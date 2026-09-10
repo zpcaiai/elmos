@@ -1076,3 +1076,288 @@ class ProductionReadinessChecklist:
     reviewed_by: Optional[str] = None
     review_date: Optional[str] = None
     overall_ready: bool = False
+
+# ─── Cost Economics & FinOps Advanced Models ─────────────────────
+
+class CostCategory(str, Enum):
+    COMPUTE = "compute"
+    STORAGE = "storage"
+    NETWORK_EGRESS = "network_egress"
+    MODEL_INFERENCE = "model_inference"
+    HUMAN_REVIEW = "human_review"
+    SUPPORT = "support"
+    LICENSING = "licensing"
+    RUNNER_FLEET = "runner_fleet"
+
+@dataclass
+class CostLineItem:
+    item_id: str
+    category: CostCategory
+    description: str
+    quantity: float
+    unit_price: float
+    total_cost: float
+    currency: str = "USD"
+    tenant_id: Optional[str] = None
+    project_id: Optional[str] = None
+    timestamp: str = ""
+
+@dataclass
+class CostScenarioForecast:
+    scenario_id: str
+    scenario_name: str  # baseline, growth_10pct, growth_50pct, etc.
+    time_horizon_months: int
+    projected_monthly_costs: List[float] = field(default_factory=list)
+    assumptions: Dict[str, str] = field(default_factory=dict)
+    confidence_interval_pct: float = 90.0
+
+@dataclass
+class ROIAnalysis:
+    analysis_id: str
+    migration_cost: float
+    annual_savings: float
+    payback_period_months: float
+    three_year_roi_pct: float
+    risk_adjusted_roi_pct: float
+    assumptions: Dict[str, str] = field(default_factory=dict)
+
+@dataclass
+class UnitEconomics:
+    unit_type: str  # per_migration, per_repository, per_route, per_tenant
+    cost_per_unit: float
+    revenue_per_unit: float
+    margin_per_unit: float
+    margin_pct: float
+    breakeven_units: int = 0
+
+@dataclass
+class BudgetAlert:
+    alert_id: str
+    tenant_id: str
+    budget_limit: float
+    current_spend: float
+    utilization_pct: float
+    threshold_breached: str  # 80pct_warning, 90pct_critical, 100pct_exceeded
+    projected_overage: float = 0.0
+
+
+# ─── Tenant Isolation Models ─────────────────────────────────────
+
+class TenantIsolationLevel(str, Enum):
+    SHARED_CLUSTER = "shared_cluster"
+    CONTAINER_HARDENED = "container_hardened"
+    ROW_LEVEL_SECURITY = "row_level_security"
+    SCHEMA_PER_TENANT = "schema_per_tenant"
+    DEDICATED_INSTANCE = "dedicated_instance"
+
+@dataclass
+class TenantDescriptor:
+    tenant_id: str
+    name: str
+    edition: str
+    isolation_level: TenantIsolationLevel
+    residency_region: RegionId
+    kms_key_arn: str
+    status: str  # ACTIVE, SUSPENDED, TERMINATED
+    max_concurrent_runners: int = 10
+    cpu_cores_limit: float = 8.0
+    memory_gb_limit: float = 32.0
+    storage_gb_limit: float = 100.0
+    rate_limit_rps: float = 100.0
+
+@dataclass
+class TenantResourceUsage:
+    tenant_id: str
+    active_runners: int = 0
+    allocated_cpu_cores: float = 0.0
+    allocated_memory_gb: float = 0.0
+    current_storage_bytes: int = 0
+    period_egress_bytes: int = 0
+    request_count: int = 0
+
+@dataclass
+class TenantWorkspaceBinding:
+    workspace_id: str
+    tenant_id: str
+    cgroup_path: str
+    network_namespace: str
+    fs_mounts: Dict[str, str] = field(default_factory=dict)
+    container_security_profile: str = "no-new-privileges"
+    read_only_rootfs: bool = True
+
+@dataclass
+class IsolationEnforcementResult:
+    allowed: bool
+    tenant_id: str
+    resource_target: str
+    boundary_type: str  # COMPUTE, STORAGE, NETWORK, CRYPTO
+    violation_code: Optional[str] = None
+    audit_message: str = ""
+
+# ─── Rolling Upgrade Models ──────────────────────────────────────
+
+class CanaryDecision(str, Enum):
+    PROCEED = "proceed"
+    HOLD = "hold"
+    ROLLBACK = "rollback"
+
+@dataclass
+class CanaryWaveSpec:
+    wave_number: int
+    traffic_percentage: float  # 5.0, 25.0, 100.0
+    observation_window_seconds: float = 300.0
+    max_error_rate: float = 0.001  # 0.1%
+    max_p99_latency_ms: float = 100.0
+
+@dataclass
+class RollingUpgradePlan:
+    plan_id: str
+    source_version: str
+    target_version: str
+    waves: List[CanaryWaveSpec] = field(default_factory=list)
+    draining_timeout_seconds: float = 30.0
+    auto_rollback_on_breach: bool = True
+
+@dataclass
+class CanaryObservation:
+    wave_number: int
+    total_requests: int
+    error_requests: int
+    p95_latency_ms: float
+    p99_latency_ms: float
+    error_rate: float = 0.0
+    observation_duration_seconds: float = 0.0
+
+@dataclass
+class DrainingStatus:
+    instance_id: str
+    deregistered: bool
+    inflight_requests: int
+    drained_successfully: bool
+    elapsed_seconds: float = 0.0
+
+@dataclass
+class RollbackRecord:
+    rollback_id: str
+    plan_id: str
+    trigger_reason: str
+    initiated_at: str
+    completed_at: str
+    rollback_duration_ms: float
+    restored_version: str
+    success: bool
+
+# ─── Agent Red Team & Governance Models ──────────────────────────
+
+class AgentTestCategory(str, Enum):
+    PROMPT_INJECTION = "prompt_injection"
+    TOOL_ABUSE = "tool_abuse"
+    PRIVILEGE_ESCALATION = "privilege_escalation"
+    DATA_EXFILTRATION = "data_exfiltration"
+    RUNAWAY_LOOP = "runaway_loop"
+    BUDGET_EXHAUSTION = "budget_exhaustion"
+    INSTRUCTION_OVERRIDE = "instruction_override"
+    CROSS_TENANT_LEAK = "cross_tenant_leak"
+
+class AgentTestVerdict(str, Enum):
+    DEFENDED = "defended"
+    VULNERABLE = "vulnerable"
+    PARTIAL = "partial"
+    INCONCLUSIVE = "inconclusive"
+
+@dataclass
+class RedTeamScenario:
+    scenario_id: str
+    category: AgentTestCategory
+    attack_description: str
+    attack_payload: str
+    expected_defense: str
+    severity: SeverityLevel = SeverityLevel.HIGH
+
+@dataclass
+class RedTeamResult:
+    scenario_id: str
+    verdict: AgentTestVerdict
+    defense_triggered: bool
+    attack_blocked: bool
+    response_contained: bool
+    details: str = ""
+    elapsed_ms: float = 0.0
+
+@dataclass
+class AgentShadowResult:
+    shadow_id: str
+    agent_id: str
+    production_output: Dict[str, Any] = field(default_factory=dict)
+    shadow_output: Dict[str, Any] = field(default_factory=dict)
+    divergence_score: float = 0.0
+    divergent_fields: List[str] = field(default_factory=list)
+    safe_to_promote: bool = True
+
+@dataclass
+class AgentConsensusResult:
+    decision_id: str
+    agent_votes: Dict[str, str] = field(default_factory=dict)
+    consensus_reached: bool = False
+    winning_decision: str = ""
+    agreement_ratio: float = 0.0
+    requires_human_arbitration: bool = False
+
+
+# ─── Version Compatibility Models ────────────────────────────────
+
+@dataclass(frozen=True)
+class SemVer:
+    major: int
+    minor: int
+    patch: int
+    prerelease: str = ""
+    
+    def __str__(self) -> str:
+        base = f"{self.major}.{self.minor}.{self.patch}"
+        return f"{base}-{self.prerelease}" if self.prerelease else base
+    
+    def __lt__(self, other: 'SemVer') -> bool:
+        return (self.major, self.minor, self.patch) < (other.major, other.minor, other.patch)
+    
+    def __le__(self, other: 'SemVer') -> bool:
+        return (self.major, self.minor, self.patch) <= (other.major, other.minor, other.patch)
+
+@dataclass
+class ComponentVersionMatrix:
+    control_plane_version: SemVer
+    min_runner_version: SemVer
+    max_runner_version: SemVer
+    supported_api_versions: List[str] = field(default_factory=list)
+    supported_schema_versions: List[str] = field(default_factory=list)
+    deprecated_features: List[str] = field(default_factory=list)
+
+@dataclass
+class RunnerHandshakeRequest:
+    runner_id: str
+    runner_version: SemVer
+    protocol_version: int
+    capabilities: List[str] = field(default_factory=list)
+    runtime_env: str = "linux-amd64"
+
+@dataclass
+class RunnerHandshakeResponse:
+    accepted: bool
+    negotiated_protocol: int = 0
+    rejection_reason: str = ""
+    lease_duration_seconds: float = 300.0
+
+@dataclass
+class WireCompatibilityResult:
+    message_type: str
+    backward_compatible: bool
+    forward_compatible: bool
+    unknown_fields_preserved: bool
+    breaking_changes: List[str] = field(default_factory=list)
+
+@dataclass
+class SchemaBreakingChange:
+    change_type: str  # FIELD_REMOVED, TYPE_CHANGED, REQUIRED_ADDED
+    field_path: str
+    description: str
+    severity: str  # breaking, deprecated, compatible
