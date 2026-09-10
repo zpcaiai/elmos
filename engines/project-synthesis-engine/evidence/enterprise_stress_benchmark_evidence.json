@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "benchmark_name": "ELMOS-ENTERPRISE-HIGH-CONCURRENCY-STRESS",
+  "timestamp": "2026-09-10T05:11:52.874510+00:00",
+  "metrics": {
+    "concurrency_level": 50,
+    "total_requests": 1000,
+    "avg_latency_ms": 0.063,
+    "p50_latency_ms": 0.0,
+    "p90_latency_ms": 0.269,
+    "p95_latency_ms": 0.315,
+    "p99_latency_ms": 0.516,
+    "cache_hit_ratio": 0.878,
+    "cache_hits": 878,
+    "cache_misses": 122,
+    "optimistic_conflicts_detected": 136,
+    "outbox_events_dispatched": 99,
+    "zero_data_corruption_guarantee": true
+  },
+  "status": "PASSED",
+  "evidence_sha256": "sha256:86f3c2c8cdad0c7a6478b427080d4f216e447c52f0d76db0580d8806ae80b9e9"
+}

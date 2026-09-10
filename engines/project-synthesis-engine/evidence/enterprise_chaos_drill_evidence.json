@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "benchmark_name": "ELMOS-ENTERPRISE-CHAOS-RECOVERY-SUITE",
+  "timestamp": "2026-09-10T05:11:52.932981+00:00",
+  "drills": {
+    "CHAOS-01-WORKER-BRAIN-SPLIT-CAS-FENCING": {
+      "status": "PASSED",
+      "description": "Stale fencing token rejected after network partition failover; zero split-brain writes.",
+      "stale_token": 1001,
+      "new_token": 1002,
+      "brain_split_prevented": true
+    },
+    "CHAOS-02-OUTBOX-BROKER-OUTAGE-RESUMPTION": {
+      "status": "PASSED",
+      "description": "Zero event loss during broker outage; 100% drained on recovery.",
+      "accumulated_during_outage": 10,
+      "drained_after_recovery": 10,
+      "zero_event_loss": true
+    },
+    "CHAOS-03-REDIS-CACHE-OUTAGE-DEGRADATION": {
+      "status": "PASSED",
+      "description": "Graceful fallback to DB during cache outage with automatic repopulation on recovery.",
+      "degradation_success": true,
+      "unhandled_exceptions": 0
+    }
+  },
+  "overall_status": "PASSED",
+  "evidence_sha256": "sha256:84e8749dde12b32805e47c2a91acaa850a82af4080ec1348cd9259b50275881e"
+}
