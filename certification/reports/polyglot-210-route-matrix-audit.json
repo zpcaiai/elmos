@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "audit_id": "polyglot-210-route-matrix-l4-v1",
-  "issued_at": "2026-09-10T08:46:52Z",
+  "issued_at": "2026-09-10T09:04:17Z",
   "scope": {
     "total_languages": 15,
     "languages": [
@@ -44,7 +44,10 @@
       "rustc",
       "go",
       "tsc",
-      "dart"
+      "dart",
+      "javac",
+      "dotnet",
+      "clang"
     ],
     "checks": [
       {
@@ -76,5 +79,5 @@
       }
     ]
   },
-  "elapsed_seconds": 4.25
+  "elapsed_seconds": 2.62
 }

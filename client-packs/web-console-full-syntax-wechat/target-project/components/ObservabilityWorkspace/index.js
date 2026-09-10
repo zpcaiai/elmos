@@ -1,3 +1,42 @@
+// Top-level helpers and constants
+try { const sampleSpans = [
+    {
+        id: "span-01",
+        name: "elmos.pipeline.cst_parsing",
+        durationMs: 4.2,
+        status: "SAMPLE_ONLY",
+        attributes: { "sample.lang.source": "java", "sample.parser": "tree-sitter", "execution.status": "NOT_RUN" },
+    },
+    {
+        id: "span-02",
+        name: "elmos.pipeline.type_algebra",
+        durationMs: 6.8,
+        status: "SAMPLE_ONLY",
+        attributes: { "sample.stage": "type-algebra", "execution.status": "NOT_RUN" },
+    },
+    {
+        id: "span-03",
+        name: "elmos.pipeline.smt_verification",
+        durationMs: 12.5,
+        status: "SAMPLE_ONLY",
+        attributes: { "sample.solver": "z3", "verification.status": "NOT_RUN" },
+    },
+    {
+        id: "span-04",
+        name: "elmos.pipeline.lean4_proof",
+        durationMs: 8.4,
+        status: "SAMPLE_ONLY",
+        attributes: { "sample.kernel": "lean4", "verification.status": "NOT_RUN" },
+    },
+    {
+        id: "span-05",
+        name: "elmos.pipeline.cas_store",
+        durationMs: 1.1,
+        status: "SAMPLE_ONLY",
+        attributes: { "sample.stage": "cas-store", "artifact.status": "NOT_GENERATED" },
+    },
+]; } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,

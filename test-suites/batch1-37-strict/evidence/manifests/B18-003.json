@@ -1,0 +1,181 @@
+{
+  "manifest_version": 2,
+  "manifest_id": "evidence-B18-003",
+  "case_id": "B18-003",
+  "case_digest": "sha256:64f902924a3eb6234d8269f12dd6725d25b6872369487aef12ff9b0e3fd79c5a",
+  "catalog_digest": "sha256:1b73b935f8ef2c15c1e0c2fcf2416a45eb076bca910ac8ee1d8363907312d6e5",
+  "artifact_digest": "sha256:fafb83451f5e10364d1e386aa6f85e897552c8b0369d1cd1d0b3b4c74c34a8fa",
+  "environment_digest": "sha256:5227a8ea67bdc47bbe7c9d16d41b19520b31aa8346e97d6dc2d991d34fc1c3cd",
+  "execution_kind": "real",
+  "started_at": "2026-09-10T08:20:52Z",
+  "finished_at": "2026-09-10T08:55:52Z",
+  "executor": {
+    "id": "elmos-b1-37-strict-executor",
+    "role": "executor"
+  },
+  "verifier": {
+    "id": "ethan-independent-certifier",
+    "role": "independent-verifier",
+    "independent": true
+  },
+  "authorization_refs": [
+    "auth-elmos-strict-b1-37"
+  ],
+  "replay_command": "./evidence/manifests/shared/replay.sh --case B18-003",
+  "files": [
+    {
+      "role": "artifact-digest",
+      "path": "shared/artifact.json",
+      "sha256": "fafb83451f5e10364d1e386aa6f85e897552c8b0369d1cd1d0b3b4c74c34a8fa",
+      "bytes": 558,
+      "immutable": true
+    },
+    {
+      "role": "environment-binding",
+      "path": "shared/environment.json",
+      "sha256": "5227a8ea67bdc47bbe7c9d16d41b19520b31aa8346e97d6dc2d991d34fc1c3cd",
+      "bytes": 273,
+      "immutable": true
+    },
+    {
+      "role": "environment-manifest",
+      "path": "cases/B18-003-environment-manifest.json",
+      "sha256": "caede75ae903e4c25fe5928cf221c5754982ef70526ca592b6b55ee08ec597fe",
+      "bytes": 97,
+      "immutable": true
+    },
+    {
+      "role": "raw-log",
+      "path": "cases/B18-003-execution.log",
+      "sha256": "e7a023bbef710c180cb5fe8f9f1104fed6a080bd163a026eda52a30443fe592e",
+      "bytes": 335,
+      "immutable": true
+    },
+    {
+      "role": "raw-execution-log",
+      "path": "cases/B18-003-raw-execution-log.json",
+      "sha256": "af4602b6cde3a5516f912f274a6bff166c48ba77d7da6e690178a65a5a2a304e",
+      "bytes": 98,
+      "immutable": true
+    },
+    {
+      "role": "execution-result",
+      "path": "cases/B18-003-execution.json",
+      "sha256": "4bd3dc66355c2f7f4e0d002c1adebb740450fb6304797f3f085b3bddde276cdf",
+      "bytes": 353,
+      "immutable": true
+    },
+    {
+      "role": "case-result",
+      "path": "cases/B18-003-case-result.json",
+      "sha256": "830735e44f24d27eda5c28257bc6c9990fe5eabda763f353d6a756027ca91cc1",
+      "bytes": 93,
+      "immutable": true
+    },
+    {
+      "role": "provenance",
+      "path": "shared/provenance.json",
+      "sha256": "1a75aaa0b3e2cc7d2e063107cd7628363135087130e5bb9657cfa2b7401e99aa",
+      "bytes": 445,
+      "immutable": true
+    },
+    {
+      "role": "verification",
+      "path": "cases/B18-003-verification.json",
+      "sha256": "104bee1a7174d71165ef8ed3a46401d03bc7270fc87ccee72553014d67afa10d",
+      "bytes": 303,
+      "immutable": true
+    },
+    {
+      "role": "replay-command",
+      "path": "shared/replay.sh",
+      "sha256": "61a0a1327d7277a1a664a5ab31df3af5580c83cbdad1573bb6ff88b4de7a70af",
+      "bytes": 114,
+      "immutable": true
+    },
+    {
+      "role": "replay-script",
+      "path": "cases/B18-003-replay-script.json",
+      "sha256": "d2ec8e3d29531e770209d8b54ca3fd4b7ce715bd3f005fc48b3adc4caaa91b9c",
+      "bytes": 83,
+      "immutable": true
+    },
+    {
+      "role": "holdout-attestation",
+      "path": "shared/holdout-attestation.json",
+      "sha256": "cc5b1a3aca832237fc4439c81051329df4bc79398377bc8426dd12a08cf166a3",
+      "bytes": 222,
+      "immutable": true
+    },
+    {
+      "role": "representative-attestation",
+      "path": "shared/representative-attestation.json",
+      "sha256": "ab982ba0d894532bb3919f3d44ec6851e163f1c34824df0f273db63fbd2f513d",
+      "bytes": 236,
+      "immutable": true
+    },
+    {
+      "role": "state-diff",
+      "path": "cases/B18-003-state-diff.json",
+      "sha256": "4ec7a36977786073691b42cb85f8877dc5d05edb9a54ab3f8fd7f8673301da1b",
+      "bytes": 92,
+      "immutable": true
+    },
+    {
+      "role": "state-before-after",
+      "path": "cases/B18-003-state-before-after.json",
+      "sha256": "6acb3551f004ab6b0c8a9889bbd1016a8dd1eee205dffa0dfed447397de9e54d",
+      "bytes": 100,
+      "immutable": true
+    },
+    {
+      "role": "coverage-link",
+      "path": "cases/B18-003-coverage-link.json",
+      "sha256": "3ea378b521d4f9cf184ea2bb452cb817c889865b46f033edc971396e6d9241d0",
+      "bytes": 95,
+      "immutable": true
+    },
+    {
+      "role": "input-manifest",
+      "path": "cases/B18-003-input-manifest.json",
+      "sha256": "b3346a1f4bb8bb62497e567ebed8876a258abd3b2a547bacdb76404fa9f20fc8",
+      "bytes": 96,
+      "immutable": true
+    },
+    {
+      "role": "toolchain-version",
+      "path": "cases/B18-003-toolchain-version.json",
+      "sha256": "3da10f890a29e0ad1721fde054437813c9d3a81ddd1cd7b2a221bf50afd0932c",
+      "bytes": 99,
+      "immutable": true
+    }
+  ],
+  "corpora": [
+    {
+      "kind": "development",
+      "digest": "sha256:0ea587ab0a5d22164a1dc3beed04848e4ce971f6b313336a27d879e0cad0ed72",
+      "manifest_path": "shared/development-corpus.json",
+      "authoring_access": true,
+      "attestation_ref": "cases/B18-003-verification.json",
+      "verifier_id": "ethan-independent-certifier"
+    },
+    {
+      "kind": "holdout",
+      "digest": "sha256:2b77258206f3ce9587305d5a1b312a9ad9b723d84114a06f0e848c036a8cfbc7",
+      "manifest_path": "shared/holdout-corpus.json",
+      "independent": true,
+      "authoring_access": false,
+      "attestation_ref": "shared/holdout-attestation.json",
+      "verifier_id": "ethan-independent-certifier"
+    },
+    {
+      "kind": "representative",
+      "digest": "sha256:79c63156c549360690582404f84a6cffd898eda4c7ec4b4f6aeb3350b1cd81b0",
+      "manifest_path": "shared/representative-corpus.json",
+      "independent": true,
+      "authoring_access": false,
+      "attestation_ref": "shared/representative-attestation.json",
+      "verifier_id": "ethan-independent-certifier"
+    }
+  ]
+}

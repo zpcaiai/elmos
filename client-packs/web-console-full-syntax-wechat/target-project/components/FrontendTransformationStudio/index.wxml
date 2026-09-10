@@ -1,21 +1,21 @@
-<view class="{{styles.page}}">
-  <view class="{{styles.hero}}" aria-labelledby="frt-title">
-    <view class="{{styles.heroCopy}}">
-      <text class="{{styles.eyebrow}}">
+<view class="{{'page'}}">
+  <view class="{{'hero'}}" aria-labelledby="frt-title">
+    <view class="{{'heroCopy'}}">
+      <text class="{{'eyebrow'}}">
         <Icon name="workflow" size="{{15}}" />
         <text>前端转换 · 30 个生成阶段</text>
       </text>
       <view id="frt-title">{{t("前端仓库转换工厂", "Frontend repository transformation factory")}}</view>
       <view>{{t("从仓库发现、类型化语义 IR 和 30 条方向路线，一直编排到产品闭环与生产就绪门禁。所有未知语义和未运行证据保持显式。", "Orchestrate repository discovery, typed UI semantics, 30 directed routes, product closure, and production-readiness gates. Unknown semantics and unexecuted evidence remain explicit.")}}</view>
-      <view class="{{styles.heroActions}}">
-        <navigator class="{{styles.primaryAction}}" href="#route-planner">
+      <view class="{{'heroActions'}}">
+        <navigator class="{{'primaryAction'}}" href="#route-planner">
           <text>{{t("选择转换路线", "Choose a directed route")}}</text>
           <Icon name="arrow" size="{{15}}" />
         </navigator>
-        <navigator class="{{styles.secondaryAction}}" href="#frt-capability-catalog">{{t("浏览全部功能", "Browse every capability")}}</navigator>
+        <navigator class="{{'secondaryAction'}}" href="#frt-capability-catalog">{{t("浏览全部功能", "Browse every capability")}}</navigator>
       </view>
     </view>
-    <view class="{{styles.heroMetrics}}" aria-label="前端转换能力规模" tabIndex="{{0}}">
+    <view class="{{'heroMetrics'}}" aria-label="前端转换能力规模" tabIndex="{{0}}">
       <view>
         <text>30</text>
         <text>生成阶段</text>
@@ -31,50 +31,50 @@
         <text>有向转换路线</text>
         <text>六类技术栈两两有向转换</text>
       </view>
-      <view class="{{styles.boundaryMetric}}">
+      <view class="{{'boundaryMetric'}}">
         <text>NOT_RUN</text>
         <text>生产证据</text>
         <text>真实设备、性能与生产门禁未冒充通过</text>
       </view>
     </view>
   </view>
-  <view class="{{styles.stageSection}}" aria-labelledby="stage-title">
-    <view class="{{styles.sectionHeading}}">
+  <view class="{{'stageSection'}}" aria-labelledby="stage-title">
+    <view class="{{'sectionHeading'}}">
       <view>
-        <text class="{{styles.kicker}}">Delivery chain</text>
+        <text class="{{'kicker'}}">Delivery chain</text>
         <view id="stage-title">{{t("六段式实施路径", "Six-stage delivery path")}}</view>
       </view>
       <view>上游契约、Policy 或 Evidence Digest 变化会使下游结果进入 STALE / RETEST_REQUIRED。</view>
     </view>
-    <view class="{{styles.stageGrid}}">
+    <view class="{{'stageGrid'}}">
       <view wx:for="{{deliveryStages}}" wx:for-item="stage" wx:for-index="index" wx:key="stage.id" key="{{stage.range}}">
-        <text class="{{styles.stageNumber}}">{{String(index + 1).padStart(2, "0")}}</text>
+        <text class="{{'stageNumber'}}">{{String(index + 1).padStart(2, "0")}}</text>
         <text>{{stage.range}}</text>
         <text>{{stage.title}}</text>
         <view>{{stage.detail}}</view>
       </view>
     </view>
   </view>
-  <view class="{{styles.routePlanner}}" id="route-planner" aria-labelledby="route-title">
-    <view class="{{styles.routeHeader}}">
+  <view class="{{'routePlanner'}}" id="route-planner" aria-labelledby="route-title">
+    <view class="{{'routeHeader'}}">
       <view>
-        <text class="{{styles.kicker}}">Route Planner</text>
+        <text class="{{'kicker'}}">Route Planner</text>
         <view id="route-title">{{t("选择一条精确的有向转换路线", "Choose an exact directed transformation route")}}</view>
         <view>反向转换属于另一条独立 Route Pack，不沿用当前路线的证据或结论。</view>
       </view>
-      <text class="{{styles.routeCount}}">
+      <text class="{{'routeCount'}}">
         <text />
         <text>30 / 30 路线已注册</text>
       </text>
     </view>
-    <view class="{{styles.routeControls}}">
+    <view class="{{'routeControls'}}">
       <text>
         <text>{{t("源技术栈", "Source stack")}}</text>
         <view value="{{source}}" bindchange="onChange">
           <view wx:for="{{frtCatalog.technologyStacks}}" wx:for-item="stack" wx:key="stack.id" key="{{stack}}" value="{{stack}}">{{stack}}</view>
         </view>
       </text>
-      <text class="{{styles.routeArrow}}" aria-hidden="true">
+      <text class="{{'routeArrow'}}" aria-hidden="true">
         <Icon name="arrow" size="{{20}}" />
       </text>
       <text>
@@ -84,9 +84,9 @@
         </view>
       </text>
     </view>
-    <view wx:if="{{selectedRoute}}" class="{{styles.routeResult}}">
-      <view class="{{styles.routeIdentity}}">
-        <text class="{{styles.routeGlyph}}">
+    <view wx:if="{{selectedRoute}}" class="{{'routeResult'}}">
+      <view class="{{'routeIdentity'}}">
+        <text class="{{'routeGlyph'}}">
           <text>{{source.slice(0, 1)}}</text>
           <text>→</text>
           <text>{{target.slice(0, 1)}}</text>
@@ -97,7 +97,7 @@
           <code>{{selectedRoute.skillName}}</code>
         </view>
       </view>
-      <view class="{{styles.routeStates}}">
+      <view class="{{'routeStates'}}">
         <view>
           <view>静态 Runtime</view>
           <view data-state="ready">READY</view>
@@ -120,32 +120,32 @@
         <Icon name="arrow" size="{{15}}" />
       </button>
     </view>
-    <view wx:else class="{{styles.routeUnavailable}}">源技术栈和目标技术栈必须不同。</view>
+    <view wx:else class="{{'routeUnavailable'}}">源技术栈和目标技术栈必须不同。</view>
   </view>
-  <view class="{{styles.catalogSection}}" id="frt-capability-catalog" aria-labelledby="catalog-title">
-    <view class="{{styles.sectionHeading}}">
+  <view class="{{'catalogSection'}}" id="frt-capability-catalog" aria-labelledby="catalog-title">
+    <view class="{{'sectionHeading'}}">
       <view>
-        <text class="{{styles.kicker}}">运行时功能目录</text>
+        <text class="{{'kicker'}}">运行时功能目录</text>
         <view id="catalog-title">{{t("472 个实现级功能", "472 implementation-level capabilities")}}</view>
       </view>
       <view>每个功能共用同一受治理 Runtime、Scope、幂等与 Evidence 协议，避免建立 472 套平行子系统。</view>
     </view>
-    <view class="{{styles.catalogLayout}}">
-      <view class="{{styles.batchRail}}" aria-label="按阶段筛选功能">
-        <button class="{{batch === &quot;ALL&quot; ? styles.activeBatch : &quot;&quot;}}" type="button" bindtap="onTap">
+    <view class="{{'catalogLayout'}}">
+      <view class="{{'batchRail'}}" aria-label="按阶段筛选功能">
+        <button class="{{batch === &quot;ALL&quot; ? 'activeBatch' : &quot;&quot;}}" type="button" bindtap="onTap">
           <text>ALL</text>
           <text>全部能力</text>
           <text>{{frtCatalog.skillCount}}</text>
         </button>
-        <button wx:for="{{frtCatalog.batches}}" wx:key="item.id" class="{{batch === item.id ? styles.activeBatch : &quot;&quot;}}" type="button" key="{{item.id}}" bindtap="onTap">
+        <button wx:for="{{frtCatalog.batches}}" wx:key="item.id" class="{{batch === item.id ? 'activeBatch' : &quot;&quot;}}" type="button" key="{{item.id}}" bindtap="onTap">
           <text>{{item.id}}</text>
           <text>{{item.title}}</text>
           <text>{{item.skillCount}}</text>
         </button>
       </view>
-      <view class="{{styles.catalogContent}}">
-        <view class="{{styles.catalogToolbar}}">
-          <text class="{{styles.searchBox}}">
+      <view class="{{'catalogContent'}}">
+        <view class="{{'catalogToolbar'}}">
+          <text class="{{'searchBox'}}">
             <Icon name="search" size="{{17}}" />
             <text class="sr-only">搜索功能</text>
             <input value="{{query}}" placeholder="搜索 ID、名称或能力…" bindchange="onChange" />
@@ -153,32 +153,32 @@
               <Icon name="close" size="{{14}}" />
             </button>
           </text>
-          <text class="{{styles.resultCount}}">显示 {{visibleSkills.length}} / {{filteredSkills.length}}</text>
+          <text class="{{'resultCount'}}">显示 {{visibleSkills.length}} / {{filteredSkills.length}}</text>
         </view>
-        <view wx:if="{{visibleSkills.length}}" class="{{styles.skillGrid}}">
-          <button wx:for="{{visibleSkills}}" wx:for-item="skill" wx:key="skill.id" type="button" class="{{`${styles.skillCard} ${selectedSkill?.id === skill.id ? styles.selectedSkill : &quot;&quot;}`}}" key="{{skill.id}}" aria-pressed="{{selectedSkill?.id === skill.id}}" bindtap="onTap">
-            <text class="{{styles.skillMeta}}">
+        <view wx:if="{{visibleSkills.length}}" class="{{'skillGrid'}}">
+          <button wx:for="{{visibleSkills}}" wx:for-item="skill" wx:key="skill.id" type="button" class="{{`${'skillCard'} ${selectedSkill?.id === skill.id ? 'selectedSkill' : &quot;&quot;}`}}" key="{{skill.id}}" aria-pressed="{{selectedSkill?.id === skill.id}}" bindtap="onTap">
+            <text class="{{'skillMeta'}}">
               <text>{{skill.id}}</text>
               <text>{{skill.batch}}</text>
             </text>
             <text>{{skill.title}}</text>
             <code>{{skill.name}}</code>
-            <text class="{{styles.skillFooter}}">
+            <text class="{{'skillFooter'}}">
               <text>Runtime interface ready</text>
               <Icon name="chevron" size="{{14}}" />
             </text>
           </button>
         </view>
-        <view wx:else class="{{styles.emptyState}}">
+        <view wx:else class="{{'emptyState'}}">
           <Icon name="search" size="{{24}}" />
           <text>没有匹配的功能</text>
           <view>尝试更换阶段或缩短搜索词。</view>
         </view>
-        <view wx:if="{{filteredSkills.length > visibleSkills.length}}" class="{{styles.limitNote}}">为保持页面响应速度，当前最多展示 72 项；请继续按阶段或关键词缩小范围。</view>
+        <view wx:if="{{filteredSkills.length > visibleSkills.length}}" class="{{'limitNote'}}">为保持页面响应速度，当前最多展示 72 项；请继续按阶段或关键词缩小范围。</view>
       </view>
-      <view class="{{styles.skillInspector}}" aria-live="polite">
+      <view class="{{'skillInspector'}}" aria-live="polite">
         <block wx:if="{{selectedSkill}}">
-          <text class="{{styles.inspectorBatch}}">{{selectedSkill.batch}} / {{selectedSkill.certificateFamily}} family</text>
+          <text class="{{'inspectorBatch'}}">{{selectedSkill.batch}} / {{selectedSkill.certificateFamily}} family</text>
           <view>{{selectedSkill.title}}</view>
           <code>{{selectedSkill.id}}</code>
           <view>{{selectedSkill.description}}</view>
@@ -205,24 +205,24 @@
             </view>
             <view>
               <view>生产认证</view>
-              <view class="{{styles.notCertified}}">NOT_CERTIFIED</view>
+              <view class="{{'notCertified'}}">NOT_CERTIFIED</view>
             </view>
           </view>
-          <view class="{{styles.operationList}}">
+          <view class="{{'operationList'}}">
             <text>PLAN</text>
             <text>ANALYZE</text>
             <text>EXECUTE*</text>
             <text>VERIFY</text>
           </view>
-          <text class="{{styles.inspectorNote}}">* EXECUTE 只准备受限提案；客户代码、真实 Provider、设备与生产操作需要外部 Runner 和授权。</text>
+          <text class="{{'inspectorNote'}}">* EXECUTE 只准备受限提案；客户代码、真实 Provider、设备与生产操作需要外部 Runner 和授权。</text>
         </block>
         <view wx:else>选择一个功能查看契约。</view>
       </view>
     </view>
-    <view class="{{styles.operationConsole}}" aria-labelledby="operation-title" id="frt-operation-console">
-      <view class="{{styles.operationHeading}}">
+    <view class="{{'operationConsole'}}" aria-labelledby="operation-title" id="frt-operation-console">
+      <view class="{{'operationHeading'}}">
         <view>
-          <text class="{{styles.kicker}}">Repository execution</text>
+          <text class="{{'kicker'}}">Repository execution</text>
           <view id="operation-title">{{t("仓库 → 计划 → 执行 → 证据闭环", "Repository → plan → execute → evidence loop")}}</view>
           <view>
             <text>当前操作绑定</text>
@@ -230,15 +230,15 @@
             <text>；组织、租户与执行者由已认证账户或受限本地身份租约派生。</text>
           </view>
         </view>
-        <text class="{{styles.persistenceBadge}}">
+        <text class="{{'persistenceBadge'}}">
           <text />
           <text>Durable / tenant-scoped</text>
         </text>
       </view>
-      <view class="{{styles.executionForm}}">
+      <view class="{{'executionForm'}}">
         <fieldset>
           <legend>1. 运行作用域</legend>
-          <view class="{{styles.fieldGrid}}">
+          <view class="{{'fieldGrid'}}">
             <text>
               <text>Workspace</text>
               <input aria-label="FRT Workspace" value="{{workspaceId}}" bindchange="onChange" />
@@ -269,7 +269,7 @@
         </fieldset>
         <fieldset>
           <legend>2. 功能类型化输入</legend>
-          <view class="{{styles.contractSummary}}">
+          <view class="{{'contractSummary'}}">
             <text>必需</text>
             <text wx:if="{{selectedInputContract?.required.length}}">{{selectedInputContract.required.map(key => <code key={`required-${key}`}>{key}</code>)}}</text>
             <text wx:else>无</text>
@@ -278,7 +278,7 @@
             <text wx:else>无</text>
           </view>
           <block wx:if="{{acceptsFiles}}">
-            <text class="{{styles.filePicker}}">
+            <text class="{{'filePicker'}}">
               <Icon name="repository" size="{{18}}" />
               <text>
                 <text>选择仓库文本文件</text>
@@ -286,7 +286,7 @@
               </text>
               <input aria-label="选择前端仓库文件" type="file" multiple="true" bindchange="onChange" />
             </text>
-            <view class="{{styles.fileSummary}}" aria-live="polite">
+            <view class="{{'fileSummary'}}" aria-live="polite">
               <text>{{Object.keys(sourceFiles).length}}</text>
               <text>个文件已绑定</text>
               <code wx:for="{{Object.keys(sourceFiles).slice(0, 5)}}" wx:for-item="path" wx:key="path.id" key="{{path}}">{{path}}</code>
@@ -297,15 +297,15 @@
               </text>
             </view>
           </block>
-          <text class="{{styles.jsonInput}}">
+          <text class="{{'jsonInput'}}">
             <text>输入 JSON（`files` 由上方选择器安全合并）</text>
             <textarea aria-label="前端转换功能类型化输入 JSON" spellCheck="{{false}}" value="{{inputJson}}" bindchange="onChange" />
           </text>
-          <button class="{{styles.resetInput}}" type="button" bindtap="onTap">恢复契约示例</button>
+          <button class="{{'resetInput'}}" type="button" bindtap="onTap">恢复契约示例</button>
         </fieldset>
-        <view class="{{styles.localIdentity}}">
+        <view class="{{'localIdentity'}}">
           <view>{{t("本地开发身份租约（生产环境使用账户会话）", "Local development identity lease (production uses account sessions)")}}</view>
-          <view class="{{styles.fieldGrid}}">
+          <view class="{{'fieldGrid'}}">
             <text>
               <text>租户标识</text>
               <input aria-label="FRT 本地租户标识" value="{{tenantId}}" bindchange="onChange" />
@@ -320,13 +320,13 @@
             </text>
           </view>
         </view>
-        <view class="{{styles.runActions}}" aria-label="FRT 运行操作">
+        <view class="{{'runActions'}}" aria-label="FRT 运行操作">
           <button wx:for="{{(['PLAN', 'ANALYZE', 'EXECUTE', 'VERIFY'] as const)}}" wx:for-item="action" wx:key="action.id" type="button" key="{{action}}" disabled="{{busy}}" bindtap="onTap">{{action}}</button>
         </view>
-        <view wx:if="{{operationError}}" class="{{styles.operationError}}" role="alert">{{operationError}}</view>
+        <view wx:if="{{operationError}}" class="{{'operationError'}}" role="alert">{{operationError}}</view>
       </view>
-      <view class="{{styles.runWorkspace}}" aria-live="polite">
-        <view class="{{styles.runSummary}}">
+      <view class="{{'runWorkspace'}}" aria-live="polite">
+        <view class="{{'runSummary'}}">
           <view>
             <text>Run</text>
             <text>{{run?.runId ?? "尚未创建"}}</text>
@@ -343,7 +343,7 @@
             <text>版本</text>
             <text>{{run?.version ?? 0}}</text>
           </view>
-          <view wx:if="{{run}}" class="{{styles.lifecycleActions}}">
+          <view wx:if="{{run}}" class="{{'lifecycleActions'}}">
             <button type="button" disabled="{{busy || run.state !== &quot;QUEUED&quot;}}" bindtap="onTap">Runner 领取</button>
             <button type="button" disabled="{{busy || run.state !== &quot;RUNNING&quot;}}" bindtap="onTap">续租</button>
             <button type="button" disabled="{{busy || ![&quot;QUEUED&quot;, &quot;RUNNING&quot;].includes(run.state)}}" bindtap="onTap">取消</button>
@@ -351,7 +351,7 @@
             <button type="button" disabled="{{busy}}" bindtap="onTap">刷新</button>
           </view>
         </view>
-        <view class="{{styles.resultPanels}}">
+        <view class="{{'resultPanels'}}">
           <view>
             <view>
               <text>Findings</text>
@@ -411,12 +411,12 @@
       </view>
     </view>
   </view>
-  <view class="{{styles.boundarySection}}" aria-labelledby="boundary-title">
+  <view class="{{'boundarySection'}}" aria-labelledby="boundary-title">
     <view>
-      <text class="{{styles.kicker}}">Evidence boundary</text>
+      <text class="{{'kicker'}}">Evidence boundary</text>
       <view id="boundary-title">{{t("已经实现，不代表已经生产认证", "Implemented does not mean production-certified")}}</view>
     </view>
-    <view class="{{styles.boundaryGrid}}">
+    <view class="{{'boundaryGrid'}}">
       <view>
         <Icon name="check" size="{{18}}" />
         <view>

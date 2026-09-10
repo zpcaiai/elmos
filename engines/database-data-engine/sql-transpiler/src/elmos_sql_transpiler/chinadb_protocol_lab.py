@@ -743,28 +743,29 @@ class ChinaDbProtocolLab:
         for inst in self.instances.values():
             inst.stop()
 
-    def execute(self, target_id: str, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
-        """Direct, zero-latency execution against target's protocol lab database."""
+    def _find_instance(self, target_id: str) -> ChinaDbInstance:
         target_norm = target_id.lower().replace("_", "-")
         inst = self.instances.get(target_norm)
-        if not inst:
-            # Fallback exact search
-            for k, v in self.instances.items():
-                if k in target_norm or target_norm in k:
-                    inst = v
-                    break
-        if not inst:
-            raise ValueError(f"Unknown ChinaDB target: {target_id}")
+        if inst:
+            return inst
+        target_flat = target_norm.replace("-", "")
+        for k, v in self.instances.items():
+            k_flat = k.replace("-", "")
+            if (
+                k in target_norm
+                or target_norm in k
+                or k_flat == target_flat
+                or k_flat in target_flat
+                or target_flat in k_flat
+            ):
+                return v
+        raise ValueError(f"Unknown ChinaDB target: {target_id}")
+
+    def execute(self, target_id: str, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
+        """Direct, zero-latency execution against target's protocol lab database."""
+        inst = self._find_instance(target_id)
         return inst.db.execute_sql(sql)
 
     def get_database(self, target_id: str) -> ProtocolLabDatabase:
-        target_norm = target_id.lower().replace("_", "-")
-        inst = self.instances.get(target_norm)
-        if not inst:
-            for k, v in self.instances.items():
-                if k in target_norm or target_norm in k:
-                    inst = v
-                    break
-        if not inst:
-            raise ValueError(f"Unknown ChinaDB target: {target_id}")
+        inst = self._find_instance(target_id)
         return inst.db

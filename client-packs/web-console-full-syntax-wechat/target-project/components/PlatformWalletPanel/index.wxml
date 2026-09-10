@@ -1,4 +1,4 @@
-<view class="{{styles.panel}}" aria-label="全平台账户余额">
+<view class="{{'panel'}}" aria-label="全平台账户余额">
   <view>
     <view>
       <text class="overline">PLATFORM WALLETS</text>
@@ -6,20 +6,19 @@
     </view>
     <text>跨组织 · 每次读取都会写审计 · 最多 100 个组织</text>
   </view>
-  <view>这一栏与「财务对账」的租户视图不同：它不带组织头，看到的是全部租户的钱。
-          能不能看由数据库里的平台管理员名单决定，本地角色只决定 BFF 转不转发。</view>
-  <view class="{{styles.inlineActions}}">
+  <view>这一栏与「财务对账」的租户视图不同：它不带组织头，看到的是全部租户的钱。 能不能看由数据库里的平台管理员名单决定，本地角色只决定 BFF 转不转发。</view>
+  <view class="{{'inlineActions'}}">
     <button class="secondary-button" type="button" disabled="{{busy}}" bindtap="onTap">
       <Icon name="{{busy ? &quot;refresh&quot; : &quot;search&quot;}}" size="{{17}}" />
       <text>{{busy ? "读取中…" : "读取全平台余额"}}</text>
     </button>
   </view>
-  <view wx:if="{{denial}}" class="{{styles.bad}}" role="alert">
+  <view wx:if="{{denial}}" class="{{'bad'}}" role="alert">
     <text>被拒绝或读取失败：</text>
     <text>{{denial}}</text>
   </view>
-  <view wx:if="{{notice}}" class="{{styles.good}}" role="status">{{notice}}</view>
-  <view wx:if="{{!loaded}}" class="{{styles.empty}}">
+  <view wx:if="{{notice}}" class="{{'good'}}" role="status">{{notice}}</view>
+  <view wx:if="{{!loaded}}" class="{{'empty'}}">
     <Icon name="database" size="{{22}}" />
     <text>点击读取后才会请求；页面不会预取全平台资金数据。</text>
   </view>
@@ -79,7 +78,7 @@
           </div>
         )}}</text>
 </view>
-<view wx:if="{{expanded}}" class="{{styles.panel}}" aria-label="账户流水">
+<view wx:if="{{expanded}}" class="{{'panel'}}" aria-label="账户流水">
   <view>
     <view>
       <text class="overline">LEDGER</text>
@@ -87,10 +86,8 @@
     </view>
     <text>最近 50 条 · 新的在前 · 只读且不可修改</text>
   </view>
-  <view class="{{styles.boundaryNote}}">流水只记录真实的资金移动（充值入账、消费、退款、人工调整、试用赠送）。
-            任务开始时的冻结与结束时的释放是预留状态的变化，不在这里——否则同一列
-            「结余」在不同的行上会是两个意思，账本也就无法靠重放自证。</view>
-  <view wx:if="{{ledgerBusy}}" class="{{styles.empty}}">
+  <view class="{{'boundaryNote'}}">流水只记录真实的资金移动（充值入账、消费、退款、人工调整、试用赠送）。 任务开始时的冻结与结束时的释放是预留状态的变化，不在这里——否则同一列 「结余」在不同的行上会是两个意思，账本也就无法靠重放自证。</view>
+  <view wx:if="{{ledgerBusy}}" class="{{'empty'}}">
     <Icon name="refresh" size="{{22}}" />
     <text>读取中…</text>
   </view>
@@ -142,7 +139,7 @@
             </div>
           )}}</text>
 </view>
-<view class="{{styles.panel}}" aria-label="充值对账">
+<view class="{{'panel'}}" aria-label="充值对账">
   <view>
     <view>
       <text class="overline">TOP-UP RECONCILIATION</text>
@@ -150,13 +147,12 @@
     </view>
     <text>已付款但未入账： {{loaded ? uncredited.length : "—"}}</text>
   </view>
-  <view wx:if="{{uncredited.length > 0}}" class="{{styles.bad}}" role="alert">
+  <view wx:if="{{uncredited.length > 0}}" class="{{'bad'}}" role="alert">
     <text>有</text>
     <text>{{uncredited.length}}</text>
-    <text>笔已收款但没有入账。这一栏应该常年为空——非空即事故：
-            钱已经收了，而客户的余额没有变。先查支付回调有没有到，再查回调有没有找到这张单。</text>
+    <text>笔已收款但没有入账。这一栏应该常年为空——非空即事故： 钱已经收了，而客户的余额没有变。先查支付回调有没有到，再查回调有没有找到这张单。</text>
   </view>
-  <view wx:if="{{!loaded}}" class="{{styles.empty}}">
+  <view wx:if="{{!loaded}}" class="{{'empty'}}">
     <Icon name="database" size="{{22}}" />
     <text>与余额一同读取。</text>
   </view>
@@ -202,7 +198,7 @@
           </div>
         )}}</text>
 </view>
-<view class="{{styles.panel}}" aria-label="人工调整余额">
+<view class="{{'panel'}}" aria-label="人工调整余额">
   <view>
     <view>
       <text class="overline">MANUAL ADJUSTMENT</text>
@@ -210,10 +206,8 @@
     </view>
     <text>需要 APPROVER + 平台管理员 · 不可撤销</text>
   </view>
-  <view>这是这个子系统里唯一一个在别处没有对照记录的动作：没有支付流水，没有任务，
-          事后能对账的只有管理员打进去的那句原因。所以原因必填，且会写进客户可见的流水。
-          写错了不能删——只能再打一笔反向的。</view>
-  <form wx:if="{{canAdjust}}" class="{{styles.financeActions}}" bindsubmit="submitAdjustment">
+  <view>这是这个子系统里唯一一个在别处没有对照记录的动作：没有支付流水，没有任务， 事后能对账的只有管理员打进去的那句原因。所以原因必填，且会写进客户可见的流水。 写错了不能删——只能再打一笔反向的。</view>
+  <form wx:if="{{canAdjust}}" class="{{'financeActions'}}" bindsubmit="submitAdjustment">
     <text>
       <text>组织 ID</text>
       <input value="{{target}}" aria-label="被调整的组织 ID" placeholder="org-xxxx" pattern="[A-Za-z0-9][A-Za-z0-9._:-]{0,127}" title="组织标识，例如 org-pre。" disabled="{{busy}}" required="true" bindchange="onChange" />
@@ -240,5 +234,5 @@
       </button>
     </view>
   </form>
-  <view wx:else class="{{styles.boundaryNote}}">当前会话角色不足，只能查看。人工改余额需要 APPROVER，且账号还要在平台管理员名单上。</view>
+  <view wx:else class="{{'boundaryNote'}}">当前会话角色不足，只能查看。人工改余额需要 APPROVER，且账号还要在平台管理员名单上。</view>
 </view>

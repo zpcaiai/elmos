@@ -1,3 +1,1668 @@
+// Top-level helpers and constants
+try { const chunkBytes = 256 * 1024; } catch(e) {}
+try { const maximumProcessableAssetBytes = 64 * 1024 * 1024; } catch(e) {}
+try { const maximumBatchAssets = 256; } catch(e) {}
+try { const maximumBatchBytes = 512 * 1024 * 1024; } catch(e) {}
+try { const maximumSkillResponseBytes = 4 * 1024 * 1024; } catch(e) {}
+try { const maximumReviewQueueTasks = 10_000; } catch(e) {}
+try { const maximumReviewQueuePages = 50; } catch(e) {}
+try { const maximumReviewSources = 1_000; } catch(e) {}
+try { const maximumReviewSourcePages = 5; } catch(e) {}
+try { const maximumStoredReviewClaims = 100; } catch(e) {}
+try { const maximumStoredReviewEnqueueAttempts = 100; } catch(e) {}
+try { const reviewClaimLeaseSeconds = 900; } catch(e) {}
+try { const skillRequestTimeoutMs = 60_000; } catch(e) {}
+try { const pendingReviewClaimRecoveryMs = (reviewClaimLeaseSeconds * 1000
+    + skillRequestTimeoutMs
+    + 2 * 60 * 1000); } catch(e) {}
+try { const webBffRoute = "/api/multimodal-intake/v1/execute"; } catch(e) {}
+try { const browserRequestSchemaVersion = "multimodal-intake-browser-request-v1"; } catch(e) {}
+try { const recoveryDatabaseName = "elmos-multimodal-intake-recovery-v1"; } catch(e) {}
+try { const recoveryStoreName = "upload-recovery"; } catch(e) {}
+try { const recoveryRecordKeys = new Set([
+    "schemaVersion",
+    "identityScope",
+    "fileFingerprint",
+    "expectedSize",
+    "lastModified",
+    "partSize",
+    "attemptKey",
+    "projectId",
+    "engineProjectId",
+    "sessionAttemptKey",
+    "contentSha256",
+    "sessionId",
+    "uploadSessionId",
+    "confirmedPartCount",
+    "processingAttempt",
+    "assetId",
+    "assetVersion",
+    "role",
+    "modelReadAllowed",
+    "updatedAt",
+]); } catch(e) {}
+try { const legacyReviewClaimStorageKey = "elmos-multimodal-review-claims-v1"; } catch(e) {}
+try { const reviewClaimStoragePrefix = "elmos-multimodal-review-claims-v2"; } catch(e) {}
+try { const legacyReviewEnqueueStoragePrefix = "elmos-multimodal-review-enqueue-v1"; } catch(e) {}
+try { const reviewEnqueueStoragePrefix = "elmos-multimodal-review-enqueue-v2"; } catch(e) {}
+try { const reviewClaimKeys = new Set([
+    "schema_version",
+    "identity_scope",
+    "project_id",
+    "task_id",
+    "token",
+    "idempotency_key",
+    "expected_version",
+    "created_at",
+    "fence",
+    "expires_at",
+]); } catch(e) {}
+try { const reviewEnqueueAttemptKeys = new Set([
+    "schema_version",
+    "identity_scope",
+    "project_scope_digest",
+    "request_digest",
+    "recovery_handle",
+    "prepare_idempotency_key",
+    "execute_idempotency_key",
+    "created_at",
+]); } catch(e) {}
+try { const reviewSourceEnqueueInputKeys = new Set([
+    "content_id", "expected_asset_version", "target_kind", "target_digest",
+    "expected_head_version", "expected_snapshot_id", "expected_snapshot_digest",
+    "expected_head_value_digest", "original_value_digest", "reason",
+]); } catch(e) {}
+try { const reviewEnqueuePreparationFields = new Set([
+    "schema_version", "recovery_handle", "request_digest", "state", "safe_to_clear",
+    "expires_at", "prepared_at", "executed_at", "task_id", "enqueue_input",
+]); } catch(e) {}
+try { const reviewEnqueuePreparationAbsenceFields = new Set([
+    "schema_version", "recovery_handle", "state", "safe_to_clear",
+]); } catch(e) {}
+try { const reviewTaskStates = new Set([
+    "QUEUED", "CLAIMED", "EDITED", "APPROVED", "REJECTED", "REOPENED",
+    "REVERTING", "REVERTED",
+]); } catch(e) {}
+try { const reviewTaskFullFields = new Set([
+    "task_id", "tenant_id", "project_id", "asset_id", "target_kind", "target",
+    "original_value", "source_digest", "source_ref", "confidence", "reason", "state",
+    "current_correction_version", "current_correction_digest", "effective_version",
+    "effective_digest", "claim_actor_id", "claim_fence", "claim_expires_at", "version",
+    "created_by", "created_at", "updated_at", "closed_at",
+]); } catch(e) {}
+try { const reviewTaskSummaryFields = new Set([
+    "schema_version", "task_id", "asset_id", "target_kind", "source_digest", "confidence",
+    "reason", "state", "current_correction_version", "current_correction_digest",
+    "effective_version", "effective_digest", "claim_actor_id", "claim_fence",
+    "claim_expires_at", "version", "created_at", "updated_at", "closed_at",
+]); } catch(e) {}
+try { const reviewSourceRefFields = new Set([
+    "schema_version", "content_id", "content_version", "content_digest", "asset_sha256",
+    "target_kind", "target_digest", "snapshot_id", "snapshot_digest", "head_version",
+    "head_value_digest", "source_digest", "provenance_digest",
+    "original_value_client_digest", "original_value_digest_contract",
+]); } catch(e) {}
+try { const reviewSourceSummaryFields = new Set([
+    "schema_version", "content_id", "content_version", "target_kind", "target",
+    "target_digest", "confidence", "head_version", "head_direction",
+    "head_correction_version", "original_value_client_digest",
+    "original_value_digest_contract", "source_ref",
+]); } catch(e) {}
+try { const reviewSourceDetailFields = new Set([...reviewSourceSummaryFields, "original_value"]); } catch(e) {}
+try { const reviewCorrectionFields = new Set([
+    "correction_id", "tenant_id", "project_id", "task_id", "correction_version",
+    "parent_correction_version", "target_kind", "target", "original_value",
+    "corrected_value", "source_digest", "actor_id", "reason", "created_at",
+    "correction_digest",
+]); } catch(e) {}
+try { const reviewDecisionFields = new Set([
+    "decision_id", "tenant_id", "project_id", "task_id", "decision_version",
+    "decision", "prior_state", "next_state", "correction_version",
+    "correction_digest", "source_digest", "actor_id", "reason", "created_at",
+]); } catch(e) {}
+try { const reviewPropagationSummaryFields = new Set([
+    "propagation_id", "task_id", "decision_id", "correction_version", "channel",
+    "direction", "payload_digest", "effective_value_digest", "state", "claim_fence",
+    "claim_expires_at", "dispatch_started_at", "failure_code", "reconciliation_required",
+    "version", "updated_at",
+]); } catch(e) {}
+try { const reviewEffectiveFields = new Set([
+    "materialized", "state", "effective_version", "effective_value",
+    "effective_value_digest", "channels",
+]); } catch(e) {}
+try { const reviewEffectiveChannelFields = new Set([
+    "channel", "source_decision_id", "correction_version", "direction",
+    "effective_value_digest", "version", "updated_at",
+]); } catch(e) {}
+try { const supportedExtensions = new Set([
+    "txt", "md", "markdown", "mdx", "log", "pdf", "doc", "docx",
+    "png", "jpg", "jpeg", "webp", "heic", "tiff", "bmp", "svg",
+    "mp3", "wav", "m4a", "aac", "flac", "ogg", "opus",
+    "zip", "tar", "tar.gz", "gz", "tgz",
+]); } catch(e) {}
+try { function safeProject(value) {
+    return /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(value);
+} } catch(e) {}
+try { function relativePath(file) {
+    const candidate = file.webkitRelativePath || file.name;
+    return candidate.replaceAll("\\", "/").replace(/^\/+/, "");
+} } catch(e) {}
+try { function extensionOf(file) {
+    const suffixes = file.name.toLocaleLowerCase("en-US").split(".");
+    if (suffixes.length > 2 && suffixes.slice(-2).join(".") === "tar.gz")
+        return "tar.gz";
+    return suffixes.length > 1 ? suffixes.at(-1) ?? "" : "";
+} } catch(e) {}
+try { function bytesToBase64(bytes) {
+    let binary = "";
+    for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+    }
+    return btoa(binary);
+} } catch(e) {}
+try { async function sha256(buffer) {
+    const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", buffer));
+    return [...digest].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+} } catch(e) {}
+try { async function fingerprintFile(file) {
+    const identity = `${relativePath(file)}\u0000${file.size}\u0000${file.lastModified}`;
+    return sha256(new TextEncoder().encode(identity).buffer);
+} } catch(e) {}
+try { const fileHashWorkerSource = `
+self.onmessage = async (event) => {
+  try {
+    const file = event.data;
+    const bytes = await file.arrayBuffer();
+    const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
+    const value = Array.from(digest, (byte) => byte.toString(16).padStart(2, "0")).join("");
+    self.postMessage({ ok: true, digest: value });
+  } catch (_error) {
+    self.postMessage({ ok: false });
+  }
+};
+`; } catch(e) {}
+try { async function sha256FileOffMainThread(file) {
+    if (typeof Worker === "undefined" || typeof URL.createObjectURL !== "function") {
+        throw new Error("FILE_HASH_WORKER_UNAVAILABLE");
+    }
+    const workerUrl = URL.createObjectURL(new Blob([fileHashWorkerSource], { type: "text/javascript" }));
+    let worker;
+    try {
+        const activeWorker = new Worker(workerUrl);
+        worker = activeWorker;
+        return await new Promise((resolve, reject) => {
+            activeWorker.onmessage = (event) => {
+                const digest = event.data?.digest;
+                if (event.data?.ok === true && typeof digest === "string" && /^[0-9a-f]{64}$/.test(digest)) {
+                    resolve(digest);
+                    return;
+                }
+                reject(new Error("FILE_HASH_WORKER_FAILED"));
+            };
+            activeWorker.onerror = () => reject(new Error("FILE_HASH_WORKER_FAILED"));
+            activeWorker.onmessageerror = () => reject(new Error("FILE_HASH_WORKER_FAILED"));
+            activeWorker.postMessage(file);
+        });
+    }
+    finally {
+        worker?.terminate();
+        URL.revokeObjectURL(workerUrl);
+    }
+} } catch(e) {}
+try { function boundedOpaque(value) {
+    return typeof value === "string"
+        && value.length > 0
+        && value.length <= 512
+        && !/[\u0000-\u001f\u007f]/.test(value);
+} } catch(e) {}
+try { function reviewClaimStorageKey(identityScope) {
+    return `${reviewClaimStoragePrefix}:${identityScope}`;
+} } catch(e) {}
+try { function reviewEnqueueStorageKey(identityScope) {
+    return `${reviewEnqueueStoragePrefix}:${identityScope}`;
+} } catch(e) {}
+try { function structurallyValidReviewEnqueueAttempt(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+        return false;
+    const attempt = value;
+    return Object.keys(attempt).length === reviewEnqueueAttemptKeys.size
+        && Object.keys(attempt).every((key) => reviewEnqueueAttemptKeys.has(key))
+        && attempt.schema_version === 3
+        && typeof attempt.identity_scope === "string"
+        && /^sha256:[0-9a-f]{64}$/.test(attempt.identity_scope)
+        && typeof attempt.project_scope_digest === "string"
+        && /^sha256:[0-9a-f]{64}$/.test(attempt.project_scope_digest)
+        && typeof attempt.request_digest === "string"
+        && /^sha256:[0-9a-f]{64}$/.test(attempt.request_digest)
+        && typeof attempt.recovery_handle === "string"
+        && /^mmi-review-recovery-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(attempt.recovery_handle)
+        && typeof attempt.prepare_idempotency_key === "string"
+        && /^mmi-review-enqueue-prepare-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(attempt.prepare_idempotency_key)
+        && typeof attempt.execute_idempotency_key === "string"
+        && /^mmi-review-enqueue-execute-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(attempt.execute_idempotency_key)
+        && attempt.prepare_idempotency_key !== attempt.execute_idempotency_key
+        && typeof attempt.created_at === "number"
+        && Number.isSafeInteger(attempt.created_at)
+        && attempt.created_at >= 0
+        && attempt.created_at <= Date.now() + 60_000;
+} } catch(e) {}
+try { function structurallyValidReviewSourceEnqueueInput(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+        return false;
+    const input = value;
+    const targetKind = input.target_kind;
+    return exactObjectFields(input, reviewSourceEnqueueInputKeys)
+        && typeof input.content_id === "string"
+        && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(input.content_id)
+        && positiveInteger(input.expected_asset_version) !== undefined
+        && typeof input.target_kind === "string"
+        && reviewTargetKinds.has(targetKind)
+        && typeof input.target_digest === "string"
+        && sha256ReferencePattern.test(input.target_digest)
+        && positiveInteger(input.expected_head_version) !== undefined
+        && boundedOpaque(input.expected_snapshot_id)
+        && typeof input.expected_snapshot_digest === "string"
+        && sha256ReferencePattern.test(input.expected_snapshot_digest)
+        && typeof input.expected_head_value_digest === "string"
+        && sha256ReferencePattern.test(input.expected_head_value_digest)
+        && typeof input.original_value_digest === "string"
+        && sha256ReferencePattern.test(input.original_value_digest)
+        && exactRequiredText(input.reason, 2_000);
+} } catch(e) {}
+try { function loadReviewEnqueueAttempts(identityScope) {
+    if (typeof sessionStorage === "undefined")
+        return {};
+    const storageKey = reviewEnqueueStorageKey(identityScope);
+    try {
+        const raw = sessionStorage.getItem(storageKey);
+        if (!raw)
+            return {};
+        const parsed = parseStrictJson(raw);
+        if (!Array.isArray(parsed) || parsed.length > maximumStoredReviewEnqueueAttempts) {
+            throw new Error("HUMAN_REVIEW_ENQUEUE_RECOVERY_CORRUPT");
+        }
+        const attempts = {};
+        for (const value of parsed) {
+            if (!structurallyValidReviewEnqueueAttempt(value)
+                || value.identity_scope !== identityScope
+                || attempts[value.request_digest]) {
+                throw new Error("HUMAN_REVIEW_ENQUEUE_RECOVERY_CORRUPT");
+            }
+            attempts[value.request_digest] = value;
+        }
+        const normalized = canonicalStrictJson(Object.values(attempts).sort((left, right) => left.request_digest.localeCompare(right.request_digest)));
+        if (normalized !== raw) {
+            try {
+                sessionStorage.setItem(storageKey, normalized);
+            }
+            catch {
+                // Keep the valid raw receipt and in-memory attempt; UNKNOWN never
+                // becomes retryable merely because normalization could not persist.
+            }
+        }
+        return attempts;
+    }
+    catch (error) {
+        // A malformed or legacy receipt may still represent an UNKNOWN side
+        // effect. Never erase it or silently turn it into a fresh retry.
+        throw error instanceof Error
+            ? error
+            : new Error("HUMAN_REVIEW_ENQUEUE_RECOVERY_CORRUPT");
+    }
+} } catch(e) {}
+try { function persistReviewEnqueueAttempts(identityScope, attempts) {
+    const values = Object.values(attempts);
+    if (typeof sessionStorage === "undefined"
+        || values.length > maximumStoredReviewEnqueueAttempts
+        || values.some((attempt) => (!structurallyValidReviewEnqueueAttempt(attempt)
+            || attempt.identity_scope !== identityScope)))
+        return false;
+    values.sort((left, right) => left.request_digest.localeCompare(right.request_digest));
+    try {
+        sessionStorage.setItem(reviewEnqueueStorageKey(identityScope), canonicalStrictJson(values));
+        return true;
+    }
+    catch {
+        return false;
+    }
+} } catch(e) {}
+try { async function reviewEnqueueRequestDigest(input) {
+    return `sha256:${await sha256(new TextEncoder().encode(canonicalStrictJson(input)).buffer)}`;
+} } catch(e) {}
+try { async function reviewProjectScopeDigest(identityScope, projectId) {
+    return `sha256:${await sha256(new TextEncoder().encode(canonicalStrictJson({
+        schema_version: "multimodal-review-project-scope-v1",
+        identity_scope: identityScope,
+        project_id: projectId,
+    })).buffer)}`;
+} } catch(e) {}
+try { async function validatedReviewEnqueuePreparation(value, attempt, expectedStates) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+        throw new Error("HUMAN_REVIEW_ENQUEUE_PREPARATION_INVALID");
+    }
+    const preparation = value;
+    const state = preparation.state;
+    const input = preparation.enqueue_input;
+    if (!exactObjectFields(preparation, reviewEnqueuePreparationFields)
+        || preparation.schema_version !== "human-review-enqueue-preparation-v1"
+        || preparation.recovery_handle !== attempt.recovery_handle
+        || preparation.request_digest !== attempt.request_digest
+        || typeof state !== "string"
+        || !expectedStates.has(state)
+        || typeof preparation.safe_to_clear !== "boolean"
+        || !exactTimestamp(preparation.expires_at)
+        || !exactTimestamp(preparation.prepared_at)
+        || Date.parse(preparation.expires_at) <= Date.parse(preparation.prepared_at)
+        || !structurallyValidReviewSourceEnqueueInput(input)
+        || await reviewEnqueueRequestDigest(input) !== attempt.request_digest)
+        throw new Error("HUMAN_REVIEW_ENQUEUE_PREPARATION_INVALID");
+    if (state === "PREPARED" && (preparation.safe_to_clear !== false
+        || preparation.executed_at !== null
+        || preparation.task_id !== null))
+        throw new Error("HUMAN_REVIEW_ENQUEUE_PREPARATION_INVALID");
+    if (state === "EXECUTED" && (preparation.safe_to_clear !== true
+        || !exactTimestamp(preparation.executed_at)
+        || !boundedOpaque(preparation.task_id)
+        || Date.parse(preparation.executed_at) < Date.parse(preparation.prepared_at)))
+        throw new Error("HUMAN_REVIEW_ENQUEUE_PREPARATION_INVALID");
+    if (state === "EXPIRED" && (preparation.safe_to_clear !== true
+        || preparation.executed_at !== null
+        || preparation.task_id !== null))
+        throw new Error("HUMAN_REVIEW_ENQUEUE_PREPARATION_INVALID");
+    return { preparation, input };
+} } catch(e) {}
+try { function exactReviewEnqueuePreparationAbsence(value, attempt) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+        return false;
+    const preparation = value;
+    return exactObjectFields(preparation, reviewEnqueuePreparationAbsenceFields)
+        && preparation.schema_version === "human-review-enqueue-preparation-absence-v1"
+        && preparation.recovery_handle === attempt.recovery_handle
+        && preparation.state === "ABSENT"
+        && preparation.safe_to_clear === true;
+} } catch(e) {}
+try { const jobProgressResultByState = Object.freeze({
+    QUEUED: "NOT_RUN",
+    RUNNING: "NOT_RUN",
+    COMPLETED: "PASSED",
+    PARTIAL: "PARTIAL",
+    NEEDS_REVIEW: "NEEDS_REVIEW",
+    BLOCKED: "BLOCKED",
+    FAILED: "FAILED",
+    CANCELLED: "BLOCKED",
+}); } catch(e) {}
+try { async function validatedJobProgressEvent(source, jobId, lastEventId) {
+    const value = parseStrictJson(source, { maximumDepth: 4, maximumNodes: 32 });
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+        throw new Error("MULTIMODAL_PROGRESS_EVENT_INVALID");
+    }
+    const event = value;
+    const fields = new Set([
+        "schema_version", "kind", "resource_id", "sequence_number", "event_type",
+        "state", "result_status", "attempt", "max_attempts", "occurred_at",
+        "content_digest", "cursor",
+    ]);
+    const state = event.state;
+    if (!exactObjectFields(event, fields)
+        || event.schema_version !== "1.0.0"
+        || event.kind !== "JOB_PROGRESS"
+        || event.resource_id !== jobId
+        || typeof event.sequence_number !== "number"
+        || !Number.isSafeInteger(event.sequence_number)
+        || event.sequence_number < 1
+        || event.event_type !== "processing.job.snapshot"
+        || typeof state !== "string"
+        || !Object.hasOwn(jobProgressResultByState, state)
+        || event.result_status !== jobProgressResultByState[state]
+        || typeof event.attempt !== "number"
+        || !Number.isSafeInteger(event.attempt)
+        || typeof event.max_attempts !== "number"
+        || !Number.isSafeInteger(event.max_attempts)
+        || event.attempt < 0
+        || event.max_attempts < 1
+        || event.attempt > event.max_attempts
+        || !exactTimestamp(event.occurred_at)
+        || typeof event.content_digest !== "string"
+        || !sha256ReferencePattern.test(event.content_digest)
+        || typeof event.cursor !== "string"
+        || event.cursor !== lastEventId)
+        throw new Error("MULTIMODAL_PROGRESS_EVENT_INVALID");
+    const unsigned = { ...event };
+    delete unsigned.content_digest;
+    delete unsigned.cursor;
+    const digest = await sha256(new TextEncoder().encode(canonicalStrictJson(unsigned)).buffer);
+    if (event.content_digest !== `sha256:${digest}`
+        || event.cursor !== `p1-${event.sequence_number}-${digest}`)
+        throw new Error("MULTIMODAL_PROGRESS_EVENT_DIGEST_INVALID");
+    return event;
+} } catch(e) {}
+try { function structurallyValidReviewClaim(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+        return false;
+    const claim = value;
+    if (Object.keys(claim).some((key) => !reviewClaimKeys.has(key)))
+        return false;
+    const fence = claim.fence;
+    const expiresAt = claim.expires_at;
+    if (claim.schema_version !== 2
+        || typeof claim.identity_scope !== "string"
+        || !/^sha256:[0-9a-f]{64}$/.test(claim.identity_scope)
+        || typeof claim.project_id !== "string"
+        || !safeProject(claim.project_id)
+        || typeof claim.task_id !== "string"
+        || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(claim.task_id)
+        || !boundedOpaque(claim.token)
+        || !boundedOpaque(claim.idempotency_key)
+        || new TextEncoder().encode(claim.token).byteLength < 8
+        || new TextEncoder().encode(claim.token).byteLength > 200
+        || new TextEncoder().encode(claim.idempotency_key).byteLength < 8
+        || new TextEncoder().encode(claim.idempotency_key).byteLength > 200
+        || typeof claim.expected_version !== "number"
+        || !Number.isSafeInteger(claim.expected_version)
+        || claim.expected_version < 1
+        || typeof claim.created_at !== "number"
+        || !Number.isSafeInteger(claim.created_at)
+        || claim.created_at < 0
+        || claim.created_at > Date.now() + 60_000
+        || ((fence === undefined) !== (expiresAt === undefined))
+        || (fence !== undefined && (typeof fence !== "number"
+            || !Number.isSafeInteger(fence)
+            || fence < 1
+            || typeof expiresAt !== "string"
+            || !Number.isFinite(Date.parse(expiresAt)))))
+        return false;
+    return true;
+} } catch(e) {}
+try { function validReviewClaim(value, identityScope, now = Date.now()) {
+    if (!structurallyValidReviewClaim(value) || value.identity_scope !== identityScope)
+        return false;
+    if (value.fence === undefined) {
+        return now - value.created_at <= pendingReviewClaimRecoveryMs;
+    }
+    return Date.parse(value.expires_at) > now;
+} } catch(e) {}
+try { function loadReviewClaims(identityScope) {
+    if (typeof sessionStorage === "undefined")
+        return {};
+    try {
+        const storageKey = reviewClaimStorageKey(identityScope);
+        const raw = sessionStorage.getItem(storageKey);
+        if (!raw)
+            return {};
+        const parsed = parseStrictJson(raw);
+        if (!Array.isArray(parsed) || parsed.length > maximumStoredReviewClaims) {
+            sessionStorage.removeItem(storageKey);
+            return {};
+        }
+        const claims = {};
+        for (const value of parsed) {
+            if (!structurallyValidReviewClaim(value) || claims[value.task_id]) {
+                sessionStorage.removeItem(storageKey);
+                return {};
+            }
+            if (validReviewClaim(value, identityScope))
+                claims[value.task_id] = value;
+        }
+        const retained = Object.values(claims).sort((left, right) => left.task_id.localeCompare(right.task_id));
+        const normalized = canonicalStrictJson(retained);
+        if (normalized !== raw) {
+            try {
+                sessionStorage.setItem(storageKey, normalized);
+            }
+            catch {
+                // Keep recoverable in-memory receipts; a storage failure must not erase them.
+            }
+        }
+        return claims;
+    }
+    catch {
+        try {
+            sessionStorage.removeItem(reviewClaimStorageKey(identityScope));
+        }
+        catch {
+            // The next server operation still validates actor, task version, token and fence.
+        }
+        return {};
+    }
+} } catch(e) {}
+try { function persistReviewClaims(claims, identityScope) {
+    if (typeof sessionStorage === "undefined")
+        return false;
+    const values = Object.values(claims);
+    if (values.length > maximumStoredReviewClaims
+        || values.some((claim) => !validReviewClaim(claim, identityScope)))
+        return false;
+    values.sort((left, right) => left.task_id.localeCompare(right.task_id));
+    try {
+        sessionStorage.setItem(reviewClaimStorageKey(identityScope), canonicalStrictJson(values));
+        return true;
+    }
+    catch {
+        return false;
+    }
+} } catch(e) {}
+try { function validRecoveryRecord(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+        return false;
+    const record = value;
+    if (Object.keys(record).some((key) => !recoveryRecordKeys.has(key)))
+        return false;
+    if (record.schemaVersion !== 2
+        || typeof record.identityScope !== "string"
+        || !/^sha256:[0-9a-f]{64}$/.test(record.identityScope)
+        || typeof record.fileFingerprint !== "string"
+        || !/^[0-9a-f]{64}$/.test(record.fileFingerprint)
+        || typeof record.expectedSize !== "number"
+        || !Number.isSafeInteger(record.expectedSize)
+        || record.expectedSize <= 0
+        || record.expectedSize > maximumProcessableAssetBytes
+        || typeof record.lastModified !== "number"
+        || !Number.isSafeInteger(record.lastModified)
+        || record.lastModified < 0
+        || record.partSize !== chunkBytes
+        || !boundedOpaque(record.attemptKey)
+        || typeof record.projectId !== "string"
+        || !safeProject(record.projectId)
+        || !boundedOpaque(record.engineProjectId)
+        || !boundedOpaque(record.sessionAttemptKey)
+        || typeof record.confirmedPartCount !== "number"
+        || !Number.isSafeInteger(record.confirmedPartCount)
+        || record.confirmedPartCount < 0
+        || record.confirmedPartCount > Math.ceil(record.expectedSize / chunkBytes)
+        || typeof record.processingAttempt !== "number"
+        || !Number.isSafeInteger(record.processingAttempt)
+        || record.processingAttempt < 0
+        || record.processingAttempt > 10_000
+        || !["PRIMARY", "REFERENCE", "IGNORE"].includes(String(record.role))
+        || typeof record.modelReadAllowed !== "boolean"
+        || record.role === "IGNORE" && record.modelReadAllowed
+        || typeof record.updatedAt !== "number"
+        || !Number.isSafeInteger(record.updatedAt)
+        || record.updatedAt < 0)
+        return false;
+    for (const key of ["sessionId", "uploadSessionId", "assetId"]) {
+        if (record[key] !== undefined && !boundedOpaque(record[key]))
+            return false;
+    }
+    if (record.contentSha256 !== undefined && (typeof record.contentSha256 !== "string" || !/^[0-9a-f]{64}$/.test(record.contentSha256)))
+        return false;
+    if (record.assetVersion !== undefined && (typeof record.assetVersion !== "number"
+        || !Number.isSafeInteger(record.assetVersion)
+        || record.assetVersion <= 0))
+        return false;
+    if (record.uploadSessionId && (!record.sessionId || !record.contentSha256))
+        return false;
+    if (record.confirmedPartCount > 0 && !record.uploadSessionId)
+        return false;
+    if (record.assetId && (!record.uploadSessionId || !record.contentSha256))
+        return false;
+    return true;
+} } catch(e) {}
+try { function recoveryStorageKey(record) {
+    return JSON.stringify([
+        record.identityScope,
+        record.projectId,
+        record.engineProjectId,
+        record.fileFingerprint,
+    ]);
+} } catch(e) {}
+try { function openRecoveryDatabase() {
+    if (typeof indexedDB === "undefined")
+        return Promise.reject(new Error("RECOVERY_STORE_UNAVAILABLE"));
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(recoveryDatabaseName, 3);
+        request.onupgradeneeded = () => {
+            // v1/v2 records could not prove browser identity scope. They contain
+            // recovery credentials and therefore cannot be adopted by the active
+            // account. Discard them on upgrade; v3 keeps each identity independent.
+            if (request.result.objectStoreNames.contains(recoveryStoreName)) {
+                request.result.deleteObjectStore(recoveryStoreName);
+            }
+            request.result.createObjectStore(recoveryStoreName, {
+                keyPath: ["identityScope", "projectId", "engineProjectId", "fileFingerprint"],
+            });
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(new Error("RECOVERY_STORE_UNAVAILABLE"));
+        request.onblocked = () => reject(new Error("RECOVERY_STORE_BLOCKED"));
+    });
+} } catch(e) {}
+try { async function readRecoveryValues() {
+    const database = await openRecoveryDatabase();
+    return new Promise((resolve, reject) => {
+        const transaction = database.transaction(recoveryStoreName, "readonly");
+        const request = transaction.objectStore(recoveryStoreName).getAll();
+        let values = [];
+        request.onsuccess = () => { values = request.result; };
+        request.onerror = () => reject(new Error("RECOVERY_STORE_READ_FAILED"));
+        transaction.oncomplete = () => { database.close(); resolve(values); };
+        transaction.onerror = () => { database.close(); reject(new Error("RECOVERY_STORE_READ_FAILED")); };
+        transaction.onabort = () => { database.close(); reject(new Error("RECOVERY_STORE_READ_FAILED")); };
+    });
+} } catch(e) {}
+try { async function replaceRecoveryValues(records) {
+    const database = await openRecoveryDatabase();
+    await new Promise((resolve, reject) => {
+        const transaction = database.transaction(recoveryStoreName, "readwrite");
+        const store = transaction.objectStore(recoveryStoreName);
+        store.clear();
+        for (const record of records)
+            store.put(record);
+        transaction.oncomplete = () => { database.close(); resolve(); };
+        transaction.onerror = () => { database.close(); reject(new Error("RECOVERY_STORE_WRITE_FAILED")); };
+        transaction.onabort = () => { database.close(); reject(new Error("RECOVERY_STORE_WRITE_FAILED")); };
+    });
+} } catch(e) {}
+try { async function putRecoveryValue(record) {
+    const database = await openRecoveryDatabase();
+    await new Promise((resolve, reject) => {
+        const transaction = database.transaction(recoveryStoreName, "readwrite");
+        transaction.objectStore(recoveryStoreName).put(record);
+        transaction.oncomplete = () => { database.close(); resolve(); };
+        transaction.onerror = () => { database.close(); reject(new Error("RECOVERY_STORE_WRITE_FAILED")); };
+        transaction.onabort = () => { database.close(); reject(new Error("RECOVERY_STORE_WRITE_FAILED")); };
+    });
+} } catch(e) {}
+try { async function deleteRecoveryValue(record) {
+    const database = await openRecoveryDatabase();
+    await new Promise((resolve, reject) => {
+        const transaction = database.transaction(recoveryStoreName, "readwrite");
+        transaction.objectStore(recoveryStoreName).delete([
+            record.identityScope,
+            record.projectId,
+            record.engineProjectId,
+            record.fileFingerprint,
+        ]);
+        transaction.oncomplete = () => { database.close(); resolve(); };
+        transaction.onerror = () => { database.close(); reject(new Error("RECOVERY_STORE_WRITE_FAILED")); };
+        transaction.onabort = () => { database.close(); reject(new Error("RECOVERY_STORE_WRITE_FAILED")); };
+    });
+} } catch(e) {}
+try { function nestedRecord(response) {
+    for (const candidate of [response.output, response.outputs, response.data, response.result]) {
+        if (candidate && typeof candidate === "object" && !Array.isArray(candidate))
+            return candidate;
+    }
+    return response;
+} } catch(e) {}
+try { function projectPackagePage(response) {
+    const output = nestedRecord(response);
+    const items = output.items;
+    const packageVersion = output.package_version;
+    const nextCursor = output.next_cursor;
+    const total = output.total;
+    const collectionDigest = output.collection_digest;
+    if (!Number.isSafeInteger(packageVersion) || Number(packageVersion) < 1
+        || !Number.isSafeInteger(total) || Number(total) < 0
+        || !Array.isArray(items) || items.length > 200
+        || !(nextCursor === null || typeof nextCursor === "string")
+        || typeof collectionDigest !== "string" || !/^[0-9a-f]{64}$/.test(collectionDigest))
+        throw new Error("PROJECT_PACKAGE_PAGE_INVALID");
+    const normalized = items.map((item) => {
+        if (!item || typeof item !== "object" || Array.isArray(item)) {
+            throw new Error("PROJECT_PACKAGE_PAGE_ENTRY_INVALID");
+        }
+        const entry = item;
+        if (typeof entry.path !== "string" || typeof entry.kind !== "string"
+            || !["PRIMARY", "REFERENCE", "IGNORE"].includes(String(entry.role))
+            || typeof entry.model_read_allowed !== "boolean"
+            || typeof entry.security_state !== "string"
+            || !Number.isSafeInteger(entry.override_version))
+            throw new Error("PROJECT_PACKAGE_PAGE_ENTRY_INVALID");
+        return entry;
+    });
+    return {
+        package_version: Number(packageVersion),
+        items: normalized,
+        next_cursor: nextCursor,
+        total: Number(total),
+        collection_digest: collectionDigest,
+    };
+} } catch(e) {}
+try { function processingEstimate(response, inputDigest) {
+    const output = nestedRecord(response);
+    const ledger = output.ledger;
+    const p50 = output.remaining_seconds_p50;
+    const p95 = output.remaining_seconds_p95;
+    const estimatedCost = output.estimated_cost;
+    const currency = output.currency;
+    const calibrationVersion = output.calibration_version;
+    const estimateDigest = output.estimate_digest;
+    const status = String(response.status ?? response.state ?? "").toUpperCase();
+    if (!["SUCCEEDED", "PARTIAL"].includes(status)
+        || typeof p50 !== "number" || !Number.isFinite(p50) || p50 < 0
+        || typeof p95 !== "number" || !Number.isFinite(p95) || p95 < p50
+        || typeof estimatedCost !== "string" || !/^(?:0|[1-9][0-9]*)(?:\.[0-9]{1,18})?$/.test(estimatedCost)
+        || typeof currency !== "string" || !/^[A-Z]{3}$/.test(currency)
+        || typeof calibrationVersion !== "string" || !boundedOpaque(calibrationVersion)
+        || typeof estimateDigest !== "string" || !/^sha256:[0-9a-f]{64}$/.test(estimateDigest)
+        || !ledger || typeof ledger !== "object" || Array.isArray(ledger))
+        throw new Error("PROCESSING_ESTIMATE_RESPONSE_INVALID");
+    const actualsState = ledger.actuals_state;
+    if (ledger.schema_version !== "multimodal-cost-ledger-v1"
+        || typeof actualsState !== "string"
+        || !["NOT_RUN", "PENDING", "RECONCILED", "UNKNOWN", "BLOCKED"].includes(actualsState))
+        throw new Error("PROCESSING_ESTIMATE_LEDGER_INVALID");
+    return {
+        inputDigest,
+        status: status === "SUCCEEDED" ? "READY" : "PARTIAL",
+        code: responseString(response, "code") ?? "PROCESSING_COST_ETA_ESTIMATED",
+        remainingSecondsP50: p50,
+        remainingSecondsP95: p95,
+        estimatedCost,
+        currency,
+        actualsState,
+        calibrationVersion,
+        estimateDigest,
+    };
+} } catch(e) {}
+try { function estimateFileType(file) {
+    const extension = extensionOf(file);
+    if (["png", "jpg", "jpeg", "webp", "heic", "tiff", "bmp", "svg"].includes(extension)) {
+        return "image/*";
+    }
+    if (["mp3", "wav", "m4a", "aac", "flac", "ogg", "opus"].includes(extension)) {
+        return "audio/*";
+    }
+    if (extension === "pdf")
+        return "application/pdf";
+    if (["doc", "docx"].includes(extension))
+        return "application/word";
+    if (["zip", "tar", "tar.gz", "gz", "tgz"].includes(extension))
+        return "application/archive";
+    return "text/plain";
+} } catch(e) {}
+try { function formatEstimateDuration(seconds) {
+    if (seconds < 60)
+        return `${Math.ceil(seconds)} 秒`;
+    if (seconds < 3_600)
+        return `${Math.ceil(seconds / 60)} 分钟`;
+    return `${(seconds / 3_600).toFixed(1)} 小时`;
+} } catch(e) {}
+try { function responseString(response, ...keys) {
+    const sources = [response, nestedRecord(response)];
+    for (const source of sources) {
+        for (const key of keys) {
+            const value = source[key];
+            if (typeof value === "string" && value)
+                return value;
+        }
+    }
+    return undefined;
+} } catch(e) {}
+try { function outputRecord(response, key) {
+    const value = nestedRecord(response)[key];
+    return value && typeof value === "object" && !Array.isArray(value)
+        ? value
+        : undefined;
+} } catch(e) {}
+try { function exactReviewOutput(response, keys) {
+    const output = nestedRecord(response);
+    if (Object.keys(output).length !== keys.length
+        || Object.keys(output).some((key) => !keys.includes(key))) {
+        throw new Error("HUMAN_REVIEW_OUTPUT_FIELDS_INVALID");
+    }
+    return output;
+} } catch(e) {}
+try { const reviewPropagationChannels = new Set([
+    "content-index", "requirements", "project-memory", "downstream",
+]); } catch(e) {}
+try { function validReviewPropagations(value, taskId, options) {
+    if (!Array.isArray(value))
+        return false;
+    const ids = new Set();
+    const channels = new Set();
+    const payloadDigests = new Set();
+    const effectiveDigests = new Set();
+    for (const item of value) {
+        if (!item || typeof item !== "object" || Array.isArray(item))
+            return false;
+        const propagation = item;
+        if (!exactObjectFields(propagation, reviewPropagationSummaryFields))
+            return false;
+        const expiresAt = propagation.claim_expires_at;
+        const dispatchStartedAt = propagation.dispatch_started_at;
+        const failureCode = propagation.failure_code;
+        const state = propagation.state;
+        const claimFence = propagation.claim_fence;
+        if (typeof propagation.propagation_id !== "string"
+            || !boundedOpaque(propagation.propagation_id)
+            || ids.has(propagation.propagation_id)
+            || propagation.task_id !== taskId
+            || typeof propagation.channel !== "string"
+            || !reviewPropagationChannels.has(propagation.channel)
+            || options.exactBatch && channels.has(propagation.channel)
+            || !["APPLY", "REVERT"].includes(String(propagation.direction))
+            || options.direction !== undefined && propagation.direction !== options.direction
+            || options.decisionId !== undefined && propagation.decision_id !== options.decisionId
+            || options.correctionVersion !== undefined
+                && propagation.correction_version !== options.correctionVersion
+            || !boundedOpaque(propagation.decision_id)
+            || positiveInteger(propagation.correction_version) === undefined
+            || typeof propagation.payload_digest !== "string"
+            || !sha256ReferencePattern.test(propagation.payload_digest)
+            || typeof propagation.effective_value_digest !== "string"
+            || !sha256ReferencePattern.test(propagation.effective_value_digest)
+            || typeof state !== "string"
+            || !["PENDING", "CLAIMED", "SUCCEEDED", "FAILED", "UNKNOWN"].includes(state)
+            || typeof claimFence !== "number"
+            || !Number.isSafeInteger(claimFence)
+            || claimFence < 0
+            || !(expiresAt === null || exactTimestamp(expiresAt))
+            || !(dispatchStartedAt === null || exactTimestamp(dispatchStartedAt))
+            || !(failureCode === null || boundedOpaque(failureCode))
+            || typeof propagation.reconciliation_required !== "boolean"
+            || positiveInteger(propagation.version) === undefined
+            || !exactTimestamp(propagation.updated_at)
+            || options.initial === true && (state !== "PENDING" || claimFence !== 0 || propagation.version !== 1)
+            || state === "PENDING" && (expiresAt !== null || dispatchStartedAt !== null || failureCode !== null
+                || propagation.reconciliation_required !== false)
+            || state === "CLAIMED" && (claimFence < 1 || !exactTimestamp(expiresAt) || failureCode !== null
+                || propagation.reconciliation_required !== false)
+            || state === "SUCCEEDED" && (expiresAt !== null || !exactTimestamp(dispatchStartedAt) || failureCode !== null
+                || propagation.reconciliation_required !== false)
+            || state === "FAILED" && (expiresAt !== null || !exactTimestamp(dispatchStartedAt) || !boundedOpaque(failureCode)
+                || propagation.reconciliation_required !== false)
+            || state === "UNKNOWN" && (expiresAt !== null || !exactTimestamp(dispatchStartedAt) || !boundedOpaque(failureCode)
+                || propagation.reconciliation_required !== true))
+            return false;
+        ids.add(propagation.propagation_id);
+        channels.add(propagation.channel);
+        payloadDigests.add(propagation.payload_digest);
+        effectiveDigests.add(propagation.effective_value_digest);
+    }
+    return !options.exactBatch || (value.length === reviewPropagationChannels.size
+        && channels.size === reviewPropagationChannels.size
+        && payloadDigests.size === reviewPropagationChannels.size
+        && effectiveDigests.size === 1);
+} } catch(e) {}
+try { function validHistoricalPropagationBatches(value, taskId) {
+    if (!validReviewPropagations(value, taskId, { exactBatch: false }))
+        return false;
+    const groups = new Map();
+    for (const propagation of value) {
+        const decisionId = propagation.decision_id;
+        groups.set(decisionId, [...(groups.get(decisionId) ?? []), propagation]);
+    }
+    for (const group of groups.values()) {
+        const channels = new Set(group.map((item) => item.channel));
+        const correctionVersions = new Set(group.map((item) => item.correction_version));
+        const directions = new Set(group.map((item) => item.direction));
+        const payloadDigests = new Set(group.map((item) => item.payload_digest));
+        const effectiveDigests = new Set(group.map((item) => item.effective_value_digest));
+        if (group.length !== reviewPropagationChannels.size
+            || channels.size !== reviewPropagationChannels.size
+            || correctionVersions.size !== 1
+            || directions.size !== 1
+            || payloadDigests.size !== reviewPropagationChannels.size
+            || effectiveDigests.size !== 1)
+            return false;
+    }
+    return true;
+} } catch(e) {}
+try { function positiveInteger(value) {
+    return typeof value === "number" && Number.isSafeInteger(value) && value > 0 ? value : undefined;
+} } catch(e) {}
+try { const reviewTargetKinds = new Set([
+    "TEXT", "SPEAKER", "TIME_RANGE", "BBOX", "TABLE", "REQUIREMENT", "CONFLICT",
+]); } catch(e) {}
+try { const sha256ReferencePattern = /^sha256:[0-9a-f]{64}$/; } catch(e) {}
+try { function exactReviewTarget(kind, value) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+        return false;
+    const target = value;
+    const exactKeys = (...keys) => (Object.keys(target).length === keys.length && keys.every((key) => Object.hasOwn(target, key)));
+    const resourceId = (candidate) => (typeof candidate === "string" && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(candidate));
+    const safeNonNegativeInteger = (candidate) => (typeof candidate === "number" && Number.isSafeInteger(candidate) && candidate >= 0);
+    if (kind === "TEXT") {
+        return exactKeys("path") && typeof target.path === "string"
+            && target.path.length > 0 && target.path === target.path.trim()
+            && !/[\u0000-\u001f\u007f]/.test(target.path)
+            && new TextEncoder().encode(target.path).byteLength <= 1_024;
+    }
+    if (kind === "SPEAKER")
+        return exactKeys("segment_id") && resourceId(target.segment_id);
+    if (kind === "TIME_RANGE") {
+        return exactKeys("start_ms", "end_ms")
+            && safeNonNegativeInteger(target.start_ms)
+            && safeNonNegativeInteger(target.end_ms)
+            && Number(target.end_ms) >= Number(target.start_ms);
+    }
+    if (kind === "BBOX") {
+        return exactKeys("page", "x", "y", "width", "height")
+            && typeof target.page === "number" && Number.isSafeInteger(target.page) && target.page >= 1
+            && [target.x, target.y, target.width, target.height].every((candidate) => (typeof candidate === "number" && Number.isFinite(candidate) && candidate >= 0))
+            && Number(target.width) > 0 && Number(target.height) > 0;
+    }
+    if (kind === "TABLE") {
+        return exactKeys("table_id", "row", "column") && resourceId(target.table_id)
+            && safeNonNegativeInteger(target.row) && safeNonNegativeInteger(target.column);
+    }
+    if (kind === "REQUIREMENT") {
+        return exactKeys("requirement_id") && resourceId(target.requirement_id);
+    }
+    return exactKeys("conflict_id") && resourceId(target.conflict_id);
+} } catch(e) {}
+try { function exactTimestamp(value) {
+    if (typeof value !== "string" || !boundedOpaque(value))
+        return false;
+    const matched = /^(\d{4})-(\d{2})-(\d{2})T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.exec(value);
+    if (!matched || !Number.isFinite(Date.parse(value)))
+        return false;
+    const year = Number(matched[1]);
+    const month = Number(matched[2]);
+    const day = Number(matched[3]);
+    if (year < 1 || month < 1 || month > 12)
+        return false;
+    const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+    const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    return day >= 1 && day <= days[month - 1];
+} } catch(e) {}
+try { function exactRequiredText(value, maximumBytes) {
+    return typeof value === "string"
+        && value.length > 0
+        && value === value.trim()
+        && new TextEncoder().encode(value).byteLength <= maximumBytes;
+} } catch(e) {}
+try { function exactObjectFields(value, fields) {
+    return Object.keys(value).length === fields.size
+        && Object.keys(value).every((key) => fields.has(key));
+} } catch(e) {}
+try { function exactReviewSourceRef(value, task) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+        return false;
+    const source = value;
+    if (!exactObjectFields(source, reviewSourceRefFields))
+        return false;
+    const digestFields = [
+        "content_digest", "asset_sha256", "target_digest", "snapshot_digest",
+        "head_value_digest", "source_digest", "provenance_digest",
+        "original_value_client_digest",
+    ];
+    return source.schema_version === "human-review-source-ref-v2"
+        && source.content_id === task.assetId
+        && positiveInteger(source.content_version) !== undefined
+        && source.target_kind === task.targetKind
+        && typeof source.snapshot_id === "string"
+        && boundedOpaque(source.snapshot_id)
+        && positiveInteger(source.head_version) !== undefined
+        && source.head_value_digest === task.sourceDigest
+        && source.original_value_digest_contract === "sha256:rfc8785-ijson-safeint-v1"
+        && digestFields.every((field) => (typeof source[field] === "string" && sha256ReferencePattern.test(source[field])));
+} } catch(e) {}
+try { function reviewSource(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+        return undefined;
+    const candidate = value;
+    const detail = candidate.schema_version === "human-review-source-detail-v1";
+    if (!exactObjectFields(candidate, detail ? reviewSourceDetailFields : reviewSourceSummaryFields)) {
+        return undefined;
+    }
+    if (!candidate.source_ref || typeof candidate.source_ref !== "object" || Array.isArray(candidate.source_ref)) {
+        return undefined;
+    }
+    const sourceRef = candidate.source_ref;
+    const targetKind = candidate.target_kind;
+    const contentVersion = positiveInteger(candidate.content_version);
+    const headVersion = positiveInteger(candidate.head_version);
+    const headCorrectionVersion = typeof candidate.head_correction_version === "number"
+        && Number.isSafeInteger(candidate.head_correction_version)
+        && candidate.head_correction_version >= 0
+        ? candidate.head_correction_version
+        : undefined;
+    const confidence = candidate.confidence;
+    const headDirection = candidate.head_direction;
+    if (typeof candidate.content_id !== "string"
+        || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(candidate.content_id)
+        || contentVersion === undefined
+        || typeof candidate.target_kind !== "string"
+        || !reviewTargetKinds.has(targetKind)
+        || !exactReviewTarget(targetKind, candidate.target)
+        || typeof candidate.target_digest !== "string"
+        || !sha256ReferencePattern.test(candidate.target_digest)
+        || typeof confidence !== "number"
+        || !Number.isFinite(confidence)
+        || confidence < 0
+        || confidence > 1
+        || headVersion === undefined
+        || !["SNAPSHOT", "APPLY", "REVERT"].includes(String(headDirection))
+        || headCorrectionVersion === undefined
+        || headDirection === "SNAPSHOT" && headCorrectionVersion !== 0
+        || headDirection === "APPLY" && headCorrectionVersion < 1
+        || typeof candidate.original_value_client_digest !== "string"
+        || !sha256ReferencePattern.test(candidate.original_value_client_digest)
+        || candidate.original_value_digest_contract !== "sha256:rfc8785-ijson-safeint-v1"
+        || !exactReviewSourceRef(sourceRef, {
+            assetId: candidate.content_id,
+            targetKind,
+            sourceDigest: String(sourceRef.head_value_digest),
+        })
+        || sourceRef.content_version !== contentVersion
+        || sourceRef.target_digest !== candidate.target_digest
+        || sourceRef.head_version !== headVersion
+        || sourceRef.original_value_client_digest !== candidate.original_value_client_digest)
+        return undefined;
+    return {
+        schema_version: detail
+            ? "human-review-source-detail-v1"
+            : "human-review-source-summary-v1",
+        content_id: candidate.content_id,
+        content_version: contentVersion,
+        target_kind: targetKind,
+        target: candidate.target,
+        target_digest: candidate.target_digest,
+        confidence,
+        head_version: headVersion,
+        head_direction: headDirection,
+        head_correction_version: headCorrectionVersion,
+        original_value_client_digest: candidate.original_value_client_digest,
+        original_value_digest_contract: "sha256:rfc8785-ijson-safeint-v1",
+        source_ref: sourceRef,
+        ...(detail ? { original_value: candidate.original_value } : {}),
+        detail_loaded: detail,
+    };
+} } catch(e) {}
+try { function reviewSourceKey(source) {
+    return `${source.target_kind}:${source.target_digest}:${source.head_version}`;
+} } catch(e) {}
+try { async function validatedReviewSource(value, expected) {
+    const source = reviewSource(value);
+    if (!source
+        || source.content_id !== expected.contentId
+        || source.content_version !== expected.contentVersion)
+        throw new Error("HUMAN_REVIEW_SOURCE_RESPONSE_INVALID");
+    if (expected.priorSummary) {
+        const summaryProjection = (candidate) => ({
+            schema_version: "human-review-source-summary-v1",
+            content_id: candidate.content_id,
+            content_version: candidate.content_version,
+            target_kind: candidate.target_kind,
+            target: candidate.target,
+            target_digest: candidate.target_digest,
+            confidence: candidate.confidence,
+            head_version: candidate.head_version,
+            head_direction: candidate.head_direction,
+            head_correction_version: candidate.head_correction_version,
+            original_value_client_digest: candidate.original_value_client_digest,
+            original_value_digest_contract: candidate.original_value_digest_contract,
+            source_ref: candidate.source_ref,
+        });
+        if (!source.detail_loaded
+            || canonicalStrictJson(summaryProjection(source))
+                !== canonicalStrictJson(summaryProjection(expected.priorSummary)))
+            throw new Error("HUMAN_REVIEW_SOURCE_DETAIL_BINDING_INVALID");
+    }
+    if (source.detail_loaded) {
+        const observed = `sha256:${await sha256(new TextEncoder().encode(canonicalStrictJson(source.original_value)).buffer)}`;
+        if (observed !== source.original_value_client_digest) {
+            throw new Error("HUMAN_REVIEW_SOURCE_VALUE_DIGEST_INVALID");
+        }
+    }
+    return source;
+} } catch(e) {}
+try { function reviewTask(value, expectedScope) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+        return undefined;
+    const candidate = value;
+    const summary = candidate.schema_version === "human-review-task-summary-v1";
+    if (!exactObjectFields(candidate, summary ? reviewTaskSummaryFields : reviewTaskFullFields)) {
+        return undefined;
+    }
+    if (!summary && (!expectedScope
+        || candidate.tenant_id !== expectedScope.tenantId
+        || candidate.project_id !== expectedScope.projectId
+        || !boundedOpaque(candidate.created_by)))
+        return undefined;
+    const resourceId = (resource) => (typeof resource === "string" && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(resource));
+    const version = positiveInteger(candidate.version);
+    const correctionVersion = typeof candidate.current_correction_version === "number"
+        && Number.isSafeInteger(candidate.current_correction_version)
+        && candidate.current_correction_version >= 0
+        ? candidate.current_correction_version
+        : undefined;
+    const effectiveVersion = typeof candidate.effective_version === "number"
+        && Number.isSafeInteger(candidate.effective_version)
+        && candidate.effective_version >= 0
+        ? candidate.effective_version
+        : undefined;
+    const claimFence = typeof candidate.claim_fence === "number"
+        && Number.isSafeInteger(candidate.claim_fence)
+        && candidate.claim_fence >= 0
+        ? candidate.claim_fence
+        : undefined;
+    const targetKind = candidate.target_kind;
+    const state = candidate.state;
+    if (!resourceId(candidate.task_id)
+        || !resourceId(candidate.asset_id)
+        || typeof candidate.target_kind !== "string"
+        || !reviewTargetKinds.has(targetKind)
+        || typeof candidate.source_digest !== "string"
+        || !sha256ReferencePattern.test(candidate.source_digest)
+        || typeof candidate.confidence !== "number"
+        || !Number.isFinite(candidate.confidence)
+        || candidate.confidence < 0
+        || candidate.confidence > 1
+        || !exactRequiredText(candidate.reason, 2_000)
+        || typeof candidate.state !== "string"
+        || !reviewTaskStates.has(state)
+        || version === undefined
+        || correctionVersion === undefined
+        || effectiveVersion === undefined
+        || claimFence === undefined
+        || !exactTimestamp(candidate.created_at)
+        || !exactTimestamp(candidate.updated_at))
+        return undefined;
+    const correctionDigest = candidate.current_correction_digest;
+    const effectiveDigest = candidate.effective_digest;
+    if (!(correctionDigest === null || (typeof correctionDigest === "string" && sha256ReferencePattern.test(correctionDigest)))
+        || (correctionVersion === 0) !== (correctionDigest === null)
+        || !(effectiveDigest === null || (typeof effectiveDigest === "string" && sha256ReferencePattern.test(effectiveDigest)))
+        || effectiveVersion > 0 && effectiveDigest === null)
+        return undefined;
+    const liveClaimState = state === "CLAIMED" || state === "EDITED";
+    const claimActor = candidate.claim_actor_id;
+    const claimExpiresAt = candidate.claim_expires_at;
+    if (liveClaimState && (!boundedOpaque(claimActor) || !exactTimestamp(claimExpiresAt) || claimFence < 1)
+        || !liveClaimState && (claimActor !== null || claimExpiresAt !== null))
+        return undefined;
+    const closedState = state === "APPROVED" || state === "REJECTED" || state === "REVERTED";
+    if (closedState && !exactTimestamp(candidate.closed_at)
+        || !closedState && candidate.closed_at !== null)
+        return undefined;
+    if (!summary && (!exactReviewTarget(targetKind, candidate.target)
+        || !exactReviewSourceRef(candidate.source_ref, {
+            assetId: candidate.asset_id,
+            targetKind,
+            sourceDigest: candidate.source_digest,
+        })))
+        return undefined;
+    return {
+        ...(!summary ? {
+            tenant_id: candidate.tenant_id,
+            project_id: candidate.project_id,
+            created_by: candidate.created_by,
+            target: candidate.target,
+            original_value: candidate.original_value,
+            source_ref: candidate.source_ref,
+        } : {}),
+        task_id: candidate.task_id,
+        asset_id: candidate.asset_id,
+        target_kind: targetKind,
+        source_digest: candidate.source_digest,
+        confidence: candidate.confidence,
+        reason: candidate.reason,
+        state,
+        current_correction_version: correctionVersion,
+        ...(typeof correctionDigest === "string" ? { current_correction_digest: correctionDigest } : {}),
+        effective_version: effectiveVersion,
+        ...(typeof effectiveDigest === "string" ? { effective_digest: effectiveDigest } : {}),
+        ...(typeof claimActor === "string" ? { claim_actor_id: claimActor } : {}),
+        claim_fence: claimFence,
+        ...(typeof claimExpiresAt === "string" ? { claim_expires_at: claimExpiresAt } : {}),
+        version,
+        created_at: candidate.created_at,
+        updated_at: candidate.updated_at,
+        ...(typeof candidate.closed_at === "string" ? { closed_at: candidate.closed_at } : {}),
+        detail_loaded: !summary,
+    };
+} } catch(e) {}
+try { function exactCurrentReviewCorrection(value, task) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+        return false;
+    const correction = value;
+    return task.detail_loaded === true
+        && task.current_correction_version > 0
+        && typeof task.current_correction_digest === "string"
+        && exactObjectFields(correction, reviewCorrectionFields)
+        && boundedOpaque(correction.correction_id)
+        && correction.tenant_id === task.tenant_id
+        && correction.project_id === task.project_id
+        && correction.task_id === task.task_id
+        && correction.correction_version === task.current_correction_version
+        && correction.parent_correction_version === task.current_correction_version - 1
+        && correction.target_kind === task.target_kind
+        && canonicalStrictJson(correction.target) === canonicalStrictJson(task.target)
+        && typeof correction.source_digest === "string"
+        && sha256ReferencePattern.test(correction.source_digest)
+        && boundedOpaque(correction.actor_id)
+        && exactRequiredText(correction.reason, 2_000)
+        && exactTimestamp(correction.created_at)
+        && correction.correction_digest === task.current_correction_digest;
+} } catch(e) {}
+try { function exactReviewCorrection(value, priorTask, nextTask, correctedValue, reason) {
+    if (!exactCurrentReviewCorrection(value, nextTask))
+        return false;
+    const correction = value;
+    const expectedSourceDigest = (priorTask.effective_version ?? 0) > 0
+        ? priorTask.effective_digest
+        : priorTask.source_digest;
+    return correction.task_id === priorTask.task_id
+        && correction.parent_correction_version === priorTask.current_correction_version
+        && correction.correction_version === priorTask.current_correction_version + 1
+        && correction.target_kind === priorTask.target_kind
+        && canonicalStrictJson(correction.target) === canonicalStrictJson(priorTask.target)
+        && ((priorTask.effective_version ?? 0) > 0
+            || canonicalStrictJson(correction.original_value) === canonicalStrictJson(priorTask.original_value))
+        && canonicalStrictJson(correction.corrected_value) === canonicalStrictJson(correctedValue)
+        && typeof expectedSourceDigest === "string"
+        && correction.source_digest === expectedSourceDigest
+        && correction.actor_id === priorTask.claim_actor_id
+        && correction.reason === reason
+        && correction.correction_digest === nextTask.current_correction_digest;
+} } catch(e) {}
+try { function exactReviewDecision(value, priorTask, nextTask, operation, reason, currentCorrection, trustedActorId) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+        return false;
+    const decision = value;
+    const expectedDecision = operation.toUpperCase();
+    const expectedCorrectionVersion = priorTask.current_correction_version > 0
+        ? priorTask.current_correction_version
+        : null;
+    const expectedCorrectionDigest = priorTask.current_correction_digest ?? null;
+    const expectedActor = operation === "approve" || operation === "reject"
+        ? priorTask.claim_actor_id
+        : trustedActorId;
+    return exactObjectFields(decision, reviewDecisionFields)
+        && boundedOpaque(decision.decision_id)
+        && decision.tenant_id === nextTask.tenant_id
+        && decision.project_id === nextTask.project_id
+        && decision.task_id === priorTask.task_id
+        && decision.decision_version === nextTask.version
+        && nextTask.version === priorTask.version + 1
+        && decision.decision === expectedDecision
+        && decision.prior_state === priorTask.state
+        && decision.next_state === nextTask.state
+        && decision.correction_version === expectedCorrectionVersion
+        && decision.correction_digest === expectedCorrectionDigest
+        && (expectedCorrectionVersion === null
+            ? currentCorrection === undefined && decision.source_digest === priorTask.source_digest
+            : currentCorrection !== undefined
+                && exactCurrentReviewCorrection(currentCorrection, priorTask)
+                && decision.source_digest === currentCorrection.source_digest)
+        && boundedOpaque(decision.actor_id)
+        && (expectedActor === undefined || decision.actor_id === expectedActor)
+        && decision.reason === reason
+        && exactTimestamp(decision.created_at)
+        && (!(operation === "approve" || operation === "revert")
+            || expectedCorrectionVersion !== null && expectedCorrectionDigest !== null);
+} } catch(e) {}
+try { function exactReviewEffective(value, task, propagations) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+        return false;
+    const effective = value;
+    if (!exactObjectFields(effective, reviewEffectiveFields)
+        || typeof effective.materialized !== "boolean"
+        || effective.effective_version !== task.effective_version
+        || effective.effective_value_digest !== (task.effective_digest ?? null)
+        || !Array.isArray(effective.channels))
+        return false;
+    if (!effective.materialized) {
+        return effective.state === "NOT_RUN"
+            && effective.effective_value === null
+            && effective.effective_value_digest === null
+            && effective.channels.length === 0;
+    }
+    if (effective.state !== "CURRENT"
+        || typeof effective.effective_value_digest !== "string"
+        || !sha256ReferencePattern.test(effective.effective_value_digest)
+        || effective.channels.length !== reviewPropagationChannels.size)
+        return false;
+    const channels = new Set();
+    const decisionIds = new Set();
+    const correctionVersions = new Set();
+    const directions = new Set();
+    for (const item of effective.channels) {
+        if (!item || typeof item !== "object" || Array.isArray(item))
+            return false;
+        const channel = item;
+        if (!exactObjectFields(channel, reviewEffectiveChannelFields)
+            || typeof channel.channel !== "string"
+            || !reviewPropagationChannels.has(channel.channel)
+            || channels.has(channel.channel)
+            || !boundedOpaque(channel.source_decision_id)
+            || positiveInteger(channel.correction_version) === undefined
+            || !["APPLY", "REVERT"].includes(String(channel.direction))
+            || channel.effective_value_digest !== effective.effective_value_digest
+            || positiveInteger(channel.version) === undefined
+            || !exactTimestamp(channel.updated_at))
+            return false;
+        channels.add(channel.channel);
+        decisionIds.add(channel.source_decision_id);
+        correctionVersions.add(channel.correction_version);
+        directions.add(channel.direction);
+    }
+    if (channels.size !== reviewPropagationChannels.size
+        || decisionIds.size !== 1
+        || correctionVersions.size !== 1
+        || directions.size !== 1
+        || !Array.isArray(propagations))
+        return false;
+    const [decisionId] = decisionIds;
+    const [correctionVersion] = correctionVersions;
+    const [direction] = directions;
+    const sourceBatch = propagations.filter((item) => (item && typeof item === "object" && !Array.isArray(item)
+        && item.decision_id === decisionId));
+    const sourceChannels = new Set();
+    for (const propagation of sourceBatch) {
+        if (propagation.task_id !== task.task_id
+            || propagation.correction_version !== correctionVersion
+            || propagation.direction !== direction
+            || propagation.effective_value_digest !== effective.effective_value_digest
+            || propagation.state !== "SUCCEEDED"
+            || typeof propagation.channel !== "string"
+            || !reviewPropagationChannels.has(propagation.channel)
+            || sourceChannels.has(propagation.channel))
+            return false;
+        sourceChannels.add(propagation.channel);
+    }
+    return sourceBatch.length === reviewPropagationChannels.size
+        && sourceChannels.size === reviewPropagationChannels.size;
+} } catch(e) {}
+try { function reviewTaskDynamicState(task) {
+    return {
+        state: task.state,
+        current_correction_version: task.current_correction_version,
+        current_correction_digest: task.current_correction_digest ?? null,
+        effective_version: task.effective_version,
+        effective_digest: task.effective_digest ?? null,
+        claim_actor_id: task.claim_actor_id ?? null,
+        claim_fence: task.claim_fence,
+        claim_expires_at: task.claim_expires_at ?? null,
+        updated_at: task.updated_at,
+        closed_at: task.closed_at ?? null,
+    };
+} } catch(e) {}
+try { function exactReviewCursor(value, expectedFilterDigest, lastTask) {
+    if (!/^[A-Za-z0-9_-]{1,4096}$/.test(value))
+        return false;
+    try {
+        const standard = value.replaceAll("-", "+").replaceAll("_", "/");
+        const padded = standard + "=".repeat((4 - standard.length % 4) % 4);
+        const binary = atob(padded);
+        const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+        const source = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+        const decoded = parseStrictJson(source, { maximumDepth: 4, maximumNodes: 16 });
+        if (!decoded || typeof decoded !== "object" || Array.isArray(decoded))
+            return false;
+        const cursor = decoded;
+        const fields = new Set(["version", "filter_digest", "confidence", "created_at", "task_id"]);
+        const canonical = bytesToBase64(new TextEncoder().encode(canonicalStrictJson(cursor))).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
+        return exactObjectFields(cursor, fields)
+            && canonical === value
+            && cursor.version === "human-review-cursor-v1"
+            && cursor.filter_digest === expectedFilterDigest
+            && typeof cursor.confidence === "number"
+            && Number.isFinite(cursor.confidence)
+            && cursor.confidence === lastTask.confidence
+            && cursor.created_at === lastTask.created_at
+            && cursor.task_id === lastTask.task_id;
+    }
+    catch {
+        return false;
+    }
+} } catch(e) {}
+try { function exactReviewSourceCursor(value, expectedFilterDigest, expectedCollectionDigest, expectedCollectionGeneration, lastSource) {
+    if (!/^[A-Za-z0-9_-]{1,4096}$/.test(value))
+        return undefined;
+    try {
+        const standard = value.replaceAll("-", "+").replaceAll("_", "/");
+        const padded = standard + "=".repeat((4 - standard.length % 4) % 4);
+        const binary = atob(padded);
+        const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+        const source = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+        const decoded = parseStrictJson(source, { maximumDepth: 4, maximumNodes: 16 });
+        if (!decoded || typeof decoded !== "object" || Array.isArray(decoded))
+            return undefined;
+        const cursor = decoded;
+        const fields = new Set([
+            "version", "filter_digest", "collection_digest", "collection_generation",
+            "target_kind", "target_digest",
+        ]);
+        const canonical = bytesToBase64(new TextEncoder().encode(canonicalStrictJson(cursor))).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
+        if (!exactObjectFields(cursor, fields)
+            || canonical !== value
+            || cursor.version !== "human-review-source-cursor-v1"
+            || cursor.filter_digest !== expectedFilterDigest
+            || typeof cursor.collection_digest !== "string"
+            || !/^[0-9a-f]{64}$/.test(cursor.collection_digest)
+            || positiveInteger(cursor.collection_generation) === undefined
+            || expectedCollectionDigest !== undefined
+                && cursor.collection_digest !== expectedCollectionDigest
+            || expectedCollectionGeneration !== undefined
+                && cursor.collection_generation !== expectedCollectionGeneration
+            || cursor.target_kind !== lastSource.target_kind
+            || cursor.target_digest !== lastSource.target_digest)
+            return undefined;
+        return {
+            collectionDigest: cursor.collection_digest,
+            collectionGeneration: cursor.collection_generation,
+        };
+    }
+    catch {
+        return undefined;
+    }
+} } catch(e) {}
+try { function strictSkillResponse(value, httpOk, expectedSkill, expectedOperation) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+        throw new Error("MULTIMODAL_RESPONSE_INVALID");
+    }
+    const response = value;
+    const allowed = new Set([
+        "schema_version", "skill", "operation", "status", "code", "retryable",
+        "trace_id", "request_digest", "implementation_state", "external_evidence",
+        "certification", "output", "result_digest",
+    ]);
+    if (Object.keys(response).some((key) => !allowed.has(key))) {
+        throw new Error("MULTIMODAL_RESPONSE_FIELDS_INVALID");
+    }
+    const status = response.status;
+    if (typeof status !== "string" || ![
+        "SUCCEEDED", "PARTIAL", "BLOCKED", "FAILED", "NOT_APPLICABLE", "NOT_RUN_EXTERNAL",
+    ].includes(status.toUpperCase())) {
+        throw new Error("MULTIMODAL_RESPONSE_STATUS_INVALID");
+    }
+    if (response.retryable !== undefined && typeof response.retryable !== "boolean") {
+        throw new Error("MULTIMODAL_RESPONSE_RETRYABLE_INVALID");
+    }
+    for (const key of ["code", "trace_id"]) {
+        if (response[key] !== undefined && !boundedOpaque(response[key])) {
+            throw new Error("MULTIMODAL_RESPONSE_FIELD_INVALID");
+        }
+    }
+    if (httpOk && (!response.output || typeof response.output !== "object" || Array.isArray(response.output))) {
+        throw new Error("MULTIMODAL_RESPONSE_OUTPUT_INVALID");
+    }
+    if (!httpOk) {
+        const errorFields = new Set([
+            "schema_version", "status", "code", "retryable", "trace_id",
+            "external_evidence", "certification", "result_digest",
+        ]);
+        if (Object.keys(response).length !== errorFields.size
+            || Object.keys(response).some((key) => !errorFields.has(key))
+            || response.schema_version !== "1.0.0"
+            || !["BLOCKED", "FAILED"].includes(String(response.status))
+            || typeof response.code !== "string"
+            || !/^[A-Z][A-Z0-9_:-]{0,127}$/.test(response.code)
+            || typeof response.retryable !== "boolean"
+            || !boundedOpaque(response.trace_id)
+            || response.external_evidence !== "NOT_RUN"
+            || response.certification !== "NOT_CERTIFIED"
+            || typeof response.result_digest !== "string"
+            || !/^[0-9a-f]{64}$/.test(response.result_digest)) {
+            throw new Error("MULTIMODAL_ERROR_RESPONSE_INVALID");
+        }
+        return response;
+    }
+    const fullFields = new Set([
+        "schema_version", "skill", "operation", "status", "retryable", "trace_id",
+        "request_digest", "implementation_state", "external_evidence", "certification",
+        "output", "result_digest",
+    ]);
+    if (response.code !== undefined)
+        fullFields.add("code");
+    if (Object.keys(response).length !== fullFields.size
+        || Object.keys(response).some((key) => !fullFields.has(key))
+        || response.schema_version !== "1.0.0"
+        || response.skill !== expectedSkill
+        || response.operation !== expectedOperation
+        || !["SUCCEEDED", "PARTIAL", "BLOCKED", "FAILED", "NOT_APPLICABLE", "NOT_RUN_EXTERNAL"]
+            .includes(String(response.status))
+        || typeof response.retryable !== "boolean"
+        || !boundedOpaque(response.trace_id)
+        || typeof response.request_digest !== "string"
+        || !/^[0-9a-f]{64}$/.test(response.request_digest)
+        || !["CODE_IMPLEMENTED_LOCAL", "BRIDGE_REQUIRED"].includes(String(response.implementation_state))
+        || response.external_evidence !== "NOT_RUN"
+        || response.certification !== "NOT_CERTIFIED"
+        || typeof response.result_digest !== "string"
+        || !/^[0-9a-f]{64}$/.test(response.result_digest)
+        || (response.code !== undefined && (typeof response.code !== "string" || !/^[A-Z][A-Z0-9_:-]{0,127}$/.test(response.code)))
+        || (["BLOCKED", "FAILED"].includes(String(response.status)) && response.code === undefined)) {
+        throw new Error("MULTIMODAL_RESPONSE_ENVELOPE_INVALID");
+    }
+    return response;
+} } catch(e) {}
+try { async function readSkillResponse(response, expectedSkill, expectedOperation) {
+    const mediaType = response.headers.get("content-type")?.split(";", 1)[0].trim().toLowerCase();
+    if (mediaType !== "application/json")
+        throw new Error("MULTIMODAL_RESPONSE_MEDIA_TYPE_INVALID");
+    const declared = response.headers.get("content-length");
+    const contentEncoding = response.headers.get("content-encoding")?.trim().toLowerCase();
+    if (declared && (!/^[0-9]{1,10}$/.test(declared) || Number(declared) > maximumSkillResponseBytes)) {
+        throw new Error("MULTIMODAL_RESPONSE_TOO_LARGE");
+    }
+    if (!response.body)
+        throw new Error("MULTIMODAL_RESPONSE_INVALID");
+    const reader = response.body.getReader();
+    const chunks = [];
+    let observed = 0;
+    try {
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done)
+                break;
+            observed += value.byteLength;
+            if (observed > maximumSkillResponseBytes) {
+                try {
+                    await reader.cancel("MULTIMODAL_RESPONSE_TOO_LARGE");
+                }
+                catch {
+                    // The size violation remains authoritative if the peer closed first.
+                }
+                throw new Error("MULTIMODAL_RESPONSE_TOO_LARGE");
+            }
+            chunks.push(value);
+        }
+    }
+    finally {
+        reader.releaseLock();
+    }
+    if (declared && (!contentEncoding || contentEncoding === "identity") && observed !== Number(declared)) {
+        throw new Error("MULTIMODAL_RESPONSE_SIZE_INVALID");
+    }
+    const bytes = new Uint8Array(observed);
+    let offset = 0;
+    for (const chunk of chunks) {
+        bytes.set(chunk, offset);
+        offset += chunk.byteLength;
+    }
+    let source;
+    try {
+        source = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+    }
+    catch {
+        throw new Error("MULTIMODAL_RESPONSE_JSON_INVALID");
+    }
+    try {
+        const payload = strictSkillResponse(parseStrictJson(source, { maximumDepth: 32, maximumNodes: 250_000 }), response.ok, expectedSkill, expectedOperation);
+        const unsigned = { ...payload };
+        delete unsigned.result_digest;
+        const expectedDigest = await sha256(new TextEncoder().encode(canonicalStrictJson(unsigned)).buffer);
+        if (payload.result_digest !== expectedDigest) {
+            throw new Error("MULTIMODAL_RESPONSE_DIGEST_INVALID");
+        }
+        return payload;
+    }
+    catch (error) {
+        if (error instanceof StrictJsonError) {
+            throw new Error(`MULTIMODAL_RESPONSE_${error.code}`);
+        }
+        throw error;
+    }
+} } catch(e) {}
+try { async function executeSkill(projectId, skill, operation, input, idempotencyKey) {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort("MULTIMODAL_REQUEST_TIMEOUT"), skillRequestTimeoutMs);
+    try {
+        const unsigned = {
+            schema_version: browserRequestSchemaVersion,
+            skill,
+            operation,
+            projectId,
+            input,
+        };
+        const requestDigest = await sha256(new TextEncoder().encode(canonicalStrictJson(unsigned)).buffer);
+        const response = await fetch(webBffRoute, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Idempotency-Key": idempotencyKey,
+            },
+            body: canonicalStrictJson({ ...unsigned, request_digest: requestDigest }),
+            signal: controller.signal,
+        });
+        const payload = await readSkillResponse(response, skill, operation);
+        if (!response.ok) {
+            const error = new Error(responseString(payload, "code", "error_code") ?? "MULTIMODAL_REQUEST_FAILED");
+            Object.assign(error, { payload });
+            throw error;
+        }
+        const state = String(payload.status ?? payload.state ?? "").toUpperCase();
+        if (["BLOCKED", "FAILED"].includes(state)) {
+            const error = new Error(responseString(payload, "code", "error_code") ?? "MULTIMODAL_OPERATION_BLOCKED");
+            Object.assign(error, { payload });
+            throw error;
+        }
+        return payload;
+    }
+    catch (error) {
+        if (controller.signal.aborted)
+            throw new Error("MULTIMODAL_REQUEST_TIMEOUT");
+        throw error;
+    }
+    finally {
+        window.clearTimeout(timer);
+    }
+} } catch(e) {}
+try { function phaseFrom(response) {
+    const status = (response.status ?? response.state ?? responseString(response, "status", "state", "asset_status", "result_status", "job_status") ?? "").toUpperCase();
+    if (["READY", "SUCCEEDED", "PASSED", "COMPLETED", "CODE_IMPLEMENTED_LOCAL"].includes(status))
+        return "READY";
+    if (["PROCESSING", "RUNNING", "PENDING", "QUEUED", "RETRYING"].includes(status))
+        return "PROCESSING";
+    if (["PARTIAL", "PARTIAL_READY", "PARTIALLY_READY", "NEEDS_REVIEW", "NOT_RUN", "NOT_RUN_EXTERNAL"].includes(status))
+        return "NEEDS_REVIEW";
+    if (status.includes("QUARANTIN"))
+        return "QUARANTINED";
+    return "BLOCKED";
+} } catch(e) {}
+try { function failureDetails(error, fallback) {
+    const payload = error?.payload;
+    const code = payload
+        ? responseString(payload, "code", "error_code") ?? fallback
+        : error instanceof Error
+            ? error.message
+            : fallback;
+    const status = `${payload?.status ?? ""} ${payload?.state ?? ""} ${code}`.toUpperCase();
+    return {
+        payload,
+        code,
+        quarantined: status.includes("QUARANTIN"),
+        retryable: payload?.retryable,
+        traceId: payload ? responseString(payload, "trace_id") : undefined,
+    };
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,
@@ -37,33 +1702,33 @@ Component({
     reviewReason: "USER_REVIEW",
     reviewPropagation: null,
     reviewCurrentCorrection: null,
-    fileInput: null,
-    folderInput: null,
-    fileAdditionLock: false,
-    fileAdditionOwner: 0,
-    selectionCapacity: "{ count: 0, bytes: 0 }",
-    recoveryByScope: "new Map<string, UploadRecoveryRecord>()",
-    recoveryLoad: null,
+    fileInput: {"current":null},
+    folderInput: {"current":null},
+    fileAdditionLock: {"current":null},
+    fileAdditionOwner: {"current":null},
+    selectionCapacity: {"current":null},
+    recoveryByScope: {"current":null},
+    recoveryLoad: {"current":null},
     reviewClaims: {},
     reviewIdentityScope: "",
     legacyReviewClaimDiscarded: false,
     reviewEnqueueRecoveryCount: 0,
     reviewEnqueueRecoveryError: "",
     reviewClock: 0,
-    reviewScopeGeneration: 0,
-    reviewRequestOwner: 0,
-    reviewEngineScope: null,
-    recoveryIdentityGeneration: 0,
-    activeIdentityScope: "",
-    intakeBusyOwner: 0,
-    estimateRequestOwner: 0,
-    intakeProjectGeneration: 0,
-    activeProjectId: "projectId",
+    reviewScopeGeneration: {"current":null},
+    reviewRequestOwner: {"current":null},
+    reviewEngineScope: {"current":null},
+    recoveryIdentityGeneration: {"current":null},
+    activeIdentityScope: {"current":null},
+    intakeBusyOwner: {"current":null},
+    estimateRequestOwner: {"current":null},
+    intakeProjectGeneration: {"current":null},
+    activeProjectId: {"current":null},
     activeProgressJobKey: null,
     summary: null,
     estimatePlan: null,
-    estimatePlanDocument: null,
     filteredPackagePage: null,
+    estimatePlanDocument: null,
   },
   lifetimes: {
     attached() {
@@ -104,6 +1769,22 @@ Component({
       const setReviewEnqueueRecoveryCount = (val) => { this.setData({ reviewEnqueueRecoveryCount: typeof val === "function" ? val(this.data.reviewEnqueueRecoveryCount) : val }); };
       const setReviewEnqueueRecoveryError = (val) => { this.setData({ reviewEnqueueRecoveryError: typeof val === "function" ? val(this.data.reviewEnqueueRecoveryError) : val }); };
       const setReviewClock = (val) => { this.setData({ reviewClock: typeof val === "function" ? val(this.data.reviewClock) : val }); };
+      const fileInput = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = { current: { focus: () => {}, scrollIntoView: () => {} } };
       // Lifecycle effect effect_4
       (async () => {
         try {
@@ -397,6 +2078,22 @@ Component({
   },
   methods: {
     captureIntakeIdentity() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const identityScope = activeIdentityScope.current;
     if (!identityScope)
@@ -412,6 +2109,22 @@ Component({
       }
     },
     intakeIdentityIsCurrent(guard) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         return guard.generation === recoveryIdentityGeneration.current
         && guard.identityScope === activeIdentityScope.current
@@ -422,6 +2135,22 @@ Component({
       }
     },
     assertIntakeIdentityCurrent(guard) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!intakeIdentityIsCurrent(guard))
     throw new Error("MULTIMODAL_IDENTITY_SCOPE_CHANGED");
@@ -430,6 +2159,22 @@ Component({
       }
     },
     async executeGuardedIntakeSkill(guard, projectAlias, skill, operation, input, idempotencyKey) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         assertIntakeIdentityCurrent(guard);
     if (projectAlias !== guard.projectId)
@@ -442,6 +2187,22 @@ Component({
       }
     },
     publishRecoveryRecords() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         setRecoveryRecordCount(recoveryByScope.current.size);
       } catch (err) {
@@ -449,6 +2210,22 @@ Component({
       }
     },
     recoveryRecords(projectAlias, fileFingerprint, engineProjectId) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         return [...recoveryByScope.current.values()].filter((record) => record.projectId === projectAlias
         && record.fileFingerprint === fileFingerprint
@@ -458,6 +2235,22 @@ Component({
       }
     },
     async persistRecovery(record, guard) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         assertIntakeIdentityCurrent(guard);
     if (!validRecoveryRecord(record)
@@ -472,6 +2265,22 @@ Component({
       }
     },
     async clearRecovery(record, guard) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         assertIntakeIdentityCurrent(guard);
     if (!record.projectId || !record.engineProjectId) {
@@ -492,6 +2301,22 @@ Component({
       }
     },
     recoveryFromAsset(asset, guard) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         assertIntakeIdentityCurrent(guard);
     if (!asset.projectId
@@ -526,6 +2351,22 @@ Component({
       }
     },
     async addFiles(files) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (fileAdditionLock.current) {
         setFeedback("FILE_SELECTION_IN_PROGRESS");
@@ -677,6 +2518,22 @@ Component({
       }
     },
     update(key, patch) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         setAssets((current) => current.map((asset) => asset.key === key ? { ...asset, ...patch } : asset));
       } catch (err) {
@@ -684,6 +2541,22 @@ Component({
       }
     },
     updateMany(keys, patch) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const selected = new Set(keys);
     setAssets((current) => current.map((asset) => selected.has(asset.key) ? { ...asset, ...patch } : asset));
@@ -692,6 +2565,22 @@ Component({
       }
     },
     async refreshProcessingEstimate() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!safeProject(projectId) || estimatePlan.stages.length === 0) {
         setEstimate({
@@ -746,6 +2635,22 @@ Component({
       }
     },
     async uploadAsset(asset, sessionId, projectAlias, identityGuard) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         assertIntakeIdentityCurrent(identityGuard);
     if (asset.permanentBlock)
@@ -839,6 +2744,22 @@ Component({
       }
     },
     async processAll() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         let identityGuard;
     try {
@@ -1300,6 +3221,22 @@ Component({
       }
     },
     addDirectText() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const value = directText.trim();
     if (!value)
@@ -1315,6 +3252,22 @@ Component({
       }
     },
     async buildPackagePreview() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!safeProject(projectId) || assets.length === 0)
         return;
@@ -1392,6 +3345,22 @@ Component({
       }
     },
     async loadPackagePage(cursor, targetIndex) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!packagePage || targetIndex < 0 || !safeProject(projectId))
         return;
@@ -1434,6 +3403,22 @@ Component({
       }
     },
     selectedReviewTask() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         return reviewTasks.find((task) => task.task_id === selectedReviewTaskId);
       } catch (err) {
@@ -1441,6 +3426,22 @@ Component({
       }
     },
     beginReviewRequest() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const guard = {
         generation: reviewScopeGeneration.current,
@@ -1456,6 +3457,22 @@ Component({
       }
     },
     reviewRequestIsCurrent(guard) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         return guard.generation === reviewScopeGeneration.current
         && guard.owner === reviewRequestOwner.current;
@@ -1464,6 +3481,22 @@ Component({
       }
     },
     assertReviewRequestCurrent(guard) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!reviewRequestIsCurrent(guard))
     throw new Error("HUMAN_REVIEW_SCOPE_CHANGED");
@@ -1472,6 +3505,22 @@ Component({
       }
     },
     finishReviewRequest(guard) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (reviewRequestIsCurrent(guard))
     setReviewBusy(false);
@@ -1480,6 +3529,22 @@ Component({
       }
     },
     async executeGuardedReviewSkill(guard, skill, operation, input, idempotencyKey) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         assertReviewRequestCurrent(guard);
     const response = await executeSkill(guard.projectId, skill, operation, input, idempotencyKey);
@@ -1490,6 +3555,22 @@ Component({
       }
     },
     saveReviewClaim(claim) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!reviewIdentityScope || claim.identity_scope !== reviewIdentityScope)
         return false;
@@ -1504,6 +3585,22 @@ Component({
       }
     },
     discardReviewClaim(taskId) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!reviewIdentityScope)
         return false;
@@ -1517,6 +3614,22 @@ Component({
       }
     },
     abandonReviewClaimRecovery(taskId) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!discardReviewClaim(taskId)) {
         setFeedback("HUMAN_REVIEW_CLAIM_RECOVERY_DISCARD_FAILED");
@@ -1530,6 +3643,22 @@ Component({
       }
     },
     reconcileReviewClaims(tasks) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!reviewIdentityScope)
         return;
@@ -1566,6 +3695,22 @@ Component({
       }
     },
     async validatedReviewTask(response, guard, expected) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         assertReviewRequestCurrent(guard);
     const task = reviewTask(outputRecord(response, "task"), reviewEngineScope.current);
@@ -1625,6 +3770,22 @@ Component({
       }
     },
     commitReviewTask(task) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         setReviewTasks((current) => [
         task,
@@ -1637,6 +3798,22 @@ Component({
       }
     },
     async ensureReviewProject(guard) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!safeProject(guard.projectId))
         throw new Error("PROJECT_ID_INVALID");
@@ -1659,6 +3836,22 @@ Component({
       }
     },
     async refreshReviewQueue() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const guard = beginReviewRequest();
     setFeedback("");
@@ -1758,6 +3951,22 @@ Component({
       }
     },
     async fetchCurrentReviewCorrection(guard, task) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (task.current_correction_version === 0)
         return undefined;
@@ -1773,6 +3982,22 @@ Component({
       }
     },
     async selectReviewTask(taskId) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (taskId !== selectedReviewTaskId) {
         setCorrection("");
@@ -1843,6 +4068,22 @@ Component({
       }
     },
     async refreshReviewSources() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const asset = assets.find((candidate) => candidate.assetId === correctionTarget);
     if (!asset?.assetId || !asset.sha256 || !positiveInteger(asset.assetVersion)) {
@@ -1958,6 +4199,22 @@ Component({
       }
     },
     async selectReviewSource(key) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         setSelectedReviewSourceKey(key);
     setReviewTargetLocator("");
@@ -2014,6 +4271,22 @@ Component({
       }
     },
     async validatedReviewEnqueueReceipt(response, guard, input, outputKeys) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         exactReviewOutput(response, outputKeys);
     const task = await validatedReviewTask(response, guard, {
@@ -2045,6 +4318,22 @@ Component({
       }
     },
     clearReviewEnqueueAttempt(guard, attempt) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         assertReviewRequestCurrent(guard);
     const attempts = loadReviewEnqueueAttempts(guard.identityScope);
@@ -2063,6 +4352,22 @@ Component({
       }
     },
     async recoverReviewEnqueueAttempts() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!reviewIdentityScope) {
         setFeedback("HUMAN_REVIEW_IDENTITY_SCOPE_UNAVAILABLE");
@@ -2149,6 +4454,22 @@ Component({
       }
     },
     async enqueueReviewTask() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const asset = assets.find((candidate) => candidate.assetId === correctionTarget);
     const selectedSource = reviewSources.find((source) => (reviewSourceKey(source) === selectedReviewSourceKey && source.detail_loaded));
@@ -2322,6 +4643,22 @@ Component({
       }
     },
     async claimReviewTask() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const task = selectedReviewTask();
     if (!task || !reviewIdentityScope) {
@@ -2439,6 +4776,22 @@ Component({
       }
     },
     correctionValue() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!correctionTouched)
         throw new Error("HUMAN_REVIEW_CORRECTION_REQUIRED");
@@ -2458,6 +4811,22 @@ Component({
       }
     },
     async editReviewTask() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const task = selectedReviewTask();
     const claim = task ? reviewClaims[task.task_id] : undefined;
@@ -2530,6 +4899,22 @@ Component({
       }
     },
     async decideReviewTask(operation) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const task = selectedReviewTask();
     const claim = task ? reviewClaims[task.task_id] : undefined;
@@ -2629,6 +5014,22 @@ Component({
       }
     },
     async transitionClosedReviewTask(operation) {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const task = selectedReviewTask();
     const visibleCorrection = task && reviewCurrentCorrection
@@ -2708,6 +5109,22 @@ Component({
       }
     },
     async refreshReviewPropagation() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const task = selectedReviewTask();
     if (!task)
@@ -2747,6 +5164,22 @@ Component({
       }
     },
     async submitCorrection() {
+      const fileInput = this.data.fileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const folderInput = this.data.folderInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionLock = this.data.fileAdditionLock || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const fileAdditionOwner = this.data.fileAdditionOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const selectionCapacity = this.data.selectionCapacity || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryByScope = this.data.recoveryByScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryLoad = this.data.recoveryLoad || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewScopeGeneration = this.data.reviewScopeGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewRequestOwner = this.data.reviewRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const reviewEngineScope = this.data.reviewEngineScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const recoveryIdentityGeneration = this.data.recoveryIdentityGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeIdentityScope = this.data.activeIdentityScope || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeBusyOwner = this.data.intakeBusyOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const estimateRequestOwner = this.data.estimateRequestOwner || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const intakeProjectGeneration = this.data.intakeProjectGeneration || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const activeProjectId = this.data.activeProjectId || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const target = assets.find((asset) => asset.assetId === correctionTarget);
     if (!target || !correctionTouched)

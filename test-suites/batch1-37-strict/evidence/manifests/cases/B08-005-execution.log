@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B08-005 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [8]
+Title: Batch 8 Patch Policy：使用越权身份、跨租户引用、恶意内容、秘密探测或出口绕过
+Capability: Patch Policy
+Test Type: security
+Skill: tst-b08-bounded-repair-loop
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

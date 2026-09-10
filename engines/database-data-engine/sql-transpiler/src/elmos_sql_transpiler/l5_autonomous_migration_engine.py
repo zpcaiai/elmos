@@ -336,6 +336,31 @@ class AutonomousDatabaseMigrationEngine:
 
         return registered
 
+    def register_source_assets(
+        self, assets: list[dict[str, Any]]
+    ) -> list[MigrationAsset]:
+        """Register a list of asset dicts for migration."""
+        res: list[MigrationAsset] = []
+        for a in assets:
+            kind_val = a.get("asset_kind", "TABLE")
+            if isinstance(kind_val, str):
+                kind = MigrationAssetKind(kind_val.upper())
+            else:
+                kind = kind_val
+            asset = self.register_raw_asset(
+                asset_name=a.get("asset_name") or a.get("asset_id", "asset"),
+                asset_kind=kind,
+                source_ddl=a.get("source_ddl", ""),
+                source_dialect=a.get("source_dialect"),
+                metadata=a.get("metadata"),
+            )
+            res.append(asset)
+        return res
+
+    def execute_full_migration(self) -> AutonomousMigrationDossier:
+        """Alias for execute_autonomous_migration."""
+        return self.execute_autonomous_migration()
+
     def execute_autonomous_migration(self) -> AutonomousMigrationDossier:
         """Run all 9 stages of the L5 autonomous migration lifecycle."""
         run_start = datetime.now(UTC)

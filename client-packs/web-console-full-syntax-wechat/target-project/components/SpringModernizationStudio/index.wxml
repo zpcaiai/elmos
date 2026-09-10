@@ -323,8 +323,7 @@
       </view>
       <StatusChip status="{{capability?.routes?.length ? &quot;READY&quot; : &quot;NOT_RUN&quot;}}" compact="true" />
     </view>
-    <view class="spring-route-intro">指纹阶段按下表选择路线，而不是断言单一版本。只有带 PASSED_LOCAL 的元组有已记录的端到端本地执行证据；
-          NOT_RUN 路线需要 Runner 显式开启实验执行；NOT_IMPLEMENTED 仅记录 inventory gap，不会进入目标选择器或执行。</view>
+    <view class="spring-route-intro">指纹阶段按下表选择路线，而不是断言单一版本。只有带 PASSED_LOCAL 的元组有已记录的端到端本地执行证据； NOT_RUN 路线需要 Runner 显式开启实验执行；NOT_IMPLEMENTED 仅记录 inventory gap，不会进入目标选择器或执行。</view>
     <view wx:if="{{capability?.routes?.length}}" class="spring-route-table" role="table" aria-label="Spring 遗留版本路线目录" tabIndex="{{0}}">
       <view class="spring-route-row spring-route-head" role="row">
         <text role="columnheader">源版本约束</text>

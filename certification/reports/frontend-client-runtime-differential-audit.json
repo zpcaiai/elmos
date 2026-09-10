@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "timestamp": "2026-09-10T08:56:31.688Z",
+  "timestamp": "2026-09-10T09:33:37.480Z",
   "packKey": "web-console-next16-react19-wechat-v1",
   "totals": {
     "totalComponents": 71,
@@ -52,7 +52,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9882,
+      "consistencyScore": 0.9906,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -169,7 +169,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.997,
+      "consistencyScore": 0.9967,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -377,7 +377,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9925,
+      "consistencyScore": 0.9906,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -416,9 +416,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9974,
+      "consistencyScore": 0.9977,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.9957,
+      "structuralSimilarity": 0.9962,
       "diagnostics": []
     },
     {
@@ -455,7 +455,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9989,
+      "consistencyScore": 0.9983,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -468,7 +468,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -520,7 +520,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9956,
+      "consistencyScore": 0.995,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -558,13 +558,11 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.9,
+      "l4Equivalent": true,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
-      "diagnostics": [
-        "Composite semantic score 0.9 is below L4 threshold (0.95)."
-      ]
+      "diagnostics": []
     },
     {
       "componentName": "Marketplace",
@@ -613,9 +611,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9659,
-      "textSimilarity": 0.9667,
-      "structuralSimilarity": 0.9635,
+      "consistencyScore": 0.9708,
+      "textSimilarity": 0.9741,
+      "structuralSimilarity": 0.9653,
       "diagnostics": []
     },
     {
@@ -638,13 +636,11 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.8467,
+      "l4Equivalent": true,
+      "consistencyScore": 0.9967,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
-      "diagnostics": [
-        "Composite semantic score 0.8467 is below L4 threshold (0.95)."
-      ]
+      "diagnostics": []
     },
     {
       "componentName": "ObservabilityPage",
@@ -719,7 +715,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9933,
+      "consistencyScore": 0.9903,
       "textSimilarity": 1,
       "structuralSimilarity": 0.9833,
       "diagnostics": []
@@ -758,7 +754,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 1,
+      "consistencyScore": 0.9977,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -771,7 +767,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9875,
+      "consistencyScore": 0.9885,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -875,7 +871,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.975,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -953,7 +949,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9962,
+      "consistencyScore": 0.9805,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []

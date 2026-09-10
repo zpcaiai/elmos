@@ -1,0 +1,8 @@
+{
+  "case_id": "TS-GOV-03-002",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:55:52Z",
+  "notes": "Independently verified by Ethan: 测试环境、Fixture与数据工厂：使用极限规模、空值、最大长度、时间边界、数值边界或版本边界"
+}

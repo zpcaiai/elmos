@@ -1,3 +1,46 @@
+// Top-level helpers and constants
+try { const jobStatuses = [
+    ["ALL", "全部状态"],
+    ["QUEUED", "排队 QUEUED"],
+    ["CLAIMED", "已认领 CLAIMED"],
+    ["RUNNING", "执行中 RUNNING"],
+    ["SUCCEEDED", "成功 SUCCEEDED"],
+    ["PARTIAL", "部分成功 PARTIAL"],
+    ["FAILED", "失败 FAILED"],
+    ["CANCELLED", "已取消 CANCELLED"],
+    ["LOST", "丢失 LOST"],
+]; } catch(e) {}
+try { function yuan(minor) {
+    if (minor === null || minor === undefined)
+        return "未计费";
+    const value = typeof minor === "number" ? minor : Number(minor);
+    if (!Number.isFinite(value))
+        return "未计费";
+    return (value / 100).toLocaleString("zh-CN", {
+        style: "currency",
+        currency: "CNY",
+        minimumFractionDigits: 2,
+    });
+} } catch(e) {}
+try { function moment(value) {
+    if (!value)
+        return "—";
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? "—" : parsed.toLocaleString("zh-CN", { hour12: false });
+} } catch(e) {}
+try { function elapsed(row) {
+    if (!row.startedAt)
+        return "—";
+    const started = new Date(row.startedAt);
+    if (Number.isNaN(started.getTime()))
+        return "—";
+    const end = row.finishedAt ? new Date(row.finishedAt) : new Date();
+    if (Number.isNaN(end.getTime()))
+        return "—";
+    const seconds = Math.max(0, Math.round((end.getTime() - started.getTime()) / 1000));
+    return `${seconds}s`;
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,

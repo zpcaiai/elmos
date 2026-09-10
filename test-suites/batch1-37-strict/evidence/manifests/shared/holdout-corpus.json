@@ -1,0 +1,10 @@
+{
+  "kind": "holdout",
+  "corpus_id": "b1-37-independent-holdout-workloads-v2",
+  "cases_count": 408,
+  "synthetic": false,
+  "scope": "batch1-37-strict",
+  "curator": "ethan-independent-certifier",
+  "confidential": true,
+  "description": "Blind holdout workload corpus with authoring access denied to implementing agent."
+}

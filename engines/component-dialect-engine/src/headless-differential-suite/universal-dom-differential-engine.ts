@@ -361,8 +361,6 @@ export class UniversalDOMDifferentialEngine {
       }
 
       const isPureTextElement = (node: DOMNode) => {
-        const tag = (node.tagName || '').toLowerCase();
-        if (!['text', 'span', 'strong', 'small', 'b', 'i', 'em', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'label', 'time', 'code'].includes(tag)) return false;
         const hasCritical = criticalAttrs.some(attr => node.hasAttribute(attr));
         if (hasCritical) return false;
         return !node.children.some(c => c.nodeType === 'element');
@@ -371,17 +369,35 @@ export class UniversalDOMDifferentialEngine {
       const sChildren = sNode.children.filter(c => c.nodeType === 'element' && !isPureTextElement(c));
       const tChildren = tNode.children.filter(c => c.nodeType === 'element' && !isPureTextElement(c));
       const usedT = new Set<number>();
-      for (const sc of sChildren) {
-        let bestIndex = -1;
+      for (let i = 0; i < sChildren.length; i++) {
+        const sc = sChildren[i];
+        if (!sc) continue;
         const scNorm = this.normalizeSemanticTag(sc.tagName, sc.nodeType);
+        let bestIndex = -1;
+        let bestScore = -Infinity;
         for (let j = 0; j < tChildren.length; j++) {
           if (usedT.has(j)) continue;
           const tc = tChildren[j];
           if (!tc) continue;
           const tcNorm = this.normalizeSemanticTag(tc.tagName, tc.nodeType);
           if (scNorm === tcNorm || this.isSemanticTagMatch(scNorm, tcNorm, sc, tc)) {
-            bestIndex = j;
-            break;
+            let score = 10;
+            for (const attr of criticalAttrs) {
+              const sv = sc.getAttribute(attr);
+              const tv = tc.getAttribute(attr);
+              if (sv !== undefined && tv !== undefined) {
+                if (sv === tv) score += 20;
+                else score -= 5;
+              } else if (sv !== undefined || tv !== undefined) {
+                score -= 2;
+              }
+            }
+            const dist = Math.abs(i - j);
+            score -= dist * 2;
+            if (score > bestScore) {
+              bestScore = score;
+              bestIndex = j;
+            }
           }
         }
         if (bestIndex !== -1) {

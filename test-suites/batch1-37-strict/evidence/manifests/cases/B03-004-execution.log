@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B03-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [3]
+Title: Batch 3 异常与资源生命周期：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: 异常与资源生命周期
+Test Type: dependency_failure
+Skill: tst-b03-unified-ir
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

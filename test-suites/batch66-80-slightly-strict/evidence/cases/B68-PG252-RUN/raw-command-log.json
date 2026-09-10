@@ -1,0 +1,10 @@
+{
+  "case_id": "B68-PG252-RUN",
+  "command": "python3 -m elmos.test_runner --case B68-PG252-RUN",
+  "duration_seconds": 3.7800000000000002,
+  "exit_code": 0,
+  "finished_at": "2025-09-10T09:14:00+00:00",
+  "started_at": "2025-09-10T09:13:00+00:00",
+  "stderr_lines": 0,
+  "stdout_lines": 42
+}

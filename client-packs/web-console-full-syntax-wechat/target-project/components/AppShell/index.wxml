@@ -44,17 +44,17 @@
       </view>
     </view>
     <view class="secondary-nav" aria-label="{{english ? &quot;Utility navigation&quot; : &quot;辅助导航&quot;}}">
-      <navigator class="{{`secondary-link ${styles.readableSecondary}`}}" href="/api/capabilities/migration" target="_blank" rel="noreferrer">
+      <navigator class="{{`secondary-link ${'readableSecondary'}`}}" href="/api/capabilities/migration" target="_blank" rel="noreferrer">
         <Icon name="box" size="{{18}}" />
         <text>{{english ? "Capability API" : "能力 API"}}</text>
       </navigator>
-      <button class="{{`secondary-link ${styles.readableSecondary}`}}" type="button" data-telemetry-ignore="true" bindtap="toggleTelemetry">
+      <button class="{{`secondary-link ${'readableSecondary'}`}}" type="button" data-telemetry-ignore="true" bindtap="toggleTelemetry">
         <Icon name="{{telemetryEnabled ? &quot;check&quot; : &quot;close&quot;}}" size="{{18}}" />
         <text>{{english
               ? `Anonymous performance log: ${telemetryEnabled ? "on" : "off"}`
               : `匿名性能日志：${telemetryEnabled ? "开" : "关"}`}}</text>
       </button>
-      <navigator class="{{`secondary-link ${styles.readableSecondary}`}}" href="/help">
+      <navigator class="{{`secondary-link ${'readableSecondary'}`}}" href="/help">
         <Icon name="help" size="{{18}}" />
         <text>{{english ? "Help and readiness" : "帮助与就绪状态"}}</text>
       </navigator>

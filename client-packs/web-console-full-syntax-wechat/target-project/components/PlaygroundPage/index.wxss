@@ -9,3 +9,27 @@
 .resultGood { color: #16a34a; font-weight: 500; }
 .resultBad { color: #dc2626; font-weight: 500; }
 .card { background: #ffffff; border-radius: 12rpx; padding: 24rpx; margin: 16rpx 0; border: 1rpx solid #e2e8f0; }
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+.rpx-4 {
+  padding-left: 32rrpx;
+  padding-right: 32rrpx;
+}
+.py-8 {
+  padding-top: 64rrpx;
+  padding-bottom: 64rrpx;
+}
+@media (min-width: 640rpx) {
+  .sm_rpx-6 {
+    padding-left: 48rrpx;
+    padding-right: 48rrpx;
+  }
+}
+@media (min-width: 1024rpx) {
+  .lg_rpx-8 {
+    padding-left: 64rrpx;
+    padding-right: 64rrpx;
+  }
+}

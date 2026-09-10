@@ -1,11 +1,11 @@
-<view class="{{styles.controlCard}}">
+<view class="{{'controlCard'}}">
   <view>
-    <text class="{{styles.severity}}">{{incident.severity}}</text>
+    <text class="{{'severity'}}">{{incident.severity}}</text>
     <text>{{incident.summaryCode}}</text>
   </view>
   <view>{{businessLineLabel}} · {{incident.status}}</view>
   <text>负责人： {{incident.ownerActorId}}</text>
-  <view wx:if="{{incident.status !== 'RESOLVED'}}" class="{{styles.inlineActions}}">
+  <view wx:if="{{incident.status !== 'RESOLVED'}}" class="{{'inlineActions'}}">
     <button class="secondary-button" type="button" disabled="{{disabled}}" bindtap="onTap">接手</button>
     <button class="secondary-button" type="button" disabled="{{disabled}}" bindtap="onTap">标记已解决</button>
   </view>

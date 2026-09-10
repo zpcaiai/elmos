@@ -1,3 +1,20 @@
+// Top-level helpers and constants
+try { const channelName = "elmos-account-session-v1"; } catch(e) {}
+try { async function readSession() {
+    const response = await fetch("/api/auth/session", {
+        credentials: "same-origin",
+        cache: "no-store",
+    });
+    const payload = await response.json();
+    return payload;
+} } catch(e) {}
+try { function useAccountSession() {
+    const value = useContext(AccountSessionContext);
+    if (!value)
+        throw new Error("AccountSessionProvider is required");
+    return value;
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,

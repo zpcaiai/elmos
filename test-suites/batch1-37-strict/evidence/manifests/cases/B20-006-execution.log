@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B20-006 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [20]
+Title: Batch 20 数据库Migration：重复提交、消息重放、Lease过期、任务恢复或并发执行
+Capability: 数据库Migration
+Test Type: replay_idempotency
+Skill: tst-b20-executable-scaffold
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

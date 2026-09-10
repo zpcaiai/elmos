@@ -1,3 +1,33 @@
+// Top-level helpers and constants
+try { function yuan(minor) {
+    if (minor === null || minor === undefined)
+        return "—";
+    const value = typeof minor === "number" ? minor : Number(minor);
+    if (!Number.isFinite(value))
+        return "—";
+    return (value / 100).toLocaleString("zh-CN", {
+        style: "currency",
+        currency: "CNY",
+        minimumFractionDigits: 2,
+    });
+} } catch(e) {}
+try { function moment(value) {
+    if (!value)
+        return "—";
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? "—" : parsed.toLocaleString("zh-CN", { hour12: false });
+} } catch(e) {}
+try { async function readRows(response) {
+    const payload = (await response.json().catch(() => null));
+    if (!response.ok) {
+        return {
+            rows: [],
+            denial: payload?.code ?? payload?.message ?? `HTTP_${response.status}`,
+        };
+    }
+    return { rows: payload?.rows ?? [], denial: "" };
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,
@@ -23,8 +53,8 @@ Component({
     amountYuan: "",
     direction: "CREDIT",
     reason: "",
-    idempotencyKey: "",
-    keySignature: "",
+    idempotencyKey: {"current":null},
+    keySignature: {"current":null},
   },
   lifetimes: {
     attached() {
@@ -41,12 +71,16 @@ Component({
       const setAmountYuan = (val) => { this.setData({ amountYuan: typeof val === "function" ? val(this.data.amountYuan) : val }); };
       const setDirection = (val) => { this.setData({ direction: typeof val === "function" ? val(this.data.direction) : val }); };
       const setReason = (val) => { this.setData({ reason: typeof val === "function" ? val(this.data.reason) : val }); };
+      const idempotencyKey = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const keySignature = { current: { focus: () => {}, scrollIntoView: () => {} } };
     },
     detached() {
     },
   },
   methods: {
     async submitAdjustment(event) {
+      const idempotencyKey = this.data.idempotencyKey || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const keySignature = this.data.keySignature || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         event.preventDefault();
     setNotice("");

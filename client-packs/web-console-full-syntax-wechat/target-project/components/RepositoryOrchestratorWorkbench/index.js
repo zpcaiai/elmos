@@ -1,3 +1,36 @@
+// Top-level helpers and constants
+try { const initialRisk = {
+    security: "low",
+    dataMigration: "low",
+    concurrency: "low",
+    publicContract: "low",
+    blastRadius: "low",
+    longHorizon: false,
+}; } catch(e) {}
+try { const riskOptions = ["none", "low", "medium", "high", "critical"]; } catch(e) {}
+try { function readableReason(reason) {
+    return reason.replaceAll("_", " ").replaceAll(":", " · ");
+} } catch(e) {}
+try { function statusTone(status) {
+    if (status === "BLOCKED" || status === "NOT_CONFIGURED")
+        return "blocked";
+    if (status.startsWith("READY"))
+        return "ready";
+    return "pending";
+} } catch(e) {}
+try { async function responseJson(response) {
+    const mediaType = response.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase();
+    if (mediaType !== "application/json")
+        throw new Error("REPOSITORY_RESPONSE_MEDIA_TYPE_INVALID");
+    return response.json();
+} } catch(e) {}
+try { function failureMessage(value, fallback) {
+    if (typeof value !== "object" || value === null || Array.isArray(value))
+        return fallback;
+    const message = value.message;
+    return typeof message === "string" && message.trim() ? message : fallback;
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,

@@ -1,4 +1,4 @@
-<view class="{{styles.tableWrap}}">
+<view class="{{'tableWrap'}}">
   <view>
     <view>
       <view>
@@ -19,7 +19,7 @@
         </view>
         <view title="{{item.target}}">{{displayTarget(item.target)}}</view>
         <view>
-          <text class="{{item.result === &quot;FAILURE&quot; ? styles.resultBad : styles.resultGood}}">{{item.result}}</text>
+          <text class="{{item.result === &quot;FAILURE&quot; ? 'resultBad' : 'resultGood'}}">{{item.result}}</text>
           <text wx:if="{{item.errorCode}}">{{item.errorCode}}</text>
         </view>
         <view>{{item.durationMs === null ? "—" : `${item.durationMs} ms`}}</view>

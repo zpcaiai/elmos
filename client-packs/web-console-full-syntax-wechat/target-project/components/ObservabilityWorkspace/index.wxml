@@ -1,117 +1,117 @@
-<view class="{{styles.container}}">
-  <view class="{{styles.header}}">
-    <view class="{{styles.titleRow}}">
-      <view class="{{styles.badge}}">SAMPLE DATA · NOT_RUN</view>
-      <view class="{{styles.title}}">可观测性与供应链证据结构预览</view>
+<view class="{{'container'}}">
+  <view class="{{'header'}}">
+    <view class="{{'titleRow'}}">
+      <view class="{{'badge'}}">SAMPLE DATA · NOT_RUN</view>
+      <view class="{{'title'}}">可观测性与供应链证据结构预览</view>
     </view>
-    <view class="{{styles.subtitle}}">展示 Trace、Prometheus 与 In-toto/SLSA 字段形态；未读取遥测后端、未执行构建，也未验证任何签名。</view>
-    <view class="{{styles.notice}}" role="status">Provider read NOT_RUN · Signature verification NOT_RUN · Independent evidence NOT_RUN · Certification NOT_CERTIFIED</view>
-    <view class="{{styles.tabBar}}">
-      <button type="button" class="{{`${styles.tabBtn} ${activeTab === &quot;traces&quot; ? styles.activeTab : &quot;&quot;}`}}" aria-pressed="{{activeTab === &quot;traces&quot;}}" bindtap="onTap">
+    <view class="{{'subtitle'}}">展示 Trace、Prometheus 与 In-toto/SLSA 字段形态；未读取遥测后端、未执行构建，也未验证任何签名。</view>
+    <view class="{{'notice'}}" role="status">Provider read NOT_RUN · Signature verification NOT_RUN · Independent evidence NOT_RUN · Certification NOT_CERTIFIED</view>
+    <view class="{{'tabBar'}}">
+      <button type="button" class="{{`${'tabBtn'} ${activeTab === &quot;traces&quot; ? 'activeTab' : &quot;&quot;}`}}" aria-pressed="{{activeTab === &quot;traces&quot;}}" bindtap="onTap">
         <Icon name="workflow" size="{{16}}" />
         <text>Trace 数据示例</text>
       </button>
-      <button type="button" class="{{`${styles.tabBtn} ${activeTab === &quot;metrics&quot; ? styles.activeTab : &quot;&quot;}`}}" aria-pressed="{{activeTab === &quot;metrics&quot;}}" bindtap="onTap">
+      <button type="button" class="{{`${'tabBtn'} ${activeTab === &quot;metrics&quot; ? 'activeTab' : &quot;&quot;}`}}" aria-pressed="{{activeTab === &quot;metrics&quot;}}" bindtap="onTap">
         <Icon name="test" size="{{16}}" />
         <text>Prometheus 指标示例</text>
       </button>
-      <button type="button" class="{{`${styles.tabBtn} ${activeTab === &quot;slsa&quot; ? styles.activeTab : &quot;&quot;}`}}" aria-pressed="{{activeTab === &quot;slsa&quot;}}" bindtap="onTap">
+      <button type="button" class="{{`${'tabBtn'} ${activeTab === &quot;slsa&quot; ? 'activeTab' : &quot;&quot;}`}}" aria-pressed="{{activeTab === &quot;slsa&quot;}}" bindtap="onTap">
         <Icon name="shield" size="{{16}}" />
         <text>SLSA 凭证结构示例</text>
       </button>
     </view>
   </view>
-  <view class="{{styles.mainGrid}}">
+  <view class="{{'mainGrid'}}">
     <block wx:if="{{activeTab === 'traces'}}">
-      <view class="{{styles.panel}}">
-        <view class="{{styles.panelHeader}}">
+      <view class="{{'panel'}}">
+        <view class="{{'panelHeader'}}">
           <view>Trace Waterfall 字段示例</view>
-          <text class="{{styles.metaTag}}">SAMPLE_ONLY · {{totalDuration.toFixed(1)}} ms</text>
+          <text class="{{'metaTag'}}">SAMPLE_ONLY · {{totalDuration.toFixed(1)}} ms</text>
         </view>
-        <view class="{{styles.waterfallList}}">
-          <button wx:for="{{sampleSpans}}" wx:for-item="span" wx:key="span.id" type="button" key="{{span.id}}" class="{{`${styles.spanRow} ${isSelected ? styles.spanRowSelected : &quot;&quot;}`}}" aria-pressed="{{isSelected}}" bindtap="onTap">
-            <view class="{{styles.spanNameCol}}">
-              <text class="{{styles.statusDot}}" />
-              <text class="{{styles.spanName}}">{{span.name}}</text>
+        <view class="{{'waterfallList'}}">
+          <button wx:for="{{sampleSpans}}" wx:for-item="span" wx:key="span.id" type="button" key="{{span.id}}" class="{{`${'spanRow'} ${isSelected ? 'spanRowSelected' : &quot;&quot;}`}}" aria-pressed="{{isSelected}}" bindtap="onTap">
+            <view class="{{'spanNameCol'}}">
+              <text class="{{'statusDot'}}" />
+              <text class="{{'spanName'}}">{{span.name}}</text>
             </view>
-            <view class="{{styles.spanBarContainer}}">
-              <view class="{{styles.spanBar}}" style="{{{ width: `${widthPct}%` }}}">{{span.durationMs}} ms</view>
+            <view class="{{'spanBarContainer'}}">
+              <view class="{{'spanBar'}}" style="{{{ width: `${widthPct}%` }}}">{{span.durationMs}} ms</view>
             </view>
           </button>
         </view>
       </view>
-      <view class="{{styles.panel}}">
-        <view class="{{styles.panelHeader}}">
+      <view class="{{'panel'}}">
+        <view class="{{'panelHeader'}}">
           <view>Span 示例字段</view>
-          <text class="{{styles.metaTag}}">{{selectedSpan.name}}</text>
+          <text class="{{'metaTag'}}">{{selectedSpan.name}}</text>
         </view>
-        <view class="{{styles.detailsContent}}">
-          <view class="{{styles.kvGrid}}">
-            <view class="{{styles.kvItem}}">
-              <text class="{{styles.kLabel}}">Span ID</text>
-              <text class="{{styles.kValue}}">{{selectedSpan.id}}</text>
+        <view class="{{'detailsContent'}}">
+          <view class="{{'kvGrid'}}">
+            <view class="{{'kvItem'}}">
+              <text class="{{'kLabel'}}">Span ID</text>
+              <text class="{{'kValue'}}">{{selectedSpan.id}}</text>
             </view>
-            <view class="{{styles.kvItem}}">
-              <text class="{{styles.kLabel}}">执行状态</text>
-              <text class="{{styles.kValue}}">{{selectedSpan.status}}</text>
+            <view class="{{'kvItem'}}">
+              <text class="{{'kLabel'}}">执行状态</text>
+              <text class="{{'kValue'}}">{{selectedSpan.status}}</text>
             </view>
-            <view class="{{styles.kvItem}}">
-              <text class="{{styles.kLabel}}">持续耗时</text>
-              <text class="{{styles.kValue}}">{{selectedSpan.durationMs}} ms</text>
+            <view class="{{'kvItem'}}">
+              <text class="{{'kLabel'}}">持续耗时</text>
+              <text class="{{'kValue'}}">{{selectedSpan.durationMs}} ms</text>
             </view>
           </view>
-          <view class="{{styles.subHeading}}">Attributes (OpenTelemetry Attributes)</view>
-          <pre class="{{styles.codeBlock}}">{{JSON.stringify(selectedSpan.attributes, null, 2)}}</pre>
+          <view class="{{'subHeading'}}">Attributes (OpenTelemetry Attributes)</view>
+          <pre class="{{'codeBlock'}}">{{JSON.stringify(selectedSpan.attributes, null, 2)}}</pre>
         </view>
       </view>
     </block>
-    <view wx:if="{{activeTab === 'metrics'}}" class="{{styles.fullPanel}}">
-      <view class="{{styles.panelHeader}}">
+    <view wx:if="{{activeTab === 'metrics'}}" class="{{'fullPanel'}}">
+      <view class="{{'panelHeader'}}">
         <view>Prometheus 指标名称示例</view>
-        <text class="{{styles.metaTag}}">Scrape Status: NOT_RUN</text>
+        <text class="{{'metaTag'}}">Scrape Status: NOT_RUN</text>
       </view>
-      <view class="{{styles.metricsGrid}}">
-        <view class="{{styles.metricCard}}">
-          <view class="{{styles.mValue}}">—</view>
-          <view class="{{styles.mLabel}}">elmos_transformations_total</view>
-          <view class="{{styles.mDesc}}">未连接指标端点</view>
+      <view class="{{'metricsGrid'}}">
+        <view class="{{'metricCard'}}">
+          <view class="{{'mValue'}}">—</view>
+          <view class="{{'mLabel'}}">elmos_transformations_total</view>
+          <view class="{{'mDesc'}}">未连接指标端点</view>
         </view>
-        <view class="{{styles.metricCard}}">
-          <view class="{{styles.mValue}}">—</view>
-          <view class="{{styles.mLabel}}">elmos_ast_nodes_parsed_total</view>
-          <view class="{{styles.mDesc}}">未连接指标端点</view>
+        <view class="{{'metricCard'}}">
+          <view class="{{'mValue'}}">—</view>
+          <view class="{{'mLabel'}}">elmos_ast_nodes_parsed_total</view>
+          <view class="{{'mDesc'}}">未连接指标端点</view>
         </view>
-        <view class="{{styles.metricCard}}">
-          <view class="{{styles.mValue}}">—</view>
-          <view class="{{styles.mLabel}}">elmos_proof_obligations_discharged</view>
-          <view class="{{styles.mDesc}}">无证明执行或放行证据</view>
+        <view class="{{'metricCard'}}">
+          <view class="{{'mValue'}}">—</view>
+          <view class="{{'mLabel'}}">elmos_proof_obligations_discharged</view>
+          <view class="{{'mDesc'}}">无证明执行或放行证据</view>
         </view>
-        <view class="{{styles.metricCard}}">
-          <view class="{{styles.mValue}}">—</view>
-          <view class="{{styles.mLabel}}">elmos_cas_hit_ratio</view>
-          <view class="{{styles.mDesc}}">未连接指标端点</view>
+        <view class="{{'metricCard'}}">
+          <view class="{{'mValue'}}">—</view>
+          <view class="{{'mLabel'}}">elmos_cas_hit_ratio</view>
+          <view class="{{'mDesc'}}">未连接指标端点</view>
         </view>
       </view>
     </view>
-    <view wx:if="{{activeTab === 'slsa'}}" class="{{styles.fullPanel}}">
-      <view class="{{styles.panelHeader}}">
+    <view wx:if="{{activeTab === 'slsa'}}" class="{{'fullPanel'}}">
+      <view class="{{'panelHeader'}}">
         <view>In-Toto / SLSA 凭证字段结构示例</view>
-        <text class="{{styles.metaTag}}">Verification: NOT_RUN</text>
+        <text class="{{'metaTag'}}">Verification: NOT_RUN</text>
       </view>
-      <view class="{{styles.slsaCard}}">
-        <view class="{{styles.slsaRow}}">
+      <view class="{{'slsaCard'}}">
+        <view class="{{'slsaRow'}}">
           <text>Predicate Type:</text>
           <code>https://slsa.dev/provenance/v1</code>
         </view>
-        <view class="{{styles.slsaRow}}">
+        <view class="{{'slsaRow'}}">
           <text>Builder ID:</text>
           <code>NOT_BOUND</code>
         </view>
-        <view class="{{styles.slsaRow}}">
+        <view class="{{'slsaRow'}}">
           <text>Signature:</text>
           <code>NOT_GENERATED</code>
         </view>
-        <view class="{{styles.slsaRow}}">
+        <view class="{{'slsaRow'}}">
           <text>Hermetic Toolchains Locked:</text>
           <code>NOT_RUN</code>
         </view>

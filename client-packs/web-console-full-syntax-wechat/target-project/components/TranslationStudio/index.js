@@ -1,3 +1,106 @@
+// Top-level helpers and constants
+try { const routeIds = new Set(directedLanguageRoutes.map((route) => route.id)); } catch(e) {}
+try { function isSafeRepositoryRef(value) {
+    if (value.length < 3
+        || value.length > 180
+        || /[\s\\?#]/.test(value)
+        || value.startsWith("/")
+        || value.startsWith("~"))
+        return false;
+    if (/^local:[a-z0-9][a-z0-9._/-]{2,170}$/i.test(value))
+        return true;
+    try {
+        const parsed = new URL(value);
+        return parsed.protocol === "https:"
+            && !parsed.username
+            && !parsed.password
+            && Boolean(parsed.hostname);
+    }
+    catch {
+        return false;
+    }
+} } catch(e) {}
+try { function isStoredHandoff(value) {
+    if (!value || typeof value !== "object")
+        return false;
+    const stored = value;
+    return stored.schemaVersion === "1.1.0"
+        && typeof stored.repositoryRef === "string"
+        && isSafeRepositoryRef(stored.repositoryRef)
+        && typeof stored.routeId === "string"
+        && routeIds.has(stored.routeId)
+        && ["single-module", "repository", "portfolio"].includes(stored.scope ?? "")
+        && stored.requestedStatus === "EXPERIMENTAL_EVALUATION"
+        && stored.executionStatus === "NOT_RUN"
+        && stored.certificationStatus === "NOT_CERTIFIED"
+        && (stored.inventorySnapshotSha256 === undefined
+            || /^[0-9a-f]{64}$/.test(stored.inventorySnapshotSha256))
+        && (stored.workUnitCount === undefined
+            || Number.isInteger(stored.workUnitCount) && stored.workUnitCount >= 1 && stored.workUnitCount <= 5_000)
+        && (stored.scope !== "repository"
+            || stored.inventorySnapshotSha256 !== undefined && stored.workUnitCount !== undefined)
+        && Array.isArray(stored.blockers)
+        && stored.blockers.length <= 20
+        && stored.blockers.every((blocker) => typeof blocker === "string" && blocker.length <= 300)
+        && typeof stored.createdAt === "string"
+        && !Number.isNaN(Date.parse(stored.createdAt));
+} } catch(e) {}
+try { function routeCellLabel(route) {
+    if (!route)
+        return "NO ROUTE";
+    if (route.localExecution === "PASSED")
+        return "LOCAL PASS";
+    if (route.localExecution === "FAILED")
+        return "LOCAL FAIL";
+    return "NOT_RUN";
+} } catch(e) {}
+try { function routeCellIcon(route) {
+    if (!route)
+        return "close";
+    if (route.localExecution === "PASSED")
+        return "check";
+    return "lock";
+} } catch(e) {}
+try { async function verifiedDownloadBlob(response, expectedBytes, expectedSha256, maximumBytes, errorCode) {
+    if (!response.body
+        || !Number.isSafeInteger(expectedBytes)
+        || expectedBytes < 1
+        || expectedBytes > maximumBytes
+        || response.headers.get("content-length") !== String(expectedBytes)
+        || response.headers.get("x-content-sha256") !== expectedSha256)
+        throw new Error(errorCode);
+    const reader = response.body.getReader();
+    const digest = new Sha256Accumulator();
+    const chunks = [];
+    let observedBytes = 0;
+    try {
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done)
+                break;
+            observedBytes += value.byteLength;
+            if (observedBytes > expectedBytes || observedBytes > maximumBytes)
+                throw new Error(errorCode);
+            digest.update(value);
+            chunks.push(value.slice().buffer);
+        }
+    }
+    catch (error) {
+        await reader.cancel(error).catch(() => undefined);
+        throw error;
+    }
+    if (observedBytes !== expectedBytes || digest.digestHex() !== expectedSha256) {
+        throw new Error(errorCode);
+    }
+    return new Blob(chunks, { type: response.headers.get("content-type") ?? "application/octet-stream" });
+} } catch(e) {}
+try { function translationRunnerFailureMessage(reason) {
+    if (reason === "FUNCTIONAL_OBLIGATION_LIMIT_EXCEEDED") {
+        return "单任务最多处理 10,000 个已报告功能义务行（5 个分片 × 每片 2,000）。请先按仓库、模块或授权工作区拆成多个独立任务，再逐个提交；本次未接受转换或计费，也未开始原生编译或代码生成。";
+    }
+    return reason;
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,
@@ -29,10 +132,10 @@ Component({
     runnerHealth: null,
     job: null,
     jobBusy: false,
+    discoveryByUnit: null,
+    filteredWorkUnits: null,
     routeByPair: null,
     routeCounts: null,
-    filteredWorkUnits: null,
-    discoveryByUnit: null,
   },
   lifetimes: {
     attached() {

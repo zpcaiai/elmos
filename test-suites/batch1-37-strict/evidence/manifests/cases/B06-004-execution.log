@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B06-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [6]
+Title: Batch 6 Provider Profile：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: Provider Profile
+Test Type: dependency_failure
+Skill: tst-b06-dependency-api-mapping
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

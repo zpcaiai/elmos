@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B26-006 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [26]
+Title: Batch 26 Model Route：重复提交、消息重放、Lease过期、任务恢复或并发执行
+Capability: Model Route
+Test Type: replay_idempotency
+Skill: tst-b26-private-runner-security
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

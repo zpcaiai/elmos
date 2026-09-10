@@ -304,6 +304,62 @@ ERROR_PATTERNS: list[ErrorPatternDefinition] = [
         "String data truncated; widen target column or apply SUBSTRING safely.",
     ),
 
+    # ChinaDB Proprietary Dialect Patterns (DM8, Kingbase, openGauss, GBase, GoldenDB)
+    ErrorPatternDefinition(
+        "DM-2106",
+        ["dm8"],
+        ErrorCategory.MISSING_IDENTIFIER,
+        r"(?:-2106|无效的列名|Invalid column name)",
+        AstPatchKind.IDENTIFIER_ESCAPE,
+        PatchRiskLevel.SAFE_DETERMINISTIC,
+        "DM8 invalid column name; apply uppercase or double quotes for case sensitivity.",
+    ),
+    ErrorPatternDefinition(
+        "DM-7033",
+        ["dm8"],
+        ErrorCategory.DYNAMIC_SQL_BIND,
+        r"(?:-7033|动态SQL绑定参数类型错误)",
+        AstPatchKind.DYNAMIC_SQL_PARAMETERIZE,
+        PatchRiskLevel.SAFE_DETERMINISTIC,
+        "DM8 dynamic SQL binding mismatch; enforce strict typed binds in EXECUTE IMMEDIATE.",
+    ),
+    ErrorPatternDefinition(
+        "KB-42703",
+        ["kingbasees"],
+        ErrorCategory.MISSING_IDENTIFIER,
+        r"(?:42703|KingbaseES: 字段不存在)",
+        AstPatchKind.IDENTIFIER_ESCAPE,
+        PatchRiskLevel.SAFE_DETERMINISTIC,
+        "KingbaseES column not found; adapt identifier casing to active compatibility mode.",
+    ),
+    ErrorPatternDefinition(
+        "OG-42883",
+        ["opengauss"],
+        ErrorCategory.UNRESOLVED_ROUTINE,
+        r"(?:42883|function .* does not exist)",
+        AstPatchKind.ROUTINE_SHIM_INJECTION,
+        PatchRiskLevel.SAFE_DETERMINISTIC,
+        "openGauss function not found; synthesize compatibility shim (e.g. NVL, DECODE).",
+    ),
+    ErrorPatternDefinition(
+        "GBASE-SPL",
+        ["gbase-8s"],
+        ErrorCategory.SYNTAX_ERROR,
+        r"(?:GBase 8s SPL syntax error|syntax error in procedure body)",
+        AstPatchKind.CLAUSE_REORDERING,
+        PatchRiskLevel.GUARDED_SEMANTIC,
+        "GBase 8s SPL requires DEFINE before executable statements; reorder body.",
+    ),
+    ErrorPatternDefinition(
+        "GOLDEN-SHARD",
+        ["goldendb"],
+        ErrorCategory.PARTITION_ALIGNMENT,
+        r"(?:GoldenDB: partition key must be included in primary key)",
+        AstPatchKind.PARTITION_SPEC_LOWERING,
+        PatchRiskLevel.SAFE_DETERMINISTIC,
+        "GoldenDB requires partition key in primary key; append shard key to composite PK.",
+    ),
+
     # PostgreSQL / openGauss / KingbaseES / HighGo Error Signatures
     ErrorPatternDefinition(
         "PG-42P01",
@@ -349,6 +405,15 @@ ERROR_PATTERNS: list[ErrorPatternDefinition] = [
         AstPatchKind.UPSERT_CONFLICT_REWRITE,
         PatchRiskLevel.SAFE_DETERMINISTIC,
         "Unique constraint violation; transform to ON CONFLICT DO UPDATE.",
+    ),
+    ErrorPatternDefinition(
+        "PG-23503",
+        ["postgresql", "opengauss", "kingbasees", "highgo-hgdb", "gbase-8c", "gbase-8s"],
+        ErrorCategory.CONSTRAINT_VIOLATION,
+        r"(?:23503|violates foreign key constraint)",
+        AstPatchKind.CLAUSE_REORDERING,
+        PatchRiskLevel.GUARDED_SEMANTIC,
+        "Foreign key constraint violation; ensure parent record exists or reorder DAG.",
     ),
     ErrorPatternDefinition(
         "PG-40001",
@@ -451,62 +516,6 @@ ERROR_PATTERNS: list[ErrorPatternDefinition] = [
         PatchRiskLevel.SAFE_DETERMINISTIC,
         "Incorrect datetime format; normalize format to 'YYYY-MM-DD HH:MM:SS'.",
     ),
-
-    # ChinaDB Proprietary Dialect Patterns (DM8, Kingbase, openGauss, GBase, GoldenDB)
-    ErrorPatternDefinition(
-        "DM-2106",
-        ["dm8"],
-        ErrorCategory.MISSING_IDENTIFIER,
-        r"(?:-2106|无效的列名|Invalid column name)",
-        AstPatchKind.IDENTIFIER_ESCAPE,
-        PatchRiskLevel.SAFE_DETERMINISTIC,
-        "DM8 invalid column name; apply uppercase or double quotes for case sensitivity.",
-    ),
-    ErrorPatternDefinition(
-        "DM-7033",
-        ["dm8"],
-        ErrorCategory.DYNAMIC_SQL_BIND,
-        r"(?:-7033|动态SQL绑定参数类型错误)",
-        AstPatchKind.DYNAMIC_SQL_PARAMETERIZE,
-        PatchRiskLevel.SAFE_DETERMINISTIC,
-        "DM8 dynamic SQL binding mismatch; enforce strict typed binds in EXECUTE IMMEDIATE.",
-    ),
-    ErrorPatternDefinition(
-        "KB-42703",
-        ["kingbasees"],
-        ErrorCategory.MISSING_IDENTIFIER,
-        r"(?:42703|KingbaseES: 字段不存在)",
-        AstPatchKind.IDENTIFIER_ESCAPE,
-        PatchRiskLevel.SAFE_DETERMINISTIC,
-        "KingbaseES column not found; adapt identifier casing to active compatibility mode.",
-    ),
-    ErrorPatternDefinition(
-        "OG-42883",
-        ["opengauss"],
-        ErrorCategory.UNRESOLVED_ROUTINE,
-        r"(?:42883|function .* does not exist)",
-        AstPatchKind.ROUTINE_SHIM_INJECTION,
-        PatchRiskLevel.SAFE_DETERMINISTIC,
-        "openGauss function not found; synthesize compatibility shim (e.g. NVL, DECODE).",
-    ),
-    ErrorPatternDefinition(
-        "GBASE-SPL",
-        ["gbase-8s"],
-        ErrorCategory.SYNTAX_ERROR,
-        r"(?:GBase 8s SPL syntax error|syntax error in procedure body)",
-        AstPatchKind.CLAUSE_REORDERING,
-        PatchRiskLevel.GUARDED_SEMANTIC,
-        "GBase 8s SPL requires DEFINE before executable statements; reorder body.",
-    ),
-    ErrorPatternDefinition(
-        "GOLDEN-SHARD",
-        ["goldendb"],
-        ErrorCategory.PARTITION_ALIGNMENT,
-        r"(?:GoldenDB: partition key must be included in primary key)",
-        AstPatchKind.PARTITION_SPEC_LOWERING,
-        PatchRiskLevel.SAFE_DETERMINISTIC,
-        "GoldenDB requires partition key in primary key; append shard key to composite PK.",
-    ),
 ]
 
 
@@ -528,8 +537,30 @@ class AutonomousDatabaseSelfHealingEngine:
             f"{target_engine}:{raw_error}:{failing_sql[:200]}".encode()
         ).hexdigest()[:16]
 
+        engine_aliases = {
+            "postgres": "postgresql",
+            "pgsql": "postgresql",
+            "kingbase": "kingbasees",
+            "kb": "kingbasees",
+            "gbase": "gbase-8s",
+            "gbase8s": "gbase-8s",
+            "gbase8c": "gbase-8c",
+            "gbase8a": "gbase-8a",
+            "highgo": "highgo-hgdb",
+            "oceanbase_oracle": "oceanbase-oracle",
+            "oceanbase_mysql": "oceanbase-mysql",
+            "gaussdb_oracle": "gaussdb-oracle",
+            "gaussdb_mysql": "gaussdb-m",
+        }
+        norm_engine = engine_aliases.get(target_engine.lower(), target_engine.lower())
+
         for pat in self.patterns:
-            if (target_engine in pat.target_engines or "all" in pat.target_engines) and re.search(
+            target_matches = (
+                target_engine in pat.target_engines
+                or norm_engine in pat.target_engines
+                or "all" in pat.target_engines
+            )
+            if target_matches and re.search(
                 pat.regex_pattern, raw_error, re.IGNORECASE
             ):
                 # Extract identifier if possible

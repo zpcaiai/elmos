@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B27-008 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [27]
+Title: Batch 27 Wave/Factory运营：篡改结果、Digest、Golden、审批、时间戳或删除失败记录
+Capability: Wave/Factory运营
+Test Type: evidence_tamper
+Skill: tst-b27-incremental-production-factory
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

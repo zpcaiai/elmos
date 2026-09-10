@@ -41,6 +41,15 @@ export class WebSSREvaluator {
       ...(typeof context.state === 'object' ? context.state : {})
     };
 
+    if (ir.metadata?.topLevelHelpers && Array.isArray(ir.metadata.topLevelHelpers)) {
+      for (const helper of ir.metadata.topLevelHelpers) {
+        try {
+          const fn = new Function('scope', `with(scope) { ${helper} }`);
+          fn(scope);
+        } catch {}
+      }
+    }
+
     if (ir.computed) {
       for (const c of ir.computed) {
         if (!(c.name in scope)) {
@@ -195,6 +204,14 @@ export class WebSSREvaluator {
             } else {
               elem.setAttribute(attr.name, attr.value);
             }
+          }
+        }
+
+        // Direct text on element
+        if (astNode.text) {
+          const textVal = astNode.text.replace(/\s+/g, ' ').trim();
+          if (textVal) {
+            elem.appendChild(new DOMNode('text', undefined, textVal));
           }
         }
 

@@ -240,9 +240,7 @@
       </view>
       <StatusChip status="{{job?.status ?? runnerHealth?.status ?? &quot;NOT_RUN&quot;}}" compact="true" />
     </view>
-    <view>Runner 从管理员预先材料化的只读源码与独立行为用例目录读取输入，自动完成清单、编译器发现、
-          断点批处理、无冲突装配、真实构建和内容寻址归档。它只覆盖 typed-pure-function-v1；
-          `PARTIAL` 会完整保留跳过与失败，绝不等同于整库完成。</view>
+    <view>Runner 从管理员预先材料化的只读源码与独立行为用例目录读取输入，自动完成清单、编译器发现、 断点批处理、无冲突装配、真实构建和内容寻址归档。它只覆盖 typed-pure-function-v1； `PARTIAL` 会完整保留跳过与失败，绝不等同于整库完成。</view>
     <view class="translation-task-limit">单个转换任务硬上限为 10,000 个已报告功能义务行（最多 5 个内容寻址分片，每片 2,000）。非 Python 路线可能仍有 inventory 未知范围，不能把行数当作项目真实功能总数。超过上限会在接受转换、计费、原生编译与代码生成前失败关闭；请先按仓库、模块或授权工作区拆分为多个任务。</view>
     <view class="business-form-grid">
       <text>
@@ -470,9 +468,7 @@
       </view>
       <StatusChip status="NOT_RUN" compact="true" />
     </view>
-    <view class="work-unit-summary">{{repositoryPlan.work_units.length}} 个工作单元来自 Snapshot {{repositoryPlan.snapshot_sha256.slice(0, 12)}} …，
-            忽略符号链接 {{repositoryPlan.ignored_symlink_count}} 个。每个单元都必须补齐函数名与独立行为语料后才能逐个执行，
-            当前全部保持 DISCOVERY_REQUIRED / NOT_RUN。</view>
+    <view class="work-unit-summary">{{repositoryPlan.work_units.length}} 个工作单元来自 Snapshot {{repositoryPlan.snapshot_sha256.slice(0, 12)}} …， 忽略符号链接 {{repositoryPlan.ignored_symlink_count}} 个。每个单元都必须补齐函数名与独立行为语料后才能逐个执行， 当前全部保持 DISCOVERY_REQUIRED / NOT_RUN。</view>
     <view class="discovery-import">
       <view>
         <text>发现报告</text>
@@ -489,8 +485,7 @@
           <view>{{count}}</view>
         </view>
       </view>
-      <text wx:else>先执行 discover 子命令，用真实编译器分析器把每个单元判定为 READY 或给出精确的不支持原因；
-                  报告由服务端按同一 Snapshot 摘要重新校验，判定为 READY 必须携带函数名、签名与分析器来源。</text>
+      <text wx:else>先执行 discover 子命令，用真实编译器分析器把每个单元判定为 READY 或给出精确的不支持原因； 报告由服务端按同一 Snapshot 摘要重新校验，判定为 READY 必须携带函数名、签名与分析器来源。</text>
     </view>
     <view class="work-unit-toolbar">
       <text>

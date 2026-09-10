@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B01-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [1]
+Title: Batch 1 调用与数据图谱：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: 调用与数据图谱
+Test Type: dependency_failure
+Skill: tst-b01-secure-repository-intake
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

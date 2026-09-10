@@ -1,5 +1,5 @@
 {
-  "baseline_commit": "d0d818d1f5561d76444d2af664ffb563295e7db9",
+  "baseline_commit": "2c44869cffec25966876dfd205b14dc860d5bb44",
   "evidence_boundaries": {
     "certification": "NOT_CERTIFIED",
     "customer": "NOT_RUN",
@@ -27,7 +27,7 @@
       "engines/knowledge-skill-model-foundry-engine/catalog/package-report.json",
       "engines/knowledge-skill-model-foundry-engine/qualification/local-qualification.json"
     ],
-    "file_count": 155,
+    "file_count": 167,
     "roots": [
       "AGENTS.md",
       "Makefile",
@@ -41,7 +41,7 @@
       "tooling/run_foundry_external_qualification.py",
       "packages/pi-harness/src/elmos_pi_harness/independent_verifier.py"
     ],
-    "sha256": "c7982dbb1a1fb9be00a5eb443bc11cc7141d5d38023d02f08bcf12bd6b90de3e",
+    "sha256": "bd0e3b66370f03d9e7aafb8e1bc6645136abfb921382932993d18175499625f9",
     "transient_exclusions": [
       ".mypy_cache",
       ".pytest_cache",

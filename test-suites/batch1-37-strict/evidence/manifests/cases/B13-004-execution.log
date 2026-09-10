@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B13-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [13]
+Title: Batch 13 Pricing与报价：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: Pricing与报价
+Test Type: dependency_failure
+Skill: tst-b13-commercial-onboarding-poc-support
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

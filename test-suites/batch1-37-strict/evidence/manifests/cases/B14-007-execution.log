@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B14-007 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [14]
+Title: Batch 14 本地化：改变工具链、Schema、Provider、配置或依赖版本并重放
+Capability: 本地化
+Test Type: version_drift
+Skill: tst-b14-plg-community-localization
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

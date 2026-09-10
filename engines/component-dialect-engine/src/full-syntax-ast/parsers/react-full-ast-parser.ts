@@ -253,6 +253,56 @@ export class ReactFullAstParser {
       }
     }
 
+    const topLevelHelpers: string[] = [];
+    for (const stmt of sourceFile.statements) {
+      if (stmt === compDecl) continue;
+      if (ts.isExportAssignment(stmt)) continue;
+      if (ts.isImportDeclaration(stmt)) continue;
+      if (ts.isInterfaceDeclaration(stmt) || ts.isTypeAliasDeclaration(stmt)) continue;
+
+      if (ts.isVariableStatement(stmt)) {
+        const isComp = stmt.declarationList.declarations.some(
+          (d) => ts.isIdentifier(d.name) && (d.name.text === compName || /^[A-Z]/.test(d.name.text))
+        );
+        if (!isComp) {
+          const rawText = stmt.getText(sourceFile);
+          if (rawText.includes('<') && (rawText.includes('/>') || rawText.includes('</'))) continue;
+          try {
+            const transpiled = ts.transpileModule(rawText, {
+              compilerOptions: { target: ts.ScriptTarget.ES2022, removeComments: false },
+            }).outputText.trim();
+            if (transpiled) topLevelHelpers.push(transpiled);
+          } catch {
+            topLevelHelpers.push(rawText);
+          }
+        }
+      } else if (ts.isFunctionDeclaration(stmt)) {
+        if (!stmt.name || stmt.name.text === compName || /^[A-Z]/.test(stmt.name.text)) continue;
+        const rawText = stmt.getText(sourceFile);
+        if (rawText.includes('<') && (rawText.includes('/>') || rawText.includes('</'))) continue;
+        try {
+          const transpiled = ts.transpileModule(rawText, {
+            compilerOptions: { target: ts.ScriptTarget.ES2022, removeComments: false },
+          }).outputText.trim();
+          if (transpiled) topLevelHelpers.push(transpiled);
+        } catch {
+          topLevelHelpers.push(rawText);
+        }
+      } else if (ts.isEnumDeclaration(stmt)) {
+        const rawText = stmt.getText(sourceFile);
+        try {
+          const transpiled = ts.transpileModule(rawText, {
+            compilerOptions: { target: ts.ScriptTarget.ES2022, removeComments: false },
+          }).outputText.trim();
+          if (transpiled) topLevelHelpers.push(transpiled);
+        } catch {
+          topLevelHelpers.push(rawText);
+        }
+      }
+    }
+
+    const refs = states.filter((s) => s.isRef).map((s) => ({ name: s.name, type: s.typeAnnotation }));
+
     return {
       schemaVersion: "2.0",
       componentName: compName,
@@ -263,7 +313,7 @@ export class ReactFullAstParser {
       effects,
       methods,
       slots,
-      refs: [],
+      refs,
       templateRoot: templateRoot || { id: generateId("root"), kind: "fragment", children: [] },
       styles: {
         cssModules: {},
@@ -272,7 +322,7 @@ export class ReactFullAstParser {
       containerApis: Array.from(containerApis),
       thirdPartyComponents: Array.from(thirdPartyComponents),
       rawSourceLinesCount: sourceCode.split("\n").length,
-      metadata: {},
+      metadata: { topLevelHelpers },
     };
   }
 }
@@ -382,8 +432,12 @@ function parseJsxNode(
   }
 
   if (ts.isJsxText(node)) {
-    const text = node.getText(sourceFile).trim();
-    if (!text) {
+    const raw = node.getText(sourceFile);
+    if (/^\s*[\r\n]+\s*$/.test(raw)) {
+      return null;
+    }
+    const text = raw.replace(/[\r\n]+/g, " ").replace(/[ \t]+/g, " ");
+    if (!text.trim()) {
       return null;
     }
     return {

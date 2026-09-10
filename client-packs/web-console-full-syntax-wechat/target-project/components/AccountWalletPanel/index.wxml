@@ -1,5 +1,5 @@
-<view class="{{styles.grid}}">
-  <view class="{{styles.panel}}">
+<view class="{{'grid'}}">
+  <view class="{{'panel'}}">
     <view>账户余额</view>
     <view wx:if="{{failure}}" role="alert">
       <text>读取或操作失败：</text>
@@ -20,8 +20,7 @@
         <text>执行中冻结</text>
         <text>{{yuan(wallet.reservedMinor)}}</text>
       </text>
-      <text>冻结是任务开始时按预估扣下的，任务结束后按实际用量结算，
-                多冻的会退回可用余额。它还在你的账面余额里，只是暂时不能用于新任务。</text>
+      <text>冻结是任务开始时按预估扣下的，任务结束后按实际用量结算， 多冻的会退回可用余额。它还在你的账面余额里，只是暂时不能用于新任务。</text>
       <view wx:if="{{frozen}}" role="alert">
         <text>钱包当前状态为</text>
         <text>{{wallet.status}}</text>
@@ -30,11 +29,10 @@
     </block>
     <button class="button" type="button" disabled="{{busy}}" bindtap="onTap">{{busy ? "读取中…" : "刷新"}}</button>
   </view>
-  <view class="{{styles.panel}}">
+  <view class="{{'panel'}}">
     <view>充值</view>
     <view>
-      <text>余额与套餐并存：任务优先消耗套餐配额，配额不足时才动余额。
-              充值不会改变你的套餐。</text>
+      <text>余额与套餐并存：任务优先消耗套餐配额，配额不足时才动余额。 充值不会改变你的套餐。</text>
     </view>
     <form bindsubmit="submitTopup">
       <text>
@@ -44,8 +42,8 @@
       </text>
       <button class="button primary" type="submit" disabled="{{busy || frozen}}">{{busy ? "提交中…" : "发起充值"}}</button>
     </form>
-    <view wx:if="{{feedback}}" class="{{styles.feedback}}" role="status">{{feedback}}</view>
-    <view wx:if="{{handoff}}" class="{{styles.token}}">
+    <view wx:if="{{feedback}}" class="{{'feedback'}}" role="status">{{feedback}}</view>
+    <view wx:if="{{handoff}}" class="{{'token'}}">
       <text>订单 {{handoff.topupOrderId}} · {{yuan(handoff.amountMinor)}} · {{handoff.status}}</text>
       <navigator wx:if="{{handoff.checkoutUrl}}" class="button" href="{{handoff.checkoutUrl}}" target="_blank" rel="noopener noreferrer">前往付款</navigator>
       <block wx:if="{{handoff.qrCodeUrl}}">
@@ -58,7 +56,7 @@
     </view>
   </view>
 </view>
-<view class="{{styles.members}}">
+<view class="{{'members'}}">
   <view>
     <view>账户流水</view>
     <text>最近 {{ledger.length}} 条 · 只读</text>
@@ -66,8 +64,8 @@
   <view wx:if="{{ledger.length === 0}}">
     <text>还没有流水。充值入账、任务消费、退款和人工调整都会记在这里。</text>
   </view>
-  <view wx:else class="{{styles.memberList}}">
-    <view wx:for="{{ledger}}" wx:for-item="entry" wx:key="entry.id" class="{{styles.member}}" key="{{entry.entryId}}">
+  <view wx:else class="{{'memberList'}}">
+    <view wx:for="{{ledger}}" wx:for-item="entry" wx:key="entry.id" class="{{'member'}}" key="{{entry.entryId}}">
       <view>
         <text>{{entryLabels[entry.entryType] ?? entry.entryType}}</text>
         <text title="{{entry.sourceRef}}">{{moment(entry.occurredAt)}} {{entry.reason ? ` · ${entry.reason}` : ""}}</text>
@@ -76,6 +74,5 @@
       <text>余额 {{yuan(entry.balanceAfterMinor)}}</text>
     </view>
   </view>
-  <text>流水只记录真实的资金移动。任务执行期间的冻结与释放不在这里，
-          它们反映在上方的「执行中冻结」里。</text>
+  <text>流水只记录真实的资金移动。任务执行期间的冻结与释放不在这里， 它们反映在上方的「执行中冻结」里。</text>
 </view>

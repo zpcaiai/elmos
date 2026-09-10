@@ -52,12 +52,12 @@
       </view>
       <StatusChip status="READY" compact="true" />
     </view>
-    <view class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-3">
-      <view wx:for="{{commercialKernels}}" wx:for-item="k" wx:key="k.id" key="{{k.id}}" class="p-3 rounded-lg border border-border bg-card/60 flex flex-col justify-between">
+    <view class="grid grid-cols-1 md_grid-cols-2 lg_grid-cols-4 gap-3 mt-3">
+      <view wx:for="{{commercialKernels}}" wx:for-item="k" wx:key="k.id" key="{{k.id}}" class="p-3 rounded-lg border border-border bg-card_60 flex flex-col justify-between">
         <view>
           <view class="flex items-center justify-between mb-1">
             <text class="text-sm font-semibold text-primary">{{k.id}} · {{k.name}}</text>
-            <text class="text-xs px-2 py-0.5 rounded bg-primary/10 text-primary font-mono">{{k.skills}} skills</text>
+            <text class="text-xs px-2 py-0d_5 rounded bg-primary_10 text-primary font-mono">{{k.skills}} skills</text>
           </view>
           <view class="text-xs text-muted-foreground">{{k.desc}}</view>
         </view>
@@ -74,10 +74,10 @@
         <text class="overline">工程翻新底座 v3.0.0</text>
         <view id="foundry-title">知识 · 能力 · 模型底座（41 个能力域）</view>
       </view>
-      <text class="text-xs px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 font-mono">合计 1,351 项功能</text>
+      <text class="text-xs px-2 py-0d_5 rounded bg-violet-500_10 text-violet-400 font-mono">合计 1,351 项功能</text>
     </view>
-    <view class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
-      <view wx:for="{{foundryHighlights}}" wx:for-item="f" wx:key="f.id" key="{{f.pack}}" class="p-3 rounded-lg border border-border bg-card/40">
+    <view class="grid grid-cols-1 md_grid-cols-2 lg_grid-cols-3 gap-3 mt-3">
+      <view wx:for="{{foundryHighlights}}" wx:for-item="f" wx:key="f.id" key="{{f.pack}}" class="p-3 rounded-lg border border-border bg-card_40">
         <view class="flex items-center justify-between mb-1">
           <text class="text-xs font-mono text-muted-foreground">Pack {{f.pack}}</text>
           <text class="text-xs text-emerald-400">{{f.skills}} 项功能</text>

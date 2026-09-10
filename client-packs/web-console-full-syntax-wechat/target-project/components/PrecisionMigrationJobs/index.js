@@ -1,3 +1,16 @@
+// Top-level helpers and constants
+try { const terminal = new Set(["SUCCEEDED", "FAILED", "BLOCKED", "CANCELLED"]); } catch(e) {}
+try { function artifactName(artifact) {
+    if (!artifact.uri)
+        return null;
+    try {
+        return decodeURIComponent(new URL(artifact.uri).pathname.split("/").pop() ?? "");
+    }
+    catch {
+        return null;
+    }
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,

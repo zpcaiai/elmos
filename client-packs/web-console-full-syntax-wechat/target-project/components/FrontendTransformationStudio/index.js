@@ -1,3 +1,66 @@
+// Top-level helpers and constants
+try { const deliveryStages = [
+    { range: "G01–G04", title: "发现与类型化", detail: "仓库、框架、依赖、UI Interaction IR 与六类源适配器" },
+    { range: "G05–G12", title: "规划与生成内核", detail: "差距决策、目标架构、生成、组件、状态、边界与平台能力" },
+    { range: "G13–G17", title: "30 条有向路线", detail: "Vue 2、Vue 3、React、小程序、ArkUI 与 Flutter 两两转换" },
+    { range: "G18–G20", title: "组合、证明与产品化", detail: "Pack 组合、Proof Obligation、Runtime、API、CLI 与 Console" },
+    { range: "G21–G26", title: "产品与体验闭环", detail: "需求、业务、数据、管理端、可用性、无障碍与回归资格" },
+    { range: "G27–G30", title: "生产就绪外部门禁", detail: "性能、韧性、安全与 SRE；需要授权的真实环境证据" },
+]; } catch(e) {}
+try { function lower(value) {
+    return value.toLocaleLowerCase("zh-CN");
+} } catch(e) {}
+try { const contractExamples = {
+    invariants: [{ id: "tenant-scope", satisfied: true }],
+    inventory: { workspaceKind: "monorepo", packages: [], routes: [], components: [] },
+    target: { stack: "React", version: "19.2.7", language: "TypeScript" },
+    targetProfile: { stack: "React", version: "19.2.7" },
+    uiIr: { title: "Application", modules: ["app"] },
+    astNodes: [{ id: "app", name: "App", kind: "component" }],
+    components: [{ id: "app", props: [], events: [], slots: [], hooks: [] }],
+    states: [{ id: "draft" }, { id: "ready" }],
+    transitions: [{ id: "publish", from: "draft", to: "ready", sideEffect: false }],
+    routes: [{ id: "home", path: "/" }],
+    uiNodes: [{ id: "page-title", interactive: false }],
+    requiredCapabilities: ["storage"],
+    platformCapabilities: { web: ["storage"] },
+    corpus: [{ id: "case-1", sourceDigest: `sha256:${"1".repeat(64)}`, expectedIrDigest: `sha256:${"2".repeat(64)}` }],
+    packs: [{ id: "core", priority: 100, provides: ["ui"], requires: [] }],
+    properties: [{ id: "state-valid", expression: "state != null", kind: "invariant", assumptions: [] }],
+    resources: [{ id: "skill-registry", type: "registry", tenantBound: true, version: "1.0.0" }],
+    requirements: [{ id: "REQ-1" }],
+    capabilities: [{ id: "runs.read" }],
+    roles: [{ id: "operator", permissions: ["runs.read"] }],
+    operations: [{ id: "list-runs", roleId: "operator", permission: "runs.read", auditEvent: "runs.listed" }],
+    workload: { concurrency: 10, durationSeconds: 60 },
+    budgets: { p95LatencyMs: 500, maximumErrorRate: 0.01 },
+    scenarios: [{ id: "dependency-loss", rollback: "restore service", blastRadius: "isolated-test-tenant" }],
+    recoveryObjectives: { maximumRtoSeconds: 300, maximumRpoSeconds: 60 },
+    assets: [{ id: "frontend-api", classification: "confidential" }],
+    findings: [],
+    slos: [{ serviceId: "frontend", target: 0.999 }],
+    runbooks: [{ id: "frontend-errors", serviceId: "frontend" }],
+}; } catch(e) {}
+try { function initialContractInput(skill) {
+    if (!skill)
+        return "{}";
+    const entries = skill.executionContract.inputContract.required
+        .filter(key => key !== "files")
+        .map(key => [key, contractExamples[key] ?? {}]);
+    return JSON.stringify(Object.fromEntries(entries), null, 2);
+} } catch(e) {}
+try { function canonicalInput(value) {
+    if (Array.isArray(value))
+        return `[${value.map(canonicalInput).join(",")}]`;
+    if (value && typeof value === "object") {
+        return `{${Object.entries(value)
+            .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
+            .map(([key, item]) => `${JSON.stringify(key)}:${canonicalInput(item)}`)
+            .join(",")}}`;
+    }
+    return JSON.stringify(value);
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,

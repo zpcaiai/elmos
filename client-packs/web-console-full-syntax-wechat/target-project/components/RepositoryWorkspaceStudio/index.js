@@ -1,3 +1,33 @@
+// Top-level helpers and constants
+try { const categoryLabels = {
+    SOURCE: "源代码",
+    DOCUMENTATION: "说明文档",
+    CONFIGURATION: "配置文件",
+    LOCAL_DEPLOYMENT: "本地部署",
+    CLOUD_DEPLOYMENT: "云端部署",
+    TEST: "测试",
+    OTHER: "其他",
+}; } catch(e) {}
+try { const workspaceStorageKey = "elmos:repository-workspace-id:v1"; } catch(e) {}
+try { const workspaceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i; } catch(e) {}
+try { function base64Utf8(value) {
+    const bytes = new TextEncoder().encode(value);
+    let binary = "";
+    for (const byte of bytes)
+        binary += String.fromCharCode(byte);
+    return btoa(binary);
+} } catch(e) {}
+try { function normalizeWorkspace(response) {
+    return {
+        ...response,
+        // Responses created before controlled delivery was introduced did not
+        // carry these fields. Such a workspace is still at its immutable source
+        // commit and has no server-reported local changes.
+        currentHeadCommit: response.currentHeadCommit || response.sourceCommit,
+        pendingPaths: Array.isArray(response.pendingPaths) ? response.pendingPaths : [],
+    };
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,

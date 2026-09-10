@@ -1,0 +1,153 @@
+{
+  "manifest_version": 2,
+  "manifest_id": "evidence-TS-GOV-02-001",
+  "case_id": "TS-GOV-02-001",
+  "case_digest": "sha256:b6d08650fa5dcc7c8efe2a7d2d1d0be78a250fc7ebb37c2c60a66f7c95f9a2de",
+  "catalog_digest": "sha256:1b73b935f8ef2c15c1e0c2fcf2416a45eb076bca910ac8ee1d8363907312d6e5",
+  "artifact_digest": "sha256:fafb83451f5e10364d1e386aa6f85e897552c8b0369d1cd1d0b3b4c74c34a8fa",
+  "environment_digest": "sha256:5227a8ea67bdc47bbe7c9d16d41b19520b31aa8346e97d6dc2d991d34fc1c3cd",
+  "execution_kind": "real",
+  "started_at": "2026-09-10T08:20:52Z",
+  "finished_at": "2026-09-10T08:55:52Z",
+  "executor": {
+    "id": "elmos-b1-37-strict-executor",
+    "role": "executor"
+  },
+  "verifier": {
+    "id": "ethan-independent-certifier",
+    "role": "independent-verifier",
+    "independent": true
+  },
+  "authorization_refs": [
+    "auth-elmos-strict-b1-37"
+  ],
+  "replay_command": "./evidence/manifests/shared/replay.sh --case TS-GOV-02-001",
+  "files": [
+    {
+      "role": "artifact-digest",
+      "path": "shared/artifact.json",
+      "sha256": "fafb83451f5e10364d1e386aa6f85e897552c8b0369d1cd1d0b3b4c74c34a8fa",
+      "bytes": 558,
+      "immutable": true
+    },
+    {
+      "role": "environment-binding",
+      "path": "shared/environment.json",
+      "sha256": "5227a8ea67bdc47bbe7c9d16d41b19520b31aa8346e97d6dc2d991d34fc1c3cd",
+      "bytes": 273,
+      "immutable": true
+    },
+    {
+      "role": "environment-manifest",
+      "path": "cases/TS-GOV-02-001-environment-manifest.json",
+      "sha256": "2e7c55a8338f42a8cc8576fe249bdf6f6f76a4b87730f70f50d4a60d7508bb82",
+      "bytes": 103,
+      "immutable": true
+    },
+    {
+      "role": "raw-log",
+      "path": "cases/TS-GOV-02-001-execution.log",
+      "sha256": "4c35e362c6a82e5fe6ca0d648613de84c128b356142fcf356f3841e7bba1f017",
+      "bytes": 538,
+      "immutable": true
+    },
+    {
+      "role": "raw-execution-log",
+      "path": "cases/TS-GOV-02-001-raw-execution-log.json",
+      "sha256": "c4761cfd8993087738a160e87f355dd508513e1b33707e43ede66d42ff9cc295",
+      "bytes": 110,
+      "immutable": true
+    },
+    {
+      "role": "execution-result",
+      "path": "cases/TS-GOV-02-001-execution.json",
+      "sha256": "0c14340496fbded991cf7e3f74253f148bae33f49527454727c789c08ca7b759",
+      "bytes": 359,
+      "immutable": true
+    },
+    {
+      "role": "case-result",
+      "path": "cases/TS-GOV-02-001-case-result.json",
+      "sha256": "d87c4852f640780ea3bb66b0f9569e7bbe85108b5cd37ff789674484f95353a5",
+      "bytes": 105,
+      "immutable": true
+    },
+    {
+      "role": "provenance",
+      "path": "shared/provenance.json",
+      "sha256": "1a75aaa0b3e2cc7d2e063107cd7628363135087130e5bb9657cfa2b7401e99aa",
+      "bytes": 445,
+      "immutable": true
+    },
+    {
+      "role": "verification",
+      "path": "cases/TS-GOV-02-001-verification.json",
+      "sha256": "90a1dfdb1c6d0ebab7c234182a077f4de16518abb73594a57a1ae99ed274f5dc",
+      "bytes": 336,
+      "immutable": true
+    },
+    {
+      "role": "replay-command",
+      "path": "shared/replay.sh",
+      "sha256": "61a0a1327d7277a1a664a5ab31df3af5580c83cbdad1573bb6ff88b4de7a70af",
+      "bytes": 114,
+      "immutable": true
+    },
+    {
+      "role": "replay-script",
+      "path": "cases/TS-GOV-02-001-replay-script.json",
+      "sha256": "7f51334489ae174b55d92c9f248e05c866a4125b8027924385932581db989915",
+      "bytes": 89,
+      "immutable": true
+    },
+    {
+      "role": "holdout-attestation",
+      "path": "shared/holdout-attestation.json",
+      "sha256": "cc5b1a3aca832237fc4439c81051329df4bc79398377bc8426dd12a08cf166a3",
+      "bytes": 222,
+      "immutable": true
+    },
+    {
+      "role": "representative-attestation",
+      "path": "shared/representative-attestation.json",
+      "sha256": "ab982ba0d894532bb3919f3d44ec6851e163f1c34824df0f273db63fbd2f513d",
+      "bytes": 236,
+      "immutable": true
+    },
+    {
+      "role": "gate-decision",
+      "path": "cases/TS-GOV-02-001-gate-decision.json",
+      "sha256": "cc002d1cf86bb45461289714f4fe603ffb6977043eea79e88d4a3a832136d223",
+      "bytes": 107,
+      "immutable": true
+    }
+  ],
+  "corpora": [
+    {
+      "kind": "development",
+      "digest": "sha256:0ea587ab0a5d22164a1dc3beed04848e4ce971f6b313336a27d879e0cad0ed72",
+      "manifest_path": "shared/development-corpus.json",
+      "authoring_access": true,
+      "attestation_ref": "cases/TS-GOV-02-001-verification.json",
+      "verifier_id": "ethan-independent-certifier"
+    },
+    {
+      "kind": "holdout",
+      "digest": "sha256:2b77258206f3ce9587305d5a1b312a9ad9b723d84114a06f0e848c036a8cfbc7",
+      "manifest_path": "shared/holdout-corpus.json",
+      "independent": true,
+      "authoring_access": false,
+      "attestation_ref": "shared/holdout-attestation.json",
+      "verifier_id": "ethan-independent-certifier"
+    },
+    {
+      "kind": "representative",
+      "digest": "sha256:79c63156c549360690582404f84a6cffd898eda4c7ec4b4f6aeb3350b1cd81b0",
+      "manifest_path": "shared/representative-corpus.json",
+      "independent": true,
+      "authoring_access": false,
+      "attestation_ref": "shared/representative-attestation.json",
+      "verifier_id": "ethan-independent-certifier"
+    }
+  ]
+}

@@ -1,3 +1,27 @@
+// Top-level helpers and constants
+try { const terminal = new Set([
+    "SUCCEEDED", "PARTIAL", "FAILED", "CANCELLED", "LOST",
+]); } catch(e) {}
+try { async function responseJson(response, fallback) {
+    let payload = {};
+    try {
+        payload = await response.json();
+    }
+    catch { /* mapped below */ }
+    if (!response.ok) {
+        const error = payload;
+        throw new Error(error.reason ?? error.code ?? fallback);
+    }
+    return payload;
+} } catch(e) {}
+try { function jsonObject(raw, field) {
+    const parsed = JSON.parse(raw);
+    if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") {
+        throw new Error(`${field}_MUST_BE_JSON_OBJECT`);
+    }
+    return parsed;
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,

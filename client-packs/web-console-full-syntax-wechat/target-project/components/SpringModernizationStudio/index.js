@@ -1,3 +1,104 @@
+// Top-level helpers and constants
+try { const latestRunStorageKey = "elmos.spring.latest-run-id"; } catch(e) {}
+try { function buildStageCards(capability, target) {
+    const verifiedRoutes = capability?.routes?.filter((route) => route.evidenceStatus === "PASSED_LOCAL").length ?? (capability ? 1 : 0);
+    const source = capability
+        ? `${capability.routes?.length ?? 1} 条声明路线；${verifiedRoutes} 个精确点有本地工程证据`
+        : "契约未读取的路线目录";
+    const targetLabel = target
+        ? `Spring Boot ${target.springBoot} / Java ${target.java}`
+        : "目标 Spring Boot / Java";
+    const rewrite = capability
+        ? `固定 Rewrite Spring ${capability.openRewrite.rewriteSpring} 与插件 ${capability.openRewrite.mavenPlugin}。`
+        : "固定 OpenRewrite 版本由 Engine 能力契约声明；契约未读取时不展示版本号。";
+    return [
+        { stages: ["IMPORT_GIT"], title: "导入 Git 仓库", detail: "仅允许批准的 HTTPS Git host，拒绝 URL 凭证。" },
+        { stages: ["LOCK_SNAPSHOT"], title: "锁定 Commit / Snapshot", detail: "解析 40 位 Commit，并生成确定性内容摘要。" },
+        { stages: ["FINGERPRINT"], title: "精确版本识别", detail: `按 Spring family、精确版本、JDK 与构建工具从 ${source} 中选择，不做模糊匹配。` },
+        { stages: ["SOURCE_BASELINE"], title: "源工程基线", detail: "在一次性副本中使用检测到且已配置的精确源 JDK 执行完整构建与测试。" },
+        { stages: ["EXTRACT_FCM"], title: "提取 FCM", detail: "在转换前固化能力、来源映射、默认值与未知项。" },
+        { stages: ["OPENREWRITE"], title: "OpenRewrite 实际转换", detail: rewrite },
+        { stages: ["BUILD_AND_TEST", "DETERMINISTIC_REPAIR"], title: "编译 / 测试 / 修复", detail: `${targetLabel} 真实测试；失败时最多一次确定性修复。` },
+        { stages: ["PACKAGE_ARTIFACT"], title: "候选项目打包", detail: "生成内容寻址 ZIP，尚不自动开放下载。" },
+        { stages: ["INDEPENDENT_VALIDATION"], title: "独立验证", detail: "另一验证器从 ZIP 新目录解包并执行 mvn verify。" },
+        { stages: ["READY"], title: "下载新项目", detail: "只有独立 PASS 后才开放下载。" },
+        { stages: ["START_APPLICATION", "HEALTH_CHECK"], title: "一键隔离启动", detail: `${targetLabel} 启动、回环健康检查，未配置 Rootless 时拒绝。` },
+        { stages: ["STOP_APPLICATION"], title: "日志 / 停止 / 重试", detail: "实时脱敏日志、优雅停止与新的可追溯尝试。" },
+    ];
+} } catch(e) {}
+try { function routeSourceFamilyLabel(route) {
+    if (route.sourceFrameworkFamily === "spring-mvc")
+        return "Spring Framework MVC";
+    if (route.sourceFrameworkFamily === "spring-framework")
+        return "Spring Framework";
+    return "Spring Boot";
+} } catch(e) {}
+try { function routeSourceConstraintLabel(route) {
+    if (route.exactSourceVersion)
+        return `exact ${route.exactSourceVersion}`;
+    if (route.sourceConstraint?.startsWith("exact:")) {
+        return `exact ${route.sourceConstraint.slice("exact:".length)}`;
+    }
+    return route.sourceConstraint
+        ?? `[${route.sourceBootMinInclusive}, ${route.sourceBootMaxExclusive})`;
+} } catch(e) {}
+try { function routeEvidenceLabel(route) {
+    const sourceFamily = routeSourceFamilyLabel(route);
+    return route.evidenceStatus === "PASSED_LOCAL"
+        ? `PASSED_LOCAL @ ${sourceFamily} ${route.verifiedSourceSpringBoot} / Java ${route.verifiedSourceJava}`
+        : `${route.evidenceStatus} · ${sourceFamily}`;
+} } catch(e) {}
+try { function routeLaunchStatus(route) {
+    if (route.launchStatus)
+        return route.launchStatus;
+    return route.evidenceStatus === "NOT_IMPLEMENTED" ? "INVENTORY_ONLY" : "EXPERIMENTAL";
+} } catch(e) {}
+try { function fingerprintSourceLabel(fingerprint) {
+    const version = fingerprint.sourceFrameworkVersion?.trim()
+        || fingerprint.springBootVersion.trim()
+        || "UNKNOWN";
+    return fingerprint.sourceFrameworkFamily === "spring-mvc"
+        ? `Spring Framework MVC ${version}`
+        : fingerprint.sourceFrameworkFamily === "spring-framework"
+            ? `Spring Framework ${version}`
+            : `Spring Boot ${version}`;
+} } catch(e) {}
+try { const orderedStages = [
+    "IMPORT_GIT", "LOCK_SNAPSHOT", "FINGERPRINT", "SOURCE_BASELINE", "EXTRACT_FCM",
+    "OPENREWRITE", "BUILD_AND_TEST", "DETERMINISTIC_REPAIR", "PACKAGE_ARTIFACT",
+    "INDEPENDENT_VALIDATION", "READY", "START_APPLICATION", "HEALTH_CHECK", "STOP_APPLICATION",
+]; } catch(e) {}
+try { function randomKey(prefix) {
+    return `${prefix}-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`;
+} } catch(e) {}
+try { function shortDigest(value) {
+    return value ? `${value.slice(0, 12)}…${value.slice(-8)}` : "等待生成";
+} } catch(e) {}
+try { function formatBytes(value) {
+    if (!value)
+        return "等待生成";
+    return value < 1024 * 1024 ? `${Math.ceil(value / 1024)} KB` : `${(value / 1024 / 1024).toFixed(1)} MB`;
+} } catch(e) {}
+try { async function api(url, init, credentials) {
+    const response = await fetch(url, {
+        cache: "no-store",
+        ...init,
+        headers: {
+            ...init?.headers,
+            ...(credentials ? {
+                authorization: `Bearer ${credentials.token}`,
+                "x-elmos-tenant": credentials.tenantId,
+                "x-elmos-actor": credentials.actorId,
+            } : {}),
+        },
+    });
+    if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(`${error.errorCode ?? `HTTP_${response.status}`}: ${error.message ?? "请求失败"}`);
+    }
+    return response.json();
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,
@@ -32,14 +133,14 @@ Component({
     actorId: "",
     proxyToken: "",
     recoveryRunId: "",
-    credentials: null,
     targetOptions: null,
     selectedTarget: null,
     runTarget: null,
-    selectableTargetKeys: null,
-    displayedTargetOptions: null,
+    credentials: null,
     stageCards: null,
     currentMessage: null,
+    selectableTargetKeys: null,
+    displayedTargetOptions: null,
   },
   lifetimes: {
     attached() {

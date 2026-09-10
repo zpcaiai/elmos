@@ -7,6 +7,16 @@ export class MiniAppFullAstEmitter {
 
     // Build index.js
     const jsLines: string[] = [];
+    const topHelpers = (ir.metadata?.topLevelHelpers as string[]) || [];
+    if (topHelpers.length > 0) {
+      jsLines.push('// Top-level helpers and constants');
+      for (const h of topHelpers) {
+        const clean = h.replace(/^export\s+(default\s+)?/gm, '').trim();
+        if (/^(const|let|var)\s+metadata\s*=/i.test(clean)) continue;
+        jsLines.push(`try { ${clean} } catch(e) {}`);
+      }
+      jsLines.push('');
+    }
     jsLines.push('Component({');
 
     // Options
@@ -39,10 +49,14 @@ export class MiniAppFullAstEmitter {
     jsLines.push('  data: {');
     for (const s of ir.states) {
       let initVal: unknown = null;
-      try {
-        initVal = JSON.parse(s.initialValueExpr);
-      } catch {
-        initVal = s.initialValueExpr.replace(/^["']|["']$/g, "");
+      if (s.isRef) {
+        initVal = { current: null };
+      } else {
+        try {
+          initVal = JSON.parse(s.initialValueExpr);
+        } catch {
+          initVal = s.initialValueExpr.replace(/^["']|["']$/g, "");
+        }
       }
       jsLines.push(`    ${s.name}: ${JSON.stringify(initVal)},`);
     }
@@ -68,6 +82,10 @@ export class MiniAppFullAstEmitter {
       if (s.setterName) {
         jsLines.push(`      const ${s.setterName} = (val) => { this.setData({ ${s.name}: typeof val === "function" ? val(this.data.${s.name}) : val }); };`);
       }
+    }
+    // Define refs so effect bodies and closures can access them
+    for (const r of (ir.refs || [])) {
+      jsLines.push(`      const ${r.name} = { current: { focus: () => {}, scrollIntoView: () => {} } };`);
     }
     // Sync initial props to data if needed or run mount effects
     for (const eff of ir.effects) {
@@ -103,6 +121,9 @@ export class MiniAppFullAstEmitter {
       const isAsync = m.isAsync || m.bodyCode.includes("await");
       const asyncPrefix = isAsync ? "async " : "";
       jsLines.push(`    ${asyncPrefix}${m.name}(${params}) {`);
+      for (const r of (ir.refs || [])) {
+        jsLines.push(`      const ${r.name} = this.data.${r.name} || { current: { focus: () => {}, scrollIntoView: () => {} } };`);
+      }
       jsLines.push(`      try {`);
       jsLines.push(`        ${this.cleanBodyCode(m.bodyCode)}`);
       jsLines.push(`      } catch (err) {`);

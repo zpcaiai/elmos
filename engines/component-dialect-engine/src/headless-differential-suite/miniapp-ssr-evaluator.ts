@@ -385,6 +385,29 @@ export class MiniAppSSREvaluator {
     if (!unescaped) return '';
     const trimmed = unescaped;
 
+    // Safe dynamic expression evaluation
+    try {
+      const proxy = new Proxy(scope, {
+        has(target, key) {
+          if (typeof key === "string" && /^(Math|String|Number|Array|Boolean|JSON|parseInt|parseFloat|encodeURIComponent|decodeURIComponent|undefined|null|NaN|Infinity)$/.test(key)) {
+            return false;
+          }
+          return true;
+        },
+        get(target, key) {
+          return key in target ? (target as any)[key] : undefined;
+        }
+      });
+      const safeExpr = trimmed
+        .replace(/\?\./g, ".")
+        .replace(/(?<=[a-zA-Z0-9_\)\]])\.(?=[a-zA-Z_$])/g, "?.");
+      const fn = new Function("scope", `with(scope) { try { return (${safeExpr}); } catch(e) { return undefined; } }`);
+      const res = fn(proxy);
+      if (res !== undefined) return res;
+    } catch {
+      // Fall back on parser below
+    }
+
     // Simple literals
     if (trimmed === 'true') return true;
     if (trimmed === 'false') return false;

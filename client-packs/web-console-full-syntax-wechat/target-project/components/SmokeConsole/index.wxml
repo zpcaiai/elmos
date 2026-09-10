@@ -1,8 +1,7 @@
 <view class="content-shell">
   <view class="business-hero">
     <view>一键冒烟运行</view>
-    <view>生成或转换完成的项目会自带 Batch 46 冒烟包。在这里选中项目即可一键跑起来：
-          自动灌入一次性种子数据、探活、跑冒烟断言，免费额度到期后自动停止服务并清空临时数据。</view>
+    <view>生成或转换完成的项目会自带 Batch 46 冒烟包。在这里选中项目即可一键跑起来： 自动灌入一次性种子数据、探活、跑冒烟断言，免费额度到期后自动停止服务并清空临时数据。</view>
   </view>
   <view class="business-form">
     <text class="business-form-grid">

@@ -14,6 +14,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as vm from "vm";
+import { createVirtualBOM } from "./runtime/enterprise-web-polyfill";
 
 export interface ComponentMountResult {
   componentName: string;
@@ -152,6 +153,15 @@ export class HeadlessMiniProgramSandbox {
               if (prop === "fetch") {
                 return () => Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
               }
+              if (prop.endsWith("Error")) {
+                class DynamicError extends Error {
+                  constructor(msg?: string) {
+                    super(msg);
+                    this.name = String(prop);
+                  }
+                }
+                return DynamicError;
+              }
             }
             return undefined;
           },
@@ -209,7 +219,39 @@ export class HeadlessMiniProgramSandbox {
       }
     }
 
+    const bom = createVirtualBOM();
     const sandboxContext: Record<string, unknown> = {
+      window: bom.window,
+      document: bom.document,
+      navigator: bom.navigator,
+      location: bom.location,
+      history: bom.history,
+      localStorage: bom.localStorage,
+      sessionStorage: bom.sessionStorage,
+      ResizeObserver: bom.ResizeObserver,
+      IntersectionObserver: bom.IntersectionObserver,
+      MutationObserver: bom.MutationObserver,
+      errorMessage: (err: unknown) => (err instanceof Error ? err.message : String(err || "")),
+      formatDate: (d: any) => String(d || ""),
+      formatNumber: (n: any) => String(n || 0),
+      errorSummary: { current: { focus: () => {}, scrollIntoView: () => {} } },
+      resultPanel: { current: { focus: () => {}, scrollIntoView: () => {} } },
+      notify: () => {},
+      toast: () => {},
+      directedLanguageRoutes: [],
+      translationLanguages: [],
+      ChinaDbSqlPolicyError: class ChinaDbSqlPolicyError extends Error {
+        constructor(msg?: string) { super(msg); this.name = "ChinaDbSqlPolicyError"; }
+      },
+      RepositoryOrchestratorContractError: class RepositoryOrchestratorContractError extends Error {
+        constructor(msg?: string) { super(msg); this.name = "RepositoryOrchestratorContractError"; }
+      },
+      StrictJsonError: class StrictJsonError extends Error {
+        constructor(msg?: string) { super(msg); this.name = "StrictJsonError"; }
+      },
+      TelemetryValidationError: class TelemetryValidationError extends Error {
+        constructor(msg?: string) { super(msg); this.name = "TelemetryValidationError"; }
+      },
       wx: this.wxMock,
       console: {
         log: () => {},
@@ -225,6 +267,10 @@ export class HeadlessMiniProgramSandbox {
       exports: {},
       setTimeout: global.setTimeout,
       clearTimeout: global.clearTimeout,
+      setInterval: global.setInterval,
+      clearInterval: global.clearInterval,
+      requestAnimationFrame: (cb: (time: number) => void) => setTimeout(() => cb(Date.now()), 16),
+      cancelAnimationFrame: (id: any) => clearTimeout(id),
       Promise: global.Promise,
     };
 
@@ -423,11 +469,21 @@ function evalExpr(expr: string, scope: Record<string, unknown>): unknown {
       ...scope,
     };
     const proxy = new Proxy(defaultScope, {
-      has: () => true,
-      get: (target, prop) => (prop in target ? target[prop as string] : undefined)
+      has(target, key) {
+        if (typeof key === "string" && /^(Math|String|Number|Array|Boolean|JSON|parseInt|parseFloat|encodeURIComponent|decodeURIComponent|undefined|null|NaN|Infinity)$/.test(key)) {
+          return false;
+        }
+        return true;
+      },
+      get: (target, prop) => (prop in target ? (target as Record<string, unknown>)[prop as string] : undefined)
     });
-    const fn = new Function('scope', `with(scope) { return (${trimmed}); }`);
-    return fn(proxy);
+    const safeExpr = trimmed
+      .replace(/\?\./g, ".")
+      .replace(/(?<=[a-zA-Z0-9_\)\]])\.(?=[a-zA-Z_$])/g, "?.");
+    const fn = new Function('scope', `with(scope) { try { return (${safeExpr}); } catch(e) { return undefined; } }`);
+    const res = fn(proxy);
+    if (res !== undefined) return res;
+    return "";
   } catch {
     return "";
   }

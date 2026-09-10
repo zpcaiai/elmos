@@ -1,3 +1,29 @@
+// Top-level helpers and constants
+try { const localeKey = "elmos:ui-locale:v1"; } catch(e) {}
+try { const themeKey = "elmos:ui-theme:v1"; } catch(e) {}
+try { function storedLocale() {
+    try {
+        return localStorage.getItem(localeKey) === "en" ? "en" : "zh-CN";
+    }
+    catch {
+        return "zh-CN";
+    }
+} } catch(e) {}
+try { function storedTheme() {
+    try {
+        return localStorage.getItem(themeKey) === "dark" ? "dark" : "light";
+    }
+    catch {
+        return "light";
+    }
+} } catch(e) {}
+try { function useUiPreferences() {
+    const value = useContext(PreferencesContext);
+    if (!value)
+        throw new Error("UI_PREFERENCES_PROVIDER_MISSING");
+    return value;
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,

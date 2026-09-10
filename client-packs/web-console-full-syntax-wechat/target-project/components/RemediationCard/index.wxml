@@ -1,12 +1,12 @@
-<view class="{{styles.controlCard}}">
+<view class="{{'controlCard'}}">
   <view>
-    <text class="{{styles.kind}}">{{proposal.remediationKind}}</text>
+    <text class="{{'kind'}}">{{proposal.remediationKind}}</text>
     <text>{{proposal.titleCode}}</text>
   </view>
   <code>{{proposal.recipeId}}</code>
   <view>{{proposal.status}} · 风险 {{proposal.riskLevel}}</view>
   <text aria-label="{{`前置摘要：${proposal.preconditionDigest}`}}">前置摘要： {{proposal.preconditionDigest.slice(0, 24)}} …</text>
-  <view wx:if="{{proposal.status === 'PROPOSED'}}" class="{{styles.inlineActions}}">
+  <view wx:if="{{proposal.status === 'PROPOSED'}}" class="{{'inlineActions'}}">
     <button class="primary-button" type="button" disabled="{{disabled}}" bindtap="onTap">批准</button>
     <button class="secondary-button" type="button" disabled="{{disabled}}" bindtap="onTap">拒绝</button>
   </view>

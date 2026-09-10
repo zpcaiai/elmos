@@ -1,0 +1,8 @@
+{
+  "case_id": "B34-004",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:55:52Z",
+  "notes": "Independently verified by Ethan: Batch 34 分布式语义索引：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行"
+}

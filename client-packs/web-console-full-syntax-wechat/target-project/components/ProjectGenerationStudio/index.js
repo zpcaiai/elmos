@@ -1,3 +1,177 @@
+// Top-level helpers and constants
+try { const plannedAssets = [
+    { icon: "workflow", title: "需求与资产图", detail: "PSIR、Blueprint 与来源追踪" },
+    { icon: "code", title: "CRUD 与健康检查", detail: "多实体接口与 OpenAPI" },
+    { icon: "test", title: "测试与构建", detail: "单元测试、CI 与 Makefile" },
+    { icon: "box", title: "容器配置", detail: "非 root Dockerfile" },
+    { icon: "cloud", title: "运行清单", detail: "Kubernetes 探针与资源" },
+    { icon: "file", title: "证据与归档", detail: "逐目标结果与可交付 ZIP" },
+]; } catch(e) {}
+try { const generationTargetIds = new Set(generationTargets.map((target) => target.id)); } catch(e) {}
+try { const repositoryWorkspaceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i; } catch(e) {}
+try { function browserArtifactTicket(value) {
+    if (!value || typeof value !== "object")
+        throw new Error("ARTIFACT_TICKET_INVALID");
+    const ticket = value;
+    if (typeof ticket.downloadUrl !== "string"
+        || ticket.downloadUrl.length === 0
+        || ticket.downloadUrl.length > 4096
+        || typeof ticket.filename !== "string"
+        || ticket.filename.length === 0
+        || ticket.filename.length > 180
+        || typeof ticket.contentSha256 !== "string"
+        || !/^[0-9a-f]{64}$/.test(ticket.contentSha256)
+        || !Number.isSafeInteger(ticket.byteSize)
+        || (ticket.byteSize ?? 0) <= 0
+        || (ticket.byteSize ?? 0) > MAX_BROWSER_ARTIFACT_BYTES
+        || !Number.isSafeInteger(ticket.expiresInSeconds)
+        || (ticket.expiresInSeconds ?? 0) <= 0
+        || (ticket.expiresInSeconds ?? 0) > 600) {
+        throw new Error("ARTIFACT_TICKET_INVALID");
+    }
+    let url;
+    try {
+        url = new URL(ticket.downloadUrl);
+    }
+    catch {
+        throw new Error("ARTIFACT_TICKET_INVALID");
+    }
+    const localDevelopment = url.protocol === "http:"
+        && ["127.0.0.1", "localhost"].includes(url.hostname)
+        && ["127.0.0.1", "localhost"].includes(window.location.hostname);
+    if ((url.protocol !== "https:" && !localDevelopment)
+        || url.username
+        || url.password
+        || url.hash) {
+        throw new Error("ARTIFACT_TICKET_URL_NOT_ALLOWED");
+    }
+    return ticket;
+} } catch(e) {}
+try { async function readBoundedArtifact(response, expectedBytes) {
+    if (!Number.isSafeInteger(expectedBytes)
+        || expectedBytes <= 0
+        || expectedBytes > MAX_BROWSER_ARTIFACT_BYTES) {
+        throw new Error("ARTIFACT_LENGTH_INVALID");
+    }
+    const declared = response.headers.get("content-length");
+    if (declared !== null && Number(declared) !== expectedBytes) {
+        await response.body?.cancel().catch(() => undefined);
+        throw new Error("ARTIFACT_LENGTH_MISMATCH");
+    }
+    if (!response.body)
+        throw new Error("ARTIFACT_BODY_MISSING");
+    const data = new Uint8Array(expectedBytes);
+    const reader = response.body.getReader();
+    let offset = 0;
+    try {
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done)
+                break;
+            if (offset + value.byteLength > expectedBytes) {
+                await reader.cancel().catch(() => undefined);
+                throw new Error("ARTIFACT_LENGTH_MISMATCH");
+            }
+            data.set(value, offset);
+            offset += value.byteLength;
+        }
+    }
+    finally {
+        reader.releaseLock();
+    }
+    if (offset !== expectedBytes)
+        throw new Error("ARTIFACT_LENGTH_MISMATCH");
+    return data.buffer;
+} } catch(e) {}
+try { function isStoredSourceReference(value) {
+    if (!value || typeof value !== "object")
+        return false;
+    const source = value;
+    return typeof source.id === "string"
+        && /^SRC-\d{3}$/.test(source.id)
+        && typeof source.label === "string"
+        && source.label.length <= 180
+        && typeof source.sha256 === "string"
+        && /^[a-f0-9]{64}$/.test(source.sha256)
+        && typeof source.byteCount === "number"
+        && typeof source.extractedCharacters === "number"
+        && typeof source.includedCharacters === "number"
+        && typeof source.truncated === "boolean"
+        && Array.isArray(source.warnings);
+} } catch(e) {}
+try { function isStoredGenerationDraft(value) {
+    if (!value || typeof value !== "object")
+        return false;
+    const draft = value;
+    return typeof draft.id === "string" && draft.id.length <= 100
+        && typeof draft.createdAt === "string" && !Number.isNaN(Date.parse(draft.createdAt))
+        && typeof draft.name === "string" && draft.name.length <= 64
+        && typeof draft.namespace === "string" && draft.namespace.length <= 200
+        && typeof draft.description === "string" && draft.description.length <= 32_000
+        && typeof draft.entity === "string" && draft.entity.length <= 64
+        && typeof draft.reviewer === "string" && draft.reviewer.length <= 200
+        && ["in-memory", "postgresql"].includes(draft.persistence ?? "in-memory")
+        && ["none", "jwt", "oidc"].includes(draft.authMode ?? "none")
+        && Array.isArray(draft.targets) && draft.targets.length > 0
+        && draft.targets.every((target) => typeof target === "string" && generationTargetIds.has(target))
+        && (draft.sources === undefined
+            || (Array.isArray(draft.sources)
+                && draft.sources.length > 0
+                && draft.sources.every(isStoredSourceReference)
+                && typeof draft.sourceBundleSha256 === "string"
+                && /^[a-f0-9]{64}$/.test(draft.sourceBundleSha256)));
+} } catch(e) {}
+try { function shellQuote(value) {
+    return `'${value.replaceAll("'", "'\\''")}'`;
+} } catch(e) {}
+try { function runnerReasonMessage(reason) {
+    if (!reason)
+        return "";
+    if (reason.includes("ROOTLESS_CONTAINER_ENGINE_REQUIRED")) {
+        return "当前容器引擎不是 rootless；生产一键本地部署运行保持关闭，请配置 rootless Podman/Docker。";
+    }
+    if (reason.includes("TOOLCHAIN_IMAGES_NOT_AVAILABLE_OFFLINE")) {
+        return "精确工具链镜像尚未缓存，且构建网络为 none；请预加载 digest 镜像或审批受限构建网络。";
+    }
+    if (reason.includes("BUILD_NETWORK_NOT_APPROVED") || reason.includes("APPROVED_BUILD_NETWORK_MISSING")) {
+        return "构建网络缺少 ELMOS 审批标签；运行器已拒绝未授权的网络出口。";
+    }
+    if (reason.includes("LOCAL_RUNNER_NOT_ENABLED")) {
+        return "本地 Runner 未启用；仍可审阅并导出 Intent，执行入口保持关闭。";
+    }
+    return reason;
+} } catch(e) {}
+try { function buildWorkflowCommands(draft) {
+    const workspace = `generated/${draft.name}`;
+    return [
+        {
+            id: "analyze",
+            label: "1 · 分析 Intent",
+            command: "uv run elmos-project-synthesis analyze --intent project-intent.json --output synthesis-request.json",
+        },
+        {
+            id: "approve",
+            label: "2 · 审阅并批准",
+            command: `uv run elmos-project-synthesis approve --request synthesis-request.json --actor ${shellQuote(draft.reviewer)} --output approved-request.json`,
+        },
+        {
+            id: "generate",
+            label: "3 · 生成工作区",
+            command: `uv run elmos-project-synthesis generate --request approved-request.json --output ${shellQuote(workspace)}`,
+        },
+        {
+            id: "verify",
+            label: "4 · 真实构建验证",
+            command: `uv run elmos-project-synthesis verify --workspace ${shellQuote(workspace)} --evidence verification.json`,
+        },
+        {
+            id: "runtime",
+            label: "5 · 生成运行计划",
+            command: `uv run elmos-project-synthesis runtime-plan --workspace ${shellQuote(workspace)}`,
+        },
+    ];
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,
@@ -44,12 +218,12 @@ Component({
     githubIdempotencyKey: "() => crypto.randomUUID()",
     feedback: "",
     targetError: "",
-    feedbackTimer: null,
-    sourceFileInput: null,
-    jobRequestEpoch: 0,
-    selectedProfiles: null,
+    feedbackTimer: {"current":null},
+    sourceFileInput: {"current":null},
+    jobRequestEpoch: {"current":null},
     artifactGroups: null,
     runtimeRemainingSeconds: null,
+    selectedProfiles: null,
   },
   lifetimes: {
     attached() {
@@ -91,6 +265,9 @@ Component({
       const setGithubIdempotencyKey = (val) => { this.setData({ githubIdempotencyKey: typeof val === "function" ? val(this.data.githubIdempotencyKey) : val }); };
       const setFeedback = (val) => { this.setData({ feedback: typeof val === "function" ? val(this.data.feedback) : val }); };
       const setTargetError = (val) => { this.setData({ targetError: typeof val === "function" ? val(this.data.targetError) : val }); };
+      const feedbackTimer = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = { current: { focus: () => {}, scrollIntoView: () => {} } };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -284,6 +461,9 @@ Component({
   },
   methods: {
     announce(message) {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (feedbackTimer.current !== null)
         window.clearTimeout(feedbackTimer.current);
@@ -297,6 +477,9 @@ Component({
       }
     },
     invalidateDraft() {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         setDraft(null);
     setAnalysis(null);
@@ -306,6 +489,9 @@ Component({
       }
     },
     updateDescription(value) {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         setDescription(value);
     if (sourceBundle && value !== sourceBundle.combinedText) {
@@ -317,6 +503,9 @@ Component({
       }
     },
     async ingestSources() {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!runnerCredentialReady) {
         announce("解析文件、能力模块或在线 HTML 前，请先登录具备生成权限的账户或输入本地短期令牌。");
@@ -380,6 +569,9 @@ Component({
       }
     },
     productionCapable(id) {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         // targets with PostgreSQL-backed integration evidence declare profiles.
     return (availableTargets.find((profile) => profile.id === id)?.productionProfiles.length ?? 0) > 0;
@@ -388,6 +580,9 @@ Component({
       }
     },
     toggleTarget(id) {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (persistence === "postgresql") {
         if (!productionCapable(id)) {
@@ -409,6 +604,9 @@ Component({
       }
     },
     createDraft(event) {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         event.preventDefault();
     if (targets.length === 0) {
@@ -450,6 +648,9 @@ Component({
       }
     },
     restoreDraft(saved) {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         setName(saved.name);
     setNamespace(saved.namespace);
@@ -481,6 +682,9 @@ Component({
       }
     },
     removeDraft(id) {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const removed = savedDrafts.find((item) => item.id === id);
     setSavedDrafts((current) => current.filter((item) => item.id !== id));
@@ -496,6 +700,9 @@ Component({
       }
     },
     async copyText(value, successMessage) {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!draft) {
         announce("请先提交并锁定当前计划预览，再复制受控命令。");
@@ -513,6 +720,9 @@ Component({
       }
     },
     async runnerRequest(url, init, identityOverride) {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const isExistingJobRequest = Boolean(job && url.includes(`/jobs/${job.id}`));
     const actor = identityOverride?.actor
@@ -541,6 +751,9 @@ Component({
       }
     },
     async recoverJob() {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         const exactJobId = recoveryJobId.trim().toLowerCase();
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(exactJobId)) {
@@ -570,6 +783,9 @@ Component({
       }
     },
     async analyzeDraft() {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!draft) {
         announce("请先锁定当前项目意图。");
@@ -615,6 +831,9 @@ Component({
       }
     },
     async executeJob() {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!draft || !analysis || analysis.request.open_questions.length > 0 || !approved) {
         announce("请先完成需求分析、处理开放问题并批准当前锁定计划。");
@@ -665,6 +884,9 @@ Component({
       }
     },
     async postJobAction(action) {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!job)
         return;
@@ -699,6 +921,9 @@ Component({
       }
     },
     async downloadArtifact() {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!job?.artifactReady || !job.artifactSize || !job.artifactSha256)
         return;
@@ -755,6 +980,9 @@ Component({
       }
     },
     async openRuntimePreview() {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!job || job.runtime.status !== "RUNNING")
         return;
@@ -776,6 +1004,9 @@ Component({
       }
     },
     async publishGitHub() {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!job?.artifactReady || !job.artifactSha256)
         return;
@@ -832,6 +1063,9 @@ Component({
       }
     },
     downloadIntent() {
+      const feedbackTimer = this.data.feedbackTimer || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const sourceFileInput = this.data.sourceFileInput || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const jobRequestEpoch = this.data.jobRequestEpoch || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         if (!draft) {
         announce("请先提交并锁定项目意图，再导出结构化 Intent。");

@@ -1,3 +1,34 @@
+// Top-level helpers and constants
+try { const entryLabels = {
+    TOPUP_SETTLED: "充值入账",
+    CONSUME: "任务消费",
+    REFUND: "退款",
+    ADMIN_ADJUSTMENT: "人工调整",
+    TRIAL_GRANT: "试用赠送",
+}; } catch(e) {}
+try { function toNumber(minor) {
+    if (minor === null || minor === undefined)
+        return null;
+    const value = typeof minor === "number" ? minor : Number(minor);
+    return Number.isFinite(value) ? value : null;
+} } catch(e) {}
+try { function yuan(minor) {
+    const value = toNumber(minor);
+    if (value === null)
+        return "—";
+    return (value / 100).toLocaleString("zh-CN", {
+        style: "currency",
+        currency: "CNY",
+        minimumFractionDigits: 2,
+    });
+} } catch(e) {}
+try { function moment(value) {
+    if (!value)
+        return "—";
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? "—" : parsed.toLocaleString("zh-CN", { hour12: false });
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,
@@ -13,8 +44,8 @@ Component({
     feedback: "",
     failure: "",
     busy: false,
-    idempotencyKey: "",
-    keyAmount: -1,
+    idempotencyKey: {"current":null},
+    keyAmount: {"current":null},
   },
   lifetimes: {
     attached() {
@@ -25,6 +56,8 @@ Component({
       const setFeedback = (val) => { this.setData({ feedback: typeof val === "function" ? val(this.data.feedback) : val }); };
       const setFailure = (val) => { this.setData({ failure: typeof val === "function" ? val(this.data.failure) : val }); };
       const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
+      const idempotencyKey = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const keyAmount = { current: { focus: () => {}, scrollIntoView: () => {} } };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -74,6 +107,8 @@ Component({
   },
   methods: {
     async submitTopup(event) {
+      const idempotencyKey = this.data.idempotencyKey || { current: { focus: () => {}, scrollIntoView: () => {} } };
+      const keyAmount = this.data.keyAmount || { current: { focus: () => {}, scrollIntoView: () => {} } };
       try {
         event.preventDefault();
     setFeedback("");

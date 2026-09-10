@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B26-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [26]
+Title: Batch 26 Attestation：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: Attestation
+Test Type: dependency_failure
+Skill: tst-b26-private-runner-security
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

@@ -1,3 +1,5 @@
+// Top-level helpers and constants
+
 Component({
   options: {
     multipleSlots: false,

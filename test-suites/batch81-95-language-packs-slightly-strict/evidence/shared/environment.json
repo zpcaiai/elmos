@@ -1,0 +1,13 @@
+{
+  "arch": "x86_64",
+  "captured_at": "2025-09-10T08:00:00+00:00",
+  "cobol": "gnucobol-3.2",
+  "container_runtime": "docker-26.1",
+  "environment_id": "99ced022-cb9b-5cc4-a707-494d5d82412d",
+  "hermetic": true,
+  "java": "21.0.4",
+  "network_policy": "deny-egress",
+  "os": "linux",
+  "python": "3.12.4",
+  "rust": "1.80.1"
+}

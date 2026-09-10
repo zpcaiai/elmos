@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B37-001 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [37]
+Title: Batch 37 Extension ABI/SDK：在精确版本、不可变Artifact和批准环境中执行完整成功路径
+Capability: Extension ABI/SDK
+Test Type: happy_path
+Skill: tst-b37-extension-marketplace-closure
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

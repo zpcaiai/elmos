@@ -440,7 +440,7 @@ export class HeadlessBoxLayoutEngine {
     let contentHeight = 0;
 
     if (node.nodeType === 'text') {
-      const textLen = (node.nodeValue || '').trim().length;
+      const textLen = (node.nodeValue || '').trim().replace(/\s+/g, ' ').length;
       contentWidth = Math.min(textLen * 14, Math.max(0, innerWidth));
       const lines = Math.max(1, Math.ceil((textLen * 14) / Math.max(1, innerWidth)));
       contentHeight = lines * 20; // 20px line height
@@ -489,9 +489,9 @@ export class HeadlessBoxLayoutEngine {
     return { width: totalWidth, height: totalHeight };
   }
 
-  private static isInlineTag(tag?: string): boolean {
+  public static isInlineTag(tag?: string): boolean {
     if (!tag) return true;
-    return ['span', 'a', 'link', 'navigator', 'text', 'strong', 'em', 'b', 'i', 'label', 'icon'].includes(tag.toLowerCase());
+    return ['span', 'a', 'link', 'navigator', 'text', 'strong', 'em', 'b', 'i', 'label', 'icon', 'small', 'code', 'sub', 'sup', 'cite', 'time'].includes(tag.toLowerCase());
   }
 
   private static parseDimension(val?: string, ref = 0): number | null {

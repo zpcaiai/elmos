@@ -1,0 +1,8 @@
+{
+  "case_id": "X46-003",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:55:52Z",
+  "notes": "Independently verified by Ethan: Chaos、DR与恢复测试：Broker故障—提供畸形、缺失、冲突、未知或明确不支持的输入"
+}

@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B10-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [10]
+Title: Batch 10 权限与Tenant隔离：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: 权限与Tenant隔离
+Test Type: dependency_failure
+Skill: tst-b10-production-hardening
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

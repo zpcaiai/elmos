@@ -1,1576 +1,183 @@
-"""Industrial-grade implementation of Requirement to Test Traceability Matrix and Coverage Gap Analysis.
+"""Industrial Traceability Matrix and Coverage Gap Analysis Engine.
 
-This module provides production data structures, validation rules,
-deterministic domain algorithms, and telemetry records.
+Provides bidirectional requirement-to-code-to-test dependency graph construction,
+transitive closure reachability, untraced requirement detection (gap analysis),
+orphan test identification, blast radius impact calculation, and Mermaid export.
 """
 
 from __future__ import annotations
 
 from collections import defaultdict, deque
-from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
-import datetime
 import hashlib
-import json
-import math
-import re
-import time
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set
+
+
+@dataclass(frozen=True)
+class TraceNode:
+    """Represents a discrete artifact in the engineering lifecycle."""
+    node_id: str
+    node_type: str  # 'REQUIREMENT', 'ARCHITECTURE', 'CODE', 'TEST'
+    title: str
+    attributes: Dict[str, Any] = field(default_factory=dict)
+
+    def compute_hash(self) -> str:
+        payload = f"{self.node_id}:{self.node_type}:{self.title}"
+        return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+@dataclass(frozen=True)
+class TraceEdge:
+    """Represents a verified relationship between two engineering artifacts."""
+    source_id: str
+    target_id: str
+    relationship: str  # 'SATISFIES', 'TESTS', 'IMPLEMENTS', 'DEPENDS_ON'
+
 
 @dataclass
-class TraceabilityMatrixEngineRecordV1:
-    """Data model representing domain record slice 1."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+class TraceabilityReport:
+    """Summary of requirement-to-test traceability posture."""
+    total_requirements: int
+    covered_requirements: int
+    untraced_requirements: List[str]
+    orphan_tests: List[str]
+    coverage_ratio: float
+    merkle_root: str
 
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV2:
-    """Data model representing domain record slice 2."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV3:
-    """Data model representing domain record slice 3."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV4:
-    """Data model representing domain record slice 4."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV5:
-    """Data model representing domain record slice 5."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV6:
-    """Data model representing domain record slice 6."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV7:
-    """Data model representing domain record slice 7."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV8:
-    """Data model representing domain record slice 8."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV9:
-    """Data model representing domain record slice 9."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV10:
-    """Data model representing domain record slice 10."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV11:
-    """Data model representing domain record slice 11."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV12:
-    """Data model representing domain record slice 12."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV13:
-    """Data model representing domain record slice 13."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV14:
-    """Data model representing domain record slice 14."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV15:
-    """Data model representing domain record slice 15."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV16:
-    """Data model representing domain record slice 16."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV17:
-    """Data model representing domain record slice 17."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV18:
-    """Data model representing domain record slice 18."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV19:
-    """Data model representing domain record slice 19."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV20:
-    """Data model representing domain record slice 20."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV21:
-    """Data model representing domain record slice 21."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV22:
-    """Data model representing domain record slice 22."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV23:
-    """Data model representing domain record slice 23."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV24:
-    """Data model representing domain record slice 24."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV25:
-    """Data model representing domain record slice 25."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV26:
-    """Data model representing domain record slice 26."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV27:
-    """Data model representing domain record slice 27."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV28:
-    """Data model representing domain record slice 28."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV29:
-    """Data model representing domain record slice 29."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV30:
-    """Data model representing domain record slice 30."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV31:
-    """Data model representing domain record slice 31."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV32:
-    """Data model representing domain record slice 32."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV33:
-    """Data model representing domain record slice 33."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV34:
-    """Data model representing domain record slice 34."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV35:
-    """Data model representing domain record slice 35."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV36:
-    """Data model representing domain record slice 36."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV37:
-    """Data model representing domain record slice 37."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV38:
-    """Data model representing domain record slice 38."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV39:
-    """Data model representing domain record slice 39."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV40:
-    """Data model representing domain record slice 40."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV41:
-    """Data model representing domain record slice 41."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV42:
-    """Data model representing domain record slice 42."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV43:
-    """Data model representing domain record slice 43."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV44:
-    """Data model representing domain record slice 44."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
-
-@dataclass
-class TraceabilityMatrixEngineRecordV45:
-    """Data model representing domain record slice 45."""
-    record_id: str
-    entity_name: str
-    status: str = 'ACTIVE'
-    metric_score: float = 1.0
-    is_valid: bool = True
-    created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-    def validate(self) -> bool:
-        if not self.record_id or not self.entity_name:
-            return False
-        return self.metric_score >= 0.0
-
-    def compute_fingerprint(self) -> str:
-        raw = f'{self.record_id}:{self.entity_name}:{self.metric_score}:{self.status}'
-        return hashlib.sha256(raw.encode('utf-8')).hexdigest()
 
 class TraceabilityMatrixEngine:
-    """Main industrial coordinator for Requirement to Test Traceability Matrix and Coverage Gap Analysis."""
+    """Industrial graph engine for bidirectional requirement traceability."""
 
-    def __init__(self, tenant_id: str = 'default-tenant') -> None:
-        self.tenant_id = tenant_id
-        self.registry: Dict[str, Any] = {}
-        self.audit_log: List[Dict[str, Any]] = []
-        self.execution_counter = 0
+    def __init__(self) -> None:
+        self._nodes: Dict[str, TraceNode] = {}
+        self._forward_adj: Dict[str, Set[str]] = defaultdict(set)
+        self._backward_adj: Dict[str, Set[str]] = defaultdict(set)
+        self._edges: List[TraceEdge] = []
 
-    def record_audit_event(self, action: str, details: Mapping[str, Any]) -> str:
-        self.execution_counter += 1
-        event_id = f'AUDIT-{self.tenant_id}-{self.execution_counter}'
-        payload = {
-            'event_id': event_id,
-            'action': action,
-            'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            'details': dict(details),
-        }
-        self.audit_log.append(payload)
-        return event_id
+    def add_node(self, node_id: str, node_type: str, title: str, attributes: Optional[Dict[str, Any]] = None) -> TraceNode:
+        if not node_id:
+            raise ValueError("node_id cannot be empty")
+        valid_types = {"REQUIREMENT", "ARCHITECTURE", "CODE", "TEST"}
+        if node_type not in valid_types:
+            raise ValueError(f"Invalid node_type '{node_type}', must be one of {valid_types}")
+        node = TraceNode(
+            node_id=node_id,
+            node_type=node_type,
+            title=title,
+            attributes=attributes or {},
+        )
+        self._nodes[node_id] = node
+        return node
 
-    def get_audit_merkle_root(self) -> str:
-        if not self.audit_log:
-            return 'sha256:' + hashlib.sha256(b'empty').hexdigest()
-        digests = [hashlib.sha256(json.dumps(e, sort_keys=True).encode('utf-8')).hexdigest() for e in self.audit_log]
-        combined = ''.join(sorted(digests))
-        return 'sha256:' + hashlib.sha256(combined.encode('utf-8')).hexdigest()
+    def add_edge(self, source_id: str, target_id: str, relationship: str) -> TraceEdge:
+        if source_id not in self._nodes:
+            raise KeyError(f"Source node '{source_id}' does not exist in graph")
+        if target_id not in self._nodes:
+            raise KeyError(f"Target node '{target_id}' does not exist in graph")
+        valid_rel = {"SATISFIES", "TESTS", "IMPLEMENTS", "DEPENDS_ON"}
+        if relationship not in valid_rel:
+            raise ValueError(f"Invalid relationship '{relationship}', must be one of {valid_rel}")
 
-    def process_domain_slice_1(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV1:
-        """Execute domain workflow slice 1."""
-        record_id = str(payload.get('id', f'REC-1-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_1'))
-        score = float(payload.get('score', 1 * 1.5))
-        record = TraceabilityMatrixEngineRecordV1(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_1_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
+        edge = TraceEdge(source_id=source_id, target_id=target_id, relationship=relationship)
+        self._edges.append(edge)
+        self._forward_adj[source_id].add(target_id)
+        self._backward_adj[target_id].add(source_id)
+        return edge
 
-    def process_domain_slice_2(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV2:
-        """Execute domain workflow slice 2."""
-        record_id = str(payload.get('id', f'REC-2-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_2'))
-        score = float(payload.get('score', 2 * 1.5))
-        record = TraceabilityMatrixEngineRecordV2(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_2_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
+    def get_forward_reachability(self, start_node_id: str) -> Set[str]:
+        """Compute transitive closure of all nodes reachable from start_node_id."""
+        if start_node_id not in self._nodes:
+            raise KeyError(f"Node '{start_node_id}' does not exist")
+        visited: Set[str] = set()
+        queue: deque[str] = deque([start_node_id])
+        while queue:
+            curr = queue.popleft()
+            for neighbor in self._forward_adj[curr]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+        return visited
 
-    def process_domain_slice_3(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV3:
-        """Execute domain workflow slice 3."""
-        record_id = str(payload.get('id', f'REC-3-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_3'))
-        score = float(payload.get('score', 3 * 1.5))
-        record = TraceabilityMatrixEngineRecordV3(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_3_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
+    def get_backward_reachability(self, start_node_id: str) -> Set[str]:
+        """Compute transitive closure of all ancestors reaching start_node_id."""
+        if start_node_id not in self._nodes:
+            raise KeyError(f"Node '{start_node_id}' does not exist")
+        visited: Set[str] = set()
+        queue: deque[str] = deque([start_node_id])
+        while queue:
+            curr = queue.popleft()
+            for parent in self._backward_adj[curr]:
+                if parent not in visited:
+                    visited.add(parent)
+                    queue.append(parent)
+        return visited
 
-    def process_domain_slice_4(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV4:
-        """Execute domain workflow slice 4."""
-        record_id = str(payload.get('id', f'REC-4-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_4'))
-        score = float(payload.get('score', 4 * 1.5))
-        record = TraceabilityMatrixEngineRecordV4(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_4_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
+    def find_untraced_requirements(self) -> List[str]:
+        """Requirements that do not have any TEST node covering their lifecycle scope."""
+        untraced = []
+        req_nodes = [n for n in self._nodes.values() if n.node_type == "REQUIREMENT"]
+        test_nodes = [n for n in self._nodes.values() if n.node_type == "TEST"]
+        for req in req_nodes:
+            req_scope = self.get_forward_reachability(req.node_id) | {req.node_id}
+            has_test = False
+            for test in test_nodes:
+                test_targets = self.get_forward_reachability(test.node_id) | self.get_backward_reachability(test.node_id) | {test.node_id}
+                if req_scope & test_targets:
+                    has_test = True
+                    break
+            if not has_test:
+                untraced.append(req.node_id)
+        return sorted(untraced)
 
-    def process_domain_slice_5(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV5:
-        """Execute domain workflow slice 5."""
-        record_id = str(payload.get('id', f'REC-5-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_5'))
-        score = float(payload.get('score', 5 * 1.5))
-        record = TraceabilityMatrixEngineRecordV5(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_5_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
+    def find_orphan_tests(self) -> List[str]:
+        """Tests that do not trace to any REQUIREMENT node."""
+        orphans = []
+        req_nodes = [n for n in self._nodes.values() if n.node_type == "REQUIREMENT"]
+        test_nodes = [n for n in self._nodes.values() if n.node_type == "TEST"]
+        for test in test_nodes:
+            test_targets = self.get_forward_reachability(test.node_id) | self.get_backward_reachability(test.node_id) | {test.node_id}
+            has_req = False
+            for req in req_nodes:
+                req_scope = self.get_forward_reachability(req.node_id) | {req.node_id}
+                if test_targets & req_scope:
+                    has_req = True
+                    break
+            if not has_req:
+                orphans.append(test.node_id)
+        return sorted(orphans)
 
-    def process_domain_slice_6(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV6:
-        """Execute domain workflow slice 6."""
-        record_id = str(payload.get('id', f'REC-6-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_6'))
-        score = float(payload.get('score', 6 * 1.5))
-        record = TraceabilityMatrixEngineRecordV6(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_6_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
+    def compute_blast_radius(self, changed_node_id: str) -> Set[str]:
+        """Compute all downstream artifacts impacted by a change in changed_node_id."""
+        return self.get_forward_reachability(changed_node_id)
 
-    def process_domain_slice_7(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV7:
-        """Execute domain workflow slice 7."""
-        record_id = str(payload.get('id', f'REC-7-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_7'))
-        score = float(payload.get('score', 7 * 1.5))
-        record = TraceabilityMatrixEngineRecordV7(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_7_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
+    def generate_report(self) -> TraceabilityReport:
+        req_ids = [n.node_id for n in self._nodes.values() if n.node_type == "REQUIREMENT"]
+        total_reqs = len(req_ids)
+        untraced = self.find_untraced_requirements()
+        covered = total_reqs - len(untraced)
+        ratio = (covered / total_reqs * 100.0) if total_reqs > 0 else 100.0
+        orphan_tests = self.find_orphan_tests()
 
-    def process_domain_slice_8(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV8:
-        """Execute domain workflow slice 8."""
-        record_id = str(payload.get('id', f'REC-8-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_8'))
-        score = float(payload.get('score', 8 * 1.5))
-        record = TraceabilityMatrixEngineRecordV8(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_8_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
+        sorted_nodes = sorted(self._nodes.keys())
+        hashes = [self._nodes[k].compute_hash() for k in sorted_nodes]
+        combined = ":".join(hashes)
+        merkle = hashlib.sha256(combined.encode("utf-8")).hexdigest()
 
-    def process_domain_slice_9(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV9:
-        """Execute domain workflow slice 9."""
-        record_id = str(payload.get('id', f'REC-9-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_9'))
-        score = float(payload.get('score', 9 * 1.5))
-        record = TraceabilityMatrixEngineRecordV9(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_9_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
+        return TraceabilityReport(
+            total_requirements=total_reqs,
+            covered_requirements=covered,
+            untraced_requirements=untraced,
+            orphan_tests=orphan_tests,
+            coverage_ratio=round(ratio, 2),
+            merkle_root=merkle,
+        )
 
-    def process_domain_slice_10(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV10:
-        """Execute domain workflow slice 10."""
-        record_id = str(payload.get('id', f'REC-10-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_10'))
-        score = float(payload.get('score', 10 * 1.5))
-        record = TraceabilityMatrixEngineRecordV10(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_10_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_11(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV11:
-        """Execute domain workflow slice 11."""
-        record_id = str(payload.get('id', f'REC-11-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_11'))
-        score = float(payload.get('score', 11 * 1.5))
-        record = TraceabilityMatrixEngineRecordV11(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_11_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_12(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV12:
-        """Execute domain workflow slice 12."""
-        record_id = str(payload.get('id', f'REC-12-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_12'))
-        score = float(payload.get('score', 12 * 1.5))
-        record = TraceabilityMatrixEngineRecordV12(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_12_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_13(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV13:
-        """Execute domain workflow slice 13."""
-        record_id = str(payload.get('id', f'REC-13-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_13'))
-        score = float(payload.get('score', 13 * 1.5))
-        record = TraceabilityMatrixEngineRecordV13(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_13_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_14(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV14:
-        """Execute domain workflow slice 14."""
-        record_id = str(payload.get('id', f'REC-14-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_14'))
-        score = float(payload.get('score', 14 * 1.5))
-        record = TraceabilityMatrixEngineRecordV14(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_14_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_15(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV15:
-        """Execute domain workflow slice 15."""
-        record_id = str(payload.get('id', f'REC-15-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_15'))
-        score = float(payload.get('score', 15 * 1.5))
-        record = TraceabilityMatrixEngineRecordV15(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_15_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_16(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV16:
-        """Execute domain workflow slice 16."""
-        record_id = str(payload.get('id', f'REC-16-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_16'))
-        score = float(payload.get('score', 16 * 1.5))
-        record = TraceabilityMatrixEngineRecordV16(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_16_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_17(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV17:
-        """Execute domain workflow slice 17."""
-        record_id = str(payload.get('id', f'REC-17-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_17'))
-        score = float(payload.get('score', 17 * 1.5))
-        record = TraceabilityMatrixEngineRecordV17(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_17_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_18(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV18:
-        """Execute domain workflow slice 18."""
-        record_id = str(payload.get('id', f'REC-18-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_18'))
-        score = float(payload.get('score', 18 * 1.5))
-        record = TraceabilityMatrixEngineRecordV18(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_18_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_19(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV19:
-        """Execute domain workflow slice 19."""
-        record_id = str(payload.get('id', f'REC-19-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_19'))
-        score = float(payload.get('score', 19 * 1.5))
-        record = TraceabilityMatrixEngineRecordV19(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_19_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_20(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV20:
-        """Execute domain workflow slice 20."""
-        record_id = str(payload.get('id', f'REC-20-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_20'))
-        score = float(payload.get('score', 20 * 1.5))
-        record = TraceabilityMatrixEngineRecordV20(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_20_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_21(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV21:
-        """Execute domain workflow slice 21."""
-        record_id = str(payload.get('id', f'REC-21-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_21'))
-        score = float(payload.get('score', 21 * 1.5))
-        record = TraceabilityMatrixEngineRecordV21(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_21_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_22(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV22:
-        """Execute domain workflow slice 22."""
-        record_id = str(payload.get('id', f'REC-22-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_22'))
-        score = float(payload.get('score', 22 * 1.5))
-        record = TraceabilityMatrixEngineRecordV22(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_22_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_23(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV23:
-        """Execute domain workflow slice 23."""
-        record_id = str(payload.get('id', f'REC-23-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_23'))
-        score = float(payload.get('score', 23 * 1.5))
-        record = TraceabilityMatrixEngineRecordV23(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_23_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_24(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV24:
-        """Execute domain workflow slice 24."""
-        record_id = str(payload.get('id', f'REC-24-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_24'))
-        score = float(payload.get('score', 24 * 1.5))
-        record = TraceabilityMatrixEngineRecordV24(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_24_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_25(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV25:
-        """Execute domain workflow slice 25."""
-        record_id = str(payload.get('id', f'REC-25-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_25'))
-        score = float(payload.get('score', 25 * 1.5))
-        record = TraceabilityMatrixEngineRecordV25(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_25_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_26(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV26:
-        """Execute domain workflow slice 26."""
-        record_id = str(payload.get('id', f'REC-26-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_26'))
-        score = float(payload.get('score', 26 * 1.5))
-        record = TraceabilityMatrixEngineRecordV26(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_26_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_27(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV27:
-        """Execute domain workflow slice 27."""
-        record_id = str(payload.get('id', f'REC-27-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_27'))
-        score = float(payload.get('score', 27 * 1.5))
-        record = TraceabilityMatrixEngineRecordV27(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_27_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_28(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV28:
-        """Execute domain workflow slice 28."""
-        record_id = str(payload.get('id', f'REC-28-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_28'))
-        score = float(payload.get('score', 28 * 1.5))
-        record = TraceabilityMatrixEngineRecordV28(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_28_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_29(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV29:
-        """Execute domain workflow slice 29."""
-        record_id = str(payload.get('id', f'REC-29-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_29'))
-        score = float(payload.get('score', 29 * 1.5))
-        record = TraceabilityMatrixEngineRecordV29(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_29_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_30(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV30:
-        """Execute domain workflow slice 30."""
-        record_id = str(payload.get('id', f'REC-30-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_30'))
-        score = float(payload.get('score', 30 * 1.5))
-        record = TraceabilityMatrixEngineRecordV30(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_30_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_31(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV31:
-        """Execute domain workflow slice 31."""
-        record_id = str(payload.get('id', f'REC-31-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_31'))
-        score = float(payload.get('score', 31 * 1.5))
-        record = TraceabilityMatrixEngineRecordV31(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_31_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_32(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV32:
-        """Execute domain workflow slice 32."""
-        record_id = str(payload.get('id', f'REC-32-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_32'))
-        score = float(payload.get('score', 32 * 1.5))
-        record = TraceabilityMatrixEngineRecordV32(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_32_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_33(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV33:
-        """Execute domain workflow slice 33."""
-        record_id = str(payload.get('id', f'REC-33-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_33'))
-        score = float(payload.get('score', 33 * 1.5))
-        record = TraceabilityMatrixEngineRecordV33(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_33_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_34(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV34:
-        """Execute domain workflow slice 34."""
-        record_id = str(payload.get('id', f'REC-34-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_34'))
-        score = float(payload.get('score', 34 * 1.5))
-        record = TraceabilityMatrixEngineRecordV34(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_34_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_35(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV35:
-        """Execute domain workflow slice 35."""
-        record_id = str(payload.get('id', f'REC-35-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_35'))
-        score = float(payload.get('score', 35 * 1.5))
-        record = TraceabilityMatrixEngineRecordV35(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_35_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_36(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV36:
-        """Execute domain workflow slice 36."""
-        record_id = str(payload.get('id', f'REC-36-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_36'))
-        score = float(payload.get('score', 36 * 1.5))
-        record = TraceabilityMatrixEngineRecordV36(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_36_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_37(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV37:
-        """Execute domain workflow slice 37."""
-        record_id = str(payload.get('id', f'REC-37-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_37'))
-        score = float(payload.get('score', 37 * 1.5))
-        record = TraceabilityMatrixEngineRecordV37(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_37_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_38(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV38:
-        """Execute domain workflow slice 38."""
-        record_id = str(payload.get('id', f'REC-38-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_38'))
-        score = float(payload.get('score', 38 * 1.5))
-        record = TraceabilityMatrixEngineRecordV38(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_38_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_39(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV39:
-        """Execute domain workflow slice 39."""
-        record_id = str(payload.get('id', f'REC-39-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_39'))
-        score = float(payload.get('score', 39 * 1.5))
-        record = TraceabilityMatrixEngineRecordV39(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_39_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_40(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV40:
-        """Execute domain workflow slice 40."""
-        record_id = str(payload.get('id', f'REC-40-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_40'))
-        score = float(payload.get('score', 40 * 1.5))
-        record = TraceabilityMatrixEngineRecordV40(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_40_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_41(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV41:
-        """Execute domain workflow slice 41."""
-        record_id = str(payload.get('id', f'REC-41-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_41'))
-        score = float(payload.get('score', 41 * 1.5))
-        record = TraceabilityMatrixEngineRecordV41(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_41_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_42(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV42:
-        """Execute domain workflow slice 42."""
-        record_id = str(payload.get('id', f'REC-42-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_42'))
-        score = float(payload.get('score', 42 * 1.5))
-        record = TraceabilityMatrixEngineRecordV42(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_42_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_43(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV43:
-        """Execute domain workflow slice 43."""
-        record_id = str(payload.get('id', f'REC-43-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_43'))
-        score = float(payload.get('score', 43 * 1.5))
-        record = TraceabilityMatrixEngineRecordV43(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_43_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_44(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV44:
-        """Execute domain workflow slice 44."""
-        record_id = str(payload.get('id', f'REC-44-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_44'))
-        score = float(payload.get('score', 44 * 1.5))
-        record = TraceabilityMatrixEngineRecordV44(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_44_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
-
-    def process_domain_slice_45(self, payload: Mapping[str, Any]) -> TraceabilityMatrixEngineRecordV45:
-        """Execute domain workflow slice 45."""
-        record_id = str(payload.get('id', f'REC-45-{self.execution_counter}'))
-        name = str(payload.get('name', f'entity_45'))
-        score = float(payload.get('score', 45 * 1.5))
-        record = TraceabilityMatrixEngineRecordV45(record_id=record_id, entity_name=name, metric_score=score)
-        if not record.validate():
-            record.is_valid = False
-            record.status = 'INVALID'
-        self.registry[record_id] = record
-        self.record_audit_event('SLICE_45_PROCESSED', {'record_id': record_id, 'score': score})
-        return record
+    def export_mermaid(self) -> str:
+        """Export graph to Mermaid flowchart format."""
+        lines = ["flowchart TD"]
+        for nid, node in sorted(self._nodes.items()):
+            label = f'"{nid} [{node.node_type}]: {node.title}"'
+            lines.append(f"    {nid}[{label}]")
+        for edge in sorted(self._edges, key=lambda e: (e.source_id, e.target_id)):
+            lines.append(f"    {edge.source_id} -->|{edge.relationship}| {edge.target_id}")
+        return "\n".join(lines)

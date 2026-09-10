@@ -1,20 +1,20 @@
 <view class="page-stack">
-  <view class="{{styles.hero}}">
+  <view class="{{'hero'}}">
     <view>
       <text class="overline">OPERATIONS · GOVERNED AUTOMATION</text>
       <view>生产运营管理端</view>
       <view>统一查看业务操作、SLO、告警、事件和修复提案。自动化负责检测、诊断与生成摘要绑定的修复计划；审批、源码变更、测试、SCM 与部署保持权限分离。</view>
     </view>
-    <view class="{{styles.heroStatus}}">
-      <text class="{{styles.statusDot}}" />
+    <view class="{{'heroStatus'}}">
+      <text class="{{'statusDot'}}" />
       <view>
         <text>{{state === "READY" ? `已连接 · ${view?.role}` : "数据链路已锁定"}}</text>
         <text>{{periodLabel}}</text>
       </view>
     </view>
   </view>
-  <form class="{{styles.accessBar}}" data-telemetry-ignore="true" bindsubmit="load">
-    <view class="{{styles.tokenField}}">
+  <form class="{{'accessBar'}}" data-telemetry-ignore="true" bindsubmit="load">
+    <view class="{{'tokenField'}}">
       <text>管理员身份</text>
       <text>{{account.principal?.email ?? "未登录"}}</text>
       <text>仅接受已验证的管理员企业账户会话</text>
@@ -49,14 +49,13 @@
     </button>
     <button wx:if="{{state === 'READY'}}" class="secondary-button" type="button" bindtap="lock">锁定</button>
   </form>
-  <view wx:if="{{state === 'READY' && adminSection === 'AUDIT'}}" class="{{styles.panel}}" aria-label="审计导出">
+  <view wx:if="{{state === 'READY' && adminSection === 'AUDIT'}}" class="{{'panel'}}" aria-label="审计导出">
     <view>
       <Icon name="file" size="{{18}}" />
       <text>审计导出</text>
     </view>
-    <view>导出所选窗口内的原始审计与遥测记录（CSV）。按游标逐页读取，
-            结果与上方筛选的业务线、结果保持一致；时间窗口在此单独选择。</view>
-    <view class="{{styles.inlineActions}}">
+    <view>导出所选窗口内的原始审计与遥测记录（CSV）。按游标逐页读取， 结果与上方筛选的业务线、结果保持一致；时间窗口在此单独选择。</view>
+    <view class="{{'inlineActions'}}">
       <text>
         <text>窗口</text>
         <view value="{{exportDays}}" aria-label="导出时间窗口" disabled="{{exportBusy}}" bindchange="onChange">
@@ -72,17 +71,16 @@
         <text>{{exportBusy ? "导出中…" : "导出 CSV"}}</text>
       </button>
     </view>
-    <view wx:if="{{exportError}}" class="{{styles.bad}}" role="alert">{{exportError}}</view>
-    <view wx:if="{{exportNotice}}" class="{{styles.good}}" role="status">{{exportNotice}}</view>
+    <view wx:if="{{exportError}}" class="{{'bad'}}" role="alert">{{exportError}}</view>
+    <view wx:if="{{exportNotice}}" class="{{'good'}}" role="status">{{exportNotice}}</view>
   </view>
-  <view wx:if="{{state === 'READY' && adminSection === 'AUDIT'}}" class="{{styles.panel}}" aria-label="运行历史回放">
+  <view wx:if="{{state === 'READY' && adminSection === 'AUDIT'}}" class="{{'panel'}}" aria-label="运行历史回放">
     <view>
       <Icon name="clock" size="{{18}}" />
       <text>运行历史回放</text>
     </view>
-    <view>按迁移运行 ID 重建一次运行的完整过程：每一次步骤尝试、沿途产出的证据、
-            以及点名这次运行的审计记录。只读重建，不会改动被回放的记录。</view>
-    <view class="{{styles.inlineActions}}">
+    <view>按迁移运行 ID 重建一次运行的完整过程：每一次步骤尝试、沿途产出的证据、 以及点名这次运行的审计记录。只读重建，不会改动被回放的记录。</view>
+    <view class="{{'inlineActions'}}">
       <text>
         <text>运行 ID</text>
         <input value="{{replayRunId}}" aria-label="迁移运行 ID" placeholder="migration-run-…" disabled="{{replayBusy}}" bindchange="onChange" />
@@ -92,14 +90,13 @@
         <text>{{replayBusy ? "读取中…" : "回放"}}</text>
       </button>
     </view>
-    <view wx:if="{{replayError}}" class="{{styles.bad}}" role="alert">{{replayError}}</view>
-    <view wx:if="{{replay}}" class="{{styles.evidence}}">
+    <view wx:if="{{replayError}}" class="{{'bad'}}" role="alert">{{replayError}}</view>
+    <view wx:if="{{replay}}" class="{{'evidence'}}">
       <view>
         <text>{{replay.migrationRunId}}</text>
         <text>· 状态</text>
         <text>{{replay.state}}</text>
-        <text>·
-                计划</text>
+        <text>· 计划</text>
         <text>{{replay.migrationPlanId}}</text>
         <text>v</text>
         <text>{{replay.planVersion}}</text>
@@ -107,12 +104,12 @@
         <text>{{replay.snapshotId}}</text>
       </view>
       <view>步骤尝试（ {{replay.steps.rows.length}} ）</view>
-      <view wx:if="{{replay.steps.truncated}}" class="{{styles.bad}}" role="alert">
+      <view wx:if="{{replay.steps.truncated}}" class="{{'bad'}}" role="alert">
         <text>步骤过多，仅显示前</text>
         <text>{{replay.steps.rows.length}}</text>
         <text>条——这份回放不完整，不能作为完整凭据。</text>
       </view>
-      <view class="{{styles.tableWrap}}">
+      <view class="{{'tableWrap'}}">
         <view>
           <view>
             <view>
@@ -128,7 +125,7 @@
             <view wx:for="{{replay.steps.rows}}" wx:for-item="attempt" wx:key="attempt.id" key="{{attempt.stepRunId}}">
               <view>{{attempt.stepId}}</view>
               <view>{{attempt.attempt}}</view>
-              <view class="{{attempt.failureCode ? styles.resultBad : styles.resultGood}}">{{attempt.state}}</view>
+              <view class="{{attempt.failureCode ? 'resultBad' : 'resultGood'}}">{{attempt.state}}</view>
               <view>{{attempt.startedAt ?? "未开始"}}</view>
               <view>{{attempt.finishedAt ?? "—"}}</view>
               <view>{{attempt.failureCode ?? "—"}}</view>
@@ -137,15 +134,15 @@
         </view>
       </view>
       <view>证据（ {{replay.evidence.rows.length}} ）</view>
-      <view wx:if="{{replay.evidence.truncated}}" class="{{styles.bad}}" role="alert">
+      <view wx:if="{{replay.evidence.truncated}}" class="{{'bad'}}" role="alert">
         <text>证据过多，仅显示前</text>
         <text>{{replay.evidence.rows.length}}</text>
         <text>条——这份回放不完整。</text>
       </view>
-      <view wx:if="{{replay.evidence.rows.length === 0}}" class="{{styles.empty}}">这次运行没有留下证据记录。</view>
-      <view wx:else class="{{styles.lineList}}">
+      <view wx:if="{{replay.evidence.rows.length === 0}}" class="{{'empty'}}">这次运行没有留下证据记录。</view>
+      <view wx:else class="{{'lineList'}}">
         <view wx:for="{{replay.evidence.rows}}" wx:key="item.id" key="{{item.evidenceId}}">
-          <text class="{{styles.kind}}">{{item.evidenceType}}</text>
+          <text class="{{'kind'}}">{{item.evidenceType}}</text>
           <text>{{item.producerName}}</text>
           <text>{{item.producerVersion}}</text>
           <text>·</text>
@@ -155,15 +152,15 @@
         </view>
       </view>
       <view>审计（ {{replay.audit.rows.length}} ）</view>
-      <view wx:if="{{replay.audit.truncated}}" class="{{styles.bad}}" role="alert">
+      <view wx:if="{{replay.audit.truncated}}" class="{{'bad'}}" role="alert">
         <text>审计记录过多，仅显示前</text>
         <text>{{replay.audit.rows.length}}</text>
         <text>条——这份回放不完整。</text>
       </view>
-      <view wx:if="{{replay.audit.rows.length === 0}}" class="{{styles.empty}}">没有点名这次运行的审计记录。审计行通过 resource_id 关联，未设置该字段的行不会出现在这里。</view>
-      <view wx:else class="{{styles.lineList}}">
+      <view wx:if="{{replay.audit.rows.length === 0}}" class="{{'empty'}}">没有点名这次运行的审计记录。审计行通过 resource_id 关联，未设置该字段的行不会出现在这里。</view>
+      <view wx:else class="{{'lineList'}}">
         <view wx:for="{{replay.audit.rows}}" wx:for-item="entry" wx:key="entry.id" key="{{entry.auditId}}">
-          <text class="{{styles.kind}}">{{entry.action}}</text>
+          <text class="{{'kind'}}">{{entry.action}}</text>
           <text>{{entry.actorType}}</text>
           <text>{{entry.actorId}}</text>
           <text>·</text>
@@ -175,7 +172,7 @@
       </view>
     </view>
   </view>
-  <view wx:if="{{state === 'LOCKED'}}" class="{{styles.locked}}">
+  <view wx:if="{{state === 'LOCKED'}}" class="{{'locked'}}">
     <text>
       <Icon name="lock" size="{{24}}" />
     </text>
@@ -184,19 +181,19 @@
       <view>仅已验证的指定管理员邮箱可建立管理会话；角色由服务端决定，页面不能自行提升。</view>
     </view>
   </view>
-  <view wx:if="{{error}}" class="{{styles.error}}" role="alert">
+  <view wx:if="{{error}}" class="{{'error'}}" role="alert">
     <Icon name="shield" size="{{21}}" />
     <view>
       <text>管理操作未完成</text>
       <view>{{error}}</view>
     </view>
   </view>
-  <view wx:if="{{notice}}" class="{{styles.notice}}" role="status">{{notice}}</view>
-  <view wx:if="{{state === 'READY'}}" class="{{styles.sectionNav}}" aria-label="管理端功能">
-    <button wx:for="{{adminSections}}" wx:for-item="[value, label]" wx:key="[value, label].id" key="{{value}}" type="button" aria-current="{{adminSection === value ? &quot;page&quot; : undefined}}" class="{{adminSection === value ? styles.activeSection : &quot;&quot;}}" bindtap="onTap">{{label}}</button>
+  <view wx:if="{{notice}}" class="{{'notice'}}" role="status">{{notice}}</view>
+  <view wx:if="{{state === 'READY'}}" class="{{'sectionNav'}}" aria-label="管理端功能">
+    <button wx:for="{{adminSections}}" wx:for-item="[value, label]" wx:key="[value, label].id" key="{{value}}" type="button" aria-current="{{adminSection === value ? &quot;page&quot; : undefined}}" class="{{adminSection === value ? 'activeSection' : &quot;&quot;}}" bindtap="onTap">{{label}}</button>
   </view>
   <block wx:if="{{summary && view}}">
-    <view wx:if="{{adminSection === 'USERS'}}" class="{{styles.panel}}">
+    <view wx:if="{{adminSection === 'USERS'}}" class="{{'panel'}}">
       <view>
         <view>
           <text class="overline">IDENTITY &amp; TENANCY</text>
@@ -204,7 +201,7 @@
         </view>
         <text>来源：当前已验证 OIDC 会话</text>
       </view>
-      <view class="{{styles.identityGrid}}">
+      <view class="{{'identityGrid'}}">
         <view>
           <text>当前用户</text>
           <text>{{account.principal?.displayName ?? view.actorId}}</text>
@@ -221,7 +218,7 @@
           <text>{{account.principal?.permissions.join(" · ") || "需要已验证的管理员企业会话"}}</text>
         </view>
       </view>
-      <view class="{{styles.membershipList}}">
+      <view class="{{'membershipList'}}">
         <view wx:for="{{(account.principal?.memberships ?? [])}}" wx:for-item="membership" wx:key="membership.id" key="{{membership.organizationId}}">
           <view>
             <text>{{membership.organizationId}}</text>
@@ -231,12 +228,12 @@
         </view>
         <Empty wx:if="{{(account.principal?.memberships.length ?? 0) === 0}}" label="外部 IdP 全量用户目录同步尚未执行；不会据当前会话推断其他用户。" />
       </view>
-      <view wx:if="{{(account.principal?.memberships.length ?? 0) > 0}}" class="{{styles.boundaryNote}}">当前列表仅来自已验证会话的成员资格；外部 IdP 全量用户目录同步尚未执行，不会据当前会话推断其他用户。</view>
+      <view wx:if="{{(account.principal?.memberships.length ?? 0) > 0}}" class="{{'boundaryNote'}}">当前列表仅来自已验证会话的成员资格；外部 IdP 全量用户目录同步尚未执行，不会据当前会话推断其他用户。</view>
       <AccountOrganizationStudio wx:if="{{account.status === 'authenticated'}}" embedded="true" />
-      <view wx:if="{{account.status !== 'authenticated'}}" class="{{styles.boundaryNote}}">这些动作必须使用已验证的指定管理员企业会话。</view>
+      <view wx:if="{{account.status !== 'authenticated'}}" class="{{'boundaryNote'}}">这些动作必须使用已验证的指定管理员企业会话。</view>
     </view>
     <block wx:if="{{adminSection === 'TASKS'}}">
-      <view class="{{styles.panel}}" aria-label="持久作业队列">
+      <view class="{{'panel'}}" aria-label="持久作业队列">
         <view>
           <view>
             <text class="overline">DURABLE JOB CONTROL</text>
@@ -244,7 +241,7 @@
           </view>
           <text>租户隔离 · 最多 100 条 · 取消需 OPERATOR</text>
         </view>
-        <view class="{{styles.inlineActions}}">
+        <view class="{{'inlineActions'}}">
           <text>
             <text>作业类型</text>
             <view aria-label="持久作业类型" value="{{operationsJobBusinessLine}}" disabled="{{operationsJobsBusy || Boolean(operationsJobCancelBusy)}}" bindchange="onChange">
@@ -262,8 +259,8 @@
             <text>{{operationsJobsBusy ? "读取中…" : "读取作业"}}</text>
           </button>
         </view>
-        <view wx:if="{{operationsJobsError}}" class="{{styles.bad}}" role="alert">{{operationsJobsError}}</view>
-        <view wx:if="{{operationsJobsNotice}}" class="{{styles.good}}" role="status">{{operationsJobsNotice}}</view>
+        <view wx:if="{{operationsJobsError}}" class="{{'bad'}}" role="alert">{{operationsJobsError}}</view>
+        <view wx:if="{{operationsJobsNotice}}" class="{{'good'}}" role="status">{{operationsJobsNotice}}</view>
         <Empty wx:if="{{!operationsJobsLoaded}}" label="选择类型和状态后读取真实作业；页面不使用审计事件推断队列状态。" />
         <text wx:else>{{operationsJobs.length === 0 ? (
                   <Empty label="当前租户没有匹配的持久作业" />
@@ -326,10 +323,9 @@
                     </table>
                   </div>
                 )}}</text>
-        <view class="{{styles.boundaryNote}}">取消只写入持久的 cancel-requested 信号，不跳过 Runner 租约、重试门禁或独立验证；
-                  结果未知时不会自动重试写操作。</view>
+        <view class="{{'boundaryNote'}}">取消只写入持久的 cancel-requested 信号，不跳过 Runner 租约、重试门禁或独立验证； 结果未知时不会自动重试写操作。</view>
       </view>
-      <view class="{{styles.panel}}" aria-label="Runner Fleet">
+      <view class="{{'panel'}}" aria-label="Runner Fleet">
         <view>
           <view>
             <text class="overline">RUNNER FLEET</text>
@@ -337,7 +333,7 @@
           </view>
           <text>租户 RLS · secret-free 投影 · 最多 100 个节点</text>
         </view>
-        <view class="{{styles.inlineActions}}">
+        <view class="{{'inlineActions'}}">
           <text>
             <text>Fleet 状态</text>
             <view aria-label="Runner Fleet 状态" value="{{runnerFleetStatus}}" disabled="{{runnerFleetBusy || Boolean(runnerFleetActionBusy)}}" bindchange="onChange">
@@ -349,8 +345,8 @@
             <text>{{runnerFleetBusy ? "读取中…" : "读取 Fleet"}}</text>
           </button>
         </view>
-        <view wx:if="{{runnerFleetError}}" class="{{styles.bad}}" role="alert">{{runnerFleetError}}</view>
-        <view wx:if="{{runnerFleetNotice}}" class="{{styles.good}}" role="status">{{runnerFleetNotice}}</view>
+        <view wx:if="{{runnerFleetError}}" class="{{'bad'}}" role="alert">{{runnerFleetError}}</view>
+        <view wx:if="{{runnerFleetNotice}}" class="{{'good'}}" role="status">{{runnerFleetNotice}}</view>
         <Empty wx:if="{{!runnerFleetLoaded}}" label="读取真实 Fleet 投影；凭据、token hash、原始 attestation 和验证者身份均不会返回浏览器。" />
         <text wx:else>{{runnerFleet.length === 0 ? (
                   <Empty label="当前租户没有匹配的 Runner 节点" />
@@ -446,10 +442,9 @@
                     </table>
                   </div>
                 )}}</text>
-        <view class="{{styles.boundaryNote}}">列表仅允许已验证的指定管理员账户读取；独立证明确认与排空是生产操作，
-                  只接受企业 OIDC 会话的 APPROVER / OPERATOR，结果未知时不自动重试。</view>
+        <view class="{{'boundaryNote'}}">列表仅允许已验证的指定管理员账户读取；独立证明确认与排空是生产操作， 只接受企业 OIDC 会话的 APPROVER / OPERATOR，结果未知时不自动重试。</view>
       </view>
-      <view class="{{styles.panel}}" aria-label="作业审计信号">
+      <view class="{{'panel'}}" aria-label="作业审计信号">
         <view>
           <view>
             <text class="overline">JOB AUDIT SIGNALS</text>
@@ -460,7 +455,7 @@
         <EventTable events="{{taskEvents}}" empty="所选窗口内没有作业审计事件" />
       </view>
     </block>
-    <view wx:if="{{adminSection === 'REPOSITORIES'}}" class="{{styles.panel}}">
+    <view wx:if="{{adminSection === 'REPOSITORIES'}}" class="{{'panel'}}">
       <view>
         <view>
           <text class="overline">REPOSITORY GOVERNANCE</text>
@@ -469,11 +464,11 @@
         <text>拉取、变更、Commit、Push、PR</text>
       </view>
       <EventTable events="{{repositoryEvents}}" empty="所选窗口内没有仓库操作" />
-      <view class="{{styles.inlineActions}}">
+      <view class="{{'inlineActions'}}">
         <navigator class="secondary-button" href="/repositories">打开仓库工作区</navigator>
       </view>
     </view>
-    <view wx:if="{{adminSection === 'FINANCE'}}" class="{{styles.panel}}" aria-label="财务对账">
+    <view wx:if="{{adminSection === 'FINANCE'}}" class="{{'panel'}}" aria-label="财务对账">
       <view>
         <view>
           <text class="overline">BILLING RECONCILIATION</text>
@@ -481,9 +476,8 @@
         </view>
         <text>租户： {{account.principal?.organizationId ?? "企业 OIDC 会话必需"}}</text>
       </view>
-      <view>列表来自 commercial-api 的租户隔离对账账本。读取需要 VIEWER，RESOLVED / REJECTED
-                结案需要 APPROVER、稳定处理依据和客户端 Idempotency-Key。</view>
-      <view class="{{styles.inlineActions}}">
+      <view>列表来自 commercial-api 的租户隔离对账账本。读取需要 VIEWER，RESOLVED / REJECTED 结案需要 APPROVER、稳定处理依据和客户端 Idempotency-Key。</view>
+      <view class="{{'inlineActions'}}">
         <text>
           <text>案件状态</text>
           <view aria-label="财务对账状态" value="{{financialStatus}}" disabled="{{financialLoadBusy || Boolean(financialBusyAction)}}" bindchange="onChange">
@@ -497,11 +491,10 @@
           <text>{{financialLoadBusy ? "读取中…" : "读取对账"}}</text>
         </button>
       </view>
-      <view class="{{styles.boundaryNote}}">管理端不接受共享 Bearer 凭据。切换租户后，Web 会比较已验证会话的所选组织与 JWT
-                organization_id；不一致时拒绝转发并要求重新取得租户授权。未知写入结果不会自动重试。</view>
-      <view wx:if="{{financialError}}" class="{{styles.bad}}" role="alert">{{financialError}}</view>
-      <view wx:if="{{financialUnknown}}" class="{{styles.bad}}" role="alert">{{financialUnknown}}</view>
-      <view wx:if="{{financialNotice}}" class="{{styles.good}}" role="status">{{financialNotice}}</view>
+      <view class="{{'boundaryNote'}}">管理端不接受共享 Bearer 凭据。切换租户后，Web 会比较已验证会话的所选组织与 JWT organization_id；不一致时拒绝转发并要求重新取得租户授权。未知写入结果不会自动重试。</view>
+      <view wx:if="{{financialError}}" class="{{'bad'}}" role="alert">{{financialError}}</view>
+      <view wx:if="{{financialUnknown}}" class="{{'bad'}}" role="alert">{{financialUnknown}}</view>
+      <view wx:if="{{financialNotice}}" class="{{'good'}}" role="status">{{financialNotice}}</view>
       <Empty wx:if="{{!financialLoaded}}" label="{{account.status === &quot;authenticated&quot;
                   ? &quot;选择状态后读取真实对账案件；页面不会使用样例财务数据。&quot;
                   : &quot;请先通过独立管理员入口登录已验证的管理员企业账户。&quot;}}" />
@@ -589,9 +582,9 @@
                   </table>
                 </div>
               )}}</text>
-      <view class="{{styles.boundaryNote}}">此页面只闭环已有商业对账案件与追加式结案事件；不代表真实支付、税务、银行结算或会计认证已通过。</view>
+      <view class="{{'boundaryNote'}}">此页面只闭环已有商业对账案件与追加式结案事件；不代表真实支付、税务、银行结算或会计认证已通过。</view>
     </view>
-    <view wx:if="{{(adminSection === 'ALERTS' || adminSection === 'CONFIG')}}" class="{{styles.actionStrip}}">
+    <view wx:if="{{(adminSection === 'ALERTS' || adminSection === 'CONFIG')}}" class="{{'actionStrip'}}">
       <view>
         <text>自动化控制</text>
         <text>{{view.control.automationMode}} · 源码修改 {{view.control.sourceMutationMode}}</text>
@@ -600,35 +593,33 @@
       <button class="primary-button" type="button" disabled="{{!can(&quot;OPERATOR&quot;) || Boolean(busyAction)}}" data-operation-id="admin.slo.evaluate" bindtap="onTap">立即评估全部 SLO</button>
       <button class="secondary-button" type="button" disabled="{{!can(&quot;APPROVER&quot;) || Boolean(busyAction)}}" data-operation-id="admin.retention.enforce" bindtap="onTap">执行 30 天保留</button>
     </view>
-    <view wx:if="{{adminSection === 'USAGE'}}" class="{{styles.panel}}" aria-label="租户配额">
+    <view wx:if="{{adminSection === 'USAGE'}}" class="{{'panel'}}" aria-label="租户配额">
       <view>
         <Icon name="database" size="{{18}}" />
         <text>租户配额</text>
       </view>
-      <view>读取需要 VIEWER，调整需要 APPROVER。调高会产生费用，调低会中断租户已被允许的工作，
-              因此与审批修复提案同级——两个动作故意设成不同门槛，否则只为看一个数字就得共用审批凭据。</view>
-      <view class="{{styles.inlineActions}}">
+      <view>读取需要 VIEWER，调整需要 APPROVER。调高会产生费用，调低会中断租户已被允许的工作， 因此与审批修复提案同级——两个动作故意设成不同门槛，否则只为看一个数字就得共用审批凭据。</view>
+      <view class="{{'inlineActions'}}">
         <button class="secondary-button" type="button" disabled="{{quotaBusy}}" bindtap="loadQuota">
           <Icon name="{{quotaBusy ? &quot;refresh&quot; : &quot;search&quot;}}" size="{{17}}" />
           <text>{{quotaBusy ? "读取中…" : "读取当前配额"}}</text>
         </button>
       </view>
-      <view wx:if="{{quotaError}}" class="{{styles.bad}}" role="alert">{{quotaError}}</view>
-      <view wx:if="{{quotaNotice}}" class="{{styles.good}}" role="status">{{quotaNotice}}</view>
-      <view wx:if="{{quota}}" class="{{styles.evidence}}">
+      <view wx:if="{{quotaError}}" class="{{'bad'}}" role="alert">{{quotaError}}</view>
+      <view wx:if="{{quotaNotice}}" class="{{'good'}}" role="status">{{quotaNotice}}</view>
+      <view wx:if="{{quota}}" class="{{'evidence'}}">
         <view>
           <text>{{quota.planDisplayName}}</text>
           <text>（</text>
           <text>{{quota.planId}}</text>
           <text>） · 版本</text>
           <text>{{quota.allocationVersion}}</text>
-          <text>·
-                  周期</text>
+          <text>· 周期</text>
           <text>{{formatTime(quota.periodStartsAt)}}</text>
           <text>—</text>
           <text>{{formatTime(quota.periodEndsAt)}}</text>
         </view>
-        <view class="{{styles.tableWrap}}">
+        <view class="{{'tableWrap'}}">
           <view>
             <view>
               <view>
@@ -658,7 +649,7 @@
           </view>
         </view>
         <view>下限为「已消耗 + 已预留」，低于它的调整会被拒绝——预留是已经对租户作出的承诺。</view>
-        <form wx:if="{{can('APPROVER')}}" class="{{styles.inlineActions}}" bindsubmit="submitQuotaAdjustment">
+        <form wx:if="{{can('APPROVER')}}" class="{{'inlineActions'}}" bindsubmit="submitQuotaAdjustment">
           <text>
             <text>Token 上限</text>
             <input value="{{quotaTokenLimit}}" aria-label="调整后的 Token 上限" inputMode="decimal" disabled="{{quotaBusy}}" required="true" bindchange="onChange" />
@@ -683,7 +674,7 @@
         </view>
       </view>
     </view>
-    <view wx:if="{{adminSection === 'USAGE'}}" class="{{styles.metrics}}" aria-label="运营指标">
+    <view wx:if="{{adminSection === 'USAGE'}}" class="{{'metrics'}}" aria-label="运营指标">
       <view>
         <text>操作事件</text>
         <text>{{summary.totalEvents.toLocaleString("zh-CN")}}</text>
@@ -705,8 +696,8 @@
         <text>API 与页面性能</text>
       </view>
     </view>
-    <view wx:if="{{adminSection === 'USAGE'}}" class="{{styles.dashboardGrid}}">
-      <view class="{{styles.panel}}">
+    <view wx:if="{{adminSection === 'USAGE'}}" class="{{'dashboardGrid'}}">
+      <view class="{{'panel'}}">
         <view>
           <view>
             <text class="overline">BUSINESS LINES</text>
@@ -715,18 +706,18 @@
           <text>失败率与 P95 耗时</text>
         </view>
         <Empty wx:if="{{summary.businessLines.length === 0}}" label="所选范围内暂无事件" />
-        <view wx:else class="{{styles.lineList}}">
+        <view wx:else class="{{'lineList'}}">
           <view wx:for="{{summary.businessLines}}" wx:for-item="line" wx:key="line.id" key="{{line.businessLine}}">
             <view>
               <text>{{lineLabels[line.businessLine] ?? line.businessLine}}</text>
               <text>{{line.eventCount}} 次操作 · {{line.sessionCount}} 个会话</text>
             </view>
-            <text class="{{line.failureRate &gt; 5 ? styles.bad : styles.good}}">{{line.failureRate.toFixed(2)}} %</text>
+            <text class="{{line.failureRate &gt; 5 ? 'bad' : 'good'}}">{{line.failureRate.toFixed(2)}} %</text>
             <text>{{line.p95DurationMs === null ? "—" : `${line.p95DurationMs} ms`}}</text>
           </view>
         </view>
       </view>
-      <view class="{{styles.panel}}">
+      <view class="{{'panel'}}">
         <view>
           <view>
             <text class="overline">ERROR SIGNALS</text>
@@ -735,7 +726,7 @@
           <text>只记录稳定错误码</text>
         </view>
         <Empty wx:if="{{summary.topErrors.length === 0}}" label="所选范围内没有失败事件" />
-        <view wx:else class="{{styles.errorList}}">
+        <view wx:else class="{{'errorList'}}">
           <view wx:for="{{summary.topErrors}}" wx:key="item.id" key="{{item.errorCode}}">
             <text>{{item.count}}</text>
             <view>
@@ -746,7 +737,7 @@
         </view>
       </view>
     </view>
-    <view wx:if="{{adminSection === 'ALERTS'}}" class="{{styles.panel}}">
+    <view wx:if="{{adminSection === 'ALERTS'}}" class="{{'panel'}}">
       <view>
         <view>
           <text class="overline">SLO &amp; ALERTS</text>
@@ -754,7 +745,7 @@
         </view>
         <text>{{view.control.policies.length}} 条业务线策略</text>
       </view>
-      <view class="{{styles.cardGrid}}">
+      <view class="{{'cardGrid'}}">
         <Empty wx:if="{{view.control.alerts.length === 0}}" label="当前没有告警" />
         <text wx:else>{{view.control.alerts.map((alert) => (
                 <article className={styles.controlCard} key={alert.alertId}>
@@ -778,7 +769,7 @@
               ))}}</text>
       </view>
     </view>
-    <view wx:if="{{adminSection === 'ALERTS'}}" class="{{styles.panel}}">
+    <view wx:if="{{adminSection === 'ALERTS'}}" class="{{'panel'}}">
       <view>
         <view>
           <text class="overline">INCIDENTS</text>
@@ -786,7 +777,7 @@
         </view>
         <text>负责人、状态和并发版本均受控</text>
       </view>
-      <view class="{{styles.cardGrid}}">
+      <view class="{{'cardGrid'}}">
         <Empty wx:if="{{view.control.incidents.length === 0}}" label="当前没有生产事件" />
         <text wx:else>{{view.control.incidents.map((incident) => (
                 <IncidentCard
@@ -808,7 +799,7 @@
               ))}}</text>
       </view>
     </view>
-    <view wx:if="{{adminSection === 'ALERTS'}}" class="{{styles.panel}}">
+    <view wx:if="{{adminSection === 'ALERTS'}}" class="{{'panel'}}">
       <view>
         <view>
           <text class="overline">QUICK FIX GOVERNANCE</text>
@@ -816,7 +807,7 @@
         </view>
         <text>预览、审批、SCM 准备、验证、回滚</text>
       </view>
-      <view class="{{styles.cardGrid}}">
+      <view class="{{'cardGrid'}}">
         <Empty wx:if="{{view.control.remediations.length === 0}}" label="尚无修复提案；先运行 SLO 评估" />
         <text wx:else>{{view.control.remediations.map((proposal) => (
                 <RemediationCard
@@ -839,7 +830,7 @@
               ))}}</text>
       </view>
     </view>
-    <view wx:if="{{adminSection === 'AUDIT'}}" class="{{styles.panel}}">
+    <view wx:if="{{adminSection === 'AUDIT'}}" class="{{'panel'}}">
       <view>
         <view>
           <text class="overline">RECENT ACTIVITY</text>
@@ -848,7 +839,7 @@
         <text>{{summary.persistence}} · 外部生产证据 {{summary.externalEvidence}}</text>
       </view>
       <Empty wx:if="{{summary.recentEvents.length === 0}}" label="所选范围内暂无事件" />
-      <view wx:else class="{{styles.tableWrap}}">
+      <view wx:else class="{{'tableWrap'}}">
         <view>
           <view>
             <view>
@@ -869,7 +860,7 @@
               </view>
               <view title="{{item.target}}">{{displayTarget(item.target)}}</view>
               <view>
-                <text class="{{item.result === &quot;FAILURE&quot; ? styles.resultBad : styles.resultGood}}">{{item.result}}</text>
+                <text class="{{item.result === &quot;FAILURE&quot; ? 'resultBad' : 'resultGood'}}">{{item.result}}</text>
                 <text wx:if="{{item.errorCode}}">{{item.errorCode}}</text>
               </view>
               <view>{{item.durationMs === null ? "—" : `${item.durationMs} ms`}}</view>
@@ -878,7 +869,7 @@
         </view>
       </view>
     </view>
-    <view wx:if="{{adminSection === 'CONFIG'}}" class="{{styles.panel}}">
+    <view wx:if="{{adminSection === 'CONFIG'}}" class="{{'panel'}}">
       <view>
         <view>
           <text class="overline">SYSTEM STATUS</text>
@@ -886,32 +877,32 @@
         </view>
         <button class="secondary-button" type="button" disabled="{{systemReadinessBusy}}" bindtap="onTap">{{systemReadinessBusy ? "检测中…" : "重新检测"}}</button>
       </view>
-      <view wx:if="{{systemReadinessError}}" class="{{styles.bad}}" role="alert">{{systemReadinessError}}</view>
-      <view wx:if="{{systemReadiness}}" class="{{styles.cardGrid}}">
-        <view class="{{styles.controlCard}}">
+      <view wx:if="{{systemReadinessError}}" class="{{'bad'}}" role="alert">{{systemReadinessError}}</view>
+      <view wx:if="{{systemReadiness}}" class="{{'cardGrid'}}">
+        <view class="{{'controlCard'}}">
           <view>
-            <text class="{{systemReadiness.status === &quot;UP&quot; ? styles.good : styles.bad}}">{{systemReadiness.status}}</text>
+            <text class="{{systemReadiness.status === &quot;UP&quot; ? 'good' : 'bad'}}">{{systemReadiness.status}}</text>
             <text>Web 聚合就绪</text>
           </view>
           <text>{{formatTime(systemReadiness.checkedAt)}}</text>
         </view>
-        <view wx:for="{{systemReadiness.dependencies}}" wx:for-item="dependency" wx:key="dependency.id" class="{{styles.controlCard}}" key="{{dependency.dependency}}">
+        <view wx:for="{{systemReadiness.dependencies}}" wx:for-item="dependency" wx:key="dependency.id" class="{{'controlCard'}}" key="{{dependency.dependency}}">
           <view>
-            <text class="{{dependency.status === &quot;UP&quot; ? styles.good : styles.bad}}">{{dependency.status}}</text>
+            <text class="{{dependency.status === &quot;UP&quot; ? 'good' : 'bad'}}">{{dependency.status}}</text>
             <text>{{dependency.dependency}}</text>
           </view>
           <text>{{dependency.reason ?? "readiness probe passed"}}</text>
         </view>
-        <view class="{{styles.controlCard}}">
+        <view class="{{'controlCard'}}">
           <view>
-            <text class="{{systemReadiness.localRunner.status === &quot;BLOCKED&quot; ? styles.bad : styles.kind}}">{{systemReadiness.localRunner.status}}</text>
+            <text class="{{systemReadiness.localRunner.status === &quot;BLOCKED&quot; ? 'bad' : 'kind'}}">{{systemReadiness.localRunner.status}}</text>
             <text>local-runner</text>
           </view>
           <text>生产默认 DISABLED；托管 Runner 池须另行验证。</text>
         </view>
       </view>
     </view>
-    <view wx:if="{{adminSection === 'CONFIG'}}" class="{{styles.panel}}">
+    <view wx:if="{{adminSection === 'CONFIG'}}" class="{{'panel'}}">
       <view>
         <view>
           <text class="overline">POLICY &amp; READINESS</text>
@@ -919,10 +910,10 @@
         </view>
         <text>敏感配置值永不回传</text>
       </view>
-      <view class="{{styles.cardGrid}}">
-        <view wx:for="{{view.control.policies}}" wx:for-item="policy" wx:key="policy.id" class="{{styles.controlCard}}" key="{{policy.policyId}}">
+      <view class="{{'cardGrid'}}">
+        <view wx:for="{{view.control.policies}}" wx:for-item="policy" wx:key="policy.id" class="{{'controlCard'}}" key="{{policy.policyId}}">
           <view>
-            <text class="{{styles.kind}}">{{policy.enabled ? "ENABLED" : "DISABLED"}}</text>
+            <text class="{{'kind'}}">{{policy.enabled ? "ENABLED" : "DISABLED"}}</text>
             <text>{{lineLabels[policy.businessLine] ?? policy.businessLine}}</text>
           </view>
           <code>{{policy.policyId}}</code>
@@ -931,7 +922,7 @@
         </view>
       </view>
     </view>
-    <view wx:if="{{adminSection === 'CONFIG'}}" class="{{styles.evidence}}">
+    <view wx:if="{{adminSection === 'CONFIG'}}" class="{{'evidence'}}">
       <text>外部门禁</text>
       <text>通知投递： {{view.control.notificationDeliveryEvidence}}</text>
       <text>生产部署： {{view.control.productionDeploymentEvidence}}</text>

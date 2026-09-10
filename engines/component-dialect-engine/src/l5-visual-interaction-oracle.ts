@@ -127,6 +127,15 @@ export class L5VisualInteractionOracle {
     const elements: LayoutBox[] = [rootBox];
     let boxIndex = 0;
 
+    const isInsideButton = (n: DOMNode): boolean => {
+      let curr: DOMNode | null | undefined = n;
+      while (curr) {
+        if ((curr.tagName || "").toLowerCase() === "button") return true;
+        curr = curr.parent;
+      }
+      return false;
+    };
+
     const traverse = (node: DOMNode) => {
       if (node.nodeType === "element") {
         const rect = node.computedLayout?.rect || { x: 0, y: 0, width: 0, height: 0 };
@@ -141,7 +150,7 @@ export class L5VisualInteractionOracle {
           }
         }
         const hasChildElements = node.children.some((c) => c.nodeType === "element");
-        const text = (!hasChildElements ? (node.textContent || "").trim() : "").slice(0, 100);
+        const text = (!hasChildElements ? (node.textContent || "").trim().replace(/\s+/g, " ") : "").slice(0, 100);
         const box: LayoutBox = {
           id: `box-${boxIndex++}`,
           tag: tagName,
@@ -151,13 +160,13 @@ export class L5VisualInteractionOracle {
           width: rect.width,
           height: rect.height,
           bgColor,
-          textColor: tagName === "button" ? 0xffffffff : 0x172033ff,
+          textColor: tagName === "button" || isInsideButton(node) ? 0xffffffff : 0x172033ff,
           children: [],
         };
         rootBox.children.push(box);
         elements.push(box);
       } else if (node.nodeType === "text") {
-        const txt = (node.nodeValue || "").trim();
+        const txt = (node.nodeValue || "").trim().replace(/\s+/g, " ");
         const parentTag = (node.parent?.tagName || "").toLowerCase();
         if (txt && parentTag !== "text" && node.parent && node.parent.children.some((c) => c.nodeType === "element")) {
           const rect = node.computedLayout?.rect || { x: 0, y: 0, width: 0, height: 0 };
@@ -170,7 +179,7 @@ export class L5VisualInteractionOracle {
             width: rect.width,
             height: rect.height,
             bgColor: 0,
-            textColor: parentTag === "button" ? 0xffffffff : 0x172033ff,
+            textColor: isInsideButton(node) ? 0xffffffff : 0x172033ff,
             children: [],
           };
           rootBox.children.push(box);

@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B14-008 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [14]
+Title: Batch 14 区域渠道：篡改结果、Digest、Golden、审批、时间戳或删除失败记录
+Capability: 区域渠道
+Test Type: evidence_tamper
+Skill: tst-b14-plg-community-localization
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

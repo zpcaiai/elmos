@@ -1,4 +1,4 @@
-<view class="{{styles.panel}}" aria-label="全平台任务执行">
+<view class="{{'panel'}}" aria-label="全平台任务执行">
   <view>
     <view>
       <text class="overline">PLATFORM EXECUTION</text>
@@ -8,10 +8,8 @@
             ? `${rows.length} 条 · 失败/丢失 ${failing.length} · 已扣费 ${charged.length}`
             : "跨组织 · 每组织最多 25 条"}}</text>
   </view>
-  <view>跨组织视图，需要平台管理员身份，与上方按租户隔离的作业队列是两条通道。
-        每一行同时给出执行结果和这次执行实际扣了多少钱——回答「客户说被多扣了」
-        不需要再开第二个页面。</view>
-  <view class="{{styles.inlineActions}}">
+  <view>跨组织视图，需要平台管理员身份，与上方按租户隔离的作业队列是两条通道。 每一行同时给出执行结果和这次执行实际扣了多少钱——回答「客户说被多扣了」 不需要再开第二个页面。</view>
+  <view class="{{'inlineActions'}}">
     <text>
       <text>执行状态</text>
       <view aria-label="全平台任务状态" value="{{status}}" disabled="{{busy}}" bindchange="onChange">
@@ -27,13 +25,12 @@
       <text>{{busy ? "读取中…" : "读取任务"}}</text>
     </button>
   </view>
-  <view wx:if="{{denial}}" class="{{styles.bad}}" role="alert">
+  <view wx:if="{{denial}}" class="{{'bad'}}" role="alert">
     <text>被拒绝或读取失败：</text>
     <text>{{denial}}</text>
-    <text>。跨组织任务视图需要平台管理员身份，
-          与本组织的运营角色是两回事。</text>
+    <text>。跨组织任务视图需要平台管理员身份， 与本组织的运营角色是两回事。</text>
   </view>
-  <view wx:if="{{!loaded}}" class="{{styles.empty}}">
+  <view wx:if="{{!loaded}}" class="{{'empty'}}">
     <Icon name="database" size="{{22}}" />
     <text>点击读取后才会请求；每次读取都会写一条平台管理员审计。</text>
   </view>

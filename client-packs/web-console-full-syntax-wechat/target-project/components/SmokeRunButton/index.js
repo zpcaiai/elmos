@@ -1,3 +1,16 @@
+// Top-level helpers and constants
+try { function clock(seconds) {
+    const safe = Math.max(0, Math.floor(seconds));
+    return `${String(Math.floor(safe / 60)).padStart(2, "0")}:${String(safe % 60).padStart(2, "0")}`;
+} } catch(e) {}
+try { async function readJson(response) {
+    const payload = (await response.json());
+    if (!response.ok || payload.status === "BLOCKED") {
+        throw new Error(payload.reason ?? `HTTP_${response.status}`);
+    }
+    return payload;
+} } catch(e) {}
+
 Component({
   options: {
     multipleSlots: false,
@@ -22,7 +35,7 @@ Component({
     extendSeconds: 300,
     extendReason: "",
     extendActor: "",
-    expiresAtRef: null,
+    expiresAtRef: {"current":null},
     selectedEntry: null,
   },
   lifetimes: {
@@ -39,6 +52,7 @@ Component({
       const setExtendSeconds = (val) => { this.setData({ extendSeconds: typeof val === "function" ? val(this.data.extendSeconds) : val }); };
       const setExtendReason = (val) => { this.setData({ extendReason: typeof val === "function" ? val(this.data.extendReason) : val }); };
       const setExtendActor = (val) => { this.setData({ extendActor: typeof val === "function" ? val(this.data.extendActor) : val }); };
+      const expiresAtRef = { current: { focus: () => {}, scrollIntoView: () => {} } };
       // Lifecycle effect effect_0
       (async () => {
         try {

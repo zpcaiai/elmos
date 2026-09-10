@@ -1,4 +1,4 @@
-<view class="{{styles.page}}">
+<view class="{{'page'}}">
   <view wx:if="{{!embedded}}" class="page-header">
     <view>
       <text class="eyebrow">IDENTITY &amp; TENANCY</text>
@@ -6,9 +6,9 @@
       <view>创建组织、邀请成员、切换租户和管理最小权限角色。租户选择只是选择器，授权以控制面数据库为准。</view>
     </view>
   </view>
-  <view wx:if="{{feedback}}" class="{{styles.feedback}}" role="status">{{feedback}}</view>
-  <view class="{{styles.grid}}">
-    <view class="{{styles.panel}}">
+  <view wx:if="{{feedback}}" class="{{'feedback'}}" role="status">{{feedback}}</view>
+  <view class="{{'grid'}}">
+    <view class="{{'panel'}}">
       <view>我的组织</view>
       <text>
         <text>组织</text>
@@ -38,7 +38,7 @@
         <button class="button" disabled="{{busy}}">创建</button>
       </form>
     </view>
-    <view class="{{styles.panel}}">
+    <view class="{{'panel'}}">
       <view>接受邀请</view>
       <form bindsubmit="acceptInvitation">
         <text>
@@ -61,20 +61,20 @@
         </text>
         <button class="button" disabled="{{busy || !selectedId}}">创建邀请</button>
       </form>
-      <view wx:if="{{invitationToken}}" class="{{styles.token}}">
+      <view wx:if="{{invitationToken}}" class="{{'token'}}">
         <text>仅显示一次</text>
         <code>{{invitationToken}}</code>
         <text>邮件/SMS 提供商未配置前，不会自动发送；外部投递证据保持 NOT_RUN。</text>
       </view>
     </view>
   </view>
-  <view class="{{styles.members}}">
+  <view class="{{'members'}}">
     <view>
       <view>成员</view>
       <text>{{selected?.displayName ?? "未选择组织"}}</text>
     </view>
-    <view class="{{styles.memberList}}">
-      <view wx:for="{{members}}" wx:for-item="member" wx:key="member.id" class="{{styles.member}}" key="{{member.accountId}}">
+    <view class="{{'memberList'}}">
+      <view wx:for="{{members}}" wx:for-item="member" wx:key="member.id" class="{{'member'}}" key="{{member.accountId}}">
         <view>
           <text>{{member.displayName}}</text>
           <text>{{member.accountId}} · {{member.state}}</text>

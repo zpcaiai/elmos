@@ -1,0 +1,8 @@
+{
+  "case_id": "B35-008",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:55:52Z",
+  "notes": "Independently verified by Ethan: Batch 35 Assurance Case：篡改结果、Digest、Golden、审批、时间戳或删除失败记录"
+}

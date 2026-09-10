@@ -1,0 +1,59 @@
+{
+  "store_version": 1,
+  "authorities": [
+    {
+      "signer_id": "ethan-independent-certifier",
+      "roles": [
+        "independent-certifier"
+      ],
+      "suites": [
+        "batch1-37-strict"
+      ],
+      "batches": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "algorithm": "rsa-sha256",
+      "revoked": false,
+      "valid_from": "2026-08-11T09:05:52Z",
+      "valid_until": "2027-03-09T09:05:52Z",
+      "public_key": "keys/ethan-independent-certifier.pub.pem",
+      "public_key_sha256": "4b1bd04bcc0b63504f56cf35a2402abedcf52c6def9ca330b7f169d9b3071fef"
+    }
+  ]
+}

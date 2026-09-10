@@ -10,6 +10,8 @@ import { Vue3FullAstEmitter } from "./emitters/vue3-full-ast-emitter";
 import { ReactFullAstEmitter } from "./emitters/react-full-ast-emitter";
 import { MiniAppFullAstEmitter } from "./emitters/miniapp-full-ast-emitter";
 
+import { ReactiveDependencyDAG } from "./core/reactive-dependency-dag";
+
 export interface TranspileOptions {
   componentNameHint?: string;
   sourceFiles?: MiniAppFiles; // For MiniApp multi-file source
@@ -68,6 +70,19 @@ export class FullSyntaxFrontendTranspiler {
 
     // 1. Parse source AST into unified IR
     const rawIr = this.parseToIr(source, sourceFramework, options.componentNameHint);
+
+    // 1.5. Validate & Order Reactive Topology via DAG
+    const dag = new ReactiveDependencyDAG();
+    dag.ingestComponentMembers(rawIr.props, rawIr.states, rawIr.computed, rawIr.effects, rawIr.methods);
+    const dagAnalysis = dag.analyze();
+    if (dagAnalysis.cycles.length > 0) {
+      diagnostics.push(`Warning: Circular reactive dependency detected: ${dagAnalysis.cycles.map(c => c.join(' -> ')).join(', ')}`);
+    }
+    rawIr.computed.sort((a, b) => {
+      const ordA = dagAnalysis.nodes.get(a.name)?.evaluationOrder ?? 999;
+      const ordB = dagAnalysis.nodes.get(b.name)?.evaluationOrder ?? 999;
+      return ordA - ordB;
+    });
 
     // 2. Transform IR for target framework
     const targetIr = this.transformer.transform(rawIr, targetFramework);
