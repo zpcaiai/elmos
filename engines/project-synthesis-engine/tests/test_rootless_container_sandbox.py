@@ -1,12 +1,10 @@
-"""Tests for Linux Rootless Container Sandbox and Hermetic Path Confinement.
-"""
+"""Tests for Linux Rootless Container Sandbox and Hermetic Path Confinement."""
+
 from __future__ import annotations
 
-import os
 import sys
 import tempfile
 from pathlib import Path
-import pytest
 
 from elmos_project_synthesis.rootless_container_sandbox import (
     LinuxRootlessSandboxRunner,

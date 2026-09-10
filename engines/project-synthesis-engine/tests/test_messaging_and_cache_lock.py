@@ -1,20 +1,20 @@
 """Unit and integration tests for Enterprise Messaging, DLQ Replay, Redis Lock, and XFetch."""
-import time
-import pytest
 
-from elmos_project_synthesis.messaging_infrastructure.messaging_middleware_emitter import (
-    MessageDeliveryStatus,
-    ConsumedMessage,
-    IdempotentDeduplicationStore,
-    ExponentialBackoffWithJitter,
-    DeadLetterQueueManager,
-    ResilientMessageConsumerPipeline,
-)
+import time
+
 from elmos_project_synthesis.messaging_infrastructure.distributed_cache_lock_emitter import (
+    LockHeartbeatDaemon,
     MockRedisState,
     RedisClusterLockManager,
-    LockHeartbeatDaemon,
     XFetchCacheStampedeGuard,
+)
+from elmos_project_synthesis.messaging_infrastructure.messaging_middleware_emitter import (
+    ConsumedMessage,
+    DeadLetterQueueManager,
+    ExponentialBackoffWithJitter,
+    IdempotentDeduplicationStore,
+    MessageDeliveryStatus,
+    ResilientMessageConsumerPipeline,
 )
 
 
@@ -23,7 +23,7 @@ def test_idempotent_deduplication_store():
     assert not store.is_processed("grp-1", "msg-101")
     store.mark_processed("grp-1", "msg-101")
     assert store.is_processed("grp-1", "msg-101")
-    assert not store.is_processed("grp-2", "msg-101") # Different consumer group
+    assert not store.is_processed("grp-2", "msg-101")  # Different consumer group
 
     # TTL expiry
     time.sleep(1.05)
@@ -51,6 +51,7 @@ def test_resilient_consumer_pipeline_and_dlq_routing():
 
     # 1. Success case
     processed_count = 0
+
     def success_handler(msg: ConsumedMessage):
         nonlocal processed_count
         processed_count += 1
@@ -64,10 +65,11 @@ def test_resilient_consumer_pipeline_and_dlq_routing():
     # Idempotent skip
     status_dup = pipeline.process_message(msg1)
     assert status_dup == MessageDeliveryStatus.ACKNOWLEDGED
-    assert processed_count == 1 # Not incremented
+    assert processed_count == 1  # Not incremented
 
     # 2. Poison pill case -> routes to DLQ
     attempts_made = 0
+
     def failing_handler(msg: ConsumedMessage):
         nonlocal attempts_made
         attempts_made += 1
@@ -77,7 +79,7 @@ def test_resilient_consumer_pipeline_and_dlq_routing():
     msg_bad = ConsumedMessage("m-poison", "orders", 0, 101, "k2", {"bad": True})
     status_fail = pipeline_fail.process_message(msg_bad)
     assert status_fail == MessageDeliveryStatus.DEAD_LETTERED
-    assert attempts_made == 3 # 3 attempts made before giving up
+    assert attempts_made == 3  # 3 attempts made before giving up
     assert len(dlq.records) == 1
 
     # Replay from DLQ

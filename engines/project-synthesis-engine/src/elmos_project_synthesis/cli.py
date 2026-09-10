@@ -78,15 +78,9 @@ def _draft_from_intent(intent: dict[str, Any]) -> dict[str, Any]:
         persistence=str(intent.get("persistence", "in-memory")),
         auth_mode=str(intent.get("auth_mode", "none")),
         requirement_sources=(
-            intent.get("requirement_sources", [])
-            if isinstance(intent.get("requirement_sources", []), list)
-            else []
+            intent.get("requirement_sources", []) if isinstance(intent.get("requirement_sources", []), list) else []
         ),
-        source_bundle_sha256=(
-            str(intent["source_bundle_sha256"])
-            if intent.get("source_bundle_sha256")
-            else None
-        ),
+        source_bundle_sha256=(str(intent["source_bundle_sha256"]) if intent.get("source_bundle_sha256") else None),
     )
 
 
@@ -210,9 +204,7 @@ def _archive_workspace(workspace: Path, destination: Path, *, evidence: Path | N
                 derived_relative = source.relative_to(root)
                 if derived_relative.as_posix() in archived_paths:
                     continue
-                total_bytes += _archive_entry(
-                    archive, source, f"{archive_root}/{derived_relative.as_posix()}"
-                )
+                total_bytes += _archive_entry(archive, source, f"{archive_root}/{derived_relative.as_posix()}")
                 archived_paths.add(derived_relative.as_posix())
             total_bytes += _archive_entry(
                 archive,
@@ -255,9 +247,8 @@ def _extract_publish_archive(
     expected_sha256: str | None = None,
 ) -> dict[str, Any]:
     expanded_archive = archive_path.expanduser()
-    if (
-        expanded_archive.is_symlink()
-        or (expected_sha256 is not None and re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is None)
+    if expanded_archive.is_symlink() or (
+        expected_sha256 is not None and re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is None
     ):
         raise ValueError("PUBLISH_ARCHIVE_UNSAFE")
     source = expanded_archive.absolute()
@@ -330,11 +321,14 @@ def _extract_publish_archive(
                 target.chmod(0o755 if unix_mode & 0o111 else 0o644)
                 paths.add(relative_text)
         after = os.fstat(source_stream.fileno())
-        if (
-            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns, after.st_nlink)
-            != (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns, before.st_nlink)
-            or _open_archive_digest(source_stream) != archive_sha256
-        ):
+        if (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns, after.st_nlink) != (
+            before.st_dev,
+            before.st_ino,
+            before.st_size,
+            before.st_mtime_ns,
+            before.st_ctime_ns,
+            before.st_nlink,
+        ) or _open_archive_digest(source_stream) != archive_sha256:
             raise ValueError("PUBLISH_ARCHIVE_CHANGED_DURING_EXTRACTION")
     if archive_root is None:
         raise ValueError("PUBLISH_ARCHIVE_EMPTY")
@@ -491,16 +485,17 @@ def main(argv: list[str] | None = None) -> int:
                 "runtime_plan": runtime_commands(args.workspace),
             }
         elif args.command == "sandbox-run":
-            from .rootless_container_sandbox import RootlessSandboxDetector, SandboxSecurityProfile
+            from .rootless_container_sandbox import LinuxRootlessSandboxRunner, SandboxSecurityConfig
 
-            profile = SandboxSecurityProfile(
-                read_only_rootfs=args.read_only_root,
-                drop_all_caps=args.cap_drop_all,
-                network_mode=args.network,
+            config = SandboxSecurityConfig(
+                read_only_root=bool(args.read_only_root),
+                drop_capabilities=("ALL",) if args.cap_drop_all else (),
+                network_isolated=args.network == "isolated",
             )
-            runner = RootlessSandboxDetector.create_best_runner(profile=profile)
+            runner = LinuxRootlessSandboxRunner(config=config)
             cmd_args = args.cmd.split() if isinstance(args.cmd, str) else list(args.cmd)
-            exec_res = runner.run_command(cmd_args, cwd=args.workspace)
+            exec_res = runner.run(cmd_args, host_workspace_path=args.workspace)
+            violations = [k for k, v in exec_res.security_verifications.items() if not v]
             result = {
                 "status": "PASSED" if exec_res.exit_code == 0 else "FAILED",
                 "backend": exec_res.backend_used,
@@ -508,7 +503,7 @@ def main(argv: list[str] | None = None) -> int:
                 "duration_ms": exec_res.duration_ms,
                 "stdout": exec_res.stdout,
                 "stderr": exec_res.stderr,
-                "security_violations": list(exec_res.security_violations),
+                "security_violations": violations,
             }
             if args.output:
                 _write_json(args.output, result)
@@ -529,7 +524,9 @@ def main(argv: list[str] | None = None) -> int:
             elif args.dry_run:
                 result = {"status": "PASSED", "stage": "dry-run", "valid": True, "manifests_bytes": len(manifests)}
             else:
-                dep_summary = controller.run_deployment_and_probes(app_name=args.app_name, namespace=args.namespace, port=args.port)
+                dep_summary = controller.run_deployment_and_probes(
+                    app_name=args.app_name, namespace=args.namespace, port=args.port
+                )
                 result = {
                     "status": "PASSED" if dep_summary.rollout_status in ("SUCCESS", "SIMULATED") else "FAILED",
                     "app_name": dep_summary.app_name,

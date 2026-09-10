@@ -6,6 +6,7 @@ profiles. Verification uses java-jwt so both HS256 and RS256 are handled by one
 library, and the store speaks plain JDBC so the tenant binding stays visible
 rather than hidden behind an ORM session.
 """
+
 from __future__ import annotations
 
 import json
@@ -52,9 +53,7 @@ def _production_lock() -> str:
     exists this emitter cannot produce a reproducible workspace, so it fails
     with a named reason rather than emitting an unlocked build.
     """
-    template = files("elmos_project_synthesis").joinpath(
-        "templates", "kotlin", "gradle.production.lockfile"
-    )
+    template = files("elmos_project_synthesis").joinpath("templates", "kotlin", "gradle.production.lockfile")
     try:
         lock = template.read_text(encoding="utf-8")
     except (FileNotFoundError, OSError) as error:
@@ -191,16 +190,12 @@ def _store_source(request: SynthesisRequest) -> str:
         entity_class = pascal(entity.singular)
         sql = statements[entity.singular]
         upsert_sql = sql.upsert_sql
-        properties = ",\n    ".join(
-            f"val {camel(field.name)}: {_kotlin_type(field)}" for field in entity.fields
-        )
+        properties = ",\n    ".join(f"val {camel(field.name)}: {_kotlin_type(field)}" for field in entity.fields)
         read_values = ",\n                    ".join(
-            ["rows.getString(1)"]
-            + [_reader(field, index + 2) for index, field in enumerate(entity.fields)]
+            ["rows.getString(1)"] + [_reader(field, index + 2) for index, field in enumerate(entity.fields)]
         )
         bind_upsert = "\n                statement.".join(
-            f"setObject({index + 3}, payload.{camel(field.name)})"
-            for index, field in enumerate(entity.fields)
+            f"setObject({index + 3}, payload.{camel(field.name)})" for index, field in enumerate(entity.fields)
         )
         classes.append(
             f"""
@@ -323,11 +318,14 @@ def _application_source(request: SynthesisRequest, port: int) -> str:
     for entity in request.entities:
         entity_class = pascal(entity.singular)
         store_name = f"{camel(entity.singular)}Store"
-        required_checks = "\n                    ".join(
-            f'if (payload.{camel(field.name)}.isBlank()) return@put call.respond(HttpStatusCode.UnprocessableEntity, mapOf("error" to "PAYLOAD_INVALID"))'
-            for field in entity.fields
-            if field.required and field.type == "string"
-        ) or "// no blank-string constraints declared"
+        required_checks = (
+            "\n                    ".join(
+                f'if (payload.{camel(field.name)}.isBlank()) return@put call.respond(HttpStatusCode.UnprocessableEntity, mapOf("error" to "PAYLOAD_INVALID"))'
+                for field in entity.fields
+                if field.required and field.type == "string"
+            )
+            or "// no blank-string constraints declared"
+        )
         route_blocks.append(
             f"""
                 get("/{entity.plural}") {{
@@ -449,6 +447,7 @@ def _application_source(request: SynthesisRequest, port: int) -> str:
         }}
         """
     )
+
 
 def _integration_test_source(request: SynthesisRequest, port: int) -> str:
     entity = request.entities[0]

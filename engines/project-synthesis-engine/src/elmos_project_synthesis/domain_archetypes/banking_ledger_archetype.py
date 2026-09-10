@@ -3,38 +3,42 @@
 Provides deep domain modeling, aggregate roots, strict zero-sum balancing rules,
 trial balance reconciliation, Merkle audit chains, and multi-currency FX revaluation.
 """
+
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 import datetime as dt
-from decimal import Decimal, ROUND_HALF_EVEN
 import enum
 import hashlib
 import json
 import re
-from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
-
+from collections.abc import Sequence
+from dataclasses import dataclass, field
+from decimal import ROUND_HALF_EVEN, Decimal
+from typing import Any
 
 # ==============================================================================
 # 1. Enums and Value Objects
 # ==============================================================================
 
-class AccountType(str, enum.Enum):
+
+class AccountType(enum.StrEnum):
     """Standard accounting equation primary classifications."""
-    ASSET = "ASSET"              # Normal Balance: DEBIT
-    LIABILITY = "LIABILITY"      # Normal Balance: CREDIT
-    EQUITY = "EQUITY"            # Normal Balance: CREDIT
-    REVENUE = "REVENUE"          # Normal Balance: CREDIT
-    EXPENSE = "EXPENSE"          # Normal Balance: DEBIT
+
+    ASSET = "ASSET"  # Normal Balance: DEBIT
+    LIABILITY = "LIABILITY"  # Normal Balance: CREDIT
+    EQUITY = "EQUITY"  # Normal Balance: CREDIT
+    REVENUE = "REVENUE"  # Normal Balance: CREDIT
+    EXPENSE = "EXPENSE"  # Normal Balance: DEBIT
 
 
-class NormalBalance(str, enum.Enum):
+class NormalBalance(enum.StrEnum):
     """The normal balance side for account types."""
+
     DEBIT = "DEBIT"
     CREDIT = "CREDIT"
 
 
-ACCOUNT_NORMAL_BALANCE: Dict[AccountType, NormalBalance] = {
+ACCOUNT_NORMAL_BALANCE: dict[AccountType, NormalBalance] = {
     AccountType.ASSET: NormalBalance.DEBIT,
     AccountType.EXPENSE: NormalBalance.DEBIT,
     AccountType.LIABILITY: NormalBalance.CREDIT,
@@ -43,22 +47,25 @@ ACCOUNT_NORMAL_BALANCE: Dict[AccountType, NormalBalance] = {
 }
 
 
-class PostingKey(str, enum.Enum):
+class PostingKey(enum.StrEnum):
     """The direction of a line in a double-entry journal entry."""
+
     DEBIT = "DEBIT"
     CREDIT = "CREDIT"
 
 
-class AccountStatus(str, enum.Enum):
+class AccountStatus(enum.StrEnum):
     """Lifecycle states of a financial account."""
+
     ACTIVE = "ACTIVE"
     FROZEN = "FROZEN"
     RESTRICTED = "RESTRICTED"
     CLOSED = "CLOSED"
 
 
-class JournalEntryStatus(str, enum.Enum):
+class JournalEntryStatus(enum.StrEnum):
     """Lifecycle states of a double-entry journal entry."""
+
     DRAFT = "DRAFT"
     BALANCED = "BALANCED"
     POSTED = "POSTED"
@@ -67,16 +74,32 @@ class JournalEntryStatus(str, enum.Enum):
 
 
 # ISO-4217 Currency Precision Specification
-CURRENCY_PRECISION: Dict[str, int] = {
-    "USD": 2, "EUR": 2, "GBP": 2, "CNY": 2, "JPY": 0, "KRW": 0,
-    "CHF": 2, "CAD": 2, "AUD": 2, "NZD": 2, "SGD": 2, "HKD": 2,
-    "BHD": 3, "KWD": 3, "OMR": 3, "BTC": 8, "ETH": 8, "USDT": 6,
+CURRENCY_PRECISION: dict[str, int] = {
+    "USD": 2,
+    "EUR": 2,
+    "GBP": 2,
+    "CNY": 2,
+    "JPY": 0,
+    "KRW": 0,
+    "CHF": 2,
+    "CAD": 2,
+    "AUD": 2,
+    "NZD": 2,
+    "SGD": 2,
+    "HKD": 2,
+    "BHD": 3,
+    "KWD": 3,
+    "OMR": 3,
+    "BTC": 8,
+    "ETH": 8,
+    "USDT": 6,
 }
 
 
 @dataclass(frozen=True)
 class Currency:
     """ISO-4217 Currency Value Object with precision and symbol validation."""
+
     code: str
 
     def __post_init__(self) -> None:
@@ -97,6 +120,7 @@ class Currency:
 @dataclass(frozen=True)
 class MoneyAmount:
     """High-precision monetary amount value object."""
+
     amount: Decimal
     currency: Currency
 
@@ -156,29 +180,35 @@ class MoneyAmount:
 # 2. Aggregates and Entities
 # ==============================================================================
 
+
 class BankingDomainError(Exception):
     """Base domain exception for banking operations."""
+
     pass
 
 
 class InvariantViolationError(BankingDomainError):
     """Raised when an accounting invariant is violated."""
+
     pass
 
 
 class InsufficientFundsError(BankingDomainError):
     """Raised when an account does not have sufficient available balance."""
+
     pass
 
 
 class AccountFrozenError(BankingDomainError):
     """Raised when attempting to transact on a frozen or closed account."""
+
     pass
 
 
 @dataclass
 class AccountAggregate:
     """Enterprise Chart-of-Accounts financial account aggregate root."""
+
     account_id: str
     tenant_id: str
     account_number: str
@@ -193,8 +223,8 @@ class AccountAggregate:
     overdraft_limit: Decimal = Decimal("0.00")
     allow_overdraft: bool = False
     version: int = 1
-    created_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
-    updated_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+    created_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
+    updated_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
 
     @property
     def normal_balance(self) -> NormalBalance:
@@ -220,7 +250,7 @@ class AccountAggregate:
             )
         self.held_amount += amount
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
     def release_hold(self, hold_id: str, amount: Decimal) -> None:
         """Release an existing authorization hold."""
@@ -231,7 +261,7 @@ class AccountAggregate:
             raise ValueError(f"Cannot release {amount}: Current hold is only {self.held_amount}")
         self.held_amount -= amount
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
     def apply_posting_line(self, posting_key: PostingKey, amount: Decimal) -> None:
         """Apply a debit or credit posting directly to the account balance."""
@@ -263,21 +293,21 @@ class AccountAggregate:
                 self.posted_balance = new_balance
 
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
     def freeze(self, reason: str) -> None:
         if self.status == AccountStatus.CLOSED:
             raise InvariantViolationError("Cannot freeze a closed account")
         self.status = AccountStatus.FROZEN
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
     def unfreeze(self) -> None:
         if self.status != AccountStatus.FROZEN:
             raise InvariantViolationError("Account is not frozen")
         self.status = AccountStatus.ACTIVE
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
     def close(self) -> None:
         if self.posted_balance != Decimal("0.00"):
@@ -286,7 +316,7 @@ class AccountAggregate:
             raise InvariantViolationError(f"Cannot close account with active holds: {self.held_amount}")
         self.status = AccountStatus.CLOSED
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
     def _ensure_operational(self) -> None:
         if self.status == AccountStatus.FROZEN:
@@ -298,6 +328,7 @@ class AccountAggregate:
 @dataclass(frozen=True)
 class JournalEntryLine:
     """Individual debit or credit leg of a financial transaction."""
+
     line_id: str
     account_id: str
     posting_key: PostingKey
@@ -306,7 +337,7 @@ class JournalEntryLine:
     base_currency_amount: Decimal
     exchange_rate: Decimal = Decimal("1.000000")
     narration: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.amount <= Decimal("0"):
@@ -320,20 +351,21 @@ class JournalEntryLine:
 @dataclass
 class JournalEntryAggregate:
     """Double-Entry Accounting Journal Entry aggregate root with zero-sum invariant."""
+
     entry_id: str
     tenant_id: str
     reference: str
     description: str
     base_currency: Currency
     posting_date: dt.date
-    effective_date: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+    effective_date: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
     status: JournalEntryStatus = JournalEntryStatus.DRAFT
-    lines: List[JournalEntryLine] = field(default_factory=list)
+    lines: list[JournalEntryLine] = field(default_factory=list)
     previous_merkle_hash: str = "0" * 64
     merkle_hash: str = ""
     version: int = 1
-    created_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
-    posted_at: Optional[dt.datetime] = None
+    created_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
+    posted_at: dt.datetime | None = None
 
     def add_line(
         self,
@@ -343,7 +375,7 @@ class JournalEntryAggregate:
         currency: Currency,
         exchange_rate: Decimal = Decimal("1.000000"),
         narration: str = "",
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> JournalEntryLine:
         """Add a transaction leg to this journal entry."""
         if self.status != JournalEntryStatus.DRAFT:
@@ -401,8 +433,12 @@ class JournalEntryAggregate:
 
         currencies = {line.currency.code for line in self.lines}
         if len(currencies) == 1:
-            curr_debits = sum((line.amount for line in self.lines if line.posting_key == PostingKey.DEBIT), Decimal("0"))
-            curr_credits = sum((line.amount for line in self.lines if line.posting_key == PostingKey.CREDIT), Decimal("0"))
+            curr_debits = sum(
+                (line.amount for line in self.lines if line.posting_key == PostingKey.DEBIT), Decimal("0")
+            )
+            curr_credits = sum(
+                (line.amount for line in self.lines if line.posting_key == PostingKey.CREDIT), Decimal("0")
+            )
             if curr_debits != curr_credits:
                 raise InvariantViolationError(
                     f"Single currency {list(currencies)[0]} legs out of balance: {curr_debits} vs {curr_credits}"
@@ -411,7 +447,7 @@ class JournalEntryAggregate:
         self.status = JournalEntryStatus.BALANCED
         self._compute_merkle_hash()
 
-    def post(self, account_repository: Dict[str, AccountAggregate]) -> None:
+    def post(self, account_repository: dict[str, AccountAggregate]) -> None:
         """Commit the balanced journal entry to all involved accounts atomically."""
         if self.status != JournalEntryStatus.BALANCED:
             self.validate_and_balance()
@@ -433,7 +469,7 @@ class JournalEntryAggregate:
             account.apply_posting_line(line.posting_key, line.amount)
 
         self.status = JournalEntryStatus.POSTED
-        self.posted_at = dt.datetime.now(dt.timezone.utc)
+        self.posted_at = dt.datetime.now(dt.UTC)
         self.version += 1
 
     def create_reversal(self, reversal_reference: str, reason: str) -> JournalEntryAggregate:
@@ -494,6 +530,7 @@ class JournalEntryAggregate:
 # 3. Domain Services: Posting Rule Engine & Trial Balance Reconciliation
 # ==============================================================================
 
+
 class PostingRuleEngine:
     """Encapsulates standard banking transaction posting rules and multi-legged transactions."""
 
@@ -509,7 +546,7 @@ class PostingRuleEngine:
         receiver_account: AccountAggregate,
         amount: Decimal,
         fee_amount: Decimal = Decimal("0.00"),
-        fee_revenue_account: Optional[AccountAggregate] = None,
+        fee_revenue_account: AccountAggregate | None = None,
         narration: str = "P2P Transfer",
     ) -> JournalEntryAggregate:
         """Build a customer fund transfer with optional platform transaction fee."""
@@ -538,7 +575,9 @@ class PostingRuleEngine:
 
         entry.add_line(
             account_id=receiver_account.account_id,
-            posting_key=PostingKey.CREDIT if receiver_account.account_type == AccountType.LIABILITY else PostingKey.DEBIT,
+            posting_key=PostingKey.CREDIT
+            if receiver_account.account_type == AccountType.LIABILITY
+            else PostingKey.DEBIT,
             amount=amount,
             currency=curr,
             narration=f"Transfer from {sender_account.account_number}",
@@ -613,10 +652,11 @@ class PostingRuleEngine:
 @dataclass
 class TrialBalanceSummary:
     """Trial Balance report structure."""
+
     as_of_date: dt.date
     tenant_id: str
     base_currency: str
-    account_balances: List[Dict[str, Any]]
+    account_balances: list[dict[str, Any]]
     total_debits: Decimal
     total_credits: Decimal
     is_balanced: bool
@@ -634,11 +674,11 @@ class LedgerReconciliationService:
         self,
         accounts: Sequence[AccountAggregate],
         journal_entries: Sequence[JournalEntryAggregate],
-        as_of: Optional[dt.date] = None,
+        as_of: dt.date | None = None,
     ) -> TrialBalanceSummary:
         """Compute the trial balance across all accounts and verify global accounting equation."""
         target_date = as_of or dt.date.today()
-        account_rows: List[Dict[str, Any]] = []
+        account_rows: list[dict[str, Any]] = []
         sum_debits = Decimal("0.00")
         sum_credits = Decimal("0.00")
 
@@ -654,17 +694,21 @@ class LedgerReconciliationService:
             sum_debits += debit_val
             sum_credits += credit_val
 
-            account_rows.append({
-                "account_number": acc.account_number,
-                "account_name": acc.account_name,
-                "account_type": acc.account_type.value,
-                "currency": acc.currency.code,
-                "debit": str(debit_val),
-                "credit": str(credit_val),
-            })
+            account_rows.append(
+                {
+                    "account_number": acc.account_number,
+                    "account_name": acc.account_name,
+                    "account_type": acc.account_type.value,
+                    "currency": acc.currency.code,
+                    "debit": str(debit_val),
+                    "credit": str(credit_val),
+                }
+            )
 
         merkle_hashes = [entry.merkle_hash for entry in journal_entries if entry.status == JournalEntryStatus.POSTED]
-        combined_hash = hashlib.sha256("".join(merkle_hashes).encode("utf-8")).hexdigest() if merkle_hashes else "0" * 64
+        combined_hash = (
+            hashlib.sha256("".join(merkle_hashes).encode("utf-8")).hexdigest() if merkle_hashes else "0" * 64
+        )
         is_balanced = sum_debits == sum_credits
 
         return TrialBalanceSummary(
@@ -678,9 +722,9 @@ class LedgerReconciliationService:
             merkle_root=combined_hash,
         )
 
-    def verify_merkle_chain_integrity(self, journal_entries: Sequence[JournalEntryAggregate]) -> Tuple[bool, List[str]]:
+    def verify_merkle_chain_integrity(self, journal_entries: Sequence[JournalEntryAggregate]) -> tuple[bool, list[str]]:
         """Verify the immutable cryptographic hash chain of all posted entries."""
-        errors: List[str] = []
+        errors: list[str] = []
         expected_prev = "0" * 64
 
         for idx, entry in enumerate(journal_entries):
@@ -705,12 +749,12 @@ class LedgerReconciliationService:
     def perform_fx_revaluation(
         self,
         foreign_accounts: Sequence[AccountAggregate],
-        fx_rates: Dict[str, Decimal],
+        fx_rates: dict[str, Decimal],
         unrealized_fx_gain_account: AccountAggregate,
         unrealized_fx_loss_account: AccountAggregate,
-    ) -> List[JournalEntryAggregate]:
+    ) -> list[JournalEntryAggregate]:
         """Revalue foreign currency asset/liability accounts against current spot rates."""
-        revaluation_entries: List[JournalEntryAggregate] = []
+        revaluation_entries: list[JournalEntryAggregate] = []
 
         for acc in foreign_accounts:
             if acc.currency == self.base_currency:

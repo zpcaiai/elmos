@@ -44,9 +44,7 @@ def hosted_payload(synthesis_request: dict[str, object] | None = None) -> dict[s
         "actor": "user:test",
         "tenantId": "tenant-test",
         "intent": {"schema_version": "1.1.0"},
-        "synthesisRequest": synthesis_request
-        if synthesis_request is not None
-        else approved_synthesis_request(),
+        "synthesisRequest": synthesis_request if synthesis_request is not None else approved_synthesis_request(),
     }
 
 
@@ -111,13 +109,9 @@ def test_success_publishes_archive_evidence_and_progress(tmp_path: Path) -> None
     with zipfile.ZipFile(archive) as bundle:
         assert bundle.namelist()
 
-    verification = json.loads(
-        (out / "evidence" / "verification.json").read_text(encoding="utf-8")
-    )
+    verification = json.loads((out / "evidence" / "verification.json").read_text(encoding="utf-8"))
     assert verification["status"] in {"PASSED", "PARTIAL"}
-    result = json.loads(
-        (out / "evidence" / "pipeline-result.json").read_text(encoding="utf-8")
-    )
+    result = json.loads((out / "evidence" / "pipeline-result.json").read_text(encoding="utf-8"))
     assert result["status"] in {"PASSED", "PARTIAL"}
     assert (out / "logs" / "pipeline.log").is_file()
 
@@ -153,9 +147,7 @@ def test_pipeline_failure_publishes_log_and_reports_blocked(tmp_path: Path) -> N
 def test_unparseable_pipeline_result_is_rejected(tmp_path: Path) -> None:
     shim = fake_engine(
         tmp_path,
-        "import sys\n"
-        "sys.stdout.write('not-json\\n')\n"
-        "sys.exit(0)\n",
+        "import sys\nsys.stdout.write('not-json\\n')\nsys.exit(0)\n",
     )
     completed = run_entrypoint(hosted_payload(), tmp_path, pythonpath=shim)
     assert completed.returncode == EXIT_RESULT_INVALID
@@ -165,9 +157,7 @@ def test_unparseable_pipeline_result_is_rejected(tmp_path: Path) -> None:
 def test_pipeline_result_status_outside_accepted_set_is_rejected(tmp_path: Path) -> None:
     shim = fake_engine(
         tmp_path,
-        "import sys\n"
-        "sys.stdout.write('{\"status\": \"FAILED\"}\\n')\n"
-        "sys.exit(0)\n",
+        'import sys\nsys.stdout.write(\'{"status": "FAILED"}\\n\')\nsys.exit(0)\n',
     )
     completed = run_entrypoint(hosted_payload(), tmp_path, pythonpath=shim)
     assert completed.returncode == EXIT_RESULT_INVALID
@@ -177,9 +167,7 @@ def test_pipeline_result_status_outside_accepted_set_is_rejected(tmp_path: Path)
 def test_missing_archive_after_passing_result_is_rejected(tmp_path: Path) -> None:
     shim = fake_engine(
         tmp_path,
-        "import sys\n"
-        "sys.stdout.write('{\"status\": \"PASSED\"}\\n')\n"
-        "sys.exit(0)\n",
+        'import sys\nsys.stdout.write(\'{"status": "PASSED"}\\n\')\nsys.exit(0)\n',
     )
     completed = run_entrypoint(hosted_payload(), tmp_path, pythonpath=shim)
     assert completed.returncode == EXIT_ARTIFACT_INVALID

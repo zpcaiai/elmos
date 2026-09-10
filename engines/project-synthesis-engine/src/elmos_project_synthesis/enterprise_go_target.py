@@ -7,18 +7,15 @@ Generates complete industrial-grade enterprise Go microservices featuring:
 4. Rich query engine with dynamic pagination (Limit/Offset), multi-field sorting, and range filtering.
 5. SRE microservice observability with Prometheus metrics, /health/live, /health/ready, and graceful shutdown.
 """
+
 from __future__ import annotations
 
-from typing import Any
 from .enterprise_production_contract import (
     HEALTH_LIVE_PATH,
     HEALTH_READY_PATH,
-    METRICS_PATH,
     NULL_SENTINEL,
-    TRACE_HEADER,
-    enterprise_entity_sql,
 )
-from .models import EntitySpec, FieldSpec, SynthesisRequest, pascal
+from .models import EntitySpec, SynthesisRequest
 
 
 def _go_type(field_type: str) -> str:
@@ -59,8 +56,12 @@ require (
     model_fields = []
     for f in entity.fields:
         gtype = _go_type(f.type)
-        model_fields.append(f"\t{f.name.capitalize()} {gtype} `gorm:\"column:{f.name}\" json:\"{f.name}\"`")
-    fields_str = "\n".join(model_fields) if model_fields else "\tReference string `gorm:\"column:reference\" json:\"reference\"`\n\tTotal float64 `gorm:\"column:total\" json:\"total\"`"
+        model_fields.append(f'\t{f.name.capitalize()} {gtype} `gorm:"column:{f.name}" json:"{f.name}"`')
+    fields_str = (
+        "\n".join(model_fields)
+        if model_fields
+        else '\tReference string `gorm:"column:reference" json:"reference"`\n\tTotal float64 `gorm:"column:total" json:"total"`'
+    )
 
     files["models/models.go"] = f"""package models
 
@@ -92,7 +93,7 @@ func (e *{entity_cap}) TableName() string {{
 """
 
     # 3. Transactional Outbox
-    files["outbox/outbox.go"] = f"""package outbox
+    files["outbox/outbox.go"] = """package outbox
 
 import (
 \t"context"
@@ -104,7 +105,7 @@ import (
 \tgorm "gorm.io/gorm"
 )
 
-type OutboxEvent struct {{
+type OutboxEvent struct {
 \tEventID       string     `gorm:\"primaryKey;column:event_id;size:64\" json:\"event_id\"`
 \tTenantID      string     `gorm:\"column:tenant_id;size:64;index:idx_outbox_poll\" json:\"tenant_id\"`
 \tAggregateType string     `gorm:\"column:aggregate_type;size:64\" json:\"aggregate_type\"`
@@ -115,84 +116,84 @@ type OutboxEvent struct {{
 \tRetryCount    int        `gorm:\"column:retry_count;default:0\" json:\"retry_count\"`
 \tCreatedAt     time.Time  `gorm:\"column:created_at;autoCreateTime;index:idx_outbox_poll\" json:\"created_at\"`
 \tPublishedAt   *time.Time `gorm:\"column:published_at\" json:\"published_at,omitempty\"`
-}}
+}
 
-func (OutboxEvent) TableName() string {{
+func (OutboxEvent) TableName() string {
 \treturn "outbox_events"
-}}
+}
 
-type OutboxPublisher struct {{
+type OutboxPublisher struct {
 \tdb     *gorm.DB
 \twriter *kafka.Writer
-\tstop   chan struct{{}}
-}}
+\tstop   chan struct{}
+}
 
-func NewOutboxPublisher(db *gorm.DB, brokers []string) *OutboxPublisher {{
-\twriter := &kafka.Writer{{
+func NewOutboxPublisher(db *gorm.DB, brokers []string) *OutboxPublisher {
+\twriter := &kafka.Writer{
 \t\tAddr:         kafka.TCP(brokers...),
-\t\tBalancer:     &kafka.LeastBytes{{}},
+\t\tBalancer:     &kafka.LeastBytes{},
 \t\tBatchTimeout: 10 * time.Millisecond,
-\t}}
-\treturn &OutboxPublisher{{
+\t}
+\treturn &OutboxPublisher{
 \t\tdb:     db,
 \t\twriter: writer,
-\t\tstop:   make(chan struct{{}}),
-\t}}
-}}
+\t\tstop:   make(chan struct{}),
+\t}
+}
 
-func (p *OutboxPublisher) Start(ctx context.Context) {{
+func (p *OutboxPublisher) Start(ctx context.Context) {
 \tticker := time.NewTicker(1 * time.Second)
-\tgo func() {{
-\t\tfor {{
-\t\t\tselect {{
+\tgo func() {
+\t\tfor {
+\t\t\tselect {
 \t\t\tcase <-ticker.C:
 \t\t\t\tp.pollAndPublish(ctx)
 \t\t\tcase <-p.stop:
 \t\t\t\tticker.Stop()
 \t\t\t\t_ = p.writer.Close()
 \t\t\t\treturn
-\t\t\t}}
-\t\t}}
-\t}}()
-}}
+\t\t\t}
+\t\t}
+\t}()
+}
 
-func (p *OutboxPublisher) Stop() {{
+func (p *OutboxPublisher) Stop() {
 \tclose(p.stop)
-}}
+}
 
-func (p *OutboxPublisher) pollAndPublish(ctx context.Context) {{
+func (p *OutboxPublisher) pollAndPublish(ctx context.Context) {
 \tvar events []OutboxEvent
 \terr := p.db.WithContext(ctx).
 \t\tWhere("status = ?", "PENDING").
 \t\tOrder("created_at asc").
 \t\tLimit(50).
 \t\tFind(&events).Error
-\tif err != nil || len(events) == 0 {{
+\tif err != nil || len(events) == 0 {
 \t\treturn
-\t}}
+\t}
 
-\tfor _, evt := range events {{
+\tfor _, evt := range events {
 \t\ttopic := "events." + evt.AggregateType
-\t\tmsg := kafka.Message{{
+\t\tmsg := kafka.Message{
 \t\t\tTopic: topic,
 \t\t\tKey:   []byte(evt.AggregateID),
 \t\t\tValue: []byte(evt.Payload),
 \t\t\tTime:  time.Now(),
-\t\t}}
+\t\t}
 \t\terr := p.writer.WriteMessages(ctx, msg)
-\t\tif err != nil {{
+\t\tif err != nil {
 \t\t\tlog.Printf("Failed to publish outbox event %s: %v", evt.EventID, err)
 \t\t\tp.db.Model(&evt).Update("retry_count", gorm.Expr("retry_count + 1"))
 \t\t\tcontinue
-\t\t}}
+\t\t}
 
 \t\tnow := time.Now()
-\t\tp.db.Model(&evt).Updates(map[string]interface{{}}{{
+\t\tp.db.Model(&evt).Updates(map[string]interface{}{
 \t\t\t"status":       "PUBLISHED",
 \t\t\t"published_at": &now,
-\t\t}})
-\t}}
-}}
+\t\t})
+\t}
+}
 """
 
     # 4. Distributed Cache-Aside (Redis)

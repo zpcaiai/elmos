@@ -360,11 +360,11 @@ def render_python(request: SynthesisRequest, port: int) -> dict[str, str]:
             + f"{chr(10).join(store_blocks)}\n\n\n"
             + '@app.get("/health")\n'
             + "def health() -> dict[str, str]:\n"
-            + '    return {\n'
+            + "    return {\n"
             + '        "status": "UP",\n'
             + f'        "service": os.getenv("APP_NAME", "{request.project_name}"),\n'
             + f'        "kind": "{request.project_kind}",\n'
-            + '    }\n\n\n'
+            + "    }\n\n\n"
             + f"{chr(10).join(route_blocks)}\n"
             + (
                 '\n\n@app.get("/api/v1/worker/status")\n'

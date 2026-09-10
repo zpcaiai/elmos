@@ -1,16 +1,15 @@
 {
   "metadata": {
     "total_skills": 4489,
-    "audited_at": "2026-09-10T16:46:14Z",
-    "scan_duration_seconds": 3.78,
+    "audited_at": "2026-09-10T17:39:31Z",
+    "scan_duration_seconds": 2.91,
     "status_summary": {
-      "DECLARED": 2100,
-      "VERIFIED": 1222,
+      "DECLARED": 2049,
+      "VERIFIED": 1377,
       "supported": 172,
       "codes": 1,
-      "SPEC_ONLY": 47,
       "LOCAL_IMPLEMENTED_BOUNDED": 1,
-      "BLUEPRINT_IMPORTED": 100,
+      "BLUEPRINT_IMPORTED": 101,
       "production-contract": 473,
       "and": 2,
       "only": 24,
@@ -18,21 +17,14 @@
       "LOCAL_IMPLEMENTED_UNQUALIFIED": 12,
       "PRODUCTION_CODE_COMPLETE": 60,
       "PARTIAL_LOCAL_IMPLEMENTED": 26,
-      "strings": 1,
       "BOUNDED_LOCAL_IMPLEMENTED": 19,
       "promotion": 1,
       "PLANNING_ONLY_IMPLEMENTED": 5,
       "LOCAL_EXECUTED_SELF_ATTESTED": 13,
       "in": 1,
-      "matches": 1,
-      "APIs": 1,
-      "is": 2,
-      "checks": 1,
       "STATIC_VALIDATED": 1,
       "vocabulary": 44,
-      "directly": 51,
-      "test-ready-not-run": 35,
-      "-": 1
+      "test-ready-not-run": 35
     },
     "category_summary": {
       "adoption": 1,
@@ -8762,8 +8754,8 @@
         "orchestrator/approvals.py",
         "orchestrator/evidence_index.py"
       ],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5007
+      "status": "VERIFIED",
+      "size_bytes": 5041
     },
     {
       "name": "chinadb-01-estate-inventory-assessment",
@@ -8772,8 +8764,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Estate Inventory & Migration Assessment. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5006
+      "status": "VERIFIED",
+      "size_bytes": 5040
     },
     {
       "name": "chinadb-02-semantic-db-ir",
@@ -8782,8 +8774,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Semantic Database IR. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4781
+      "status": "VERIFIED",
+      "size_bytes": 4815
     },
     {
       "name": "chinadb-03-rule-mutation-dsl",
@@ -8794,8 +8786,8 @@
       "dependencies": [
         "config/rule-dsl-example.yaml"
       ],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4448
+      "status": "VERIFIED",
+      "size_bytes": 4482
     },
     {
       "name": "chinadb-04-data-movement-cdc",
@@ -8804,8 +8796,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial Data Movement & CDC. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4964
+      "status": "VERIFIED",
+      "size_bytes": 4998
     },
     {
       "name": "chinadb-05-ddl-auto-conversion",
@@ -8816,8 +8808,8 @@
       "dependencies": [
         "conversion-result.schema.json"
       ],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4628
+      "status": "VERIFIED",
+      "size_bytes": 4662
     },
     {
       "name": "chinadb-06-sql-auto-conversion",
@@ -8826,8 +8818,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL Automatic Conversion. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4791
+      "status": "VERIFIED",
+      "size_bytes": 4825
     },
     {
       "name": "chinadb-07-plsql-tsql-conversion",
@@ -8836,8 +8828,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for PL/SQL & T-SQL Conversion / Logic Decomposition. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5198
+      "status": "VERIFIED",
+      "size_bytes": 5232
     },
     {
       "name": "chinadb-08-application-code-auto-refactor",
@@ -8846,8 +8838,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Application Code Automatic Refactoring. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5023
+      "status": "VERIFIED",
+      "size_bytes": 5057
     },
     {
       "name": "chinadb-09-behavior-equivalence-verification",
@@ -8856,8 +8848,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Behavioral Equivalence Verification. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4876
+      "status": "VERIFIED",
+      "size_bytes": 4910
     },
     {
       "name": "chinadb-10-performance-equivalence-verification",
@@ -8866,8 +8858,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Performance Equivalence Verification. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4806
+      "status": "VERIFIED",
+      "size_bytes": 4840
     },
     {
       "name": "chinadb-11-guarded-auto-repair",
@@ -8878,8 +8870,8 @@
       "dependencies": [
         "schemas/repair-plan.schema.json"
       ],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4506
+      "status": "VERIFIED",
+      "size_bytes": 4540
     },
     {
       "name": "chinadb-12-cutover-rollback",
@@ -8888,8 +8880,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Cutover, Rehearsal & Rollback. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4483
+      "status": "VERIFIED",
+      "size_bytes": 4517
     },
     {
       "name": "chinadb-13-production-migration-certification",
@@ -8900,8 +8892,8 @@
       "dependencies": [
         "schemas/certification.schema.json"
       ],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4606
+      "status": "VERIFIED",
+      "size_bytes": 4640
     },
     {
       "name": "chinadb-14-security-governance",
@@ -8910,8 +8902,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Security, Secrets & Governance. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4338
+      "status": "VERIFIED",
+      "size_bytes": 4372
     },
     {
       "name": "chinadb-15-evidence-ledger-reproducibility",
@@ -8922,8 +8914,8 @@
       "dependencies": [
         "schemas/evidence.schema.json"
       ],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4366
+      "status": "VERIFIED",
+      "size_bytes": 4400
     },
     {
       "name": "chinadb-16-release-ci-quality-gates",
@@ -8932,8 +8924,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Release CI & Quality Gates. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4094
+      "status": "VERIFIED",
+      "size_bytes": 4128
     },
     {
       "name": "chinadb-20-source-oracle-adapter",
@@ -8942,8 +8934,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Oracle Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4731
+      "status": "VERIFIED",
+      "size_bytes": 4765
     },
     {
       "name": "chinadb-21-source-sqlserver-adapter",
@@ -8952,8 +8944,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL Server / T-SQL Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4773
+      "status": "VERIFIED",
+      "size_bytes": 4807
     },
     {
       "name": "chinadb-22-source-postgresql-adapter",
@@ -8962,8 +8954,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for PostgreSQL Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4615
+      "status": "VERIFIED",
+      "size_bytes": 4649
     },
     {
       "name": "chinadb-23-source-mysql-adapter",
@@ -8972,8 +8964,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for MySQL / MariaDB Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4571
+      "status": "VERIFIED",
+      "size_bytes": 4605
     },
     {
       "name": "chinadb-24-source-db2-adapter",
@@ -8982,8 +8974,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for DB2 LUW Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4496
+      "status": "VERIFIED",
+      "size_bytes": 4530
     },
     {
       "name": "chinadb-25-source-sybase-adapter",
@@ -8992,8 +8984,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Sybase ASE Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4517
+      "status": "VERIFIED",
+      "size_bytes": 4551
     },
     {
       "name": "chinadb-30-app-java-spring-adapter",
@@ -9002,8 +8994,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Java / Spring Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4697
+      "status": "VERIFIED",
+      "size_bytes": 4731
     },
     {
       "name": "chinadb-31-app-dotnet-adapter",
@@ -9012,8 +9004,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for .NET Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4577
+      "status": "VERIFIED",
+      "size_bytes": 4611
     },
     {
       "name": "chinadb-32-app-python-adapter",
@@ -9022,8 +9014,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Python Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4532
+      "status": "VERIFIED",
+      "size_bytes": 4566
     },
     {
       "name": "chinadb-33-app-nodejs-adapter",
@@ -9032,8 +9024,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Node.js / TypeScript Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4593
+      "status": "VERIFIED",
+      "size_bytes": 4627
     },
     {
       "name": "chinadb-34-app-go-adapter",
@@ -9042,8 +9034,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Go Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4460
+      "status": "VERIFIED",
+      "size_bytes": 4494
     },
     {
       "name": "chinadb-40-target-dm8",
@@ -9052,8 +9044,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for DM8 Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5737
+      "status": "VERIFIED",
+      "size_bytes": 5771
     },
     {
       "name": "chinadb-41-target-kingbasees",
@@ -9062,8 +9054,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for KingbaseES Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5811
+      "status": "VERIFIED",
+      "size_bytes": 5845
     },
     {
       "name": "chinadb-42-target-opengauss",
@@ -9072,8 +9064,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for openGauss Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5760
+      "status": "VERIFIED",
+      "size_bytes": 5794
     },
     {
       "name": "chinadb-43-target-tidb",
@@ -9082,8 +9074,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for TiDB Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5775
+      "status": "VERIFIED",
+      "size_bytes": 5809
     },
     {
       "name": "chinadb-44-target-gbase8s",
@@ -9092,8 +9084,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8s Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5641
+      "status": "VERIFIED",
+      "size_bytes": 5675
     },
     {
       "name": "chinadb-45-target-gbase8c",
@@ -9102,8 +9094,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8c Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5668
+      "status": "VERIFIED",
+      "size_bytes": 5702
     },
     {
       "name": "chinadb-46-target-gbase8a",
@@ -9112,8 +9104,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8a Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5622
+      "status": "VERIFIED",
+      "size_bytes": 5656
     },
     {
       "name": "chinadb-47-target-highgo",
@@ -9122,8 +9114,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for HighGo / HGDB Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5704
+      "status": "VERIFIED",
+      "size_bytes": 5738
     },
     {
       "name": "chinadb-48-target-oceanbase-oracle",
@@ -9132,8 +9124,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for OceanBase Oracle-Compatible Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5921
+      "status": "VERIFIED",
+      "size_bytes": 5955
     },
     {
       "name": "chinadb-49-target-oceanbase-mysql",
@@ -9142,8 +9134,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for OceanBase MySQL-Compatible Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5641
+      "status": "VERIFIED",
+      "size_bytes": 5675
     },
     {
       "name": "chinadb-50-target-gaussdb-oracle",
@@ -9152,8 +9144,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GaussDB Oracle-Compatible Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5964
+      "status": "VERIFIED",
+      "size_bytes": 5998
     },
     {
       "name": "chinadb-51-target-gaussdb-m",
@@ -9162,8 +9154,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GaussDB M-Compatible Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5589
+      "status": "VERIFIED",
+      "size_bytes": 5623
     },
     {
       "name": "chinadb-52-target-goldendb",
@@ -9172,8 +9164,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GoldenDB Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5958
+      "status": "VERIFIED",
+      "size_bytes": 5992
     },
     {
       "name": "chinadb-60-route-support-matrix",
@@ -9182,8 +9174,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Route Support Matrix & Compatibility Governance. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 3967
+      "status": "VERIFIED",
+      "size_bytes": 4001
     },
     {
       "name": "chinadb-61-fixture-corpus-and-mutation-tests",
@@ -9192,8 +9184,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial Fixture Corpus & Mutation Tests. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4131
+      "status": "VERIFIED",
+      "size_bytes": 4165
     },
     {
       "name": "chinadb-62-benchmark-lab",
@@ -9202,8 +9194,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Database Migration Benchmark Lab. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 3799
+      "status": "VERIFIED",
+      "size_bytes": 3833
     },
     {
       "name": "chinadb-63-migration-estimation-commercial-report",
@@ -9212,8 +9204,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial Assessment, Estimation & Delivery Report. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4038
+      "status": "VERIFIED",
+      "size_bytes": 4072
     },
     {
       "name": "chinadb-64-vendor-native-tool-bridge",
@@ -9222,8 +9214,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Vendor-Native Migration Tool Bridge. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4021
+      "status": "VERIFIED",
+      "size_bytes": 4055
     },
     {
       "name": "chinadb-65-observability-migration-control-plane",
@@ -9232,8 +9224,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Migration Observability & Control Plane. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 3973
+      "status": "VERIFIED",
+      "size_bytes": 4007
     },
     {
       "name": "coding-and-error-pattern-miner",
@@ -12874,8 +12866,8 @@
         "templates/GAP_ANALYSIS.json",
         "references/workflows/retrieval.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2054
+      "status": "VERIFIED",
+      "size_bytes": 2172
     },
     {
       "name": "elmos-ai-policy-as-code-compiler",
@@ -14118,8 +14110,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "strings",
-      "size_bytes": 8175
+      "status": "VERIFIED",
+      "size_bytes": 8293
     },
     {
       "name": "architecture-cost-quality-pareto",
@@ -15204,8 +15196,8 @@
         "scripts/continue-with-skills.sh",
         "scripts/check_install.sh"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2744
+      "status": "VERIFIED",
+      "size_bytes": 2862
     },
     {
       "name": "autogen-crewai-project-generation",
@@ -15396,8 +15388,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 9658
+      "status": "VERIFIED",
+      "size_bytes": 9776
     },
     {
       "name": "backup-restore-disaster-recovery",
@@ -18706,8 +18698,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 10255
+      "status": "VERIFIED",
+      "size_bytes": 10373
     },
     {
       "name": "elmos-content-safety-policy-classifier-orchestrator",
@@ -23129,8 +23121,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 9232
+      "status": "VERIFIED",
+      "size_bytes": 9350
     },
     {
       "name": "evidence-preserving-compression",
@@ -26423,8 +26415,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 10813
+      "status": "VERIFIED",
+      "size_bytes": 10931
     },
     {
       "name": "elmos-ieee754-floating-point-semantics",
@@ -26705,8 +26697,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 9136
+      "status": "VERIFIED",
+      "size_bytes": 9254
     },
     {
       "name": "incremental-strangler-module-cutover",
@@ -26951,8 +26943,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 8383
+      "status": "VERIFIED",
+      "size_bytes": 8501
     },
     {
       "name": "elmos-ingestion-api-and-sdk",
@@ -27436,8 +27428,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 10602
+      "status": "VERIFIED",
+      "size_bytes": 10720
     },
     {
       "name": "java-rust-service-conversion",
@@ -28419,8 +28411,8 @@
         "docs/live-workbench/IMPLEMENTATION.md",
         "python3 scripts/live_workbench/validate_archive.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1615
+      "status": "VERIFIED",
+      "size_bytes": 1733
     },
     {
       "name": "elmos-liveness-fairness-verifier",
@@ -29667,8 +29659,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 11417
+      "status": "VERIFIED",
+      "size_bytes": 11535
     },
     {
       "name": "model-inference-gateway",
@@ -31168,8 +31160,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 10935
+      "status": "VERIFIED",
+      "size_bytes": 11053
     },
     {
       "name": "observability-health-audit-foundation",
@@ -32442,8 +32434,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 9504
+      "status": "VERIFIED",
+      "size_bytes": 9622
     },
     {
       "name": "elmos-polyglot-build-toolchain-orchestrator",
@@ -33131,8 +33123,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 8604
+      "status": "VERIFIED",
+      "size_bytes": 8722
     },
     {
       "name": "progressive-skill-disclosure",
@@ -33431,8 +33423,8 @@
         "docs/project-synthesis/bundled-emitter-support.json",
         "source-docs/batch-49-52/EXECUTION_PIPELINE.md"
       ],
-      "status": "matches",
-      "size_bytes": 14902
+      "status": "VERIFIED",
+      "size_bytes": 15020
     },
     {
       "name": "project-template-product-line-management",
@@ -33753,8 +33745,8 @@
         "references/reason-codes.md",
         "references/certification-levels.md"
       ],
-      "status": "APIs",
-      "size_bytes": 19654
+      "status": "VERIFIED",
+      "size_bytes": 19772
     },
     {
       "name": "elmos-proof-driven-harness-intelligence",
@@ -35377,8 +35369,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 8585
+      "status": "VERIFIED",
+      "size_bytes": 8703
     },
     {
       "name": "elmos-repository-system-of-record",
@@ -35451,8 +35443,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 9325
+      "status": "VERIFIED",
+      "size_bytes": 9443
     },
     {
       "name": "elmos-requirement-coverage-ledger",
@@ -36339,8 +36331,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 9494
+      "status": "VERIFIED",
+      "size_bytes": 9612
     },
     {
       "name": "elmos-runtime-admission-attestation-controller",
@@ -36799,8 +36791,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "is",
-      "size_bytes": 10138
+      "status": "VERIFIED",
+      "size_bytes": 10256
     },
     {
       "name": "scheduler-quartz-cron-migration",
@@ -37097,8 +37089,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 9899
+      "status": "VERIFIED",
+      "size_bytes": 10017
     },
     {
       "name": "elmos-secure-zip-tar-extraction",
@@ -37593,16 +37585,11 @@
       "name": "elmos-semantic-ir-builder",
       "path": ".agents/skills/elmos-semantic-ir-builder/SKILL.md",
       "category": "elmos",
-      "description": "Normalize type, symbol, control-flow, data-flow, effect, error, async, ownership, and lifetime semantics across supported technologies.",
+      "description": "Invoke the bounded repository handler for elmos-semantic-ir-builder while preserving its immutable source and fail-closed evidence boundary.",
       "tasks": [],
-      "dependencies": [
-        "semantic-ir.json",
-        "type-system-map.json",
-        "effect-map.json",
-        "semantic-loss-register.json"
-      ],
-      "status": "DECLARED",
-      "size_bytes": 7072
+      "dependencies": [],
+      "status": "BLUEPRINT_IMPORTED",
+      "size_bytes": 3186
     },
     {
       "name": "elmos-semantic-ir-compiler-platform",
@@ -37625,8 +37612,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 10596
+      "status": "VERIFIED",
+      "size_bytes": 10714
     },
     {
       "name": "elmos-semantic-ir-formal-semantics",
@@ -39498,8 +39485,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "checks",
-      "size_bytes": 8561
+      "status": "VERIFIED",
+      "size_bytes": 8679
     },
     {
       "name": "stale-and-conflict-arbitration",
@@ -41014,8 +41001,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 9789
+      "status": "VERIFIED",
+      "size_bytes": 9907
     },
     {
       "name": "temporal-version-semantic-graph",
@@ -42681,8 +42668,8 @@
         "templates/IMPLEMENTATION-PLAN.yaml",
         "templates/TASK-REPORT.md"
       ],
-      "status": "is",
-      "size_bytes": 10784
+      "status": "VERIFIED",
+      "size_bytes": 10902
     },
     {
       "name": "elmos-verification-planner",
@@ -55362,8 +55349,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1924
+      "status": "VERIFIED",
+      "size_bytes": 2042
     },
     {
       "name": "tst-airgap-offline-update-revocation",
@@ -55379,8 +55366,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1920
+      "status": "VERIFIED",
+      "size_bytes": 2038
     },
     {
       "name": "tst-api-event-sdk-runner-compatibility",
@@ -55396,8 +55383,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1910
+      "status": "VERIFIED",
+      "size_bytes": 2028
     },
     {
       "name": "tst-b01-secure-repository-intake",
@@ -55422,8 +55409,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4308
+      "status": "VERIFIED",
+      "size_bytes": 4426
     },
     {
       "name": "tst-b02-semantic-adapters-psp",
@@ -55448,8 +55435,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4304
+      "status": "VERIFIED",
+      "size_bytes": 4422
     },
     {
       "name": "tst-b03-unified-ir",
@@ -55474,8 +55461,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4272
+      "status": "VERIFIED",
+      "size_bytes": 4390
     },
     {
       "name": "tst-b04-target-skeleton",
@@ -55500,8 +55487,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4261
+      "status": "VERIFIED",
+      "size_bytes": 4379
     },
     {
       "name": "tst-b05-method-lowering",
@@ -55526,8 +55513,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4290
+      "status": "VERIFIED",
+      "size_bytes": 4408
     },
     {
       "name": "tst-b06-dependency-api-mapping",
@@ -55552,8 +55539,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4273
+      "status": "VERIFIED",
+      "size_bytes": 4391
     },
     {
       "name": "tst-b07-framework-mapping",
@@ -55578,8 +55565,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4267
+      "status": "VERIFIED",
+      "size_bytes": 4385
     },
     {
       "name": "tst-b08-bounded-repair-loop",
@@ -55604,8 +55591,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4285
+      "status": "VERIFIED",
+      "size_bytes": 4403
     },
     {
       "name": "tst-b09-behavior-equivalence",
@@ -55630,8 +55617,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4311
+      "status": "VERIFIED",
+      "size_bytes": 4429
     },
     {
       "name": "tst-b10-production-hardening",
@@ -55656,8 +55643,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4315
+      "status": "VERIFIED",
+      "size_bytes": 4433
     },
     {
       "name": "tst-b11-release-data-cutover-retirement",
@@ -55682,8 +55669,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4325
+      "status": "VERIFIED",
+      "size_bytes": 4443
     },
     {
       "name": "tst-b12-enterprise-platformization",
@@ -55708,8 +55695,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4273
+      "status": "VERIFIED",
+      "size_bytes": 4391
     },
     {
       "name": "tst-b13-commercial-onboarding-poc-support",
@@ -55734,8 +55721,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4345
+      "status": "VERIFIED",
+      "size_bytes": 4463
     },
     {
       "name": "tst-b14-plg-community-localization",
@@ -55760,8 +55747,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4312
+      "status": "VERIFIED",
+      "size_bytes": 4430
     },
     {
       "name": "tst-b15-company-operating-system",
@@ -55786,8 +55773,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4308
+      "status": "VERIFIED",
+      "size_bytes": 4426
     },
     {
       "name": "tst-b16-ai-native-workforce",
@@ -55812,8 +55799,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4321
+      "status": "VERIFIED",
+      "size_bytes": 4439
     },
     {
       "name": "tst-b17-vertical-solution-factory",
@@ -55838,8 +55825,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4351
+      "status": "VERIFIED",
+      "size_bytes": 4469
     },
     {
       "name": "tst-b18-ma-group-migration",
@@ -55864,8 +55851,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4289
+      "status": "VERIFIED",
+      "size_bytes": 4407
     },
     {
       "name": "tst-b19-productization-blueprint",
@@ -55890,8 +55877,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4270
+      "status": "VERIFIED",
+      "size_bytes": 4388
     },
     {
       "name": "tst-b20-executable-scaffold",
@@ -55916,8 +55903,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4260
+      "status": "VERIFIED",
+      "size_bytes": 4378
     },
     {
       "name": "tst-b21-real-repository-vertical-slice",
@@ -55942,8 +55929,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4304
+      "status": "VERIFIED",
+      "size_bytes": 4422
     },
     {
       "name": "tst-b22-semantic-hardening",
@@ -55968,8 +55955,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4314
+      "status": "VERIFIED",
+      "size_bytes": 4432
     },
     {
       "name": "tst-b23-spring-to-aspnet",
@@ -55994,8 +55981,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4342
+      "status": "VERIFIED",
+      "size_bytes": 4460
     },
     {
       "name": "tst-b24-build-test-repair",
@@ -56020,8 +56007,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4323
+      "status": "VERIFIED",
+      "size_bytes": 4441
     },
     {
       "name": "tst-b25-high-confidence-behavior-poc",
@@ -56046,8 +56033,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4296
+      "status": "VERIFIED",
+      "size_bytes": 4414
     },
     {
       "name": "tst-b26-private-runner-security",
@@ -56072,8 +56059,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4329
+      "status": "VERIFIED",
+      "size_bytes": 4447
     },
     {
       "name": "tst-b27-incremental-production-factory",
@@ -56098,8 +56085,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4313
+      "status": "VERIFIED",
+      "size_bytes": 4431
     },
     {
       "name": "tst-b28-organization-talent",
@@ -56124,8 +56111,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4298
+      "status": "VERIFIED",
+      "size_bytes": 4416
     },
     {
       "name": "tst-b29-multi-language-routes",
@@ -56150,8 +56137,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4287
+      "status": "VERIFIED",
+      "size_bytes": 4405
     },
     {
       "name": "tst-b30-multi-framework-version",
@@ -56176,8 +56163,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4296
+      "status": "VERIFIED",
+      "size_bytes": 4414
     },
     {
       "name": "tst-b31-database-data-platform",
@@ -56202,8 +56189,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4279
+      "status": "VERIFIED",
+      "size_bytes": 4397
     },
     {
       "name": "tst-b32-client-modernization",
@@ -56228,8 +56215,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4282
+      "status": "VERIFIED",
+      "size_bytes": 4400
     },
     {
       "name": "tst-b33-cloud-iac-devops",
@@ -56254,8 +56241,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4322
+      "status": "VERIFIED",
+      "size_bytes": 4440
     },
     {
       "name": "tst-b34-portfolio-scale",
@@ -56280,8 +56267,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4294
+      "status": "VERIFIED",
+      "size_bytes": 4412
     },
     {
       "name": "tst-b35-advanced-formal-verification",
@@ -56306,8 +56293,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4344
+      "status": "VERIFIED",
+      "size_bytes": 4462
     },
     {
       "name": "tst-b36-ide-cli-pr-experience",
@@ -56332,8 +56319,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4289
+      "status": "VERIFIED",
+      "size_bytes": 4407
     },
     {
       "name": "tst-b37-extension-marketplace-closure",
@@ -56358,8 +56345,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4319
+      "status": "VERIFIED",
+      "size_bytes": 4437
     },
     {
       "name": "tst-b38-45-capability-traceability",
@@ -56375,8 +56362,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1880
+      "status": "VERIFIED",
+      "size_bytes": 1998
     },
     {
       "name": "tst-b38-45-environment-fixture-chaos-factory",
@@ -56392,8 +56379,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1908
+      "status": "VERIFIED",
+      "size_bytes": 2026
     },
     {
       "name": "tst-b38-45-evidence-integrity-anti-cheating",
@@ -56409,8 +56396,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1899
+      "status": "VERIFIED",
+      "size_bytes": 2017
     },
     {
       "name": "tst-b38-45-final-strict-release-gate",
@@ -56426,8 +56413,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1868
+      "status": "VERIFIED",
+      "size_bytes": 1986
     },
     {
       "name": "tst-b38-45-strict-suite-orchestrator",
@@ -56443,8 +56430,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1900
+      "status": "VERIFIED",
+      "size_bytes": 2018
     },
     {
       "name": "tst-b38-deployment-upgrade-lifecycle",
@@ -56469,8 +56456,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2058
+      "status": "VERIFIED",
+      "size_bytes": 2176
     },
     {
       "name": "tst-b39-global-sre-operations",
@@ -56495,8 +56482,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2051
+      "status": "VERIFIED",
+      "size_bytes": 2169
     },
     {
       "name": "tst-b40-supply-chain-compliance",
@@ -56521,8 +56508,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2055
+      "status": "VERIFIED",
+      "size_bytes": 2173
     },
     {
       "name": "tst-b41-knowledge-flywheel",
@@ -56547,8 +56534,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2046
+      "status": "VERIFIED",
+      "size_bytes": 2164
     },
     {
       "name": "tst-b42-agent-factory",
@@ -56573,8 +56560,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2047
+      "status": "VERIFIED",
+      "size_bytes": 2165
     },
     {
       "name": "tst-b43-product-lifecycle-lts",
@@ -56599,8 +56586,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2053
+      "status": "VERIFIED",
+      "size_bytes": 2171
     },
     {
       "name": "tst-b44-finops-economics",
@@ -56625,8 +56612,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2050
+      "status": "VERIFIED",
+      "size_bytes": 2168
     },
     {
       "name": "tst-b45-mature-product-certification",
@@ -56651,8 +56638,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2060
+      "status": "VERIFIED",
+      "size_bytes": 2178
     },
     {
       "name": "tst-b66-80-evidence-integrity-anti-forgery",
@@ -56929,8 +56916,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1911
+      "status": "VERIFIED",
+      "size_bytes": 2029
     },
     {
       "name": "tst-capability-traceability-matrix",
@@ -56946,8 +56933,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4456
+      "status": "VERIFIED",
+      "size_bytes": 4574
     },
     {
       "name": "tst-chaos-dr-recovery",
@@ -56963,8 +56950,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4417
+      "status": "VERIFIED",
+      "size_bytes": 4535
     },
     {
       "name": "tst-cicd-runner-permission-provenance",
@@ -56995,8 +56982,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1915
+      "status": "VERIFIED",
+      "size_bytes": 2033
     },
     {
       "name": "tst-concurrency-cancellation-race-leak",
@@ -57057,8 +57044,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1918
+      "status": "VERIFIED",
+      "size_bytes": 2036
     },
     {
       "name": "tst-cross-platform-toolchain-runtime-matrix",
@@ -57089,8 +57076,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4469
+      "status": "VERIFIED",
+      "size_bytes": 4587
     },
     {
       "name": "tst-customer-evidence-independent-review",
@@ -57106,8 +57093,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1916
+      "status": "VERIFIED",
+      "size_bytes": 2034
     },
     {
       "name": "tst-customer-uat-operability-handoff",
@@ -57123,8 +57110,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4450
+      "status": "VERIFIED",
+      "size_bytes": 4568
     },
     {
       "name": "tst-data-privacy-residency-retention",
@@ -57140,8 +57127,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4446
+      "status": "VERIFIED",
+      "size_bytes": 4564
     },
     {
       "name": "tst-data-transaction-migration-integrity",
@@ -57187,8 +57174,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4487
+      "status": "VERIFIED",
+      "size_bytes": 4605
     },
     {
       "name": "tst-edition-topology-data-boundary",
@@ -57204,8 +57191,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1920
+      "status": "VERIFIED",
+      "size_bytes": 2038
     },
     {
       "name": "tst-environment-fixture-data-factory",
@@ -57221,8 +57208,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4453
+      "status": "VERIFIED",
+      "size_bytes": 4571
     },
     {
       "name": "tst-evidence-integrity-anti-cheating",
@@ -57238,8 +57225,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "-",
-      "size_bytes": 4784
+      "status": "VERIFIED",
+      "size_bytes": 4902
     },
     {
       "name": "tst-evidence-provenance-anti-forgery",
@@ -57255,8 +57242,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4449
+      "status": "VERIFIED",
+      "size_bytes": 4567
     },
     {
       "name": "tst-evidence-replay-certification-anti-forgery",
@@ -57272,8 +57259,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1934
+      "status": "VERIFIED",
+      "size_bytes": 2052
     },
     {
       "name": "tst-generated-project-build-run-shutdown",
@@ -57319,8 +57306,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1923
+      "status": "VERIFIED",
+      "size_bytes": 2041
     },
     {
       "name": "tst-metering-billing-margin-reconciliation",
@@ -57336,8 +57323,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1920
+      "status": "VERIFIED",
+      "size_bytes": 2038
     },
     {
       "name": "tst-mixed-version-upgrade-rollback",
@@ -57353,8 +57340,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1908
+      "status": "VERIFIED",
+      "size_bytes": 2026
     },
     {
       "name": "tst-model-routing-budget-kill-switch",
@@ -57370,8 +57357,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1932
+      "status": "VERIFIED",
+      "size_bytes": 2050
     },
     {
       "name": "tst-native-memory-abi-ffi-safety",
@@ -57402,8 +57389,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4415
+      "status": "VERIFIED",
+      "size_bytes": 4533
     },
     {
       "name": "tst-performance-capacity-cost-regression",
@@ -57419,8 +57406,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1918
+      "status": "VERIFIED",
+      "size_bytes": 2036
     },
     {
       "name": "tst-performance-capacity-cost",
@@ -57436,8 +57423,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4439
+      "status": "VERIFIED",
+      "size_bytes": 4557
     },
     {
       "name": "tst-performance-cost-resource-regression",
@@ -57468,8 +57455,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1920
+      "status": "VERIFIED",
+      "size_bytes": 2038
     },
     {
       "name": "tst-shell-powershell-injection-portability",
@@ -57500,8 +57487,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1916
+      "status": "VERIFIED",
+      "size_bytes": 2034
     },
     {
       "name": "tst-sql-query-migration-security",
@@ -57532,8 +57519,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4815
+      "status": "VERIFIED",
+      "size_bytes": 4933
     },
     {
       "name": "tst-strict-suite-orchestrator",
@@ -57549,8 +57536,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4950
+      "status": "VERIFIED",
+      "size_bytes": 5068
     },
     {
       "name": "tst-supply-chain-secret-identity-tamper",
@@ -57581,8 +57568,8 @@
         "../../../test-suites/batch38-45-strict/strict-profile.json",
         "test-suites/batch38-45-strict/suite.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1928
+      "status": "VERIFIED",
+      "size_bytes": 2046
     },
     {
       "name": "tst-test-selection-flakiness-integrity",
@@ -57598,8 +57585,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4442
+      "status": "VERIFIED",
+      "size_bytes": 4560
     },
     {
       "name": "tst-ui-accessibility-localization-runtime-journey",
@@ -57630,8 +57617,8 @@
         "../../../test-suites/batch1-37-strict/suite.json",
         "../../../test-suites/batch1-37-strict/strict-profile.json"
       ],
-      "status": "directly",
-      "size_bytes": 4460
+      "status": "VERIFIED",
+      "size_bytes": 4578
     },
     {
       "name": "typed-tool-registry",

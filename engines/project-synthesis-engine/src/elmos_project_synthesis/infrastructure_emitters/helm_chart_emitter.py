@@ -3,10 +3,10 @@
 Generates complete Helm v3 charts complying with restricted PodSecurity standards,
 HPA autoscaling, zero-trust NetworkPolicy, Prometheus ServiceMonitors, and Outbox CronJobs.
 """
+
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, Optional
 
 
 def generate_enterprise_helm_chart(
@@ -15,10 +15,10 @@ def generate_enterprise_helm_chart(
     port: int = 8080,
     metrics_port: int = 9090,
     namespace: str = "production",
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """Emit production-grade Helm v3 chart files."""
-    files: Dict[str, str] = {}
-    chart_name = f"{service_name.lower().replace("_", "-")}-service"
+    files: dict[str, str] = {}
+    chart_name = f"{service_name.lower().replace('_', '-')}-service"
 
     # 1. Chart.yaml
     files["deploy/helm/Chart.yaml"] = f"""apiVersion: v2
@@ -51,16 +51,16 @@ maintainers:
                 "properties": {
                     "repository": {"type": "string"},
                     "tag": {"type": "string"},
-                    "pullPolicy": {"type": "string", "enum": ["Always", "IfNotPresent", "Never"]}
-                }
+                    "pullPolicy": {"type": "string", "enum": ["Always", "IfNotPresent", "Never"]},
+                },
             },
             "service": {
                 "type": "object",
                 "required": ["type", "port"],
                 "properties": {
                     "type": {"type": "string", "enum": ["ClusterIP", "NodePort", "LoadBalancer"]},
-                    "port": {"type": "integer", "minimum": 1, "maximum": 65535}
-                }
+                    "port": {"type": "integer", "minimum": 1, "maximum": 65535},
+                },
             },
             "autoscaling": {
                 "type": "object",
@@ -69,10 +69,10 @@ maintainers:
                     "enabled": {"type": "boolean"},
                     "minReplicas": {"type": "integer", "minimum": 1},
                     "maxReplicas": {"type": "integer", "minimum": 1},
-                    "targetCPUUtilizationPercentage": {"type": "integer", "minimum": 1, "maximum": 100}
-                }
-            }
-        }
+                    "targetCPUUtilizationPercentage": {"type": "integer", "minimum": 1, "maximum": 100},
+                },
+            },
+        },
     }
     files["deploy/helm/values.schema.json"] = json.dumps(schema, indent=2)
 

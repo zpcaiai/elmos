@@ -19,15 +19,16 @@ Batch 95: Lua / OpenResty
 
 Also loads and evaluates the 1,090 verification test cases across Batch 66-80 (450 cases) and Batch 81-95 (640 cases).
 """
+
 from __future__ import annotations
 
 import hashlib
 import json
 import logging
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -47,13 +48,13 @@ class SpecializedEvaluationSummary:
     b81_95_cases_evaluated: int
     b66_80_cases_evaluated: int
     execution_status: str  # LOCAL_EXECUTED
-    gate_decision: str     # LOCAL_PASSED
+    gate_decision: str  # LOCAL_PASSED
     certification_status: str  # NOT_CERTIFIED (per repository conservative boundary)
     external_evidence_status: str  # NOT_RUN
     evaluated_at: str
     evidence_digest: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -62,34 +63,39 @@ class SpecializedLanguageHarness:
 
     def __init__(self) -> None:
         import sys
+
         if str(REPO_ROOT) not in sys.path:
             sys.path.insert(0, str(REPO_ROOT))
 
-        from scripts.language_packs_b81_95.registry import get_registry
-        from scripts.language_packs_b81_95.orchestrator import LanguagePackOrchestrator
-        from scripts.language_packs_b81_95.gate import LanguagePackGate
+        from scripts.language_packs_b81_95.gate import LanguagePackGate  # type: ignore
+        from scripts.language_packs_b81_95.orchestrator import (  # type: ignore
+            LanguagePackOrchestrator,
+        )
+        from scripts.language_packs_b81_95.registry import get_registry  # type: ignore
 
         self.registry = get_registry()
         self.orchestrator = LanguagePackOrchestrator(registry=self.registry)
         self.gate = LanguagePackGate()
 
-    def execute_all_skills(self) -> Tuple[int, List[Dict[str, Any]]]:
+    def execute_all_skills(self) -> tuple[int, list[dict[str, Any]]]:
         """Executes all 180 skills across the 15 batches (B81-B95)."""
-        receipts: List[Dict[str, Any]] = []
+        receipts: list[dict[str, Any]] = []
         for batch_num in range(81, 96):
             batch_receipt = self.orchestrator.run_batch(batch_num)
-            receipts.append({
-                "batch": batch_num,
-                "skills_executed": batch_receipt.skills_executed,
-                "status": batch_receipt.status,
-                "receipt_digest": batch_receipt.receipt_digest,
-            })
+            receipts.append(
+                {
+                    "batch": batch_num,
+                    "skills_executed": batch_receipt.skills_executed,
+                    "status": batch_receipt.status,
+                    "receipt_digest": batch_receipt.receipt_digest,
+                }
+            )
         return len(self.registry), receipts
 
-    def load_test_cases(self) -> Tuple[int, int, List[Dict[str, Any]]]:
+    def load_test_cases(self) -> tuple[int, int, list[dict[str, Any]]]:
         """Loads and indexes the 1,090 verification test cases from suites."""
-        b81_cases: List[Dict[str, Any]] = []
-        b66_cases: List[Dict[str, Any]] = []
+        b81_cases: list[dict[str, Any]] = []
+        b66_cases: list[dict[str, Any]] = []
 
         # 1. Batch 81-95 cases (640 cases)
         b81_catalog = SUITE_B81_95 / "cases/catalog.json"
@@ -117,7 +123,7 @@ class SpecializedLanguageHarness:
         b81_count, b66_count, all_cases = self.load_test_cases()
         total_cases = b81_count + b66_count
 
-        now_iso = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+        now_iso = datetime.now(UTC).replace(microsecond=0).isoformat()
         payload_to_hash = {
             "total_skills": total_skills,
             "batches": 15,

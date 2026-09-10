@@ -8,28 +8,17 @@ Generates complete industrial-grade enterprise microservices featuring:
 5. SRE microservice observability with 3-tier health probes (/health/live, /health/ready, /metrics),
    structured correlation/trace logging, and graceful shutdown.
 """
+
 from __future__ import annotations
 
-import datetime as dt
-import json
-from typing import Any
-
-from .enterprise_production_contract import (
-    HEALTH_LIVE_PATH,
-    HEALTH_READY_PATH,
-    METRICS_PATH,
-    TRACE_HEADER,
-    enterprise_entity_sql,
-)
-from .models import EntitySpec, FieldSpec, SynthesisRequest
+from .models import EntitySpec, SynthesisRequest
 
 
 def generate_enterprise_python_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate all files for a production-grade enterprise FastAPI microservice."""
     files: dict[str, str] = {}
 
-    entity = request.entities[0] if request.entities else EntitySpec(singular="order", plural="orders")
-    sql_spec = enterprise_entity_sql(entity, placeholder="%s")
+    entity = request.entities[0] if request.entities else EntitySpec(singular="order", plural="orders", fields=())
 
     # 1. Domain Models with Audit & Versioning
     models_py = f'''"""Enterprise domain models with audit tracing and optimistic locking."""
@@ -90,7 +79,7 @@ class OutboxEventRecord(BaseModel):
     files["src/models.py"] = models_py
 
     # 2. Distributed Cache-Aside Layer with Anti-Penetration
-    cache_py = f'''"""Enterprise Distributed Cache-Aside Layer with TTL jitter and anti-penetration."""
+    cache_py = '''"""Enterprise Distributed Cache-Aside Layer with TTL jitter and anti-penetration."""
 from __future__ import annotations
 
 import datetime as dt
@@ -110,7 +99,7 @@ class DistributedCache:
     """Thread-safe Cache-Aside implementation supporting TTL jitter and anti-penetration."""
 
     def __init__(self, default_ttl_seconds: int = 300, null_ttl_seconds: int = 30):
-        self._store: dict[str, tuple[Any, dt.datetime]] = {{}}
+        self._store: dict[str, tuple[Any, dt.datetime]] = {}
         self._lock = threading.Lock()
         self.default_ttl_seconds = default_ttl_seconds
         self.null_ttl_seconds = null_ttl_seconds
@@ -173,7 +162,7 @@ app_cache = DistributedCache()
     files["src/cache.py"] = cache_py
 
     # 3. Transactional Outbox Pattern Manager & Async Publisher Worker
-    outbox_py = f'''"""Transactional Outbox Engine for Zero Data-Loss Domain Event Publishing."""
+    outbox_py = '''"""Transactional Outbox Engine for Zero Data-Loss Domain Event Publishing."""
 from __future__ import annotations
 
 import datetime as dt
@@ -190,7 +179,7 @@ class OutboxManager:
     """Manages atomic domain event recording and async message delivery."""
 
     def __init__(self):
-        self._events: dict[str, OutboxEventRecord] = {{}}
+        self._events: dict[str, OutboxEventRecord] = {}
         self._lock = threading.Lock()
         self._published_events: list[OutboxEventRecord] = []
         self._worker_thread: threading.Thread | None = None
@@ -214,7 +203,7 @@ class OutboxManager:
         )
         with self._lock:
             self._events[event.event_id] = event
-        logger.info(f"Recorded outbox event {{event.event_id}} [{{event.event_type}}] for aggregate {{aggregate_id}}")
+        logger.info(f"Recorded outbox event {event.event_id} [{event.event_type}] for aggregate {aggregate_id}")
         return event
 
     def poll_and_publish_pending(self, batch_size: int = 50) -> list[OutboxEventRecord]:
@@ -234,7 +223,7 @@ class OutboxManager:
                 except Exception as ex:
                     event.retry_count += 1
                     event.status = "FAILED" if event.retry_count >= 5 else "PENDING"
-                    logger.error(f"Failed to publish outbox event {{event.event_id}}: {{ex}}")
+                    logger.error(f"Failed to publish outbox event {event.event_id}: {ex}")
 
         return dispatched
 
@@ -727,20 +716,20 @@ def test_rich_pagination_and_filtering():
     return files
 
 
-
 def generate_enterprise_target_files(request: SynthesisRequest, language: str | None = None) -> dict[str, str]:
     """Generate enterprise production-grade microservice files based on target language."""
-    from .enterprise_java_target import generate_enterprise_java_files
-    from .enterprise_go_target import generate_enterprise_go_files
     from .enterprise_dotnet_target import generate_enterprise_dotnet_files
-    from .enterprise_typescript_target import generate_enterprise_typescript_files
+    from .enterprise_go_target import generate_enterprise_go_files
+    from .enterprise_java_target import generate_enterprise_java_files
     from .enterprise_polyglot_targets import (
-        generate_enterprise_rust_files,
         generate_enterprise_kotlin_files,
         generate_enterprise_php_files,
+        generate_enterprise_rust_files,
     )
+    from .enterprise_typescript_target import generate_enterprise_typescript_files
 
-    target_lang = (language or request.language or "python").strip().lower()
+    req_lang = request.targets[0].language if request.targets else None
+    target_lang = (language or req_lang or "python").strip().lower()
     if target_lang == "python":
         return generate_enterprise_python_files(request)
     elif target_lang == "java":

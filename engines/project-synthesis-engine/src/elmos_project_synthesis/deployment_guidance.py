@@ -337,9 +337,7 @@ def render_deployment_guidance(request: SynthesisRequest) -> dict[str, str]:
         "APP_NAME": request.project_name,
     }
     if request.requires_database:
-        cloud_secrets.append(
-            {"mount_path": "/run/secrets/database-url", "name": "database-url", "version": "1"}
-        )
+        cloud_secrets.append({"mount_path": "/run/secrets/database-url", "name": "database-url", "version": "1"})
         cloud_environment["ELMOS_DATABASE_URL_FILE"] = "/run/secrets/database-url"
     if request.auth_mode != "none":
         cloud_environment.update(
@@ -349,14 +347,10 @@ def render_deployment_guidance(request: SynthesisRequest) -> dict[str, str]:
             }
         )
     if request.auth_mode == "jwt":
-        cloud_secrets.append(
-            {"mount_path": "/run/secrets/jwt-hmac-secret", "name": "jwt-hmac-secret", "version": "1"}
-        )
+        cloud_secrets.append({"mount_path": "/run/secrets/jwt-hmac-secret", "name": "jwt-hmac-secret", "version": "1"})
         cloud_environment["ELMOS_JWT_HMAC_SECRET_FILE"] = "/run/secrets/jwt-hmac-secret"  # noqa: S105
     elif request.auth_mode == "oidc":
-        cloud_secrets.append(
-            {"mount_path": "/run/secrets/oidc-jwks", "name": "oidc-jwks", "version": "1"}
-        )
+        cloud_secrets.append({"mount_path": "/run/secrets/oidc-jwks", "name": "oidc-jwks", "version": "1"})
         cloud_environment["ELMOS_OIDC_JWKS_FILE"] = "/run/secrets/oidc-jwks"
     contract = {
         "schema_version": "1.0.0",
@@ -407,9 +401,7 @@ def render_deployment_guidance(request: SynthesisRequest) -> dict[str, str]:
         "docs/CLOUD_DEPLOYMENT.md": _cloud_markdown(request, profiles),
         "deploy/deployment-options.json": json.dumps(contract, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         "deploy/cloud-run-control.py": (
-            files("elmos_project_synthesis")
-            .joinpath("cloud_run_control.py")
-            .read_text(encoding="utf-8")
+            files("elmos_project_synthesis").joinpath("cloud_run_control.py").read_text(encoding="utf-8")
         ),
         "deploy/cloud-run-request.example.json": json.dumps(
             {
@@ -443,7 +435,8 @@ def render_deployment_guidance(request: SynthesisRequest) -> dict[str, str]:
             ensure_ascii=False,
             indent=2,
             sort_keys=True,
-        ) + "\n",
+        )
+        + "\n",
         "deploy/cloud-run-authorization.example.json": json.dumps(
             {
                 "schema_version": 1,
@@ -459,5 +452,6 @@ def render_deployment_guidance(request: SynthesisRequest) -> dict[str, str]:
             ensure_ascii=False,
             indent=2,
             sort_keys=True,
-        ) + "\n",
+        )
+        + "\n",
     }

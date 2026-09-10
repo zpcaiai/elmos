@@ -354,12 +354,12 @@ def _compose(request: SynthesisRequest) -> str:
                 "    cap_drop: [ALL]",
                 "    security_opt: [no-new-privileges:true]",
                 "    pids_limit: 256",
-                f"    cpus: \"{cpus}\"",
+                f'    cpus: "{cpus}"',
                 f"    mem_limit: {memory}",
                 "    stop_grace_period: 15s",
                 "    networks: [runtime]",
                 "    labels:",
-                "      io.elmos.generated: \"true\"",
+                '      io.elmos.generated: "true"',
                 "      io.elmos.runtime-scope: local-development",
             ]
         )

@@ -6,13 +6,13 @@ Verifies:
 3. Cloud-native deployment generation (Distroless Dockerfile, Kubernetes manifests, Helm chart).
 4. Full FastAPI enterprise target execution (Outbox, Cache-Aside, Pagination, Filtering, Optimistic Locking, SRE probes).
 """
+
 from __future__ import annotations
 
 import datetime as dt
-import time
-from decimal import Decimal
 
 import pytest
+
 from elmos_project_synthesis.cloud_native_deployment import (
     generate_distroless_dockerfile,
     generate_helm_chart,
@@ -20,13 +20,11 @@ from elmos_project_synthesis.cloud_native_deployment import (
 )
 from elmos_project_synthesis.enterprise_production_contract import (
     CacheConfig,
-    OutboxEvent,
     enterprise_entity_sql,
 )
 from elmos_project_synthesis.enterprise_production_target import generate_enterprise_python_files
 from elmos_project_synthesis.hosted_runner_fleet import (
     HostedRunnerFleet,
-    JobQueueItem,
     WorkerNode,
 )
 from elmos_project_synthesis.models import EntitySpec, FieldSpec, SynthesisRequest
@@ -93,7 +91,7 @@ def test_hosted_runner_fleet_full_lifecycle():
 
     # 5. Heartbeat & Dead Node Eviction + Job Failover
     # Simulate node2 going silent
-    node2.last_heartbeat_at = dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=45)
+    node2.last_heartbeat_at = dt.datetime.now(dt.UTC) - dt.timedelta(seconds=45)
     # Assign job2 to node2 manually to test failover
     job2.status = "RUNNING"
     job2.assigned_node_id = node2.node_id
@@ -105,7 +103,7 @@ def test_hosted_runner_fleet_full_lifecycle():
     assert job2.retry_count == 1
 
     # 6. Timeout Kill
-    job1.started_at = dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=5)
+    job1.started_at = dt.datetime.now(dt.UTC) - dt.timedelta(seconds=5)
     killed = fleet.check_timeouts()
     assert job1.job_id in killed
     assert job1.status == "TIMEOUT_KILLED"
@@ -131,6 +129,7 @@ def test_cloud_native_deployment_assets():
 
 def test_enterprise_generated_target_execution(tmp_path):
     from elmos_project_synthesis.intake import approve_request, create_draft
+
     draft = create_draft(
         name="enterprise-order-service",
         description="Enterprise order service with outbox, cache and audit.",
@@ -152,6 +151,7 @@ def test_enterprise_generated_target_execution(tmp_path):
 
     # Verify every generated file is valid Python code via AST parser
     import ast
+
     for rel_path, content in files.items():
         tree = ast.parse(content, filename=rel_path)
         assert tree is not None, f"Failed to parse {rel_path}"
@@ -276,7 +276,7 @@ def test_enterprise_relation_specs_and_cascading_ddl():
     from elmos_project_synthesis.enterprise_production_contract import enterprise_entity_sql
     from elmos_project_synthesis.models import EntitySpec, FieldSpec, RelationSpec
 
-    parent = EntitySpec(
+    _parent = EntitySpec(
         singular="order",
         plural="orders",
         fields=[FieldSpec(name="reference", type="string", required=True)],

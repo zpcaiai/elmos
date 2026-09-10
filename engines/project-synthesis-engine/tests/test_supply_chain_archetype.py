@@ -1,23 +1,24 @@
 """Unit and integration tests for Industrial Multi-Warehouse Supply Chain Archetype."""
-from decimal import Decimal
+
 import datetime as dt
+from decimal import Decimal
+
 import pytest
 
 from elmos_project_synthesis.domain_archetypes.supply_chain_archetype import (
-    StorageZoneType,
-    InventoryStatus,
-    TransferStatus,
-    FulfillmentFsmState,
-    Sku,
     BinLocation,
+    FulfillmentFsmState,
+    FulfillmentOrderAggregate,
+    InventoryAllocationError,
+    InventoryBinAggregate,
     LotNumber,
     PhysicalDimension,
     PhysicalWeight,
-    InventoryBinAggregate,
+    Sku,
     StockTransferAggregate,
-    FulfillmentOrderAggregate,
+    StorageZoneType,
     SupplyChainDomainError,
-    InventoryAllocationError,
+    TransferStatus,
 )
 
 
@@ -107,7 +108,7 @@ def test_inter_warehouse_stock_transfer_lifecycle():
     xfer2.mark_allocated()
     xfer2.mark_picked()
     xfer2.dispatch("UPS", "TRACK-1122", Decimal("100"))
-    xfer2.receive_at_destination(Decimal("95")) # 5 missing
+    xfer2.receive_at_destination(Decimal("95"))  # 5 missing
     assert xfer2.status == TransferStatus.DISCREPANCY_FLAGGED
 
 
@@ -136,7 +137,7 @@ def test_fulfillment_pick_pack_ship_fsm():
     assert order.state == FulfillmentFsmState.PACKING
 
     # Weight verification within 3% tolerance
-    verified = order.verify_packed_weight(Decimal("10.15")) # +1.5% ok
+    verified = order.verify_packed_weight(Decimal("10.15"))  # +1.5% ok
     assert verified
     assert order.state == FulfillmentFsmState.PACKED_VERIFIED
 
@@ -148,7 +149,7 @@ def test_fulfillment_pick_pack_ship_fsm():
     order_bad.complete_picking()
     order_bad.start_packing()
     with pytest.raises(SupplyChainDomainError, match="Weight mismatch"):
-        order_bad.verify_packed_weight(Decimal("11.50")) # 15% discrepancy
+        order_bad.verify_packed_weight(Decimal("11.50"))  # 15% discrepancy
 
     # Manifest and carrier handoff
     manifest_id = order.generate_carrier_manifest("DHL_EXPRESS", "DHL-99220011")

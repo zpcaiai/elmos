@@ -7,6 +7,7 @@ Implements an industrial execution daemon that:
 4. Detects brain-split / revoked leases and aborts zombie worker writes.
 5. Emits SHA-256 evidence bundles upon job completion.
 """
+
 from __future__ import annotations
 
 import datetime as dt
@@ -81,6 +82,7 @@ class WorkerAgentDaemon:
                 request = SynthesisRequest.from_mapping(request_data)
             else:
                 from .intake import approve_request, create_draft
+
                 lang = target_lang
                 if lang in ("dotnet", "c#"):
                     lang = "csharp"
@@ -98,7 +100,7 @@ class WorkerAgentDaemon:
                 approved = approve_request(
                     draft,
                     actor=job.actor_id,
-                    approved_at=dt.datetime.now(dt.timezone.utc).isoformat(),
+                    approved_at=dt.datetime.now(dt.UTC).isoformat(),
                 )
                 request = SynthesisRequest.from_mapping(approved)
 
@@ -125,7 +127,7 @@ class WorkerAgentDaemon:
                 "fencing_token": lease.fencing_token,
                 "files_count": len(generated_files),
                 "target_language": target_lang,
-                "completed_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+                "completed_at": dt.datetime.now(dt.UTC).isoformat(),
             }
             digest = hashlib.sha256(json.dumps(manifest_summary, sort_keys=True).encode()).hexdigest()
 

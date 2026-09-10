@@ -1,24 +1,25 @@
 """Unit and integration tests for Industrial Banking and Double-Entry Ledger Archetype."""
-from decimal import Decimal
+
 import datetime as dt
+from decimal import Decimal
+
 import pytest
 
 from elmos_project_synthesis.domain_archetypes.banking_ledger_archetype import (
-    Currency,
-    MoneyAmount,
-    AccountType,
-    NormalBalance,
-    AccountStatus,
-    JournalEntryStatus,
-    PostingKey,
     AccountAggregate,
-    JournalEntryLine,
-    JournalEntryAggregate,
-    PostingRuleEngine,
-    LedgerReconciliationService,
-    InvariantViolationError,
-    InsufficientFundsError,
     AccountFrozenError,
+    AccountStatus,
+    AccountType,
+    Currency,
+    InsufficientFundsError,
+    InvariantViolationError,
+    JournalEntryAggregate,
+    JournalEntryStatus,
+    LedgerReconciliationService,
+    MoneyAmount,
+    NormalBalance,
+    PostingKey,
+    PostingRuleEngine,
 )
 
 
@@ -32,7 +33,7 @@ def test_currency_and_money_operations():
     assert bhd.precision == 3
 
     m1 = MoneyAmount(Decimal("100.555"), usd)
-    assert m1.amount == Decimal("100.56") # ROUND_HALF_EVEN
+    assert m1.amount == Decimal("100.56")  # ROUND_HALF_EVEN
 
     m2 = MoneyAmount(Decimal("50.20"), usd)
     m_sum = m1 + m2
@@ -93,7 +94,9 @@ def test_account_aggregate_holds_and_overdraft():
 def test_journal_entry_balancing_and_merkle_hash():
     usd = Currency("USD")
     acc_a = AccountAggregate("acc-a", "t1", "1001", "Cash", AccountType.ASSET, usd, posted_balance=Decimal("1000.00"))
-    acc_b = AccountAggregate("acc-b", "t1", "2001", "Payable", AccountType.LIABILITY, usd, posted_balance=Decimal("500.00"))
+    acc_b = AccountAggregate(
+        "acc-b", "t1", "2001", "Payable", AccountType.LIABILITY, usd, posted_balance=Decimal("500.00")
+    )
 
     repo = {"acc-a": acc_a, "acc-b": acc_b}
 
@@ -127,7 +130,7 @@ def test_journal_entry_balancing_and_merkle_hash():
     # Post entry
     entry.post(repo)
     assert entry.status == JournalEntryStatus.POSTED
-    assert acc_a.posted_balance == Decimal("1200.00") # Asset DEBIT increase
+    assert acc_a.posted_balance == Decimal("1200.00")  # Asset DEBIT increase
     assert acc_b.posted_balance == Decimal("700.00")  # Liability CREDIT increase
 
     # Create reversal
@@ -135,7 +138,7 @@ def test_journal_entry_balancing_and_merkle_hash():
     assert reversal.is_balanced
     assert reversal.previous_merkle_hash == entry.merkle_hash
     reversal.post(repo)
-    assert acc_a.posted_balance == Decimal("1000.00") # Back to baseline
+    assert acc_a.posted_balance == Decimal("1000.00")  # Back to baseline
     assert acc_b.posted_balance == Decimal("500.00")
 
 
@@ -144,10 +147,18 @@ def test_posting_rule_engine_and_trial_balance():
     engine = PostingRuleEngine("tenant-prime", usd)
 
     # Asset backing the deposits to maintain global accounting equation (Assets = Liabilities + Equity)
-    vault = AccountAggregate("v1", "t-prime", "AST-1", "Central Reserve", AccountType.ASSET, usd, posted_balance=Decimal("1200.00"))
-    sender = AccountAggregate("s1", "t-prime", "CHK-1", "Alice", AccountType.LIABILITY, usd, posted_balance=Decimal("1000.00"))
-    receiver = AccountAggregate("r1", "t-prime", "CHK-2", "Bob", AccountType.LIABILITY, usd, posted_balance=Decimal("200.00"))
-    fee_acc = AccountAggregate("f1", "t-prime", "REV-1", "Platform Fee", AccountType.REVENUE, usd, posted_balance=Decimal("0.00"))
+    vault = AccountAggregate(
+        "v1", "t-prime", "AST-1", "Central Reserve", AccountType.ASSET, usd, posted_balance=Decimal("1200.00")
+    )
+    sender = AccountAggregate(
+        "s1", "t-prime", "CHK-1", "Alice", AccountType.LIABILITY, usd, posted_balance=Decimal("1000.00")
+    )
+    receiver = AccountAggregate(
+        "r1", "t-prime", "CHK-2", "Bob", AccountType.LIABILITY, usd, posted_balance=Decimal("200.00")
+    )
+    fee_acc = AccountAggregate(
+        "f1", "t-prime", "REV-1", "Platform Fee", AccountType.REVENUE, usd, posted_balance=Decimal("0.00")
+    )
 
     repo = {"v1": vault, "s1": sender, "r1": receiver, "f1": fee_acc}
 
@@ -163,8 +174,8 @@ def test_posting_rule_engine_and_trial_balance():
     )
 
     entry.post(repo)
-    assert sender.posted_balance == Decimal("897.50") # 1000 - 102.50
-    assert receiver.posted_balance == Decimal("300.00") # 200 + 100
+    assert sender.posted_balance == Decimal("897.50")  # 1000 - 102.50
+    assert receiver.posted_balance == Decimal("300.00")  # 200 + 100
     assert fee_acc.posted_balance == Decimal("2.50")
 
     # Reconciliation Service

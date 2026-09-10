@@ -212,6 +212,12 @@ knowledge-skill-model-foundry-external-gate:
 	@test -n "$(FOUNDRY_EXTERNAL_DECISION)" || (echo "FOUNDRY_EXTERNAL_DECISION is required" >&2; exit 2)
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src:packages/pi-harness/src $(UV) run --quiet --with 'cryptography>=45,<47' python tooling/run_foundry_external_qualification.py --bundle "$(FOUNDRY_EXTERNAL_BUNDLE)" --trust-store "$(FOUNDRY_EXTERNAL_TRUST_STORE)" --output "$(FOUNDRY_EXTERNAL_DECISION)"
 
+.PHONY: elmos-7plus1-commercial-skills
+elmos-7plus1-commercial-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet python tooling/integrate_elmos_7plus1_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/software-factory-engine/src $(UV) run --quiet python -m unittest discover -s tests/elmos-7plus1-commercial-skills -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/software-factory-engine/src $(UV) run --quiet python -m unittest discover -s engines/software-factory-engine/tests -p 'test_*.py'
+
 .PHONY: pricing-billing-skills
 pricing-billing-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet python tooling/integrate_pricing_billing_skills.py --check

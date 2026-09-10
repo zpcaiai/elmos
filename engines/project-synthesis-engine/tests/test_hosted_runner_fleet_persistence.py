@@ -1,10 +1,9 @@
 """Tests for Persistent HostedRunnerFleet & WorkerAgentDaemon with CAS Fencing."""
+
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
 
-import pytest
 from elmos_project_synthesis.hosted_runner_fleet import HostedRunnerFleet, WorkerNode
 from elmos_project_synthesis.worker_agent import WorkerAgentDaemon
 
@@ -18,7 +17,7 @@ def test_persistent_fleet_lifecycle_and_crash_recovery(tmp_path: Path):
     fleet1.register_node(node1)
     fleet1.set_tenant_quota("tenant-persistent", max_concurrency=3)
 
-    job1 = fleet1.submit_job("tenant-persistent", "actor-bob", {"sample": "data1"})
+    _job1 = fleet1.submit_job("tenant-persistent", "actor-bob", {"sample": "data1"})
     scheduled1 = fleet1.schedule_next_job()
     assert scheduled1 is not None
     s_job1, s_node1, s_lease1 = scheduled1
@@ -39,7 +38,7 @@ def test_persistent_fleet_lifecycle_and_crash_recovery(tmp_path: Path):
     assert fleet2.leases[s_lease1.lease_id].fencing_token == token1
 
     # Monotonic fencing sequence after crash: next token must be strictly greater
-    job2 = fleet2.submit_job("tenant-persistent", "actor-bob", {"sample": "data2"})
+    _job2 = fleet2.submit_job("tenant-persistent", "actor-bob", {"sample": "data2"})
     scheduled2 = fleet2.schedule_next_job()
     assert scheduled2 is not None
     s_job2, s_node2, s_lease2 = scheduled2
@@ -87,7 +86,7 @@ def test_worker_agent_execution_and_brain_split_protection(tmp_path: Path):
     assert fleet.jobs[job.job_id].status == "COMPLETED"
 
     # 2. Brain-split protection: simulate revoked/expired lease
-    job_split = fleet.submit_job("tenant-corp", "actor-test", {"name": "split-job"})
+    _job_split = fleet.submit_job("tenant-corp", "actor-test", {"name": "split-job"})
     s_split = fleet.schedule_next_job()
     assert s_split is not None
     j_split, n_split, l_split = s_split

@@ -114,9 +114,7 @@ def test_generated_cloud_run_controller_is_fail_closed(tmp_path) -> None:
             "project_id": "approved-project-1",
             "release_id": "release-01",
             "image": "asia-east1-docker.pkg.dev/approved-project-1/apps/api@sha256:" + "a" * 64,
-            "runtime_service_account": (
-                "deployment-guide-service-runtime@approved-project-1.iam.gserviceaccount.com"
-            ),
+            "runtime_service_account": ("deployment-guide-service-runtime@approved-project-1.iam.gserviceaccount.com"),
         }
     )
     config.write_text(json.dumps(cloud_request), encoding="utf-8")

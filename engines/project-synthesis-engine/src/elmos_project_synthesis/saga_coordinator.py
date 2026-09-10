@@ -6,13 +6,14 @@ Implements an orchestration-based Saga coordinator providing:
 3. Immutable state transition journal for auditability, crash-recovery, and replayability.
 4. Tenant-scoped idempotency token validation to guarantee exactly-once step invocation.
 """
+
 from __future__ import annotations
 
 import datetime as dt
 import logging
 from collections.abc import Callable
 from dataclasses import replace
-from typing import Any
+from typing import Any, Literal
 
 from .enterprise_production_contract import SagaDefinition, SagaExecutionRecord, SagaStep
 
@@ -71,8 +72,8 @@ class SagaCoordinator:
             current_step=0,
             status="PENDING",
             payload=dict(initial_payload),
-            created_at=dt.datetime.now(dt.timezone.utc).isoformat(),
-            updated_at=dt.datetime.now(dt.timezone.utc).isoformat(),
+            created_at=dt.datetime.now(dt.UTC).isoformat(),
+            updated_at=dt.datetime.now(dt.UTC).isoformat(),
         )
         self._executions[execution_id] = record
         self._append_journal(execution_id, "SAGA_STARTED", {"status": "PENDING", "payload": initial_payload})
@@ -97,7 +98,7 @@ class SagaCoordinator:
         record = replace(
             record,
             status="RUNNING",
-            updated_at=dt.datetime.now(dt.timezone.utc).isoformat(),
+            updated_at=dt.datetime.now(dt.UTC).isoformat(),
         )
         self._executions[execution_id] = record
         self._append_journal(execution_id, "SAGA_RUNNING", {})
@@ -124,7 +125,7 @@ class SagaCoordinator:
                     record,
                     current_step=step_idx + 1,
                     payload=payload,
-                    updated_at=dt.datetime.now(dt.timezone.utc).isoformat(),
+                    updated_at=dt.datetime.now(dt.UTC).isoformat(),
                 )
                 self._executions[execution_id] = record
                 self._append_journal(
@@ -143,7 +144,7 @@ class SagaCoordinator:
             record,
             status="COMPLETED",
             payload=payload,
-            updated_at=dt.datetime.now(dt.timezone.utc).isoformat(),
+            updated_at=dt.datetime.now(dt.UTC).isoformat(),
         )
         self._executions[execution_id] = record
         self._append_journal(execution_id, "SAGA_COMPLETED", {"payload": payload})
@@ -164,7 +165,7 @@ class SagaCoordinator:
             record,
             status="COMPENSATING",
             error=error_msg,
-            updated_at=dt.datetime.now(dt.timezone.utc).isoformat(),
+            updated_at=dt.datetime.now(dt.UTC).isoformat(),
         )
         self._executions[record.execution_id] = record
         self._append_journal(record.execution_id, "SAGA_COMPENSATING", {"error": error_msg})
@@ -192,24 +193,26 @@ class SagaCoordinator:
                     {"step_name": comp_name, "error": str(comp_exc)},
                 )
 
-        final_status = "FAILED" if compensation_failed else "COMPENSATED"
+        final_status: Literal["FAILED", "COMPENSATED"] = "FAILED" if compensation_failed else "COMPENSATED"
         record = replace(
             record,
             status=final_status,
             error=error_msg,
-            updated_at=dt.datetime.now(dt.timezone.utc).isoformat(),
+            updated_at=dt.datetime.now(dt.UTC).isoformat(),
         )
         self._executions[record.execution_id] = record
         self._append_journal(record.execution_id, f"SAGA_{final_status}", {"error": error_msg})
         return record
 
     def _append_journal(self, execution_id: str, event_type: str, details: dict[str, Any]) -> None:
-        self._journal.append({
-            "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
-            "execution_id": execution_id,
-            "event_type": event_type,
-            "details": details,
-        })
+        self._journal.append(
+            {
+                "timestamp": dt.datetime.now(dt.UTC).isoformat(),
+                "execution_id": execution_id,
+                "event_type": event_type,
+                "details": details,
+            }
+        )
 
     def get_journal(self, execution_id: str | None = None) -> list[dict[str, Any]]:
         """Retrieve the transition journal, optionally filtered by execution_id."""

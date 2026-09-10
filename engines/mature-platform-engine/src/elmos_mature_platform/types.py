@@ -2501,3 +2501,296 @@ class OncallOverride:
     starts_at: str
     ends_at: str
     reason: str = ""
+
+# ─── Multi-Agent Consensus Models ─────────────────────────────────────
+
+class ConsensusStrategy(str, Enum):
+    MAJORITY = "majority"
+    UNANIMOUS = "unanimous"
+    WEIGHTED = "weighted"
+    QUORUM = "quorum"
+    ARBITER = "arbiter"
+
+class VoteValue(str, Enum):
+    APPROVE = "approve"
+    REJECT = "reject"
+    ABSTAIN = "abstain"
+
+class ProposalStatus(str, Enum):
+    OPEN = "open"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    EXPIRED = "expired"
+    ARBITRATED = "arbitrated"
+
+@dataclass
+class ConsensusAgent:
+    agent_id: str
+    name: str
+    weight: float = 1.0  # for weighted voting
+    trust_score: float = 1.0  # 0-1
+    specialization: str = ""
+    vote_count: int = 0
+    correct_predictions: int = 0
+
+@dataclass
+class ConsensusProposal:
+    proposal_id: str
+    topic: str
+    description: str
+    strategy: ConsensusStrategy
+    proposer_id: str
+    status: ProposalStatus = ProposalStatus.OPEN
+    quorum_threshold: float = 0.5  # for quorum strategy
+    deadline: str = ""
+    created_at: str = ""
+    resolved_at: str = ""
+    arbiter_id: str = ""  # for arbiter strategy
+
+@dataclass
+class AgentVote:
+    vote_id: str
+    proposal_id: str
+    agent_id: str
+    value: VoteValue
+    confidence: float = 1.0  # 0-1
+    reasoning: str = ""
+    timestamp: str = ""
+
+@dataclass
+class ConsensusResult:
+    proposal_id: str
+    outcome: VoteValue  # APPROVE or REJECT
+    approve_count: int = 0
+    reject_count: int = 0
+    abstain_count: int = 0
+    weighted_approve: float = 0.0
+    weighted_reject: float = 0.0
+    strategy_used: ConsensusStrategy = ConsensusStrategy.MAJORITY
+    decided_by: str = ""  # agent_id if arbiter
+
+# ─── Tenant Edition Migration Models ─────────────────────────────────
+
+class TenantMigrationStatus(str, Enum):
+    PLANNED = "planned"
+    VALIDATING = "validating"
+    MIGRATING = "migrating"
+    VERIFYING = "verifying"
+    COMPLETED = "completed"
+    ROLLED_BACK = "rolled_back"
+    FAILED = "failed"
+
+@dataclass
+class TenantEditionMapping:
+    mapping_id: str
+    tenant_id: str
+    source_edition: str
+    target_edition: str
+    status: TenantMigrationStatus = TenantMigrationStatus.PLANNED
+    data_size_gb: float = 0.0
+    feature_gaps: List[str] = field(default_factory=list)
+    config_changes: Dict[str, str] = field(default_factory=dict)
+    started_at: str = ""
+    completed_at: str = ""
+    rollback_deadline: str = ""
+    validation_passed: bool = False
+
+@dataclass
+class MigrationPrecheck:
+    mapping_id: str
+    edition_compatible: bool = False
+    data_exportable: bool = False
+    features_available: bool = False
+    capacity_sufficient: bool = False
+    overall_ready: bool = False
+    blockers: List[str] = field(default_factory=list)
+
+@dataclass
+class MigrationWave:
+    wave_id: str
+    wave_name: str
+    mappings: List[str] = field(default_factory=list)  # mapping_ids
+    max_parallel: int = 5
+    started_at: str = ""
+    completed_at: str = ""
+
+# ─── Workflow Version Recovery Models ─────────────────────────────────
+
+class WorkflowState(str, Enum):
+    PENDING = "pending"
+    RUNNING = "running"
+    PAUSED = "paused"
+    WAITING = "waiting"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    RECOVERING = "recovering"
+    CANCELLED = "cancelled"
+
+class CheckpointType(str, Enum):
+    AUTOMATIC = "automatic"
+    MANUAL = "manual"
+    PRE_UPGRADE = "pre_upgrade"
+    POST_ROLLBACK = "post_rollback"
+
+@dataclass
+class WorkflowCheckpoint:
+    checkpoint_id: str
+    workflow_id: str
+    step_index: int
+    checkpoint_type: CheckpointType
+    state_snapshot: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = ""
+    version: str = ""
+    checksum: str = ""
+
+@dataclass
+class WorkflowExecution:
+    workflow_id: str
+    workflow_name: str
+    version: str
+    state: WorkflowState = WorkflowState.PENDING
+    current_step: int = 0
+    total_steps: int = 0
+    started_at: str = ""
+    completed_at: str = ""
+    checkpoints: List[str] = field(default_factory=list)  # checkpoint_ids
+    error_message: str = ""
+    retry_count: int = 0
+    max_retries: int = 3
+    idempotency_key: str = ""
+
+@dataclass
+class RecoveryPlan:
+    workflow_id: str
+    from_checkpoint_id: str
+    resume_step: int
+    version_compatible: bool = True
+    migration_needed: bool = False
+    estimated_steps_remaining: int = 0
+
+# ─── DAST/IAST Security Models ────────────────────────────────────────
+
+class SecurityScanType(str, Enum):
+    DAST = "dast"
+    IAST = "iast"
+    SAST = "sast"
+    SCA = "sca"
+    CONTAINER = "container"
+
+class FindingSeverity(str, Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    INFO = "info"
+
+class FindingStatus(str, Enum):
+    NEW = "new"
+    CONFIRMED = "confirmed"
+    FALSE_POSITIVE = "false_positive"
+    REMEDIATED = "remediated"
+    ACCEPTED_RISK = "accepted_risk"
+    REOPENED = "reopened"
+
+@dataclass
+class SecurityScan:
+    scan_id: str
+    scan_type: SecurityScanType
+    target: str  # URL, image, or repo path
+    started_at: str = ""
+    completed_at: str = ""
+    duration_seconds: float = 0.0
+    findings_count: int = 0
+    scanner_name: str = ""
+    scanner_version: str = ""
+    policy_id: str = ""
+
+@dataclass
+class SecurityFinding:
+    finding_id: str
+    scan_id: str
+    severity: FindingSeverity
+    status: FindingStatus = FindingStatus.NEW
+    title: str = ""
+    description: str = ""
+    location: str = ""  # file:line or URL
+    cwe_id: str = ""  # CWE-79, etc.
+    cvss_score: float = 0.0
+    remediation: str = ""
+    first_seen: str = ""
+    last_seen: str = ""
+    false_positive_reason: str = ""
+    sla_deadline: str = ""
+
+@dataclass
+class SecurityPolicy:
+    policy_id: str
+    name: str
+    max_critical: int = 0  # 0 = no critical allowed
+    max_high: int = 0
+    sla_critical_hours: int = 24
+    sla_high_hours: int = 72
+    sla_medium_hours: int = 168
+    block_on_critical: bool = True
+    require_scan_types: List[str] = field(default_factory=list)
+# ─── Customer ROI/TCO Models ──────────────────────────────────────────
+
+class CostDriver(str, Enum):
+    LABOR = "labor"
+    INFRASTRUCTURE = "infrastructure"
+    LICENSE = "license"
+    TRAINING = "training"
+    MIGRATION = "migration"
+    MAINTENANCE = "maintenance"
+    DOWNTIME = "downtime"
+    OPPORTUNITY = "opportunity"
+
+class ValueDriver(str, Enum):
+    PRODUCTIVITY = "productivity"
+    QUALITY = "quality"
+    SPEED = "speed"
+    RISK_REDUCTION = "risk_reduction"
+    COMPLIANCE = "compliance"
+    INNOVATION = "innovation"
+
+@dataclass
+class TcoCostItem:
+    item_id: str
+    driver: CostDriver
+    description: str
+    amount: float
+    recurring: bool = True  # True = annual, False = one-time
+    period_years: int = 3
+
+@dataclass
+class ValueItem:
+    item_id: str
+    driver: ValueDriver
+    description: str
+    annual_value: float
+    confidence: float = 0.8  # 0-1
+    realization_month: int = 6  # months until value realized
+
+@dataclass
+class RoiAnalysis:
+    analysis_id: str
+    customer_name: str
+    period_years: int = 3
+    total_cost: float = 0.0
+    total_value: float = 0.0
+    net_value: float = 0.0
+    roi_percentage: float = 0.0
+    payback_months: float = 0.0
+    npv: float = 0.0  # net present value
+    irr: float = 0.0  # internal rate of return
+    risk_adjusted_roi: float = 0.0
+    created_at: str = ""
+
+@dataclass
+class TcoComparison:
+    current_state: str  # "manual", "competitor", etc.
+    proposed_state: str  # "elmos"
+    current_tco: float = 0.0
+    proposed_tco: float = 0.0
+    savings: float = 0.0
+    savings_percentage: float = 0.0

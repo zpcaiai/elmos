@@ -3,35 +3,36 @@
 Provides multi-warehouse topology, precision bin-level inventory allocation,
 lot traceability, pick-pack-ship FSM workflows, and carrier dispatch reconciliation.
 """
+
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 import datetime as dt
-from decimal import Decimal, ROUND_HALF_UP
 import enum
-import hashlib
-import json
 import re
-from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
-
+from dataclasses import dataclass, field
+from decimal import ROUND_HALF_UP, Decimal
+from typing import Any
 
 # ==============================================================================
 # 1. Enums and Value Objects
 # ==============================================================================
 
-class StorageZoneType(str, enum.Enum):
+
+class StorageZoneType(enum.StrEnum):
     """Physical climate and security zones within a warehouse."""
+
     AMBIENT = "AMBIENT"
-    COLD_STORAGE = "COLD_STORAGE"      # 2C to 8C
-    DEEP_FREEZE = "DEEP_FREEZE"        # -20C
+    COLD_STORAGE = "COLD_STORAGE"  # 2C to 8C
+    DEEP_FREEZE = "DEEP_FREEZE"  # -20C
     HAZARDOUS_MATERIAL = "HAZMAT"
     HIGH_VALUE_SECURE = "HIGH_VALUE"
     RECEIVING_DOCK = "RECEIVING"
     SHIPPING_STAGING = "SHIPPING"
 
 
-class InventoryStatus(str, enum.Enum):
+class InventoryStatus(enum.StrEnum):
     """Status of inventory at lot/bin level."""
+
     AVAILABLE = "AVAILABLE"
     ALLOCATED = "ALLOCATED"
     PICKED = "PICKED"
@@ -40,8 +41,9 @@ class InventoryStatus(str, enum.Enum):
     EXPIRED = "EXPIRED"
 
 
-class TransferStatus(str, enum.Enum):
+class TransferStatus(enum.StrEnum):
     """Lifecycle states of an inter-warehouse or inter-bin stock transfer."""
+
     REQUESTED = "REQUESTED"
     ALLOCATED = "ALLOCATED"
     PICKED = "PICKED"
@@ -53,8 +55,9 @@ class TransferStatus(str, enum.Enum):
     CANCELLED = "CANCELLED"
 
 
-class FulfillmentFsmState(str, enum.Enum):
+class FulfillmentFsmState(enum.StrEnum):
     """Order fulfillment workflow states."""
+
     PENDING_ALLOCATION = "PENDING_ALLOCATION"
     INVENTORY_ALLOCATED = "INVENTORY_ALLOCATED"
     WAVE_RELEASED = "WAVE_RELEASED"
@@ -71,6 +74,7 @@ class FulfillmentFsmState(str, enum.Enum):
 @dataclass(frozen=True)
 class Sku:
     """Stock Keeping Unit value object with strict format validation."""
+
     code: str
     name: str
     category: str
@@ -86,6 +90,7 @@ class Sku:
 @dataclass(frozen=True)
 class BinLocation:
     """Precise Aisle-Rack-Shelf-Bin physical coordinates in warehouse."""
+
     aisle: str
     rack: str
     shelf: str
@@ -100,12 +105,13 @@ class BinLocation:
 @dataclass(frozen=True)
 class LotNumber:
     """Manufacturing batch lot for FIFO / FEFO tracking and expiration safety."""
+
     lot_code: str
     manufacture_date: dt.date
     expiration_date: dt.date
     supplier_code: str
 
-    def is_expired(self, as_of: Optional[dt.date] = None) -> bool:
+    def is_expired(self, as_of: dt.date | None = None) -> bool:
         check_date = as_of or dt.date.today()
         return check_date > self.expiration_date
 
@@ -113,6 +119,7 @@ class LotNumber:
 @dataclass(frozen=True)
 class PhysicalDimension:
     """Carton or pallet physical dimensions."""
+
     length_cm: Decimal
     width_cm: Decimal
     height_cm: Decimal
@@ -127,6 +134,7 @@ class PhysicalDimension:
 @dataclass(frozen=True)
 class PhysicalWeight:
     """Gross / Net weight value object with unit conversions."""
+
     value: Decimal
     unit: str = "KG"
 
@@ -144,34 +152,39 @@ class PhysicalWeight:
 # 2. Aggregates and Invariants
 # ==============================================================================
 
+
 class SupplyChainDomainError(Exception):
     """Base exception for supply chain domain invariants."""
+
     pass
 
 
 class InventoryAllocationError(SupplyChainDomainError):
     """Raised when requested stock exceeds available quantities."""
+
     pass
 
 
 class StorageZoneIncompatibleError(SupplyChainDomainError):
     """Raised when product storage requirements conflict with bin zone."""
+
     pass
 
 
 @dataclass
 class InventoryBinAggregate:
     """Granular physical storage location and stock allocation aggregate root."""
+
     bin_id: str
     warehouse_id: str
     location: BinLocation
     max_weight_kg: Decimal
-    sku_quantities: Dict[str, Decimal] = field(default_factory=dict)         # SKU -> on_hand
-    allocated_quantities: Dict[str, Decimal] = field(default_factory=dict)   # SKU -> allocated
-    quarantined_quantities: Dict[str, Decimal] = field(default_factory=dict) # SKU -> quarantined
-    lot_assignments: Dict[str, str] = field(default_factory=dict)            # SKU -> lot_code
+    sku_quantities: dict[str, Decimal] = field(default_factory=dict)  # SKU -> on_hand
+    allocated_quantities: dict[str, Decimal] = field(default_factory=dict)  # SKU -> allocated
+    quarantined_quantities: dict[str, Decimal] = field(default_factory=dict)  # SKU -> quarantined
+    lot_assignments: dict[str, str] = field(default_factory=dict)  # SKU -> lot_code
     version: int = 1
-    updated_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+    updated_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
 
     def get_on_hand(self, sku_code: str) -> Decimal:
         return self.sku_quantities.get(sku_code, Decimal("0"))
@@ -200,7 +213,7 @@ class InventoryBinAggregate:
         self.sku_quantities[sku.code] = current + qty
         self.lot_assignments[sku.code] = lot.lot_code
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
     def allocate_stock(self, sku_code: str, qty: Decimal) -> None:
         """Reserve stock for an active pick list or order."""
@@ -215,7 +228,7 @@ class InventoryBinAggregate:
         current_allocated = self.allocated_quantities.get(sku_code, Decimal("0"))
         self.allocated_quantities[sku_code] = current_allocated + qty
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
     def pick_stock(self, sku_code: str, qty: Decimal) -> None:
         """Physically pick allocated stock from bin during wave execution."""
@@ -227,9 +240,9 @@ class InventoryBinAggregate:
             raise InventoryAllocationError(f"Cannot pick {qty}: physical on-hand is only {on_hand}")
 
         self.allocated_quantities[sku_code] = allocated - qty
-        self.sku_quantities[sku.code if hasattr(sku_code, "code") else sku_code] = on_hand - qty
+        self.sku_quantities[sku_code] = on_hand - qty
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
     def quarantine_stock(self, sku_code: str, qty: Decimal, reason: str) -> None:
         """Isolate damaged or suspect stock into quarantine balance."""
@@ -239,12 +252,13 @@ class InventoryBinAggregate:
         curr_q = self.quarantined_quantities.get(sku_code, Decimal("0"))
         self.quarantined_quantities[sku_code] = curr_q + qty
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
 
 @dataclass
 class StockTransferAggregate:
     """Inter-Warehouse or Inter-Facility Stock Transfer Aggregate."""
+
     transfer_id: str
     tenant_id: str
     source_warehouse_id: str
@@ -258,8 +272,8 @@ class StockTransferAggregate:
     carrier_code: str = ""
     tracking_number: str = ""
     version: int = 1
-    created_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
-    updated_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+    created_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
+    updated_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
 
     def mark_allocated(self) -> None:
         if self.status != TransferStatus.REQUESTED:
@@ -283,7 +297,7 @@ class StockTransferAggregate:
         self.shipped_qty = shipped_qty
         self.status = TransferStatus.IN_TRANSIT
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
     def receive_at_destination(self, actual_received_qty: Decimal) -> None:
         if self.status != TransferStatus.IN_TRANSIT:
@@ -294,26 +308,27 @@ class StockTransferAggregate:
         else:
             self.status = TransferStatus.DISCREPANCY_FLAGGED
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
 
 @dataclass
 class FulfillmentOrderAggregate:
     """Outbound pick-pack-ship order fulfillment workflow aggregate root."""
+
     order_id: str
     tenant_id: str
     customer_id: str
-    items: List[Dict[str, Any]] = field(default_factory=list) # [{sku, qty, allocated_bin}]
+    items: list[dict[str, Any]] = field(default_factory=list)  # [{sku, qty, allocated_bin}]
     state: FulfillmentFsmState = FulfillmentFsmState.PENDING_ALLOCATION
     expected_weight_kg: Decimal = Decimal("0.00")
-    actual_weight_kg: Optional[Decimal] = None
-    manifest_id: Optional[str] = None
-    carrier_tracking: Optional[str] = None
+    actual_weight_kg: Decimal | None = None
+    manifest_id: str | None = None
+    carrier_tracking: str | None = None
     version: int = 1
-    created_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
-    updated_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+    created_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
+    updated_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
 
-    def record_allocation(self, allocations: List[Dict[str, Any]], total_weight_kg: Decimal) -> None:
+    def record_allocation(self, allocations: list[dict[str, Any]], total_weight_kg: Decimal) -> None:
         if self.state != FulfillmentFsmState.PENDING_ALLOCATION:
             raise SupplyChainDomainError(f"Invalid transition from {self.state}")
         self.items = allocations
@@ -378,4 +393,4 @@ class FulfillmentOrderAggregate:
             raise SupplyChainDomainError(f"Cannot handoff unmanifested order from {self.state}")
         self.state = FulfillmentFsmState.CARRIER_DISPATCHED
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)

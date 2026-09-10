@@ -3,20 +3,22 @@
 Provides Redis distributed lock management with background heartbeat renewal daemon,
 monotonically increasing fencing tokens, and XFetch probabilistic early expiration.
 """
+
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-import datetime as dt
 import math
 import random
 import threading
 import time
-from typing import Any, Callable, Dict, Optional, Tuple
+from collections.abc import Callable
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
 class DistributedLockHandle:
     """Represents an actively held distributed mutex with monotonic fencing token."""
+
     resource_key: str
     owner_token: str
     fencing_token: int
@@ -35,15 +37,15 @@ class MockRedisState:
 
     def __init__(self) -> None:
         self._lock = threading.Lock()
-        self._data: Dict[str, Tuple[str, float]] = {} # key -> (val, expire_time)
+        self._data: dict[str, tuple[str, float]] = {}  # key -> (val, expire_time)
         self._fencing_sequence: int = 1000
 
-    def set_nx_px(self, key: str, value: str, ttl_seconds: float) -> Tuple[bool, int]:
+    def set_nx_px(self, key: str, value: str, ttl_seconds: float) -> tuple[bool, int]:
         with self._lock:
             now = time.time()
             existing = self._data.get(key)
             if existing and existing[1] > now:
-                return False, 0 # Key already exists and valid
+                return False, 0  # Key already exists and valid
 
             self._fencing_sequence += 1
             token = self._fencing_sequence
@@ -71,7 +73,7 @@ class MockRedisState:
 class RedisClusterLockManager:
     """Industrial-grade distributed lock manager with fencing token and safety guarantees."""
 
-    def __init__(self, redis_state: Optional[MockRedisState] = None) -> None:
+    def __init__(self, redis_state: MockRedisState | None = None) -> None:
         self._redis = redis_state or MockRedisState()
 
     def acquire_lock(
@@ -81,7 +83,7 @@ class RedisClusterLockManager:
         ttl_seconds: float = 10.0,
         timeout_seconds: float = 2.0,
         retry_interval_seconds: float = 0.05,
-    ) -> Optional[DistributedLockHandle]:
+    ) -> DistributedLockHandle | None:
         deadline = time.time() + timeout_seconds
         while time.time() < deadline:
             success, fencing_token = self._redis.set_nx_px(resource_key, owner_token, ttl_seconds)
@@ -130,7 +132,7 @@ class LockHeartbeatDaemon:
         self.handle = handle
         self.heartbeat_interval = heartbeat_interval_seconds
         self._stop_event = threading.Event()
-        self._thread: Optional[threading.Thread] = None
+        self._thread: threading.Thread | None = None
 
     def start(self) -> None:
         self._thread = threading.Thread(target=self._run_loop, daemon=True)
@@ -156,7 +158,7 @@ class LockHeartbeatDaemon:
 class CacheEntry:
     value: Any
     created_at: float
-    delta_computation_time: float   # Seconds taken to compute value
+    delta_computation_time: float  # Seconds taken to compute value
     ttl_seconds: float
 
     @property
@@ -176,7 +178,7 @@ class XFetchCacheStampedeGuard:
 
     def __init__(self, beta: float = 1.0) -> None:
         self.beta = beta
-        self._cache: Dict[str, CacheEntry] = {}
+        self._cache: dict[str, CacheEntry] = {}
         self._lock = threading.Lock()
 
     def get_or_compute(self, key: str, compute_func: Callable[[], Any], ttl_seconds: float) -> Any:

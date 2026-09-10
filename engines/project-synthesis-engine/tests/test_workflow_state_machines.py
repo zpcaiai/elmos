@@ -1,5 +1,5 @@
-"""Tests for Workflow State Machine Engine, Guards, Actions, and Audit Ledger.
-"""
+"""Tests for Workflow State Machine Engine, Guards, Actions, and Audit Ledger."""
+
 from __future__ import annotations
 
 import pytest

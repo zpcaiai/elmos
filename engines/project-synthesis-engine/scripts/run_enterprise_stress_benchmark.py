@@ -7,6 +7,7 @@ Simulates enterprise-scale concurrent workloads to evaluate:
 3. Optimistic concurrency CAS conflict handling under race conditions.
 4. Transactional Outbox throughput and publish latency.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -17,19 +18,8 @@ import json
 import random
 import sys
 import time
-from decimal import Decimal
 from pathlib import Path
 from typing import Any
-
-from elmos_project_synthesis.enterprise_production_contract import (
-    CacheConfig,
-    OutboxEvent,
-    enterprise_entity_sql,
-)
-from elmos_project_synthesis.enterprise_production_target import generate_enterprise_python_files
-from elmos_project_synthesis.hosted_runner_fleet import HostedRunnerFleet, WorkerNode
-from elmos_project_synthesis.intake import approve_request, create_draft
-from elmos_project_synthesis.models import SynthesisRequest
 
 
 def run_benchmark(
@@ -98,12 +88,14 @@ def run_benchmark(
                 # Invalidate cache
                 cache_store.pop(target_id, None)
                 # Enqueue Outbox
-                outbox_queue.append({
-                    "event_id": f"evt-{req_id}",
-                    "aggregate_id": target_id,
-                    "event_type": "OrderUpdated",
-                    "status": "PENDING",
-                })
+                outbox_queue.append(
+                    {
+                        "event_id": f"evt-{req_id}",
+                        "aggregate_id": target_id,
+                        "event_type": "OrderUpdated",
+                        "status": "PENDING",
+                    }
+                )
             else:
                 is_conflict = True
 
@@ -155,7 +147,7 @@ def run_benchmark(
         "zero_data_corruption_guarantee": True,
     }
 
-    print(f"Benchmark completed: P50={p50:.2f}ms, P95={p95:.2f}ms, P99={p99:.2f}ms | HitRatio={hit_ratio*100:.1f}%")
+    print(f"Benchmark completed: P50={p50:.2f}ms, P95={p95:.2f}ms, P99={p99:.2f}ms | HitRatio={hit_ratio * 100:.1f}%")
     return metrics
 
 
@@ -170,7 +162,7 @@ def main() -> int:
     report = {
         "schema_version": "1.0.0",
         "benchmark_name": "ELMOS-ENTERPRISE-HIGH-CONCURRENCY-STRESS",
-        "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "timestamp": dt.datetime.now(dt.UTC).isoformat(),
         "metrics": metrics,
         "status": "PASSED",
     }

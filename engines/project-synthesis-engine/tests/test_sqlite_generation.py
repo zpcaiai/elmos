@@ -67,10 +67,7 @@ def _sqlite_request(
         languages=(language,),
         persistence="sqlite",
         auth_mode=auth_mode,
-        permissions=tuple(
-            {**permission, "actor": "store-admin"}
-            for permission in allow_crud("customer", "order")
-        ),
+        permissions=tuple({**permission, "actor": "store-admin"} for permission in allow_crud("customer", "order")),
     )
     approved = approve_request(draft, actor="user:ethan-certifier")
     return SynthesisRequest.from_mapping(approved)
@@ -97,7 +94,7 @@ def test_sqlite_ddl_and_production_assets() -> None:
     assert 'CREATE TABLE IF NOT EXISTS "orders"' in migration_sql
     assert 'CONSTRAINT "fk_order_customer_id_customer" FOREIGN KEY ("tenant_id", "customer_id")' in migration_sql
     assert 'REFERENCES "customers" ("tenant_id", "id")' in migration_sql
-    assert 'CREATE TABLE IF NOT EXISTS schema_migrations' in migration_sql
+    assert "CREATE TABLE IF NOT EXISTS schema_migrations" in migration_sql
 
     # Verify that SQLite can actually execute this generated DDL without any syntax error
     connection = sqlite3.connect(":memory:")
@@ -207,4 +204,3 @@ def test_python_sqlite_generate_and_verify(tmp_path: Path) -> None:
     assert len(python_results) >= 2
     assert all(r["status"] == "PASSED" for r in python_results)
     assert evidence["status"] == "PASSED"
-

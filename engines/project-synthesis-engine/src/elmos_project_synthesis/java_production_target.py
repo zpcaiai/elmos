@@ -11,6 +11,7 @@ to that transaction, and lets the forced row-level-security policy filter rows.
 A missing or wrong tenant claim therefore cannot read another tenant's data even
 if a future query forgets a predicate.
 """
+
 from __future__ import annotations
 
 import json
@@ -58,13 +59,13 @@ def _java_type(field: FieldSpec) -> str:
 
 def _result_getter(field: FieldSpec, index: int) -> str:
     accessor = {
-        "string": f'row.getString({index})',
-        "integer": f'row.getObject({index}, Long.class)',
+        "string": f"row.getString({index})",
+        "integer": f"row.getObject({index}, Long.class)",
         # pgjdbc cannot convert `numeric` to Double via getObject; read the
         # BigDecimal the wire type actually carries and narrow explicitly.
-        "number": f'readNumber(row, {index})',
-        "boolean": f'row.getObject({index}, Boolean.class)',
-        "datetime": f'row.getObject({index}, java.time.OffsetDateTime.class)',
+        "number": f"readNumber(row, {index})",
+        "boolean": f"row.getObject({index}, Boolean.class)",
+        "datetime": f"row.getObject({index}, java.time.OffsetDateTime.class)",
     }[field.type]
     return accessor
 
@@ -354,9 +355,7 @@ def _uuid_relation_fields(request: SynthesisRequest) -> set[tuple[str, str]]:
     }
 
 
-def _bind_argument(
-    entity: object, field: FieldSpec, uuid_fields: set[tuple[str, str]]
-) -> str:
+def _bind_argument(entity: object, field: FieldSpec, uuid_fields: set[tuple[str, str]]) -> str:
     accessor = f"request.{camel(field.name)}()"
     if (entity.singular, field.name) in uuid_fields:  # type: ignore[attr-defined]
         return f"java.util.UUID.fromString({accessor})"
@@ -373,9 +372,7 @@ def _relation_parents(request: SynthesisRequest, entity_name: str) -> list[tuple
     return [
         (relation.source_field, relation.target)
         for relation in request.canonical_relations
-        if relation.source == entity_name
-        and relation.source_field is not None
-        and relation.target_field == "id"
+        if relation.source == entity_name and relation.source_field is not None and relation.target_field == "id"
     ]
 
 
@@ -403,9 +400,7 @@ def _fixture_chain(request: SynthesisRequest, entity_name: str) -> list[str]:
     return ordered
 
 
-def _java_body_expression(
-    request: SynthesisRequest, entity: object, parent_variables: dict[str, str]
-) -> str:
+def _java_body_expression(request: SynthesisRequest, entity: object, parent_variables: dict[str, str]) -> str:
     """A Java expression producing the request body for one entity.
 
     Two details are load-bearing and were both wrong when this only ever ran
@@ -461,11 +456,7 @@ def _entity_scenario_methods(request: SynthesisRequest) -> str:
         # Indented to the inner template's own body level so textwrap.dedent
         # inside clean() treats these lines like their siblings instead of
         # lowering the whole block's common prefix.
-        fixtures = (
-            ("\n".join(fixture_lines) + "\n").replace("\n", "\n" + " " * 20)
-            if fixture_lines
-            else ""
-        )
+        fixtures = ("\n".join(fixture_lines) + "\n").replace("\n", "\n" + " " * 20) if fixture_lines else ""
         blocks.append(
             clean(
                 f"""
@@ -965,11 +956,7 @@ def render_java_production(request: SynthesisRequest, port: int) -> dict[str, st
             language="Java 21",
             framework="Spring Boot 3.5.3",
             port=port,
-            commands=(
-                "mvn -B test\n"
-                "python3 scripts/local_runtime.py --verify\n"
-                "python3 scripts/local_runtime.py"
-            ),
+            commands=("mvn -B test\npython3 scripts/local_runtime.py --verify\npython3 scripts/local_runtime.py"),
         ),
     }
 

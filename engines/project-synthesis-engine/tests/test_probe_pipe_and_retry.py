@@ -37,7 +37,7 @@ def _free_port() -> int:
 
 
 _CHATTY_SERVER = textwrap.dedent(
-    '''
+    """
     import json, sys
     from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -59,11 +59,12 @@ _CHATTY_SERVER = textwrap.dedent(
             pass
 
     HTTPServer(("127.0.0.1", int(sys.argv[1])), Handler).serve_forever()
-    '''
+    """
 )
 
 
 # ------------------------------------------------------- the pipe deadlock ----
+
 
 @pytest.mark.parametrize("volume", [_PIPE_BUFFER_CEILING * 2, 200_000])
 def test_a_service_that_logs_past_the_pipe_buffer_still_starts(tmp_path: Path, volume: int) -> None:
@@ -137,14 +138,13 @@ def test_the_drain_survives_a_stream_closed_under_it() -> None:
 
 # --------------------------------------------------- the configured timeout ----
 
+
 def test_the_environment_supplies_the_default_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS", "450")
     assert verification._configured_command_timeout_seconds() == 450
 
 
-def test_an_explicit_argument_still_beats_the_environment(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_an_explicit_argument_still_beats_the_environment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """The env var is the DEFAULT. A caller that decided per-command keeps it."""
 
     observed: list[float] = []
@@ -160,9 +160,7 @@ def test_an_explicit_argument_still_beats_the_environment(
     assert observed == [45.0]
 
 
-def test_an_unset_environment_keeps_the_documented_default(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_an_unset_environment_keeps_the_documented_default(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     observed: list[float] = []
 
     def run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
@@ -193,9 +191,7 @@ def test_an_out_of_range_configured_timeout_fails_before_executing(
         verification._run(["x"], tmp_path, language="test-runtime")
 
 
-def test_a_non_numeric_configured_timeout_is_named(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_a_non_numeric_configured_timeout_is_named(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS", "soon")
     with pytest.raises(ValueError, match="COMMAND_TIMEOUT_NOT_AN_INTEGER"):
         verification._run(["x"], tmp_path, language="test-runtime")
@@ -203,10 +199,12 @@ def test_a_non_numeric_configured_timeout_is_named(
 
 # ------------------------------------------------------------- the retry ----
 
+
 def _counting_run(results: list[subprocess.CompletedProcess[str]], attempts: list[int]):
     def run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
         attempts.append(1)
         return results[min(len(attempts) - 1, len(results) - 1)]
+
     return run
 
 
@@ -265,9 +263,7 @@ def test_the_retry_happens_at_most_once(tmp_path: Path, monkeypatch: pytest.Monk
     assert result["status"] == "FAILED"
 
 
-def test_a_retried_pass_still_shows_the_first_failure(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_a_retried_pass_still_shows_the_first_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """A green result that needed a retry must not look identical to one that
     succeeded first time."""
 

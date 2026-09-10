@@ -3,18 +3,17 @@
 Generates complete industrial-grade NestJS domain layers, value objects, FSM machines, and distributed
 transaction coordinators.
 """
+
 from __future__ import annotations
 
-from typing import Dict
 from .models import SynthesisRequest, pascal
 
 
-def generate_typescript_domain_workflow_files(request: SynthesisRequest) -> Dict[str, str]:
+def generate_typescript_domain_workflow_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate industrial-grade DDD, FSM, and Distributed Transaction files for TypeScript."""
-    files: Dict[str, str] = {}
+    files: dict[str, str] = {}
     entity = request.entities[0] if request.entities else None
     entity_name = pascal(entity.singular) if entity else "Order"
-    entity_lower = entity_name.lower()
 
     # 1. Domain Value Objects
     files["src/domain/value-objects.ts"] = """/**
@@ -76,11 +75,11 @@ export class Address {
 """
 
     # 2. Domain Events
-    files["src/domain/events.ts"] = f"""/**
+    files["src/domain/events.ts"] = """/**
  * Strongly typed Domain Event Envelope.
  */
 
-export interface DomainEvent {{
+export interface DomainEvent {
   readonly eventId: string;
   readonly aggregateType: string;
   readonly aggregateId: string;
@@ -88,7 +87,7 @@ export interface DomainEvent {{
   readonly occurredAt: string;
   readonly payload: Record<string, any>;
   readonly tenantId: string;
-}}
+}
 
 export function createDomainEvent(
   aggregateType: string,
@@ -96,17 +95,17 @@ export function createDomainEvent(
   eventType: string,
   payload: Record<string, any>,
   tenantId = 'default',
-): DomainEvent {{
-  return {{
-    eventId: `evt-${{Math.random().toString(36).substring(2, 14)}}`,
+): DomainEvent {
+  return {
+    eventId: `evt-${Math.random().toString(36).substring(2, 14)}`,
     aggregateType,
     aggregateId,
     eventType,
     occurredAt: new Date().toISOString(),
     payload,
     tenantId,
-  }};
-}}
+  };
+}
 """
 
     # 3. Domain Aggregate Root

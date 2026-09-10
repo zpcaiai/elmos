@@ -3,15 +3,15 @@
 Generates industrial-grade C# domain models, value objects, FSM state machines,
 and distributed transaction coordinators (Saga LIFO compensation, Outbox, Fencing Locks).
 """
+
 from __future__ import annotations
 
-from typing import Dict
 from .models import SynthesisRequest, pascal
 
 
-def generate_dotnet_domain_workflow_files(request: SynthesisRequest) -> Dict[str, str]:
+def generate_dotnet_domain_workflow_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate industrial-grade DDD, FSM, and Distributed Transaction files for C# .NET 8."""
-    files: Dict[str, str] = {}
+    files: dict[str, str] = {}
     app_name = pascal(request.project_name)
     entity = request.entities[0] if request.entities else None
     entity_name = pascal(entity.singular) if entity else "Order"

@@ -941,9 +941,7 @@ def test_native_verification_timeout_fails_closed(
     def time_out(*args: object, **kwargs: object) -> None:
         nonlocal attempts
         attempts += 1
-        raise subprocess.TimeoutExpired(
-            ["uv", "sync", "--locked"], 30, output="partial output"
-        )
+        raise subprocess.TimeoutExpired(["uv", "sync", "--locked"], 30, output="partial output")
 
     monkeypatch.setattr(verification.subprocess, "run", time_out)
     result = verification._run(
@@ -1242,14 +1240,12 @@ def test_one_executable_must_satisfy_every_constraint_for_the_same_tool(
     path_runtime = tmp_path / "path-runtime"
     exact_runtime = tmp_path / "exact-runtime"
     path_runtime.write_text(
-        "#!/bin/sh\n"
-        "if [ \"$1\" = \"--version\" ]; then printf 'runtime 99.0\\n'; "
-        "else printf 'language 3.12\\n'; fi\n",
+        "#!/bin/sh\nif [ \"$1\" = \"--version\" ]; then printf 'runtime 99.0\\n'; else printf 'language 3.12\\n'; fi\n",
         encoding="utf-8",
     )
     exact_runtime.write_text(
         "#!/bin/sh\n"
-        "if [ \"$1\" = \"--version\" ]; then printf 'runtime 1.2.3\\n'; "
+        'if [ "$1" = "--version" ]; then printf \'runtime 1.2.3\\n\'; '
         "else printf 'language 3.12\\n'; fi\n",
         encoding="utf-8",
     )
@@ -1630,9 +1626,7 @@ def test_publish_extraction_rejects_zip_slip_and_symlinks(tmp_path: Path) -> Non
         ),
     ):
         archive_path = tmp_path / name
-        info = zipfile.ZipInfo(
-            "safe-project/../../escape" if name == "zip-slip.zip" else "safe-project/link"
-        )
+        info = zipfile.ZipInfo("safe-project/../../escape" if name == "zip-slip.zip" else "safe-project/link")
         configure(info)
         with zipfile.ZipFile(archive_path, "w") as archive:
             archive.writestr(info, b"payload")
@@ -1843,15 +1837,9 @@ def test_postgres_durability_is_chosen_at_run_time_and_records_itself() -> None:
         app_command=["go", "run", "."],
         verify_command=["go", "test", "./..."],
     )
-    assert (
-        "'fast-feedback': ('fsync=off', 'synchronous_commit=off', 'full_page_writes=off')"
-        in runtime
-    )
+    assert "'fast-feedback': ('fsync=off', 'synchronous_commit=off', 'full_page_writes=off')" in runtime
     assert 'durability_file.write_text(durability, encoding="utf-8")' in runtime
-    assert (
-        '*[argument for setting in durability_profiles[durability] '
-        'for argument in ("-c", setting)]'
-    ) in runtime
+    assert ('*[argument for setting in durability_profiles[durability] for argument in ("-c", setting)]') in runtime
 
     with pytest.raises(ValueError, match="UNSUPPORTED_DURABILITY"):
         render_local_runtime(

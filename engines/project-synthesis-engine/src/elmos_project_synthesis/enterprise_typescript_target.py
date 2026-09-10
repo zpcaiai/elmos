@@ -7,18 +7,16 @@ Generates complete industrial-grade enterprise NestJS microservices with:
 4. Rich query engine with dynamic pagination, multi-field sorting, and range filtering.
 5. SRE microservice observability with Health probes (/health/live, /health/ready) and Prometheus metrics (/metrics).
 """
+
 from __future__ import annotations
 
-from typing import Any
 from .enterprise_production_contract import (
     HEALTH_LIVE_PATH,
     HEALTH_READY_PATH,
     METRICS_PATH,
     NULL_SENTINEL,
-    TRACE_HEADER,
-    enterprise_entity_sql,
 )
-from .models import EntitySpec, FieldSpec, SynthesisRequest, pascal
+from .models import EntitySpec, SynthesisRequest, pascal
 
 
 def _ts_type(field_type: str) -> str:
@@ -36,7 +34,6 @@ def generate_enterprise_typescript_files(request: SynthesisRequest) -> dict[str,
     files: dict[str, str] = {}
     entity = request.entities[0] if request.entities else EntitySpec(singular="order", plural="orders", fields=())
     entity_cap = pascal(entity.singular)
-    entity_plural_cap = pascal(entity.plural)
     relations = request.canonical_relations
 
     # 1. package.json
@@ -110,7 +107,11 @@ def generate_enterprise_typescript_files(request: SynthesisRequest) -> dict[str,
     for f in entity.fields:
         t = _ts_type(f.type)
         field_lines.append(f"  @Column()\n  {f.name}!: {t};")
-    fields_code = "\n".join(field_lines) if field_lines else "  @Column()\n  reference!: string;\n\n  @Column('decimal', { precision: 12, scale: 2 })\n  total!: number;"
+    fields_code = (
+        "\n".join(field_lines)
+        if field_lines
+        else "  @Column()\n  reference!: string;\n\n  @Column('decimal', { precision: 12, scale: 2 })\n  total!: number;"
+    )
 
     rel_lines = []
     for rel in relations:
@@ -261,7 +262,9 @@ export class CacheService {{
 """
 
     # 6. src/outbox/outbox.service.ts
-    files["src/outbox/outbox.service.ts"] = """import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+    files[
+        "src/outbox/outbox.service.ts"
+    ] = """import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Kafka, Producer } from 'kafkajs';
@@ -596,4 +599,3 @@ bootstrap();
         files[path] = content
 
     return files
-

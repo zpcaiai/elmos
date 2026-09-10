@@ -3,15 +3,15 @@
 Generates production-grade microservices for Banking Ledger, Supply Chain Logistics,
 and SaaS Billing in Java (Spring Boot 3), C# (.NET 8), and Rust (Axum).
 """
+
 from __future__ import annotations
 
-from typing import Dict
-from ..models import SynthesisRequest, pascal
+from ..models import SynthesisRequest
 
 
-def generate_java_archetype_files(request: SynthesisRequest, archetype_name: str = "banking") -> Dict[str, str]:
+def generate_java_archetype_files(request: SynthesisRequest, archetype_name: str = "banking") -> dict[str, str]:
     """Emit Java Spring Boot 3 domain files for the archetype."""
-    files: Dict[str, str] = {}
+    files: dict[str, str] = {}
     pkg = request.namespace or "com.elmos.enterprise"
     pkg_path = pkg.replace(".", "/")
     arch = archetype_name.lower()
@@ -59,9 +59,9 @@ public class AccountEntity {{
     return files
 
 
-def generate_dotnet_archetype_files(request: SynthesisRequest, archetype_name: str = "banking") -> Dict[str, str]:
+def generate_dotnet_archetype_files(request: SynthesisRequest, archetype_name: str = "banking") -> dict[str, str]:
     """Emit C# .NET 8 domain files for the archetype."""
-    files: Dict[str, str] = {}
+    files: dict[str, str] = {}
     arch = archetype_name.lower()
 
     if "bank" in arch or "ledger" in arch:
@@ -100,9 +100,9 @@ namespace Enterprise.Banking.Domain
     return files
 
 
-def generate_rust_archetype_files(request: SynthesisRequest, archetype_name: str = "banking") -> Dict[str, str]:
+def generate_rust_archetype_files(request: SynthesisRequest, archetype_name: str = "banking") -> dict[str, str]:
     """Emit Rust Axum / Tokio domain files for the archetype."""
-    files: Dict[str, str] = {}
+    files: dict[str, str] = {}
     arch = archetype_name.lower()
 
     if "bank" in arch or "ledger" in arch:

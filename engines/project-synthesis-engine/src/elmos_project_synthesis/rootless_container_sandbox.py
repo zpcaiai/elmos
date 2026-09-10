@@ -14,17 +14,15 @@ Provides unprivileged, hardened sandboxing for untrusted build and verification 
    - Network namespace isolation: loopback only, blocking unapproved egress.
 3. Ephemeral zero-residual lifecycle management with deterministic process group reaping.
 """
+
 from __future__ import annotations
 
-import os
 import platform
 import shutil
 import subprocess
-import tempfile
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
 
 
 @dataclass(frozen=True)
@@ -35,11 +33,11 @@ class SandboxSecurityConfig:
     memory_mb: int = 512
     pids_limit: int = 128
     read_only_root: bool = True
-    drop_capabilities: Tuple[str, ...] = ("ALL",)
+    drop_capabilities: tuple[str, ...] = ("ALL",)
     no_new_privileges: bool = True
     network_isolated: bool = True
     timeout_seconds: int = 60
-    tmpfs_mounts: Tuple[str, ...] = ("/tmp", "/run")
+    tmpfs_mounts: tuple[str, ...] = ("/tmp", "/run")
     working_dir: str = "/workspace"
 
 
@@ -52,7 +50,7 @@ class SandboxExecutionResult:
     stderr: str
     duration_ms: float
     backend_used: str
-    security_verifications: Dict[str, bool]
+    security_verifications: dict[str, bool]
     is_timeout: bool = False
 
     @property
@@ -64,8 +62,8 @@ class RootlessSandboxDetector:
     """Detects available Linux rootless container and namespace engines."""
 
     @staticmethod
-    def detect_backends() -> List[str]:
-        backends: List[str] = []
+    def detect_backends() -> list[str]:
+        backends: list[str] = []
         is_linux = platform.system() == "Linux"
 
         # 1. Check Podman
@@ -91,21 +89,21 @@ class RootlessSandboxDetector:
 class LinuxRootlessSandboxRunner:
     """Executes code and commands within a hardened rootless sandbox."""
 
-    def __init__(self, config: Optional[SandboxSecurityConfig] = None) -> None:
+    def __init__(self, config: SandboxSecurityConfig | None = None) -> None:
         self.config = config or SandboxSecurityConfig()
         self.available_backends = RootlessSandboxDetector.detect_backends()
 
     def run(
         self,
-        command: List[str],
+        command: list[str],
         host_workspace_path: Path,
-        env: Optional[Dict[str, str]] = None,
+        env: dict[str, str] | None = None,
         image_name: str = "alpine:latest",
     ) -> SandboxExecutionResult:
         """Run command in the highest-fidelity available rootless backend."""
         started_at = time.perf_counter()
         backend = self.available_backends[0]
-        verifications: Dict[str, bool] = {
+        verifications: dict[str, bool] = {
             "cap_drop_all": True,
             "no_new_privileges": self.config.no_new_privileges,
             "read_only_root": self.config.read_only_root,
@@ -124,16 +122,19 @@ class LinuxRootlessSandboxRunner:
 
     def _run_podman(
         self,
-        command: List[str],
+        command: list[str],
         host_workspace_path: Path,
-        env: Optional[Dict[str, str]],
+        env: dict[str, str] | None,
         image_name: str,
         started_at: float,
-        verifications: Dict[str, bool],
+        verifications: dict[str, bool],
     ) -> SandboxExecutionResult:
         podman_cmd = [
-            "podman", "run", "--rm",
-            "--security-opt", "no-new-privileges",
+            "podman",
+            "run",
+            "--rm",
+            "--security-opt",
+            "no-new-privileges",
             "--cap-drop=ALL",
             f"--cpus={self.config.cpus}",
             f"--memory={self.config.memory_mb}m",
@@ -160,18 +161,22 @@ class LinuxRootlessSandboxRunner:
 
     def _run_bwrap(
         self,
-        command: List[str],
+        command: list[str],
         host_workspace_path: Path,
-        env: Optional[Dict[str, str]],
+        env: dict[str, str] | None,
         started_at: float,
-        verifications: Dict[str, bool],
+        verifications: dict[str, bool],
     ) -> SandboxExecutionResult:
         bwrap_cmd = [
             "bwrap",
             "--unshare-all",
-            "--ro-bind", "/", "/",
-            "--dev", "/dev",
-            "--proc", "/proc",
+            "--ro-bind",
+            "/",
+            "/",
+            "--dev",
+            "/dev",
+            "--proc",
+            "/proc",
         ]
         for tmpfs in self.config.tmpfs_mounts:
             bwrap_cmd.extend(["--tmpfs", tmpfs])
@@ -183,27 +188,24 @@ class LinuxRootlessSandboxRunner:
 
     def _run_unshare(
         self,
-        command: List[str],
+        command: list[str],
         host_workspace_path: Path,
-        env: Optional[Dict[str, str]],
+        env: dict[str, str] | None,
         started_at: float,
-        verifications: Dict[str, bool],
+        verifications: dict[str, bool],
     ) -> SandboxExecutionResult:
-        unshare_cmd = [
-            "unshare", "--user", "--pid", "--mount", "--net", "--fork",
-            "--", *command
-        ]
+        unshare_cmd = ["unshare", "--user", "--pid", "--mount", "--net", "--fork", "--", *command]
         return self._exec_process(
             unshare_cmd, "user_namespace", started_at, verifications, cwd=host_workspace_path, env=env
         )
 
     def _run_hermetic_jail(
         self,
-        command: List[str],
+        command: list[str],
         host_workspace_path: Path,
-        env: Optional[Dict[str, str]],
+        env: dict[str, str] | None,
         started_at: float,
-        verifications: Dict[str, bool],
+        verifications: dict[str, bool],
     ) -> SandboxExecutionResult:
         """Hermetic jail runner ensuring path safety, timeout boundaries, and environment pruning."""
         safe_env = {
@@ -221,12 +223,12 @@ class LinuxRootlessSandboxRunner:
 
     def _exec_process(
         self,
-        argv: List[str],
+        argv: list[str],
         backend_name: str,
         started_at: float,
-        verifications: Dict[str, bool],
-        cwd: Optional[Path] = None,
-        env: Optional[Dict[str, str]] = None,
+        verifications: dict[str, bool],
+        cwd: Path | None = None,
+        env: dict[str, str] | None = None,
     ) -> SandboxExecutionResult:
         is_timeout = False
         try:

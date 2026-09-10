@@ -3,19 +3,21 @@
 Generates complete, production-grade microservices for Banking Ledger,
 Supply Chain Logistics, and SaaS Billing domains in TypeScript / Node 20+.
 """
+
 from __future__ import annotations
 
-from typing import Dict
 from ..models import SynthesisRequest
 
 
-def generate_typescript_archetype_files(request: SynthesisRequest, archetype_name: str = "banking") -> Dict[str, str]:
+def generate_typescript_archetype_files(request: SynthesisRequest, archetype_name: str = "banking") -> dict[str, str]:
     """Emit production TypeScript files for the chosen enterprise archetype."""
-    files: Dict[str, str] = {}
+    files: dict[str, str] = {}
     arch = archetype_name.lower()
 
     if "bank" in arch or "ledger" in arch:
-        files["src/domain/banking.entity.ts"] = """import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn, Index } from "typeorm";
+        files[
+            "src/domain/banking.entity.ts"
+        ] = """import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn, Index } from "typeorm";
 
 export enum AccountType {
   ASSET = "ASSET",
@@ -130,7 +132,9 @@ export class JournalLineEntity {
   entry: JournalEntryEntity;
 }
 """
-        files["src/controllers/banking.controller.ts"] = """import { Controller, Post, Body, BadRequestException, HttpCode, HttpStatus } from "@nestjs/common";
+        files[
+            "src/controllers/banking.controller.ts"
+        ] = """import { Controller, Post, Body, BadRequestException, HttpCode, HttpStatus } from "@nestjs/common";
 import BigNumber from "bignumber.js";
 
 export class PostJournalLineDto {
@@ -179,7 +183,9 @@ export class BankingController {
 """
 
     elif "supply" in arch or "logistics" in arch:
-        files["src/domain/supply_chain.entity.ts"] = """import { Entity, PrimaryColumn, Column, Index, CreateDateColumn } from "typeorm";
+        files[
+            "src/domain/supply_chain.entity.ts"
+        ] = """import { Entity, PrimaryColumn, Column, Index, CreateDateColumn } from "typeorm";
 
 @Entity("inventory_bins")
 export class InventoryBinEntity {
@@ -225,7 +231,9 @@ export class FulfillmentOrderEntity {
   createdAt: Date;
 }
 """
-        files["src/controllers/supply_chain.controller.ts"] = """import { Controller, Post, Body, BadRequestException } from "@nestjs/common";
+        files[
+            "src/controllers/supply_chain.controller.ts"
+        ] = """import { Controller, Post, Body, BadRequestException } from "@nestjs/common";
 import BigNumber from "bignumber.js";
 
 export class VerifyPackingDto {
@@ -258,7 +266,9 @@ export class SupplyChainController {
 
     else:
         # SaaS Billing
-        files["src/domain/billing.entity.ts"] = """import { Entity, PrimaryColumn, Column, Index, CreateDateColumn } from "typeorm";
+        files[
+            "src/domain/billing.entity.ts"
+        ] = """import { Entity, PrimaryColumn, Column, Index, CreateDateColumn } from "typeorm";
 
 @Entity("subscriptions")
 export class SubscriptionEntity {

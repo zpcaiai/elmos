@@ -3,15 +3,15 @@
 Generates complete, production-grade microservices for Banking Ledger,
 Supply Chain Logistics, and SaaS Billing domains in Go 1.22+.
 """
+
 from __future__ import annotations
 
-from typing import Dict
 from ..models import SynthesisRequest
 
 
-def generate_go_archetype_files(request: SynthesisRequest, archetype_name: str = "banking") -> Dict[str, str]:
+def generate_go_archetype_files(request: SynthesisRequest, archetype_name: str = "banking") -> dict[str, str]:
     """Emit production Go files for the chosen enterprise archetype."""
-    files: Dict[str, str] = {}
+    files: dict[str, str] = {}
     arch = archetype_name.lower()
 
     if "bank" in arch or "ledger" in arch:

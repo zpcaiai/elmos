@@ -10,6 +10,7 @@ descriptors and only supplies syntax, so "does Go enforce tenant isolation the
 same way Java does" becomes a property of shared data rather than a matter of
 reading two emitters side by side.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -111,14 +112,14 @@ def entity_sql(
             entity=entity.singular,
             plural=entity.plural,
             columns=columns,
-            list_sql=f'SELECT {select_columns} FROM {table} WHERE `tenant_id` = {mark(1)} ORDER BY `id`',  # noqa: S608
-            get_sql=f'SELECT {select_columns} FROM {table} WHERE `tenant_id` = {mark(1)} AND `id` = {mark(2)}',  # noqa: S608
+            list_sql=f"SELECT {select_columns} FROM {table} WHERE `tenant_id` = {mark(1)} ORDER BY `id`",  # noqa: S608
+            get_sql=f"SELECT {select_columns} FROM {table} WHERE `tenant_id` = {mark(1)} AND `id` = {mark(2)}",  # noqa: S608
             upsert_sql=(
                 f"INSERT INTO {table} ({insert_columns}) "  # noqa: S608
                 f"VALUES ({insert_row}) AS new_row "
                 f"ON DUPLICATE KEY UPDATE {assignments}"
             ),
-            delete_sql=f'DELETE FROM {table} WHERE `tenant_id` = {mark(1)} AND `id` = {mark(2)}',  # noqa: S608
+            delete_sql=f"DELETE FROM {table} WHERE `tenant_id` = {mark(1)} AND `id` = {mark(2)}",  # noqa: S608
         )
     assignments = ", ".join(f'"{column}" = EXCLUDED."{column}"' for column in columns)
     if is_sqlite:
@@ -180,9 +181,7 @@ def relation_parents(request: SynthesisRequest, entity_name: str) -> list[tuple[
     return [
         (relation.source_field, relation.target)
         for relation in request.canonical_relations
-        if relation.source == entity_name
-        and relation.source_field is not None
-        and relation.target_field == "id"
+        if relation.source == entity_name and relation.source_field is not None and relation.target_field == "id"
     ]
 
 
@@ -335,9 +334,7 @@ def production_contract(request: SynthesisRequest) -> dict[str, object]:
                 "shutdown_signals": ["SIGTERM", "SIGINT"],
             },
         },
-        "integration_scenario": [
-            {"id": step.id, "description": step.description} for step in INTEGRATION_SCENARIO
-        ],
+        "integration_scenario": [{"id": step.id, "description": step.description} for step in INTEGRATION_SCENARIO],
         "external_evidence_status": "NOT_RUN",
         "certification_status": "NOT_CERTIFIED",
     }

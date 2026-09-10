@@ -1,6 +1,6 @@
 """Unit and integration tests for Cloud-Native Helm Chart and Terraform Emitters."""
+
 import json
-import pytest
 
 from elmos_project_synthesis.infrastructure_emitters.helm_chart_emitter import generate_enterprise_helm_chart
 from elmos_project_synthesis.infrastructure_emitters.terraform_infra_emitter import generate_enterprise_terraform_infra
@@ -36,8 +36,8 @@ def test_generate_enterprise_helm_chart():
     # Verify NetworkPolicy strict isolation
     np_tpl = chart_files["deploy/helm/templates/networkpolicy.yaml"]
     assert "NetworkPolicy" in np_tpl
-    assert "5432" in np_tpl # PostgreSQL port
-    assert "6379" in np_tpl # Redis port
+    assert "5432" in np_tpl  # PostgreSQL port
+    assert "6379" in np_tpl  # Redis port
 
 
 def test_generate_enterprise_terraform_infra():

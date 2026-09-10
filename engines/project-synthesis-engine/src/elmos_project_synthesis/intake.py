@@ -433,8 +433,7 @@ def create_draft(
         for relation in normalized_relations:
             _, _, canonical_source_field, canonical_target_field = _canonical(relation)
             if (
-                relation.get("kind")
-                not in {"many-to-one", "one-to-one", "one-to-many"}
+                relation.get("kind") not in {"many-to-one", "one-to-one", "one-to-many"}
                 or not canonical_source_field
                 or canonical_target_field != "id"
             ):

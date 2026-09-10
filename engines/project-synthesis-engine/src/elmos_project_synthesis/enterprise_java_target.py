@@ -7,18 +7,15 @@ Generates complete industrial-grade enterprise Spring Boot 3 microservices with:
 4. Rich query engine with dynamic pagination (Pageable), multi-field sorting, and range filtering.
 5. SRE microservice observability with Spring Actuator (/actuator/health/liveness, /actuator/health/readiness, /actuator/prometheus).
 """
+
 from __future__ import annotations
 
-from typing import Any
 from .enterprise_production_contract import (
     HEALTH_LIVE_PATH,
     HEALTH_READY_PATH,
-    METRICS_PATH,
     NULL_SENTINEL,
-    TRACE_HEADER,
-    enterprise_entity_sql,
 )
-from .models import EntitySpec, FieldSpec, SynthesisRequest, pascal
+from .models import EntitySpec, SynthesisRequest
 
 
 def _java_type(field_type: str) -> str:
@@ -38,7 +35,6 @@ def generate_enterprise_java_files(request: SynthesisRequest) -> dict[str, str]:
     pkg_path = pkg.replace(".", "/")
     entity = request.entities[0] if request.entities else EntitySpec(singular="order", plural="orders", fields=())
     entity_cap = entity.singular.capitalize()
-    relations = request.canonical_relations
 
     # 1. Maven pom.xml
     files["pom.xml"] = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -171,9 +167,13 @@ management:
     field_declarations = []
     for f in entity.fields:
         jtype = _java_type(f.type)
-        field_declarations.append(f"    @Column(name = \"{f.name}\")\n    private {jtype} {f.name};")
+        field_declarations.append(f'    @Column(name = "{f.name}")\n    private {jtype} {f.name};')
 
-    fields_str = "\n\n".join(field_declarations) if field_declarations else "    @Column(name = \"reference\")\n    private String reference;\n\n    @Column(name = \"total\")\n    private java.math.BigDecimal total;"
+    fields_str = (
+        "\n\n".join(field_declarations)
+        if field_declarations
+        else '    @Column(name = "reference")\n    private String reference;\n\n    @Column(name = "total")\n    private java.math.BigDecimal total;'
+    )
 
     files[f"src/main/java/{pkg_path}/model/{entity_cap}Entity.java"] = f"""package {pkg}.model;
 

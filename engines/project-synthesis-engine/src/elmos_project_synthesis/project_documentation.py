@@ -452,9 +452,7 @@ def _database_design(request: SynthesisRequest) -> str:
             """
         )
     else:
-        physical = (
-            "当前持久化配置为 `in-memory`，没有生成数据库 DDL、迁移脚本或物理索引；相关状态为 `NOT_APPLICABLE`。"
-        )
+        physical = "当前持久化配置为 `in-memory`，没有生成数据库 DDL、迁移脚本或物理索引；相关状态为 `NOT_APPLICABLE`。"
         isolation = (
             "当前内存配置没有实现数据库级租户隔离。若未来切换到持久化数据库，"
             "必须重新审批任务基线并"

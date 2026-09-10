@@ -10,16 +10,15 @@ Provides enterprise-grade domain modeling capabilities:
 4. Business Invariant Engine: Real-time validation of business rules and invariants
    with fail-closed domain exceptions.
 """
+
 from __future__ import annotations
 
 import datetime as dt
 import decimal
-import hashlib
-import json
 import re
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any
 from uuid import uuid4
 
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
@@ -33,7 +32,7 @@ class DomainError(Exception):
 class DomainInvariantViolationError(DomainError):
     """Raised when an aggregate invariant is violated."""
 
-    def __init__(self, rule_id: str, message: str, aggregate_id: Optional[str] = None):
+    def __init__(self, rule_id: str, message: str, aggregate_id: str | None = None):
         super().__init__(f"[{rule_id}] Aggregate {aggregate_id or 'unknown'}: {message}")
         self.rule_id = rule_id
         self.message = message
@@ -53,10 +52,10 @@ class ValueObject:
         """Validate invariant constraints. Subclasses must override."""
         pass
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize value object to dictionary."""
         return {
-            key: str(value) if isinstance(value, (Decimal, dt.datetime, dt.date)) else value
+            key: str(value) if isinstance(value, Decimal | dt.datetime | dt.date) else value
             for key, value in self.__dict__.items()
         }
 
@@ -226,14 +225,12 @@ class DomainEvent:
     aggregate_type: str = "Aggregate"
     aggregate_id: str = ""
     event_type: str = "DomainEvent"
-    occurred_at: str = field(
-        default_factory=lambda: dt.datetime.now(dt.timezone.utc).isoformat()
-    )
-    payload: Dict[str, Any] = field(default_factory=dict)
-    trace_id: Optional[str] = None
+    occurred_at: str = field(default_factory=lambda: dt.datetime.now(dt.UTC).isoformat())
+    payload: dict[str, Any] = field(default_factory=dict)
+    trace_id: str | None = None
     tenant_id: str = "default"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "event_id": self.event_id,
             "aggregate_type": self.aggregate_type,
@@ -267,7 +264,7 @@ class InvariantEvaluator:
     """Evaluates declarative invariant rules against aggregate state."""
 
     @staticmethod
-    def evaluate(rule: InvariantRuleSpec, target_data: Dict[str, Any], aggregate_id: str = "") -> None:
+    def evaluate(rule: InvariantRuleSpec, target_data: dict[str, Any], aggregate_id: str = "") -> None:
         val = target_data.get(rule.target_field)
         op = rule.operator
 
@@ -324,17 +321,17 @@ class AggregateRoot:
         self.id = aggregate_id
         self.tenant_id = tenant_id
         self.version: int = 1
-        self._uncommitted_events: List[DomainEvent] = []
-        self._invariants: List[InvariantRuleSpec] = []
+        self._uncommitted_events: list[DomainEvent] = []
+        self._invariants: list[InvariantRuleSpec] = []
 
     def register_invariant(self, rule: InvariantRuleSpec) -> None:
         self._invariants.append(rule)
 
-    def check_invariants(self, state_dict: Dict[str, Any]) -> None:
+    def check_invariants(self, state_dict: dict[str, Any]) -> None:
         for rule in self._invariants:
             InvariantEvaluator.evaluate(rule, state_dict, self.id)
 
-    def record_event(self, event_type: str, payload: Dict[str, Any], trace_id: Optional[str] = None) -> DomainEvent:
+    def record_event(self, event_type: str, payload: dict[str, Any], trace_id: str | None = None) -> DomainEvent:
         event = DomainEvent(
             aggregate_type=self.__class__.__name__,
             aggregate_id=self.id,
@@ -346,7 +343,7 @@ class AggregateRoot:
         self._uncommitted_events.append(event)
         return event
 
-    def poll_uncommitted_events(self) -> List[DomainEvent]:
+    def poll_uncommitted_events(self) -> list[DomainEvent]:
         events = list(self._uncommitted_events)
         self._uncommitted_events.clear()
         return events
@@ -365,7 +362,7 @@ class ValueObjectFieldSpec:
     name: str
     type: str  # string, integer, number, boolean, decimal
     required: bool = True
-    default: Optional[Any] = None
+    default: Any | None = None
 
 
 @dataclass(frozen=True)
@@ -373,10 +370,10 @@ class CustomValueObjectSpec:
     """Definition of a project-specific Value Object."""
 
     name: str
-    fields: Tuple[ValueObjectFieldSpec, ...]
-    validation_rules: Tuple[InvariantRuleSpec, ...] = field(default_factory=tuple)
+    fields: tuple[ValueObjectFieldSpec, ...]
+    validation_rules: tuple[InvariantRuleSpec, ...] = field(default_factory=tuple)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "fields": [f.__dict__ for f in self.fields],
@@ -390,10 +387,10 @@ class DomainMethodSpec:
 
     name: str
     description: str
-    parameters: Tuple[Tuple[str, str], ...]  # (param_name, param_type)
-    state_mutations: Dict[str, str]  # field -> new_value_expression
-    emitted_event_type: Optional[str] = None
-    guard_rule_ids: Tuple[str, ...] = field(default_factory=tuple)
+    parameters: tuple[tuple[str, str], ...]  # (param_name, param_type)
+    state_mutations: dict[str, str]  # field -> new_value_expression
+    emitted_event_type: str | None = None
+    guard_rule_ids: tuple[str, ...] = field(default_factory=tuple)
 
 
 @dataclass(frozen=True)
@@ -402,12 +399,12 @@ class AggregateModelSpec:
 
     name: str
     root_entity: str
-    child_entities: Tuple[str, ...] = field(default_factory=tuple)
-    value_objects: Tuple[str, ...] = field(default_factory=tuple)
-    invariants: Tuple[InvariantRuleSpec, ...] = field(default_factory=tuple)
-    methods: Tuple[DomainMethodSpec, ...] = field(default_factory=tuple)
+    child_entities: tuple[str, ...] = field(default_factory=tuple)
+    value_objects: tuple[str, ...] = field(default_factory=tuple)
+    invariants: tuple[InvariantRuleSpec, ...] = field(default_factory=tuple)
+    methods: tuple[DomainMethodSpec, ...] = field(default_factory=tuple)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "root_entity": self.root_entity,

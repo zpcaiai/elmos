@@ -1,7 +1,9 @@
 """Tests for Enterprise Middleware Contracts & Distributed Saga Coordination."""
+
 from __future__ import annotations
 
 import pytest
+
 from elmos_project_synthesis.enterprise_production_contract import (
     EnterpriseMiddlewareConfig,
     SagaDefinition,

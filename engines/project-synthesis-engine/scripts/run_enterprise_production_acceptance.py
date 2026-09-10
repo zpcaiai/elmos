@@ -11,6 +11,7 @@ Executes a 100% strict, zero-slack verification across:
 
 Emits structured, machine-readable JSON evidence with status 100% PASSED.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -19,7 +20,6 @@ import hashlib
 import json
 import sys
 import time
-from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -36,7 +36,6 @@ from elmos_project_synthesis.enterprise_production_contract import (
 from elmos_project_synthesis.enterprise_production_target import generate_enterprise_python_files
 from elmos_project_synthesis.hosted_runner_fleet import (
     HostedRunnerFleet,
-    JobQueueItem,
     WorkerNode,
 )
 from elmos_project_synthesis.intake import approve_request, create_draft
@@ -177,6 +176,7 @@ def run_scenario_hosted_runner_fleet() -> dict[str, Any]:
 
 def run_scenario_generated_code_ast() -> dict[str, Any]:
     import ast
+
     draft = create_draft(
         name="enterprise-order-service",
         description="Enterprise microservice with outbox, cache, and audit.",
@@ -330,7 +330,7 @@ def main() -> int:
     results: dict[str, Any] = {
         "schema_version": "1.0.0",
         "business_line": "project-synthesis-generation",
-        "evaluated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "evaluated_at": dt.datetime.now(dt.UTC).isoformat(),
         "criteria": {
             "real_pure_automated_coverage": 1.0,
             "real_industrial_applicability": 1.0,

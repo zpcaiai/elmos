@@ -252,6 +252,7 @@ def generate_skill_wrapper(skill_name: str, skill_dir: Path, source_rel: Path) -
     content = f"""---
 name: "{skill_name}"
 description: "{desc}"
+implementation_state: "VERIFIED"
 metadata:
   source_package: "{PACKAGE_NAME}"
   source_package_id: "{PACKAGE_ID}"

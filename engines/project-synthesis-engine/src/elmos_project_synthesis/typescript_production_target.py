@@ -7,6 +7,7 @@ crypto.verify with a public key imported straight from the harness JWKS -- so
 the sole runtime dependency is the PostgreSQL driver, and the integration test
 signs its tokens with the same stdlib the verifier uses.
 """
+
 from __future__ import annotations
 
 import json
@@ -366,9 +367,7 @@ def _auth_ts(request: SynthesisRequest) -> str:
 
 def render_typescript_production(request: SynthesisRequest, port: int) -> dict[str, str]:
     statements = {item.entity: item for item in all_entity_sql(request, placeholder="${}")}
-    store_entities = "\n".join(
-        _ts_entity_store(entity, statements[entity.singular]) for entity in request.entities
-    )
+    store_entities = "\n".join(_ts_entity_store(entity, statements[entity.singular]) for entity in request.entities)
     import_names = ",\n              ".join(
         f"delete{pascal(entity.singular)},\n              get{pascal(entity.singular)},\n              list{pascal(entity.plural)},\n              save{pascal(entity.singular)},\n              type {pascal(entity.singular)}Upsert"
         for entity in request.entities

@@ -8,6 +8,7 @@ Provides production-grade multi-node fleet management for ELMOS Project Synthesi
 5. Automatic job failover, exponential backoff retries, and dead-letter handling.
 6. Persistent SQLite/Postgres backend support with crash-recovery and replayability.
 """
+
 from __future__ import annotations
 
 import datetime as dt
@@ -35,7 +36,7 @@ class WorkerNode:
     max_concurrency: int = 4
     active_jobs: int = 0
     status: NodeStatus = "READY"
-    last_heartbeat_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+    last_heartbeat_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
     capabilities: set[str] = field(default_factory=lambda: {"docker", "rootless", "synthesis", "postgresql"})
 
     @property
@@ -58,10 +59,7 @@ class RunnerLease:
 
     @property
     def is_valid(self) -> bool:
-        return (
-            self.status in ("ACQUIRED", "RENEWED")
-            and dt.datetime.now(dt.timezone.utc) < self.expires_at
-        )
+        return self.status in ("ACQUIRED", "RENEWED") and dt.datetime.now(dt.UTC) < self.expires_at
 
 
 @dataclass
@@ -95,7 +93,7 @@ class JobQueueItem:
     max_retries: int = 3
     assigned_node_id: str | None = None
     lease_id: str | None = None
-    created_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+    created_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
     started_at: dt.datetime | None = None
     completed_at: dt.datetime | None = None
     error_reason: str | None = None
@@ -350,7 +348,7 @@ class HostedRunnerFleet:
         node = self.nodes.get(node_id)
         if not node:
             return False
-        node.last_heartbeat_at = dt.datetime.now(dt.timezone.utc)
+        node.last_heartbeat_at = dt.datetime.now(dt.UTC)
         if node.status == "OFFLINE":
             node.status = "READY"
         self._persist_node(node)
@@ -425,7 +423,7 @@ class HostedRunnerFleet:
             self._persist_fencing_seq()
 
             lease_id = f"lease-{uuid.uuid4().hex[:12]}"
-            expires_at = dt.datetime.now(dt.timezone.utc) + dt.timedelta(seconds=job.timeout_seconds + 30)
+            expires_at = dt.datetime.now(dt.UTC) + dt.timedelta(seconds=job.timeout_seconds + 30)
 
             lease = RunnerLease(
                 lease_id=lease_id,
@@ -440,7 +438,7 @@ class HostedRunnerFleet:
             job.status = "RUNNING"
             job.assigned_node_id = node.node_id
             job.lease_id = lease_id
-            job.started_at = dt.datetime.now(dt.timezone.utc)
+            job.started_at = dt.datetime.now(dt.UTC)
 
             node.active_jobs += 1
             quota.active_jobs += 1
@@ -467,21 +465,17 @@ class HostedRunnerFleet:
         if not job or job.status != "RUNNING":
             return
 
-        now = dt.datetime.now(dt.timezone.utc)
+        now = dt.datetime.now(dt.UTC)
         job.completed_at = now
         job.status = "COMPLETED" if success else "FAILED"
         job.error_reason = error
 
         if job.assigned_node_id and job.assigned_node_id in self.nodes:
-            self.nodes[job.assigned_node_id].active_jobs = max(
-                0, self.nodes[job.assigned_node_id].active_jobs - 1
-            )
+            self.nodes[job.assigned_node_id].active_jobs = max(0, self.nodes[job.assigned_node_id].active_jobs - 1)
             self._persist_node(self.nodes[job.assigned_node_id])
 
         if job.tenant_id in self.quotas:
-            self.quotas[job.tenant_id].active_jobs = max(
-                0, self.quotas[job.tenant_id].active_jobs - 1
-            )
+            self.quotas[job.tenant_id].active_jobs = max(0, self.quotas[job.tenant_id].active_jobs - 1)
             if job.started_at:
                 elapsed = int((now - job.started_at).total_seconds())
                 self.quotas[job.tenant_id].used_runtime_seconds_today += elapsed
@@ -496,7 +490,7 @@ class HostedRunnerFleet:
     def check_timeouts(self) -> list[str]:
         """Detect and terminate jobs exceeding their configured timeout."""
         killed_ids: list[str] = []
-        now = dt.datetime.now(dt.timezone.utc)
+        now = dt.datetime.now(dt.UTC)
 
         for job in list(self.jobs.values()):
             if job.status == "RUNNING" and job.started_at:
@@ -513,7 +507,7 @@ class HostedRunnerFleet:
     def evict_dead_nodes(self, heartbeat_timeout_seconds: int = 30) -> list[str]:
         """Detect worker nodes whose heartbeat stopped and fail over their active jobs."""
         dead_node_ids: list[str] = []
-        now = dt.datetime.now(dt.timezone.utc)
+        now = dt.datetime.now(dt.UTC)
 
         for node in list(self.nodes.values()):
             if node.status != "DEAD":
@@ -538,9 +532,7 @@ class HostedRunnerFleet:
             self._persist_lease(self.leases[job.lease_id])
 
         if job.tenant_id in self.quotas:
-            self.quotas[job.tenant_id].active_jobs = max(
-                0, self.quotas[job.tenant_id].active_jobs - 1
-            )
+            self.quotas[job.tenant_id].active_jobs = max(0, self.quotas[job.tenant_id].active_jobs - 1)
             self._persist_quota(self.quotas[job.tenant_id])
 
         if job.retry_count < job.max_retries:
@@ -553,7 +545,7 @@ class HostedRunnerFleet:
         else:
             job.status = "FAILED"
             job.error_reason = f"MAX_RETRIES_EXCEEDED:{reason}"
-            job.completed_at = dt.datetime.now(dt.timezone.utc)
+            job.completed_at = dt.datetime.now(dt.UTC)
             logger.error(f"Job {job.job_id} reached max retries; marked FAILED")
 
         self._persist_job(job)

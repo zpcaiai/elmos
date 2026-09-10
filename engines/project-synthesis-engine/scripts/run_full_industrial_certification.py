@@ -15,6 +15,7 @@ Calculates final certified scores across all 4 dimensions:
 
 Emits cryptographic machine-verifiable evidence to evidence/generation_industrial_full_certification_evidence.json.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -35,7 +36,9 @@ def run_command_json(cmd: list[str]) -> tuple[int, str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run ELMOS Full Industrial Certification Gate.")
-    parser.add_argument("--output", type=Path, default=Path("evidence/generation_industrial_full_certification_evidence.json"))
+    parser.add_argument(
+        "--output", type=Path, default=Path("evidence/generation_industrial_full_certification_evidence.json")
+    )
     args = parser.parse_args()
 
     print("================================================================================")
@@ -48,7 +51,17 @@ def main() -> int:
 
     # Campaign 1 & 2 & 3: Run pytest suite
     print("\n[CAMPAIGN 1-3] Running Comprehensive Pytest Suites...")
-    ret, out = run_command_json(["uv", "run", "pytest", "tests/test_enterprise_production_synthesis.py", "tests/test_enterprise_middleware_contracts.py", "tests/test_hosted_runner_fleet_persistence.py", "-v"])
+    ret, out = run_command_json(
+        [
+            "uv",
+            "run",
+            "pytest",
+            "tests/test_enterprise_production_synthesis.py",
+            "tests/test_enterprise_middleware_contracts.py",
+            "tests/test_hosted_runner_fleet_persistence.py",
+            "-v",
+        ]
+    )
     assert ret == 0, f"Pytest suites failed:\n{out}"
     campaign_results["pytest_suites"] = {
         "status": "PASSED",
@@ -64,7 +77,9 @@ def main() -> int:
     # Acceptance Matrix (9 Scenarios)
     print("\n[ACCEPTANCE] Running Enterprise Acceptance Matrix (9 Scenarios)...")
     acc_out = Path("evidence/enterprise_acceptance_evidence.json")
-    ret, out = run_command_json(["uv", "run", "python", "scripts/run_enterprise_production_acceptance.py", "--output", str(acc_out)])
+    ret, out = run_command_json(
+        ["uv", "run", "python", "scripts/run_enterprise_production_acceptance.py", "--output", str(acc_out)]
+    )
     assert ret == 0, f"Acceptance matrix failed:\n{out}"
     acc_data = json.loads(acc_out.read_text(encoding="utf-8"))
     campaign_results["acceptance_matrix"] = {
@@ -77,7 +92,20 @@ def main() -> int:
     # Campaign 4A: Stress Benchmark
     print("\n[CAMPAIGN 4A] Running High-Concurrency Stress Benchmark...")
     bench_out = Path("evidence/enterprise_stress_benchmark_evidence.json")
-    ret, out = run_command_json(["uv", "run", "python", "scripts/run_enterprise_stress_benchmark.py", "--concurrency", "50", "--requests", "1000", "--output", str(bench_out)])
+    ret, out = run_command_json(
+        [
+            "uv",
+            "run",
+            "python",
+            "scripts/run_enterprise_stress_benchmark.py",
+            "--concurrency",
+            "50",
+            "--requests",
+            "1000",
+            "--output",
+            str(bench_out),
+        ]
+    )
     assert ret == 0, f"Benchmark failed:\n{out}"
     bench_data = json.loads(bench_out.read_text(encoding="utf-8"))
     campaign_results["stress_benchmark"] = {
@@ -85,12 +113,16 @@ def main() -> int:
         "metrics": bench_data["metrics"],
         "sha256": bench_data["evidence_sha256"],
     }
-    print(f"  -> Benchmark passed: P50={bench_data['metrics']['p50_latency_ms']}ms, P99={bench_data['metrics']['p99_latency_ms']}ms, HitRatio={bench_data['metrics']['cache_hit_ratio']*100:.1f}%.")
+    print(
+        f"  -> Benchmark passed: P50={bench_data['metrics']['p50_latency_ms']}ms, P99={bench_data['metrics']['p99_latency_ms']}ms, HitRatio={bench_data['metrics']['cache_hit_ratio'] * 100:.1f}%."
+    )
 
     # Campaign 4B: Chaos & Self-Healing Drills
     print("\n[CAMPAIGN 4B] Running Chaos & Fault-Recovery Drills...")
     chaos_out = Path("evidence/enterprise_chaos_drill_evidence.json")
-    ret, out = run_command_json(["uv", "run", "python", "scripts/run_enterprise_chaos_drill.py", "--output", str(chaos_out)])
+    ret, out = run_command_json(
+        ["uv", "run", "python", "scripts/run_enterprise_chaos_drill.py", "--output", str(chaos_out)]
+    )
     assert ret == 0, f"Chaos drills failed:\n{out}"
     chaos_data = json.loads(chaos_out.read_text(encoding="utf-8"))
     campaign_results["chaos_drills"] = {
@@ -107,7 +139,7 @@ def main() -> int:
         "schema_version": "1.0.0",
         "business_line": "多语言项目生成 (/generation)",
         "certification_standard": "ELMOS-INDUSTRIAL-GRADE-PRODUCTION-V3",
-        "certified_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "certified_at": dt.datetime.now(dt.UTC).isoformat(),
         "evaluation_verdict": "100% FULLY_CERTIFIED",
         "scores": {
             "真实纯自动覆盖率": "100%",

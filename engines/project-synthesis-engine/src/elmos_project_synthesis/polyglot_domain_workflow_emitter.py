@@ -3,15 +3,15 @@
 Generates complete industrial-grade Kotlin (Spring Boot) and PHP (Laravel 11) domain models,
 value objects, FSM state machines, and distributed transaction coordinators.
 """
+
 from __future__ import annotations
 
-from typing import Dict
 from .models import SynthesisRequest, pascal
 
 
-def generate_kotlin_domain_workflow_files(request: SynthesisRequest) -> Dict[str, str]:
+def generate_kotlin_domain_workflow_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate industrial-grade DDD, FSM, and Distributed Transaction files for Kotlin Spring Boot."""
-    files: Dict[str, str] = {}
+    files: dict[str, str] = {}
     pkg = request.namespace or "com.elmos.enterprise"
     pkg_path = pkg.replace(".", "/")
     entity = request.entities[0] if request.entities else None
@@ -304,9 +304,9 @@ class DistributedLockManager {{
     return files
 
 
-def generate_php_domain_workflow_files(request: SynthesisRequest) -> Dict[str, str]:
+def generate_php_domain_workflow_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate industrial-grade DDD, FSM, and Distributed Transaction files for PHP Laravel 11."""
-    files: Dict[str, str] = {}
+    files: dict[str, str] = {}
     entity = request.entities[0] if request.entities else None
     entity_name = pascal(entity.singular) if entity else "Order"
 

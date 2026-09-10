@@ -6,20 +6,18 @@ Provides end-to-end autonomic delivery and self-healing for Kubernetes microserv
 3. SelfHealingController: detects degradation, CrashLoop, or probe failures, executes automatic atomic rollback,
    and issues cryptographically verifiable SelfHealingReceipt audit records.
 """
+
 from __future__ import annotations
 
 import hashlib
 import json
 import logging
-import time
-from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
+from typing import Any
 
 from .k8s_deployment_controller import (
-    K8sDeploymentSummary,
     K8sProbeResult,
-    generate_enterprise_k8s_manifests,
 )
 
 logger = logging.getLogger(__name__)
@@ -33,7 +31,7 @@ class PackagingCheckResult:
     has_multistage: bool
     has_non_root_user: bool
     has_healthcheck: bool
-    findings: Tuple[str, ...]
+    findings: tuple[str, ...]
 
 
 class ContainerPackagingVerifier:
@@ -41,17 +39,19 @@ class ContainerPackagingVerifier:
 
     @staticmethod
     def verify_dockerfile(dockerfile_content: str) -> PackagingCheckResult:
-        findings: List[str] = []
+        findings: list[str] = []
         lines = [line.strip() for line in dockerfile_content.splitlines()]
 
         # 1. Multi-stage build check
-        from_stages = [l for l in lines if l.upper().startswith("FROM ")]
-        has_multistage = len(from_stages) >= 2 or any("AS " in l.upper() for l in from_stages)
+        from_stages = [line for line in lines if line.upper().startswith("FROM ")]
+        has_multistage = len(from_stages) >= 2 or any("AS " in stage.upper() for stage in from_stages)
         if not has_multistage:
-            findings.append("RECOMMEND_MULTISTAGE_BUILD: Single stage build image may contain build tools in final artifact")
+            findings.append(
+                "RECOMMEND_MULTISTAGE_BUILD: Single stage build image may contain build tools in final artifact"
+            )
 
         # 2. Non-root user check
-        user_lines = [l for l in lines if l.upper().startswith("USER ")]
+        user_lines = [line for line in lines if line.upper().startswith("USER ")]
         has_non_root_user = False
         if user_lines:
             last_user = user_lines[-1].split(maxsplit=1)[1].strip()
@@ -61,7 +61,7 @@ class ContainerPackagingVerifier:
             findings.append("CRITICAL_RUN_AS_ROOT: Dockerfile does not switch to non-root USER before entrypoint")
 
         # 3. Healthcheck instruction or probe readiness
-        has_healthcheck = any(l.upper().startswith("HEALTHCHECK") for l in lines)
+        has_healthcheck = any(line.upper().startswith("HEALTHCHECK") for line in lines)
 
         valid = has_non_root_user
         return PackagingCheckResult(
@@ -88,7 +88,7 @@ class SelfHealingReceipt:
     recovered_at: str
     receipt_sha256: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -104,10 +104,10 @@ class AutonomicHealingPipeline:
         self.app_name = app_name
         self.namespace = namespace
         self.port = port
-        self.revisions: Dict[str, str] = {}
-        self.current_revision: Optional[str] = None
-        self.stable_revision: Optional[str] = None
-        self.receipts: List[SelfHealingReceipt] = []
+        self.revisions: dict[str, str] = {}
+        self.current_revision: str | None = None
+        self.stable_revision: str | None = None
+        self.receipts: list[SelfHealingReceipt] = []
 
     def register_revision(self, revision_id: str, manifest: str, is_stable: bool = False) -> None:
         self.revisions[revision_id] = manifest
@@ -117,14 +117,14 @@ class AutonomicHealingPipeline:
 
     def simulate_or_probe_health(
         self,
-        mock_probe_responses: Optional[List[Tuple[str, str, int]]] = None,
-    ) -> Tuple[bool, List[K8sProbeResult]]:
+        mock_probe_responses: list[tuple[str, str, int]] | None = None,
+    ) -> tuple[bool, list[K8sProbeResult]]:
         """Samples the 3-tier health probes."""
-        results: List[K8sProbeResult] = []
+        results: list[K8sProbeResult] = []
 
         if mock_probe_responses is not None:
             for ptype, path, code in mock_probe_responses:
-                passed = (200 <= code < 400)
+                passed = 200 <= code < 400
                 results.append(
                     K8sProbeResult(
                         probe_type=ptype,
@@ -142,7 +142,7 @@ class AutonomicHealingPipeline:
                 K8sProbeResult("startup", "/health/live", 200, 1.2, True, '{"status":"UP"}'),
                 K8sProbeResult("liveness", "/health/live", 200, 0.9, True, '{"status":"UP"}'),
                 K8sProbeResult("readiness", "/health/ready", 200, 1.8, True, '{"status":"UP"}'),
-                K8sProbeResult("metrics", "/metrics", 200, 2.0, True, '# HELP requests'),
+                K8sProbeResult("metrics", "/metrics", 200, 2.0, True, "# HELP requests"),
             ]
 
         all_healthy = all(r.passed for r in results)
@@ -152,8 +152,8 @@ class AutonomicHealingPipeline:
         self,
         new_revision_id: str,
         new_manifest: str,
-        mock_probe_responses: Optional[List[Tuple[str, str, int]]] = None,
-    ) -> Tuple[str, Optional[SelfHealingReceipt], List[K8sProbeResult]]:
+        mock_probe_responses: list[tuple[str, str, int]] | None = None,
+    ) -> tuple[str, SelfHealingReceipt | None, list[K8sProbeResult]]:
         """Deploys a new revision, evaluates probes, and triggers self-healing if probes fail."""
         # Record previous stable revision
         previous_stable = self.stable_revision or "v1-initial"
@@ -188,7 +188,7 @@ class AutonomicHealingPipeline:
         recovery_status = "RECOVERED" if recovered_healthy else "ESCALATED"
 
         # Create Self-Healing Receipt
-        now_iso = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+        now_iso = datetime.now(UTC).replace(microsecond=0).isoformat()
         incident_id = f"inc-{hashlib.sha256(f'{self.app_name}:{new_revision_id}:{now_iso}'.encode()).hexdigest()[:16]}"
         payload_to_sign = {
             "incident_id": incident_id,

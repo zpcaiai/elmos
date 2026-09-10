@@ -1,8 +1,6 @@
-"""Tests for Specialized Language Runtimes & Cross-Compilation Verification Harness (B81-B95).
-"""
-from __future__ import annotations
+"""Tests for Specialized Language Runtimes & Cross-Compilation Verification Harness (B81-B95)."""
 
-import pytest
+from __future__ import annotations
 
 from elmos_project_synthesis.specialized_language_harness import (
     SpecializedEvaluationSummary,

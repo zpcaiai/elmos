@@ -1,16 +1,14 @@
-"""Tests for Kubernetes Manifest Generation, Restricted PSS, and 3-Tier Probing.
-"""
+"""Tests for Kubernetes Manifest Generation, Restricted PSS, and 3-Tier Probing."""
+
 from __future__ import annotations
 
 import http.server
 import threading
-import time
-import pytest
+
 import yaml
 
 from elmos_project_synthesis.k8s_deployment_controller import (
     K8sDeploymentController,
-    K8sProbeResult,
     LocalK8sDetector,
     generate_enterprise_k8s_manifests,
 )
@@ -83,7 +81,7 @@ class _MockHealthHandler(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-Type", "text/plain")
             self.end_headers()
-            self.wfile.write(b'http_requests_total 42\n')
+            self.wfile.write(b"http_requests_total 42\n")
         else:
             self.send_response(404)
             self.end_headers()

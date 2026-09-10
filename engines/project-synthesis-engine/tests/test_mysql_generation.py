@@ -67,10 +67,7 @@ def _mysql_request(
         languages=(language,),
         persistence="mysql",
         auth_mode=auth_mode,
-        permissions=tuple(
-            {**permission, "actor": "store-admin"}
-            for permission in allow_crud("customer", "order")
-        ),
+        permissions=tuple({**permission, "actor": "store-admin"} for permission in allow_crud("customer", "order")),
     )
     approved = approve_request(draft, actor="user:ethan-certifier")
     return SynthesisRequest.from_mapping(approved)

@@ -1,5 +1,5 @@
-"""Tests for Distributed Transactions: Saga Orchestrator, TCC Coordinator, Outbox, and Distributed Lock.
-"""
+"""Tests for Distributed Transactions: Saga Orchestrator, TCC Coordinator, Outbox, and Distributed Lock."""
+
 from __future__ import annotations
 
 import pytest
@@ -131,9 +131,27 @@ def test_saga_orchestrator_failure_and_lifo_compensation():
         compensations_run.append("inventory_released")
 
     steps = [
-        SagaStepDef(step_id="s_ord", name="OrderStep", forward_action=order_action, compensation_action=order_compensate, max_retries=1),
-        SagaStepDef(step_id="s_pay", name="PaymentStep", forward_action=payment_action, compensation_action=payment_compensate, max_retries=1),
-        SagaStepDef(step_id="s_inv", name="InventoryStep", forward_action=inventory_action, compensation_action=inventory_compensate, max_retries=1),
+        SagaStepDef(
+            step_id="s_ord",
+            name="OrderStep",
+            forward_action=order_action,
+            compensation_action=order_compensate,
+            max_retries=1,
+        ),
+        SagaStepDef(
+            step_id="s_pay",
+            name="PaymentStep",
+            forward_action=payment_action,
+            compensation_action=payment_compensate,
+            max_retries=1,
+        ),
+        SagaStepDef(
+            step_id="s_inv",
+            name="InventoryStep",
+            forward_action=inventory_action,
+            compensation_action=inventory_compensate,
+            max_retries=1,
+        ),
     ]
 
     orchestrator = SagaOrchestrator(saga_name="SAGA-ORDER-FAIL", steps=steps)

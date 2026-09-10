@@ -119,9 +119,7 @@ def _integration_roles(request: SynthesisRequest) -> list[str]:
     """Bind the integration identity to the approved permission matrix."""
 
     operations = {
-        (entity.singular, action)
-        for entity in request.entities
-        for action in ("create", "read", "update", "delete")
+        (entity.singular, action) for entity in request.entities for action in ("create", "read", "update", "delete")
     }
     permissions = request.raw["permissions"]
     actors = sorted({str(permission["actor"]) for permission in permissions})
@@ -146,9 +144,7 @@ def _integration_roles(request: SynthesisRequest) -> list[str]:
         (resource, action)
         for resource, action in operations
         if any(
-            permission["actor"] in eligible
-            and permission["effect"] == "allow"
-            and covers(permission, resource, action)
+            permission["actor"] in eligible and permission["effect"] == "allow" and covers(permission, resource, action)
             for permission in permissions
         )
     }
@@ -415,9 +411,9 @@ def _ci_workflow(
             "printf '%s' 'mysql://root:integration-only@127.0.0.1:3306/generated' > /tmp/admin-database-url"
         )
         create_runtime_user = (
-            'mysql --host=127.0.0.1 --port=3306 --user=root --password=integration-only -e '
-            '"CREATE USER IF NOT EXISTS \'app_runtime\'@\'%\' IDENTIFIED BY \'integration-runtime-only\'; '
-            'GRANT ALL PRIVILEGES ON generated.* TO \'app_runtime\'@\'%\'; FLUSH PRIVILEGES;"'
+            "mysql --host=127.0.0.1 --port=3306 --user=root --password=integration-only -e "
+            "\"CREATE USER IF NOT EXISTS 'app_runtime'@'%' IDENTIFIED BY 'integration-runtime-only'; "
+            "GRANT ALL PRIVILEGES ON generated.* TO 'app_runtime'@'%'; FLUSH PRIVILEGES;\""
         )
         write_runtime_url = (
             "printf '%s' 'mysql://app_runtime:integration-runtime-only@127.0.0.1:3306/generated' > /tmp/database-url"
@@ -1171,21 +1167,15 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
         assignments = ", ".join(f'"{column}" = EXCLUDED."{column}"' for column in columns)
         if request.is_sqlite:
             placeholders = ", ".join(["?"] * len(columns))
-            list_query = (
-                f'SELECT "id", {quoted_columns} FROM {table_ref} WHERE "tenant_id" = ? ORDER BY "id"'
-            )
-            get_query = (
-                f'SELECT "id", {quoted_columns} FROM {table_ref} WHERE "tenant_id" = ? AND "id" = ?'
-            )
+            list_query = f'SELECT "id", {quoted_columns} FROM {table_ref} WHERE "tenant_id" = ? ORDER BY "id"'
+            get_query = f'SELECT "id", {quoted_columns} FROM {table_ref} WHERE "tenant_id" = ? AND "id" = ?'
             save_query = (
-                f'INSERT INTO {table_ref} '
+                f"INSERT INTO {table_ref} "
                 f'("tenant_id", "id", {quoted_columns}) VALUES (?, ?, {placeholders}) '
                 f'ON CONFLICT ("tenant_id", "id") DO UPDATE SET {assignments} '
                 f'RETURNING "id", {quoted_columns}'
             )
-            delete_query = (
-                f'DELETE FROM {table_ref} WHERE "tenant_id" = ? AND "id" = ?'
-            )
+            delete_query = f'DELETE FROM {table_ref} WHERE "tenant_id" = ? AND "id" = ?'
             save_params_elements = [
                 "identity.tenant_id",
                 "str(record_id)",
@@ -1251,19 +1241,13 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                 if columns
                 else "`id` = new_row.`id`"
             )
-            list_query = (
-                f"SELECT {select_cols} FROM {table_ref} WHERE `tenant_id` = %s ORDER BY `id`"
-            )
-            get_query = (
-                f"SELECT {select_cols} FROM {table_ref} WHERE `tenant_id` = %s AND `id` = %s"
-            )
+            list_query = f"SELECT {select_cols} FROM {table_ref} WHERE `tenant_id` = %s ORDER BY `id`"
+            get_query = f"SELECT {select_cols} FROM {table_ref} WHERE `tenant_id` = %s AND `id` = %s"
             save_query = (
                 f"INSERT INTO {table_ref} ({insert_cols}) VALUES ({val_placeholders}) AS new_row "
                 f"ON DUPLICATE KEY UPDATE {mysql_assignments}"
             )
-            delete_query = (
-                f"DELETE FROM {table_ref} WHERE `tenant_id` = %s AND `id` = %s"
-            )
+            delete_query = f"DELETE FROM {table_ref} WHERE `tenant_id` = %s AND `id` = %s"
             save_params_elements = [
                 "identity.tenant_id",
                 "str(record_id)",
@@ -1328,9 +1312,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             placeholders = ", ".join(["%s"] * len(columns))
             values = ", ".join(f"payload.{column}" for column in columns)
             save_params = (
-                f"(identity.tenant_id, str(record_id), {values})"
-                if columns
-                else "(identity.tenant_id, str(record_id))"
+                f"(identity.tenant_id, str(record_id), {values})" if columns else "(identity.tenant_id, str(record_id))"
             )
             list_query = (  # noqa: S608 - identifiers are produced by strict entity/field validators.
                 f'SELECT "id", {quoted_columns} FROM {table_ref} ORDER BY "id"'
@@ -1339,7 +1321,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                 f'SELECT "id", {quoted_columns} FROM {table_ref} WHERE "id" = %s'
             )
             save_query = (  # noqa: S608 - identifiers are produced by strict entity/field validators.
-                f'INSERT INTO {table_ref} '
+                f"INSERT INTO {table_ref} "
                 f'("tenant_id", "id", {quoted_columns}) VALUES (%s, %s, {placeholders}) '
                 f'ON CONFLICT ("tenant_id", "id") DO UPDATE SET {assignments} '
                 f'RETURNING "id", {quoted_columns}'

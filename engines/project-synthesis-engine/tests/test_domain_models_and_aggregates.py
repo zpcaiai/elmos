@@ -1,16 +1,17 @@
-"""Tests for DDD Domain Models, Value Objects, Aggregates, and Invariants.
-"""
+"""Tests for DDD Domain Models, Value Objects, Aggregates, and Invariants."""
+
 from __future__ import annotations
 
 import datetime as dt
+from dataclasses import FrozenInstanceError
 from decimal import Decimal
+
 import pytest
 
 from elmos_project_synthesis.domain_models import (
     Address,
     AggregateRoot,
     DateRange,
-    DomainEvent,
     DomainInvariantViolationError,
     Email,
     GeoLocation,
@@ -33,7 +34,7 @@ def test_money_value_object_operations():
     assert sub.amount == Decimal("51.00")
 
     # Invariant: Frozen / Immutability
-    with pytest.raises(Exception):
+    with pytest.raises(FrozenInstanceError):
         m1.amount = Decimal("200.00")  # type: ignore
 
     # Invariant: Currency mismatch raises DomainInvariantViolationError

@@ -5,23 +5,21 @@ Generates complete industrial-grade enterprise microservices for:
 2. Kotlin: Spring Boot 3.3.0 + Spring Data JPA + Redis (Lettuce) + Kafka + Coroutines + Actuator.
 3. PHP: Laravel 11 / Octane + Eloquent + Redis + Kafka Outbox worker + SRE health endpoints.
 """
+
 from __future__ import annotations
 
-from typing import Any
 from .enterprise_production_contract import (
     HEALTH_LIVE_PATH,
     HEALTH_READY_PATH,
     METRICS_PATH,
     NULL_SENTINEL,
-    TRACE_HEADER,
-    enterprise_entity_sql,
 )
-from .models import EntitySpec, FieldSpec, SynthesisRequest, pascal
-
+from .models import EntitySpec, SynthesisRequest, pascal
 
 # ---------------------------------------------------------------------------
 # Rust (Axum + SQLx + Redis + Kafka)
 # ---------------------------------------------------------------------------
+
 
 def generate_enterprise_rust_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate all files for a production-grade enterprise Rust Axum microservice."""
@@ -29,7 +27,6 @@ def generate_enterprise_rust_files(request: SynthesisRequest) -> dict[str, str]:
     entity = request.entities[0] if request.entities else EntitySpec(singular="order", plural="orders", fields=())
     entity_cap = pascal(entity.singular)
     entity_plural = entity.plural
-    relations = request.canonical_relations
 
     # 1. Cargo.toml
     files["Cargo.toml"] = f"""[package]
@@ -417,9 +414,11 @@ async fn delete_entity(
 # Kotlin (Spring Boot 3 + JPA + Redis + Kafka)
 # ---------------------------------------------------------------------------
 
+
 def generate_enterprise_kotlin_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate all files for a production-grade enterprise Kotlin Spring Boot microservice."""
     from .enterprise_java_target import generate_enterprise_java_files
+
     # Kotlin Spring Boot shares Java build configuration and enterprise patterns
     java_files = generate_enterprise_java_files(request)
     files = {}
@@ -434,7 +433,7 @@ def generate_enterprise_kotlin_files(request: SynthesisRequest) -> dict[str, str
     kotlin("plugin.jpa") version "1.9.24"
 }}
 
-group = "{request.namespace or 'com.elmos.enterprise'}"
+group = "{request.namespace or "com.elmos.enterprise"}"
 version = "1.0.0-SNAPSHOT"
 
 java {{
@@ -466,6 +465,7 @@ dependencies {{
 # ---------------------------------------------------------------------------
 # PHP (Laravel 11 / Octane + Eloquent + Redis + Kafka)
 # ---------------------------------------------------------------------------
+
 
 def generate_enterprise_php_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate all files for a production-grade enterprise PHP Laravel microservice."""

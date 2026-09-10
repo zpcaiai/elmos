@@ -8,14 +8,16 @@ Provides robust, deterministic Finite State Machine (FSM) capabilities:
 5. Immutable State Transition Audit Ledger (state_transition_logs).
 6. Automatic State Machine Diagram Rendering (Mermaid and PlantUML).
 """
+
 from __future__ import annotations
 
 import datetime as dt
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any
 from uuid import uuid4
 
-from .domain_models import DomainError, DomainInvariantViolationError
+from .domain_models import DomainError
 
 
 class FsmError(DomainError):
@@ -77,7 +79,7 @@ class EventSpec:
 
     name: str
     description: str = ""
-    payload_fields: Tuple[str, ...] = field(default_factory=tuple)
+    payload_fields: tuple[str, ...] = field(default_factory=tuple)
 
 
 @dataclass(frozen=True)
@@ -87,9 +89,9 @@ class TransitionSpec:
     from_state: str
     to_state: str
     event: str
-    guard_rule_id: Optional[str] = None
-    before_hook: Optional[str] = None
-    after_hook: Optional[str] = None
+    guard_rule_id: str | None = None
+    before_hook: str | None = None
+    after_hook: str | None = None
     description: str = ""
 
 
@@ -107,12 +109,10 @@ class StateTransitionLog:
     tenant_id: str = "default"
     version_before: int = 1
     version_after: int = 2
-    timestamp: str = field(
-        default_factory=lambda: dt.datetime.now(dt.timezone.utc).isoformat()
-    )
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    timestamp: str = field(default_factory=lambda: dt.datetime.now(dt.UTC).isoformat())
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "transition_id": self.transition_id,
             "aggregate_id": self.aggregate_id,
@@ -136,9 +136,9 @@ class WorkflowFsmSpec:
     name: str
     entity_name: str
     state_field: str = "status"
-    states: Tuple[StateSpec, ...] = field(default_factory=tuple)
-    events: Tuple[EventSpec, ...] = field(default_factory=tuple)
-    transitions: Tuple[TransitionSpec, ...] = field(default_factory=tuple)
+    states: tuple[StateSpec, ...] = field(default_factory=tuple)
+    events: tuple[EventSpec, ...] = field(default_factory=tuple)
+    transitions: tuple[TransitionSpec, ...] = field(default_factory=tuple)
 
     def get_initial_state(self) -> str:
         for s in self.states:
@@ -146,10 +146,10 @@ class WorkflowFsmSpec:
                 return s.name
         return self.states[0].name if self.states else "INITIAL"
 
-    def get_terminal_states(self) -> Set[str]:
+    def get_terminal_states(self) -> set[str]:
         return {s.name for s in self.states if s.is_terminal}
 
-    def find_transition(self, from_state: str, event: str) -> Optional[TransitionSpec]:
+    def find_transition(self, from_state: str, event: str) -> TransitionSpec | None:
         for t in self.transitions:
             if t.from_state == from_state and t.event == event:
                 return t
@@ -186,7 +186,7 @@ class WorkflowFsmSpec:
         lines.append("@enduml")
         return "\n".join(lines)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "entity_name": self.entity_name,
@@ -207,12 +207,10 @@ class StateMachineEngine:
 
     def __init__(self, spec: WorkflowFsmSpec):
         self.spec = spec
-        self._guard_registry: Dict[str, Callable[[Dict[str, Any], Dict[str, Any]], bool]] = {}
-        self._audit_ledger: List[StateTransitionLog] = []
+        self._guard_registry: dict[str, Callable[[dict[str, Any], dict[str, Any]], bool]] = {}
+        self._audit_ledger: list[StateTransitionLog] = []
 
-    def register_guard(
-        self, guard_id: str, predicate: Callable[[Dict[str, Any], Dict[str, Any]], bool]
-    ) -> None:
+    def register_guard(self, guard_id: str, predicate: Callable[[dict[str, Any], dict[str, Any]], bool]) -> None:
         """Register a Python guard predicate: (entity_state, event_payload) -> bool."""
         self._guard_registry[guard_id] = predicate
 
@@ -222,12 +220,12 @@ class StateMachineEngine:
         current_state: str,
         current_version: int,
         event: str,
-        entity_state: Dict[str, Any],
-        event_payload: Optional[Dict[str, Any]] = None,
+        entity_state: dict[str, Any],
+        event_payload: dict[str, Any] | None = None,
         actor: str = "system",
         tenant_id: str = "default",
-        expected_version: Optional[int] = None,
-    ) -> Tuple[str, int, StateTransitionLog]:
+        expected_version: int | None = None,
+    ) -> tuple[str, int, StateTransitionLog]:
         """Execute a state transition. Returns (new_state, new_version, transition_log)."""
         payload = event_payload or {}
 
@@ -273,10 +271,10 @@ class StateMachineEngine:
 
         return new_state, new_version, log_entry
 
-    def get_audit_history(self, aggregate_id: Optional[str] = None) -> List[StateTransitionLog]:
+    def get_audit_history(self, aggregate_id: str | None = None) -> list[StateTransitionLog]:
         if aggregate_id:
             return [log for log in self._audit_ledger if log.aggregate_id == aggregate_id]
         return list(self._audit_ledger)
 
-    def get_audit_ledger(self) -> List[StateTransitionLog]:
+    def get_audit_ledger(self) -> list[StateTransitionLog]:
         return list(self._audit_ledger)

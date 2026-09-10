@@ -3,24 +3,24 @@
 Provides Kafka & RabbitMQ consumer group workers with partition-key affinity routing,
 idempotent deduplication tables, exponential backoff with full jitter, and automated DLQ replay.
 """
+
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 import datetime as dt
 import enum
-import hashlib
-import json
 import random
 import time
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import Any
 
 
-class MessageBrokerType(str, enum.Enum):
+class MessageBrokerType(enum.StrEnum):
     KAFKA = "KAFKA"
     RABBITMQ = "RABBITMQ"
 
 
-class MessageDeliveryStatus(str, enum.Enum):
+class MessageDeliveryStatus(enum.StrEnum):
     PENDING = "PENDING"
     PROCESSING = "PROCESSING"
     ACKNOWLEDGED = "ACKNOWLEDGED"
@@ -31,17 +31,18 @@ class MessageDeliveryStatus(str, enum.Enum):
 @dataclass
 class ConsumedMessage:
     """Standardized envelope for incoming broker messages."""
+
     message_id: str
     topic: str
     partition: int
     offset: int
-    key: Optional[str]
-    payload: Dict[str, Any]
-    headers: Dict[str, str] = field(default_factory=dict)
+    key: str | None
+    payload: dict[str, Any]
+    headers: dict[str, str] = field(default_factory=dict)
     delivery_attempt: int = 1
-    received_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+    received_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
     status: MessageDeliveryStatus = MessageDeliveryStatus.PENDING
-    last_error: Optional[str] = None
+    last_error: str | None = None
 
 
 class IdempotentDeduplicationStore:
@@ -50,7 +51,7 @@ class IdempotentDeduplicationStore:
     def __init__(self, ttl_seconds: int = 86400) -> None:
         self.ttl_seconds = ttl_seconds
         # key -> (consumer_group, processed_at_timestamp)
-        self._processed: Dict[str, Tuple[str, float]] = {}
+        self._processed: dict[str, tuple[str, float]] = {}
 
     def is_processed(self, consumer_group: str, message_id: str) -> bool:
         key = f"{consumer_group}:{message_id}"
@@ -99,17 +100,18 @@ class ExponentialBackoffWithJitter:
 @dataclass
 class DeadLetterRecord:
     """Archived failed message forwarded to DLQ with diagnostic audit context."""
+
     dead_letter_id: str
     original_topic: str
     consumer_group: str
     original_message_id: str
-    payload: Dict[str, Any]
-    headers: Dict[str, str]
+    payload: dict[str, Any]
+    headers: dict[str, str]
     failure_reason: str
     attempts_made: int
-    dead_lettered_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+    dead_lettered_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
     replayed: bool = False
-    replayed_at: Optional[dt.datetime] = None
+    replayed_at: dt.datetime | None = None
 
 
 class DeadLetterQueueManager:
@@ -117,7 +119,7 @@ class DeadLetterQueueManager:
 
     def __init__(self, dlq_topic_suffix: str = ".dlq") -> None:
         self.dlq_topic_suffix = dlq_topic_suffix
-        self.records: Dict[str, DeadLetterRecord] = {}
+        self.records: dict[str, DeadLetterRecord] = {}
 
     def route_to_dlq(self, message: ConsumedMessage, consumer_group: str, reason: str) -> DeadLetterRecord:
         dlq_id = f"dlq-{message.message_id}-{int(time.time() * 1000)}"
@@ -136,13 +138,13 @@ class DeadLetterQueueManager:
         message.last_error = reason
         return record
 
-    def replay_dead_letter(self, dead_letter_id: str) -> Optional[ConsumedMessage]:
+    def replay_dead_letter(self, dead_letter_id: str) -> ConsumedMessage | None:
         record = self.records.get(dead_letter_id)
         if not record or record.replayed:
             return None
 
         record.replayed = True
-        record.replayed_at = dt.datetime.now(dt.timezone.utc)
+        record.replayed_at = dt.datetime.now(dt.UTC)
 
         # Re-construct message for replay
         return ConsumedMessage(
@@ -164,9 +166,9 @@ class ResilientMessageConsumerPipeline:
         self,
         consumer_group: str,
         handler: Callable[[ConsumedMessage], None],
-        dedup_store: Optional[IdempotentDeduplicationStore] = None,
-        retry_policy: Optional[ExponentialBackoffWithJitter] = None,
-        dlq_manager: Optional[DeadLetterQueueManager] = None,
+        dedup_store: IdempotentDeduplicationStore | None = None,
+        retry_policy: ExponentialBackoffWithJitter | None = None,
+        dlq_manager: DeadLetterQueueManager | None = None,
     ) -> None:
         self.consumer_group = consumer_group
         self.handler = handler
@@ -198,7 +200,7 @@ class ResilientMessageConsumerPipeline:
                     message.status = MessageDeliveryStatus.RETRYING
                     message.delivery_attempt += 1
                     backoff_secs = self.retry_policy.compute_backoff_seconds(message.delivery_attempt)
-                    time.sleep(min(backoff_secs, 0.05)) # Scaled down for unit testing speed
+                    time.sleep(min(backoff_secs, 0.05))  # Scaled down for unit testing speed
                 else:
                     # Retries exhausted -> route to DLQ
                     self.dlq_manager.route_to_dlq(message, self.consumer_group, err_msg)

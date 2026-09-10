@@ -7,18 +7,16 @@ Generates complete industrial-grade enterprise ASP.NET Core 8 microservices with
 4. Rich query engine with dynamic pagination, multi-field sorting, and range filtering.
 5. SRE microservice observability with HealthChecks (/health/live, /health/ready) and Prometheus metrics (/metrics).
 """
+
 from __future__ import annotations
 
-from typing import Any
 from .enterprise_production_contract import (
     HEALTH_LIVE_PATH,
     HEALTH_READY_PATH,
     METRICS_PATH,
     NULL_SENTINEL,
-    TRACE_HEADER,
-    enterprise_entity_sql,
 )
-from .models import EntitySpec, FieldSpec, SynthesisRequest, pascal
+from .models import EntitySpec, SynthesisRequest, pascal
 
 
 def _csharp_type(field_type: str) -> str:
@@ -90,7 +88,11 @@ def generate_enterprise_dotnet_files(request: SynthesisRequest) -> dict[str, str
     for f in entity.fields:
         cs_t = _csharp_type(f.type)
         entity_fields.append(f"        public {cs_t} {pascal(f.name)} {{ get; set; }} = default!;")
-    fields_code = "\n".join(entity_fields) if entity_fields else "        public string Reference { get; set; } = default!;\n        public decimal Total { get; set; };"
+    fields_code = (
+        "\n".join(entity_fields)
+        if entity_fields
+        else "        public string Reference { get; set; } = default!;\n        public decimal Total { get; set; };"
+    )
 
     # Relational foreign keys
     rel_fields = []

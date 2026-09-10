@@ -15,15 +15,16 @@ Provides comprehensive distributed consistency patterns:
 4. Distributed Lock with Monotonic Fencing Tokens:
    - High-availability mutex with lease renewal and split-brain protection.
 """
+
 from __future__ import annotations
 
 import datetime as dt
-import json
 import logging
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any
 from uuid import uuid4
 
 logger = logging.getLogger(__name__)
@@ -46,8 +47,8 @@ class DistributedLockManager:
     """Manages distributed locks with lease expiry and monotonic fencing tokens."""
 
     def __init__(self) -> None:
-        self._locks: Dict[str, Dict[str, Any]] = {}
-        self._fencing_counters: Dict[str, int] = {}
+        self._locks: dict[str, dict[str, Any]] = {}
+        self._fencing_counters: dict[str, int] = {}
         self._lock = threading.Lock()
 
     def acquire(self, resource_key: str, owner_id: str, ttl_seconds: float = 30.0) -> int:
@@ -104,15 +105,15 @@ class OutboxRecord:
     aggregate_type: str
     aggregate_id: str
     event_type: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     status: str = "PENDING"  # PENDING, IN_FLIGHT, PUBLISHED, FAILED, DEAD_LETTER
     retry_count: int = 0
     max_retries: int = 5
-    created_at: str = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc).isoformat())
-    published_at: Optional[str] = None
-    last_error: Optional[str] = None
+    created_at: str = field(default_factory=lambda: dt.datetime.now(dt.UTC).isoformat())
+    published_at: str | None = None
+    last_error: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "event_id": self.event_id,
             "tenant_id": self.tenant_id,
@@ -133,8 +134,8 @@ class OutboxStore:
     """Thread-safe transactional outbox store simulating SELECT FOR UPDATE SKIP LOCKED."""
 
     def __init__(self) -> None:
-        self._records: Dict[str, OutboxRecord] = {}
-        self._in_flight: Set[str] = set()
+        self._records: dict[str, OutboxRecord] = {}
+        self._in_flight: set[str] = set()
         self._lock = threading.Lock()
 
     def append(self, record: OutboxRecord) -> None:
@@ -144,10 +145,10 @@ class OutboxStore:
     def insert(self, record: OutboxRecord) -> None:
         self.append(record)
 
-    def fetch_and_lock_batch(self, batch_size: int = 50) -> List[OutboxRecord]:
+    def fetch_and_lock_batch(self, batch_size: int = 50) -> list[OutboxRecord]:
         """Fetch pending records with SKIP LOCKED semantics."""
         with self._lock:
-            selected: List[OutboxRecord] = []
+            selected: list[OutboxRecord] = []
             for event_id, rec in self._records.items():
                 if len(selected) >= batch_size:
                     break
@@ -162,7 +163,7 @@ class OutboxStore:
             self._in_flight.discard(event_id)
             if event_id in self._records:
                 self._records[event_id].status = "PUBLISHED"
-                self._records[event_id].published_at = dt.datetime.now(dt.timezone.utc).isoformat()
+                self._records[event_id].published_at = dt.datetime.now(dt.UTC).isoformat()
 
     def mark_failed(self, event_id: str, error_msg: str) -> None:
         with self._lock:
@@ -176,7 +177,7 @@ class OutboxStore:
                 else:
                     rec.status = "FAILED"
 
-    def get_all(self) -> List[OutboxRecord]:
+    def get_all(self) -> list[OutboxRecord]:
         with self._lock:
             return list(self._records.values())
 
@@ -194,7 +195,7 @@ class OutboxDispatcher:
         self.publisher = publisher
         self.batch_size = batch_size
 
-    def dispatch_batch(self) -> Tuple[int, int]:
+    def dispatch_batch(self) -> tuple[int, int]:
         """Dispatch a single batch. Returns (published_count, failed_count)."""
         batch = self.store.fetch_and_lock_batch(self.batch_size)
         published = 0
@@ -227,8 +228,8 @@ class SagaStepDef:
 
     step_id: str
     name: str
-    forward_action: Callable[[Dict[str, Any]], Dict[str, Any]]
-    compensation_action: Callable[[Dict[str, Any]], None]
+    forward_action: Callable[[dict[str, Any]], dict[str, Any]]
+    compensation_action: Callable[[dict[str, Any]], None]
     timeout_seconds: float = 30.0
     max_retries: int = 3
 
@@ -240,9 +241,9 @@ class SagaJournalEntry:
     phase: str  # FORWARD, COMPENSATION
     status: str  # SUCCESS, FAILED, RETRYING
     started_at: str
-    ended_at: Optional[str] = None
-    output: Optional[Dict[str, Any]] = None
-    error: Optional[str] = None
+    ended_at: str | None = None
+    output: dict[str, Any] | None = None
+    error: str | None = None
 
 
 @dataclass
@@ -252,20 +253,20 @@ class SagaExecutionState:
     tenant_id: str
     status: str  # PENDING, RUNNING, COMPLETED, COMPENSATING, COMPENSATED, FAILED
     current_step_index: int = 0
-    context: Dict[str, Any] = field(default_factory=dict)
-    completed_steps: List[str] = field(default_factory=list)
-    journal: List[SagaJournalEntry] = field(default_factory=list)
-    error: Optional[str] = None
+    context: dict[str, Any] = field(default_factory=dict)
+    completed_steps: list[str] = field(default_factory=list)
+    journal: list[SagaJournalEntry] = field(default_factory=list)
+    error: str | None = None
 
 
 class SagaOrchestrator:
     """Executes distributed Sagas with forward step progression and LIFO compensation."""
 
-    def __init__(self, saga_name: str, steps: List[SagaStepDef]) -> None:
+    def __init__(self, saga_name: str, steps: list[SagaStepDef]) -> None:
         self.saga_name = saga_name
         self.steps = steps
 
-    def execute(self, initial_context: Dict[str, Any], tenant_id: str = "default") -> SagaExecutionState:
+    def execute(self, initial_context: dict[str, Any], tenant_id: str = "default") -> SagaExecutionState:
         """Run the Saga. If any step fails, automatically trigger LIFO compensation."""
         state = SagaExecutionState(
             execution_id=f"saga-{uuid4().hex[:12]}",
@@ -275,7 +276,7 @@ class SagaOrchestrator:
             context=dict(initial_context),
         )
 
-        completed_step_defs: List[SagaStepDef] = []
+        completed_step_defs: list[SagaStepDef] = []
 
         # Forward Phase
         for idx, step in enumerate(self.steps):
@@ -285,21 +286,21 @@ class SagaOrchestrator:
                 name=step.name,
                 phase="FORWARD",
                 status="RUNNING",
-                started_at=dt.datetime.now(dt.timezone.utc).isoformat(),
+                started_at=dt.datetime.now(dt.UTC).isoformat(),
             )
             state.journal.append(entry)
 
             step_success = False
             last_err = None
 
-            for attempt in range(1, step.max_retries + 1):
+            for _attempt in range(1, step.max_retries + 1):
                 try:
                     result = step.forward_action(state.context)
                     if isinstance(result, dict):
                         state.context.update(result)
                     entry.status = "SUCCESS"
                     entry.output = result
-                    entry.ended_at = dt.datetime.now(dt.timezone.utc).isoformat()
+                    entry.ended_at = dt.datetime.now(dt.UTC).isoformat()
                     step_success = True
                     completed_step_defs.append(step)
                     state.completed_steps.append(step.step_id)
@@ -311,7 +312,7 @@ class SagaOrchestrator:
             if not step_success:
                 entry.status = "FAILED"
                 entry.error = last_err
-                entry.ended_at = dt.datetime.now(dt.timezone.utc).isoformat()
+                entry.ended_at = dt.datetime.now(dt.UTC).isoformat()
                 state.error = f"Step '{step.name}' failed: {last_err}"
                 # Trigger LIFO Compensation
                 self._compensate(state, completed_step_defs)
@@ -320,7 +321,7 @@ class SagaOrchestrator:
         state.status = "COMPLETED"
         return state
 
-    def _compensate(self, state: SagaExecutionState, completed_steps: List[SagaStepDef]) -> None:
+    def _compensate(self, state: SagaExecutionState, completed_steps: list[SagaStepDef]) -> None:
         """Execute compensating transactions in strict LIFO order."""
         state.status = "COMPENSATING"
 
@@ -331,18 +332,18 @@ class SagaOrchestrator:
                 name=f"Compensate_{step.name}",
                 phase="COMPENSATION",
                 status="RUNNING",
-                started_at=dt.datetime.now(dt.timezone.utc).isoformat(),
+                started_at=dt.datetime.now(dt.UTC).isoformat(),
             )
             state.journal.append(entry)
 
             try:
                 step.compensation_action(state.context)
                 entry.status = "SUCCESS"
-                entry.ended_at = dt.datetime.now(dt.timezone.utc).isoformat()
+                entry.ended_at = dt.datetime.now(dt.UTC).isoformat()
             except Exception as exc:
                 entry.status = "FAILED"
                 entry.error = str(exc)
-                entry.ended_at = dt.datetime.now(dt.timezone.utc).isoformat()
+                entry.ended_at = dt.datetime.now(dt.UTC).isoformat()
                 state.status = "FAILED"
                 state.error = f"Compensation of step '{step.name}' failed: {exc}"
                 return
@@ -361,23 +362,23 @@ class TccParticipantDef:
 
     participant_id: str
     name: str
-    try_action: Callable[[Dict[str, Any]], bool]
-    confirm_action: Callable[[Dict[str, Any]], bool]
-    cancel_action: Callable[[Dict[str, Any]], bool]
+    try_action: Callable[[dict[str, Any]], bool]
+    confirm_action: Callable[[dict[str, Any]], bool]
+    cancel_action: Callable[[dict[str, Any]], bool]
 
 
 class TccCoordinator:
     """Coordinates two-phase TCC transactions with empty rollback & dangling cancel defense."""
 
-    def __init__(self, tx_name: str, participants: List[TccParticipantDef]) -> None:
+    def __init__(self, tx_name: str, participants: list[TccParticipantDef]) -> None:
         self.tx_name = tx_name
         self.participants = participants
-        self._cancelled_branches: Set[str] = set()
+        self._cancelled_branches: set[str] = set()
 
-    def execute(self, tx_context: Dict[str, Any]) -> Tuple[bool, str]:
+    def execute(self, tx_context: dict[str, Any]) -> tuple[bool, str]:
         """Execute full TCC cycle: Try all -> Confirm all; on failure -> Cancel succeeded."""
         tx_id = f"tcc-{uuid4().hex[:12]}"
-        succeeded_tries: List[TccParticipantDef] = []
+        succeeded_tries: list[TccParticipantDef] = []
 
         # Phase 1: Try
         for p in self.participants:
@@ -409,9 +410,7 @@ class TccCoordinator:
 
         return True, "TCC transaction committed successfully"
 
-    def _cancel_all(
-        self, tx_id: str, participants: List[TccParticipantDef], tx_context: Dict[str, Any]
-    ) -> None:
+    def _cancel_all(self, tx_id: str, participants: list[TccParticipantDef], tx_context: dict[str, Any]) -> None:
         """Rollback all participants whose Try succeeded."""
         for p in reversed(participants):
             branch_key = f"{tx_id}:{p.participant_id}"

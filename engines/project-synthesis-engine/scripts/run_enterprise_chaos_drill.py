@@ -7,6 +7,7 @@ Validates that the generated enterprise microservices and runner fleet maintain
 2. Message broker (Kafka/RabbitMQ) outage with Outbox persistence and post-recovery drain.
 3. Distributed cache (Redis) network partition with graceful database fallback.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -15,12 +16,10 @@ import hashlib
 import json
 import sys
 import tempfile
-import time
 from pathlib import Path
 from typing import Any
 
 from elmos_project_synthesis.hosted_runner_fleet import HostedRunnerFleet, WorkerNode
-from elmos_project_synthesis.worker_agent import WorkerAgentDaemon
 
 
 def drill_worker_brain_split_fencing() -> dict[str, Any]:
@@ -34,7 +33,7 @@ def drill_worker_brain_split_fencing() -> dict[str, Any]:
         fleet.register_node(node_a)
         fleet.register_node(node_b)
 
-        job = fleet.submit_job("tenant-chaos", "actor-root", {"task": "critical-synthesis"})
+        _job = fleet.submit_job("tenant-chaos", "actor-root", {"task": "critical-synthesis"})
         scheduled = fleet.schedule_next_job()
         assert scheduled is not None
         s_job, s_node, s_lease = scheduled
@@ -42,7 +41,7 @@ def drill_worker_brain_split_fencing() -> dict[str, Any]:
         stale_token = s_lease.fencing_token
 
         # Simulate Network Partition: Worker A stops heartbeating
-        node_a.last_heartbeat_at = dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=60)
+        node_a.last_heartbeat_at = dt.datetime.now(dt.UTC) - dt.timedelta(seconds=60)
         dead_nodes = fleet.evict_dead_nodes(heartbeat_timeout_seconds=30)
         assert "worker-A" in dead_nodes
 
@@ -80,13 +79,15 @@ def drill_outbox_broker_outage_resumption() -> dict[str, Any]:
 
     # 1. Broker is offline: 10 transactions commit to DB and write Outbox events
     for i in range(10):
-        outbox_db.append({
-            "event_id": f"evt-{i}",
-            "tenant_id": "tenant-chaos",
-            "aggregate_id": f"ord-{i}",
-            "payload": {"reference": f"ORD-{i}"},
-            "status": "PENDING",
-        })
+        outbox_db.append(
+            {
+                "event_id": f"evt-{i}",
+                "tenant_id": "tenant-chaos",
+                "aggregate_id": f"ord-{i}",
+                "payload": {"reference": f"ORD-{i}"},
+                "status": "PENDING",
+            }
+        )
 
     # Outbox polling worker runs while broker is down
     pending = [e for e in outbox_db if e["status"] == "PENDING"]
@@ -179,7 +180,7 @@ def main() -> int:
     results: dict[str, Any] = {
         "schema_version": "1.0.0",
         "benchmark_name": "ELMOS-ENTERPRISE-CHAOS-RECOVERY-SUITE",
-        "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "timestamp": dt.datetime.now(dt.UTC).isoformat(),
         "drills": {},
         "overall_status": "PASSED",
     }

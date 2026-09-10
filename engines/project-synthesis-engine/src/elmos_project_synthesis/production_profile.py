@@ -96,7 +96,7 @@ def _mysql_comparison_sql(rule: dict[str, Any]) -> str | None:
         if isinstance(value, int | float)
         else "'" + value.replace("'", "''") + "'"
     )
-    return f'CONSTRAINT `{rule["id"].lower()}_check` CHECK (`{predicate["field"]}` {operator} {literal})'
+    return f"CONSTRAINT `{rule['id'].lower()}_check` CHECK (`{predicate['field']}` {operator} {literal})"
 
 
 def _sqlite_schema_sql(request: SynthesisRequest) -> str:
@@ -596,13 +596,11 @@ def render_production_assets(request: SynthesisRequest) -> dict[str, str]:
                 "Backups use `sqlite3 .backup` against the live SQLite database file. "
                 "Restore by validating the checksum and atomic copy into the target path."
                 if request.is_sqlite
-                else
-                "Backups use `mysqldump --single-transaction --quick` against a consistent snapshot. "
+                else "Backups use `mysqldump --single-transaction --quick` against a consistent snapshot. "
                 "Restore into a new database, run migrations, verify row counts and tenant-isolation negatives, "
                 "then switch traffic through an approved change. Never overwrite the only existing database."
                 if request.is_mysql
-                else
-                "Backups use `pg_dump --format=custom` against a read-consistent "
+                else "Backups use `pg_dump --format=custom` against a read-consistent "
                 "snapshot. Restore into a new database, run migrations, verify row "
                 "counts and tenant-isolation negatives, then switch traffic through "
                 "an approved change. Never overwrite the only existing database."

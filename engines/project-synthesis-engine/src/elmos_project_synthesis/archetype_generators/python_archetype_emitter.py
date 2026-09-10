@@ -3,15 +3,15 @@
 Generates complete, production-grade microservices for Banking Ledger,
 Supply Chain Logistics, and SaaS Billing domains in Python 3.12.
 """
+
 from __future__ import annotations
 
-from typing import Dict
-from ..models import SynthesisRequest, pascal
+from ..models import SynthesisRequest
 
 
-def generate_python_archetype_files(request: SynthesisRequest, archetype_name: str = "banking") -> Dict[str, str]:
+def generate_python_archetype_files(request: SynthesisRequest, archetype_name: str = "banking") -> dict[str, str]:
     """Emit production Python files for the chosen enterprise archetype."""
-    files: Dict[str, str] = {}
+    files: dict[str, str] = {}
     arch = archetype_name.lower()
 
     if "bank" in arch or "ledger" in arch:

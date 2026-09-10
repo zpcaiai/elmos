@@ -15,20 +15,17 @@ Provides complete local K8s lifecycle automation:
      readinessProbe (/health/ready), and Prometheus metrics (/metrics).
 5. Clean Teardown and Resource Reclamation.
 """
+
 from __future__ import annotations
 
-import json
 import logging
-import os
-import re
 import shutil
 import subprocess
 import time
 import urllib.error
 import urllib.request
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from dataclasses import dataclass
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +39,8 @@ class K8sProbeResult:
     status_code: int
     latency_ms: float
     passed: bool
-    response_body: Optional[str] = None
-    error: Optional[str] = None
+    response_body: str | None = None
+    error: str | None = None
 
 
 @dataclass(frozen=True)
@@ -54,20 +51,18 @@ class K8sDeploymentSummary:
     namespace: str
     cluster_context: str
     rollout_status: str  # SUCCESS, FAILED, SIMULATED
-    probes: Tuple[K8sProbeResult, ...]
-    diagnostics: List[str]
+    probes: tuple[K8sProbeResult, ...]
+    diagnostics: list[str]
     duration_ms: float
 
 
 class LocalK8sDetector:
     """Detects presence and status of local Kubernetes development clusters."""
 
-    KNOWN_LOCAL_CONTEXTS = (
-        "kind", "k3d", "minikube", "orbstack", "docker-desktop", "microk8s"
-    )
+    KNOWN_LOCAL_CONTEXTS = ("kind", "k3d", "minikube", "orbstack", "docker-desktop", "microk8s")
 
     @staticmethod
-    def detect_cluster() -> Tuple[bool, str]:
+    def detect_cluster() -> tuple[bool, str]:
         """Returns (is_available, context_name)."""
         kubectl = shutil.which("kubectl")
         if not kubectl:
@@ -244,11 +239,11 @@ spec:
 class K8sDeploymentController:
     """Controls deployment, rollout monitoring, health probing, and cleanup."""
 
-    def __init__(self, kubectl_bin: Optional[str] = None) -> None:
+    def __init__(self, kubectl_bin: str | None = None) -> None:
         self.kubectl = kubectl_bin or shutil.which("kubectl") or "kubectl"
         self.is_cluster_available, self.current_context = LocalK8sDetector.detect_cluster()
 
-    def dry_run_validate(self, manifest_yaml: str) -> Tuple[bool, str]:
+    def dry_run_validate(self, manifest_yaml: str) -> tuple[bool, str]:
         """Validate manifests using client-side dry-run."""
         if not shutil.which(self.kubectl):
             # Parse YAML syntactic validity if kubectl is absent
@@ -267,9 +262,9 @@ class K8sDeploymentController:
         except Exception as exc:
             return False, str(exc)
 
-    def probe_service_http(self, base_url: str, app_name: str) -> List[K8sProbeResult]:
+    def probe_service_http(self, base_url: str, app_name: str) -> list[K8sProbeResult]:
         """Directly test 3-tier health probe endpoints over HTTP."""
-        results: List[K8sProbeResult] = []
+        results: list[K8sProbeResult] = []
         endpoints = [
             ("startup", "/health/live"),
             ("liveness", "/health/live"),
@@ -330,12 +325,12 @@ class K8sDeploymentController:
         app_name: str,
         namespace: str = "elmos-test",
         port: int = 8080,
-        mock_http_server: Optional[str] = None,
+        mock_http_server: str | None = None,
     ) -> K8sDeploymentSummary:
         """Executes full deployment lifecycle or high-fidelity simulated deployment with probe checks."""
         t_start = time.perf_counter()
         manifests = generate_enterprise_k8s_manifests(app_name, namespace=namespace, port=port)
-        diagnostics: List[str] = []
+        diagnostics: list[str] = []
 
         # 1. Dry run validation
         valid, msg = self.dry_run_validate(manifests)
@@ -360,8 +355,17 @@ class K8sDeploymentController:
             probe_results = [
                 K8sProbeResult("startup", "/health/live", 200, 1.25, True, '{"status":"UP"}'),
                 K8sProbeResult("liveness", "/health/live", 200, 0.85, True, '{"status":"UP"}'),
-                K8sProbeResult("readiness", "/health/ready", 200, 1.82, True, '{"status":"UP","dependencies":{"db":"UP","cache":"UP"}}'),
-                K8sProbeResult("metrics", "/metrics", 200, 2.10, True, '# HELP http_requests_total\nhttp_requests_total 42'),
+                K8sProbeResult(
+                    "readiness",
+                    "/health/ready",
+                    200,
+                    1.82,
+                    True,
+                    '{"status":"UP","dependencies":{"db":"UP","cache":"UP"}}',
+                ),
+                K8sProbeResult(
+                    "metrics", "/metrics", 200, 2.10, True, "# HELP http_requests_total\nhttp_requests_total 42"
+                ),
             ]
             rollout_status = "SUCCESS"
             diagnostics.append(f"Probes verified against deployment contract in namespace '{namespace}'")
@@ -382,8 +386,8 @@ class K8sDeploymentController:
         app_name: str,
         namespace: str = "elmos-test",
         port: int = 8080,
-        mock_probe_responses: Optional[List[Tuple[str, str, int]]] = None,
-    ) -> Tuple[str, Any, List[K8sProbeResult]]:
+        mock_probe_responses: list[tuple[str, str, int]] | None = None,
+    ) -> tuple[str, Any, list[K8sProbeResult]]:
         """Deploys application, monitors 3-tier probes, and executes self-healing rollback if degraded."""
         from .autonomic_healing_pipeline import AutonomicHealingPipeline
 

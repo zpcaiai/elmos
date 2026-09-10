@@ -1,5 +1,5 @@
-"""Tests for Autonomous Intent Disambiguation & Zero-Human Intake Approval.
-"""
+"""Tests for Autonomous Intent Disambiguation & Zero-Human Intake Approval."""
+
 from __future__ import annotations
 
 import pytest

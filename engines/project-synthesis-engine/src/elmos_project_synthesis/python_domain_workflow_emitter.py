@@ -3,22 +3,23 @@
 Generates complete industrial-grade DDD domain layers, state machines, and distributed transaction
 coordinators for Python microservice workspaces.
 """
+
 from __future__ import annotations
 
-from typing import Dict
 from .models import SynthesisRequest
 
 
-def generate_python_domain_workflow_files(request: SynthesisRequest) -> Dict[str, str]:
+def generate_python_domain_workflow_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate industrial-grade DDD, FSM, and Distributed Transaction files for Python."""
-    files: Dict[str, str] = {}
-    app_name = request.project_name
+    files: dict[str, str] = {}
     entity = request.entities[0] if request.entities else None
     entity_name = entity.singular.capitalize() if entity else "Order"
     entity_lower = entity_name.lower()
 
     # 1. Domain Value Objects
-    files["src/domain/value_objects.py"] = f'''"""Domain Value Objects with structural equality and invariant validation."""
+    files[
+        "src/domain/value_objects.py"
+    ] = '''"""Domain Value Objects with structural equality and invariant validation."""
 from __future__ import annotations
 
 import datetime as dt
@@ -33,24 +34,24 @@ class Money(BaseModel):
     amount: Decimal = Field(..., ge=0, description="Amount in fractional decimal")
     currency: str = Field(default="USD", min_length=3, max_length=3)
 
-    model_config = {{"frozen": True}}
+    model_config = {"frozen": True}
 
     @field_validator("currency")
     @classmethod
     def validate_currency(cls, v: str) -> str:
         code = v.strip().upper()
-        if not re.match(r"^[A-Z]{{3}}$", code):
-            raise ValueError(f"Invalid ISO-4217 currency code: {{code}}")
+        if not re.match(r"^[A-Z]{3}$", code):
+            raise ValueError(f"Invalid ISO-4217 currency code: {code}")
         return code
 
     def add(self, other: Money) -> Money:
         if self.currency != other.currency:
-            raise ValueError(f"Currency mismatch: {{self.currency}} vs {{other.currency}}")
+            raise ValueError(f"Currency mismatch: {self.currency} vs {other.currency}")
         return Money(amount=self.amount + other.amount, currency=self.currency)
 
     def subtract(self, other: Money) -> Money:
         if self.currency != other.currency:
-            raise ValueError(f"Currency mismatch: {{self.currency}} vs {{other.currency}}")
+            raise ValueError(f"Currency mismatch: {self.currency} vs {other.currency}")
         if self.amount < other.amount:
             raise ValueError("Insufficient funds for subtraction")
         return Money(amount=self.amount - other.amount, currency=self.currency)
@@ -64,7 +65,7 @@ class Address(BaseModel):
     postal_code: str = Field(..., min_length=1, max_length=32)
     country: str = Field(default="CN", min_length=2, max_length=64)
 
-    model_config = {{"frozen": True}}
+    model_config = {"frozen": True}
 
 
 class Quantity(BaseModel):
@@ -72,7 +73,7 @@ class Quantity(BaseModel):
     value: Decimal = Field(..., gt=0)
     unit: str = Field(..., min_length=1, max_length=32)
 
-    model_config = {{"frozen": True}}
+    model_config = {"frozen": True}
 '''
 
     # 2. Domain Events
@@ -373,7 +374,7 @@ class OutboxDispatcherService:
 '''
 
     # 7. Distributed Lock & Fencing
-    files["src/transactions/lock.py"] = f'''"""Distributed Lock with Monotonic Fencing Token."""
+    files["src/transactions/lock.py"] = '''"""Distributed Lock with Monotonic Fencing Token."""
 from __future__ import annotations
 
 import time
@@ -385,8 +386,8 @@ class DistributedLockService:
     """Manages resource locks with fencing tokens preventing stale split-brain writes."""
 
     def __init__(self) -> None:
-        self._locks: Dict[str, Dict[str, Any]] = {{}}
-        self._generation: Dict[str, int] = {{}}
+        self._locks: Dict[str, Dict[str, Any]] = {}
+        self._generation: Dict[str, int] = {}
         self._mu = threading.Lock()
 
     def acquire(self, resource_id: str, owner: str, ttl_sec: float = 30.0) -> int:
@@ -394,11 +395,11 @@ class DistributedLockService:
         with self._mu:
             lock = self._locks.get(resource_id)
             if lock and lock["expires_at"] > now and lock["owner"] != owner:
-                raise RuntimeError(f"Resource '{{resource_id}}' locked by '{{lock['owner']}}'")
+                raise RuntimeError(f"Resource '{resource_id}' locked by '{lock['owner']}'")
 
             token = self._generation.get(resource_id, 0) + 1
             self._generation[resource_id] = token
-            self._locks[resource_id] = {{"owner": owner, "expires_at": now + ttl_sec, "token": token}}
+            self._locks[resource_id] = {"owner": owner, "expires_at": now + ttl_sec, "token": token}
             return token
 
     def release(self, resource_id: str, owner: str) -> None:

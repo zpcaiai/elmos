@@ -275,10 +275,7 @@ def _smoke(project: str, applications: list[dict[str, Any]], *, requests: int) -
     results: dict[str, Any] = {}
     for application in applications:
         language = str(application["language"])
-        samples = [
-            _probe(f"http://127.0.0.1:{application['port']}/health", project)
-            for _ in range(requests)
-        ]
+        samples = [_probe(f"http://127.0.0.1:{application['port']}/health", project) for _ in range(requests)]
         ordered = sorted(samples)
         percentile_index = max(0, min(len(ordered) - 1, (95 * len(ordered) + 99) // 100 - 1))
         p95 = ordered[percentile_index]

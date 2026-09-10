@@ -11,6 +11,7 @@ Run it after changing any dependency in ``rust_production_target.py``:
 
     uv run --locked python scripts/bootstrap_rust_production_lock.py
 """
+
 from __future__ import annotations
 
 import shutil
@@ -26,6 +27,7 @@ def _cargo() -> str:
     if resolved is None:
         raise SystemExit("EXACT_TOOLCHAIN_NOT_AVAILABLE:rust:cargo")
     return resolved
+
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -80,9 +82,7 @@ def main() -> int:
             actor="bootstrap:rust-production-lock",
             approved_at="2026-07-26T00:00:00+00:00",
         )
-        files = rust_production_target.render_rust_production(
-            models.SynthesisRequest.from_mapping(request), 8088
-        )
+        files = rust_production_target.render_rust_production(models.SynthesisRequest.from_mapping(request), 8088)
     finally:
         rust_production_target._production_lock = original
         models.SUPPORTED_PROFILE_TARGETS = original_targets

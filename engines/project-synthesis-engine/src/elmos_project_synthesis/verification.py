@@ -418,8 +418,7 @@ def _run(
             # Kept in the output on purpose: a PASSED result that needed a
             # retry must not look identical to one that succeeded first time.
             retry_notes.append(
-                f"TRANSIENT_DEPENDENCY_FETCH_RETRY:{attempt}/"
-                f"{_MAX_TRANSIENT_DEPENDENCY_RETRIES}\n{attempt_output}"
+                f"TRANSIENT_DEPENDENCY_FETCH_RETRY:{attempt}/{_MAX_TRANSIENT_DEPENDENCY_RETRIES}\n{attempt_output}"
             )
             time.sleep(_TRANSIENT_DEPENDENCY_RETRY_BACKOFF_SECONDS)
     except subprocess.TimeoutExpired as error:
@@ -562,14 +561,12 @@ def _matching_tool_requirements(
         raise ValueError("TOOLCHAIN_REQUIREMENT_TOOL_MISMATCH")
     candidates = [
         candidate
-        for candidate in dict.fromkeys((
-            shutil.which(tool_name),
-            *(
-                str(requirement["fallback"])
-                for requirement in requirements
-                if requirement.get("fallback")
-            ),
-        ))
+        for candidate in dict.fromkeys(
+            (
+                shutil.which(tool_name),
+                *(str(requirement["fallback"]) for requirement in requirements if requirement.get("fallback")),
+            )
+        )
         if candidate and Path(candidate).is_file()
     ]
     observations: list[list[str]] = [[] for _ in requirements]
@@ -1035,11 +1032,14 @@ def _harness_runtime_plan(
     interpreter = _resolve_tool("python3", "/usr/bin/python3")
     tools = _language_tool_paths(language)
     integration = _HARNESS_INTEGRATION_COMMANDS.get(language)
-    postgres_ready = _runtime_tool(
-        "postgresql",
-        "postgres",
-        "/opt/homebrew/opt/postgresql@17/bin/postgres",
-    ) is not None
+    postgres_ready = (
+        _runtime_tool(
+            "postgresql",
+            "postgres",
+            "/opt/homebrew/opt/postgresql@17/bin/postgres",
+        )
+        is not None
+    )
 
     blocking: str | None = None
     if interpreter is None:

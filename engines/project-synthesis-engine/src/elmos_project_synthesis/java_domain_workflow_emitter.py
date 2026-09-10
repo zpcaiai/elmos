@@ -3,20 +3,19 @@
 Generates complete industrial-grade Java domain models, value objects, FSM state machines,
 and distributed transaction coordinators (Saga LIFO compensation, Outbox, Fencing Locks).
 """
+
 from __future__ import annotations
 
-from typing import Dict
 from .models import SynthesisRequest, pascal
 
 
-def generate_java_domain_workflow_files(request: SynthesisRequest) -> Dict[str, str]:
+def generate_java_domain_workflow_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate industrial-grade DDD, FSM, and Distributed Transaction files for Java Spring Boot 3."""
-    files: Dict[str, str] = {}
+    files: dict[str, str] = {}
     pkg = request.namespace or "com.elmos.enterprise"
     pkg_path = pkg.replace(".", "/")
     entity = request.entities[0] if request.entities else None
     entity_name = pascal(entity.singular) if entity else "Order"
-    entity_lower = entity_name.lower()
 
     # 1. Domain Value Objects (Java 21+ record types)
     files[f"src/main/java/{pkg_path}/domain/Money.java"] = f"""package {pkg}.domain;

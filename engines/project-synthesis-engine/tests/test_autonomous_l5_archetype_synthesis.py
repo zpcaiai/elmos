@@ -1,16 +1,16 @@
 """Unit and integration tests for Autonomous L5 Zero-Human Archetype Synthesis."""
-from decimal import Decimal
-import ast
-import pytest
 
+import ast
+
+from elmos_project_synthesis.archetype_generators.go_archetype_emitter import generate_go_archetype_files
+from elmos_project_synthesis.archetype_generators.python_archetype_emitter import generate_python_archetype_files
+from elmos_project_synthesis.archetype_generators.typescript_archetype_emitter import (
+    generate_typescript_archetype_files,
+)
 from elmos_project_synthesis.autonomous_intent_resolver import (
-    auto_resolve_open_questions,
     autonomous_resolve_and_approve,
     infer_domain_archetype,
 )
-from elmos_project_synthesis.archetype_generators.python_archetype_emitter import generate_python_archetype_files
-from elmos_project_synthesis.archetype_generators.go_archetype_emitter import generate_go_archetype_files
-from elmos_project_synthesis.archetype_generators.typescript_archetype_emitter import generate_typescript_archetype_files
 from elmos_project_synthesis.infrastructure_emitters.helm_chart_emitter import generate_enterprise_helm_chart
 from elmos_project_synthesis.infrastructure_emitters.terraform_infra_emitter import generate_enterprise_terraform_infra
 from elmos_project_synthesis.intake import create_draft
@@ -63,7 +63,7 @@ def test_autonomous_l5_end_to_end_synthesis():
     py_files = generate_python_archetype_files(request, archetype)
     assert "src/domain/banking_models.py" in py_files
     assert "src/api/banking_router.py" in py_files
-    for p, code in py_files.items():
+    for _p, code in py_files.items():
         assert ast.parse(code) is not None
 
     # 2. Go Archetype Emission

@@ -1,34 +1,32 @@
 """Unit and integration tests for Industrial SaaS Billing & Metered Usage Archetype."""
-from decimal import Decimal
+
 import datetime as dt
+from decimal import Decimal
+
 import pytest
 
 from elmos_project_synthesis.domain_archetypes.saas_billing_archetype import (
     BillingInterval,
-    SubscriptionStatus,
-    UsageAggregationType,
-    PricingModel,
-    InvoiceStatus,
-    TierBracket,
-    UsageEvent,
-    SubscriptionPlanAggregate,
-    UsageMeterAggregate,
-    SubscriptionAggregate,
-    InvoiceLineItem,
     InvoiceAggregate,
-    ProrationEngine,
-    TieredPricingCalculator,
-    BillingDomainError,
-    InvalidSubscriptionTransitionError,
     InvoiceFinalizedError,
+    InvoiceStatus,
+    ProrationEngine,
+    SubscriptionAggregate,
+    SubscriptionPlanAggregate,
+    SubscriptionStatus,
+    TierBracket,
+    TieredPricingCalculator,
+    UsageAggregationType,
+    UsageEvent,
+    UsageMeterAggregate,
 )
 
 
 def test_tier_bracket_validation_and_graduated_pricing():
     brackets = [
-        TierBracket(Decimal("0"), Decimal("100"), Decimal("0.10"), Decimal("0.00")),     # 0-100 @ $0.10
-        TierBracket(Decimal("100"), Decimal("500"), Decimal("0.08"), Decimal("0.00")),   # 101-500 @ $0.08
-        TierBracket(Decimal("500"), None, Decimal("0.05"), Decimal("10.00")),             # 500+ @ $0.05 + $10 flat
+        TierBracket(Decimal("0"), Decimal("100"), Decimal("0.10"), Decimal("0.00")),  # 0-100 @ $0.10
+        TierBracket(Decimal("100"), Decimal("500"), Decimal("0.08"), Decimal("0.00")),  # 101-500 @ $0.08
+        TierBracket(Decimal("500"), None, Decimal("0.05"), Decimal("10.00")),  # 500+ @ $0.05 + $10 flat
     ]
 
     calc = TieredPricingCalculator()
@@ -55,21 +53,25 @@ def test_usage_meter_deduplication_and_window_aggregation():
         aggregation_type=UsageAggregationType.SUM,
     )
 
-    t0 = dt.datetime.now(dt.timezone.utc)
+    t0 = dt.datetime.now(dt.UTC)
     ev1 = UsageEvent("e1", "t-saas", "sub-101", "api_calls", Decimal("10"), t0, "dedup-key-1")
     ev2 = UsageEvent("e2", "t-saas", "sub-101", "api_calls", Decimal("25"), t0 + dt.timedelta(minutes=1), "dedup-key-2")
-    ev_dup = UsageEvent("e3", "t-saas", "sub-101", "api_calls", Decimal("10"), t0 + dt.timedelta(minutes=2), "dedup-key-1")
+    ev_dup = UsageEvent(
+        "e3", "t-saas", "sub-101", "api_calls", Decimal("10"), t0 + dt.timedelta(minutes=2), "dedup-key-1"
+    )
 
     assert meter.ingest_event(ev1) is True
     assert meter.ingest_event(ev2) is True
-    assert meter.ingest_event(ev_dup) is False # Duplicate rejected!
+    assert meter.ingest_event(ev_dup) is False  # Duplicate rejected!
 
     total_usage = meter.calculate_window_usage(t0 - dt.timedelta(seconds=1), t0 + dt.timedelta(hours=1))
     assert total_usage == Decimal("35")
 
 
 def test_subscription_state_machine_and_proration():
-    plan_starter = SubscriptionPlanAggregate("p-start", "STARTER", "Starter Plan", Decimal("100.00"), "USD", BillingInterval.MONTHLY)
+    plan_starter = SubscriptionPlanAggregate(
+        "p-start", "STARTER", "Starter Plan", Decimal("100.00"), "USD", BillingInterval.MONTHLY
+    )
     plan_pro = SubscriptionPlanAggregate("p-pro", "PRO", "Pro Plan", Decimal("300.00"), "USD", BillingInterval.MONTHLY)
 
     sub = SubscriptionAggregate(
@@ -87,7 +89,7 @@ def test_subscription_state_machine_and_proration():
     assert sub.status == SubscriptionStatus.ACTIVE
 
     # Proration calculation: 30 day month, changing on day 15
-    now = dt.datetime.now(dt.timezone.utc)
+    now = dt.datetime.now(dt.UTC)
     t_start = now - dt.timedelta(days=15)
     t_end = now + dt.timedelta(days=15)
 
@@ -113,11 +115,11 @@ def test_invoice_aggregate_calculations_and_lifecycle():
         subscription_id="sub-101",
         invoice_number="INV-0001",
         currency="USD",
-        tax_rate=Decimal("0.10"), # 10% tax
+        tax_rate=Decimal("0.10"),  # 10% tax
     )
 
     inv.add_line("Pro Plan Monthly Base", Decimal("1"), Decimal("300.00"))
-    inv.add_line("Extra API Calls Overage", Decimal("1000"), Decimal("0.05")) # $50.00
+    inv.add_line("Extra API Calls Overage", Decimal("1000"), Decimal("0.05"))  # $50.00
     inv.add_line("Proration Credit", Decimal("1"), Decimal("-50.00"), is_proration=True)
 
     # Subtotal: 300 + 50 - 50 = $300.00

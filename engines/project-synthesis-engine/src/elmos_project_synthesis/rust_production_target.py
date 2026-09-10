@@ -19,6 +19,7 @@ Two mappings are not obvious and are load-bearing:
   HTTP client crate would add a TLS stack to a build that only ever talks to
   127.0.0.1, and every extra crate is another version to pin and audit.
 """
+
 from __future__ import annotations
 
 import json
@@ -70,9 +71,7 @@ def _production_lock(project_name: str) -> str:
     cannot produce a reproducible workspace, so it fails with a named reason
     rather than emitting a build that would resolve differently on every run.
     """
-    template = files("elmos_project_synthesis").joinpath(
-        "templates", "rust", "Cargo.production.lock"
-    )
+    template = files("elmos_project_synthesis").joinpath("templates", "rust", "Cargo.production.lock")
     try:
         lock = template.read_text(encoding="utf-8")
     except (FileNotFoundError, OSError) as error:
@@ -84,9 +83,7 @@ def _production_lock(project_name: str) -> str:
         f'name = "axum"\nversion = "{AXUM_VERSION}"',
     ):
         if marker not in lock:
-            raise ValueError(
-                "RUST_PRODUCTION_LOCK_TEMPLATE_INVALID:" + marker.split('"')[1]
-            )
+            raise ValueError("RUST_PRODUCTION_LOCK_TEMPLATE_INVALID:" + marker.split('"')[1])
     if lock.count(_LOCK_PROJECT_MARKER) != 1:
         raise ValueError("RUST_PRODUCTION_LOCK_TEMPLATE_INVALID:project-name-marker")
     return lock.replace(_LOCK_PROJECT_MARKER, project_name)
@@ -783,9 +780,7 @@ def _upsert_query(bind_values: list[str], *, sql_const: str = "UPSERT_SQL") -> s
     """
     values = ["&tenant", "&id", *bind_values]
     parameters = ", ".join(values)
-    collapsed = (
-        f"        let rows = transaction.query({sql_const}, &[{parameters}]).await?;"
-    )
+    collapsed = f"        let rows = transaction.query({sql_const}, &[{parameters}]).await?;"
     if len(collapsed) <= _RUSTFMT_MAX_WIDTH:
         return collapsed
     broken = f"            .query({sql_const}, &[{parameters}])"
@@ -834,11 +829,7 @@ def _substitute(template: str, replacements: dict[str, str]) -> str:
         rendered = rendered.replace(token, value)
     if "__" in rendered:
         leftovers = sorted(
-            {
-                fragment
-                for fragment in rendered.split()
-                if fragment.startswith("__") and fragment.endswith("__")
-            }
+            {fragment for fragment in rendered.split() if fragment.startswith("__") and fragment.endswith("__")}
         )
         if leftovers:
             raise ValueError("RUST_TEMPLATE_TOKEN_UNRESOLVED:" + ",".join(leftovers))
@@ -847,16 +838,12 @@ def _substitute(template: str, replacements: dict[str, str]) -> str:
 
 def _security_source(request: SynthesisRequest) -> str:
     if request.auth_mode == "jwt":
-        key_source = _substitute(
-            _SECURITY_JWT, {"__ENV_JWT_SECRET_FILE__": ENV_JWT_SECRET_FILE}
-        )
+        key_source = _substitute(_SECURITY_JWT, {"__ENV_JWT_SECRET_FILE__": ENV_JWT_SECRET_FILE})
         oidc_imports = ""
         # rustfmt sorts a contiguous import block, so the OIDC-only import has
         # to be emitted in its already-sorted position rather than appended.
     else:
-        key_source = _substitute(
-            _SECURITY_OIDC, {"__ENV_OIDC_JWKS_FILE__": ENV_OIDC_JWKS_FILE}
-        )
+        key_source = _substitute(_SECURITY_OIDC, {"__ENV_OIDC_JWKS_FILE__": ENV_OIDC_JWKS_FILE})
         oidc_imports = "use serde_json::Value;\n"
     return _substitute(
         _SECURITY_SOURCE,
@@ -919,13 +906,10 @@ fn f64_to_decimal(value: f64) -> Result<Decimal, StoreError> {{
         entity_type = pascal(entity.singular)
         prefix = entity.singular.upper().replace("-", "_")
         sql = statements[entity.singular]
-        upsert_fields = "\n".join(
-            f"    pub {field.name}: {_rust_type(field)}," for field in entity.fields
-        )
+        upsert_fields = "\n".join(f"    pub {field.name}: {_rust_type(field)}," for field in entity.fields)
         record_fields = upsert_fields
         row_assignments = ["id: row.get(0)"] + [
-            f"{field.name}: {_row_read(field, index + 1)}"
-            for index, field in enumerate(entity.fields)
+            f"{field.name}: {_row_read(field, index + 1)}" for index, field in enumerate(entity.fields)
         ]
         bind_values = [_bind_expression(field) for field in entity.fields]
         sql_consts = "\n".join(
@@ -954,7 +938,9 @@ fn f64_to_decimal(value: f64) -> Result<Decimal, StoreError> {{
                 "        let records =\n"
                 f"            rows.iter().map({entity_type}::from_row).collect::<Result<Vec<_>, _>>()?;"
             )
-        find_sig = f"    pub async fn find(&self, tenant: &str, id: Uuid) -> Result<Option<{entity_type}>, StoreError> {{"
+        find_sig = (
+            f"    pub async fn find(&self, tenant: &str, id: Uuid) -> Result<Option<{entity_type}>, StoreError> {{"
+        )
         if len(find_sig) > 100:
             find_sig = (
                 "    pub async fn find(\n"
@@ -1074,12 +1060,10 @@ def _application_source(request: SynthesisRequest) -> str:
     from .models import pascal
 
     imports = ", ".join(
-        f"{pascal(entity.singular)}Store, {pascal(entity.singular)}Upsert"
-        for entity in request.entities
+        f"{pascal(entity.singular)}Store, {pascal(entity.singular)}Upsert" for entity in request.entities
     )
     state_fields = "\n    ".join(
-        f"pub {entity.singular}_store: {pascal(entity.singular)}Store,"
-        for entity in request.entities
+        f"pub {entity.singular}_store: {pascal(entity.singular)}Store," for entity in request.entities
     )
     path_consts = [_string_const("SERVICE_NAME", json.dumps(request.project_name))]
     handlers: list[str] = []
@@ -1097,18 +1081,18 @@ def _application_source(request: SynthesisRequest) -> str:
         item = f"/{entity.plural}/{{id}}"
         path_consts.append(_string_const(f"{prefix.upper()}_COLLECTION_PATH", json.dumps(collection)))
         path_consts.append(_string_const(f"{prefix.upper()}_ITEM_PATH", json.dumps(item)))
-        checks = "\n    ".join(
-            f"    reject_blank(&payload.{field.name})?;"
-            for field in entity.fields
-            if field.required and field.type == "string"
-        ) or "    // no blank-string constraints declared"
-        save_line = (
-            f"    let record = state.{prefix}_store.save(&tenant, id, payload).await.map_err(internal)?;"
+        checks = (
+            "\n    ".join(
+                f"    reject_blank(&payload.{field.name})?;"
+                for field in entity.fields
+                if field.required and field.type == "string"
+            )
+            or "    // no blank-string constraints declared"
         )
+        save_line = f"    let record = state.{prefix}_store.save(&tenant, id, payload).await.map_err(internal)?;"
         if len(save_line) > 100:
             save_stmt = (
-                "    let record =\n"
-                f"        state.{prefix}_store.save(&tenant, id, payload).await.map_err(internal)?;"
+                f"    let record =\n        state.{prefix}_store.save(&tenant, id, payload).await.map_err(internal)?;"
             )
         else:
             save_stmt = save_line
@@ -1161,9 +1145,7 @@ async fn delete_{entity.singular}(
 }}
 """
         )
-        routes.append(
-            f".route({prefix.upper()}_COLLECTION_PATH, get(list_{entity.plural}))"
-        )
+        routes.append(f".route({prefix.upper()}_COLLECTION_PATH, get(list_{entity.plural}))")
         item_route = (
             f".route({prefix.upper()}_ITEM_PATH, "
             f"get(get_{entity.singular}).put(put_{entity.singular}).delete(delete_{entity.singular}))"
@@ -1276,9 +1258,7 @@ def _test_source(request: SynthesisRequest, port: int) -> str:
         ensure_ascii=False,
     )
     if request.auth_mode == "jwt":
-        signer = _substitute(
-            _TEST_JWT_SIGNER, {"__ENV_JWT_SECRET_FILE__": ENV_JWT_SECRET_FILE}
-        )
+        signer = _substitute(_TEST_JWT_SIGNER, {"__ENV_JWT_SECRET_FILE__": ENV_JWT_SECRET_FILE})
     else:
         signer = _substitute(
             _TEST_OIDC_SIGNER,
@@ -1292,9 +1272,7 @@ def _test_source(request: SynthesisRequest, port: int) -> str:
             "__TEST_CONSTS__": "\n".join(
                 (
                     _string_const("SAMPLE_BODY", json.dumps(body)),
-                    _string_const(
-                        "RECORD_ID", '"6f1d9c52-4f0a-4c2e-9a58-6f4b2c8d1e70"'
-                    ),
+                    _string_const("RECORD_ID", '"6f1d9c52-4f0a-4c2e-9a58-6f4b2c8d1e70"'),
                     _string_const("COLLECTION_PATH", json.dumps(f"/{entity.plural}")),
                 )
             ),
@@ -1366,9 +1344,7 @@ def render_rust_production(request: SynthesisRequest, port: int) -> dict[str, st
             """
         ),
         "src/lib.rs": _LIB_SOURCE.lstrip("\n"),
-        "src/main.rs": _substitute(
-            _MAIN_SOURCE, {"__CRATE__": crate, "__PORT__": str(port)}
-        ),
+        "src/main.rs": _substitute(_MAIN_SOURCE, {"__CRATE__": crate, "__PORT__": str(port)}),
         "src/security.rs": _security_source(request),
         "src/store.rs": _store_source(request),
         "src/application.rs": _application_source(request),

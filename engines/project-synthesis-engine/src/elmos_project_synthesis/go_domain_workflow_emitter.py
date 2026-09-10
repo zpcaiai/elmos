@@ -3,16 +3,15 @@
 Generates complete industrial-grade Go domain models, value objects, concurrency-safe state machines,
 and distributed transaction coordinators.
 """
+
 from __future__ import annotations
 
-from typing import Dict
 from .models import SynthesisRequest, pascal
 
 
-def generate_go_domain_workflow_files(request: SynthesisRequest) -> Dict[str, str]:
+def generate_go_domain_workflow_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate industrial-grade DDD, FSM, and Distributed Transaction files for Go."""
-    files: Dict[str, str] = {}
-    app_name = request.project_name.lower().replace("_", "-")
+    files: dict[str, str] = {}
     entity = request.entities[0] if request.entities else None
     entity_name = pascal(entity.singular) if entity else "Order"
 
@@ -89,25 +88,25 @@ func NewAddress(street, city, state, postal, country string) (*Address, error) {
 """
 
     # 2. Domain Events
-    files["domain/events.go"] = f"""package domain
+    files["domain/events.go"] = """package domain
 
 import (
 \t"time"
 \t"github.com/google/uuid"
 )
 
-type DomainEvent struct {{
+type DomainEvent struct {
 \tEventID       string                 `json:"event_id"`
 \tAggregateType string                 `json:"aggregate_type"`
 \tAggregateID   string                 `json:"aggregate_id"`
 \tEventType     string                 `json:"event_type"`
 \tOccurredAt    time.Time              `json:"occurred_at"`
-\tPayload       map[string]interface{{}} `json:"payload"`
+\tPayload       map[string]interface{} `json:"payload"`
 \tTenantID      string                 `json:"tenant_id"`
-}}
+}
 
-func NewDomainEvent(aggregateType, aggregateID, eventType string, payload map[string]interface{{}}) DomainEvent {{
-\treturn DomainEvent{{
+func NewDomainEvent(aggregateType, aggregateID, eventType string, payload map[string]interface{}) DomainEvent {
+\treturn DomainEvent{
 \t\tEventID:       "evt-" + uuid.New().String()[:16],
 \t\tAggregateType: aggregateType,
 \t\tAggregateID:   aggregateID,
@@ -115,8 +114,8 @@ func NewDomainEvent(aggregateType, aggregateID, eventType string, payload map[st
 \t\tOccurredAt:    time.Now().UTC(),
 \t\tPayload:       payload,
 \t\tTenantID:      "default",
-\t}}
-}}
+\t}
+}
 """
 
     # 3. Domain Aggregate Root & Invariants

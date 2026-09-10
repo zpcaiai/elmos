@@ -7,6 +7,7 @@ Extends the baseline starter contract with industrial-grade microservice specifi
 4. Entity governance with automatic audit columns (created_at, updated_at, created_by) and optimistic locking (version).
 5. Comprehensive SRE observability with 3-tier health probes (/health/live, /health/ready, /metrics) and graceful shutdown.
 """
+
 from __future__ import annotations
 
 import datetime as dt
@@ -15,7 +16,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
-from .models import EntitySpec, RelationSpec, SynthesisRequest
+from .models import EntitySpec, RelationSpec
 
 # SRE & Observability constants
 HEALTH_LIVE_PATH = "/health/live"
@@ -83,8 +84,8 @@ class SagaExecutionRecord:
     status: Literal["PENDING", "RUNNING", "COMPLETED", "COMPENSATING", "COMPENSATED", "FAILED"]
     payload: dict[str, Any]
     error: str | None = None
-    created_at: str = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc).isoformat())
-    updated_at: str = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc).isoformat())
+    created_at: str = field(default_factory=lambda: dt.datetime.now(dt.UTC).isoformat())
+    updated_at: str = field(default_factory=lambda: dt.datetime.now(dt.UTC).isoformat())
 
 
 @dataclass(frozen=True)
@@ -99,7 +100,7 @@ class OutboxEvent:
     payload: dict[str, Any]
     status: OutboxStatus = "PENDING"
     retry_count: int = 0
-    created_at: str = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc).isoformat())
+    created_at: str = field(default_factory=lambda: dt.datetime.now(dt.UTC).isoformat())
     published_at: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
@@ -270,8 +271,7 @@ def enterprise_entity_sql(
     )
 
     count_sql = (
-        f"SELECT COUNT(*) FROM {table_name} "
-        f"WHERE {quote}tenant_id{quote} = {p} AND {quote}is_deleted{quote} = FALSE"
+        f"SELECT COUNT(*) FROM {table_name} WHERE {quote}tenant_id{quote} = {p} AND {quote}is_deleted{quote} = FALSE"
     )
 
     # Optimistic locking update (Compare-And-Swap on version)
@@ -290,7 +290,9 @@ def enterprise_entity_sql(
         # If this entity is the child in many-to-one or one-to-many
         if rel.target == entity.singular and rel.kind == "one-to-many":
             fk_col = rel.target_field or f"{rel.source}_id"
-            parent_table = f"`{rel.source}s`" if is_mysql else (f'"{rel.source}s"' if is_sqlite else f'"app"."{rel.source}s"')
+            parent_table = (
+                f"`{rel.source}s`" if is_mysql else (f'"{rel.source}s"' if is_sqlite else f'"app"."{rel.source}s"')
+            )
             fk_ddl = (
                 f"ALTER TABLE {table_name} ADD CONSTRAINT {quote}fk_{entity.singular}_{rel.source}{quote} "
                 f"FOREIGN KEY ({quote}{fk_col}{quote}) REFERENCES {parent_table}({quote}id{quote}) ON DELETE CASCADE;"
@@ -300,9 +302,13 @@ def enterprise_entity_sql(
             fk_indexes.append(fk_idx)
         elif rel.source == entity.singular and rel.kind == "one-to-many":
             # This entity is the parent, cascade delete on children
-            child_table = f"`{rel.target}s`" if is_mysql else (f'"{rel.target}s"' if is_sqlite else f'"app"."{rel.target}s"')
+            child_table = (
+                f"`{rel.target}s`" if is_mysql else (f'"{rel.target}s"' if is_sqlite else f'"app"."{rel.target}s"')
+            )
             fk_col = rel.target_field or f"{entity.singular}_id"
-            cascade_sql = f"DELETE FROM {child_table} WHERE {quote}tenant_id{quote} = {p} AND {quote}{fk_col}{quote} = {p}"
+            cascade_sql = (
+                f"DELETE FROM {child_table} WHERE {quote}tenant_id{quote} = {p} AND {quote}{fk_col}{quote} = {p}"
+            )
             cascade_deletes.append(cascade_sql)
 
     return EnterpriseEntitySql(
@@ -321,4 +327,3 @@ def enterprise_entity_sql(
         foreign_key_indexes=tuple(fk_indexes),
         cascade_delete_sqls=tuple(cascade_deletes),
     )
-

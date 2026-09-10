@@ -3,31 +3,32 @@
 Provides multi-cycle subscription lifecycles, tiered/graduated usage metering,
 sub-cent precision proration calculation, and multi-currency invoice generation.
 """
+
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 import datetime as dt
-from decimal import Decimal, ROUND_HALF_EVEN, ROUND_HALF_UP
 import enum
-import hashlib
-import json
-import re
-from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
-
+from collections.abc import Sequence
+from dataclasses import dataclass, field
+from decimal import ROUND_HALF_EVEN, ROUND_HALF_UP, Decimal
+from typing import Any
 
 # ==============================================================================
 # 1. Enums and Value Objects
 # ==============================================================================
 
-class BillingInterval(str, enum.Enum):
+
+class BillingInterval(enum.StrEnum):
     """Frequency of recurring subscription billing cycles."""
+
     MONTHLY = "MONTHLY"
     QUARTERLY = "QUARTERLY"
     ANNUAL = "ANNUAL"
 
 
-class SubscriptionStatus(str, enum.Enum):
+class SubscriptionStatus(enum.StrEnum):
     """SaaS subscription lifecycle states."""
+
     TRIALING = "TRIALING"
     ACTIVE = "ACTIVE"
     PAST_DUE = "PAST_DUE"
@@ -36,24 +37,27 @@ class SubscriptionStatus(str, enum.Enum):
     UNPAID = "UNPAID"
 
 
-class UsageAggregationType(str, enum.Enum):
+class UsageAggregationType(enum.StrEnum):
     """Strategy for aggregating high-frequency usage events over a billing window."""
-    SUM = "SUM"                    # Total cumulative consumption (e.g. API requests, gigabytes transferred)
-    MAX = "MAX"                    # High-water peak mark (e.g. peak concurrent storage, peak memory)
-    LAST = "LAST"                  # Most recent gauge value at period close (e.g. active seat count)
+
+    SUM = "SUM"  # Total cumulative consumption (e.g. API requests, gigabytes transferred)
+    MAX = "MAX"  # High-water peak mark (e.g. peak concurrent storage, peak memory)
+    LAST = "LAST"  # Most recent gauge value at period close (e.g. active seat count)
     UNIQUE_COUNT = "UNIQUE_COUNT"  # Cardinality of unique identifiers (e.g. active daily unique users)
 
 
-class PricingModel(str, enum.Enum):
+class PricingModel(enum.StrEnum):
     """Pricing strategy applied to plan base and usage components."""
+
     FLAT_FEE = "FLAT_FEE"
     PER_UNIT = "PER_UNIT"
-    TIERED_VOLUME = "TIERED_VOLUME"        # Whole volume priced at single tier bracket
+    TIERED_VOLUME = "TIERED_VOLUME"  # Whole volume priced at single tier bracket
     TIERED_GRADUATED = "TIERED_GRADUATED"  # Graduated brackets (marginal tax bracket style)
 
 
-class InvoiceStatus(str, enum.Enum):
+class InvoiceStatus(enum.StrEnum):
     """Invoice lifecycle states conforming to enterprise billing requirements."""
+
     DRAFT = "DRAFT"
     FINALIZED = "FINALIZED"
     PAID = "PAID"
@@ -64,8 +68,9 @@ class InvoiceStatus(str, enum.Enum):
 @dataclass(frozen=True)
 class TierBracket:
     """Bracket specification for volume and graduated tiered pricing."""
+
     start_qty: Decimal
-    end_qty: Optional[Decimal]      # None represents unbounded infinity (last bracket)
+    end_qty: Decimal | None  # None represents unbounded infinity (last bracket)
     unit_price: Decimal
     flat_fee: Decimal = Decimal("0.00")
 
@@ -79,6 +84,7 @@ class TierBracket:
 @dataclass(frozen=True)
 class UsageEvent:
     """Raw immutable usage telemetry event ingested from microservices."""
+
     event_id: str
     tenant_id: str
     subscription_id: str
@@ -96,32 +102,37 @@ class UsageEvent:
 # 2. Aggregates and Invariants
 # ==============================================================================
 
+
 class BillingDomainError(Exception):
     """Base domain exception for SaaS billing operations."""
+
     pass
 
 
 class InvalidSubscriptionTransitionError(BillingDomainError):
     """Raised on illegal state machine transitions."""
+
     pass
 
 
 class InvoiceFinalizedError(BillingDomainError):
     """Raised when attempting to modify a finalized or paid invoice."""
+
     pass
 
 
 @dataclass
 class SubscriptionPlanAggregate:
     """SaaS subscription catalog plan definition."""
+
     plan_id: str
     code: str
     name: str
     base_fee: Decimal
     currency: str
     interval: BillingInterval
-    included_units: Dict[str, Decimal] = field(default_factory=dict)
-    tier_brackets: Dict[str, List[TierBracket]] = field(default_factory=dict)
+    included_units: dict[str, Decimal] = field(default_factory=dict)
+    tier_brackets: dict[str, list[TierBracket]] = field(default_factory=dict)
     active: bool = True
     version: int = 1
 
@@ -129,13 +140,14 @@ class SubscriptionPlanAggregate:
 @dataclass
 class UsageMeterAggregate:
     """Aggregates incoming usage streams with deduplication windowing."""
+
     meter_id: str
     tenant_id: str
     subscription_id: str
     metric_name: str
     aggregation_type: UsageAggregationType
-    processed_dedup_keys: Set[str] = field(default_factory=set)
-    events: List[UsageEvent] = field(default_factory=list)
+    processed_dedup_keys: set[str] = field(default_factory=set)
+    events: list[UsageEvent] = field(default_factory=list)
     version: int = 1
 
     def ingest_event(self, event: UsageEvent) -> bool:
@@ -171,17 +183,18 @@ class UsageMeterAggregate:
 @dataclass
 class SubscriptionAggregate:
     """Core tenant subscription aggregate root."""
+
     subscription_id: str
     tenant_id: str
     customer_id: str
     plan: SubscriptionPlanAggregate
     status: SubscriptionStatus = SubscriptionStatus.ACTIVE
-    current_period_start: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
-    current_period_end: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc) + dt.timedelta(days=30))
+    current_period_start: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
+    current_period_end: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC) + dt.timedelta(days=30))
     cancel_at_period_end: bool = False
     active_seats: int = 1
     version: int = 1
-    updated_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+    updated_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
 
     def activate_trial(self, trial_days: int = 14) -> None:
         self.status = SubscriptionStatus.TRIALING
@@ -193,7 +206,7 @@ class SubscriptionAggregate:
             raise InvalidSubscriptionTransitionError(f"Cannot reactivate canceled subscription {self.subscription_id}")
         self.status = SubscriptionStatus.ACTIVE
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
     def mark_past_due(self) -> None:
         if self.status != SubscriptionStatus.ACTIVE:
@@ -204,7 +217,7 @@ class SubscriptionAggregate:
     def cancel_immediately(self) -> None:
         self.status = SubscriptionStatus.CANCELED
         self.version += 1
-        self.updated_at = dt.datetime.now(dt.timezone.utc)
+        self.updated_at = dt.datetime.now(dt.UTC)
 
     def set_cancel_at_period_end(self, cancel: bool) -> None:
         self.cancel_at_period_end = cancel
@@ -214,6 +227,7 @@ class SubscriptionAggregate:
 @dataclass
 class InvoiceLineItem:
     """Detailed debit or credit item on a customer invoice."""
+
     line_id: str
     description: str
     quantity: Decimal
@@ -221,12 +235,13 @@ class InvoiceLineItem:
     amount: Decimal
     currency: str
     is_proration: bool = False
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class InvoiceAggregate:
     """Customer billing invoice aggregate root."""
+
     invoice_id: str
     tenant_id: str
     customer_id: str
@@ -235,13 +250,13 @@ class InvoiceAggregate:
     currency: str
     status: InvoiceStatus = InvoiceStatus.DRAFT
     due_date: dt.date = field(default_factory=lambda: dt.date.today() + dt.timedelta(days=14))
-    line_items: List[InvoiceLineItem] = field(default_factory=list)
+    line_items: list[InvoiceLineItem] = field(default_factory=list)
     tax_rate: Decimal = Decimal("0.00")
     discount_amount: Decimal = Decimal("0.00")
     amount_paid: Decimal = Decimal("0.00")
     version: int = 1
-    created_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
-    finalized_at: Optional[dt.datetime] = None
+    created_at: dt.datetime = field(default_factory=lambda: dt.datetime.now(dt.UTC))
+    finalized_at: dt.datetime | None = None
 
     def add_line(
         self,
@@ -249,7 +264,7 @@ class InvoiceAggregate:
         quantity: Decimal,
         unit_price: Decimal,
         is_proration: bool = False,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> InvoiceLineItem:
         if self.status != InvoiceStatus.DRAFT:
             raise InvoiceFinalizedError(f"Cannot add lines to invoice in status {self.status}")
@@ -293,7 +308,7 @@ class InvoiceAggregate:
             raise BillingDomainError("Cannot finalize empty invoice")
 
         self.status = InvoiceStatus.FINALIZED
-        self.finalized_at = dt.datetime.now(dt.timezone.utc)
+        self.finalized_at = dt.datetime.now(dt.UTC)
         self.version += 1
 
     def record_payment(self, payment_amount: Decimal, transaction_id: str) -> None:
@@ -310,6 +325,7 @@ class InvoiceAggregate:
 # 3. Domain Services: Proration Engine & Graduated Pricing
 # ==============================================================================
 
+
 class ProrationEngine:
     """Calculates exact sub-cent proration credits and charges for mid-cycle plan changes."""
 
@@ -320,7 +336,7 @@ class ProrationEngine:
         period_start: dt.datetime,
         period_end: dt.datetime,
         change_timestamp: dt.datetime,
-    ) -> Tuple[Decimal, Decimal, Decimal]:
+    ) -> tuple[Decimal, Decimal, Decimal]:
         """Returns: (unused_old_credit, new_charge_remaining, net_adjustment)."""
         total_duration = (period_end - period_start).total_seconds()
         remaining_duration = (period_end - change_timestamp).total_seconds()

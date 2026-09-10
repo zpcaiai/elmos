@@ -1,8 +1,6 @@
-"""Tests for End-to-End Multi-Language Enterprise Project Synthesis (Python, Go, TypeScript).
-"""
-from __future__ import annotations
+"""Tests for End-to-End Multi-Language Enterprise Project Synthesis (Python, Go, TypeScript)."""
 
-import pytest
+from __future__ import annotations
 
 from elmos_project_synthesis.enterprise_go_target import generate_enterprise_go_files
 from elmos_project_synthesis.enterprise_production_target import (
@@ -276,8 +274,6 @@ def test_php_enterprise_synthesis_includes_ddd_and_workflow():
 
 
 def test_all_8_languages_via_enterprise_target_router():
-    from elmos_project_synthesis.enterprise_production_target import generate_enterprise_target_files
-
     req = _sample_synthesis_request()
     for lang in ["python", "go", "typescript", "java", "csharp", "rust", "kotlin", "php"]:
         generated = generate_enterprise_target_files(req, language=lang)

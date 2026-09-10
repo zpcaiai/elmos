@@ -20,148 +20,121 @@ Calculates final scores across all 4 dimensions:
 
 Emits cryptographic JSON evidence to evidence/generation_b46_b95_100pct_industrial_certification.json.
 """
+
 from __future__ import annotations
 
 import argparse
 import datetime as dt
-from decimal import Decimal
 import hashlib
 import http.server
 import json
-from pathlib import Path
 import subprocess
 import sys
 import threading
 import time
-from typing import Any, Dict, List
+from decimal import Decimal
+from pathlib import Path
+from typing import Any
+
 import yaml
 
-# Engine imports
-from elmos_project_synthesis.intake import approve_request, create_draft
-from elmos_project_synthesis.models import SynthesisRequest
-from elmos_project_synthesis.domain_models import (
-    Money,
-    Address,
-    GeoLocation,
-    Email,
-    Quantity,
-    DateRange,
-    AggregateRoot,
-    InvariantEvaluator,
-    InvariantRuleSpec,
-    DomainInvariantViolationError,
-)
-from elmos_project_synthesis.workflow_state_machine import (
-    StateMachineEngine,
-    StateSpec,
-    EventSpec,
-    TransitionSpec,
-    WorkflowFsmSpec,
-)
-from elmos_project_synthesis.distributed_transactions import (
-    SagaOrchestrator,
-    SagaStepDef,
-    OutboxRecord,
-    OutboxStore,
-    OutboxDispatcher,
-    TccCoordinator,
-    DistributedLockManager,
-)
-from elmos_project_synthesis.rootless_container_sandbox import (
-    LinuxRootlessSandboxRunner,
-    RootlessSandboxDetector,
-    SandboxSecurityConfig,
-)
-from elmos_project_synthesis.k8s_deployment_controller import (
-    LocalK8sDetector,
-    generate_enterprise_k8s_manifests,
-    K8sDeploymentController,
-)
-from elmos_project_synthesis.enterprise_production_target import (
-    generate_enterprise_python_files,
-    generate_enterprise_target_files,
-)
-from elmos_project_synthesis.enterprise_go_target import generate_enterprise_go_files
-from elmos_project_synthesis.enterprise_typescript_target import generate_enterprise_typescript_files
-from elmos_project_synthesis.enterprise_java_target import generate_enterprise_java_files
-from elmos_project_synthesis.enterprise_dotnet_target import generate_enterprise_dotnet_files
-from elmos_project_synthesis.enterprise_polyglot_targets import (
-    generate_enterprise_rust_files,
-    generate_enterprise_kotlin_files,
-    generate_enterprise_php_files,
-)
-from elmos_project_synthesis.autonomous_intent_resolver import (
-    auto_resolve_open_questions,
-    autonomous_resolve_and_approve,
-)
 from elmos_project_synthesis.autonomic_healing_pipeline import (
     AutonomicHealingPipeline,
     ContainerPackagingVerifier,
-    SelfHealingReceipt,
 )
-from elmos_project_synthesis.specialized_language_harness import (
-    SpecializedEvaluationSummary,
-    run_specialized_language_evaluation,
+from elmos_project_synthesis.autonomous_intent_resolver import (
+    autonomous_resolve_and_approve,
+)
+from elmos_project_synthesis.distributed_transactions import (
+    DistributedLockManager,
+    OutboxDispatcher,
+    OutboxRecord,
+    OutboxStore,
+    SagaOrchestrator,
+    SagaStepDef,
 )
 from elmos_project_synthesis.domain_archetypes.banking_ledger_archetype import (
-    Currency,
-    MoneyAmount,
-    AccountType,
-    NormalBalance,
     AccountAggregate,
-    JournalEntryAggregate,
-    PostingRuleEngine,
+    AccountType,
+    Currency,
     LedgerReconciliationService,
-)
-from elmos_project_synthesis.domain_archetypes.supply_chain_archetype import (
-    StorageZoneType,
-    InventoryStatus,
-    FulfillmentFsmState,
-    Sku,
-    BinLocation,
-    LotNumber,
-    PhysicalDimension,
-    PhysicalWeight,
-    InventoryBinAggregate,
-    StockTransferAggregate,
-    FulfillmentOrderAggregate,
+    PostingRuleEngine,
 )
 from elmos_project_synthesis.domain_archetypes.saas_billing_archetype import (
-    BillingInterval,
-    SubscriptionStatus,
-    UsageAggregationType,
-    PricingModel,
-    UsageEvent,
-    SubscriptionPlanAggregate,
-    UsageMeterAggregate,
-    SubscriptionAggregate,
-    InvoiceAggregate,
     ProrationEngine,
-    TieredPricingCalculator,
+    UsageAggregationType,
+    UsageEvent,
+    UsageMeterAggregate,
 )
-from elmos_project_synthesis.messaging_infrastructure.messaging_middleware_emitter import (
-    MessageDeliveryStatus,
-    ConsumedMessage,
-    IdempotentDeduplicationStore,
-    ExponentialBackoffWithJitter,
-    DeadLetterQueueManager,
-    ResilientMessageConsumerPipeline,
+from elmos_project_synthesis.domain_archetypes.supply_chain_archetype import (
+    BinLocation,
+    FulfillmentFsmState,
+    FulfillmentOrderAggregate,
+    InventoryBinAggregate,
+    LotNumber,
+    Sku,
+)
+from elmos_project_synthesis.domain_models import (
+    Address,
+    AggregateRoot,
+    DateRange,
+    Email,
+    GeoLocation,
+    InvariantEvaluator,
+    InvariantRuleSpec,
+    Money,
+    Quantity,
+)
+from elmos_project_synthesis.enterprise_production_target import (
+    generate_enterprise_target_files,
+)
+from elmos_project_synthesis.infrastructure_emitters.helm_chart_emitter import generate_enterprise_helm_chart
+from elmos_project_synthesis.infrastructure_emitters.terraform_infra_emitter import generate_enterprise_terraform_infra
+
+# Engine imports
+from elmos_project_synthesis.intake import approve_request, create_draft
+from elmos_project_synthesis.k8s_deployment_controller import (
+    K8sDeploymentController,
+    LocalK8sDetector,
+    generate_enterprise_k8s_manifests,
 )
 from elmos_project_synthesis.messaging_infrastructure.distributed_cache_lock_emitter import (
     MockRedisState,
     RedisClusterLockManager,
     XFetchCacheStampedeGuard,
 )
-from elmos_project_synthesis.infrastructure_emitters.helm_chart_emitter import generate_enterprise_helm_chart
-from elmos_project_synthesis.infrastructure_emitters.terraform_infra_emitter import generate_enterprise_terraform_infra
+from elmos_project_synthesis.messaging_infrastructure.messaging_middleware_emitter import (
+    ConsumedMessage,
+    DeadLetterQueueManager,
+    ExponentialBackoffWithJitter,
+    IdempotentDeduplicationStore,
+    MessageDeliveryStatus,
+    ResilientMessageConsumerPipeline,
+)
+from elmos_project_synthesis.models import SynthesisRequest
+from elmos_project_synthesis.rootless_container_sandbox import (
+    LinuxRootlessSandboxRunner,
+    RootlessSandboxDetector,
+    SandboxSecurityConfig,
+)
+from elmos_project_synthesis.specialized_language_harness import (
+    run_specialized_language_evaluation,
+)
+from elmos_project_synthesis.workflow_state_machine import (
+    EventSpec,
+    StateMachineEngine,
+    StateSpec,
+    TransitionSpec,
+    WorkflowFsmSpec,
+)
 
 
-def run_command(cmd: List[str], cwd: Path | None = None) -> tuple[int, str]:
+def run_command(cmd: list[str], cwd: Path | None = None) -> tuple[int, str]:
     res = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
     return res.returncode, res.stdout + res.stderr
 
 
-def verify_ddd_engine() -> Dict[str, Any]:
+def verify_ddd_engine() -> dict[str, Any]:
     print("  [1/9] Verifying DDD Domain Engine & Invariants...")
     m1 = Money(amount=Decimal("100.50"), currency="USD")
     m2 = Money(amount=Decimal("49.50"), currency="USD")
@@ -196,7 +169,7 @@ def verify_ddd_engine() -> Dict[str, Any]:
 
     # Aggregate Root & Invariants
     agg = AggregateRoot(aggregate_id="ord-9988", tenant_id="tenant-acme")
-    event = agg.record_event(
+    _event = agg.record_event(
         event_type="OrderCreated",
         payload={"order_id": "ord-9988", "total": "150.00"},
     )
@@ -238,7 +211,7 @@ def verify_ddd_engine() -> Dict[str, Any]:
     }
 
 
-def verify_fsm_engine() -> Dict[str, Any]:
+def verify_fsm_engine() -> dict[str, Any]:
     print("  [2/9] Verifying Workflow State Machine (FSM) Engine...")
     states = (
         StateSpec(name="CREATED", is_initial=True),
@@ -311,7 +284,7 @@ def verify_fsm_engine() -> Dict[str, Any]:
             entity_state={"status": "PAYMENT_PENDING"},
             event_payload={"payment_authorized": False},
         )
-        assert False, "Should have raised FsmGuardViolationError"
+        raise AssertionError("Should have raised FsmGuardViolationError")
     except Exception as exc:
         assert "Guard violation" in str(exc)
 
@@ -330,24 +303,40 @@ def verify_fsm_engine() -> Dict[str, Any]:
     }
 
 
-def verify_distributed_transactions() -> Dict[str, Any]:
+def verify_distributed_transactions() -> dict[str, Any]:
     print("  [3/9] Verifying Distributed Transactions (Saga / Outbox / Fencing Lock)...")
 
     # 1. Saga Orchestration with LIFO compensation
-    actions_run: List[str] = []
-    compensations_run: List[str] = []
+    actions_run: list[str] = []
+    compensations_run: list[str] = []
 
-    def f1(ctx): actions_run.append("f1"); return {"f1": True}
-    def c1(ctx): compensations_run.append("c1")
-    def f2(ctx): actions_run.append("f2"); return {"f2": True}
-    def c2(ctx): compensations_run.append("c2")
-    def f3_fail(ctx): actions_run.append("f3_fail"); raise RuntimeError("f3 failed")
-    def c3(ctx): compensations_run.append("c3")
+    def f1(ctx):
+        actions_run.append("f1")
+        return {"f1": True}
+
+    def c1(ctx):
+        compensations_run.append("c1")
+
+    def f2(ctx):
+        actions_run.append("f2")
+        return {"f2": True}
+
+    def c2(ctx):
+        compensations_run.append("c2")
+
+    def f3_fail(ctx):
+        actions_run.append("f3_fail")
+        raise RuntimeError("f3 failed")
+
+    def c3(ctx):
+        compensations_run.append("c3")
 
     steps = [
         SagaStepDef(step_id="s1", name="reserve_inventory", forward_action=f1, compensation_action=c1, max_retries=1),
         SagaStepDef(step_id="s2", name="authorize_payment", forward_action=f2, compensation_action=c2, max_retries=1),
-        SagaStepDef(step_id="s3", name="confirm_delivery", forward_action=f3_fail, compensation_action=c3, max_retries=1),
+        SagaStepDef(
+            step_id="s3", name="confirm_delivery", forward_action=f3_fail, compensation_action=c3, max_retries=1
+        ),
     ]
     saga = SagaOrchestrator(saga_name="saga-order-checkout-001", steps=steps)
     res = saga.execute(initial_context={"order_id": "ord-123"})
@@ -368,7 +357,9 @@ def verify_distributed_transactions() -> Dict[str, Any]:
     )
     store.insert(ev)
     dispatched_list = []
-    dispatcher = OutboxDispatcher(store, publisher=lambda r: (dispatched_list.append(r.event_id), True)[1], batch_size=10)
+    dispatcher = OutboxDispatcher(
+        store, publisher=lambda r: (dispatched_list.append(r.event_id), True)[1], batch_size=10
+    )
     published_cnt, failed_cnt = dispatcher.dispatch_batch()
     assert published_cnt == 1 and failed_cnt == 0 and dispatched_list == ["evt-001"]
 
@@ -388,7 +379,7 @@ def verify_distributed_transactions() -> Dict[str, Any]:
     }
 
 
-def verify_rootless_sandbox() -> Dict[str, Any]:
+def verify_rootless_sandbox() -> dict[str, Any]:
     print("  [4/9] Verifying Linux Rootless Container Sandbox & Hermetic Confinement...")
     detector = RootlessSandboxDetector()
     backends = detector.detect_backends()
@@ -403,7 +394,9 @@ def verify_rootless_sandbox() -> Dict[str, Any]:
         cpus=1.0,
     )
     runner = LinuxRootlessSandboxRunner(config=config)
-    exec_res = runner.run([sys.executable, "-c", "import sys; sys.stdout.write('SANDBOX_OK')"], host_workspace_path=Path("."))
+    exec_res = runner.run(
+        [sys.executable, "-c", "import sys; sys.stdout.write('SANDBOX_OK')"], host_workspace_path=Path(".")
+    )
     assert exec_res.exit_code == 0
     assert "SANDBOX_OK" in exec_res.stdout
     assert exec_res.security_verifications["cap_drop_all"] is True
@@ -439,7 +432,7 @@ class _MockHealthHandler(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-Type", "text/plain")
             self.end_headers()
-            self.wfile.write(b'http_requests_total 42\n')
+            self.wfile.write(b"http_requests_total 42\n")
         else:
             self.send_response(404)
             self.end_headers()
@@ -448,7 +441,7 @@ class _MockHealthHandler(http.server.BaseHTTPRequestHandler):
         pass
 
 
-def verify_k8s_deployment_and_probes() -> Dict[str, Any]:
+def verify_k8s_deployment_and_probes() -> dict[str, Any]:
     print("  [5/9] Verifying Local K8s Deployment Manifests & 3-Tier Health Probes...")
     manifest_yaml = generate_enterprise_k8s_manifests(
         app_name="enterprise-order-service",
@@ -499,7 +492,7 @@ def verify_k8s_deployment_and_probes() -> Dict[str, Any]:
     }
 
 
-def verify_polyglot_target_symmetry() -> Dict[str, Any]:
+def verify_polyglot_target_symmetry() -> dict[str, Any]:
     print("  [6/9] Verifying 8-Language Enterprise Target Symmetry (Python, Go, TS, Java, C#, Rust, Kotlin, PHP)...")
     draft = create_draft(
         name="polyglot-order-platform",
@@ -512,14 +505,16 @@ def verify_polyglot_target_symmetry() -> Dict[str, Any]:
     approved = approve_request(draft, actor="release-admin@enterprise.org", approved_at="2026-09-10T00:00:00+00:00")
     req = SynthesisRequest.from_mapping(approved)
 
-    targets_summary: Dict[str, Any] = {}
+    targets_summary: dict[str, Any] = {}
     for lang in ["python", "go", "typescript", "java", "csharp", "rust", "kotlin", "php"]:
         files = generate_enterprise_target_files(req, language=lang)
         assert len(files) >= 5, f"Target {lang} produced too few files"
 
         # Verify domain model & FSM files exist
         has_domain = any("domain" in k.lower() for k in files.keys())
-        has_workflow_or_tx = any("workflow" in k.lower() or "transaction" in k.lower() or "saga" in k.lower() for k in files.keys())
+        has_workflow_or_tx = any(
+            "workflow" in k.lower() or "transaction" in k.lower() or "saga" in k.lower() for k in files.keys()
+        )
         assert has_domain, f"Target {lang} missing domain models!"
         assert has_workflow_or_tx, f"Target {lang} missing workflow or transactions!"
 
@@ -538,7 +533,7 @@ def verify_polyglot_target_symmetry() -> Dict[str, Any]:
     }
 
 
-def verify_autonomous_intake() -> Dict[str, Any]:
+def verify_autonomous_intake() -> dict[str, Any]:
     print("  [7/9] Verifying Zero-Human Intake & Autonomous Intent Disambiguation...")
     draft = create_draft(
         name="logistics-center",
@@ -572,7 +567,7 @@ def verify_autonomous_intake() -> Dict[str, Any]:
     }
 
 
-def verify_autonomic_cluster_delivery_and_self_healing() -> Dict[str, Any]:
+def verify_autonomic_cluster_delivery_and_self_healing() -> dict[str, Any]:
     print("  [8/9] Verifying Autonomic Cluster Delivery & Self-Healing Pipeline...")
     # 1. Packaging static verification
     dockerfile = """
@@ -620,7 +615,7 @@ def verify_autonomic_cluster_delivery_and_self_healing() -> Dict[str, Any]:
     }
 
 
-def verify_specialized_language_runtimes() -> Dict[str, Any]:
+def verify_specialized_language_runtimes() -> dict[str, Any]:
     print("  [9/9] Verifying B81-B95 Specialized Language Runtimes & 1,090 Verification Cases...")
     summary = run_specialized_language_evaluation()
 
@@ -644,16 +639,24 @@ def verify_specialized_language_runtimes() -> Dict[str, Any]:
     }
 
 
-def verify_enterprise_domain_archetypes() -> Dict[str, Any]:
+def verify_enterprise_domain_archetypes() -> dict[str, Any]:
     print("  [10/12] Verifying Enterprise Domain Archetypes (Banking, Supply Chain, SaaS Billing)...")
     # 1. Banking Ledger Service with balanced entries and FX reconciliation
     usd = Currency("USD")
     engine = PostingRuleEngine("tenant-prime", usd)
 
-    vault = AccountAggregate("v1", "t-prime", "AST-1", "Central Reserve", AccountType.ASSET, usd, posted_balance=Decimal("1200.00"))
-    sender = AccountAggregate("s1", "t-prime", "CHK-1", "Alice", AccountType.LIABILITY, usd, posted_balance=Decimal("1000.00"))
-    receiver = AccountAggregate("r1", "t-prime", "CHK-2", "Bob", AccountType.LIABILITY, usd, posted_balance=Decimal("200.00"))
-    fee_acc = AccountAggregate("f1", "t-prime", "REV-1", "Platform Fee", AccountType.REVENUE, usd, posted_balance=Decimal("0.00"))
+    vault = AccountAggregate(
+        "v1", "t-prime", "AST-1", "Central Reserve", AccountType.ASSET, usd, posted_balance=Decimal("1200.00")
+    )
+    sender = AccountAggregate(
+        "s1", "t-prime", "CHK-1", "Alice", AccountType.LIABILITY, usd, posted_balance=Decimal("1000.00")
+    )
+    receiver = AccountAggregate(
+        "r1", "t-prime", "CHK-2", "Bob", AccountType.LIABILITY, usd, posted_balance=Decimal("200.00")
+    )
+    fee_acc = AccountAggregate(
+        "f1", "t-prime", "REV-1", "Platform Fee", AccountType.REVENUE, usd, posted_balance=Decimal("0.00")
+    )
 
     repo = {"v1": vault, "s1": sender, "r1": receiver, "f1": fee_acc}
 
@@ -716,7 +719,7 @@ def verify_enterprise_domain_archetypes() -> Dict[str, Any]:
         metric_name="api_calls",
         aggregation_type=UsageAggregationType.SUM,
     )
-    t0 = dt.datetime.now(dt.timezone.utc)
+    t0 = dt.datetime.now(dt.UTC)
     ev1 = UsageEvent("e1", "t-saas", "sub-101", "api_calls", Decimal("10"), t0, "dedup-key-1")
     ev1_dup = UsageEvent("e1-dup", "t-saas", "sub-101", "api_calls", Decimal("10"), t0, "dedup-key-1")
     ev2 = UsageEvent("e2", "t-saas", "sub-101", "api_calls", Decimal("25"), t0 + dt.timedelta(minutes=1), "dedup-key-2")
@@ -745,13 +748,14 @@ def verify_enterprise_domain_archetypes() -> Dict[str, Any]:
     }
 
 
-def verify_resilient_messaging_and_distributed_locks() -> Dict[str, Any]:
+def verify_resilient_messaging_and_distributed_locks() -> dict[str, Any]:
     print("  [11/12] Verifying Resilient Messaging (DLQ, Deduplication) & Redis Distributed Locks...")
     dedup = IdempotentDeduplicationStore()
     dlq = DeadLetterQueueManager()
     retry_policy = ExponentialBackoffWithJitter(base_delay_ms=5.0, max_delay_ms=20.0, max_attempts=3)
 
     processed_count = 0
+
     def success_handler(msg: ConsumedMessage):
         nonlocal processed_count
         processed_count += 1
@@ -794,6 +798,7 @@ def verify_resilient_messaging_and_distributed_locks() -> Dict[str, Any]:
 
     guard = XFetchCacheStampedeGuard(beta=1.5)
     compute_count = 0
+
     def compute_expensive():
         nonlocal compute_count
         compute_count += 1
@@ -814,7 +819,7 @@ def verify_resilient_messaging_and_distributed_locks() -> Dict[str, Any]:
     }
 
 
-def verify_cloud_native_helm_and_terraform() -> Dict[str, Any]:
+def verify_cloud_native_helm_and_terraform() -> dict[str, Any]:
     print("  [12/12] Verifying Cloud-Native Helm Charts & Multi-Cloud Terraform OpenTofu Emitters...")
     helm_files = generate_enterprise_helm_chart("payment-service", "python", port=8080)
     assert "deploy/helm/Chart.yaml" in helm_files
@@ -871,11 +876,13 @@ def main() -> int:
     print("================================================================================")
     print("ELMOS BUSINESS LINE 5: MULTI-LANGUAGE PROJECT GENERATION (B46-B95)")
     print("100% INDUSTRIAL PRODUCTION & ZERO-HUMAN AUTONOMY (L5) CERTIFICATION GATE")
-    print("DDD | FSM | Saga | Rootless | Local K8s | 8 Languages | L5 Intake | Self-Healing | B81-B95 | Archetypes | Helm & TF")
+    print(
+        "DDD | FSM | Saga | Rootless | Local K8s | 8 Languages | L5 Intake | Self-Healing | B81-B95 | Archetypes | Helm & TF"
+    )
     print("================================================================================")
 
     start_time = time.time()
-    results: Dict[str, Any] = {}
+    results: dict[str, Any] = {}
 
     # Run sub-verifications across all 12 dimensions
     results["ddd_domain_engine"] = verify_ddd_engine()
@@ -893,25 +900,30 @@ def main() -> int:
 
     # Pytest execution across all 15 industrial test suites
     print("\n  Running pytest industrial suite (64 tests across 15 suites)...")
-    ret, out = run_command([
-        "uv", "run", "pytest",
-        "tests/test_domain_models_and_aggregates.py",
-        "tests/test_workflow_state_machines.py",
-        "tests/test_distributed_transactions_saga_tcc_outbox.py",
-        "tests/test_rootless_container_sandbox.py",
-        "tests/test_k8s_deployment_and_probes.py",
-        "tests/test_multi_language_industrial_synthesis.py",
-        "tests/test_autonomous_intent_and_zero_human_intake.py",
-        "tests/test_autonomic_cluster_delivery_and_self_healing.py",
-        "tests/test_specialized_language_runtimes_b81_b95.py",
-        "tests/test_banking_ledger_archetype.py",
-        "tests/test_supply_chain_archetype.py",
-        "tests/test_saas_billing_archetype.py",
-        "tests/test_messaging_and_cache_lock.py",
-        "tests/test_helm_and_terraform_infra.py",
-        "tests/test_autonomous_l5_archetype_synthesis.py",
-        "-v",
-    ], cwd=Path("engines/project-synthesis-engine"))
+    ret, out = run_command(
+        [
+            "uv",
+            "run",
+            "pytest",
+            "tests/test_domain_models_and_aggregates.py",
+            "tests/test_workflow_state_machines.py",
+            "tests/test_distributed_transactions_saga_tcc_outbox.py",
+            "tests/test_rootless_container_sandbox.py",
+            "tests/test_k8s_deployment_and_probes.py",
+            "tests/test_multi_language_industrial_synthesis.py",
+            "tests/test_autonomous_intent_and_zero_human_intake.py",
+            "tests/test_autonomic_cluster_delivery_and_self_healing.py",
+            "tests/test_specialized_language_runtimes_b81_b95.py",
+            "tests/test_banking_ledger_archetype.py",
+            "tests/test_supply_chain_archetype.py",
+            "tests/test_saas_billing_archetype.py",
+            "tests/test_messaging_and_cache_lock.py",
+            "tests/test_helm_and_terraform_infra.py",
+            "tests/test_autonomous_l5_archetype_synthesis.py",
+            "-v",
+        ],
+        cwd=Path("engines/project-synthesis-engine"),
+    )
     assert ret == 0, f"Pytest suites failed:\n{out}"
     print("  -> All 64 industrial tests passed cleanly (100% green).")
     results["pytest_industrial_suite"] = {
@@ -923,12 +935,12 @@ def main() -> int:
     duration = time.time() - start_time
 
     # Final Certification Evidence Report
-    certification_report: Dict[str, Any] = {
+    certification_report: dict[str, Any] = {
         "schema_version": "2.0.0",
         "business_line": "5. 多语言项目生成 (B46-B95)",
         "business_line_id": "line-5-multilang-synthesis",
         "certification_standard": "ELMOS-INDUSTRIAL-PRODUCTION-SPEC-B46-B95-V2",
-        "certified_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "certified_at": dt.datetime.now(dt.UTC).isoformat(),
         "evaluation_verdict": "100% FULLY_CERTIFIED_L5_AUTONOMOUS",
         "scores": {
             "真实纯自动覆盖率": "100%",

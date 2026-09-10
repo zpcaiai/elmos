@@ -7,6 +7,7 @@ library (crypto/hmac, crypto/rsa) so the only third-party dependency is the
 PostgreSQL driver; the integration test signs its tokens with the same stdlib,
 so a verifier bug cannot be masked by a matching library quirk.
 """
+
 from __future__ import annotations
 
 import json
@@ -248,11 +249,14 @@ def _go_validator_funcs(request: SynthesisRequest) -> str:
     blocks: list[str] = []
     for entity in request.entities:
         entity_class = pascal(entity.singular)
-        required_checks = "\n    ".join(
-            f'if payload.{pascal(field.name)} == "" {{\n        return nil, false\n    }}'
-            for field in entity.fields
-            if field.required and field.type == "string"
-        ) or "_ = payload"
+        required_checks = (
+            "\n    ".join(
+                f'if payload.{pascal(field.name)} == "" {{\n        return nil, false\n    }}'
+                for field in entity.fields
+                if field.required and field.type == "string"
+            )
+            or "_ = payload"
+        )
         blocks.append(
             f"""
             func validated{entity_class}Upsert(request *http.Request) (*{entity_class}Upsert, bool) {{
@@ -290,8 +294,8 @@ def _go_entity_scenario(
         lines.extend(
             [
                 f"{variable} {assign_op} uuidString(test)",
-                f"response, body = send(test, server, \"PUT\", \"/{parent_entity.plural}/\"+{variable}, tenantA, {body})",
-                f"expectStatus(test, \"fixture {parent}\", response, 200, body)",
+                f'response, body = send(test, server, "PUT", "/{parent_entity.plural}/"+{variable}, tenantA, {body})',
+                f'expectStatus(test, "fixture {parent}", response, 200, body)',
             ]
         )
     record_var = f"{entity.singular}ID"
@@ -301,28 +305,28 @@ def _go_entity_scenario(
     lines.extend(
         [
             f"{record_var} {assign_op} uuidString(test)",
-            f"response, body = send(test, server, \"PUT\", \"/{entity.plural}/\"+{record_var}, tenantA, {body})",
+            f'response, body = send(test, server, "PUT", "/{entity.plural}/"+{record_var}, tenantA, {body})',
             f'expectStatus(test, "upsert-and-read {entity.singular} (PUT)", response, 200, body)',
-            f"response, body = send(test, server, \"GET\", \"/{entity.plural}/\"+{record_var}, tenantA, \"\")",
+            f'response, body = send(test, server, "GET", "/{entity.plural}/"+{record_var}, tenantA, "")',
             f'expectStatus(test, "upsert-and-read {entity.singular} (GET)", response, 200, body)',
             f"if !strings.Contains(body, {record_var}) {{\n"
             f'                test.Fatalf("upsert-and-read {entity.singular}: record id missing from body %s", body)\n'
             f"            }}",
-            f"response, body = send(test, server, \"GET\", \"/{entity.plural}\", tenantA, \"\")",
+            f'response, body = send(test, server, "GET", "/{entity.plural}", tenantA, "")',
             f'expectStatus(test, "list-scoped-to-tenant {entity.singular}", response, 200, body)',
             f"if !strings.Contains(body, {record_var}) {{\n"
             f'                test.Fatalf("list-scoped-to-tenant {entity.singular}: record id missing from %s", body)\n'
             f"            }}",
-            f"response, body = send(test, server, \"GET\", \"/{entity.plural}/\"+{record_var}, tenantB, \"\")",
+            f'response, body = send(test, server, "GET", "/{entity.plural}/"+{record_var}, tenantB, "")',
             f'expectStatus(test, "cross-tenant-read-blocked {entity.singular}", response, 404, body)',
-            f"response, body = send(test, server, \"GET\", \"/{entity.plural}\", tenantB, \"\")",
+            f'response, body = send(test, server, "GET", "/{entity.plural}", tenantB, "")',
             f'expectStatus(test, "cross-tenant-read-blocked {entity.singular} (list)", response, 200, body)',
             f"if strings.Contains(body, {record_var}) {{\n"
             f'                test.Fatalf("cross-tenant-read-blocked {entity.singular}: tenant-b can see %s", {record_var})\n'
             f"            }}",
-            f"response, body = send(test, server, \"DELETE\", fmt.Sprintf(\"/{entity.plural}/%s\", {record_var}), tenantA, \"\")",
+            f'response, body = send(test, server, "DELETE", fmt.Sprintf("/{entity.plural}/%s", {record_var}), tenantA, "")',
             f'expectStatus(test, "delete-removes-record {entity.singular}", response, 204, body)',
-            f"response, body = send(test, server, \"GET\", \"/{entity.plural}/\"+{record_var}, tenantA, \"\")",
+            f'response, body = send(test, server, "GET", "/{entity.plural}/"+{record_var}, tenantA, "")',
             f'expectStatus(test, "delete-removes-record {entity.singular} (GET)", response, 404, body)',
         ]
     )
@@ -507,9 +511,7 @@ def _auth_go(request: SynthesisRequest) -> str:
 def render_go_production(request: SynthesisRequest, port: int) -> dict[str, str]:
     module = request.project_name
     statements = {item.entity: item for item in all_entity_sql(request, placeholder="${}")}
-    needs_time = any(
-        field.type == "datetime" for entity in request.entities for field in entity.fields
-    )
+    needs_time = any(field.type == "datetime" for entity in request.entities for field in entity.fields)
     time_import = '\n            "time"' if needs_time else ""
     entity_store_blocks = "\n".join(
         _go_entity_store_block(entity, statements[entity.singular]) for entity in request.entities
