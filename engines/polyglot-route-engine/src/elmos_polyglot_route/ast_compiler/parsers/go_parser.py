@@ -32,6 +32,7 @@ from ..ir import (
     VarDeclStmt,
 )
 from .base import BaseAstParser
+from .native_bridge import NativeBridge
 
 
 class GoAstParser(BaseAstParser):
@@ -41,6 +42,11 @@ class GoAstParser(BaseAstParser):
         super().__init__('go')
 
     def parse(self, source_code: str) -> UniversalModule:
+        # 1. Attempt genuine native go/ast compiler first
+        native_mod = NativeBridge.parse_go_with_ast(source_code)
+        if native_mod and (native_mod.classes or native_mod.free_functions):
+            return native_mod
+
         module = UniversalModule(name='GoModule', source_language='go')
 
         # Package
