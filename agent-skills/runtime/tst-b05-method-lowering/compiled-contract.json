@@ -1,0 +1,34 @@
+{
+  "schema_version": "elmos.strict-test-suite.compiled-skill-contract.v1",
+  "package_id": "elmos.migration-platform-strict-tests",
+  "package_version": "1.0.0",
+  "installed_alias": "tst-b05-method-lowering",
+  "namespace": "elmos-strict-test-suite",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute",
+    "skill_name": "tst-b05-method-lowering",
+    "title": "Batch 5：方法体与控制流Lowering严格测试",
+    "suite_source": "batch1-37-strict",
+    "case_count": 8,
+    "case_ids": [
+      "B05-001",
+      "B05-002",
+      "B05-003",
+      "B05-004",
+      "B05-005",
+      "B05-006",
+      "B05-007",
+      "B05-008"
+    ],
+    "module_path": "scripts/test-suite/tst_skill_runtime.py",
+    "runtime_class": "TstSkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

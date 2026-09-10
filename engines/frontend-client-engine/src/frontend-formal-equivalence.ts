@@ -1088,16 +1088,29 @@ export function runFrontendSolver(smt2: string, options: FrontendSolverOptions =
   });
   if ((options.args?.length ?? 0) > 0) return rejected("ERROR", "custom solver arguments are forbidden by the locked Z3 profile");
   let binaryPath: string | undefined;
+  let fallbackPath: string | undefined;
   const candidates = command.includes("/")
     ? [resolve(command)]
-    : (process.env.PATH ?? "").split(":").filter(Boolean).map(directory => join(directory, command));
+    : [
+        ...(process.env.PATH ?? "").split(":").filter(Boolean).map(directory => join(directory, command)),
+        resolve(process.cwd(), "client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3"),
+        resolve(process.cwd(), "../../client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3"),
+      ];
   for (const candidate of candidates) {
     try {
       accessSync(candidate, fsConstants.X_OK);
-      binaryPath = realpathSync(candidate);
-      break;
-    } catch { /* continue bounded PATH search */ }
+      const resolved = realpathSync(candidate);
+      if (!fallbackPath) fallbackPath = resolved;
+      if (basename(resolved) === "z3") {
+        const candidateDigest = bytesDigest(readFileSync(resolved));
+        if (lockedZ3BinaryDigests.has(candidateDigest)) {
+          binaryPath = resolved;
+          break;
+        }
+      }
+    } catch { /* continue bounded search */ }
   }
+  if (binaryPath === undefined) binaryPath = fallbackPath;
   if (binaryPath === undefined) return rejected("MISSING", "locked Z3 executable is missing");
   const binaryDigest = bytesDigest(readFileSync(binaryPath));
   if (basename(binaryPath) !== "z3") return rejected("ERROR", "solver executable identity is not Z3", binaryPath, binaryDigest);

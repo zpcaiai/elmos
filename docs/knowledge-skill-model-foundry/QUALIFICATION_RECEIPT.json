@@ -1,5 +1,5 @@
 {
-  "baseline_commit": "a1803a96897cde313a81e80969e1cc9cff140f89",
+  "baseline_commit": "78c5e1d02906ee7a36ed21297e59ec60ee5f0ec4",
   "evidence_boundaries": {
     "certification": "NOT_CERTIFIED",
     "customer": "NOT_RUN",
@@ -41,7 +41,7 @@
       "tooling/run_foundry_external_qualification.py",
       "packages/pi-harness/src/elmos_pi_harness/independent_verifier.py"
     ],
-    "sha256": "a2d8e40abdfe474dc7dfe9f9cf140df9e27d61a44dec3a7561f5f3584ada941e",
+    "sha256": "128a1418a06ef2a59d4456ee9b7254ae25cdf3032cf359ee17ba56beb4f384b3",
     "transient_exclusions": [
       ".mypy_cache",
       ".pytest_cache",

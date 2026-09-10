@@ -1,11 +1,11 @@
 {
   "metadata": {
     "total_skills": 4489,
-    "audited_at": "2026-09-10T16:38:33Z",
-    "scan_duration_seconds": 3.11,
+    "audited_at": "2026-09-10T16:46:14Z",
+    "scan_duration_seconds": 3.78,
     "status_summary": {
-      "DECLARED": 2142,
-      "VERIFIED": 1180,
+      "DECLARED": 2100,
+      "VERIFIED": 1222,
       "supported": 172,
       "codes": 1,
       "SPEC_ONLY": 47,
@@ -9410,8 +9410,8 @@
       "description": "防止继续无边界扩张，确保每项新能力有业务证据、Owner和退出条件。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1611
+      "status": "VERIFIED",
+      "size_bytes": 1729
     },
     {
       "name": "conv-benchmark-corpus-governance",
@@ -9422,8 +9422,8 @@
       "dependencies": [
         "benchmark-corpus.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1707
+      "status": "VERIFIED",
+      "size_bytes": 1825
     },
     {
       "name": "conv-capability-dependency-graph",
@@ -9434,8 +9434,8 @@
       "dependencies": [
         "product-convergence/dependency-graph.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1614
+      "status": "VERIFIED",
+      "size_bytes": 1732
     },
     {
       "name": "conv-capability-package-metamodel",
@@ -9446,8 +9446,8 @@
       "dependencies": [
         "schemas/product-convergence/capability-package.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1819
+      "status": "VERIFIED",
+      "size_bytes": 1937
     },
     {
       "name": "conv-capability-registry-support-matrix",
@@ -9459,8 +9459,8 @@
         "capability-registry.schema.json",
         "product-convergence/capability-registry.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1743
+      "status": "VERIFIED",
+      "size_bytes": 1861
     },
     {
       "name": "conv-control-plane-modular-monolith",
@@ -9469,8 +9469,8 @@
       "description": "实现Tenant、Project、Repository、Workflow、Migration、Artifact、Evidence、Policy、Runner、Validation和Certification最小内核。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1828
+      "status": "VERIFIED",
+      "size_bytes": 1946
     },
     {
       "name": "conv-convergence-observability-debt-dashboard",
@@ -9483,8 +9483,8 @@
       "dependencies": [
         "AGENTS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3357
+      "status": "VERIFIED",
+      "size_bytes": 3599
     },
     {
       "name": "conv-convergence-roadmap-p0-p3",
@@ -9498,8 +9498,8 @@
         "AGENTS.md",
         "product/roadmap/convergence.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3278
+      "status": "VERIFIED",
+      "size_bytes": 3520
     },
     {
       "name": "conv-core-extension-boundary",
@@ -9508,8 +9508,8 @@
       "description": "保持Control Plane内核稳定，把语言、框架、数据库、云和行业能力留在Pack/Extension层。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1631
+      "status": "VERIFIED",
+      "size_bytes": 1749
     },
     {
       "name": "conv-cross-batch-contract-normalization",
@@ -9518,8 +9518,8 @@
       "description": "统一ID、状态、Owner、Digest、时间、版本、Error和Event命名。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1630
+      "status": "VERIFIED",
+      "size_bytes": 1748
     },
     {
       "name": "conv-cross-batch-integration-anti-fragmentation",
@@ -9528,8 +9528,8 @@
       "description": "验证独立Pack和Gate组合后仍能形成一个可运行产品。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1676
+      "status": "VERIFIED",
+      "size_bytes": 1794
     },
     {
       "name": "conv-customer-handoff-operability",
@@ -9540,8 +9540,8 @@
       "dependencies": [
         "handoff-package.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1639
+      "status": "VERIFIED",
+      "size_bytes": 1757
     },
     {
       "name": "conv-customer-success-sla-operations-proof",
@@ -9554,8 +9554,8 @@
       "dependencies": [
         "AGENTS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3275
+      "status": "VERIFIED",
+      "size_bytes": 3517
     },
     {
       "name": "conv-design-partner-pilot",
@@ -9564,8 +9564,8 @@
       "description": "用两个独立客户项目验证标准系统和复杂Legacy系统的产品可用性。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1620
+      "status": "VERIFIED",
+      "size_bytes": 1738
     },
     {
       "name": "conv-deterministic-migration-engine-reference",
@@ -9574,8 +9574,8 @@
       "description": "实现Java Semantic Model、PSP/UIR、C# Emitter、Source Map、FCM、Recipe与Diagnostic主链。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1845
+      "status": "VERIFIED",
+      "size_bytes": 1963
     },
     {
       "name": "conv-duplicate-skill-consolidation",
@@ -9584,8 +9584,8 @@
       "description": "把Evidence、Version、Gate、Policy、Rollback等重复基础能力收敛为共享Skill加领域Profile。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1619
+      "status": "VERIFIED",
+      "size_bytes": 1737
     },
     {
       "name": "conv-durable-workflow-runtime",
@@ -9596,8 +9596,8 @@
       "dependencies": [
         "workflow-definition.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1677
+      "status": "VERIFIED",
+      "size_bytes": 1795
     },
     {
       "name": "conv-edition-commercial-package-simplification",
@@ -9606,8 +9606,8 @@
       "description": "早期只维护SaaS、Enterprise Private Runner、Self-hosted/Air-gap三类Edition和五类标准套餐。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1731
+      "status": "VERIFIED",
+      "size_bytes": 1849
     },
     {
       "name": "conv-global-evidence-graph",
@@ -9618,8 +9618,8 @@
       "dependencies": [
         "evidence-graph.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1665
+      "status": "VERIFIED",
+      "size_bytes": 1783
     },
     {
       "name": "conv-global-project-lifecycle",
@@ -9630,8 +9630,8 @@
       "dependencies": [
         "product-convergence/project-lifecycle.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1586
+      "status": "VERIFIED",
+      "size_bytes": 1704
     },
     {
       "name": "conv-integration-contract-anti-corruption-layer",
@@ -9644,8 +9644,8 @@
       "dependencies": [
         "AGENTS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3312
+      "status": "VERIFIED",
+      "size_bytes": 3554
     },
     {
       "name": "conv-java-spring-csharp-reference-route",
@@ -9654,8 +9654,8 @@
       "description": "用一个10万–50万行、5–20模块真实系统证明产品主链。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1793
+      "status": "VERIFIED",
+      "size_bytes": 1911
     },
     {
       "name": "conv-maintainability-gate",
@@ -9664,8 +9664,8 @@
       "description": "在Build、Behavior、Security、Production之外增加可维护性独立门禁。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1732
+      "status": "VERIFIED",
+      "size_bytes": 1850
     },
     {
       "name": "conv-migration-design-studio",
@@ -9674,8 +9674,8 @@
       "description": "为架构师提供源/目标架构、映射、Wave、风险、成本和Cutover的可视化决策空间。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1656
+      "status": "VERIFIED",
+      "size_bytes": 1774
     },
     {
       "name": "conv-pack-lifecycle-certification-unifier",
@@ -9684,8 +9684,8 @@
       "description": "统一所有Pack的draft到revoked生命周期、续证、EOL和撤销传播。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1636
+      "status": "VERIFIED",
+      "size_bytes": 1754
     },
     {
       "name": "conv-private-runner-reference-implementation",
@@ -9694,8 +9694,8 @@
       "description": "实现能安全处理客户真实代码的Enrollment、Attestation、Lease、Sandbox和Evidence执行面。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1835
+      "status": "VERIFIED",
+      "size_bytes": 1953
     },
     {
       "name": "conv-product-convergence-orchestrator",
@@ -9706,8 +9706,8 @@
       "dependencies": [
         "product-convergence/convergence-plan.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1791
+      "status": "VERIFIED",
+      "size_bytes": 1909
     },
     {
       "name": "conv-product-convergence-readiness-gate",
@@ -9718,8 +9718,8 @@
       "dependencies": [
         "readiness-gate.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1828
+      "status": "VERIFIED",
+      "size_bytes": 1946
     },
     {
       "name": "conv-product-information-architecture",
@@ -9728,8 +9728,8 @@
       "description": "让客户围绕Assess、Plan、Migrate、Validate、Release、Operate、Retire使用产品，而非面对Batch和Skill。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1773
+      "status": "VERIFIED",
+      "size_bytes": 1891
     },
     {
       "name": "conv-recipe-promotion-knowledge-governance",
@@ -9742,8 +9742,8 @@
       "dependencies": [
         "AGENTS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3324
+      "status": "VERIFIED",
+      "size_bytes": 3566
     },
     {
       "name": "conv-reference-architecture-blueprint",
@@ -9757,8 +9757,8 @@
         "AGENTS.md",
         "docs/architecture/reference-architecture.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3391
+      "status": "VERIFIED",
+      "size_bytes": 3633
     },
     {
       "name": "conv-reference-implementation-release-train",
@@ -9771,8 +9771,8 @@
       "dependencies": [
         "AGENTS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3385
+      "status": "VERIFIED",
+      "size_bytes": 3627
     },
     {
       "name": "conv-reference-product-acceptance-review",
@@ -9785,8 +9785,8 @@
       "dependencies": [
         "AGENTS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3239
+      "status": "VERIFIED",
+      "size_bytes": 3481
     },
     {
       "name": "conv-reference-repository-design-partner-corpus",
@@ -9799,8 +9799,8 @@
       "dependencies": [
         "AGENTS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3328
+      "status": "VERIFIED",
+      "size_bytes": 3570
     },
     {
       "name": "conv-reference-route-acceptance-profile",
@@ -9811,8 +9811,8 @@
       "dependencies": [
         "reference-route-plan.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1722
+      "status": "VERIFIED",
+      "size_bytes": 1840
     },
     {
       "name": "conv-repeatable-profitable-delivery-model",
@@ -9826,8 +9826,8 @@
         "AGENTS.md",
         "contracts/commercial/unit-economics.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3295
+      "status": "VERIFIED",
+      "size_bytes": 3537
     },
     {
       "name": "conv-skill-layering-routing",
@@ -9836,8 +9836,8 @@
       "description": "将数百个Skill组织为Meta、Orchestrator、Implementation、Test/Operations四层。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1641
+      "status": "VERIFIED",
+      "size_bytes": 1759
     },
     {
       "name": "conv-skill-registry-compiler",
@@ -9849,8 +9849,8 @@
         "skill-registry.schema.json",
         "product-convergence/skill-registry.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1649
+      "status": "VERIFIED",
+      "size_bytes": 1767
     },
     {
       "name": "conv-test-pyramid-real-system-classification",
@@ -9859,8 +9859,8 @@
       "description": "统一Schema、Component、Integration、E2E、Production-like、Customer Acceptance和Continuous Certification层次。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1723
+      "status": "VERIFIED",
+      "size_bytes": 1841
     },
     {
       "name": "conv-unified-policy-engine",
@@ -9871,8 +9871,8 @@
       "dependencies": [
         "policy-decision.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 1720
+      "status": "VERIFIED",
+      "size_bytes": 1838
     },
     {
       "name": "conv-validation-lab-evidence-store",
@@ -9881,8 +9881,8 @@
       "description": "实现Source/Target双运行、Golden、Mutation/Fuzz、性能、安全和Evidence持久化。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1733
+      "status": "VERIFIED",
+      "size_bytes": 1851
     },
     {
       "name": "conv-verified-migrated-workload-metrics",
@@ -9891,8 +9891,8 @@
       "description": "用经过验证的业务工作负载替代代码行数和生成文件数作为核心成果。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1602
+      "status": "VERIFIED",
+      "size_bytes": 1720
     },
     {
       "name": "correctness-concurrency-consistency-audit",
