@@ -11,27 +11,32 @@ import (
 )
 
 func TestStandingOrderRecurringExecution(t *testing.T) {
-	acctRepo := persistence.NewInMemoryAccountRepository()
-	journalRepo := persistence.NewInMemoryJournalEntryRepository()
+	accRepo := persistence.NewInMemoryAccountRepository()
+	jourRepo := persistence.NewInMemoryJournalRepository()
+	idemRepo := persistence.NewInMemoryIdempotencyRepository()
 	lockMgr := persistence.NewInMemoryLockManager()
-	postingEng := service.NewPostingEngine(acctRepo, journalRepo, lockMgr)
+	currReg := model.NewCurrencyRegistry()
+	postingEng := service.NewPostingEngine(accRepo, jourRepo, idemRepo, lockMgr, currReg)
 
-	debtor, _ := model.NewAccount("ACCT-A", "Employer Corp", model.AccountTypeChecking, model.USD, model.AccountNormalBalanceCredit)
-	debtor.AvailableBalance, _ = model.NewMoney(1000000, model.USD) // $10,000.00
-	creditor, _ := model.NewAccount("ACCT-B", "Employee Alice", model.AccountTypeChecking, model.USD, model.AccountNormalBalanceCredit)
+	tenantID := "tenant-1"
+	debtor, _ := model.NewAccount("ACCT-A", tenantID, "1001", "Employer Corp", model.AccountTypeLiability, "USD", 0)
+	_ = debtor.ApplyCredit(1000000, "USD", false) // $10,000.00
+	creditor, _ := model.NewAccount("ACCT-B", tenantID, "1002", "Employee Alice", model.AccountTypeLiability, "USD", 0)
 
-	acctRepo.Save(context.Background(), debtor)
-	acctRepo.Save(context.Background(), creditor)
+	accRepo.Save(context.Background(), debtor)
+	accRepo.Save(context.Background(), creditor)
 
-	standingSvc := service.NewStandingOrderService(acctRepo, postingEng)
+	standingSvc := service.NewStandingOrderService(accRepo, postingEng)
 
-	monthlyAmount, _ := model.NewMoney(250000, model.USD) // $2,500.00
+	monthlyAmountCents := int64(250000) // $2,500.00
 	startDate := time.Date(2026, 6, 1, 0, 0, 0, 0, time.UTC)
 
 	order, err := standingSvc.CreateStandingOrder(
+		tenantID,
 		"ACCT-A",
 		"ACCT-B",
-		monthlyAmount,
+		monthlyAmountCents,
+		"USD",
 		service.FreqMonthly,
 		service.ConvFollowing,
 		startDate,
@@ -51,10 +56,10 @@ func TestStandingOrderRecurringExecution(t *testing.T) {
 		t.Fatalf("Expected 1 executed entry, got %d", len(entries))
 	}
 
-	// Verify debtor was debited $2,500 ($10,000 - $2,500 = $7,500)
-	updatedDebtor, _ := acctRepo.FindByID(context.Background(), "ACCT-A")
-	if updatedDebtor.AvailableBalance.AmountMinor() != 750000 {
-		t.Fatalf("Expected debtor balance 750000, got %d", updatedDebtor.AvailableBalance.AmountMinor())
+	// Verify debtor balance was reduced
+	updatedDebtor, _ := accRepo.FindByID(context.Background(), tenantID, "ACCT-A")
+	if updatedDebtor.AvailableBalance() != 750000 {
+		t.Fatalf("Expected debtor balance 750000, got %d", updatedDebtor.AvailableBalance())
 	}
 
 	// Next execution date moved to July 1
@@ -72,29 +77,31 @@ func TestFeeEngineCalculationAndWaivers(t *testing.T) {
 		OverdraftBufferCents: 1000, // $10.00 cushion
 	}
 
-	acctRepo := persistence.NewInMemoryAccountRepository()
-	journalRepo := persistence.NewInMemoryJournalEntryRepository()
+	accRepo := persistence.NewInMemoryAccountRepository()
+	jourRepo := persistence.NewInMemoryJournalRepository()
+	idemRepo := persistence.NewInMemoryIdempotencyRepository()
 	lockMgr := persistence.NewInMemoryLockManager()
-	postingEng := service.NewPostingEngine(acctRepo, journalRepo, lockMgr)
+	currReg := model.NewCurrencyRegistry()
+	postingEng := service.NewPostingEngine(accRepo, jourRepo, idemRepo, lockMgr, currReg)
 	feeSvc := service.NewFeeEngineService(cfg, postingEng)
 
-	wireAmount, _ := model.NewMoney(10000000, model.USD)
+	wireAmountCents := int64(10000000)
 
 	// Retail client pays full fee
-	retailFee := feeSvc.CalculateWireFee(wireAmount, false, service.TierRetail)
+	retailFee := feeSvc.CalculateWireFee(wireAmountCents, "USD", false, service.TierRetail)
 	if retailFee.NetFeeCents != 2500 {
 		t.Fatalf("Expected retail fee 2500, got %d", retailFee.NetFeeCents)
 	}
 
 	// Private Banking client gets full fee waiver
-	privateFee := feeSvc.CalculateWireFee(wireAmount, true, service.TierPrivate)
+	privateFee := feeSvc.CalculateWireFee(wireAmountCents, "USD", true, service.TierPrivate)
 	if privateFee.NetFeeCents != 0 || privateFee.WaivedCents != 4500 {
 		t.Fatalf("Expected private client 100%% waiver, got net: %d, waived: %d", privateFee.NetFeeCents, privateFee.WaivedCents)
 	}
 
 	// Overdraft within $10 cushion gets waived
-	minorOverdraft, _ := model.NewMoney(-500, model.USD) // -$5.00
-	odRes := feeSvc.AssessOverdraftFee(minorOverdraft, 0)
+	minorOverdraftCents := int64(-500) // -$5.00
+	odRes := feeSvc.AssessOverdraftFee(minorOverdraftCents, "USD", 0)
 	if odRes.NetFeeCents != 0 {
 		t.Fatalf("Expected overdraft within buffer to be waived, got %d", odRes.NetFeeCents)
 	}

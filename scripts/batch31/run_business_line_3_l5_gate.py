@@ -66,9 +66,6 @@ from elmos_sql_transpiler.chinadb_enterprise_corpora.insurance_claims import (
     BeneficiaryRecord,
     LossTriangleRecord,
 )
-from elmos_sql_transpiler.chinadb_enterprise_corpora.supply_chain_logistics import (
-    CarrierFreightRateRecord,
-)
 from elmos_sql_transpiler.chinadb_enterprise_corpora.telecom_rating import (
     QuotaWalletRecord,
 )
@@ -453,10 +450,10 @@ class BusinessLine3L5GateRunner:
 
             # 1. Lower Table DDL
             try:
-                table_result = lowerer.lower_table_ddl(source_ddl, source_dialect="oracle")
-                if not table_result.lowered_sql:
+                table_sql = lowerer.lower_table_ddl(source_ddl, source_dialect="oracle")
+                if not table_sql:
                     errors.append(f"[{target}] lower_table_ddl returned empty SQL")
-                target_diag["ddl_chars"] = len(table_result.lowered_sql)
+                target_diag["ddl_chars"] = len(table_sql)
                 target_diag["ddl_success"] = True
             except Exception as ex:
                 errors.append(f"[{target}] lower_table_ddl failed: {ex}")
@@ -464,12 +461,12 @@ class BusinessLine3L5GateRunner:
 
             # 2. Lower Query DML
             try:
-                stmt_result = lowerer.lower_statement(
+                stmt_sql = lowerer.lower_statement(
                     source_query, source_dialect="oracle", asset_kind="QUERY"
                 )
-                if not stmt_result.lowered_sql:
+                if not stmt_sql:
                     errors.append(f"[{target}] lower_statement returned empty SQL")
-                target_diag["query_chars"] = len(stmt_result.lowered_sql)
+                target_diag["query_chars"] = len(stmt_sql)
                 target_diag["query_success"] = True
             except Exception as ex:
                 errors.append(f"[{target}] lower_statement failed: {ex}")
@@ -528,7 +525,7 @@ class BusinessLine3L5GateRunner:
                 LedgerEntry("L1", "ACC_001", "J1", "DEBIT", 250000.0, 750000.0, "CNY", "Debit"),
                 LedgerEntry("L2", "ACC_002", "J1", "CREDIT", 250000.0, 1250000.0, "CNY", "Credit"),
             ]
-            balanced, diff = BankingSettlementCorpus.verify_double_entry_balance(entries)
+            balanced, diff, errs = BankingSettlementCorpus.verify_double_entry_conservation(entries)
             if not balanced or diff != 0.0:
                 errors.append(f"Banking double-entry balance check failed: diff={diff}")
 
@@ -577,18 +574,18 @@ class BusinessLine3L5GateRunner:
 
         # 3. Telecom Rating & Monotonic Quota
         try:
-            sub = TelecomRatingCorpus.get_seed_subscribers()[0]
+            sub = TelecomRatingCorpus.get_seed_subscribers(count=1)[0]
             plan = TelecomRatingCorpus.get_seed_rate_plans()[0]
             wallet = QuotaWalletRecord("W1", sub.subscriber_id, "MINUTES", 500, 0, 500)
-            res = TelecomRatingCorpus.rate_and_deduct_voice_cdr(
+            charge, deducted, status = TelecomRatingCorpus.rate_voice_cdr_in_memory(
                 sub, plan, wallet, duration_seconds=120
             )
-            if res.rating_status != "RATED" or res.billed_amount <= 0:
-                errors.append(f"Telecom rating failed: status={res.rating_status}")
+            if status != "RATED" or charge <= 0:
+                errors.append(f"Telecom rating failed: status={status}")
 
             domain_metrics["telecom"] = {
-                "rating_status": res.rating_status,
-                "billed_amount": res.billed_amount,
+                "rating_status": status,
+                "billed_amount": charge,
                 "remaining_quota": wallet.remaining_balance,
             }
             self.log("  Telecom: Real-time CDR rating and quota depletion OK", "INFO")
@@ -597,15 +594,15 @@ class BusinessLine3L5GateRunner:
 
         # 4. Supply Chain Logistics & ATP Conservation
         try:
-            item = SupplyChainLogisticsCorpus.get_seed_items()[0]
-            rate = CarrierFreightRateRecord("R1", "CARRIER_1", "REGION_NORTH", "STANDARD", 10.0, 2.5)
+            skus = SupplyChainLogisticsCorpus.get_seed_skus(count=1)
+            rate = SupplyChainLogisticsCorpus.get_seed_freight_rates()[0]
             cost = SupplyChainLogisticsCorpus.calculate_freight_cost(rate, weight_kg=12.0)
-            expected_freight = 10.0 + 12.0 * 2.5
+            expected_freight = rate.base_fee + 12.0 * rate.per_kg_rate
             if abs(cost - expected_freight) > 0.01:
                 errors.append(f"Freight cost mismatch: expected {expected_freight}, got {cost}")
 
             domain_metrics["supply_chain"] = {
-                "sku_verified": item.sku_code,
+                "sku_verified": skus[0].sku_id,
                 "calculated_freight": cost,
             }
             self.log("  Supply Chain: ATP inventory and freight tier calculation OK", "INFO")
@@ -614,12 +611,12 @@ class BusinessLine3L5GateRunner:
 
         # 5. Enterprise ERP Payroll & Tax Progressive
         try:
-            emp = ErpPayrollCorpus.get_seed_employees()[0]
+            emp = ErpPayrollCorpus.get_seed_employees(count=1)[0]
             brackets = ErpPayrollCorpus.get_seed_tax_brackets()
-            payroll = ErpPayrollCorpus.compute_monthly_payroll(
-                emp, period_month="202603", gross_base=20000.0, brackets=brackets
+            payroll = ErpPayrollCorpus.calculate_employee_payroll_in_memory(
+                emp, period_month="202603", base_salary=20000.0, tax_brackets=brackets
             )
-            mb_ok, mb_msg = ErpPayrollCorpus.verify_payroll_mass_balance(payroll)
+            mb_ok, mb_diff, mb_msg = ErpPayrollCorpus.verify_payroll_mass_balance(payroll)
             if not mb_ok:
                 errors.append(f"Payroll mass balance violation: {mb_msg}")
 
@@ -703,7 +700,7 @@ class BusinessLine3L5GateRunner:
                     target_engine=target_engine,
                     sandbox_verifier=sandbox,
                 )
-                if not ok or receipt.status != "SUCCESS":
+                if not ok or not receipt.verification_passed or not receipt.zero_human_intervention:
                     errors.append(
                         f"Self-healing failed for target {target_engine}: {raw_err}"
                     )
@@ -711,8 +708,8 @@ class BusinessLine3L5GateRunner:
                     healed_count += 1
                     if self.verbose:
                         self.log(
-                            f"  Healed [{target_engine}]: rule={receipt.rule_id}, "
-                            f"attempts={receipt.attempt_count}",
+                            f"  Healed [{target_engine}]: receipt={receipt.receipt_id}, "
+                            f"patch_kind={receipt.patch_kind}",
                             "INFO",
                         )
             except Exception as ex:

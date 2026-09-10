@@ -5,14 +5,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/elmos/enterprise_reference_projects/go-banking-ledger/internal/domain/model"
 	"github.com/elmos/enterprise_reference_projects/go-banking-ledger/internal/domain/service"
 )
 
 func TestPacs008BuildAndParseXML(t *testing.T) {
 	isoEngine := service.NewISO20022Engine()
 
-	amt, _ := model.NewMoney(5000000, model.USD) // $50,000.00
+	amountCents := int64(5000000) // $50,000.00
 	msg, err := isoEngine.BuildPacs008(
 		"MSG-2026-001",
 		"c2b6d510-9b43-4f9e-8c31-7e8c1b9201f4",
@@ -20,7 +19,8 @@ func TestPacs008BuildAndParseXML(t *testing.T) {
 		"TX-998877",
 		time.Date(2026, 9, 10, 0, 0, 0, 0, time.UTC),
 		"FEDWIRE",
-		amt,
+		amountCents,
+		"USD",
 		"Acme Corporation",
 		"US",
 		"US12FEDW000123456789",
