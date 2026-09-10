@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
-	"github.com/elmos/enterprise_reference_projects/go-banking-ledger/internal/domain/model"
 )
 
 // Pacs008Message represents an ISO 20022 FI Customer Credit Transfer (pacs.008.001.10)
@@ -182,7 +180,8 @@ func (e *ISO20022Engine) BuildPacs008(
 	msgID, uetr, endToEndID, txID string,
 	settlementDate time.Time,
 	clearingSystemName string,
-	amount model.Money,
+	amountCents int64,
+	currency string,
 	debtorName, debtorCountry, debtorAcct, debtorBIC string,
 	creditorName, creditorCountry, creditorAcct, creditorBIC string,
 	remittanceUnstructured string,
@@ -191,7 +190,7 @@ func (e *ISO20022Engine) BuildPacs008(
 		return nil, fmt.Errorf("msgID and endToEndID are required")
 	}
 
-	amountDecimal := float64(amount.AmountMinor()) / 100.0
+	amountDecimal := float64(amountCents) / 100.0
 
 	var rmt *RemittanceInfo
 	if remittanceUnstructured != "" {

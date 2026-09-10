@@ -12,11 +12,11 @@ import (
 type FeeType string
 
 const (
-	FeeWireDomestic    FeeType = "WIRE_DOMESTIC"
+	FeeWireDomestic      FeeType = "WIRE_DOMESTIC"
 	FeeWireInternational FeeType = "WIRE_INTERNATIONAL"
-	FeeOverdraft       FeeType = "OVERDRAFT_PENALTY"
-	FeeMonthlyService  FeeType = "MONTHLY_MAINTENANCE"
-	FeeAtmOutOfNetwork FeeType = "ATM_OUT_OF_NETWORK"
+	FeeOverdraft         FeeType = "OVERDRAFT_PENALTY"
+	FeeMonthlyService    FeeType = "MONTHLY_MAINTENANCE"
+	FeeAtmOutOfNetwork   FeeType = "ATM_OUT_OF_NETWORK"
 )
 
 type CustomerTier string
@@ -29,13 +29,13 @@ const (
 )
 
 type FeeScheduleConfig struct {
-	FeeIncomeAccountID    string
-	DomesticWireFeeCents  int64
-	IntlWireFeeCents      int64
-	OverdraftFeeCents     int64
-	OverdraftBufferCents  int64 // Courtesy cushion (e.g. $10.00 negative before fee applies)
+	FeeIncomeAccountID     string
+	DomesticWireFeeCents   int64
+	IntlWireFeeCents       int64
+	OverdraftFeeCents      int64
+	OverdraftBufferCents   int64
 	MonthlyServiceFeeCents int64
-	MinBalanceWaiverCents int64
+	MinBalanceWaiverCents  int64
 }
 
 type FeeCalculationResult struct {
@@ -44,7 +44,7 @@ type FeeCalculationResult struct {
 	WaivedCents   int64
 	NetFeeCents   int64
 	WaiverReason  string
-	Currency      model.Currency
+	Currency      string
 }
 
 type FeeEngineService struct {
@@ -61,7 +61,8 @@ func NewFeeEngineService(config FeeScheduleConfig, postingEng *PostingEngine) *F
 
 // CalculateWireFee evaluates fees and waivers based on transaction magnitude and customer tier.
 func (s *FeeEngineService) CalculateWireFee(
-	transferAmount model.Money,
+	transferAmountCents int64,
+	currency string,
 	isInternational bool,
 	tier CustomerTier,
 ) FeeCalculationResult {
@@ -95,26 +96,25 @@ func (s *FeeEngineService) CalculateWireFee(
 		WaivedCents:   waived,
 		NetFeeCents:   gross - waived,
 		WaiverReason:  reason,
-		Currency:      transferAmount.Currency(),
+		Currency:      currency,
 	}
 }
 
 // AssessOverdraftFee evaluates whether an overdraft penalty should be assessed.
 func (s *FeeEngineService) AssessOverdraftFee(
-	endingBalance model.Money,
+	endingBalanceCents int64,
+	currency string,
 	dailyOverdraftCount int,
 ) FeeCalculationResult {
-	balanceCents := endingBalance.AmountMinor()
-
 	// If balance is above negative courtesy buffer, waive fee
-	if balanceCents >= -s.config.OverdraftBufferCents {
+	if endingBalanceCents >= -s.config.OverdraftBufferCents {
 		return FeeCalculationResult{
 			FeeType:       FeeOverdraft,
 			GrossFeeCents: s.config.OverdraftFeeCents,
 			WaivedCents:   s.config.OverdraftFeeCents,
 			NetFeeCents:   0,
 			WaiverReason:  "Within courtesy buffer limit",
-			Currency:      endingBalance.Currency(),
+			Currency:      currency,
 		}
 	}
 
@@ -126,7 +126,7 @@ func (s *FeeEngineService) AssessOverdraftFee(
 			WaivedCents:   s.config.OverdraftFeeCents,
 			NetFeeCents:   0,
 			WaiverReason:  "Daily overdraft cap reached (max 3 per day)",
-			Currency:      endingBalance.Currency(),
+			Currency:      currency,
 		}
 	}
 
@@ -136,57 +136,33 @@ func (s *FeeEngineService) AssessOverdraftFee(
 		WaivedCents:   0,
 		NetFeeCents:   s.config.OverdraftFeeCents,
 		WaiverReason:  "Uncovered overdraft event",
-		Currency:      endingBalance.Currency(),
+		Currency:      currency,
 	}
 }
 
 // ChargeFee posts the net fee from the customer's account to the bank's fee income account.
 func (s *FeeEngineService) ChargeFee(
 	ctx context.Context,
-	customerAccountID string,
+	tenantID, customerAccountID string,
 	result FeeCalculationResult,
-) (*model.JournalEntry, error) {
+) (*model.JournalEntryAggregate, error) {
 	if result.NetFeeCents <= 0 {
-		return nil, nil // No net fee to debit
+		return nil, nil
 	}
 
-	feeMoney, err := model.NewMoney(result.NetFeeCents, result.Currency)
-	if err != nil {
-		return nil, err
+	req := model.PostingRequest{
+		RequestID:      uuid.New().String(),
+		TenantID:       tenantID,
+		IdempotencyKey: fmt.Sprintf("FEE-%s-%d", customerAccountID, time.Now().UnixNano()),
+		Type:           model.TxTypeFee,
+		ReferenceID:    fmt.Sprintf("REF-FEE-%s", customerAccountID),
+		SourceAccount:  customerAccountID,
+		TargetAccount:  s.config.FeeIncomeAccountID,
+		Amount:         result.NetFeeCents,
+		Currency:       result.Currency,
+		Description:    fmt.Sprintf("Service fee charge: %s", result.FeeType),
+		ValueDate:      time.Now().UTC(),
 	}
 
-	journalID := uuid.New().String()
-	now := time.Now().UTC()
-	desc := fmt.Sprintf("Service fee charge: %s", result.FeeType)
-
-	lines := []model.PostingLine{
-		{
-			ID:          uuid.New().String(),
-			AccountID:   customerAccountID,
-			Direction:   model.DirectionDebit,
-			Amount:      feeMoney,
-			Description: desc,
-		},
-		{
-			ID:          uuid.New().String(),
-			AccountID:   s.config.FeeIncomeAccountID,
-			Direction:   model.DirectionCredit,
-			Amount:      feeMoney,
-			Description: desc,
-		},
-	}
-
-	entry, err := model.NewJournalEntry(
-		journalID,
-		now,
-		now,
-		desc,
-		"FEE_ASSESSMENT",
-		lines,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.postingEng.Post(ctx, entry)
+	return s.postingEng.ProcessTransfer(ctx, req)
 }

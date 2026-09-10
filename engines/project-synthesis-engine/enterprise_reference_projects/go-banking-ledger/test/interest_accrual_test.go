@@ -13,29 +13,25 @@ import (
 func TestInterestAccrualTieredCalculation(t *testing.T) {
 	calc := service.NewDayCountCalculator()
 	start := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
-	end := time.Date(2026, 1, 31, 0, 0, 0, 0, time.UTC) // 30 days under 30/360, 30 days fraction = 30/360 = 1/12
+	end := time.Date(2026, 1, 31, 0, 0, 0, 0, time.UTC)
 
 	frac := calc.YearFraction(start, end, service.DayCount30360US)
 	if frac != 30.0/360.0 {
 		t.Fatalf("Expected 30/360 fraction = 0.08333, got %f", frac)
 	}
 
-	acctRepo := persistence.NewInMemoryAccountRepository()
-	journalRepo := persistence.NewInMemoryJournalEntryRepository()
+	accRepo := persistence.NewInMemoryAccountRepository()
+	jourRepo := persistence.NewInMemoryJournalRepository()
+	idemRepo := persistence.NewInMemoryIdempotencyRepository()
 	lockMgr := persistence.NewInMemoryLockManager()
-	postingEng := service.NewPostingEngine(acctRepo, journalRepo, lockMgr)
-	accrualSvc := service.NewInterestAccrualService(acctRepo, journalRepo, postingEng)
+	currReg := model.NewCurrencyRegistry()
+	postingEng := service.NewPostingEngine(accRepo, jourRepo, idemRepo, lockMgr, currReg)
+	accrualSvc := service.NewInterestAccrualService(accRepo, jourRepo, postingEng)
 
 	// $100,000.00 deposit
-	custAcct, _ := model.NewAccount(
-		"CUST-01",
-		"ACME Corp",
-		model.AccountTypeChecking,
-		model.USD,
-		model.AccountNormalBalanceCredit,
-	)
-	custAcct.AvailableBalance, _ = model.NewMoney(10000000, model.USD) // $100,000.00
-	acctRepo.Save(context.Background(), custAcct)
+	custAcct, _ := model.NewAccount("CUST-01", "tenant-1", "1001", "ACME Corp", model.AccountTypeLiability, "USD", 0)
+	_ = custAcct.ApplyCredit(10000000, "USD", false) // $100,000.00 credit balance
+	_ = accRepo.Save(context.Background(), custAcct)
 
 	cfg := &service.InterestProductConfig{
 		ProductID: "HIGH_YIELD_SAVINGS",
@@ -68,22 +64,18 @@ func TestInterestAccrualTieredCalculation(t *testing.T) {
 }
 
 func TestOverdraftInterestCharge(t *testing.T) {
-	acctRepo := persistence.NewInMemoryAccountRepository()
-	journalRepo := persistence.NewInMemoryJournalEntryRepository()
+	accRepo := persistence.NewInMemoryAccountRepository()
+	jourRepo := persistence.NewInMemoryJournalRepository()
+	idemRepo := persistence.NewInMemoryIdempotencyRepository()
 	lockMgr := persistence.NewInMemoryLockManager()
-	postingEng := service.NewPostingEngine(acctRepo, journalRepo, lockMgr)
-	accrualSvc := service.NewInterestAccrualService(acctRepo, journalRepo, postingEng)
+	currReg := model.NewCurrencyRegistry()
+	postingEng := service.NewPostingEngine(accRepo, jourRepo, idemRepo, lockMgr, currReg)
+	accrualSvc := service.NewInterestAccrualService(accRepo, jourRepo, postingEng)
 
 	// Account is overdrawn by $5,000.00
-	custAcct, _ := model.NewAccount(
-		"CUST-OVERDRAWN",
-		"Struggling LLC",
-		model.AccountTypeChecking,
-		model.USD,
-		model.AccountNormalBalanceCredit,
-	)
-	custAcct.AvailableBalance, _ = model.NewMoney(-500000, model.USD) // -$5,000.00
-	acctRepo.Save(context.Background(), custAcct)
+	custAcct, _ := model.NewAccount("CUST-OVERDRAWN", "tenant-1", "1002", "Struggling LLC", model.AccountTypeLiability, "USD", 0)
+	_ = custAcct.ApplyDebit(500000, "USD", true) // -$5,000.00 debit balance
+	_ = accRepo.Save(context.Background(), custAcct)
 
 	cfg := &service.InterestProductConfig{
 		ProductID:        "STANDARD_CHECKING",
