@@ -1658,3 +1658,278 @@ class ComplianceReport:
     not_applicable: int = 0
     coverage_pct: float = 0.0
     findings: List[AuditFinding] = field(default_factory=list)
+
+# ─── Isolated Trusted Builder Models ──────────────────────────────────
+
+class BuildIsolationLevel(str, Enum):
+    SHARED = "shared"
+    TENANT_ISOLATED = "tenant_isolated"
+    HERMETIC = "hermetic"
+    AIR_GAPPED = "air_gapped"
+
+class BuildVerdict(str, Enum):
+    PASSED = "passed"
+    FAILED = "failed"
+    TAINTED = "tainted"  # build succeeded but integrity check failed
+    TIMEOUT = "timeout"
+
+class SlsaLevel(str, Enum):
+    LEVEL_0 = "L0"  # no provenance
+    LEVEL_1 = "L1"  # build exists
+    LEVEL_2 = "L2"  # hosted build, signed provenance
+    LEVEL_3 = "L3"  # hardened builds, non-falsifiable provenance
+    LEVEL_4 = "L4"  # hermetic, reproducible builds
+
+@dataclass
+class BuildRequest:
+    build_id: str
+    source_repo: str
+    source_commit: str
+    builder_image: str
+    isolation_level: BuildIsolationLevel
+    tenant_id: str = ""
+    timeout_seconds: int = 3600
+    network_allowed: bool = False  # hermetic = no network
+    env_vars: Dict[str, str] = field(default_factory=dict)
+
+@dataclass
+class BuildAttestation:
+    build_id: str
+    verdict: BuildVerdict
+    artifact_digest: str = ""  # SHA-256 of produced artifact
+    builder_digest: str = ""  # SHA-256 of builder image
+    slsa_level: SlsaLevel = SlsaLevel.LEVEL_0
+    reproducible: bool = False
+    provenance_signed: bool = False
+    started_at: str = ""
+    completed_at: str = ""
+    log_digest: str = ""  # SHA-256 of build log
+    network_accessed: bool = False
+
+@dataclass
+class BuildPolicy:
+    policy_id: str
+    min_isolation: BuildIsolationLevel
+    min_slsa_level: SlsaLevel
+    require_reproducible: bool = False
+    require_signed_provenance: bool = True
+    allowed_builder_digests: List[str] = field(default_factory=list)
+    max_build_duration_seconds: int = 7200
+
+# ─── Agent Shadow/Canary Models ───────────────────────────────────────
+
+class AgentDeploymentMode(str, Enum):
+    PRODUCTION = "production"
+    SHADOW = "shadow"
+    CANARY = "canary"
+    BLUE_GREEN = "blue_green"
+
+class AgentComparisonVerdict(str, Enum):
+    EQUIVALENT = "equivalent"
+    DIVERGENT = "divergent"
+    IMPROVED = "improved"
+    DEGRADED = "degraded"
+    UNKNOWN = "unknown"
+
+@dataclass
+class AgentDeployment:
+    deployment_id: str
+    agent_id: str
+    agent_version: str
+    mode: AgentDeploymentMode
+    traffic_pct: float = 0.0  # 0-100
+    started_at: str = ""
+    is_active: bool = True
+    model_id: str = ""
+    tool_permissions: List[str] = field(default_factory=list)
+
+@dataclass
+class ShadowComparison:
+    comparison_id: str
+    production_deployment_id: str
+    shadow_deployment_id: str
+    request_count: int = 0
+    match_count: int = 0
+    divergence_count: int = 0
+    avg_latency_diff_ms: float = 0.0
+    verdict: AgentComparisonVerdict = AgentComparisonVerdict.UNKNOWN
+    divergence_examples: List[str] = field(default_factory=list)
+
+@dataclass
+class CanaryMetrics:
+    deployment_id: str
+    success_rate: float = 0.0
+    p50_latency_ms: float = 0.0
+    p99_latency_ms: float = 0.0
+    error_count: int = 0
+    total_requests: int = 0
+    cost_per_request: float = 0.0
+
+@dataclass
+class CanaryPromotionDecision:
+    deployment_id: str
+    promote: bool
+    reason: str
+    metrics: Optional[CanaryMetrics] = None
+    rollback_recommended: bool = False
+
+
+# ─── Feature Flag Governance Models ───────────────────────────────────
+
+class FlagState(str, Enum):
+    DISABLED = "disabled"
+    PERCENTAGE_ROLLOUT = "percentage_rollout"
+    TENANT_TARGETED = "tenant_targeted"
+    ENABLED = "enabled"
+    KILL_SWITCHED = "kill_switched"
+
+class FlagLifecycleStage(str, Enum):
+    CREATED = "created"
+    TESTING = "testing"
+    ROLLING_OUT = "rolling_out"
+    FULLY_ENABLED = "fully_enabled"
+    STALE = "stale"
+    RETIRED = "retired"
+
+@dataclass
+class FeatureFlag:
+    flag_id: str
+    name: str
+    description: str
+    state: FlagState = FlagState.DISABLED
+    lifecycle: FlagLifecycleStage = FlagLifecycleStage.CREATED
+    rollout_percentage: float = 0.0  # 0-100
+    targeted_tenants: List[str] = field(default_factory=list)
+    owner: str = ""
+    created_at: str = ""
+    stale_after_days: int = 90
+    kill_switch_reason: str = ""
+    dependencies: List[str] = field(default_factory=list)  # other flag_ids
+
+@dataclass
+class FlagEvaluation:
+    flag_id: str
+    tenant_id: str
+    enabled: bool
+    reason: str  # targeted, percentage, global, disabled, kill_switched
+    evaluated_at: str = ""
+
+@dataclass
+class FlagAuditEntry:
+    flag_id: str
+    action: str  # created, updated, enabled, disabled, kill_switched, retired
+    actor: str
+    previous_state: str
+    new_state: str
+    timestamp: str = ""
+    reason: str = ""
+
+# ─── Portable Control Plane Models ────────────────────────────────────
+
+class PortablePlaneType(str, Enum):
+    CONTROL = "control"
+    DATA = "data"
+    MANAGEMENT = "management"
+    OBSERVABILITY = "observability"
+
+class DeploymentTopology(str, Enum):
+    SINGLE_REGION = "single_region"
+    MULTI_REGION = "multi_region"
+    HYBRID = "hybrid"
+    EDGE = "edge"
+    AIR_GAPPED = "air_gapped"
+
+class PlaneHealthState(str, Enum):
+    RUNNING = "running"
+    DEGRADED = "degraded"
+    STARTING = "starting"
+    STOPPED = "stopped"
+    UNREACHABLE = "unreachable"
+
+@dataclass
+class ControlPlaneComponent:
+    component_id: str
+    plane_type: PortablePlaneType
+    version: str
+    topology: DeploymentTopology
+    health: PlaneHealthState = PlaneHealthState.STOPPED
+    region: str = ""
+    endpoint_url: str = ""
+    dependencies: List[str] = field(default_factory=list)
+    resource_cpu_millicores: int = 500
+    resource_memory_mb: int = 512
+
+@dataclass
+class TopologyValidation:
+    topology: DeploymentTopology
+    valid: bool
+    missing_components: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
+    resource_total_cpu: int = 0
+    resource_total_memory: int = 0
+
+@dataclass
+class PlaneGovernanceRule:
+    rule_id: str
+    plane_type: PortablePlaneType
+    max_instances: int = 3
+    min_instances: int = 1
+    allowed_topologies: List[str] = field(default_factory=list)
+    requires_encryption: bool = True
+    requires_auth: bool = True
+
+# ─── Multiregion Failover Models ──────────────────────────────────────
+
+class FailoverMode(str, Enum):
+    ACTIVE_PASSIVE = "active_passive"
+    ACTIVE_ACTIVE = "active_active"
+    PILOT_LIGHT = "pilot_light"
+    WARM_STANDBY = "warm_standby"
+
+class RegionHealthStatus(str, Enum):
+    HEALTHY = "healthy"
+    DEGRADED = "degraded"
+    UNREACHABLE = "unreachable"
+    DRAINING = "draining"
+    RECOVERING = "recovering"
+
+class FailoverTrigger(str, Enum):
+    MANUAL = "manual"
+    AUTOMATIC = "automatic"
+    SCHEDULED = "scheduled"
+    DR_DRILL = "dr_drill"
+
+@dataclass
+class RegionConfig:
+    region_id: str
+    is_primary: bool
+    failover_mode: FailoverMode
+    health_status: RegionHealthStatus = RegionHealthStatus.HEALTHY
+    traffic_weight: float = 0.0  # 0-100
+    replication_lag_ms: float = 0.0
+    last_health_check: str = ""
+    data_residency_zone: str = ""
+
+@dataclass
+class FailoverEvent:
+    event_id: str
+    source_region: str
+    target_region: str
+    trigger: FailoverTrigger
+    started_at: str
+    completed_at: str = ""
+    rto_seconds: float = 0.0
+    rpo_data_loss_bytes: int = 0
+    success: bool = False
+    rollback_available: bool = True
+    dns_propagation_complete: bool = False
+
+@dataclass
+class TrafficShift:
+    shift_id: str
+    from_region: str
+    to_region: str
+    percentage: float  # 0-100
+    reason: str
+    started_at: str
+    completed: bool = False
