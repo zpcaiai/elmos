@@ -171,7 +171,11 @@ export class WebSSREvaluator {
           for (const attr of astNode.attrs) {
             if (attr.isDynamic && attr.expression) {
               const dynVal = this.evalExpression(attr.expression, scope);
-              if (dynVal !== undefined && dynVal !== null && dynVal !== false) {
+              if (attr.name.startsWith('aria-')) {
+                if (dynVal !== undefined && dynVal !== null) {
+                  elem.setAttribute(attr.name, String(dynVal));
+                }
+              } else if (dynVal !== undefined && dynVal !== null && dynVal !== false) {
                 elem.setAttribute(attr.name, dynVal === true ? '' : String(dynVal));
               }
             } else {

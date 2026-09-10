@@ -22,7 +22,7 @@ ENGINE_SOURCE = ROOT / "engines/knowledge-skill-model-foundry-engine/src"
 if str(ENGINE_SOURCE) not in sys.path:
     sys.path.insert(0, str(ENGINE_SOURCE))
 
-from elmos_foundry.core_skill_handlers import (
+from elmos_foundry.core_skill_handlers import (  # noqa: E402
     CoreSkillExecutionError,
     HIGH_FREQUENCY_CORE_HANDLERS,
     execute_ast_codemod,
@@ -33,8 +33,8 @@ from elmos_foundry.core_skill_handlers import (
     execute_prompt_injection_defense,
     execute_sql_dialect_transpilation,
 )
-from elmos_foundry.kernel import ExecutionKernel
-from elmos_foundry.skills import SkillCatalog
+from elmos_foundry.kernel import ExecutionKernel  # noqa: E402
+from elmos_foundry.skills import SkillCatalog  # noqa: E402
 
 
 class FoundryCoreSkillDirectTests(unittest.TestCase):

@@ -209,6 +209,14 @@ class CompilerDiagnosticParser:
                 line_no = int(match2.group(1))
                 sev = match2.group(2)
                 msg = match2.group(3)
+                # Lookahead for symbol details
+                raw_lines = raw.splitlines()
+                idx_in_raw = raw_lines.index(line) if line in raw_lines else -1
+                if idx_in_raw != -1:
+                    for next_idx in range(idx_in_raw + 1, min(idx_in_raw + 4, len(raw_lines))):
+                        if "symbol:" in raw_lines[next_idx]:
+                            msg += " " + raw_lines[next_idx].strip()
+                            break
                 cat = cls._categorize_message(msg)
                 diags.append(NativeCompilerDiagnostic(lang, sev, line_no, 1, msg, cat))
                 continue
