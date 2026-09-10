@@ -1,5 +1,8 @@
 ---
 name: "router-industrial-04-routing-engine"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Compute 4-phase deterministic route decisions, multi-factor scoring, and fallback sequences."
 metadata:
   source_package: "elmos-router-industrial-skillpack"
@@ -13,7 +16,7 @@ metadata:
   runtime_skill_key: "router-industrial-04-routing-engine"
   runtime_handler: "execute_04_routing_engine"
   runtime_phase: "routing"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "READY_FOR_RAMPING"
 ---

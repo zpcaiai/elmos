@@ -272,7 +272,7 @@ class BankingSettlementCorpus:
         """Generate deterministic master customer records."""
         customers: list[CustomerRecord] = []
         for i in range(1, count + 1):
-            is_corp = (i % 3 == 0)
+            is_corp = i % 3 == 0
             customers.append(
                 CustomerRecord(
                     customer_id=f"CUST_{i:04d}",
@@ -527,9 +527,7 @@ class BankingSettlementCorpus:
         """Verify that loan repayment schedule sums exactly to principal."""
         errors: list[str] = []
         if len(schedules) != contract.term_months:
-            errors.append(
-                f"Schedule count {len(schedules)} != term months {contract.term_months}"
-            )
+            errors.append(f"Schedule count {len(schedules)} != term months {contract.term_months}")
 
         sum_principal = sum(s.principal_due for s in schedules)
         diff = abs(sum_principal - contract.principal_amount)

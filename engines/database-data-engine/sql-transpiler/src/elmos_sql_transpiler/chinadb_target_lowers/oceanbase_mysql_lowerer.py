@@ -57,7 +57,7 @@ class OceanBaseMysqlTargetLowerer(ChinaDbTargetLowerer):
         return [
             DialectLoweringRule(
                 rule_id="ob_mysql_backtick",
-                description="Convert brackets [col] or Oracle \"col\" to MySQL backticks `col`",
+                description='Convert brackets [col] or Oracle "col" to MySQL backticks `col`',
                 pattern=r"\[([a-zA-Z0-9_]+)\]|\"([a-zA-Z0-9_]+)\"",
                 replacement=r"`\1\2`",
                 is_regex=True,
@@ -174,4 +174,3 @@ class OceanBaseMysqlTargetLowerer(ChinaDbTargetLowerer):
         res = self.lower_data_types(source_sql, source_dialect)
         res = self.apply_custom_rules(res, source_dialect)
         return res
-

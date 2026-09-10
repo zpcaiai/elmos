@@ -1,5 +1,6 @@
 {
   "component": true,
-  "usingComponents": {},
-  "styleIsolation": "apply-shared"
+  "usingComponents": {
+    "status-mark": "/components/StatusMark/index"
+  }
 }

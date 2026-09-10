@@ -1,5 +1,8 @@
 ---
 name: alipay-miniapp-codegen
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Generate a native Alipay Mini Program project from validated IR and plans,
   including pages, components, styles, app configuration, platform APIs, tests, CLI
   metadata, and traceability. Use only for the Alipay target.

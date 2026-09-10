@@ -1,0 +1,19 @@
+{
+  "package": "elmos-fde-autonomous-delivery-repository-refactoring-skills",
+  "version": "5.2.0",
+  "source_id": "database-schema-routine-data-transformation",
+  "alias": "elmos-fde-database-schema-routine-data-transformation",
+  "pack": "05-planning-transformation",
+  "is_workflow": false,
+  "dependencies": [
+    "proof-guided-atomic-refactor-execution",
+    "data-database-migration-audit",
+    "business-invariant-recovery"
+  ],
+  "effect_boundary": "E3",
+  "routable": false,
+  "implementation_state": "LOCAL_CONTROL_PLANE",
+  "external_evidence": "NOT_RUN",
+  "independent_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

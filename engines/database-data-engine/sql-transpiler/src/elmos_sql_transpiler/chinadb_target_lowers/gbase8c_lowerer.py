@@ -86,7 +86,7 @@ class GBase8cTargetLowerer(ChinaDbTargetLowerer):
             ),
             DialectLoweringRule(
                 rule_id="gbase8c_square_brackets",
-                description="Convert brackets [col] to GBase 8c \"col\"",
+                description='Convert brackets [col] to GBase 8c "col"',
                 pattern=r"\[([a-zA-Z0-9_]+)\]",
                 replacement=r'"\1"',
                 is_regex=True,
@@ -218,4 +218,3 @@ class GBase8cTargetLowerer(ChinaDbTargetLowerer):
         res = self.lower_data_types(source_sql, source_dialect)
         res = self.apply_custom_rules(res, source_dialect)
         return res
-

@@ -102,9 +102,7 @@ class TestEnterpriseCorporaRegistryAndDiscovery:
             ("hr", ErpPayrollCorpus),
         ],
     )
-    def test_get_corpus_by_domain_keywords(
-        self, domain_keyword: str, expected_cls: type
-    ) -> None:
+    def test_get_corpus_by_domain_keywords(self, domain_keyword: str, expected_cls: type) -> None:
         cls = get_corpus_by_domain(domain_keyword)
         assert cls is not None
         assert cls is expected_cls
@@ -117,19 +115,15 @@ class TestEnterpriseCorporaRegistryAndDiscovery:
         corpora = get_all_enterprise_corpora()
         for corpus in corpora:
             path = corpus.get_raw_sql_path()
-            assert path.exists(), f'Missing raw SQL file for {corpus.domain_name}'
+            assert path.exists(), f"Missing raw SQL file for {corpus.domain_name}"
             sql_text = corpus.get_raw_sql()
-            assert len(sql_text) > 100000, (
-                f'SQL file unexpectedly small for {corpus.domain_name}'
-            )
+            assert len(sql_text) > 100000, f"SQL file unexpectedly small for {corpus.domain_name}"
             stmts = corpus.parse_statements()
-            assert len(stmts) >= 10, (
-                f'Too few statements parsed for {corpus.domain_name}'
-            )
+            assert len(stmts) >= 10, f"Too few statements parsed for {corpus.domain_name}"
 
     def test_corpus_primary_source_dialect(self) -> None:
         for corpus in get_all_enterprise_corpora():
-            assert corpus.primary_source_dialect in ('oracle', 'sqlserver', 'postgres')
+            assert corpus.primary_source_dialect in ("oracle", "sqlserver", "postgres")
 
 
 class TestBankingSettlementEnterpriseCorpus:
@@ -170,11 +164,7 @@ class TestBankingSettlementEnterpriseCorpus:
         assert len(fx_rates) >= 4
         assert all(isinstance(r, FxRateRecord) for r in fx_rates)
         cny_usd = next(
-            (
-                r
-                for r in fx_rates
-                if r.base_currency == 'USD' and r.target_currency == 'CNY'
-            ),
+            (r for r in fx_rates if r.base_currency == "USD" and r.target_currency == "CNY"),
             None,
         )
         assert cny_usd is not None
@@ -184,10 +174,10 @@ class TestBankingSettlementEnterpriseCorpus:
         accounts = BankingSettlementCorpus.get_seed_accounts(count=2)
         accounts[0].balance = 10000.0
         accounts[0].frozen_balance = 0.0
-        accounts[0].status = 'ACTIVE'
+        accounts[0].status = "ACTIVE"
         accounts[1].balance = 5000.0
         accounts[1].frozen_balance = 0.0
-        accounts[1].status = 'ACTIVE'
+        accounts[1].status = "ACTIVE"
         acc_map = {a.account_no: a for a in accounts}
 
         ok, msg, entries = BankingSettlementCorpus.execute_in_memory_transfer(
@@ -203,8 +193,8 @@ class TestBankingSettlementEnterpriseCorpus:
         accounts = BankingSettlementCorpus.get_seed_accounts(count=2)
         accounts[0].balance = 100.0
         accounts[0].frozen_balance = 0.0
-        accounts[0].status = 'ACTIVE'
-        accounts[1].status = 'ACTIVE'
+        accounts[0].status = "ACTIVE"
+        accounts[1].status = "ACTIVE"
         acc_map = {a.account_no: a for a in accounts}
         ok, msg, entries = BankingSettlementCorpus.execute_in_memory_transfer(
             acc_map, accounts[0].account_no, accounts[1].account_no, amount=500.0
@@ -215,7 +205,7 @@ class TestBankingSettlementEnterpriseCorpus:
 
     def test_in_memory_transfer_account_frozen(self) -> None:
         accounts = BankingSettlementCorpus.get_seed_accounts(count=2)
-        accounts[0].status = 'FROZEN'
+        accounts[0].status = "FROZEN"
         acc_map = {a.account_no: a for a in accounts}
         ok, msg, _ = BankingSettlementCorpus.execute_in_memory_transfer(
             acc_map, accounts[0].account_no, accounts[1].account_no, amount=100.0
@@ -255,9 +245,7 @@ class TestBankingSettlementEnterpriseCorpus:
                 description="Internal Transfer Credit",
             ),
         ]
-        is_balanced, diff, errs = BankingSettlementCorpus.verify_double_entry_conservation(
-            entries
-        )
+        is_balanced, diff, errs = BankingSettlementCorpus.verify_double_entry_conservation(entries)
         assert is_balanced is True
         assert diff == 0.0
         assert len(errs) == 0
@@ -285,9 +273,7 @@ class TestBankingSettlementEnterpriseCorpus:
                 description="Credit Imbalance",
             ),
         ]
-        is_balanced, diff, errs = BankingSettlementCorpus.verify_double_entry_conservation(
-            entries
-        )
+        is_balanced, diff, errs = BankingSettlementCorpus.verify_double_entry_conservation(entries)
         assert is_balanced is False
         assert diff == 50.0
         assert len(errs) > 0
@@ -295,6 +281,7 @@ class TestBankingSettlementEnterpriseCorpus:
     def test_account_balance_conservation_multi_step(self) -> None:
         initial_accounts = BankingSettlementCorpus.get_seed_accounts(count=10)
         import copy
+
         final_accounts = copy.deepcopy(initial_accounts)
         acc_map = {a.account_no: a for a in final_accounts}
         total_in = 1000.0
@@ -326,10 +313,8 @@ class TestBankingSettlementEnterpriseCorpus:
         )
         schedules = BankingSettlementCorpus.generate_loan_amortization_schedule(contract)
         assert len(schedules) == 12
-        ok, errs = BankingSettlementCorpus.verify_loan_schedule_integrity(
-            contract, schedules
-        )
-        assert ok is True, f'Integrity errors: {errs}'
+        ok, errs = BankingSettlementCorpus.verify_loan_schedule_integrity(contract, schedules)
+        assert ok is True, f"Integrity errors: {errs}"
         total_principal_paid = sum(s.principal_due for s in schedules)
         assert abs(total_principal_paid - 120000.0) < 0.1
 
@@ -356,11 +341,11 @@ class TestBankingSettlementEnterpriseCorpus:
         res = BankingSettlementCorpus.simulate_concurrent_settlement_stress(
             concurrency=4, transactions_per_worker=10
         )
-        assert res['total_transactions'] == 40
-        assert res['success_count'] > 0
-        assert res['p95_latency_ms'] <= 100.0
-        assert res['double_entry_balanced'] is True
-        assert res['total_balance_conserved'] is True
+        assert res["total_transactions"] == 40
+        assert res["success_count"] > 0
+        assert res["p95_latency_ms"] <= 100.0
+        assert res["double_entry_balanced"] is True
+        assert res["total_balance_conserved"] is True
 
 
 class TestInsuranceClaimsEnterpriseCorpus:
@@ -399,9 +384,9 @@ class TestInsuranceClaimsEnterpriseCorpus:
         policies = InsuranceClaimsCorpus.get_seed_policies(count=1)
         policy = policies[0]
         policy.sum_assured = 100000.0
-        policy.policy_status = 'IN_FORCE'
+        policy.policy_status = "IN_FORCE"
         ok, msg, claim, payouts = InsuranceClaimsCorpus.adjudicate_in_memory_claim(
-            policy, claim_amount=20000.0, decision='APPROVE', deductible_ratio=0.05
+            policy, claim_amount=20000.0, decision="APPROVE", deductible_ratio=0.05
         )
         assert ok is True
         assert msg == "APPROVED"
@@ -412,9 +397,9 @@ class TestInsuranceClaimsEnterpriseCorpus:
     def test_claim_adjudication_rejection(self) -> None:
         policies = InsuranceClaimsCorpus.get_seed_policies(count=1)
         policy = policies[0]
-        policy.policy_status = 'IN_FORCE'
+        policy.policy_status = "IN_FORCE"
         ok, msg, claim, payouts = InsuranceClaimsCorpus.adjudicate_in_memory_claim(
-            policy, claim_amount=10000.0, decision='REJECT'
+            policy, claim_amount=10000.0, decision="REJECT"
         )
         assert ok is True
         assert msg == "REJECTED"
@@ -457,9 +442,7 @@ class TestInsuranceClaimsEnterpriseCorpus:
                 share_percentage=40.0,
             ),
         ]
-        ok, total, msg = InsuranceClaimsCorpus.verify_beneficiary_allocation_total(
-            bens_valid
-        )
+        ok, total, msg = InsuranceClaimsCorpus.verify_beneficiary_allocation_total(bens_valid)
         assert ok is True
         assert abs(total - 100.0) < 0.001
 
@@ -479,9 +462,7 @@ class TestInsuranceClaimsEnterpriseCorpus:
                 share_percentage=30.0,
             ),
         ]
-        ok, total, msg = InsuranceClaimsCorpus.verify_beneficiary_allocation_total(
-            bens_invalid
-        )
+        ok, total, msg = InsuranceClaimsCorpus.verify_beneficiary_allocation_total(bens_invalid)
         assert ok is False
 
     def test_actuarial_ibnr_chain_ladder_calculation(self) -> None:
@@ -537,10 +518,10 @@ class TestInsuranceClaimsEnterpriseCorpus:
         res = InsuranceClaimsCorpus.simulate_concurrent_claims_stress(
             concurrency=4, claims_per_worker=10
         )
-        assert res['total_claims_processed'] == 40
-        assert res['approved_count'] + res['rejected_count'] == 40
-        assert res['p95_latency_ms'] <= 100.0
-        assert res['boundary_violations'] == 0
+        assert res["total_claims_processed"] == 40
+        assert res["approved_count"] + res["rejected_count"] == 40
+        assert res["p95_latency_ms"] <= 100.0
+        assert res["boundary_violations"] == 0
 
 
 class TestTelecomRatingEnterpriseCorpus:
@@ -642,17 +623,13 @@ class TestTelecomRatingEnterpriseCorpus:
     def test_ocs_credit_reservation_and_commit(self) -> None:
         sub = TelecomRatingCorpus.get_seed_subscribers(count=1)[0]
         sub.wallet_balance = 50.0
-        ok, msg, resv = TelecomRatingCorpus.reserve_ocs_credit(
-            sub, requested_amount=20.0
-        )
+        ok, msg, resv = TelecomRatingCorpus.reserve_ocs_credit(sub, requested_amount=20.0)
         assert ok is True
         assert msg == "APPROVED"
         assert resv is not None
         assert sub.wallet_balance == 30.0
 
-        commit_ok, refunded = TelecomRatingCorpus.commit_ocs_credit(
-            sub, resv, actual_consumed=12.0
-        )
+        commit_ok, refunded = TelecomRatingCorpus.commit_ocs_credit(sub, resv, actual_consumed=12.0)
         assert commit_ok is True
         assert refunded == 8.0
         assert sub.wallet_balance == 38.0
@@ -678,9 +655,7 @@ class TestTelecomRatingEnterpriseCorpus:
             cycle_start_date="2026-03-01",
             cycle_end_date="2026-03-31",
         )
-        ok, msg = TelecomRatingCorpus.verify_quota_depletion_monotonicity(
-            w_before, w_after_valid
-        )
+        ok, msg = TelecomRatingCorpus.verify_quota_depletion_monotonicity(w_before, w_after_valid)
         assert ok is True
 
         w_after_invalid = QuotaWalletRecord(
@@ -693,9 +668,7 @@ class TestTelecomRatingEnterpriseCorpus:
             cycle_start_date="2026-03-01",
             cycle_end_date="2026-03-31",
         )
-        ok, msg = TelecomRatingCorpus.verify_quota_depletion_monotonicity(
-            w_before, w_after_invalid
-        )
+        ok, msg = TelecomRatingCorpus.verify_quota_depletion_monotonicity(w_before, w_after_invalid)
         assert ok is False
         assert "decreased" in msg
 
@@ -713,7 +686,7 @@ class TestTelecomRatingEnterpriseCorpus:
             paid_status="UNPAID",
         )
         ok, errs = TelecomRatingCorpus.verify_monthly_bill_calculation(plan, 35.5, bill)
-        assert ok is True, f'Bill errors: {errs}'
+        assert ok is True, f"Bill errors: {errs}"
 
     def test_telecom_cdc_stream_simulation(self) -> None:
         cdrs = [
@@ -742,9 +715,9 @@ class TestTelecomRatingEnterpriseCorpus:
         res = TelecomRatingCorpus.simulate_concurrent_cdr_rating_stress(
             concurrency=4, cdrs_per_worker=10
         )
-        assert res['total_cdrs_rated'] == 40
-        assert res['rated_voice_count'] + res['rated_data_count'] == 40
-        assert res['p95_latency_ms'] <= 100.0
+        assert res["total_cdrs_rated"] == 40
+        assert res["rated_voice_count"] + res["rated_data_count"] == 40
+        assert res["p95_latency_ms"] <= 100.0
 
 
 class TestSupplyChainLogisticsEnterpriseCorpus:
@@ -790,14 +763,14 @@ class TestSupplyChainLogisticsEnterpriseCorpus:
             in_transit_qty=50,
             reorder_point=50,
         )
-        inv_map = {'WH_001_SKU_0001': inv_rec}
+        inv_map = {"WH_001_SKU_0001": inv_rec}
         ok, msg, allocated = SupplyChainLogisticsCorpus.allocate_order_inventory_in_memory(
-            inv_map, 'WH_001', [{'sku_id': 'SKU_0001', 'ordered_qty': 150}]
+            inv_map, "WH_001", [{"sku_id": "SKU_0001", "ordered_qty": 150}]
         )
         assert ok is True
         assert "ALLOCATED" in msg
         assert len(allocated) == 1
-        assert allocated[0] == ('SKU_0001', 150)
+        assert allocated[0] == ("SKU_0001", 150)
         assert inv_rec.allocated_qty == 250
         assert inv_rec.available_to_promise == 250
 
@@ -810,9 +783,9 @@ class TestSupplyChainLogisticsEnterpriseCorpus:
             in_transit_qty=0,
             reorder_point=50,
         )
-        inv_map = {'WH_001_SKU_0002': inv_rec}
+        inv_map = {"WH_001_SKU_0002": inv_rec}
         ok, msg, allocated = SupplyChainLogisticsCorpus.allocate_order_inventory_in_memory(
-            inv_map, 'WH_001', [{'sku_id': 'SKU_0002', 'ordered_qty': 50}]
+            inv_map, "WH_001", [{"sku_id": "SKU_0002", "ordered_qty": 50}]
         )
         assert ok is False
         assert "INSUFFICIENT_ATP" in msg
@@ -828,9 +801,9 @@ class TestSupplyChainLogisticsEnterpriseCorpus:
             in_transit_qty=100,
             reorder_point=50,
         )
-        inv_map = {'WH_001_SKU_0003': inv_rec}
+        inv_map = {"WH_001_SKU_0003": inv_rec}
         SupplyChainLogisticsCorpus.receive_inbound_asn_in_memory(
-            inv_map, 'WH_001', [('SKU_0003', 100)]
+            inv_map, "WH_001", [("SKU_0003", 100)]
         )
         assert inv_rec.on_hand_qty == 300
         assert inv_rec.available_to_promise == 250
@@ -892,7 +865,7 @@ class TestSupplyChainLogisticsEnterpriseCorpus:
         assert abs(cost - (rate.base_fee + 10.0 * rate.per_kg_rate)) < 0.01
 
     def test_supply_chain_cdc_stream_simulation(self) -> None:
-        allocations = [('WH_EAST', 'SKU_1', 20), ('WH_WEST', 'SKU_2', 15)]
+        allocations = [("WH_EAST", "SKU_1", 20), ("WH_WEST", "SKU_2", 15)]
         events = SupplyChainLogisticsCorpus.simulate_cdc_stream(allocations)
         assert len(events) == 2
         assert all(hasattr(e, "event_id") and hasattr(e, "table_name") for e in events)
@@ -902,10 +875,10 @@ class TestSupplyChainLogisticsEnterpriseCorpus:
         res = SupplyChainLogisticsCorpus.simulate_concurrent_order_allocation_stress(
             concurrency=4, orders_per_worker=10
         )
-        assert res['total_orders_processed'] == 40
-        assert res['success_count'] + res['insufficient_atp_count'] == 40
-        assert res['p95_latency_ms'] <= 100.0
-        assert res['atp_valid'] is True
+        assert res["total_orders_processed"] == 40
+        assert res["success_count"] + res["insufficient_atp_count"] == 40
+        assert res["p95_latency_ms"] <= 100.0
+        assert res["atp_valid"] is True
 
 
 class TestErpPayrollEnterpriseCorpus:
@@ -968,7 +941,7 @@ class TestErpPayrollEnterpriseCorpus:
             overtime_hours=0,
         )
         payroll = ErpPayrollCorpus.calculate_employee_payroll_in_memory(
-            emp, att, period_month='202603'
+            emp, att, period_month="202603"
         )
         assert isinstance(payroll, MonthlyPayrollRecord)
         assert payroll.gross_salary == 25000.0
@@ -1002,7 +975,7 @@ class TestErpPayrollEnterpriseCorpus:
             overtime_hours=10,
         )
         payroll = ErpPayrollCorpus.calculate_employee_payroll_in_memory(
-            emp, att, period_month='202603'
+            emp, att, period_month="202603"
         )
         assert payroll.gross_salary > emp.base_salary
 
@@ -1029,10 +1002,10 @@ class TestErpPayrollEnterpriseCorpus:
         res = ErpPayrollCorpus.simulate_concurrent_payroll_stress(
             concurrency=4, batches_per_worker=10
         )
-        assert res['total_payrolls_calculated'] == 40
-        assert res['calculated_count'] == 40
-        assert res['p95_latency_ms'] <= 100.0
-        assert res['balance_failures'] == 0
+        assert res["total_payrolls_calculated"] == 40
+        assert res["calculated_count"] == 40
+        assert res["p95_latency_ms"] <= 100.0
+        assert res["balance_failures"] == 0
 
 
 class TestEnterpriseCorporaCrossDialectLowering:
@@ -1073,7 +1046,7 @@ class TestEnterpriseCorporaCrossDialectLowering:
             CONSTRAINT PK_ACCOUNT_MASTER PRIMARY KEY (ACCOUNT_NO)
         );
         """
-        res = lowerer.lower_table_ddl(source_ddl, source_dialect='oracle')
+        res = lowerer.lower_table_ddl(source_ddl, source_dialect="oracle")
         assert res is not None
         assert len(res) > 0
         assert "ACCOUNT_MASTER" in res.upper()
@@ -1113,7 +1086,7 @@ class TestEnterpriseCorporaCrossDialectLowering:
             CONSTRAINT PK_INS_CLAIM PRIMARY KEY (CLAIM_ID)
         );
         """
-        res = lowerer.lower_table_ddl(source_ddl, source_dialect='oracle')
+        res = lowerer.lower_table_ddl(source_ddl, source_dialect="oracle")
         assert res is not None
         assert "INS_CLAIM" in res.upper()
 
@@ -1151,7 +1124,7 @@ class TestEnterpriseCorporaCrossDialectLowering:
             CONSTRAINT PK_TEL_CDR_RATED PRIMARY KEY (CDR_ID)
         );
         """
-        res = lowerer.lower_table_ddl(source_ddl, source_dialect='oracle')
+        res = lowerer.lower_table_ddl(source_ddl, source_dialect="oracle")
         assert res is not None
         assert "TEL_CDR_RATED" in res.upper()
 
@@ -1188,7 +1161,7 @@ class TestEnterpriseCorporaCrossDialectLowering:
             CONSTRAINT PK_WMS_INV_BAL PRIMARY KEY (BALANCE_ID)
         );
         """
-        res = lowerer.lower_table_ddl(source_ddl, source_dialect='oracle')
+        res = lowerer.lower_table_ddl(source_ddl, source_dialect="oracle")
         assert res is not None
         assert "WMS_INVENTORY_BALANCE" in res.upper()
 
@@ -1227,7 +1200,7 @@ class TestEnterpriseCorporaCrossDialectLowering:
             CONSTRAINT PK_HR_PAYROLL PRIMARY KEY (PAYROLL_ID)
         );
         """
-        res = lowerer.lower_table_ddl(source_ddl, source_dialect='oracle')
+        res = lowerer.lower_table_ddl(source_ddl, source_dialect="oracle")
         assert res is not None
         assert "HR_PAYROLL_MONTHLY" in res.upper()
 
@@ -1266,7 +1239,7 @@ class TestEnterpriseCorporaComplexQueriesLowering:
         FROM JOURNAL_ENTRY
         WHERE STATUS = 'SETTLED';
         """
-        res = lowerer.lower_statement(query, source_dialect='oracle', asset_kind='DML')
+        res = lowerer.lower_statement(query, source_dialect="oracle", asset_kind="DML")
         assert res is not None
         assert "JOURNAL_ENTRY" in res.upper()
         assert "OVER" in res.upper()
@@ -1309,7 +1282,7 @@ class TestEnterpriseCorporaComplexQueriesLowering:
             ) AS PREV_PAID
         FROM DEV_SUMMARY;
         """
-        res = lowerer.lower_statement(query, source_dialect='oracle', asset_kind='DML')
+        res = lowerer.lower_statement(query, source_dialect="oracle", asset_kind="DML")
         assert res is not None
         assert "DEV_SUMMARY" in res.upper()
 
@@ -1343,7 +1316,7 @@ class TestEnterpriseCorporaComplexQueriesLowering:
         FROM TEL_CDR_RATED
         GROUP BY IMSI, TRUNC(START_TIME);
         """
-        res = lowerer.lower_statement(query, source_dialect='oracle', asset_kind='DML')
+        res = lowerer.lower_statement(query, source_dialect="oracle", asset_kind="DML")
         assert res is not None
         assert "TEL_CDR_RATED" in res.upper()
 
@@ -1381,7 +1354,7 @@ class TestEnterpriseCorporaComplexQueriesLowering:
         FROM WMS_INVENTORY_BALANCE
         WHERE ON_HAND_QTY > ALLOCATED_QTY;
         """
-        res = lowerer.lower_statement(query, source_dialect='oracle', asset_kind='DML')
+        res = lowerer.lower_statement(query, source_dialect="oracle", asset_kind="DML")
         assert res is not None
         assert "WMS_INVENTORY_BALANCE" in res.upper()
 
@@ -1418,7 +1391,7 @@ class TestEnterpriseCorporaComplexQueriesLowering:
         WHERE P.PERIOD_MONTH = '202603'
         GROUP BY E.ENTITY_ID, E.DEPARTMENT_ID;
         """
-        res = lowerer.lower_statement(query, source_dialect='oracle', asset_kind='DML')
+        res = lowerer.lower_statement(query, source_dialect="oracle", asset_kind="DML")
         assert res is not None
         assert "HR_PAYROLL_MONTHLY" in res.upper()
 
@@ -1434,15 +1407,14 @@ class TestEnterpriseCorporaL5SelfHealingIntegration:
         self, healing_engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         failing_sql = (
-            'SELECT ACCOUNT_NO, NVL(FEE_AMT, 0) AS FEE '
-            'FROM JOURNAL_ENTRY WHERE STATUS = 1;'
+            "SELECT ACCOUNT_NO, NVL(FEE_AMT, 0) AS FEE FROM JOURNAL_ENTRY WHERE STATUS = 1;"
         )
-        err_msg = '42883: function nvl(numeric, integer) does not exist'
+        err_msg = "42883: function nvl(numeric, integer) does not exist"
         ok, repaired, receipt = healing_engine.autonomous_repair_and_verify(
             failing_sql=failing_sql,
             raw_error=err_msg,
-            target_engine='opengauss',
-            sandbox_verifier=lambda s: (True, 'OK'),
+            target_engine="opengauss",
+            sandbox_verifier=lambda s: (True, "OK"),
         )
         assert ok is True
         assert receipt.zero_human_intervention is True
@@ -1453,16 +1425,13 @@ class TestEnterpriseCorporaL5SelfHealingIntegration:
     def test_insurance_sysdate_healing_on_tidb(
         self, healing_engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
-        failing_sql = (
-            'INSERT INTO INS_CLAIM (CLAIM_ID, REPORT_DATE) '
-            'VALUES (101, SYSDATE);'
-        )
+        failing_sql = "INSERT INTO INS_CLAIM (CLAIM_ID, REPORT_DATE) VALUES (101, SYSDATE);"
         err_msg = "Error 1064: You have an error in your SQL syntax near 'SYSDATE'"
         ok, repaired, receipt = healing_engine.autonomous_repair_and_verify(
             failing_sql=failing_sql,
             raw_error=err_msg,
-            target_engine='tidb',
-            sandbox_verifier=lambda s: (True, 'OK'),
+            target_engine="tidb",
+            sandbox_verifier=lambda s: (True, "OK"),
         )
         assert ok is True
         assert receipt.zero_human_intervention is True
@@ -1472,15 +1441,14 @@ class TestEnterpriseCorporaL5SelfHealingIntegration:
         self, healing_engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         failing_sql = (
-            'INSERT INTO TEL_CDR_RAW (CDR_ID, IMSI) '
-            'VALUES (SEQ_CDR_ID.NEXTVAL, 460010001);'
+            "INSERT INTO TEL_CDR_RAW (CDR_ID, IMSI) VALUES (SEQ_CDR_ID.NEXTVAL, 460010001);"
         )
         err_msg = "Error 1054: Unknown column 'SEQ_CDR_ID.NEXTVAL' in 'field list'"
         ok, repaired, receipt = healing_engine.autonomous_repair_and_verify(
             failing_sql=failing_sql,
             raw_error=err_msg,
-            target_engine='oceanbase_mysql',
-            sandbox_verifier=lambda s: (True, 'OK'),
+            target_engine="oceanbase_mysql",
+            sandbox_verifier=lambda s: (True, "OK"),
         )
         assert ok is True
         assert receipt.zero_human_intervention is True
@@ -1489,13 +1457,13 @@ class TestEnterpriseCorporaL5SelfHealingIntegration:
     def test_supply_chain_keyword_escaping_healing(
         self, healing_engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
-        failing_sql = 'SELECT ORDER, SKU_CODE FROM TMS_TRANSPORT_ORDER;'
+        failing_sql = "SELECT ORDER, SKU_CODE FROM TMS_TRANSPORT_ORDER;"
         err_msg = "42703: KingbaseES: 字段不存在: ORDER"
         ok, repaired, receipt = healing_engine.autonomous_repair_and_verify(
             failing_sql=failing_sql,
             raw_error=err_msg,
-            target_engine='kingbase',
-            sandbox_verifier=lambda s: (True, 'OK'),
+            target_engine="kingbase",
+            sandbox_verifier=lambda s: (True, "OK"),
         )
         assert ok is True
         assert receipt.zero_human_intervention is True
@@ -1504,15 +1472,13 @@ class TestEnterpriseCorporaL5SelfHealingIntegration:
     def test_erp_type_cast_mismatch_healing(
         self, healing_engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
-        failing_sql = (
-            'SELECT * FROM HR_PAYROLL_MONTHLY WHERE PERIOD_MONTH = 202603;'
-        )
-        err_msg = 'ERROR: 42804: datatype mismatch, cannot cast type text to integer'
+        failing_sql = "SELECT * FROM HR_PAYROLL_MONTHLY WHERE PERIOD_MONTH = 202603;"
+        err_msg = "ERROR: 42804: datatype mismatch, cannot cast type text to integer"
         ok, repaired, receipt = healing_engine.autonomous_repair_and_verify(
             failing_sql=failing_sql,
             raw_error=err_msg,
-            target_engine='gaussdb_oracle',
-            sandbox_verifier=lambda s: (True, 'OK'),
+            target_engine="gaussdb_oracle",
+            sandbox_verifier=lambda s: (True, "OK"),
         )
         assert ok is True
         assert receipt.zero_human_intervention is True
@@ -1537,18 +1503,20 @@ class TestEnterpriseCorporaFullAutonomousMigrationLifecycle:
         self, migration_config: AutonomousMigrationConfig
     ) -> None:
         engine = AutonomousDatabaseMigrationEngine(config=migration_config)
-        engine.register_source_assets([
-            {
-                "asset_id": "BANK_DDL_01",
-                "asset_name": "ACCOUNT_MASTER",
-                "asset_kind": "TABLE",
-                "source_dialect": "oracle",
-                "source_ddl": (
-                    'CREATE TABLE ACCOUNT_MASTER (ACCOUNT_NO VARCHAR2(32) NOT NULL, '
-                    'BALANCE NUMBER(18, 4) NOT NULL);'
-                ),
-            },
-        ])
+        engine.register_source_assets(
+            [
+                {
+                    "asset_id": "BANK_DDL_01",
+                    "asset_name": "ACCOUNT_MASTER",
+                    "asset_kind": "TABLE",
+                    "source_dialect": "oracle",
+                    "source_ddl": (
+                        "CREATE TABLE ACCOUNT_MASTER (ACCOUNT_NO VARCHAR2(32) NOT NULL, "
+                        "BALANCE NUMBER(18, 4) NOT NULL);"
+                    ),
+                },
+            ]
+        )
         dossier = engine.execute_full_migration()
         assert isinstance(dossier, AutonomousMigrationDossier)
         assert dossier.overall_success is True
@@ -1561,18 +1529,20 @@ class TestEnterpriseCorporaFullAutonomousMigrationLifecycle:
     ) -> None:
         engine = AutonomousDatabaseMigrationEngine(config=migration_config)
         engine.config.target_engine = "kingbase"
-        engine.register_source_assets([
-            {
-                "asset_id": "INS_DDL_01",
-                "asset_name": "INS_CLAIM",
-                "asset_kind": "TABLE",
-                "source_dialect": "oracle",
-                "source_ddl": (
-                    'CREATE TABLE INS_CLAIM (CLAIM_ID VARCHAR2(32) NOT NULL, '
-                    'AMOUNT NUMBER(18, 2) NOT NULL);'
-                ),
-            },
-        ])
+        engine.register_source_assets(
+            [
+                {
+                    "asset_id": "INS_DDL_01",
+                    "asset_name": "INS_CLAIM",
+                    "asset_kind": "TABLE",
+                    "source_dialect": "oracle",
+                    "source_ddl": (
+                        "CREATE TABLE INS_CLAIM (CLAIM_ID VARCHAR2(32) NOT NULL, "
+                        "AMOUNT NUMBER(18, 2) NOT NULL);"
+                    ),
+                },
+            ]
+        )
         dossier = engine.execute_full_migration()
         assert dossier.overall_success is True
         assert dossier.human_review_backlog_count == 0
@@ -1582,18 +1552,20 @@ class TestEnterpriseCorporaFullAutonomousMigrationLifecycle:
     ) -> None:
         engine = AutonomousDatabaseMigrationEngine(config=migration_config)
         engine.config.target_engine = "opengauss"
-        engine.register_source_assets([
-            {
-                "asset_id": "TEL_DDL_01",
-                "asset_name": "TEL_CDR",
-                "asset_kind": "TABLE",
-                "source_dialect": "oracle",
-                "source_ddl": (
-                    'CREATE TABLE TEL_CDR (CDR_ID VARCHAR2(64) NOT NULL, '
-                    'DURATION NUMBER(8, 0) NOT NULL);'
-                ),
-            },
-        ])
+        engine.register_source_assets(
+            [
+                {
+                    "asset_id": "TEL_DDL_01",
+                    "asset_name": "TEL_CDR",
+                    "asset_kind": "TABLE",
+                    "source_dialect": "oracle",
+                    "source_ddl": (
+                        "CREATE TABLE TEL_CDR (CDR_ID VARCHAR2(64) NOT NULL, "
+                        "DURATION NUMBER(8, 0) NOT NULL);"
+                    ),
+                },
+            ]
+        )
         dossier = engine.execute_full_migration()
         assert dossier.overall_success is True
         assert dossier.human_review_backlog_count == 0
@@ -1603,18 +1575,20 @@ class TestEnterpriseCorporaFullAutonomousMigrationLifecycle:
     ) -> None:
         engine = AutonomousDatabaseMigrationEngine(config=migration_config)
         engine.config.target_engine = "tidb"
-        engine.register_source_assets([
-            {
-                "asset_id": "WMS_DDL_01",
-                "asset_name": "WMS_BALANCE",
-                "asset_kind": "TABLE",
-                "source_dialect": "oracle",
-                "source_ddl": (
-                    'CREATE TABLE WMS_BALANCE (WH_CODE VARCHAR2(32) NOT NULL, '
-                    'ON_HAND NUMBER(12, 0) NOT NULL);'
-                ),
-            },
-        ])
+        engine.register_source_assets(
+            [
+                {
+                    "asset_id": "WMS_DDL_01",
+                    "asset_name": "WMS_BALANCE",
+                    "asset_kind": "TABLE",
+                    "source_dialect": "oracle",
+                    "source_ddl": (
+                        "CREATE TABLE WMS_BALANCE (WH_CODE VARCHAR2(32) NOT NULL, "
+                        "ON_HAND NUMBER(12, 0) NOT NULL);"
+                    ),
+                },
+            ]
+        )
         dossier = engine.execute_full_migration()
         assert dossier.overall_success is True
         assert dossier.human_review_backlog_count == 0
@@ -1624,18 +1598,20 @@ class TestEnterpriseCorporaFullAutonomousMigrationLifecycle:
     ) -> None:
         engine = AutonomousDatabaseMigrationEngine(config=migration_config)
         engine.config.target_engine = "highgo"
-        engine.register_source_assets([
-            {
-                "asset_id": "ERP_DDL_01",
-                "asset_name": "HR_PAYROLL",
-                "asset_kind": "TABLE",
-                "source_dialect": "oracle",
-                "source_ddl": (
-                    'CREATE TABLE HR_PAYROLL (PAYROLL_ID VARCHAR2(32) NOT NULL, '
-                    'GROSS NUMBER(14, 2) NOT NULL);'
-                ),
-            },
-        ])
+        engine.register_source_assets(
+            [
+                {
+                    "asset_id": "ERP_DDL_01",
+                    "asset_name": "HR_PAYROLL",
+                    "asset_kind": "TABLE",
+                    "source_dialect": "oracle",
+                    "source_ddl": (
+                        "CREATE TABLE HR_PAYROLL (PAYROLL_ID VARCHAR2(32) NOT NULL, "
+                        "GROSS NUMBER(14, 2) NOT NULL);"
+                    ),
+                },
+            ]
+        )
         dossier = engine.execute_full_migration()
         assert dossier.overall_success is True
         assert dossier.human_review_backlog_count == 0
@@ -1648,253 +1624,205 @@ class TestBankingCorpusExhaustiveTargetMatrix:
     def corpus(self) -> type[BankingSettlementCorpus]:
         return BankingSettlementCorpus
 
-    def test_banking_lowering_to_dm8(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_lowering_to_dm8(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DDL to dm8."""
         lowerer = get_chinadb_lowerer("dm8")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_banking_dml_lowering_to_dm8(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_dml_lowering_to_dm8(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DML to dm8."""
         lowerer = get_chinadb_lowerer("dm8")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM BANKING_SETTLEMENT_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM BANKING_SETTLEMENT_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_banking_lowering_to_kingbase(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_lowering_to_kingbase(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DDL to kingbase."""
         lowerer = get_chinadb_lowerer("kingbase")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_banking_dml_lowering_to_kingbase(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_dml_lowering_to_kingbase(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DML to kingbase."""
         lowerer = get_chinadb_lowerer("kingbase")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM BANKING_SETTLEMENT_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM BANKING_SETTLEMENT_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_banking_lowering_to_opengauss(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_lowering_to_opengauss(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DDL to opengauss."""
         lowerer = get_chinadb_lowerer("opengauss")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_banking_dml_lowering_to_opengauss(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_dml_lowering_to_opengauss(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DML to opengauss."""
         lowerer = get_chinadb_lowerer("opengauss")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM BANKING_SETTLEMENT_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM BANKING_SETTLEMENT_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_banking_lowering_to_tidb(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_lowering_to_tidb(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DDL to tidb."""
         lowerer = get_chinadb_lowerer("tidb")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_banking_dml_lowering_to_tidb(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_dml_lowering_to_tidb(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DML to tidb."""
         lowerer = get_chinadb_lowerer("tidb")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM BANKING_SETTLEMENT_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM BANKING_SETTLEMENT_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_banking_lowering_to_gbase8s(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_lowering_to_gbase8s(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DDL to gbase8s."""
         lowerer = get_chinadb_lowerer("gbase8s")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_banking_dml_lowering_to_gbase8s(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_dml_lowering_to_gbase8s(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DML to gbase8s."""
         lowerer = get_chinadb_lowerer("gbase8s")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM BANKING_SETTLEMENT_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM BANKING_SETTLEMENT_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_banking_lowering_to_gbase8c(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_lowering_to_gbase8c(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DDL to gbase8c."""
         lowerer = get_chinadb_lowerer("gbase8c")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_banking_dml_lowering_to_gbase8c(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_dml_lowering_to_gbase8c(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DML to gbase8c."""
         lowerer = get_chinadb_lowerer("gbase8c")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM BANKING_SETTLEMENT_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM BANKING_SETTLEMENT_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_banking_lowering_to_gbase8a(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_lowering_to_gbase8a(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DDL to gbase8a."""
         lowerer = get_chinadb_lowerer("gbase8a")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_banking_dml_lowering_to_gbase8a(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_dml_lowering_to_gbase8a(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DML to gbase8a."""
         lowerer = get_chinadb_lowerer("gbase8a")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM BANKING_SETTLEMENT_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM BANKING_SETTLEMENT_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_banking_lowering_to_highgo(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_lowering_to_highgo(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DDL to highgo."""
         lowerer = get_chinadb_lowerer("highgo")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_banking_dml_lowering_to_highgo(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_dml_lowering_to_highgo(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DML to highgo."""
         lowerer = get_chinadb_lowerer("highgo")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM BANKING_SETTLEMENT_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM BANKING_SETTLEMENT_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_banking_lowering_to_oceanbase_oracle(
         self, corpus: type[BankingSettlementCorpus]
@@ -1902,13 +1830,13 @@ class TestBankingCorpusExhaustiveTargetMatrix:
         """Validate lowering Banking DDL to oceanbase_oracle."""
         lowerer = get_chinadb_lowerer("oceanbase_oracle")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_banking_dml_lowering_to_oceanbase_oracle(
         self, corpus: type[BankingSettlementCorpus]
@@ -1916,16 +1844,14 @@ class TestBankingCorpusExhaustiveTargetMatrix:
         """Validate lowering Banking DML to oceanbase_oracle."""
         lowerer = get_chinadb_lowerer("oceanbase_oracle")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM BANKING_SETTLEMENT_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM BANKING_SETTLEMENT_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_banking_lowering_to_oceanbase_mysql(
         self, corpus: type[BankingSettlementCorpus]
@@ -1933,13 +1859,13 @@ class TestBankingCorpusExhaustiveTargetMatrix:
         """Validate lowering Banking DDL to oceanbase_mysql."""
         lowerer = get_chinadb_lowerer("oceanbase_mysql")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_banking_dml_lowering_to_oceanbase_mysql(
         self, corpus: type[BankingSettlementCorpus]
@@ -1947,16 +1873,14 @@ class TestBankingCorpusExhaustiveTargetMatrix:
         """Validate lowering Banking DML to oceanbase_mysql."""
         lowerer = get_chinadb_lowerer("oceanbase_mysql")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM BANKING_SETTLEMENT_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM BANKING_SETTLEMENT_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_banking_lowering_to_gaussdb_oracle(
         self, corpus: type[BankingSettlementCorpus]
@@ -1964,13 +1888,13 @@ class TestBankingCorpusExhaustiveTargetMatrix:
         """Validate lowering Banking DDL to gaussdb_oracle."""
         lowerer = get_chinadb_lowerer("gaussdb_oracle")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_banking_dml_lowering_to_gaussdb_oracle(
         self, corpus: type[BankingSettlementCorpus]
@@ -1978,30 +1902,26 @@ class TestBankingCorpusExhaustiveTargetMatrix:
         """Validate lowering Banking DML to gaussdb_oracle."""
         lowerer = get_chinadb_lowerer("gaussdb_oracle")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM BANKING_SETTLEMENT_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM BANKING_SETTLEMENT_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_banking_lowering_to_gaussdb_mysql(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_lowering_to_gaussdb_mysql(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DDL to gaussdb_mysql."""
         lowerer = get_chinadb_lowerer("gaussdb_mysql")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_banking_dml_lowering_to_gaussdb_mysql(
         self, corpus: type[BankingSettlementCorpus]
@@ -2009,47 +1929,39 @@ class TestBankingCorpusExhaustiveTargetMatrix:
         """Validate lowering Banking DML to gaussdb_mysql."""
         lowerer = get_chinadb_lowerer("gaussdb_mysql")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM BANKING_SETTLEMENT_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM BANKING_SETTLEMENT_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_banking_lowering_to_goldendb(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_lowering_to_goldendb(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DDL to goldendb."""
         lowerer = get_chinadb_lowerer("goldendb")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_banking_dml_lowering_to_goldendb(
-        self, corpus: type[BankingSettlementCorpus]
-    ) -> None:
+    def test_banking_dml_lowering_to_goldendb(self, corpus: type[BankingSettlementCorpus]) -> None:
         """Validate lowering Banking DML to goldendb."""
         lowerer = get_chinadb_lowerer("goldendb")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM BANKING_SETTLEMENT_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM BANKING_SETTLEMENT_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
 
 class TestInsuranceCorpusExhaustiveTargetMatrix:
@@ -2059,253 +1971,205 @@ class TestInsuranceCorpusExhaustiveTargetMatrix:
     def corpus(self) -> type[InsuranceClaimsCorpus]:
         return InsuranceClaimsCorpus
 
-    def test_insurance_lowering_to_dm8(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_lowering_to_dm8(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DDL to dm8."""
         lowerer = get_chinadb_lowerer("dm8")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_insurance_dml_lowering_to_dm8(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_dml_lowering_to_dm8(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DML to dm8."""
         lowerer = get_chinadb_lowerer("dm8")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM INSURANCE_CLAIMS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM INSURANCE_CLAIMS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_insurance_lowering_to_kingbase(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_lowering_to_kingbase(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DDL to kingbase."""
         lowerer = get_chinadb_lowerer("kingbase")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_insurance_dml_lowering_to_kingbase(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_dml_lowering_to_kingbase(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DML to kingbase."""
         lowerer = get_chinadb_lowerer("kingbase")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM INSURANCE_CLAIMS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM INSURANCE_CLAIMS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_insurance_lowering_to_opengauss(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_lowering_to_opengauss(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DDL to opengauss."""
         lowerer = get_chinadb_lowerer("opengauss")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_insurance_dml_lowering_to_opengauss(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_dml_lowering_to_opengauss(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DML to opengauss."""
         lowerer = get_chinadb_lowerer("opengauss")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM INSURANCE_CLAIMS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM INSURANCE_CLAIMS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_insurance_lowering_to_tidb(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_lowering_to_tidb(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DDL to tidb."""
         lowerer = get_chinadb_lowerer("tidb")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_insurance_dml_lowering_to_tidb(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_dml_lowering_to_tidb(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DML to tidb."""
         lowerer = get_chinadb_lowerer("tidb")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM INSURANCE_CLAIMS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM INSURANCE_CLAIMS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_insurance_lowering_to_gbase8s(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_lowering_to_gbase8s(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DDL to gbase8s."""
         lowerer = get_chinadb_lowerer("gbase8s")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_insurance_dml_lowering_to_gbase8s(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_dml_lowering_to_gbase8s(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DML to gbase8s."""
         lowerer = get_chinadb_lowerer("gbase8s")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM INSURANCE_CLAIMS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM INSURANCE_CLAIMS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_insurance_lowering_to_gbase8c(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_lowering_to_gbase8c(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DDL to gbase8c."""
         lowerer = get_chinadb_lowerer("gbase8c")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_insurance_dml_lowering_to_gbase8c(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_dml_lowering_to_gbase8c(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DML to gbase8c."""
         lowerer = get_chinadb_lowerer("gbase8c")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM INSURANCE_CLAIMS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM INSURANCE_CLAIMS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_insurance_lowering_to_gbase8a(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_lowering_to_gbase8a(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DDL to gbase8a."""
         lowerer = get_chinadb_lowerer("gbase8a")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_insurance_dml_lowering_to_gbase8a(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_dml_lowering_to_gbase8a(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DML to gbase8a."""
         lowerer = get_chinadb_lowerer("gbase8a")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM INSURANCE_CLAIMS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM INSURANCE_CLAIMS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_insurance_lowering_to_highgo(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_lowering_to_highgo(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DDL to highgo."""
         lowerer = get_chinadb_lowerer("highgo")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_insurance_dml_lowering_to_highgo(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_dml_lowering_to_highgo(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DML to highgo."""
         lowerer = get_chinadb_lowerer("highgo")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM INSURANCE_CLAIMS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM INSURANCE_CLAIMS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_insurance_lowering_to_oceanbase_oracle(
         self, corpus: type[InsuranceClaimsCorpus]
@@ -2313,13 +2177,13 @@ class TestInsuranceCorpusExhaustiveTargetMatrix:
         """Validate lowering Insurance DDL to oceanbase_oracle."""
         lowerer = get_chinadb_lowerer("oceanbase_oracle")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_insurance_dml_lowering_to_oceanbase_oracle(
         self, corpus: type[InsuranceClaimsCorpus]
@@ -2327,16 +2191,14 @@ class TestInsuranceCorpusExhaustiveTargetMatrix:
         """Validate lowering Insurance DML to oceanbase_oracle."""
         lowerer = get_chinadb_lowerer("oceanbase_oracle")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM INSURANCE_CLAIMS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM INSURANCE_CLAIMS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_insurance_lowering_to_oceanbase_mysql(
         self, corpus: type[InsuranceClaimsCorpus]
@@ -2344,13 +2206,13 @@ class TestInsuranceCorpusExhaustiveTargetMatrix:
         """Validate lowering Insurance DDL to oceanbase_mysql."""
         lowerer = get_chinadb_lowerer("oceanbase_mysql")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_insurance_dml_lowering_to_oceanbase_mysql(
         self, corpus: type[InsuranceClaimsCorpus]
@@ -2358,16 +2220,14 @@ class TestInsuranceCorpusExhaustiveTargetMatrix:
         """Validate lowering Insurance DML to oceanbase_mysql."""
         lowerer = get_chinadb_lowerer("oceanbase_mysql")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM INSURANCE_CLAIMS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM INSURANCE_CLAIMS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_insurance_lowering_to_gaussdb_oracle(
         self, corpus: type[InsuranceClaimsCorpus]
@@ -2375,13 +2235,13 @@ class TestInsuranceCorpusExhaustiveTargetMatrix:
         """Validate lowering Insurance DDL to gaussdb_oracle."""
         lowerer = get_chinadb_lowerer("gaussdb_oracle")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_insurance_dml_lowering_to_gaussdb_oracle(
         self, corpus: type[InsuranceClaimsCorpus]
@@ -2389,30 +2249,26 @@ class TestInsuranceCorpusExhaustiveTargetMatrix:
         """Validate lowering Insurance DML to gaussdb_oracle."""
         lowerer = get_chinadb_lowerer("gaussdb_oracle")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM INSURANCE_CLAIMS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM INSURANCE_CLAIMS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_insurance_lowering_to_gaussdb_mysql(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_lowering_to_gaussdb_mysql(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DDL to gaussdb_mysql."""
         lowerer = get_chinadb_lowerer("gaussdb_mysql")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_insurance_dml_lowering_to_gaussdb_mysql(
         self, corpus: type[InsuranceClaimsCorpus]
@@ -2420,47 +2276,39 @@ class TestInsuranceCorpusExhaustiveTargetMatrix:
         """Validate lowering Insurance DML to gaussdb_mysql."""
         lowerer = get_chinadb_lowerer("gaussdb_mysql")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM INSURANCE_CLAIMS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM INSURANCE_CLAIMS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_insurance_lowering_to_goldendb(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_lowering_to_goldendb(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DDL to goldendb."""
         lowerer = get_chinadb_lowerer("goldendb")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_insurance_dml_lowering_to_goldendb(
-        self, corpus: type[InsuranceClaimsCorpus]
-    ) -> None:
+    def test_insurance_dml_lowering_to_goldendb(self, corpus: type[InsuranceClaimsCorpus]) -> None:
         """Validate lowering Insurance DML to goldendb."""
         lowerer = get_chinadb_lowerer("goldendb")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM INSURANCE_CLAIMS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM INSURANCE_CLAIMS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
 
 class TestTelecomCorpusExhaustiveTargetMatrix:
@@ -2470,267 +2318,217 @@ class TestTelecomCorpusExhaustiveTargetMatrix:
     def corpus(self) -> type[TelecomRatingCorpus]:
         return TelecomRatingCorpus
 
-    def test_telecom_lowering_to_dm8(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_lowering_to_dm8(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DDL to dm8."""
         lowerer = get_chinadb_lowerer("dm8")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_telecom_dml_lowering_to_dm8(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_dml_lowering_to_dm8(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DML to dm8."""
         lowerer = get_chinadb_lowerer("dm8")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM TELECOM_RATING_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM TELECOM_RATING_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_telecom_lowering_to_kingbase(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_lowering_to_kingbase(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DDL to kingbase."""
         lowerer = get_chinadb_lowerer("kingbase")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_telecom_dml_lowering_to_kingbase(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_dml_lowering_to_kingbase(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DML to kingbase."""
         lowerer = get_chinadb_lowerer("kingbase")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM TELECOM_RATING_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM TELECOM_RATING_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_telecom_lowering_to_opengauss(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_lowering_to_opengauss(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DDL to opengauss."""
         lowerer = get_chinadb_lowerer("opengauss")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_telecom_dml_lowering_to_opengauss(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_dml_lowering_to_opengauss(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DML to opengauss."""
         lowerer = get_chinadb_lowerer("opengauss")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM TELECOM_RATING_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM TELECOM_RATING_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_telecom_lowering_to_tidb(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_lowering_to_tidb(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DDL to tidb."""
         lowerer = get_chinadb_lowerer("tidb")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_telecom_dml_lowering_to_tidb(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_dml_lowering_to_tidb(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DML to tidb."""
         lowerer = get_chinadb_lowerer("tidb")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM TELECOM_RATING_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM TELECOM_RATING_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_telecom_lowering_to_gbase8s(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_lowering_to_gbase8s(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DDL to gbase8s."""
         lowerer = get_chinadb_lowerer("gbase8s")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_telecom_dml_lowering_to_gbase8s(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_dml_lowering_to_gbase8s(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DML to gbase8s."""
         lowerer = get_chinadb_lowerer("gbase8s")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM TELECOM_RATING_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM TELECOM_RATING_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_telecom_lowering_to_gbase8c(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_lowering_to_gbase8c(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DDL to gbase8c."""
         lowerer = get_chinadb_lowerer("gbase8c")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_telecom_dml_lowering_to_gbase8c(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_dml_lowering_to_gbase8c(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DML to gbase8c."""
         lowerer = get_chinadb_lowerer("gbase8c")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM TELECOM_RATING_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM TELECOM_RATING_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_telecom_lowering_to_gbase8a(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_lowering_to_gbase8a(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DDL to gbase8a."""
         lowerer = get_chinadb_lowerer("gbase8a")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_telecom_dml_lowering_to_gbase8a(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_dml_lowering_to_gbase8a(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DML to gbase8a."""
         lowerer = get_chinadb_lowerer("gbase8a")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM TELECOM_RATING_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM TELECOM_RATING_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_telecom_lowering_to_highgo(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_lowering_to_highgo(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DDL to highgo."""
         lowerer = get_chinadb_lowerer("highgo")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_telecom_dml_lowering_to_highgo(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_dml_lowering_to_highgo(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DML to highgo."""
         lowerer = get_chinadb_lowerer("highgo")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM TELECOM_RATING_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM TELECOM_RATING_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_telecom_lowering_to_oceanbase_oracle(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_lowering_to_oceanbase_oracle(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DDL to oceanbase_oracle."""
         lowerer = get_chinadb_lowerer("oceanbase_oracle")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_telecom_dml_lowering_to_oceanbase_oracle(
         self, corpus: type[TelecomRatingCorpus]
@@ -2738,30 +2536,26 @@ class TestTelecomCorpusExhaustiveTargetMatrix:
         """Validate lowering Telecom DML to oceanbase_oracle."""
         lowerer = get_chinadb_lowerer("oceanbase_oracle")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM TELECOM_RATING_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM TELECOM_RATING_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_telecom_lowering_to_oceanbase_mysql(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_lowering_to_oceanbase_mysql(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DDL to oceanbase_mysql."""
         lowerer = get_chinadb_lowerer("oceanbase_mysql")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_telecom_dml_lowering_to_oceanbase_mysql(
         self, corpus: type[TelecomRatingCorpus]
@@ -2769,30 +2563,26 @@ class TestTelecomCorpusExhaustiveTargetMatrix:
         """Validate lowering Telecom DML to oceanbase_mysql."""
         lowerer = get_chinadb_lowerer("oceanbase_mysql")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM TELECOM_RATING_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM TELECOM_RATING_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_telecom_lowering_to_gaussdb_oracle(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_lowering_to_gaussdb_oracle(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DDL to gaussdb_oracle."""
         lowerer = get_chinadb_lowerer("gaussdb_oracle")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_telecom_dml_lowering_to_gaussdb_oracle(
         self, corpus: type[TelecomRatingCorpus]
@@ -2800,78 +2590,64 @@ class TestTelecomCorpusExhaustiveTargetMatrix:
         """Validate lowering Telecom DML to gaussdb_oracle."""
         lowerer = get_chinadb_lowerer("gaussdb_oracle")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM TELECOM_RATING_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM TELECOM_RATING_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_telecom_lowering_to_gaussdb_mysql(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_lowering_to_gaussdb_mysql(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DDL to gaussdb_mysql."""
         lowerer = get_chinadb_lowerer("gaussdb_mysql")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_telecom_dml_lowering_to_gaussdb_mysql(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_dml_lowering_to_gaussdb_mysql(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DML to gaussdb_mysql."""
         lowerer = get_chinadb_lowerer("gaussdb_mysql")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM TELECOM_RATING_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM TELECOM_RATING_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_telecom_lowering_to_goldendb(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_lowering_to_goldendb(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DDL to goldendb."""
         lowerer = get_chinadb_lowerer("goldendb")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_telecom_dml_lowering_to_goldendb(
-        self, corpus: type[TelecomRatingCorpus]
-    ) -> None:
+    def test_telecom_dml_lowering_to_goldendb(self, corpus: type[TelecomRatingCorpus]) -> None:
         """Validate lowering Telecom DML to goldendb."""
         lowerer = get_chinadb_lowerer("goldendb")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM TELECOM_RATING_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM TELECOM_RATING_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
 
 class TestSupplyChainCorpusExhaustiveTargetMatrix:
@@ -2881,19 +2657,17 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
     def corpus(self) -> type[SupplyChainLogisticsCorpus]:
         return SupplyChainLogisticsCorpus
 
-    def test_supplychain_lowering_to_dm8(
-        self, corpus: type[SupplyChainLogisticsCorpus]
-    ) -> None:
+    def test_supplychain_lowering_to_dm8(self, corpus: type[SupplyChainLogisticsCorpus]) -> None:
         """Validate lowering SupplyChain DDL to dm8."""
         lowerer = get_chinadb_lowerer("dm8")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_supplychain_dml_lowering_to_dm8(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -2901,16 +2675,14 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DML to dm8."""
         lowerer = get_chinadb_lowerer("dm8")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_supplychain_lowering_to_kingbase(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -2918,13 +2690,13 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DDL to kingbase."""
         lowerer = get_chinadb_lowerer("kingbase")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_supplychain_dml_lowering_to_kingbase(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -2932,16 +2704,14 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DML to kingbase."""
         lowerer = get_chinadb_lowerer("kingbase")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_supplychain_lowering_to_opengauss(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -2949,13 +2719,13 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DDL to opengauss."""
         lowerer = get_chinadb_lowerer("opengauss")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_supplychain_dml_lowering_to_opengauss(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -2963,30 +2733,26 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DML to opengauss."""
         lowerer = get_chinadb_lowerer("opengauss")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_supplychain_lowering_to_tidb(
-        self, corpus: type[SupplyChainLogisticsCorpus]
-    ) -> None:
+    def test_supplychain_lowering_to_tidb(self, corpus: type[SupplyChainLogisticsCorpus]) -> None:
         """Validate lowering SupplyChain DDL to tidb."""
         lowerer = get_chinadb_lowerer("tidb")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_supplychain_dml_lowering_to_tidb(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -2994,16 +2760,14 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DML to tidb."""
         lowerer = get_chinadb_lowerer("tidb")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_supplychain_lowering_to_gbase8s(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3011,13 +2775,13 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DDL to gbase8s."""
         lowerer = get_chinadb_lowerer("gbase8s")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_supplychain_dml_lowering_to_gbase8s(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3025,16 +2789,14 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DML to gbase8s."""
         lowerer = get_chinadb_lowerer("gbase8s")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_supplychain_lowering_to_gbase8c(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3042,13 +2804,13 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DDL to gbase8c."""
         lowerer = get_chinadb_lowerer("gbase8c")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_supplychain_dml_lowering_to_gbase8c(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3056,16 +2818,14 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DML to gbase8c."""
         lowerer = get_chinadb_lowerer("gbase8c")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_supplychain_lowering_to_gbase8a(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3073,13 +2833,13 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DDL to gbase8a."""
         lowerer = get_chinadb_lowerer("gbase8a")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_supplychain_dml_lowering_to_gbase8a(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3087,30 +2847,26 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DML to gbase8a."""
         lowerer = get_chinadb_lowerer("gbase8a")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_supplychain_lowering_to_highgo(
-        self, corpus: type[SupplyChainLogisticsCorpus]
-    ) -> None:
+    def test_supplychain_lowering_to_highgo(self, corpus: type[SupplyChainLogisticsCorpus]) -> None:
         """Validate lowering SupplyChain DDL to highgo."""
         lowerer = get_chinadb_lowerer("highgo")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_supplychain_dml_lowering_to_highgo(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3118,16 +2874,14 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DML to highgo."""
         lowerer = get_chinadb_lowerer("highgo")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_supplychain_lowering_to_oceanbase_oracle(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3135,13 +2889,13 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DDL to oceanbase_oracle."""
         lowerer = get_chinadb_lowerer("oceanbase_oracle")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_supplychain_dml_lowering_to_oceanbase_oracle(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3149,16 +2903,14 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DML to oceanbase_oracle."""
         lowerer = get_chinadb_lowerer("oceanbase_oracle")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_supplychain_lowering_to_oceanbase_mysql(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3166,13 +2918,13 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DDL to oceanbase_mysql."""
         lowerer = get_chinadb_lowerer("oceanbase_mysql")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_supplychain_dml_lowering_to_oceanbase_mysql(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3180,16 +2932,14 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DML to oceanbase_mysql."""
         lowerer = get_chinadb_lowerer("oceanbase_mysql")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_supplychain_lowering_to_gaussdb_oracle(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3197,13 +2947,13 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DDL to gaussdb_oracle."""
         lowerer = get_chinadb_lowerer("gaussdb_oracle")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_supplychain_dml_lowering_to_gaussdb_oracle(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3211,16 +2961,14 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DML to gaussdb_oracle."""
         lowerer = get_chinadb_lowerer("gaussdb_oracle")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_supplychain_lowering_to_gaussdb_mysql(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3228,13 +2976,13 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DDL to gaussdb_mysql."""
         lowerer = get_chinadb_lowerer("gaussdb_mysql")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_supplychain_dml_lowering_to_gaussdb_mysql(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3242,16 +2990,14 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DML to gaussdb_mysql."""
         lowerer = get_chinadb_lowerer("gaussdb_mysql")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
     def test_supplychain_lowering_to_goldendb(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3259,13 +3005,13 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DDL to goldendb."""
         lowerer = get_chinadb_lowerer("goldendb")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
     def test_supplychain_dml_lowering_to_goldendb(
         self, corpus: type[SupplyChainLogisticsCorpus]
@@ -3273,16 +3019,14 @@ class TestSupplyChainCorpusExhaustiveTargetMatrix:
         """Validate lowering SupplyChain DML to goldendb."""
         lowerer = get_chinadb_lowerer("goldendb")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM SUPPLY_CHAIN_LOGISTICS_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
 
 class TestErpCorpusExhaustiveTargetMatrix:
@@ -3292,407 +3036,327 @@ class TestErpCorpusExhaustiveTargetMatrix:
     def corpus(self) -> type[ErpPayrollCorpus]:
         return ErpPayrollCorpus
 
-    def test_erp_lowering_to_dm8(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_lowering_to_dm8(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DDL to dm8."""
         lowerer = get_chinadb_lowerer("dm8")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_erp_dml_lowering_to_dm8(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_dml_lowering_to_dm8(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DML to dm8."""
         lowerer = get_chinadb_lowerer("dm8")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM ERP_PAYROLL_HR_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM ERP_PAYROLL_HR_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_erp_lowering_to_kingbase(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_lowering_to_kingbase(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DDL to kingbase."""
         lowerer = get_chinadb_lowerer("kingbase")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_erp_dml_lowering_to_kingbase(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_dml_lowering_to_kingbase(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DML to kingbase."""
         lowerer = get_chinadb_lowerer("kingbase")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM ERP_PAYROLL_HR_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM ERP_PAYROLL_HR_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_erp_lowering_to_opengauss(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_lowering_to_opengauss(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DDL to opengauss."""
         lowerer = get_chinadb_lowerer("opengauss")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_erp_dml_lowering_to_opengauss(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_dml_lowering_to_opengauss(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DML to opengauss."""
         lowerer = get_chinadb_lowerer("opengauss")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM ERP_PAYROLL_HR_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM ERP_PAYROLL_HR_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_erp_lowering_to_tidb(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_lowering_to_tidb(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DDL to tidb."""
         lowerer = get_chinadb_lowerer("tidb")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_erp_dml_lowering_to_tidb(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_dml_lowering_to_tidb(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DML to tidb."""
         lowerer = get_chinadb_lowerer("tidb")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM ERP_PAYROLL_HR_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM ERP_PAYROLL_HR_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_erp_lowering_to_gbase8s(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_lowering_to_gbase8s(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DDL to gbase8s."""
         lowerer = get_chinadb_lowerer("gbase8s")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_erp_dml_lowering_to_gbase8s(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_dml_lowering_to_gbase8s(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DML to gbase8s."""
         lowerer = get_chinadb_lowerer("gbase8s")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM ERP_PAYROLL_HR_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM ERP_PAYROLL_HR_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_erp_lowering_to_gbase8c(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_lowering_to_gbase8c(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DDL to gbase8c."""
         lowerer = get_chinadb_lowerer("gbase8c")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_erp_dml_lowering_to_gbase8c(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_dml_lowering_to_gbase8c(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DML to gbase8c."""
         lowerer = get_chinadb_lowerer("gbase8c")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM ERP_PAYROLL_HR_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM ERP_PAYROLL_HR_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_erp_lowering_to_gbase8a(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_lowering_to_gbase8a(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DDL to gbase8a."""
         lowerer = get_chinadb_lowerer("gbase8a")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_erp_dml_lowering_to_gbase8a(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_dml_lowering_to_gbase8a(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DML to gbase8a."""
         lowerer = get_chinadb_lowerer("gbase8a")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM ERP_PAYROLL_HR_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM ERP_PAYROLL_HR_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_erp_lowering_to_highgo(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_lowering_to_highgo(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DDL to highgo."""
         lowerer = get_chinadb_lowerer("highgo")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_erp_dml_lowering_to_highgo(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_dml_lowering_to_highgo(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DML to highgo."""
         lowerer = get_chinadb_lowerer("highgo")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM ERP_PAYROLL_HR_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM ERP_PAYROLL_HR_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_erp_lowering_to_oceanbase_oracle(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_lowering_to_oceanbase_oracle(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DDL to oceanbase_oracle."""
         lowerer = get_chinadb_lowerer("oceanbase_oracle")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_erp_dml_lowering_to_oceanbase_oracle(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_dml_lowering_to_oceanbase_oracle(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DML to oceanbase_oracle."""
         lowerer = get_chinadb_lowerer("oceanbase_oracle")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM ERP_PAYROLL_HR_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM ERP_PAYROLL_HR_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_erp_lowering_to_oceanbase_mysql(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_lowering_to_oceanbase_mysql(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DDL to oceanbase_mysql."""
         lowerer = get_chinadb_lowerer("oceanbase_mysql")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_erp_dml_lowering_to_oceanbase_mysql(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_dml_lowering_to_oceanbase_mysql(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DML to oceanbase_mysql."""
         lowerer = get_chinadb_lowerer("oceanbase_mysql")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM ERP_PAYROLL_HR_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM ERP_PAYROLL_HR_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_erp_lowering_to_gaussdb_oracle(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_lowering_to_gaussdb_oracle(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DDL to gaussdb_oracle."""
         lowerer = get_chinadb_lowerer("gaussdb_oracle")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_erp_dml_lowering_to_gaussdb_oracle(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_dml_lowering_to_gaussdb_oracle(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DML to gaussdb_oracle."""
         lowerer = get_chinadb_lowerer("gaussdb_oracle")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM ERP_PAYROLL_HR_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM ERP_PAYROLL_HR_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_erp_lowering_to_gaussdb_mysql(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_lowering_to_gaussdb_mysql(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DDL to gaussdb_mysql."""
         lowerer = get_chinadb_lowerer("gaussdb_mysql")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_erp_dml_lowering_to_gaussdb_mysql(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_dml_lowering_to_gaussdb_mysql(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DML to gaussdb_mysql."""
         lowerer = get_chinadb_lowerer("gaussdb_mysql")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM ERP_PAYROLL_HR_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM ERP_PAYROLL_HR_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
+        assert "SELECT" in lowered.upper()
 
-    def test_erp_lowering_to_goldendb(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_lowering_to_goldendb(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DDL to goldendb."""
         lowerer = get_chinadb_lowerer("goldendb")
         stmts = corpus.parse_statements()
-        sample_stmts = [s for s in stmts if 'CREATE TABLE' in s.upper()][:3]
-        assert len(sample_stmts) > 0, 'No table DDL statements found'
+        sample_stmts = [s for s in stmts if "CREATE TABLE" in s.upper()][:3]
+        assert len(sample_stmts) > 0, "No table DDL statements found"
         for s in sample_stmts:
-            lowered = lowerer.lower_table_ddl(s, source_dialect='oracle')
+            lowered = lowerer.lower_table_ddl(s, source_dialect="oracle")
             assert lowered is not None
             assert len(lowered) > 0
-            assert 'CREATE TABLE' in lowered.upper()
+            assert "CREATE TABLE" in lowered.upper()
 
-    def test_erp_dml_lowering_to_goldendb(
-        self, corpus: type[ErpPayrollCorpus]
-    ) -> None:
+    def test_erp_dml_lowering_to_goldendb(self, corpus: type[ErpPayrollCorpus]) -> None:
         """Validate lowering Erp DML to goldendb."""
         lowerer = get_chinadb_lowerer("goldendb")
         sample_query = (
-            'SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL '
-            'FROM ERP_PAYROLL_HR_SAMPLE '
-            'WHERE AMOUNT > 0 ORDER BY ID;'
+            "SELECT ID, AMOUNT, NVL(STATUS, 0) AS STATUS_VAL "
+            "FROM ERP_PAYROLL_HR_SAMPLE "
+            "WHERE AMOUNT > 0 ORDER BY ID;"
         )
-        lowered = lowerer.lower_statement(
-            sample_query, source_dialect='oracle', asset_kind='DML'
-        )
+        lowered = lowerer.lower_statement(sample_query, source_dialect="oracle", asset_kind="DML")
         assert lowered is not None
         assert len(lowered) > 0
-        assert 'SELECT' in lowered.upper()
-
-
+        assert "SELECT" in lowered.upper()

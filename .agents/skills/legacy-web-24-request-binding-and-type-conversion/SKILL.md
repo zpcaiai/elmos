@@ -1,5 +1,8 @@
 ---
 name: legacy-web-24-request-binding-and-type-conversion
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for 请求绑定与类型转换恢复; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
   source_package: elmos.java-legacy-web.repository-modernization

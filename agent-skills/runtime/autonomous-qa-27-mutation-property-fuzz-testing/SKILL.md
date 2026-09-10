@@ -1,5 +1,8 @@
 ---
 name: "autonomous-qa-27-mutation-property-fuzz-testing"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Run 27-mutation-property-fuzz-testing through its exact repository-owned Autonomous QA handler."
 metadata:
   source_package: "elmos-autonomous-qa-self-healing-skills"
@@ -18,7 +21,7 @@ metadata:
   runtime_phase: "generation"
   runtime_mutating: "false"
   runtime_operation: "elmos_autonomous_qa.advanced_skills.plan_advanced_testing"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_NOT_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "NOT_CERTIFIED"
 ---

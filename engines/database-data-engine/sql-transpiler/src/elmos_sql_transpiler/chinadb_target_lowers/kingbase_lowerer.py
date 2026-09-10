@@ -113,7 +113,7 @@ class KingbaseTargetLowerer(ChinaDbTargetLowerer):
             ),
             DialectLoweringRule(
                 rule_id="kb_square_brackets",
-                description="Convert T-SQL [col] to Kingbase \"col\"",
+                description='Convert T-SQL [col] to Kingbase "col"',
                 pattern=r"\[([a-zA-Z0-9_]+)\]",
                 replacement=r'"\1"',
                 is_regex=True,
@@ -194,11 +194,11 @@ class KingbaseTargetLowerer(ChinaDbTargetLowerer):
             "ORA-01403": "P0002",  # no_data_found
             "ORA-02291": "23503",  # foreign_key_violation
             "ORA-02292": "23503",  # foreign_key_violation
-            "1062": "23505",       # MySQL duplicate key
-            "1146": "42P01",       # MySQL no such table
-            "1054": "42703",       # MySQL bad field
-            "2627": "23505",       # T-SQL PK violation
-            "208": "42P01",        # T-SQL invalid object
+            "1062": "23505",  # MySQL duplicate key
+            "1146": "42P01",  # MySQL no such table
+            "1054": "42703",  # MySQL bad field
+            "2627": "23505",  # T-SQL PK violation
+            "208": "42P01",  # T-SQL invalid object
         }
 
     def _build_catalog_queries(self) -> dict[str, str]:
@@ -307,4 +307,3 @@ class KingbaseTargetLowerer(ChinaDbTargetLowerer):
         res = self.lower_data_types(source_sql, source_dialect)
         res = self.apply_custom_rules(res, source_dialect)
         return res
-

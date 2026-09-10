@@ -1,0 +1,19 @@
+{
+  "package": "elmos-fde-autonomous-delivery-repository-refactoring-skills",
+  "version": "5.2.0",
+  "source_id": "architecture-maintainability-audit",
+  "alias": "elmos-fde-architecture-maintainability-audit",
+  "pack": "04-unified-assessment",
+  "is_workflow": false,
+  "dependencies": [
+    "issue-ontology-and-finding-normalization",
+    "business-capability-code-mapping",
+    "git-history-ownership-change-coupling"
+  ],
+  "effect_boundary": "E3",
+  "routable": false,
+  "implementation_state": "LOCAL_CONTROL_PLANE",
+  "external_evidence": "NOT_RUN",
+  "independent_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

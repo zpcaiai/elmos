@@ -122,7 +122,7 @@ class Dm8TargetLowerer(ChinaDbTargetLowerer):
             ),
             DialectLoweringRule(
                 rule_id="dm8_square_bracket_escape",
-                description="Convert T-SQL square brackets [col] to DM8 double quotes \"col\"",
+                description='Convert T-SQL square brackets [col] to DM8 double quotes "col"',
                 pattern=r"\[([a-zA-Z0-9_]+)\]",
                 replacement=r'"\1"',
                 is_regex=True,

@@ -1,5 +1,8 @@
 ---
 name: legacy-web-05-tool-authority-and-sandbox
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for 工具权限与执行沙箱; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
   source_package: elmos.java-legacy-web.repository-modernization

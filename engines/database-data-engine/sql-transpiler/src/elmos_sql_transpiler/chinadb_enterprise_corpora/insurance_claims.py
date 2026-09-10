@@ -496,7 +496,6 @@ class InsuranceClaimsCorpus:
             if matching and pay.disbursed_amount > matching[0].sum_assured:
                 boundary_violations += 1
 
-
         return {
             "total_claims_processed": len(latencies_ms),
             "approved_count": approved_count,

@@ -1,5 +1,8 @@
 ---
 name: "autonomous-qa-17-test-data-management"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Run 17-test-data-management through its exact repository-owned Autonomous QA handler."
 metadata:
   source_package: "elmos-autonomous-qa-self-healing-skills"
@@ -18,7 +21,7 @@ metadata:
   runtime_phase: "execution"
   runtime_mutating: "false"
   runtime_operation: "elmos_autonomous_qa.context_skills.prepare_test_data"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_NOT_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "NOT_CERTIFIED"
 ---

@@ -1,5 +1,8 @@
 ---
 name: miniapp-style-layout-converter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Convert CSS, scoped styles, CSS Modules, CSS-in-JS, Tailwind-like utilities,
   Flutter constraints, themes, units, animations, and responsive layouts into platform-specific
   style plans. Use before code generation and visual repair.

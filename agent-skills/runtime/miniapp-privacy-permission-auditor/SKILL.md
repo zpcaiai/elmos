@@ -1,5 +1,8 @@
 ---
 name: miniapp-privacy-permission-auditor
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Audit generated miniapps for permissions, personal-data flows, secrets,
   logging, storage, consent, third-party SDKs, and platform review disclosures. Use
   before release and after any capability or dependency change.

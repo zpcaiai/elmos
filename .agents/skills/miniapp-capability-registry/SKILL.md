@@ -1,5 +1,8 @@
 ---
 name: miniapp-capability-registry
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Resolve source capabilities against a versioned registry for WeChat,
   Alipay, Douyin, and Xiaohongshu, producing A-E compatibility classifications, permissions,
   backend needs, fallbacks, and review risks. Use before target generation.

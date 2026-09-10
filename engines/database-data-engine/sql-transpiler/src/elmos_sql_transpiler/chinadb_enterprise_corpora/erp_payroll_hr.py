@@ -314,9 +314,7 @@ class ErpPayrollCorpus:
         )
 
     @classmethod
-    def verify_payroll_mass_balance(
-        cls, payroll: MonthlyPayrollRecord
-    ) -> tuple[bool, float, str]:
+    def verify_payroll_mass_balance(cls, payroll: MonthlyPayrollRecord) -> tuple[bool, float, str]:
         """Verify fundamental conservation: Gross == Net + SS + Housing + Tax."""
         deductions = (
             payroll.net_salary
@@ -327,15 +325,12 @@ class ErpPayrollCorpus:
         diff = abs(payroll.gross_salary - deductions)
         is_balanced = diff < 0.01
         msg = (
-            f"Gross: {payroll.gross_salary:.4f}, Net+Deductions: {deductions:.4f}, "
-            f"Diff: {diff:.4f}"
+            f"Gross: {payroll.gross_salary:.4f}, Net+Deductions: {deductions:.4f}, Diff: {diff:.4f}"
         )
         return is_balanced, diff, msg
 
     @classmethod
-    def simulate_cdc_stream(
-        cls, payrolls: list[MonthlyPayrollRecord]
-    ) -> list[CdcEvent]:
+    def simulate_cdc_stream(cls, payrolls: list[MonthlyPayrollRecord]) -> list[CdcEvent]:
         """Generate CDC change event stream for real-time replication verification."""
         events: list[CdcEvent] = []
         base_ts = int(time.time() * 1000)

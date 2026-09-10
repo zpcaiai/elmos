@@ -1,5 +1,8 @@
 ---
 name: legacy-web-29-concurrency-lifecycle-and-threadlocal
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for 并发、实例生命周期与 ThreadLocal 恢复; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
   source_package: elmos.java-legacy-web.repository-modernization

@@ -1,5 +1,8 @@
 ---
 name: "router-industrial-08-resilience-and-replay"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Enforce circuit breakers, jittered retries, CAS idempotency commit, and deterministic replay."
 metadata:
   source_package: "elmos-router-industrial-skillpack"
@@ -13,7 +16,7 @@ metadata:
   runtime_skill_key: "router-industrial-08-resilience-and-replay"
   runtime_handler: "execute_08_resilience_and_replay"
   runtime_phase: "resilience"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "READY_FOR_RAMPING"
 ---

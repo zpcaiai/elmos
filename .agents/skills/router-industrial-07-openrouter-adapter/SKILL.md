@@ -1,5 +1,8 @@
 ---
 name: "router-industrial-07-openrouter-adapter"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Route long-tail, dynamic, and specialized open models through zero-data-retention OpenRouter."
 metadata:
   source_package: "elmos-router-industrial-skillpack"
@@ -13,7 +16,7 @@ metadata:
   runtime_skill_key: "router-industrial-07-openrouter-adapter"
   runtime_handler: "execute_07_openrouter_adapter"
   runtime_phase: "adapters"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "READY_FOR_RAMPING"
 ---

@@ -85,7 +85,7 @@ class HighGoTargetLowerer(ChinaDbTargetLowerer):
             ),
             DialectLoweringRule(
                 rule_id="hg_square_brackets",
-                description="Convert T-SQL brackets [col] to HighGo \"col\"",
+                description='Convert T-SQL brackets [col] to HighGo "col"',
                 pattern=r"\[([a-zA-Z0-9_]+)\]",
                 replacement=r'"\1"',
                 is_regex=True,
@@ -207,4 +207,3 @@ class HighGoTargetLowerer(ChinaDbTargetLowerer):
         res = self.lower_data_types(source_sql, source_dialect)
         res = self.apply_custom_rules(res, source_dialect)
         return res
-

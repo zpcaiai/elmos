@@ -1,5 +1,8 @@
 ---
 name: miniapp-auto-repair-loop
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Apply bounded, evidence-driven repairs to IR, mappings, adapters, or
   generated code, then rerun the smallest valid test set and all affected gates. Use
   only when a reproducible finding and rollback point exist.

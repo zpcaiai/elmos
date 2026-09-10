@@ -1,5 +1,8 @@
 ---
 name: "router-industrial-12-certification-and-rollout"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Execute phased traffic ramping (1%->5%->25%->100%), anti-regression gates, and E0-E5 readiness."
 metadata:
   source_package: "elmos-router-industrial-skillpack"
@@ -13,7 +16,7 @@ metadata:
   runtime_skill_key: "router-industrial-12-certification-and-rollout"
   runtime_handler: "execute_12_certification_and_rollout"
   runtime_phase: "certification"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "READY_FOR_RAMPING"
 ---

@@ -1,14 +1,14 @@
 {
   "metadata": {
     "total_skills": 4489,
-    "audited_at": "2026-09-10T16:36:48Z",
-    "scan_duration_seconds": 2.8,
+    "audited_at": "2026-09-10T16:38:33Z",
+    "scan_duration_seconds": 3.11,
     "status_summary": {
-      "DECLARED": 2272,
-      "SPECIFICATION_IMPORTED": 196,
-      "VERIFIED": 900,
+      "DECLARED": 2142,
+      "VERIFIED": 1180,
       "supported": 172,
       "codes": 1,
+      "SPEC_ONLY": 47,
       "LOCAL_IMPLEMENTED_BOUNDED": 1,
       "BLUEPRINT_IMPORTED": 100,
       "production-contract": 473,
@@ -30,7 +30,6 @@
       "checks": 1,
       "STATIC_VALIDATED": 1,
       "vocabulary": 44,
-      "experimental": 1,
       "directly": 51,
       "test-ready-not-run": 35,
       "-": 1
@@ -836,8 +835,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3489
+      "status": "VERIFIED",
+      "size_bytes": 3486
     },
     {
       "name": "agent-evidence-evaluation",
@@ -861,8 +860,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3527
+      "status": "VERIFIED",
+      "size_bytes": 3524
     },
     {
       "name": "agent-step-budget",
@@ -873,8 +872,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3465
+      "status": "VERIFIED",
+      "size_bytes": 3462
     },
     {
       "name": "ai-agent-system-audit",
@@ -898,8 +897,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 4978
+      "status": "VERIFIED",
+      "size_bytes": 5096
     },
     {
       "name": "api-contract-preserving-transform",
@@ -937,8 +936,8 @@
         "doc/adr/0008-rpc-data-table-stores.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3534
+      "status": "VERIFIED",
+      "size_bytes": 3531
     },
     {
       "name": "architecture-maintainability-audit",
@@ -995,8 +994,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2835
+      "status": "VERIFIED",
+      "size_bytes": 2935
     },
     {
       "name": "autonomous-qa-01-project-context-ingestion",
@@ -1007,8 +1006,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2932
+      "status": "VERIFIED",
+      "size_bytes": 3032
     },
     {
       "name": "autonomous-qa-02-spec-normalization",
@@ -1019,8 +1018,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2859
+      "status": "VERIFIED",
+      "size_bytes": 2959
     },
     {
       "name": "autonomous-qa-03-requirement-traceability-graph",
@@ -1031,8 +1030,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2952
+      "status": "VERIFIED",
+      "size_bytes": 3052
     },
     {
       "name": "autonomous-qa-04-risk-coverage-planning",
@@ -1043,8 +1042,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2888
+      "status": "VERIFIED",
+      "size_bytes": 2988
     },
     {
       "name": "autonomous-qa-05-test-model-dsl",
@@ -1055,8 +1054,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2820
+      "status": "VERIFIED",
+      "size_bytes": 2920
     },
     {
       "name": "autonomous-qa-06-functional-test-generation",
@@ -1067,8 +1066,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2914
+      "status": "VERIFIED",
+      "size_bytes": 3014
     },
     {
       "name": "autonomous-qa-07-api-contract-testing",
@@ -1079,8 +1078,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2862
+      "status": "VERIFIED",
+      "size_bytes": 2962
     },
     {
       "name": "autonomous-qa-08-data-database-testing",
@@ -1091,8 +1090,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2862
+      "status": "VERIFIED",
+      "size_bytes": 2962
     },
     {
       "name": "autonomous-qa-09-message-workflow-testing",
@@ -1103,8 +1102,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2902
+      "status": "VERIFIED",
+      "size_bytes": 3002
     },
     {
       "name": "autonomous-qa-10-ui-e2e-testing",
@@ -1115,8 +1114,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2802
+      "status": "VERIFIED",
+      "size_bytes": 2902
     },
     {
       "name": "autonomous-qa-11-visual-responsive-testing",
@@ -1127,8 +1126,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2912
+      "status": "VERIFIED",
+      "size_bytes": 3012
     },
     {
       "name": "autonomous-qa-12-accessibility-compatibility-testing",
@@ -1139,8 +1138,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3012
+      "status": "VERIFIED",
+      "size_bytes": 3112
     },
     {
       "name": "autonomous-qa-13-performance-baseline-testing",
@@ -1151,8 +1150,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2942
+      "status": "VERIFIED",
+      "size_bytes": 3042
     },
     {
       "name": "autonomous-qa-14-load-stress-spike-soak-testing",
@@ -1163,8 +1162,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2976
+      "status": "VERIFIED",
+      "size_bytes": 3076
     },
     {
       "name": "autonomous-qa-15-security-abuse-testing",
@@ -1175,8 +1174,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2882
+      "status": "VERIFIED",
+      "size_bytes": 2982
     },
     {
       "name": "autonomous-qa-16-resilience-chaos-recovery-testing",
@@ -1187,8 +1186,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2992
+      "status": "VERIFIED",
+      "size_bytes": 3092
     },
     {
       "name": "autonomous-qa-17-test-data-management",
@@ -1199,8 +1198,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2864
+      "status": "VERIFIED",
+      "size_bytes": 2964
     },
     {
       "name": "autonomous-qa-18-environment-orchestration",
@@ -1211,8 +1210,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2930
+      "status": "VERIFIED",
+      "size_bytes": 3030
     },
     {
       "name": "autonomous-qa-19-distributed-test-execution",
@@ -1223,8 +1222,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2929
+      "status": "VERIFIED",
+      "size_bytes": 3029
     },
     {
       "name": "autonomous-qa-20-test-oracle-evidence",
@@ -1235,8 +1234,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2852
+      "status": "VERIFIED",
+      "size_bytes": 2952
     },
     {
       "name": "autonomous-qa-21-flaky-test-control",
@@ -1247,8 +1246,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2846
+      "status": "VERIFIED",
+      "size_bytes": 2946
     },
     {
       "name": "autonomous-qa-22-defect-triage-rca",
@@ -1259,8 +1258,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2850
+      "status": "VERIFIED",
+      "size_bytes": 2950
     },
     {
       "name": "autonomous-qa-23-repair-planning",
@@ -1271,8 +1270,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2803
+      "status": "VERIFIED",
+      "size_bytes": 2903
     },
     {
       "name": "autonomous-qa-24-safe-code-auto-fix",
@@ -1283,8 +1282,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2839
+      "status": "VERIFIED",
+      "size_bytes": 2939
     },
     {
       "name": "autonomous-qa-25-test-self-healing",
@@ -1295,8 +1294,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2861
+      "status": "VERIFIED",
+      "size_bytes": 2961
     },
     {
       "name": "autonomous-qa-26-impact-analysis-regression",
@@ -1307,8 +1306,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2898
+      "status": "VERIFIED",
+      "size_bytes": 2998
     },
     {
       "name": "autonomous-qa-27-mutation-property-fuzz-testing",
@@ -1319,8 +1318,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2948
+      "status": "VERIFIED",
+      "size_bytes": 3048
     },
     {
       "name": "autonomous-qa-28-quality-gate-release-certification",
@@ -1331,8 +1330,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2978
+      "status": "VERIFIED",
+      "size_bytes": 3078
     },
     {
       "name": "autonomous-qa-29-reporting-observability",
@@ -1343,8 +1342,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2916
+      "status": "VERIFIED",
+      "size_bytes": 3016
     },
     {
       "name": "autonomous-qa-30-checkpoint-resume-idempotency",
@@ -1355,8 +1354,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2956
+      "status": "VERIFIED",
+      "size_bytes": 3056
     },
     {
       "name": "autonomous-qa-31-runtime-cost-eta",
@@ -1367,8 +1366,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2852
+      "status": "VERIFIED",
+      "size_bytes": 2952
     },
     {
       "name": "autonomous-qa-32-multilanguage-adapter-sdk",
@@ -1379,8 +1378,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2900
+      "status": "VERIFIED",
+      "size_bytes": 3000
     },
     {
       "name": "autonomous-qa-33-ci-cd-pr-integration",
@@ -1391,8 +1390,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2897
+      "status": "VERIFIED",
+      "size_bytes": 2997
     },
     {
       "name": "autonomous-qa-34-continuous-learning-knowledge-base",
@@ -1403,8 +1402,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2975
+      "status": "VERIFIED",
+      "size_bytes": 3075
     },
     {
       "name": "autonomous-qa-35-governance-approval-audit",
@@ -1415,8 +1414,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2894
+      "status": "VERIFIED",
+      "size_bytes": 2994
     },
     {
       "name": "autonomous-qa-36-project-output-contract",
@@ -1427,8 +1426,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2983
+      "status": "VERIFIED",
+      "size_bytes": 3083
     },
     {
       "name": "autonomous-qa-37-test-source-materialization",
@@ -1439,8 +1438,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3307
+      "status": "VERIFIED",
+      "size_bytes": 3407
     },
     {
       "name": "autonomous-qa-38-project-output-bundle-publishing",
@@ -1451,8 +1450,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3109
+      "status": "VERIFIED",
+      "size_bytes": 3209
     },
     {
       "name": "autonomous-qa-39-output-versioning-retention",
@@ -1463,8 +1462,8 @@
       "dependencies": [
         "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3016
+      "status": "VERIFIED",
+      "size_bytes": 3116
     },
     {
       "name": "b29-adapter-emitter-conformance",
@@ -8657,8 +8656,8 @@
         "doc/adr/0011-native-node-lock-regeneration.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3678
+      "status": "VERIFIED",
+      "size_bytes": 3675
     },
     {
       "name": "build-system-migration",
@@ -8763,8 +8762,8 @@
         "orchestrator/approvals.py",
         "orchestrator/evidence_index.py"
       ],
-      "status": "VERIFIED",
-      "size_bytes": 5041
+      "status": "SPEC_ONLY",
+      "size_bytes": 5007
     },
     {
       "name": "chinadb-01-estate-inventory-assessment",
@@ -8773,8 +8772,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Estate Inventory & Migration Assessment. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5040
+      "status": "SPEC_ONLY",
+      "size_bytes": 5006
     },
     {
       "name": "chinadb-02-semantic-db-ir",
@@ -8783,8 +8782,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Semantic Database IR. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4815
+      "status": "SPEC_ONLY",
+      "size_bytes": 4781
     },
     {
       "name": "chinadb-03-rule-mutation-dsl",
@@ -8795,8 +8794,8 @@
       "dependencies": [
         "config/rule-dsl-example.yaml"
       ],
-      "status": "VERIFIED",
-      "size_bytes": 4482
+      "status": "SPEC_ONLY",
+      "size_bytes": 4448
     },
     {
       "name": "chinadb-04-data-movement-cdc",
@@ -8805,8 +8804,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial Data Movement & CDC. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4998
+      "status": "SPEC_ONLY",
+      "size_bytes": 4964
     },
     {
       "name": "chinadb-05-ddl-auto-conversion",
@@ -8817,8 +8816,8 @@
       "dependencies": [
         "conversion-result.schema.json"
       ],
-      "status": "VERIFIED",
-      "size_bytes": 4662
+      "status": "SPEC_ONLY",
+      "size_bytes": 4628
     },
     {
       "name": "chinadb-06-sql-auto-conversion",
@@ -8827,8 +8826,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL Automatic Conversion. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4825
+      "status": "SPEC_ONLY",
+      "size_bytes": 4791
     },
     {
       "name": "chinadb-07-plsql-tsql-conversion",
@@ -8837,8 +8836,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for PL/SQL & T-SQL Conversion / Logic Decomposition. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5232
+      "status": "SPEC_ONLY",
+      "size_bytes": 5198
     },
     {
       "name": "chinadb-08-application-code-auto-refactor",
@@ -8847,8 +8846,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Application Code Automatic Refactoring. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5057
+      "status": "SPEC_ONLY",
+      "size_bytes": 5023
     },
     {
       "name": "chinadb-09-behavior-equivalence-verification",
@@ -8857,8 +8856,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Behavioral Equivalence Verification. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4910
+      "status": "SPEC_ONLY",
+      "size_bytes": 4876
     },
     {
       "name": "chinadb-10-performance-equivalence-verification",
@@ -8867,8 +8866,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Performance Equivalence Verification. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4840
+      "status": "SPEC_ONLY",
+      "size_bytes": 4806
     },
     {
       "name": "chinadb-11-guarded-auto-repair",
@@ -8879,8 +8878,8 @@
       "dependencies": [
         "schemas/repair-plan.schema.json"
       ],
-      "status": "VERIFIED",
-      "size_bytes": 4540
+      "status": "SPEC_ONLY",
+      "size_bytes": 4506
     },
     {
       "name": "chinadb-12-cutover-rollback",
@@ -8889,8 +8888,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Cutover, Rehearsal & Rollback. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4517
+      "status": "SPEC_ONLY",
+      "size_bytes": 4483
     },
     {
       "name": "chinadb-13-production-migration-certification",
@@ -8901,8 +8900,8 @@
       "dependencies": [
         "schemas/certification.schema.json"
       ],
-      "status": "VERIFIED",
-      "size_bytes": 4640
+      "status": "SPEC_ONLY",
+      "size_bytes": 4606
     },
     {
       "name": "chinadb-14-security-governance",
@@ -8911,8 +8910,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Security, Secrets & Governance. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4372
+      "status": "SPEC_ONLY",
+      "size_bytes": 4338
     },
     {
       "name": "chinadb-15-evidence-ledger-reproducibility",
@@ -8923,8 +8922,8 @@
       "dependencies": [
         "schemas/evidence.schema.json"
       ],
-      "status": "VERIFIED",
-      "size_bytes": 4400
+      "status": "SPEC_ONLY",
+      "size_bytes": 4366
     },
     {
       "name": "chinadb-16-release-ci-quality-gates",
@@ -8933,8 +8932,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Release CI & Quality Gates. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4128
+      "status": "SPEC_ONLY",
+      "size_bytes": 4094
     },
     {
       "name": "chinadb-20-source-oracle-adapter",
@@ -8943,8 +8942,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Oracle Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4765
+      "status": "SPEC_ONLY",
+      "size_bytes": 4731
     },
     {
       "name": "chinadb-21-source-sqlserver-adapter",
@@ -8953,8 +8952,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL Server / T-SQL Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4807
+      "status": "SPEC_ONLY",
+      "size_bytes": 4773
     },
     {
       "name": "chinadb-22-source-postgresql-adapter",
@@ -8963,8 +8962,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for PostgreSQL Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4649
+      "status": "SPEC_ONLY",
+      "size_bytes": 4615
     },
     {
       "name": "chinadb-23-source-mysql-adapter",
@@ -8973,8 +8972,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for MySQL / MariaDB Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4605
+      "status": "SPEC_ONLY",
+      "size_bytes": 4571
     },
     {
       "name": "chinadb-24-source-db2-adapter",
@@ -8983,8 +8982,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for DB2 LUW Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4530
+      "status": "SPEC_ONLY",
+      "size_bytes": 4496
     },
     {
       "name": "chinadb-25-source-sybase-adapter",
@@ -8993,8 +8992,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Sybase ASE Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4551
+      "status": "SPEC_ONLY",
+      "size_bytes": 4517
     },
     {
       "name": "chinadb-30-app-java-spring-adapter",
@@ -9003,8 +9002,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Java / Spring Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4731
+      "status": "SPEC_ONLY",
+      "size_bytes": 4697
     },
     {
       "name": "chinadb-31-app-dotnet-adapter",
@@ -9013,8 +9012,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for .NET Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4611
+      "status": "SPEC_ONLY",
+      "size_bytes": 4577
     },
     {
       "name": "chinadb-32-app-python-adapter",
@@ -9023,8 +9022,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Python Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4566
+      "status": "SPEC_ONLY",
+      "size_bytes": 4532
     },
     {
       "name": "chinadb-33-app-nodejs-adapter",
@@ -9033,8 +9032,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Node.js / TypeScript Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4627
+      "status": "SPEC_ONLY",
+      "size_bytes": 4593
     },
     {
       "name": "chinadb-34-app-go-adapter",
@@ -9043,8 +9042,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Go Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4494
+      "status": "SPEC_ONLY",
+      "size_bytes": 4460
     },
     {
       "name": "chinadb-40-target-dm8",
@@ -9053,8 +9052,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for DM8 Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5771
+      "status": "SPEC_ONLY",
+      "size_bytes": 5737
     },
     {
       "name": "chinadb-41-target-kingbasees",
@@ -9063,8 +9062,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for KingbaseES Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5845
+      "status": "SPEC_ONLY",
+      "size_bytes": 5811
     },
     {
       "name": "chinadb-42-target-opengauss",
@@ -9073,8 +9072,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for openGauss Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5794
+      "status": "SPEC_ONLY",
+      "size_bytes": 5760
     },
     {
       "name": "chinadb-43-target-tidb",
@@ -9083,8 +9082,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for TiDB Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5809
+      "status": "SPEC_ONLY",
+      "size_bytes": 5775
     },
     {
       "name": "chinadb-44-target-gbase8s",
@@ -9093,8 +9092,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8s Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5675
+      "status": "SPEC_ONLY",
+      "size_bytes": 5641
     },
     {
       "name": "chinadb-45-target-gbase8c",
@@ -9103,8 +9102,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8c Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5702
+      "status": "SPEC_ONLY",
+      "size_bytes": 5668
     },
     {
       "name": "chinadb-46-target-gbase8a",
@@ -9113,8 +9112,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8a Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5656
+      "status": "SPEC_ONLY",
+      "size_bytes": 5622
     },
     {
       "name": "chinadb-47-target-highgo",
@@ -9123,8 +9122,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for HighGo / HGDB Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5738
+      "status": "SPEC_ONLY",
+      "size_bytes": 5704
     },
     {
       "name": "chinadb-48-target-oceanbase-oracle",
@@ -9133,8 +9132,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for OceanBase Oracle-Compatible Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5955
+      "status": "SPEC_ONLY",
+      "size_bytes": 5921
     },
     {
       "name": "chinadb-49-target-oceanbase-mysql",
@@ -9143,8 +9142,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for OceanBase MySQL-Compatible Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5675
+      "status": "SPEC_ONLY",
+      "size_bytes": 5641
     },
     {
       "name": "chinadb-50-target-gaussdb-oracle",
@@ -9153,8 +9152,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GaussDB Oracle-Compatible Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5998
+      "status": "SPEC_ONLY",
+      "size_bytes": 5964
     },
     {
       "name": "chinadb-51-target-gaussdb-m",
@@ -9163,8 +9162,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GaussDB M-Compatible Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5623
+      "status": "SPEC_ONLY",
+      "size_bytes": 5589
     },
     {
       "name": "chinadb-52-target-goldendb",
@@ -9173,8 +9172,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GoldenDB Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5992
+      "status": "SPEC_ONLY",
+      "size_bytes": 5958
     },
     {
       "name": "chinadb-60-route-support-matrix",
@@ -9183,8 +9182,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Route Support Matrix & Compatibility Governance. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4001
+      "status": "SPEC_ONLY",
+      "size_bytes": 3967
     },
     {
       "name": "chinadb-61-fixture-corpus-and-mutation-tests",
@@ -9193,8 +9192,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial Fixture Corpus & Mutation Tests. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4165
+      "status": "SPEC_ONLY",
+      "size_bytes": 4131
     },
     {
       "name": "chinadb-62-benchmark-lab",
@@ -9203,8 +9202,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Database Migration Benchmark Lab. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 3833
+      "status": "SPEC_ONLY",
+      "size_bytes": 3799
     },
     {
       "name": "chinadb-63-migration-estimation-commercial-report",
@@ -9213,8 +9212,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial Assessment, Estimation & Delivery Report. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4072
+      "status": "SPEC_ONLY",
+      "size_bytes": 4038
     },
     {
       "name": "chinadb-64-vendor-native-tool-bridge",
@@ -9223,8 +9222,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Vendor-Native Migration Tool Bridge. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4055
+      "status": "SPEC_ONLY",
+      "size_bytes": 4021
     },
     {
       "name": "chinadb-65-observability-migration-control-plane",
@@ -9233,8 +9232,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Migration Observability & Control Plane. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4007
+      "status": "SPEC_ONLY",
+      "size_bytes": 3973
     },
     {
       "name": "coding-and-error-pattern-miner",
@@ -9246,8 +9245,8 @@
         "doc/adr/0008-rpc-data-table-stores.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3536
+      "status": "VERIFIED",
+      "size_bytes": 3533
     },
     {
       "name": "command-resource-policy",
@@ -9258,8 +9257,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3664
+      "status": "VERIFIED",
+      "size_bytes": 3661
     },
     {
       "name": "compiler-api-rewrite",
@@ -9336,8 +9335,8 @@
         "doc/adr/0007-javascript-templating-enhancements.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3530
+      "status": "VERIFIED",
+      "size_bytes": 3527
     },
     {
       "name": "context-aware-skill-source",
@@ -9362,8 +9361,8 @@
         "specs/v2/session.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3513
+      "status": "VERIFIED",
+      "size_bytes": 3510
     },
     {
       "name": "context-epoch",
@@ -9375,8 +9374,8 @@
         "specs/v2/session.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3456
+      "status": "VERIFIED",
+      "size_bytes": 3453
     },
     {
       "name": "continuous-fuzz-certification",
@@ -9973,8 +9972,8 @@
         "doc/adr/0008-rpc-data-table-stores.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3530
+      "status": "VERIFIED",
+      "size_bytes": 3527
     },
     {
       "name": "cursor-execution-context",
@@ -9987,8 +9986,8 @@
         "CLAUDE.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3759
+      "status": "VERIFIED",
+      "size_bytes": 3756
     },
     {
       "name": "cutover-rollback-gate",
@@ -10106,8 +10105,8 @@
         "doc/adr/0008-rpc-data-table-stores.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3654
+      "status": "VERIFIED",
+      "size_bytes": 3651
     },
     {
       "name": "dependency-build-graph-discovery",
@@ -10134,8 +10133,8 @@
         "doc/adr/0011-native-node-lock-regeneration.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3793
+      "status": "VERIFIED",
+      "size_bytes": 3790
     },
     {
       "name": "deterministic-first-router",
@@ -10146,8 +10145,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3656
+      "status": "VERIFIED",
+      "size_bytes": 3653
     },
     {
       "name": "deterministic-recipe-engine",
@@ -10158,8 +10157,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3615
+      "status": "VERIFIED",
+      "size_bytes": 3612
     },
     {
       "name": "deterministic-toolchain-lock",
@@ -10196,8 +10195,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3718
+      "status": "VERIFIED",
+      "size_bytes": 3715
     },
     {
       "name": "douyin-miniapp-codegen",
@@ -10211,8 +10210,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5014
+      "status": "VERIFIED",
+      "size_bytes": 5132
     },
     {
       "name": "durable-agent-workflow",
@@ -10237,8 +10236,8 @@
         "specs/v2/session.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3499
+      "status": "VERIFIED",
+      "size_bytes": 3496
     },
     {
       "name": "durable-tool-settlement",
@@ -10250,8 +10249,8 @@
         "specs/v2/session.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3540
+      "status": "VERIFIED",
+      "size_bytes": 3537
     },
     {
       "name": "dynamic-template-builder",
@@ -10264,8 +10263,8 @@
         "doc/adr/0007-javascript-templating-enhancements.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3573
+      "status": "VERIFIED",
+      "size_bytes": 3570
     },
     {
       "name": "e0-e3-readiness-and-evidence-bundle",
@@ -16159,8 +16158,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4736
+      "status": "VERIFIED",
+      "size_bytes": 4733
     },
     {
       "name": "elmos-build-config-remapper",
@@ -18189,8 +18188,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4866
+      "status": "VERIFIED",
+      "size_bytes": 4863
     },
     {
       "name": "compile-test-and-runtime-verification",
@@ -25564,8 +25563,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4761
+      "status": "VERIFIED",
+      "size_bytes": 4758
     },
     {
       "name": "golden-route-production-certifier",
@@ -28914,8 +28913,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4687
+      "status": "VERIFIED",
+      "size_bytes": 4684
     },
     {
       "name": "maven-gradle-ant-build-adapter",
@@ -32949,8 +32948,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4753
+      "status": "VERIFIED",
+      "size_bytes": 4750
     },
     {
       "name": "elmos-product-scope",
@@ -34628,8 +34627,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4848
+      "status": "VERIFIED",
+      "size_bytes": 4845
     },
     {
       "name": "elmos-reconciliation-scheduler",
@@ -36123,8 +36122,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6530
+      "status": "VERIFIED",
+      "size_bytes": 6634
     },
     {
       "name": "router-model-training",
@@ -36925,8 +36924,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4712
+      "status": "VERIFIED",
+      "size_bytes": 4709
     },
     {
       "name": "elmos-scope-resolution-engine",
@@ -38916,8 +38915,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4823
+      "status": "VERIFIED",
+      "size_bytes": 4820
     },
     {
       "name": "spring-route-request-binding-migration",
@@ -44274,8 +44273,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5301
+      "status": "VERIFIED",
+      "size_bytes": 5419
     },
     {
       "name": "formal-assurance-routing",
@@ -44325,8 +44324,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5501
+      "status": "VERIFIED",
+      "size_bytes": 5619
     },
     {
       "name": "generation-idempotency-gate",
@@ -44359,8 +44358,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3740
+      "status": "VERIFIED",
+      "size_bytes": 3737
     },
     {
       "name": "golden-route-corpus-manager",
@@ -44384,8 +44383,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4847
+      "status": "VERIFIED",
+      "size_bytes": 4844
     },
     {
       "name": "gr-benchmark-corpus",
@@ -44396,8 +44395,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4785
+      "status": "VERIFIED",
+      "size_bytes": 4782
     },
     {
       "name": "gr-cache",
@@ -44408,8 +44407,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4963
+      "status": "VERIFIED",
+      "size_bytes": 4960
     },
     {
       "name": "gr-capacity",
@@ -44420,8 +44419,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4927
+      "status": "VERIFIED",
+      "size_bytes": 4924
     },
     {
       "name": "gr-claim-ledger",
@@ -44432,8 +44431,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4736
+      "status": "VERIFIED",
+      "size_bytes": 4733
     },
     {
       "name": "gr-clean-room",
@@ -44444,8 +44443,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4742
+      "status": "VERIFIED",
+      "size_bytes": 4739
     },
     {
       "name": "gr-cost-accounting",
@@ -44456,8 +44455,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4746
+      "status": "VERIFIED",
+      "size_bytes": 4743
     },
     {
       "name": "gr-customer-data-ip",
@@ -44468,8 +44467,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4739
+      "status": "VERIFIED",
+      "size_bytes": 4736
     },
     {
       "name": "gr-data-model",
@@ -44480,8 +44479,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4760
+      "status": "VERIFIED",
+      "size_bytes": 4757
     },
     {
       "name": "gr-event-catalog",
@@ -44492,8 +44491,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4784
+      "status": "VERIFIED",
+      "size_bytes": 4781
     },
     {
       "name": "gr-evidence-store",
@@ -44504,8 +44503,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4819
+      "status": "VERIFIED",
+      "size_bytes": 4816
     },
     {
       "name": "gr-failure-denominator",
@@ -44516,8 +44515,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4813
+      "status": "VERIFIED",
+      "size_bytes": 4810
     },
     {
       "name": "gr-l3-gate",
@@ -44528,8 +44527,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4724
+      "status": "VERIFIED",
+      "size_bytes": 4721
     },
     {
       "name": "gr-large-repo",
@@ -44540,8 +44539,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4966
+      "status": "VERIFIED",
+      "size_bytes": 4963
     },
     {
       "name": "gr-migration-kg",
@@ -44552,8 +44551,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4906
+      "status": "VERIFIED",
+      "size_bytes": 4903
     },
     {
       "name": "gr-multirepo",
@@ -44564,8 +44563,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4847
+      "status": "VERIFIED",
+      "size_bytes": 4844
     },
     {
       "name": "gr-no-cheating",
@@ -44576,8 +44575,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4757
+      "status": "VERIFIED",
+      "size_bytes": 4754
     },
     {
       "name": "gr-observability",
@@ -44588,8 +44587,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4757
+      "status": "VERIFIED",
+      "size_bytes": 4754
     },
     {
       "name": "gr-patch-mining",
@@ -44600,8 +44599,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4927
+      "status": "VERIFIED",
+      "size_bytes": 4924
     },
     {
       "name": "gr-pilot-selection",
@@ -44612,8 +44611,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4712
+      "status": "VERIFIED",
+      "size_bytes": 4709
     },
     {
       "name": "gr-pilot-success",
@@ -44624,8 +44623,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4707
+      "status": "VERIFIED",
+      "size_bytes": 4704
     },
     {
       "name": "gr-pricing",
@@ -44636,8 +44635,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4612
+      "status": "VERIFIED",
+      "size_bytes": 4609
     },
     {
       "name": "gr-progress-eta",
@@ -44648,8 +44647,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4759
+      "status": "VERIFIED",
+      "size_bytes": 4756
     },
     {
       "name": "gr-public-claims",
@@ -44660,8 +44659,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4713
+      "status": "VERIFIED",
+      "size_bytes": 4710
     },
     {
       "name": "gr-recipe-certification",
@@ -44672,8 +44671,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 5035
+      "status": "VERIFIED",
+      "size_bytes": 5032
     },
     {
       "name": "gr-route-expansion",
@@ -44684,8 +44683,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4925
+      "status": "VERIFIED",
+      "size_bytes": 4922
     },
     {
       "name": "gr-size-gate",
@@ -44696,8 +44695,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4726
+      "status": "VERIFIED",
+      "size_bytes": 4723
     },
     {
       "name": "gr-sow",
@@ -44708,8 +44707,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4668
+      "status": "VERIFIED",
+      "size_bytes": 4665
     },
     {
       "name": "gr-unseen-policy",
@@ -44720,8 +44719,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4746
+      "status": "VERIFIED",
+      "size_bytes": 4743
     },
     {
       "name": "hermetic-build-environment",
@@ -44745,8 +44744,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3460
+      "status": "VERIFIED",
+      "size_bytes": 3457
     },
     {
       "name": "hierarchical-context-and-repo-cache",
@@ -44757,8 +44756,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3865
+      "status": "VERIFIED",
+      "size_bytes": 3862
     },
     {
       "name": "hierarchical-enterprise-config",
@@ -44770,8 +44769,8 @@
         "packages/llm/DESIGN.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4030
+      "status": "VERIFIED",
+      "size_bytes": 4027
     },
     {
       "name": "human-approval-message-injection",
@@ -44809,8 +44808,8 @@
         "CLAUDE.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3669
+      "status": "VERIFIED",
+      "size_bytes": 3666
     },
     {
       "name": "incident-replay-root-cause",
@@ -44897,8 +44896,8 @@
         "packages/llm/DESIGN.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3974
+      "status": "VERIFIED",
+      "size_bytes": 3971
     },
     {
       "name": "legacy-web-00-modernization-orchestrator",
@@ -44907,8 +44906,8 @@
       "description": "Repository-owned exact runtime interface for 仓库级现代化总编排器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4199
+      "status": "VERIFIED",
+      "size_bytes": 4317
     },
     {
       "name": "legacy-web-01-job-contract-and-policy-resolver",
@@ -44917,8 +44916,8 @@
       "description": "Repository-owned exact runtime interface for 任务契约与策略解析; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4178
+      "status": "VERIFIED",
+      "size_bytes": 4296
     },
     {
       "name": "legacy-web-02-reproducible-repository-snapshot",
@@ -44927,8 +44926,8 @@
       "description": "Repository-owned exact runtime interface for 可复现仓库快照; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4201
+      "status": "VERIFIED",
+      "size_bytes": 4319
     },
     {
       "name": "legacy-web-03-checkpoint-resume-cancel",
@@ -44937,8 +44936,8 @@
       "description": "Repository-owned exact runtime interface for 检查点、恢复与取消; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4213
+      "status": "VERIFIED",
+      "size_bytes": 4331
     },
     {
       "name": "legacy-web-04-wall-clock-eta-and-cost-model",
@@ -44947,8 +44946,8 @@
       "description": "Repository-owned exact runtime interface for 机器运行时 ETA 与成本模型; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4213
+      "status": "VERIFIED",
+      "size_bytes": 4331
     },
     {
       "name": "legacy-web-05-tool-authority-and-sandbox",
@@ -44957,8 +44956,8 @@
       "description": "Repository-owned exact runtime interface for 工具权限与执行沙箱; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4177
+      "status": "VERIFIED",
+      "size_bytes": 4295
     },
     {
       "name": "legacy-web-10-build-and-module-topology",
@@ -44967,8 +44966,8 @@
       "description": "Repository-owned exact runtime interface for 构建与模块拓扑恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4221
+      "status": "VERIFIED",
+      "size_bytes": 4339
     },
     {
       "name": "legacy-web-11-framework-and-version-fingerprinting",
@@ -44977,8 +44976,8 @@
       "description": "Repository-owned exact runtime interface for 框架与版本指纹; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4155
+      "status": "VERIFIED",
+      "size_bytes": 4273
     },
     {
       "name": "legacy-web-12-runtime-deployment-topology",
@@ -44987,8 +44986,8 @@
       "description": "Repository-owned exact runtime interface for 运行时与部署拓扑恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4274
+      "status": "VERIFIED",
+      "size_bytes": 4392
     },
     {
       "name": "legacy-web-13-route-ownership-and-conflict-analysis",
@@ -44997,8 +44996,8 @@
       "description": "Repository-owned exact runtime interface for 路由所有权与冲突分析; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4351
+      "status": "VERIFIED",
+      "size_bytes": 4469
     },
     {
       "name": "legacy-web-14-environment-config-overlay-analysis",
@@ -45007,8 +45006,8 @@
       "description": "Repository-owned exact runtime interface for 环境配置叠加分析; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4247
+      "status": "VERIFIED",
+      "size_bytes": 4365
     },
     {
       "name": "legacy-web-15-dependency-compatibility-and-jakarta-readiness",
@@ -45017,8 +45016,8 @@
       "description": "Repository-owned exact runtime interface for 依赖兼容性与 Jakarta 就绪度; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4480
+      "status": "VERIFIED",
+      "size_bytes": 4598
     },
     {
       "name": "legacy-web-20-struts1-lifecycle-recovery",
@@ -45027,8 +45026,8 @@
       "description": "Repository-owned exact runtime interface for Struts 1 请求生命周期恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4465
+      "status": "VERIFIED",
+      "size_bytes": 4583
     },
     {
       "name": "legacy-web-21-struts2-interceptor-pipeline-recovery",
@@ -45037,8 +45036,8 @@
       "description": "Repository-owned exact runtime interface for Struts 2 拦截器流水线恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4457
+      "status": "VERIFIED",
+      "size_bytes": 4575
     },
     {
       "name": "legacy-web-22-servlet-container-semantics-recovery",
@@ -45047,8 +45046,8 @@
       "description": "Repository-owned exact runtime interface for Servlet 容器语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4468
+      "status": "VERIFIED",
+      "size_bytes": 4586
     },
     {
       "name": "legacy-web-23-jsp-taglib-and-view-semantics",
@@ -45057,8 +45056,8 @@
       "description": "Repository-owned exact runtime interface for JSP、Taglib 与视图语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4372
+      "status": "VERIFIED",
+      "size_bytes": 4490
     },
     {
       "name": "legacy-web-24-request-binding-and-type-conversion",
@@ -45067,8 +45066,8 @@
       "description": "Repository-owned exact runtime interface for 请求绑定与类型转换恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4451
+      "status": "VERIFIED",
+      "size_bytes": 4569
     },
     {
       "name": "legacy-web-25-navigation-dispatch-and-error-semantics",
@@ -45077,8 +45076,8 @@
       "description": "Repository-owned exact runtime interface for 导航、分派与错误语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4522
+      "status": "VERIFIED",
+      "size_bytes": 4640
     },
     {
       "name": "legacy-web-26-session-state-and-scope-semantics",
@@ -45087,8 +45086,8 @@
       "description": "Repository-owned exact runtime interface for Session、状态与作用域语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4596
+      "status": "VERIFIED",
+      "size_bytes": 4714
     },
     {
       "name": "legacy-web-27-security-authn-authz-csrf-semantics",
@@ -45097,8 +45096,8 @@
       "description": "Repository-owned exact runtime interface for 认证、授权与 CSRF 语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4519
+      "status": "VERIFIED",
+      "size_bytes": 4637
     },
     {
       "name": "legacy-web-28-transaction-and-side-effect-topology",
@@ -45107,8 +45106,8 @@
       "description": "Repository-owned exact runtime interface for 事务与副作用拓扑恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4342
+      "status": "VERIFIED",
+      "size_bytes": 4460
     },
     {
       "name": "legacy-web-29-concurrency-lifecycle-and-threadlocal",
@@ -45117,8 +45116,8 @@
       "description": "Repository-owned exact runtime interface for 并发、实例生命周期与 ThreadLocal 恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4498
+      "status": "VERIFIED",
+      "size_bytes": 4616
     },
     {
       "name": "legacy-web-30-repository-evidence-graph",
@@ -45127,8 +45126,8 @@
       "description": "Repository-owned exact runtime interface for Repository Evidence Graph; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 5153
+      "status": "VERIFIED",
+      "size_bytes": 5271
     },
     {
       "name": "legacy-web-31-legacy-web-semantic-ir",
@@ -45137,8 +45136,8 @@
       "description": "Repository-owned exact runtime interface for Legacy Web Semantic IR; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4182
+      "status": "VERIFIED",
+      "size_bytes": 4300
     },
     {
       "name": "legacy-web-32-behavioral-contract-and-sequence-mining",
@@ -45147,8 +45146,8 @@
       "description": "Repository-owned exact runtime interface for 行为契约与请求序列挖掘; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4205
+      "status": "VERIFIED",
+      "size_bytes": 4323
     },
     {
       "name": "legacy-web-33-unknown-semantics-ledger",
@@ -45157,8 +45156,8 @@
       "description": "Repository-owned exact runtime interface for 未知语义债务账本; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4081
+      "status": "VERIFIED",
+      "size_bytes": 4199
     },
     {
       "name": "legacy-web-34-semantic-risk-scoring",
@@ -45167,8 +45166,8 @@
       "description": "Repository-owned exact runtime interface for 语义风险评分; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4118
+      "status": "VERIFIED",
+      "size_bytes": 4236
     },
     {
       "name": "legacy-web-40-preserve-first-migration-strategy",
@@ -45177,8 +45176,8 @@
       "description": "Repository-owned exact runtime interface for Preserve-first 迁移策略; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4179
+      "status": "VERIFIED",
+      "size_bytes": 4297
     },
     {
       "name": "legacy-web-41-springboot4-target-architecture",
@@ -45187,8 +45186,8 @@
       "description": "Repository-owned exact runtime interface for Spring Boot 4 目标架构合成; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4410
+      "status": "VERIFIED",
+      "size_bytes": 4528
     },
     {
       "name": "legacy-web-42-multi-module-conversion-wave-planner",
@@ -45197,8 +45196,8 @@
       "description": "Repository-owned exact runtime interface for 多模块转换波次规划; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4273
+      "status": "VERIFIED",
+      "size_bytes": 4391
     },
     {
       "name": "legacy-web-43-compatibility-shim-synthesis",
@@ -45207,8 +45206,8 @@
       "description": "Repository-owned exact runtime interface for 兼容层合成规划; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4205
+      "status": "VERIFIED",
+      "size_bytes": 4323
     },
     {
       "name": "legacy-web-44-packaging-view-and-container-decision",
@@ -45217,8 +45216,8 @@
       "description": "Repository-owned exact runtime interface for 打包、视图与容器决策; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4325
+      "status": "VERIFIED",
+      "size_bytes": 4443
     },
     {
       "name": "legacy-web-45-cutover-strangler-and-dual-run-plan",
@@ -45227,8 +45226,8 @@
       "description": "Repository-owned exact runtime interface for 切流、Strangler 与双运行规划; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4260
+      "status": "VERIFIED",
+      "size_bytes": 4378
     },
     {
       "name": "legacy-web-50-deterministic-ast-and-config-rewrite",
@@ -45237,8 +45236,8 @@
       "description": "Repository-owned exact runtime interface for 确定性 AST 与配置改写; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4334
+      "status": "VERIFIED",
+      "size_bytes": 4452
     },
     {
       "name": "legacy-web-51-struts1-to-springmvc-generator",
@@ -45247,8 +45246,8 @@
       "description": "Repository-owned exact runtime interface for Struts 1→Spring MVC 生成器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4637
+      "status": "VERIFIED",
+      "size_bytes": 4755
     },
     {
       "name": "legacy-web-52-struts2-to-springmvc-generator",
@@ -45257,8 +45256,8 @@
       "description": "Repository-owned exact runtime interface for Struts 2→Spring MVC 生成器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4593
+      "status": "VERIFIED",
+      "size_bytes": 4711
     },
     {
       "name": "legacy-web-53-servlet-to-springmvc-generator",
@@ -45267,8 +45266,8 @@
       "description": "Repository-owned exact runtime interface for Servlet→Spring MVC 生成器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4617
+      "status": "VERIFIED",
+      "size_bytes": 4735
     },
     {
       "name": "legacy-web-54-jakarta-and-dependency-migration",
@@ -45277,8 +45276,8 @@
       "description": "Repository-owned exact runtime interface for Jakarta 与依赖迁移; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4390
+      "status": "VERIFIED",
+      "size_bytes": 4508
     },
     {
       "name": "legacy-web-55-spring-security-validation-transaction-generator",
@@ -45287,8 +45286,8 @@
       "description": "Repository-owned exact runtime interface for Security、Validation 与 Transaction 生成器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4728
+      "status": "VERIFIED",
+      "size_bytes": 4846
     },
     {
       "name": "legacy-web-56-jsp-preserve-or-modernize",
@@ -45297,8 +45296,8 @@
       "description": "Repository-owned exact runtime interface for JSP 保留或现代化; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4303
+      "status": "VERIFIED",
+      "size_bytes": 4421
     },
     {
       "name": "legacy-web-57-source-map-change-provenance",
@@ -45307,8 +45306,8 @@
       "description": "Repository-owned exact runtime interface for 语义 Source Map 与变更溯源; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4797
+      "status": "VERIFIED",
+      "size_bytes": 4915
     },
     {
       "name": "legacy-web-58-idempotent-change-set-commit",
@@ -45317,8 +45316,8 @@
       "description": "Repository-owned exact runtime interface for 幂等 Change Set 提交; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4246
+      "status": "VERIFIED",
+      "size_bytes": 4364
     },
     {
       "name": "legacy-web-60-static-semantic-coverage",
@@ -45327,8 +45326,8 @@
       "description": "Repository-owned exact runtime interface for 静态语义覆盖验证; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4202
+      "status": "VERIFIED",
+      "size_bytes": 4320
     },
     {
       "name": "legacy-web-61-test-and-scenario-generation",
@@ -45337,8 +45336,8 @@
       "description": "Repository-owned exact runtime interface for 测试与场景生成; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4173
+      "status": "VERIFIED",
+      "size_bytes": 4291
     },
     {
       "name": "legacy-web-62-differential-http-and-view-oracle",
@@ -45347,8 +45346,8 @@
       "description": "Repository-owned exact runtime interface for HTTP 与视图差分 Oracle; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4381
+      "status": "VERIFIED",
+      "size_bytes": 4499
     },
     {
       "name": "legacy-web-63-session-db-and-side-effect-diff",
@@ -45357,8 +45356,8 @@
       "description": "Repository-owned exact runtime interface for Session、数据库与副作用差分; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4423
+      "status": "VERIFIED",
+      "size_bytes": 4541
     },
     {
       "name": "legacy-web-64-security-equivalence-and-hardening",
@@ -45367,8 +45366,8 @@
       "description": "Repository-owned exact runtime interface for 安全等价与可选硬化验证; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4453
+      "status": "VERIFIED",
+      "size_bytes": 4571
     },
     {
       "name": "legacy-web-65-concurrency-performance-and-fault-verification",
@@ -45377,8 +45376,8 @@
       "description": "Repository-owned exact runtime interface for 并发、性能与故障验证; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4409
+      "status": "VERIFIED",
+      "size_bytes": 4527
     },
     {
       "name": "legacy-web-66-observability-and-trace-correlation",
@@ -45387,8 +45386,8 @@
       "description": "Repository-owned exact runtime interface for 可观测性与 Trace 关联; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4281
+      "status": "VERIFIED",
+      "size_bytes": 4399
     },
     {
       "name": "legacy-web-70-mismatch-classification",
@@ -45397,8 +45396,8 @@
       "description": "Repository-owned exact runtime interface for 差异分类与根因定位; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4387
+      "status": "VERIFIED",
+      "size_bytes": 4505
     },
     {
       "name": "legacy-web-71-bounded-semantic-auto-repair",
@@ -45407,8 +45406,8 @@
       "description": "Repository-owned exact runtime interface for 有界语义自动修复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4116
+      "status": "VERIFIED",
+      "size_bytes": 4234
     },
     {
       "name": "legacy-web-72-impact-based-regression-selection",
@@ -45417,8 +45416,8 @@
       "description": "Repository-owned exact runtime interface for 影响面回归选择; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4221
+      "status": "VERIFIED",
+      "size_bytes": 4339
     },
     {
       "name": "legacy-web-73-production-cutover-rollback",
@@ -45427,8 +45426,8 @@
       "description": "Repository-owned exact runtime interface for 生产切流与回滚执行; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4336
+      "status": "VERIFIED",
+      "size_bytes": 4454
     },
     {
       "name": "legacy-web-74-evidence-bundle-and-e0-e5-certification",
@@ -45437,8 +45436,8 @@
       "description": "Repository-owned exact runtime interface for 证据包与 E0–E5 生产认证; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4939
+      "status": "VERIFIED",
+      "size_bytes": 5057
     },
     {
       "name": "legacy-web-75-golden-route-benchmark-and-learning-cache",
@@ -45447,8 +45446,8 @@
       "description": "Repository-owned exact runtime interface for Golden Route 基准与学习缓存; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4386
+      "status": "VERIFIED",
+      "size_bytes": 4504
     },
     {
       "name": "lenient-semantic-comparator",
@@ -45461,8 +45460,8 @@
         "doc/adr/0007-javascript-templating-enhancements.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3565
+      "status": "VERIFIED",
+      "size_bytes": 3562
     },
     {
       "name": "license-compliance-scanner",
@@ -45489,8 +45488,8 @@
         "doc/adr/0011-native-node-lock-regeneration.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3704
+      "status": "VERIFIED",
+      "size_bytes": 3701
     },
     {
       "name": "lossless-semantic-ir",
@@ -45503,8 +45502,8 @@
         "CLAUDE.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3676
+      "status": "VERIFIED",
+      "size_bytes": 3673
     },
     {
       "name": "lsp-diagnostics-and-navigation",
@@ -45516,8 +45515,8 @@
         "packages/llm/DESIGN.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4035
+      "status": "VERIFIED",
+      "size_bytes": 4032
     },
     {
       "name": "manual-edit-preservation-gate",
@@ -45541,8 +45540,8 @@
         "packages/llm/DESIGN.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4130
+      "status": "VERIFIED",
+      "size_bytes": 4127
     },
     {
       "name": "metamorphic-equivalence-testing",
@@ -45567,8 +45566,8 @@
         "doc/adr/0008-rpc-data-table-stores.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3520
+      "status": "VERIFIED",
+      "size_bytes": 3517
     },
     {
       "name": "migration-knowledge-graph",
@@ -45579,8 +45578,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3677
+      "status": "VERIFIED",
+      "size_bytes": 3674
     },
     {
       "name": "miniapp-auto-repair-loop",
@@ -45594,8 +45593,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 4930
+      "status": "VERIFIED",
+      "size_bytes": 5048
     },
     {
       "name": "miniapp-capability-registry",
@@ -45609,8 +45608,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5121
+      "status": "VERIFIED",
+      "size_bytes": 5239
     },
     {
       "name": "miniapp-ci-build-release",
@@ -45624,8 +45623,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 4980
+      "status": "VERIFIED",
+      "size_bytes": 5098
     },
     {
       "name": "miniapp-commerce-social-adapter",
@@ -45639,8 +45638,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5041
+      "status": "VERIFIED",
+      "size_bytes": 5159
     },
     {
       "name": "miniapp-component-mapping-engine",
@@ -45654,8 +45653,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5006
+      "status": "VERIFIED",
+      "size_bytes": 5124
     },
     {
       "name": "miniapp-differential-testing",
@@ -45669,8 +45668,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5044
+      "status": "VERIFIED",
+      "size_bytes": 5162
     },
     {
       "name": "miniapp-migration-evidence-reporter",
@@ -45684,8 +45683,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5124
+      "status": "VERIFIED",
+      "size_bytes": 5242
     },
     {
       "name": "miniapp-privacy-permission-auditor",
@@ -45699,8 +45698,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5141
+      "status": "VERIFIED",
+      "size_bytes": 5259
     },
     {
       "name": "miniapp-semantic-ir",
@@ -45714,8 +45713,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5076
+      "status": "VERIFIED",
+      "size_bytes": 5194
     },
     {
       "name": "miniapp-source-framework-detector",
@@ -45729,8 +45728,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 4985
+      "status": "VERIFIED",
+      "size_bytes": 5103
     },
     {
       "name": "miniapp-state-event-lifecycle-converter",
@@ -45744,8 +45743,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5047
+      "status": "VERIFIED",
+      "size_bytes": 5165
     },
     {
       "name": "miniapp-style-layout-converter",
@@ -45759,8 +45758,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5033
+      "status": "VERIFIED",
+      "size_bytes": 5151
     },
     {
       "name": "miniapp-third-party-dependency-migrator",
@@ -45774,8 +45773,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5042
+      "status": "VERIFIED",
+      "size_bytes": 5160
     },
     {
       "name": "miniapp-visual-regression-testing",
@@ -45789,8 +45788,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 4986
+      "status": "VERIFIED",
+      "size_bytes": 5104
     },
     {
       "name": "minimal-lockfile-delta",
@@ -45804,8 +45803,8 @@
         "doc/adr/0011-native-node-lock-regeneration.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3597
+      "status": "VERIFIED",
+      "size_bytes": 3594
     },
     {
       "name": "mirrored-rpc-capabilities",
@@ -45817,8 +45816,8 @@
         "doc/adr/0008-rpc-data-table-stores.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3548
+      "status": "VERIFIED",
+      "size_bytes": 3545
     },
     {
       "name": "model-run-vs-provider-turn",
@@ -45830,8 +45829,8 @@
         "packages/llm/DESIGN.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4043
+      "status": "VERIFIED",
+      "size_bytes": 4040
     },
     {
       "name": "model-tool-skill-router",
@@ -45865,8 +45864,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3501
+      "status": "VERIFIED",
+      "size_bytes": 3498
     },
     {
       "name": "multi-engine-rewrite-router",
@@ -45892,8 +45891,8 @@
         "CLAUDE.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3820
+      "status": "VERIFIED",
+      "size_bytes": 3817
     },
     {
       "name": "multi-tenant-isolation-certifier",
@@ -45933,8 +45932,8 @@
         "doc/adr/0011-native-node-lock-regeneration.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3689
+      "status": "VERIFIED",
+      "size_bytes": 3686
     },
     {
       "name": "native-parser-adapter",
@@ -45947,8 +45946,8 @@
         "CLAUDE.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3741
+      "status": "VERIFIED",
+      "size_bytes": 3738
     },
     {
       "name": "native-runtime-lab",
@@ -46000,8 +45999,8 @@
         "doc/adr/0011-native-node-lock-regeneration.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3616
+      "status": "VERIFIED",
+      "size_bytes": 3613
     },
     {
       "name": "parallel-subagent-execution",
@@ -46012,8 +46011,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3531
+      "status": "VERIFIED",
+      "size_bytes": 3528
     },
     {
       "name": "parent-child-session-graph",
@@ -46024,8 +46023,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3568
+      "status": "VERIFIED",
+      "size_bytes": 3565
     },
     {
       "name": "parse-failure-evidence",
@@ -46039,8 +46038,8 @@
         "doc/adr/0011-native-node-lock-regeneration.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3631
+      "status": "VERIFIED",
+      "size_bytes": 3628
     },
     {
       "name": "parser-capability-contract",
@@ -46053,8 +46052,8 @@
         "CLAUDE.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3756
+      "status": "VERIFIED",
+      "size_bytes": 3753
     },
     {
       "name": "parser-roundtrip-fidelity",
@@ -46067,8 +46066,8 @@
         "CLAUDE.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3707
+      "status": "VERIFIED",
+      "size_bytes": 3704
     },
     {
       "name": "parser-roundtrip-gate",
@@ -46094,8 +46093,8 @@
         "doc/adr/0011-native-node-lock-regeneration.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3570
+      "status": "VERIFIED",
+      "size_bytes": 3567
     },
     {
       "name": "per-agent-model-routing",
@@ -46106,8 +46105,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3536
+      "status": "VERIFIED",
+      "size_bytes": 3533
     },
     {
       "name": "performance-regression-certification",
@@ -46151,8 +46150,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3482
+      "status": "VERIFIED",
+      "size_bytes": 3479
     },
     {
       "name": "platform-deployment-gate",
@@ -53223,8 +53222,8 @@
         "packages/llm/DESIGN.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4068
+      "status": "VERIFIED",
+      "size_bytes": 4065
     },
     {
       "name": "portfolio-multi-repository-governance",
@@ -53245,8 +53244,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3932
+      "status": "VERIFIED",
+      "size_bytes": 3929
     },
     {
       "name": "post-edit-format-and-patch",
@@ -53258,8 +53257,8 @@
         "packages/llm/DESIGN.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4064
+      "status": "VERIFIED",
+      "size_bytes": 4061
     },
     {
       "name": "primary-subagent-hierarchy",
@@ -53270,8 +53269,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3504
+      "status": "VERIFIED",
+      "size_bytes": 3501
     },
     {
       "name": "procurement-security-questionnaire",
@@ -53364,8 +53363,8 @@
         "packages/llm/DESIGN.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4053
+      "status": "VERIFIED",
+      "size_bytes": 4050
     },
     {
       "name": "provider-turn-persistence",
@@ -53377,8 +53376,8 @@
         "specs/v2/session.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3550
+      "status": "VERIFIED",
+      "size_bytes": 3547
     },
     {
       "name": "query-plan-performance-equivalence",
@@ -53403,8 +53402,8 @@
         "specs/v2/session.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3434
+      "status": "VERIFIED",
+      "size_bytes": 3431
     },
     {
       "name": "react-to-miniapp-analyzer",
@@ -53418,8 +53417,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5104
+      "status": "VERIFIED",
+      "size_bytes": 5222
     },
     {
       "name": "recipe-agent-hybrid-planner",
@@ -53430,8 +53429,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3703
+      "status": "VERIFIED",
+      "size_bytes": 3700
     },
     {
       "name": "recipe-bundle-resolver",
@@ -53444,8 +53443,8 @@
         "doc/adr/0007-javascript-templating-enhancements.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3623
+      "status": "VERIFIED",
+      "size_bytes": 3620
     },
     {
       "name": "recipe-change-attribution",
@@ -53456,8 +53455,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3590
+      "status": "VERIFIED",
+      "size_bytes": 3587
     },
     {
       "name": "recipe-composition-graph",
@@ -53468,8 +53467,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3555
+      "status": "VERIFIED",
+      "size_bytes": 3552
     },
     {
       "name": "recipe-data-table",
@@ -53482,8 +53481,8 @@
         "doc/adr/0007-javascript-templating-enhancements.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3506
+      "status": "VERIFIED",
+      "size_bytes": 3503
     },
     {
       "name": "recipe-descriptor-introspection",
@@ -53494,8 +53493,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3703
+      "status": "VERIFIED",
+      "size_bytes": 3700
     },
     {
       "name": "recipe-effort-estimation",
@@ -53506,8 +53505,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3590
+      "status": "VERIFIED",
+      "size_bytes": 3587
     },
     {
       "name": "recipe-marketplace-validation",
@@ -53520,8 +53519,8 @@
         "doc/adr/0007-javascript-templating-enhancements.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3613
+      "status": "VERIFIED",
+      "size_bytes": 3610
     },
     {
       "name": "recipe-marketplace",
@@ -53534,8 +53533,8 @@
         "doc/adr/0007-javascript-templating-enhancements.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3555
+      "status": "VERIFIED",
+      "size_bytes": 3552
     },
     {
       "name": "recipe-option-schema",
@@ -53546,8 +53545,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3561
+      "status": "VERIFIED",
+      "size_bytes": 3558
     },
     {
       "name": "recipe-preconditions",
@@ -53558,8 +53557,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3507
+      "status": "VERIFIED",
+      "size_bytes": 3504
     },
     {
       "name": "reconnect-safe-history",
@@ -53571,8 +53570,8 @@
         "specs/v2/session.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3485
+      "status": "VERIFIED",
+      "size_bytes": 3482
     },
     {
       "name": "remote-execution-cache-planner",
@@ -53596,8 +53595,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4788
+      "status": "VERIFIED",
+      "size_bytes": 4785
     },
     {
       "name": "repo-erss",
@@ -53608,8 +53607,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4675
+      "status": "VERIFIED",
+      "size_bytes": 4672
     },
     {
       "name": "repo-mrloc",
@@ -53620,8 +53619,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4796
+      "status": "VERIFIED",
+      "size_bytes": 4793
     },
     {
       "name": "repo-origin-classifier",
@@ -53632,8 +53631,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4767
+      "status": "VERIFIED",
+      "size_bytes": 4764
     },
     {
       "name": "repo-rcs",
@@ -53644,8 +53643,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4609
+      "status": "VERIFIED",
+      "size_bytes": 4606
     },
     {
       "name": "repo-scale-report",
@@ -53656,8 +53655,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4676
+      "status": "VERIFIED",
+      "size_bytes": 4673
     },
     {
       "name": "repo-semantic-accounting",
@@ -53668,8 +53667,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4788
+      "status": "VERIFIED",
+      "size_bytes": 4785
     },
     {
       "name": "repo-transform-surface",
@@ -53680,8 +53679,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4662
+      "status": "VERIFIED",
+      "size_bytes": 4659
     },
     {
       "name": "repository-custody-and-revisionset",
@@ -53703,8 +53702,8 @@
         "doc/adr/0008-rpc-data-table-stores.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3639
+      "status": "VERIFIED",
+      "size_bytes": 3636
     },
     {
       "name": "repository-semantic-code-graph",
@@ -53788,8 +53787,8 @@
         "doc/adr/0008-rpc-data-table-stores.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3556
+      "status": "VERIFIED",
+      "size_bytes": 3553
     },
     {
       "name": "rich-type-attribution",
@@ -53802,8 +53801,8 @@
         "CLAUDE.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3685
+      "status": "VERIFIED",
+      "size_bytes": 3682
     },
     {
       "name": "root-cause-risk-prioritization",
@@ -53826,8 +53825,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2819
+      "status": "VERIFIED",
+      "size_bytes": 2923
     },
     {
       "name": "router-industrial-01-domain-contracts",
@@ -53840,8 +53839,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3632
+      "status": "VERIFIED",
+      "size_bytes": 3736
     },
     {
       "name": "router-industrial-02-model-provider-registry",
@@ -53854,8 +53853,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "experimental",
-      "size_bytes": 3267
+      "status": "VERIFIED",
+      "size_bytes": 3371
     },
     {
       "name": "router-industrial-03-policy-and-security",
@@ -53868,8 +53867,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3639
+      "status": "VERIFIED",
+      "size_bytes": 3743
     },
     {
       "name": "router-industrial-04-routing-engine",
@@ -53883,8 +53882,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3704
+      "status": "VERIFIED",
+      "size_bytes": 3808
     },
     {
       "name": "router-industrial-05-litellm-gateway",
@@ -53897,8 +53896,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3486
+      "status": "VERIFIED",
+      "size_bytes": 3590
     },
     {
       "name": "router-industrial-06-native-provider-adapters",
@@ -53911,8 +53910,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3259
+      "status": "VERIFIED",
+      "size_bytes": 3363
     },
     {
       "name": "router-industrial-07-openrouter-adapter",
@@ -53925,8 +53924,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3336
+      "status": "VERIFIED",
+      "size_bytes": 3440
     },
     {
       "name": "router-industrial-08-resilience-and-replay",
@@ -53939,8 +53938,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3841
+      "status": "VERIFIED",
+      "size_bytes": 3945
     },
     {
       "name": "router-industrial-09-cost-rate-limit-accounting",
@@ -53953,8 +53952,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3325
+      "status": "VERIFIED",
+      "size_bytes": 3429
     },
     {
       "name": "router-industrial-10-observability-and-evals",
@@ -53967,8 +53966,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3637
+      "status": "VERIFIED",
+      "size_bytes": 3741
     },
     {
       "name": "router-industrial-11-deployment-and-operations",
@@ -53981,8 +53980,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3721
+      "status": "VERIFIED",
+      "size_bytes": 3825
     },
     {
       "name": "router-industrial-12-certification-and-rollout",
@@ -53995,8 +53994,8 @@
       "dependencies": [
         "engines/router-industrial-engine/src/elmos_router_industrial/skill_runtime.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3683
+      "status": "VERIFIED",
+      "size_bytes": 3787
     },
     {
       "name": "rpc-process-isolation",
@@ -54008,8 +54007,8 @@
         "doc/adr/0008-rpc-data-table-stores.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3471
+      "status": "VERIFIED",
+      "size_bytes": 3468
     },
     {
       "name": "runtime-evidence-graph",
@@ -54043,8 +54042,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3546
+      "status": "VERIFIED",
+      "size_bytes": 3543
     },
     {
       "name": "safety-regulatory-boundary-gate",
@@ -54080,8 +54079,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3589
+      "status": "VERIFIED",
+      "size_bytes": 3586
     },
     {
       "name": "scanning-recipe-accumulator",
@@ -54092,8 +54091,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3550
+      "status": "VERIFIED",
+      "size_bytes": 3547
     },
     {
       "name": "schema-metadata-discovery",
@@ -54117,8 +54116,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3661
+      "status": "VERIFIED",
+      "size_bytes": 3658
     },
     {
       "name": "secret-egress-control",
@@ -54165,8 +54164,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3657
+      "status": "VERIFIED",
+      "size_bytes": 3654
     },
     {
       "name": "semantic-ir-lift-lower",
@@ -54192,8 +54191,8 @@
         "CLAUDE.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3723
+      "status": "VERIFIED",
+      "size_bytes": 3720
     },
     {
       "name": "semantic-patch-and-evidence-ledger",
@@ -54204,8 +54203,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3708
+      "status": "VERIFIED",
+      "size_bytes": 3705
     },
     {
       "name": "semantic-preservation-gate",
@@ -54230,8 +54229,8 @@
         "doc/adr/0007-javascript-templating-enhancements.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3576
+      "status": "VERIFIED",
+      "size_bytes": 3573
     },
     {
       "name": "semantic-symbol-index",
@@ -54257,8 +54256,8 @@
         "doc/adr/0007-javascript-templating-enhancements.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3540
+      "status": "VERIFIED",
+      "size_bytes": 3537
     },
     {
       "name": "semantic-token-context-query",
@@ -54270,8 +54269,8 @@
         "doc/adr/0008-rpc-data-table-stores.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3652
+      "status": "VERIFIED",
+      "size_bytes": 3649
     },
     {
       "name": "session-event-sourcing",
@@ -54283,8 +54282,8 @@
         "specs/v2/session.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3450
+      "status": "VERIFIED",
+      "size_bytes": 3447
     },
     {
       "name": "session-retry-run-state",
@@ -54295,8 +54294,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3731
+      "status": "VERIFIED",
+      "size_bytes": 3728
     },
     {
       "name": "session-run-coordinator",
@@ -54308,8 +54307,8 @@
         "specs/v2/session.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3431
+      "status": "VERIFIED",
+      "size_bytes": 3428
     },
     {
       "name": "shadow-dual-run-canary-rollback-preparation",
@@ -54330,8 +54329,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3787
+      "status": "VERIFIED",
+      "size_bytes": 3784
     },
     {
       "name": "side-effect-ledger-and-recovery-fencing",
@@ -54342,8 +54341,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3695
+      "status": "VERIFIED",
+      "size_bytes": 3692
     },
     {
       "name": "skill-marketplace-certification",
@@ -54354,8 +54353,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3776
+      "status": "VERIFIED",
+      "size_bytes": 3773
     },
     {
       "name": "skill-promotion-canary",
@@ -54481,8 +54480,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4935
+      "status": "VERIFIED",
+      "size_bytes": 4932
     },
     {
       "name": "spring-api-diff",
@@ -54493,8 +54492,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4864
+      "status": "VERIFIED",
+      "size_bytes": 4861
     },
     {
       "name": "spring-assessment-report",
@@ -54505,8 +54504,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4740
+      "status": "VERIFIED",
+      "size_bytes": 4737
     },
     {
       "name": "spring-assessment-sku",
@@ -54517,8 +54516,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4673
+      "status": "VERIFIED",
+      "size_bytes": 4670
     },
     {
       "name": "spring-async-graph",
@@ -54529,8 +54528,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4881
+      "status": "VERIFIED",
+      "size_bytes": 4878
     },
     {
       "name": "spring-baseline-preflight",
@@ -54541,8 +54540,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4818
+      "status": "VERIFIED",
+      "size_bytes": 4815
     },
     {
       "name": "spring-bean-flow",
@@ -54553,8 +54552,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4831
+      "status": "VERIFIED",
+      "size_bytes": 4828
     },
     {
       "name": "spring-build-migrator",
@@ -54565,8 +54564,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4904
+      "status": "VERIFIED",
+      "size_bytes": 4901
     },
     {
       "name": "spring-capability-matrix",
@@ -54577,8 +54576,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 5031
+      "status": "VERIFIED",
+      "size_bytes": 5028
     },
     {
       "name": "spring-characterization",
@@ -54589,8 +54588,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4809
+      "status": "VERIFIED",
+      "size_bytes": 4806
     },
     {
       "name": "spring-completion-proof",
@@ -54601,8 +54600,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 5020
+      "status": "VERIFIED",
+      "size_bytes": 5017
     },
     {
       "name": "spring-context-slicer",
@@ -54613,8 +54612,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4956
+      "status": "VERIFIED",
+      "size_bytes": 4953
     },
     {
       "name": "spring-crash-recovery",
@@ -54625,8 +54624,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4984
+      "status": "VERIFIED",
+      "size_bytes": 4981
     },
     {
       "name": "spring-critical-subroutes",
@@ -54637,8 +54636,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4934
+      "status": "VERIFIED",
+      "size_bytes": 4931
     },
     {
       "name": "spring-data-graph",
@@ -54649,8 +54648,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4845
+      "status": "VERIFIED",
+      "size_bytes": 4842
     },
     {
       "name": "spring-db-diff",
@@ -54661,8 +54660,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4920
+      "status": "VERIFIED",
+      "size_bytes": 4917
     },
     {
       "name": "spring-delivery-rollback",
@@ -54673,8 +54672,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4923
+      "status": "VERIFIED",
+      "size_bytes": 4920
     },
     {
       "name": "spring-deterministic-share",
@@ -54685,8 +54684,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4876
+      "status": "VERIFIED",
+      "size_bytes": 4873
     },
     {
       "name": "spring-diagnostic-classifier",
@@ -54697,8 +54696,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 5013
+      "status": "VERIFIED",
+      "size_bytes": 5010
     },
     {
       "name": "spring-dual-runtime",
@@ -54709,8 +54708,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4924
+      "status": "VERIFIED",
+      "size_bytes": 4921
     },
     {
       "name": "spring-durable-session",
@@ -54721,8 +54720,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 5046
+      "status": "VERIFIED",
+      "size_bytes": 5043
     },
     {
       "name": "spring-effort-estimate",
@@ -54733,8 +54732,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4718
+      "status": "VERIFIED",
+      "size_bytes": 4715
     },
     {
       "name": "spring-eligibility",
@@ -54745,8 +54744,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4768
+      "status": "VERIFIED",
+      "size_bytes": 4765
     },
     {
       "name": "spring-env-snapshot",
@@ -54757,8 +54756,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4804
+      "status": "VERIFIED",
+      "size_bytes": 4801
     },
     {
       "name": "spring-factory-sku",
@@ -54769,8 +54768,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4694
+      "status": "VERIFIED",
+      "size_bytes": 4691
     },
     {
       "name": "spring-human-approval",
@@ -54781,8 +54780,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4852
+      "status": "VERIFIED",
+      "size_bytes": 4849
     },
     {
       "name": "spring-legacy-risk",
@@ -54793,8 +54792,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4722
+      "status": "VERIFIED",
+      "size_bytes": 4719
     },
     {
       "name": "spring-license-router",
@@ -54805,8 +54804,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4842
+      "status": "VERIFIED",
+      "size_bytes": 4839
     },
     {
       "name": "spring-maven-multimodule",
@@ -54817,8 +54816,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4883
+      "status": "VERIFIED",
+      "size_bytes": 4880
     },
     {
       "name": "spring-migration-dag",
@@ -54829,8 +54828,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4882
+      "status": "VERIFIED",
+      "size_bytes": 4879
     },
     {
       "name": "spring-native-recipes",
@@ -54841,8 +54840,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4846
+      "status": "VERIFIED",
+      "size_bytes": 4843
     },
     {
       "name": "spring-openrewrite-adapter",
@@ -54853,8 +54852,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4908
+      "status": "VERIFIED",
+      "size_bytes": 4905
     },
     {
       "name": "spring-pilot-sku",
@@ -54865,8 +54864,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4697
+      "status": "VERIFIED",
+      "size_bytes": 4694
     },
     {
       "name": "spring-private-deps",
@@ -54877,8 +54876,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4767
+      "status": "VERIFIED",
+      "size_bytes": 4764
     },
     {
       "name": "spring-quality-gates",
@@ -54889,8 +54888,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 5015
+      "status": "VERIFIED",
+      "size_bytes": 5012
     },
     {
       "name": "spring-recipe-fixpoint",
@@ -54901,8 +54900,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4876
+      "status": "VERIFIED",
+      "size_bytes": 4873
     },
     {
       "name": "spring-repair-agent",
@@ -54913,8 +54912,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4881
+      "status": "VERIFIED",
+      "size_bytes": 4878
     },
     {
       "name": "spring-repo-graph",
@@ -54925,8 +54924,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4807
+      "status": "VERIFIED",
+      "size_bytes": 4804
     },
     {
       "name": "spring-route-orchestrator",
@@ -54938,8 +54937,8 @@
         "references/contract.json",
         "docs/spring-golden-route-commercial-skills/installed-manifest.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 5564
+      "status": "VERIFIED",
+      "size_bytes": 5561
     },
     {
       "name": "spring-runtime-eta",
@@ -54950,8 +54949,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4626
+      "status": "VERIFIED",
+      "size_bytes": 4623
     },
     {
       "name": "spring-sandbox",
@@ -54962,8 +54961,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4932
+      "status": "VERIFIED",
+      "size_bytes": 4929
     },
     {
       "name": "spring-secure-intake",
@@ -54974,8 +54973,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4693
+      "status": "VERIFIED",
+      "size_bytes": 4690
     },
     {
       "name": "spring-security-diff",
@@ -54986,8 +54985,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4975
+      "status": "VERIFIED",
+      "size_bytes": 4972
     },
     {
       "name": "spring-security-graph",
@@ -54998,8 +54997,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4865
+      "status": "VERIFIED",
+      "size_bytes": 4862
     },
     {
       "name": "spring-side-effect-ledger",
@@ -55010,8 +55009,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4989
+      "status": "VERIFIED",
+      "size_bytes": 4986
     },
     {
       "name": "spring-sideeffect-diff",
@@ -55022,8 +55021,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4923
+      "status": "VERIFIED",
+      "size_bytes": 4920
     },
     {
       "name": "spring-source-profile",
@@ -55034,8 +55033,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4916
+      "status": "VERIFIED",
+      "size_bytes": 4913
     },
     {
       "name": "spring-target-profile",
@@ -55046,8 +55045,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4972
+      "status": "VERIFIED",
+      "size_bytes": 4969
     },
     {
       "name": "spring-test-corpus",
@@ -55058,8 +55057,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4903
+      "status": "VERIFIED",
+      "size_bytes": 4900
     },
     {
       "name": "spring-unsupported-manager",
@@ -55070,8 +55069,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4944
+      "status": "VERIFIED",
+      "size_bytes": 4941
     },
     {
       "name": "spring-verification-fixpoint",
@@ -55082,8 +55081,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 5023
+      "status": "VERIFIED",
+      "size_bytes": 5020
     },
     {
       "name": "sql-dialect-transpiler",
@@ -55164,8 +55163,8 @@
         "packages/llm/DESIGN.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4141
+      "status": "VERIFIED",
+      "size_bytes": 4138
     },
     {
       "name": "structured-task-and-question-tools",
@@ -55176,8 +55175,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3727
+      "status": "VERIFIED",
+      "size_bytes": 3724
     },
     {
       "name": "successful-patch-to-recipe-learning",
@@ -55188,8 +55187,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3716
+      "status": "VERIFIED",
+      "size_bytes": 3713
     },
     {
       "name": "support-profile-and-unknown-register",
@@ -55308,8 +55307,8 @@
         "doc/adr/0011-native-node-lock-regeneration.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3747
+      "status": "VERIFIED",
+      "size_bytes": 3744
     },
     {
       "name": "transformation-benchmarks",
@@ -55323,8 +55322,8 @@
         "doc/adr/0011-native-node-lock-regeneration.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3778
+      "status": "VERIFIED",
+      "size_bytes": 3775
     },
     {
       "name": "transformation-dag-estimation",
@@ -57643,8 +57642,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3739
+      "status": "VERIFIED",
+      "size_bytes": 3736
     },
     {
       "name": "universal-agent-skill-runtime",
@@ -57705,8 +57704,8 @@
         "doc/adr/0007-javascript-templating-enhancements.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3542
+      "status": "VERIFIED",
+      "size_bytes": 3539
     },
     {
       "name": "verification-fixpoint-completion-proof",
@@ -57717,8 +57716,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3817
+      "status": "VERIFIED",
+      "size_bytes": 3814
     },
     {
       "name": "version-aware-parser",
@@ -57731,8 +57730,8 @@
         "CLAUDE.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3645
+      "status": "VERIFIED",
+      "size_bytes": 3642
     },
     {
       "name": "version-drift-gate",
@@ -57758,8 +57757,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5123
+      "status": "VERIFIED",
+      "size_bytes": 5241
     },
     {
       "name": "wake-resume-interrupt",
@@ -57771,8 +57770,8 @@
         "specs/v2/session.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3424
+      "status": "VERIFIED",
+      "size_bytes": 3421
     },
     {
       "name": "wechat-miniapp-codegen",
@@ -57786,8 +57785,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5014
+      "status": "VERIFIED",
+      "size_bytes": 5132
     },
     {
       "name": "wildcard-permission-engine",
@@ -57798,8 +57797,8 @@
       "dependencies": [
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 3728
+      "status": "VERIFIED",
+      "size_bytes": 3725
     },
     {
       "name": "workspace-control-plane-and-multi-client",
@@ -57811,8 +57810,8 @@
         "packages/llm/DESIGN.md",
         "references/contract.json"
       ],
-      "status": "SPECIFICATION_IMPORTED",
-      "size_bytes": 4158
+      "status": "VERIFIED",
+      "size_bytes": 4155
     },
     {
       "name": "xiaohongshu-miniapp-codegen",
@@ -57826,8 +57825,8 @@
         "examples/invocation.md",
         "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5093
+      "status": "VERIFIED",
+      "size_bytes": 5211
     }
   ]
 }

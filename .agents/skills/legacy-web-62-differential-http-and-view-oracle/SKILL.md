@@ -1,5 +1,8 @@
 ---
 name: legacy-web-62-differential-http-and-view-oracle
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for HTTP 与视图差分 Oracle; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
   source_package: elmos.java-legacy-web.repository-modernization

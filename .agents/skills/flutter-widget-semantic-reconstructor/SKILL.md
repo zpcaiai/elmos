@@ -1,5 +1,8 @@
 ---
 name: flutter-widget-semantic-reconstructor
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Reconstruct Flutter/Dart widget trees, navigation, state management,
   gestures, themes, animations, painters, and platform channels into MiniApp IR. Use
   for Flutter sources; never convert by screenshotting or flattening the whole UI

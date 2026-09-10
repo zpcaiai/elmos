@@ -79,7 +79,7 @@ class TidbTargetLowerer(ChinaDbTargetLowerer):
         return [
             DialectLoweringRule(
                 rule_id="tidb_backtick_escape",
-                description="Convert T-SQL [col] or Oracle \"col\" to TiDB `col`",
+                description='Convert T-SQL [col] or Oracle "col" to TiDB `col`',
                 pattern=r"\[([a-zA-Z0-9_]+)\]|\"([a-zA-Z0-9_]+)\"",
                 replacement=r"`\1\2`",
                 is_regex=True,
@@ -144,17 +144,17 @@ class TidbTargetLowerer(ChinaDbTargetLowerer):
     def _build_error_code_mappings(self) -> dict[str, str]:
         """Translate legacy DBMS error codes to TiDB MySQL wire error codes."""
         return {
-            "ORA-00001": "1062",   # ER_DUP_ENTRY
-            "ORA-00942": "1146",   # ER_NO_SUCH_TABLE
-            "ORA-00904": "1054",   # ER_BAD_FIELD_ERROR
-            "ORA-01400": "1048",   # ER_BAD_NULL_ERROR
-            "ORA-02291": "1452",   # Cannot add or update child row (FK)
-            "ORA-02292": "1451",   # Cannot delete or update parent row (FK)
-            "23505": "1062",       # PG unique_violation
-            "42P01": "1146",       # PG undefined_table
-            "42703": "1054",       # PG undefined_column
-            "2627": "1062",        # T-SQL PK violation
-            "208": "1146",         # T-SQL invalid object
+            "ORA-00001": "1062",  # ER_DUP_ENTRY
+            "ORA-00942": "1146",  # ER_NO_SUCH_TABLE
+            "ORA-00904": "1054",  # ER_BAD_FIELD_ERROR
+            "ORA-01400": "1048",  # ER_BAD_NULL_ERROR
+            "ORA-02291": "1452",  # Cannot add or update child row (FK)
+            "ORA-02292": "1451",  # Cannot delete or update parent row (FK)
+            "23505": "1062",  # PG unique_violation
+            "42P01": "1146",  # PG undefined_table
+            "42703": "1054",  # PG undefined_column
+            "2627": "1062",  # T-SQL PK violation
+            "208": "1146",  # T-SQL invalid object
         }
 
     def _build_catalog_queries(self) -> dict[str, str]:
@@ -247,4 +247,3 @@ class TidbTargetLowerer(ChinaDbTargetLowerer):
         res = self.lower_data_types(source_sql, source_dialect)
         res = self.apply_custom_rules(res, source_dialect)
         return res
-

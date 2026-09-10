@@ -1,5 +1,8 @@
 ---
 name: "autonomous-qa-23-repair-planning"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Run 23-repair-planning through its exact repository-owned Autonomous QA handler."
 metadata:
   source_package: "elmos-autonomous-qa-self-healing-skills"
@@ -18,7 +21,7 @@ metadata:
   runtime_phase: "repair"
   runtime_mutating: "false"
   runtime_operation: "elmos_autonomous_qa.advanced_skills.plan_repair"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_NOT_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "NOT_CERTIFIED"
 ---

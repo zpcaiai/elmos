@@ -1,15 +1,16 @@
-<view class="{{'subscriptionPanel'}}" aria-label="当前订阅">
-  <view class="{{'subscriptionCopy'}}">
-    <text>当前订阅</text>
-    <text>{{copy}}</text>
-    <text wx:if="{{message}}" role="status">{{message}}</text>
+<view class="card" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <view class="source-labels">
+    <text class="source-label">/api/billing/cancel</text>
+    <text class="source-label">/api/billing/subscription</text>
+    <text class="source-label">ACTIVE_SUBSCRIPTION_NOT_FOUND</text>
+    <text class="source-label">AUTH</text>
+    <text class="source-label">EMPTY</text>
+    <text class="source-label">Idempotency-Key</text>
   </view>
-  <view class="{{'subscriptionActions'}}">
-    <button wx:if="{{state === 'UNAVAILABLE'}}" class="button button-secondary" type="button" bindtap="onTap">重试</button>
-    <button wx:if="{{state === 'READY' && subscription?.canCancel && !confirming}}" class="button button-secondary" type="button" bindtap="onTap">到期取消</button>
-    <block wx:if="{{state === 'READY' && subscription?.canCancel && confirming}}">
-      <button class="button button-secondary" type="button" disabled="{{pending}}" bindtap="onTap">保留订阅</button>
-      <button class="button button-primary" type="button" disabled="{{pending}}" bindtap="cancel">{{pending ? "正在提交…" : "确认到期取消"}}</button>
-    </block>
+  <view class="actions">
+    <button wx:for="{{actions}}" wx:key="id" size="mini" data-action="{{item.id}}" bindtap="runAction">{{item.label}}</button>
   </view>
+  <view wx:for="{{rows}}" wx:key="key" class="data-row"><text>{{item.key}}</text><text>{{item.value}}</text></view>
 </view>

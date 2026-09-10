@@ -1,0 +1,32 @@
+{
+  "schema_version": "elmos.spring-golden-route.compiled-skill-contract.v2",
+  "package_id": "elmos-spring-golden-route-commercial-skills",
+  "package_version": "2.0.0",
+  "installed_alias": "spring-recipe-fixpoint",
+  "namespace": "spring-golden-route-commercial-v2",
+  "source_id": "ELMOS-GR-047",
+  "batch": "16",
+  "dependencies": [
+    "spring-api-config-migrator"
+  ],
+  "effective_dependencies": [
+    "spring-api-config-migrator"
+  ],
+  "critical_dependencies": [],
+  "required_outputs": [
+    "cycle-results.json",
+    "convergence-proof.json",
+    "oscillation-report.json"
+  ],
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "handler_id": "handle_spring_recipe_fixpoint",
+    "dispatcher": "dispatch_skill",
+    "module_path": "engines/spring-golden-route-engine/src/elmos_spring_golden_route/runtime.py",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

@@ -62,9 +62,7 @@ class TestErrorPatternsAndDiagnostics:
         p_ids = [p.pattern_id for p in ERROR_PATTERNS]
         assert len(p_ids) == len(set(p_ids))
 
-    def test_diagnostic_ora_00942(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_ora_00942(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-00942: table or view 'accounts' does not exist"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
@@ -75,9 +73,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_ora_00942(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_ora_00942(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-00942: table or view 'accounts' does not exist"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
@@ -88,13 +84,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_ora_00942(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_ora_00942(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-00942: table or view 'accounts' does not exist"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "oracle", sandbox_check
         )
@@ -104,9 +100,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_ora_00904(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_ora_00904(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-00904: 'c_balance': invalid identifier"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
@@ -117,9 +111,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_ora_00904(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_ora_00904(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-00904: 'c_balance': invalid identifier"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
@@ -130,13 +122,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_ora_00904(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_ora_00904(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-00904: 'c_balance': invalid identifier"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "oracle", sandbox_check
         )
@@ -146,9 +138,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_ora_01400(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_ora_01400(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-01400: cannot insert NULL into ('t_orders'.'order_amt')"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
@@ -159,9 +149,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_ora_01400(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_ora_01400(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-01400: cannot insert NULL into ('t_orders'.'order_amt')"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
@@ -172,13 +160,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_ora_01400(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_ora_01400(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-01400: cannot insert NULL into ('t_orders'.'order_amt')"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "oracle", sandbox_check
         )
@@ -188,10 +176,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_ora_01422(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-01422: exact fetch returns more than requested number of rows'
+    def test_diagnostic_ora_01422(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-01422: exact fetch returns more than requested number of rows"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
         assert isinstance(diag, DiagnosticReport)
@@ -201,10 +187,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_ora_01422(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-01422: exact fetch returns more than requested number of rows'
+    def test_synthesize_for_ora_01422(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-01422: exact fetch returns more than requested number of rows"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -214,13 +198,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_ora_01422(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-01422: exact fetch returns more than requested number of rows'
+    def test_heal_and_verify_ora_01422(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-01422: exact fetch returns more than requested number of rows"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "oracle", sandbox_check
         )
@@ -230,10 +214,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_ora_01438(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-01438: value larger than specified precision allowed for this column'
+    def test_diagnostic_ora_01438(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-01438: value larger than specified precision allowed for this column"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
         assert isinstance(diag, DiagnosticReport)
@@ -243,10 +225,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_ora_01438(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-01438: value larger than specified precision allowed for this column'
+    def test_synthesize_for_ora_01438(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-01438: value larger than specified precision allowed for this column"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -256,13 +236,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_ora_01438(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-01438: value larger than specified precision allowed for this column'
+    def test_heal_and_verify_ora_01438(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-01438: value larger than specified precision allowed for this column"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "oracle", sandbox_check
         )
@@ -272,10 +252,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_ora_01722(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-01722: invalid number in expression'
+    def test_diagnostic_ora_01722(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-01722: invalid number in expression"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
         assert isinstance(diag, DiagnosticReport)
@@ -285,10 +263,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_ora_01722(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-01722: invalid number in expression'
+    def test_synthesize_for_ora_01722(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-01722: invalid number in expression"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -298,13 +274,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_ora_01722(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-01722: invalid number in expression'
+    def test_heal_and_verify_ora_01722(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-01722: invalid number in expression"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "oracle", sandbox_check
         )
@@ -314,10 +290,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_ora_02291(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-02291: integrity constraint violated - parent key not found'
+    def test_diagnostic_ora_02291(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-02291: integrity constraint violated - parent key not found"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
         assert isinstance(diag, DiagnosticReport)
@@ -327,10 +301,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_ora_02291(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-02291: integrity constraint violated - parent key not found'
+    def test_synthesize_for_ora_02291(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-02291: integrity constraint violated - parent key not found"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -340,13 +312,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_ora_02291(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-02291: integrity constraint violated - parent key not found'
+    def test_heal_and_verify_ora_02291(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-02291: integrity constraint violated - parent key not found"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "oracle", sandbox_check
         )
@@ -356,9 +328,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_ora_04091(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_ora_04091(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-04091: table 'journal' is mutating, trigger/function may not see it"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
@@ -369,9 +339,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_ora_04091(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_ora_04091(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-04091: table 'journal' is mutating, trigger/function may not see it"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
@@ -382,13 +350,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_ora_04091(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_ora_04091(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-04091: table 'journal' is mutating, trigger/function may not see it"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "oracle", sandbox_check
         )
@@ -398,10 +366,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_ora_06502(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-06502: numeric or value error: character string buffer too small'
+    def test_diagnostic_ora_06502(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-06502: numeric or value error: character string buffer too small"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
         assert isinstance(diag, DiagnosticReport)
@@ -411,10 +377,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_ora_06502(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-06502: numeric or value error: character string buffer too small'
+    def test_synthesize_for_ora_06502(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-06502: numeric or value error: character string buffer too small"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -424,13 +388,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_ora_06502(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ORA-06502: numeric or value error: character string buffer too small'
+    def test_heal_and_verify_ora_06502(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ORA-06502: numeric or value error: character string buffer too small"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "oracle", sandbox_check
         )
@@ -440,9 +404,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_ora_08177(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_ora_08177(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-08177: can't serialize access for this transaction"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
@@ -453,9 +415,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_ora_08177(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_ora_08177(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-08177: can't serialize access for this transaction"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "oracle")
@@ -466,13 +426,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_ora_08177(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_ora_08177(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "ORA-08177: can't serialize access for this transaction"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "oracle", sandbox_check
         )
@@ -482,9 +442,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_mssql_207(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_mssql_207(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Msg 207, Level 16: Invalid column name 'cust_code'."
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "sqlserver")
@@ -495,9 +453,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_mssql_207(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_mssql_207(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Msg 207, Level 16: Invalid column name 'cust_code'."
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "sqlserver")
@@ -508,13 +464,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_mssql_207(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_mssql_207(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Msg 207, Level 16: Invalid column name 'cust_code'."
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "sqlserver", sandbox_check
         )
@@ -524,9 +480,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_mssql_208(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_mssql_208(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Msg 208, Level 16: Invalid object name 'orders_archive'."
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "sqlserver")
@@ -537,9 +491,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_mssql_208(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_mssql_208(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Msg 208, Level 16: Invalid object name 'orders_archive'."
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "sqlserver")
@@ -550,13 +502,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_mssql_208(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_mssql_208(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Msg 208, Level 16: Invalid object name 'orders_archive'."
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "sqlserver", sandbox_check
         )
@@ -566,13 +518,11 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_mssql_245(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_mssql_245(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = (
-            'Msg 245, Level 16: Conversion failed when con'
+            "Msg 245, Level 16: Conversion failed when con"
             "verting the varchar value 'abc' to data type "
-            'int.'
+            "int."
         )
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "sqlserver")
@@ -583,13 +533,11 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_mssql_245(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_mssql_245(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = (
-            'Msg 245, Level 16: Conversion failed when con'
+            "Msg 245, Level 16: Conversion failed when con"
             "verting the varchar value 'abc' to data type "
-            'int.'
+            "int."
         )
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "sqlserver")
@@ -600,17 +548,17 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_mssql_245(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_mssql_245(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = (
-            'Msg 245, Level 16: Conversion failed when con'
+            "Msg 245, Level 16: Conversion failed when con"
             "verting the varchar value 'abc' to data type "
-            'int.'
+            "int."
         )
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "sqlserver", sandbox_check
         )
@@ -620,9 +568,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_mssql_515(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_mssql_515(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Msg 515, Level 16: Cannot insert the value NULL into column 'created_by'."
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "sqlserver")
@@ -633,9 +579,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_mssql_515(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_mssql_515(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Msg 515, Level 16: Cannot insert the value NULL into column 'created_by'."
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "sqlserver")
@@ -646,13 +590,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_mssql_515(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_mssql_515(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Msg 515, Level 16: Cannot insert the value NULL into column 'created_by'."
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "sqlserver", sandbox_check
         )
@@ -662,12 +606,9 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_mssql_547(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_mssql_547(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = (
-            'Msg 547, Level 16: The INSERT statement confl'
-            'icted with the FOREIGN KEY constraint.'
+            "Msg 547, Level 16: The INSERT statement conflicted with the FOREIGN KEY constraint."
         )
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "sqlserver")
@@ -678,12 +619,9 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_mssql_547(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_mssql_547(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = (
-            'Msg 547, Level 16: The INSERT statement confl'
-            'icted with the FOREIGN KEY constraint.'
+            "Msg 547, Level 16: The INSERT statement conflicted with the FOREIGN KEY constraint."
         )
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "sqlserver")
@@ -694,16 +632,15 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_mssql_547(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_mssql_547(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = (
-            'Msg 547, Level 16: The INSERT statement confl'
-            'icted with the FOREIGN KEY constraint.'
+            "Msg 547, Level 16: The INSERT statement conflicted with the FOREIGN KEY constraint."
         )
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "sqlserver", sandbox_check
         )
@@ -713,10 +650,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_mssql_1205(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'Msg 1205, Level 13: Transaction was deadlocked on lock resources.'
+    def test_diagnostic_mssql_1205(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "Msg 1205, Level 13: Transaction was deadlocked on lock resources."
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "sqlserver")
         assert isinstance(diag, DiagnosticReport)
@@ -726,10 +661,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_mssql_1205(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'Msg 1205, Level 13: Transaction was deadlocked on lock resources.'
+    def test_synthesize_for_mssql_1205(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "Msg 1205, Level 13: Transaction was deadlocked on lock resources."
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "sqlserver")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -739,13 +672,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_mssql_1205(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'Msg 1205, Level 13: Transaction was deadlocked on lock resources.'
+    def test_heal_and_verify_mssql_1205(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "Msg 1205, Level 13: Transaction was deadlocked on lock resources."
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "sqlserver", sandbox_check
         )
@@ -755,9 +688,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_pg_42p01(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_pg_42p01(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = 'ERROR: 42P01: relation "customer_profile" does not exist'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "postgres")
@@ -768,9 +699,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_pg_42p01(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_pg_42p01(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = 'ERROR: 42P01: relation "customer_profile" does not exist'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "postgres")
@@ -781,13 +710,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_pg_42p01(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_pg_42p01(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = 'ERROR: 42P01: relation "customer_profile" does not exist'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "postgres", sandbox_check
         )
@@ -797,9 +726,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_pg_42703(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_pg_42703(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = 'ERROR: 42703: column "created_date" does not exist'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "postgres")
@@ -810,9 +737,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_pg_42703(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_pg_42703(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = 'ERROR: 42703: column "created_date" does not exist'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "postgres")
@@ -823,13 +748,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_pg_42703(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_pg_42703(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = 'ERROR: 42703: column "created_date" does not exist'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "postgres", sandbox_check
         )
@@ -839,10 +764,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_pg_42804(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ERROR: 42804: datatype mismatch, cannot cast type text to integer'
+    def test_diagnostic_pg_42804(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ERROR: 42804: datatype mismatch, cannot cast type text to integer"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "postgres")
         assert isinstance(diag, DiagnosticReport)
@@ -852,10 +775,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_pg_42804(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ERROR: 42804: datatype mismatch, cannot cast type text to integer'
+    def test_synthesize_for_pg_42804(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ERROR: 42804: datatype mismatch, cannot cast type text to integer"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "postgres")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -865,13 +786,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_pg_42804(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'ERROR: 42804: datatype mismatch, cannot cast type text to integer'
+    def test_heal_and_verify_pg_42804(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "ERROR: 42804: datatype mismatch, cannot cast type text to integer"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "postgres", sandbox_check
         )
@@ -881,9 +802,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_pg_23505(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_pg_23505(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = 'ERROR: 23505: duplicate key value violates unique constraint "pk_account"'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "postgres")
@@ -894,9 +813,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_pg_23505(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_pg_23505(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = 'ERROR: 23505: duplicate key value violates unique constraint "pk_account"'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "postgres")
@@ -907,13 +824,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_pg_23505(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_pg_23505(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = 'ERROR: 23505: duplicate key value violates unique constraint "pk_account"'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "postgres", sandbox_check
         )
@@ -923,13 +840,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_pg_23503(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = (
-            'ERROR: 23503: insert or update on table "orde'
-            'rs" violates foreign key constraint'
-        )
+    def test_diagnostic_pg_23503(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = 'ERROR: 23503: insert or update on table "orders" violates foreign key constraint'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "postgres")
         assert isinstance(diag, DiagnosticReport)
@@ -939,13 +851,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_pg_23503(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = (
-            'ERROR: 23503: insert or update on table "orde'
-            'rs" violates foreign key constraint'
-        )
+    def test_synthesize_for_pg_23503(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = 'ERROR: 23503: insert or update on table "orders" violates foreign key constraint'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "postgres")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -955,16 +862,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_pg_23503(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = (
-            'ERROR: 23503: insert or update on table "orde'
-            'rs" violates foreign key constraint'
-        )
+    def test_heal_and_verify_pg_23503(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = 'ERROR: 23503: insert or update on table "orders" violates foreign key constraint'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "postgres", sandbox_check
         )
@@ -974,9 +878,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_pg_23502(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_pg_23502(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = 'ERROR: 23502: null value in column "amount" violates not-null constraint'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "postgres")
@@ -987,9 +889,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_pg_23502(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_pg_23502(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = 'ERROR: 23502: null value in column "amount" violates not-null constraint'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "postgres")
@@ -1000,13 +900,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_pg_23502(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_pg_23502(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = 'ERROR: 23502: null value in column "amount" violates not-null constraint'
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "postgres", sandbox_check
         )
@@ -1016,9 +916,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_my_1064(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_my_1064(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1064: You have an error in your SQL syntax near 'ORDER BY' at line 1"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
@@ -1029,9 +927,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_my_1064(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_my_1064(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1064: You have an error in your SQL syntax near 'ORDER BY' at line 1"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
@@ -1042,13 +938,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_my_1064(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_my_1064(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1064: You have an error in your SQL syntax near 'ORDER BY' at line 1"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "mysql", sandbox_check
         )
@@ -1058,9 +954,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_my_1054(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_my_1054(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1054: Unknown column 'item_sku' in 'field list'"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
@@ -1071,9 +965,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_my_1054(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_my_1054(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1054: Unknown column 'item_sku' in 'field list'"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
@@ -1084,13 +976,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_my_1054(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_my_1054(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1054: Unknown column 'item_sku' in 'field list'"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "mysql", sandbox_check
         )
@@ -1100,9 +992,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_my_1146(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_my_1146(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1146: Table 'dev.inventory_lot' doesn't exist"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
@@ -1113,9 +1003,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_my_1146(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_my_1146(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1146: Table 'dev.inventory_lot' doesn't exist"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
@@ -1126,13 +1014,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_my_1146(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_my_1146(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1146: Table 'dev.inventory_lot' doesn't exist"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "mysql", sandbox_check
         )
@@ -1142,13 +1030,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_my_1213(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = (
-            'Error 1213: Deadlock found when trying to get'
-            ' lock; try restarting transaction'
-        )
+    def test_diagnostic_my_1213(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "Error 1213: Deadlock found when trying to get lock; try restarting transaction"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
         assert isinstance(diag, DiagnosticReport)
@@ -1158,13 +1041,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_my_1213(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = (
-            'Error 1213: Deadlock found when trying to get'
-            ' lock; try restarting transaction'
-        )
+    def test_synthesize_for_my_1213(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "Error 1213: Deadlock found when trying to get lock; try restarting transaction"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -1174,16 +1052,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_my_1213(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = (
-            'Error 1213: Deadlock found when trying to get'
-            ' lock; try restarting transaction'
-        )
+    def test_heal_and_verify_my_1213(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "Error 1213: Deadlock found when trying to get lock; try restarting transaction"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "mysql", sandbox_check
         )
@@ -1193,9 +1068,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_my_1364(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_my_1364(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1364: Field 'status' doesn't have a default value"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
@@ -1206,9 +1079,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_my_1364(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_my_1364(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1364: Field 'status' doesn't have a default value"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
@@ -1219,13 +1090,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_my_1364(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_my_1364(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1364: Field 'status' doesn't have a default value"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "mysql", sandbox_check
         )
@@ -1235,9 +1106,7 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_my_1406(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_my_1406(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1406: Data too long for column 'description' at row 1"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
@@ -1248,9 +1117,7 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_my_1406(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_synthesize_for_my_1406(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1406: Data too long for column 'description' at row 1"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
@@ -1261,13 +1128,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_my_1406(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_heal_and_verify_my_1406(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Error 1406: Data too long for column 'description' at row 1"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "mysql", sandbox_check
         )
@@ -1277,13 +1144,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_my_1452(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = (
-            'Error 1452: Cannot add or update a child row:'
-            ' a foreign key constraint fails'
-        )
+    def test_diagnostic_my_1452(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "Error 1452: Cannot add or update a child row: a foreign key constraint fails"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
         assert isinstance(diag, DiagnosticReport)
@@ -1293,13 +1155,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_my_1452(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = (
-            'Error 1452: Cannot add or update a child row:'
-            ' a foreign key constraint fails'
-        )
+    def test_synthesize_for_my_1452(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "Error 1452: Cannot add or update a child row: a foreign key constraint fails"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "mysql")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -1309,16 +1166,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_my_1452(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = (
-            'Error 1452: Cannot add or update a child row:'
-            ' a foreign key constraint fails'
-        )
+    def test_heal_and_verify_my_1452(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "Error 1452: Cannot add or update a child row: a foreign key constraint fails"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "mysql", sandbox_check
         )
@@ -1328,10 +1182,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_dm_2106(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = '-2106: 无效的列名[trans_seq]'
+    def test_diagnostic_dm_2106(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "-2106: 无效的列名[trans_seq]"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "dm8")
         assert isinstance(diag, DiagnosticReport)
@@ -1341,10 +1193,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_dm_2106(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = '-2106: 无效的列名[trans_seq]'
+    def test_synthesize_for_dm_2106(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "-2106: 无效的列名[trans_seq]"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "dm8")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -1354,13 +1204,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_dm_2106(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = '-2106: 无效的列名[trans_seq]'
+    def test_heal_and_verify_dm_2106(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "-2106: 无效的列名[trans_seq]"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "dm8", sandbox_check
         )
@@ -1370,10 +1220,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_dm_7033(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = '-7033: 动态SQL绑定参数类型错误'
+    def test_diagnostic_dm_7033(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "-7033: 动态SQL绑定参数类型错误"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "dm8")
         assert isinstance(diag, DiagnosticReport)
@@ -1383,10 +1231,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_dm_7033(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = '-7033: 动态SQL绑定参数类型错误'
+    def test_synthesize_for_dm_7033(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "-7033: 动态SQL绑定参数类型错误"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "dm8")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -1396,13 +1242,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_dm_7033(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = '-7033: 动态SQL绑定参数类型错误'
+    def test_heal_and_verify_dm_7033(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "-7033: 动态SQL绑定参数类型错误"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "dm8", sandbox_check
         )
@@ -1412,10 +1258,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_kb_42703(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = '42703: KingbaseES: 字段不存在: sys_status'
+    def test_diagnostic_kb_42703(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "42703: KingbaseES: 字段不存在: sys_status"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "kingbasees")
         assert isinstance(diag, DiagnosticReport)
@@ -1425,10 +1269,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_kb_42703(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = '42703: KingbaseES: 字段不存在: sys_status'
+    def test_synthesize_for_kb_42703(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "42703: KingbaseES: 字段不存在: sys_status"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "kingbasees")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -1438,13 +1280,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_kb_42703(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = '42703: KingbaseES: 字段不存在: sys_status'
+    def test_heal_and_verify_kb_42703(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "42703: KingbaseES: 字段不存在: sys_status"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "kingbasees", sandbox_check
         )
@@ -1454,10 +1296,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_og_42883(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = '42883: function nvl(numeric, integer) does not exist'
+    def test_diagnostic_og_42883(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "42883: function nvl(numeric, integer) does not exist"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "opengauss")
         assert isinstance(diag, DiagnosticReport)
@@ -1467,10 +1307,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_og_42883(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = '42883: function nvl(numeric, integer) does not exist'
+    def test_synthesize_for_og_42883(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "42883: function nvl(numeric, integer) does not exist"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "opengauss")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -1480,13 +1318,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_og_42883(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = '42883: function nvl(numeric, integer) does not exist'
+    def test_heal_and_verify_og_42883(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "42883: function nvl(numeric, integer) does not exist"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "opengauss", sandbox_check
         )
@@ -1496,10 +1334,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_gbase_spl(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'GBase 8s SPL syntax error in procedure body'
+    def test_diagnostic_gbase_spl(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "GBase 8s SPL syntax error in procedure body"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "gbase-8s")
         assert isinstance(diag, DiagnosticReport)
@@ -1509,10 +1345,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_gbase_spl(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'GBase 8s SPL syntax error in procedure body'
+    def test_synthesize_for_gbase_spl(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "GBase 8s SPL syntax error in procedure body"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "gbase-8s")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -1522,13 +1356,13 @@ class TestErrorPatternsAndDiagnostics:
         assert len(top.patched_sql) > 0
         assert top.confidence_score >= 0.80
 
-    def test_heal_and_verify_gbase_spl(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'GBase 8s SPL syntax error in procedure body'
+    def test_heal_and_verify_gbase_spl(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "GBase 8s SPL syntax error in procedure body"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "gbase-8s", sandbox_check
         )
@@ -1538,10 +1372,8 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_golden_shard(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'GoldenDB: partition key must be included in primary key'
+    def test_diagnostic_golden_shard(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "GoldenDB: partition key must be included in primary key"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "goldendb")
         assert isinstance(diag, DiagnosticReport)
@@ -1551,10 +1383,8 @@ class TestErrorPatternsAndDiagnostics:
         assert diag.confidence_score >= 0.90
         assert len(diag.failure_id) > 0
 
-    def test_synthesize_for_golden_shard(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
-        raw_err = 'GoldenDB: partition key must be included in primary key'
+    def test_synthesize_for_golden_shard(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
+        raw_err = "GoldenDB: partition key must be included in primary key"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
         diag = engine.diagnose_failure(raw_err, sql_sample, "goldendb")
         proposals = engine.synthesize_ast_patch(diag, sql_sample)
@@ -1567,10 +1397,12 @@ class TestErrorPatternsAndDiagnostics:
     def test_heal_and_verify_golden_shard(
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
-        raw_err = 'GoldenDB: partition key must be included in primary key'
+        raw_err = "GoldenDB: partition key must be included in primary key"
         sql_sample = "SELECT * FROM test_tbl WHERE val = 1;"
+
         def sandbox_check(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             sql_sample, raw_err, "goldendb", sandbox_check
         )
@@ -1580,14 +1412,13 @@ class TestErrorPatternsAndDiagnostics:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
 
-    def test_diagnostic_generic_fallback(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_diagnostic_generic_fallback(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         raw_err = "Completely unclassified dialect failure 99999"
         diag = engine.diagnose_failure(raw_err, "SELECT 1;", "dm8")
         assert diag.matched_pattern_id == "GENERIC_DIALECT_FALLBACK"
         assert diag.category == ErrorCategory.SYNTAX_ERROR
         assert diag.confidence_score > 0.80
+
 
 class TestAstPatchSynthesisStrategies:
     """Test AST patch synthesis strategies and patch proposal ranking."""
@@ -1618,9 +1449,7 @@ class TestAstPatchSynthesisStrategies:
         assert p.patch_kind == AstPatchKind.IDENTIFIER_ESCAPE
         assert len(p.patched_sql) > 0
 
-    def test_explicit_cast_synthesis(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_explicit_cast_synthesis(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         sql = "SELECT * FROM accounts WHERE balance = '1000.50';"
         diag = engine.diagnose_failure("ORA-01722: invalid number", sql, "dm8")
         proposals = engine.synthesize_ast_patch(diag, sql)
@@ -1640,9 +1469,7 @@ class TestAstPatchSynthesisStrategies:
         assert p.patch_kind == AstPatchKind.NULL_COALESCE_GUARD
         assert len(p.patched_sql) > 0
 
-    def test_routine_shim_synthesis(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_routine_shim_synthesis(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         sql = "SELECT NVL(col1, 0) FROM my_table;"
         diag = engine.diagnose_failure("42883: function nvl does not exist", sql, "opengauss")
         proposals = engine.synthesize_ast_patch(diag, sql)
@@ -1674,6 +1501,7 @@ class TestAstPatchSynthesisStrategies:
         p = proposals[0]
         assert p.confidence_score >= 0.85
 
+
 class TestSandboxVerificationLoop:
     """Test autonomous repair and sandbox verification cycle."""
 
@@ -1686,10 +1514,12 @@ class TestSandboxVerificationLoop:
     ) -> None:
         failing_sql = "SELECT order, user FROM tbl;"
         raw_err = "ORA-00904: invalid identifier 'order'"
+
         def validator(s: str) -> tuple[bool, str]:
             if '"ORDER"' in s or '"order"' in s or "`order`" in s:
                 return (True, "")
             return (False, "Still invalid identifier")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             failing_sql, raw_err, "dm8", sandbox_verifier=validator
         )
@@ -1704,12 +1534,14 @@ class TestSandboxVerificationLoop:
         failing_sql = "SELECT * FROM t WHERE val = 1;"
         raw_err = "Obscure unrecognized parser error"
         calls = 0
+
         def selective_validator(s: str) -> tuple[bool, str]:
             nonlocal calls
             calls += 1
             if calls >= 2:
                 return (True, "")
             return (False, "Rejected first attempt")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             failing_sql, raw_err, "dm8", sandbox_verifier=selective_validator
         )
@@ -1722,14 +1554,17 @@ class TestSandboxVerificationLoop:
     ) -> None:
         failing_sql = "TOTAL MALFORMED JUNK ;;;;"
         raw_err = "Completely fatal error"
+
         def reject_all(s: str) -> tuple[bool, str]:
             return (False, "Never valid")
+
         ok, rep_sql, receipt = engine.autonomous_repair_and_verify(
             failing_sql, raw_err, "dm8", sandbox_verifier=reject_all
         )
         assert ok is False
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is False
+
 
 class TestMultiEngineRepairMatrix:
     """Test autonomous repair matrix across all 13 domestic database engines."""
@@ -1738,16 +1573,16 @@ class TestMultiEngineRepairMatrix:
     def engine(self) -> AutonomousDatabaseSelfHealingEngine:
         return AutonomousDatabaseSelfHealingEngine()
 
-    def test_repair_dm8_missing_id(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_dm8_missing_id(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify Dameng 8 (DM8) self-healing for missing_id."""
-        failing = 'SELECT status_code FROM accounts;'
+        failing = "SELECT status_code FROM accounts;"
         raw_err = "42703: column 'status_code' does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "dm8")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "dm8", sandbox_verifier=sandbox_ok
         )
@@ -1757,16 +1592,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "dm8"
 
-    def test_repair_dm8_type_mismatch(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_dm8_type_mismatch(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify Dameng 8 (DM8) self-healing for type_mismatch."""
         failing = "SELECT * FROM tab WHERE id = '100';"
-        raw_err = '42804: cannot cast type text to integer'
+        raw_err = "42804: cannot cast type text to integer"
         diag = engine.diagnose_failure(raw_err, failing, "dm8")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "dm8", sandbox_verifier=sandbox_ok
         )
@@ -1776,16 +1611,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "dm8"
 
-    def test_repair_dm8_null_insert(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_dm8_null_insert(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify Dameng 8 (DM8) self-healing for null_insert."""
-        failing = 'INSERT INTO t (id, amt) VALUES (1, NULL);'
-        raw_err = '23502: null value violates not-null constraint'
+        failing = "INSERT INTO t (id, amt) VALUES (1, NULL);"
+        raw_err = "23502: null value violates not-null constraint"
         diag = engine.diagnose_failure(raw_err, failing, "dm8")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "dm8", sandbox_verifier=sandbox_ok
         )
@@ -1795,16 +1630,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "dm8"
 
-    def test_repair_dm8_string_trunc(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_dm8_string_trunc(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify Dameng 8 (DM8) self-healing for string_trunc."""
         failing = "INSERT INTO t (code) VALUES ('ABCDEFGHIJKLMNO123456');"
-        raw_err = '22001: value too long'
+        raw_err = "22001: value too long"
         diag = engine.diagnose_failure(raw_err, failing, "dm8")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "dm8", sandbox_verifier=sandbox_ok
         )
@@ -1814,16 +1649,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "dm8"
 
-    def test_repair_dm8_unresolved_fn(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_dm8_unresolved_fn(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify Dameng 8 (DM8) self-healing for unresolved_fn."""
         failing = "SELECT NVL(col1, 'N/A') FROM t;"
-        raw_err = '42883: function nvl(text, text) does not exist'
+        raw_err = "42883: function nvl(text, text) does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "dm8")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "dm8", sandbox_verifier=sandbox_ok
         )
@@ -1833,16 +1668,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "dm8"
 
-    def test_repair_dm8_dup_key_conflict(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_dm8_dup_key_conflict(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify Dameng 8 (DM8) self-healing for dup_key_conflict."""
-        failing = 'INSERT INTO t (id, val) VALUES (1, 100);'
-        raw_err = '23505: duplicate key violates unique constraint'
+        failing = "INSERT INTO t (id, val) VALUES (1, 100);"
+        raw_err = "23505: duplicate key violates unique constraint"
         diag = engine.diagnose_failure(raw_err, failing, "dm8")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "dm8", sandbox_verifier=sandbox_ok
         )
@@ -1852,16 +1687,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "dm8"
 
-    def test_repair_dm8_deadlock_hint(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_dm8_deadlock_hint(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify Dameng 8 (DM8) self-healing for deadlock_hint."""
-        failing = 'SELECT * FROM accounts FOR UPDATE;'
-        raw_err = '40P01: deadlock detected'
+        failing = "SELECT * FROM accounts FOR UPDATE;"
+        raw_err = "40P01: deadlock detected"
         diag = engine.diagnose_failure(raw_err, failing, "dm8")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "dm8", sandbox_verifier=sandbox_ok
         )
@@ -1871,16 +1706,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "dm8"
 
-    def test_repair_kingbase_missing_id(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_kingbase_missing_id(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify KingbaseES (V8/V9) self-healing for missing_id."""
-        failing = 'SELECT status_code FROM accounts;'
+        failing = "SELECT status_code FROM accounts;"
         raw_err = "42703: column 'status_code' does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "kingbase")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "kingbase", sandbox_verifier=sandbox_ok
         )
@@ -1895,11 +1730,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify KingbaseES (V8/V9) self-healing for type_mismatch."""
         failing = "SELECT * FROM tab WHERE id = '100';"
-        raw_err = '42804: cannot cast type text to integer'
+        raw_err = "42804: cannot cast type text to integer"
         diag = engine.diagnose_failure(raw_err, failing, "kingbase")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "kingbase", sandbox_verifier=sandbox_ok
         )
@@ -1909,16 +1746,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "kingbase"
 
-    def test_repair_kingbase_null_insert(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_kingbase_null_insert(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify KingbaseES (V8/V9) self-healing for null_insert."""
-        failing = 'INSERT INTO t (id, amt) VALUES (1, NULL);'
-        raw_err = '23502: null value violates not-null constraint'
+        failing = "INSERT INTO t (id, amt) VALUES (1, NULL);"
+        raw_err = "23502: null value violates not-null constraint"
         diag = engine.diagnose_failure(raw_err, failing, "kingbase")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "kingbase", sandbox_verifier=sandbox_ok
         )
@@ -1933,11 +1770,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify KingbaseES (V8/V9) self-healing for string_trunc."""
         failing = "INSERT INTO t (code) VALUES ('ABCDEFGHIJKLMNO123456');"
-        raw_err = '22001: value too long'
+        raw_err = "22001: value too long"
         diag = engine.diagnose_failure(raw_err, failing, "kingbase")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "kingbase", sandbox_verifier=sandbox_ok
         )
@@ -1952,11 +1791,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify KingbaseES (V8/V9) self-healing for unresolved_fn."""
         failing = "SELECT NVL(col1, 'N/A') FROM t;"
-        raw_err = '42883: function nvl(text, text) does not exist'
+        raw_err = "42883: function nvl(text, text) does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "kingbase")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "kingbase", sandbox_verifier=sandbox_ok
         )
@@ -1970,12 +1811,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify KingbaseES (V8/V9) self-healing for dup_key_conflict."""
-        failing = 'INSERT INTO t (id, val) VALUES (1, 100);'
-        raw_err = '23505: duplicate key violates unique constraint'
+        failing = "INSERT INTO t (id, val) VALUES (1, 100);"
+        raw_err = "23505: duplicate key violates unique constraint"
         diag = engine.diagnose_failure(raw_err, failing, "kingbase")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "kingbase", sandbox_verifier=sandbox_ok
         )
@@ -1989,12 +1832,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify KingbaseES (V8/V9) self-healing for deadlock_hint."""
-        failing = 'SELECT * FROM accounts FOR UPDATE;'
-        raw_err = '40P01: deadlock detected'
+        failing = "SELECT * FROM accounts FOR UPDATE;"
+        raw_err = "40P01: deadlock detected"
         diag = engine.diagnose_failure(raw_err, failing, "kingbase")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "kingbase", sandbox_verifier=sandbox_ok
         )
@@ -2004,16 +1849,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "kingbase"
 
-    def test_repair_opengauss_missing_id(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_opengauss_missing_id(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify openGauss / MogDB self-healing for missing_id."""
-        failing = 'SELECT status_code FROM accounts;'
+        failing = "SELECT status_code FROM accounts;"
         raw_err = "42703: column 'status_code' does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "opengauss")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "opengauss", sandbox_verifier=sandbox_ok
         )
@@ -2028,11 +1873,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify openGauss / MogDB self-healing for type_mismatch."""
         failing = "SELECT * FROM tab WHERE id = '100';"
-        raw_err = '42804: cannot cast type text to integer'
+        raw_err = "42804: cannot cast type text to integer"
         diag = engine.diagnose_failure(raw_err, failing, "opengauss")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "opengauss", sandbox_verifier=sandbox_ok
         )
@@ -2046,12 +1893,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify openGauss / MogDB self-healing for null_insert."""
-        failing = 'INSERT INTO t (id, amt) VALUES (1, NULL);'
-        raw_err = '23502: null value violates not-null constraint'
+        failing = "INSERT INTO t (id, amt) VALUES (1, NULL);"
+        raw_err = "23502: null value violates not-null constraint"
         diag = engine.diagnose_failure(raw_err, failing, "opengauss")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "opengauss", sandbox_verifier=sandbox_ok
         )
@@ -2066,11 +1915,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify openGauss / MogDB self-healing for string_trunc."""
         failing = "INSERT INTO t (code) VALUES ('ABCDEFGHIJKLMNO123456');"
-        raw_err = '22001: value too long'
+        raw_err = "22001: value too long"
         diag = engine.diagnose_failure(raw_err, failing, "opengauss")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "opengauss", sandbox_verifier=sandbox_ok
         )
@@ -2085,11 +1936,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify openGauss / MogDB self-healing for unresolved_fn."""
         failing = "SELECT NVL(col1, 'N/A') FROM t;"
-        raw_err = '42883: function nvl(text, text) does not exist'
+        raw_err = "42883: function nvl(text, text) does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "opengauss")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "opengauss", sandbox_verifier=sandbox_ok
         )
@@ -2103,12 +1956,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify openGauss / MogDB self-healing for dup_key_conflict."""
-        failing = 'INSERT INTO t (id, val) VALUES (1, 100);'
-        raw_err = '23505: duplicate key violates unique constraint'
+        failing = "INSERT INTO t (id, val) VALUES (1, 100);"
+        raw_err = "23505: duplicate key violates unique constraint"
         diag = engine.diagnose_failure(raw_err, failing, "opengauss")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "opengauss", sandbox_verifier=sandbox_ok
         )
@@ -2122,12 +1977,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify openGauss / MogDB self-healing for deadlock_hint."""
-        failing = 'SELECT * FROM accounts FOR UPDATE;'
-        raw_err = '40P01: deadlock detected'
+        failing = "SELECT * FROM accounts FOR UPDATE;"
+        raw_err = "40P01: deadlock detected"
         diag = engine.diagnose_failure(raw_err, failing, "opengauss")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "opengauss", sandbox_verifier=sandbox_ok
         )
@@ -2137,16 +1994,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "opengauss"
 
-    def test_repair_tidb_missing_id(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_tidb_missing_id(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify TiDB (v6/v7) self-healing for missing_id."""
-        failing = 'SELECT status_code FROM accounts;'
+        failing = "SELECT status_code FROM accounts;"
         raw_err = "42703: column 'status_code' does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "tidb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "tidb", sandbox_verifier=sandbox_ok
         )
@@ -2156,16 +2013,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "tidb"
 
-    def test_repair_tidb_type_mismatch(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_tidb_type_mismatch(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify TiDB (v6/v7) self-healing for type_mismatch."""
         failing = "SELECT * FROM tab WHERE id = '100';"
-        raw_err = '42804: cannot cast type text to integer'
+        raw_err = "42804: cannot cast type text to integer"
         diag = engine.diagnose_failure(raw_err, failing, "tidb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "tidb", sandbox_verifier=sandbox_ok
         )
@@ -2175,16 +2032,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "tidb"
 
-    def test_repair_tidb_null_insert(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_tidb_null_insert(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify TiDB (v6/v7) self-healing for null_insert."""
-        failing = 'INSERT INTO t (id, amt) VALUES (1, NULL);'
-        raw_err = '23502: null value violates not-null constraint'
+        failing = "INSERT INTO t (id, amt) VALUES (1, NULL);"
+        raw_err = "23502: null value violates not-null constraint"
         diag = engine.diagnose_failure(raw_err, failing, "tidb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "tidb", sandbox_verifier=sandbox_ok
         )
@@ -2194,16 +2051,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "tidb"
 
-    def test_repair_tidb_string_trunc(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_tidb_string_trunc(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify TiDB (v6/v7) self-healing for string_trunc."""
         failing = "INSERT INTO t (code) VALUES ('ABCDEFGHIJKLMNO123456');"
-        raw_err = '22001: value too long'
+        raw_err = "22001: value too long"
         diag = engine.diagnose_failure(raw_err, failing, "tidb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "tidb", sandbox_verifier=sandbox_ok
         )
@@ -2213,16 +2070,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "tidb"
 
-    def test_repair_tidb_unresolved_fn(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_tidb_unresolved_fn(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify TiDB (v6/v7) self-healing for unresolved_fn."""
         failing = "SELECT NVL(col1, 'N/A') FROM t;"
-        raw_err = '42883: function nvl(text, text) does not exist'
+        raw_err = "42883: function nvl(text, text) does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "tidb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "tidb", sandbox_verifier=sandbox_ok
         )
@@ -2236,12 +2093,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify TiDB (v6/v7) self-healing for dup_key_conflict."""
-        failing = 'INSERT INTO t (id, val) VALUES (1, 100);'
-        raw_err = '23505: duplicate key violates unique constraint'
+        failing = "INSERT INTO t (id, val) VALUES (1, 100);"
+        raw_err = "23505: duplicate key violates unique constraint"
         diag = engine.diagnose_failure(raw_err, failing, "tidb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "tidb", sandbox_verifier=sandbox_ok
         )
@@ -2251,16 +2110,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "tidb"
 
-    def test_repair_tidb_deadlock_hint(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_tidb_deadlock_hint(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify TiDB (v6/v7) self-healing for deadlock_hint."""
-        failing = 'SELECT * FROM accounts FOR UPDATE;'
-        raw_err = '40P01: deadlock detected'
+        failing = "SELECT * FROM accounts FOR UPDATE;"
+        raw_err = "40P01: deadlock detected"
         diag = engine.diagnose_failure(raw_err, failing, "tidb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "tidb", sandbox_verifier=sandbox_ok
         )
@@ -2270,16 +2129,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "tidb"
 
-    def test_repair_gbase8s_missing_id(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_gbase8s_missing_id(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify GBase 8s (Informix-based) self-healing for missing_id."""
-        failing = 'SELECT status_code FROM accounts;'
+        failing = "SELECT status_code FROM accounts;"
         raw_err = "42703: column 'status_code' does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8s")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8s", sandbox_verifier=sandbox_ok
         )
@@ -2294,11 +2153,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify GBase 8s (Informix-based) self-healing for type_mismatch."""
         failing = "SELECT * FROM tab WHERE id = '100';"
-        raw_err = '42804: cannot cast type text to integer'
+        raw_err = "42804: cannot cast type text to integer"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8s")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8s", sandbox_verifier=sandbox_ok
         )
@@ -2308,16 +2169,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "gbase8s"
 
-    def test_repair_gbase8s_null_insert(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_gbase8s_null_insert(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify GBase 8s (Informix-based) self-healing for null_insert."""
-        failing = 'INSERT INTO t (id, amt) VALUES (1, NULL);'
-        raw_err = '23502: null value violates not-null constraint'
+        failing = "INSERT INTO t (id, amt) VALUES (1, NULL);"
+        raw_err = "23502: null value violates not-null constraint"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8s")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8s", sandbox_verifier=sandbox_ok
         )
@@ -2327,16 +2188,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "gbase8s"
 
-    def test_repair_gbase8s_string_trunc(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_gbase8s_string_trunc(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify GBase 8s (Informix-based) self-healing for string_trunc."""
         failing = "INSERT INTO t (code) VALUES ('ABCDEFGHIJKLMNO123456');"
-        raw_err = '22001: value too long'
+        raw_err = "22001: value too long"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8s")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8s", sandbox_verifier=sandbox_ok
         )
@@ -2351,11 +2212,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify GBase 8s (Informix-based) self-healing for unresolved_fn."""
         failing = "SELECT NVL(col1, 'N/A') FROM t;"
-        raw_err = '42883: function nvl(text, text) does not exist'
+        raw_err = "42883: function nvl(text, text) does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8s")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8s", sandbox_verifier=sandbox_ok
         )
@@ -2369,12 +2232,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GBase 8s (Informix-based) self-healing for dup_key_conflict."""
-        failing = 'INSERT INTO t (id, val) VALUES (1, 100);'
-        raw_err = '23505: duplicate key violates unique constraint'
+        failing = "INSERT INTO t (id, val) VALUES (1, 100);"
+        raw_err = "23505: duplicate key violates unique constraint"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8s")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8s", sandbox_verifier=sandbox_ok
         )
@@ -2388,12 +2253,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GBase 8s (Informix-based) self-healing for deadlock_hint."""
-        failing = 'SELECT * FROM accounts FOR UPDATE;'
-        raw_err = '40P01: deadlock detected'
+        failing = "SELECT * FROM accounts FOR UPDATE;"
+        raw_err = "40P01: deadlock detected"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8s")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8s", sandbox_verifier=sandbox_ok
         )
@@ -2403,16 +2270,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "gbase8s"
 
-    def test_repair_gbase8c_missing_id(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_gbase8c_missing_id(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify GBase 8c (Distributed openGauss) self-healing for missing_id."""
-        failing = 'SELECT status_code FROM accounts;'
+        failing = "SELECT status_code FROM accounts;"
         raw_err = "42703: column 'status_code' does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8c")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8c", sandbox_verifier=sandbox_ok
         )
@@ -2427,11 +2294,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify GBase 8c (Distributed openGauss) self-healing for type_mismatch."""
         failing = "SELECT * FROM tab WHERE id = '100';"
-        raw_err = '42804: cannot cast type text to integer'
+        raw_err = "42804: cannot cast type text to integer"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8c")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8c", sandbox_verifier=sandbox_ok
         )
@@ -2441,16 +2310,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "gbase8c"
 
-    def test_repair_gbase8c_null_insert(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_gbase8c_null_insert(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify GBase 8c (Distributed openGauss) self-healing for null_insert."""
-        failing = 'INSERT INTO t (id, amt) VALUES (1, NULL);'
-        raw_err = '23502: null value violates not-null constraint'
+        failing = "INSERT INTO t (id, amt) VALUES (1, NULL);"
+        raw_err = "23502: null value violates not-null constraint"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8c")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8c", sandbox_verifier=sandbox_ok
         )
@@ -2460,16 +2329,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "gbase8c"
 
-    def test_repair_gbase8c_string_trunc(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_gbase8c_string_trunc(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify GBase 8c (Distributed openGauss) self-healing for string_trunc."""
         failing = "INSERT INTO t (code) VALUES ('ABCDEFGHIJKLMNO123456');"
-        raw_err = '22001: value too long'
+        raw_err = "22001: value too long"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8c")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8c", sandbox_verifier=sandbox_ok
         )
@@ -2484,11 +2353,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify GBase 8c (Distributed openGauss) self-healing for unresolved_fn."""
         failing = "SELECT NVL(col1, 'N/A') FROM t;"
-        raw_err = '42883: function nvl(text, text) does not exist'
+        raw_err = "42883: function nvl(text, text) does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8c")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8c", sandbox_verifier=sandbox_ok
         )
@@ -2502,12 +2373,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GBase 8c (Distributed openGauss) self-healing for dup_key_conflict."""
-        failing = 'INSERT INTO t (id, val) VALUES (1, 100);'
-        raw_err = '23505: duplicate key violates unique constraint'
+        failing = "INSERT INTO t (id, val) VALUES (1, 100);"
+        raw_err = "23505: duplicate key violates unique constraint"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8c")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8c", sandbox_verifier=sandbox_ok
         )
@@ -2521,12 +2394,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GBase 8c (Distributed openGauss) self-healing for deadlock_hint."""
-        failing = 'SELECT * FROM accounts FOR UPDATE;'
-        raw_err = '40P01: deadlock detected'
+        failing = "SELECT * FROM accounts FOR UPDATE;"
+        raw_err = "40P01: deadlock detected"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8c")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8c", sandbox_verifier=sandbox_ok
         )
@@ -2536,16 +2411,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "gbase8c"
 
-    def test_repair_gbase8a_missing_id(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_gbase8a_missing_id(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify GBase 8a (MPP Columnar) self-healing for missing_id."""
-        failing = 'SELECT status_code FROM accounts;'
+        failing = "SELECT status_code FROM accounts;"
         raw_err = "42703: column 'status_code' does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8a")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8a", sandbox_verifier=sandbox_ok
         )
@@ -2560,11 +2435,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify GBase 8a (MPP Columnar) self-healing for type_mismatch."""
         failing = "SELECT * FROM tab WHERE id = '100';"
-        raw_err = '42804: cannot cast type text to integer'
+        raw_err = "42804: cannot cast type text to integer"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8a")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8a", sandbox_verifier=sandbox_ok
         )
@@ -2574,16 +2451,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "gbase8a"
 
-    def test_repair_gbase8a_null_insert(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_gbase8a_null_insert(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify GBase 8a (MPP Columnar) self-healing for null_insert."""
-        failing = 'INSERT INTO t (id, amt) VALUES (1, NULL);'
-        raw_err = '23502: null value violates not-null constraint'
+        failing = "INSERT INTO t (id, amt) VALUES (1, NULL);"
+        raw_err = "23502: null value violates not-null constraint"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8a")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8a", sandbox_verifier=sandbox_ok
         )
@@ -2593,16 +2470,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "gbase8a"
 
-    def test_repair_gbase8a_string_trunc(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_gbase8a_string_trunc(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify GBase 8a (MPP Columnar) self-healing for string_trunc."""
         failing = "INSERT INTO t (code) VALUES ('ABCDEFGHIJKLMNO123456');"
-        raw_err = '22001: value too long'
+        raw_err = "22001: value too long"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8a")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8a", sandbox_verifier=sandbox_ok
         )
@@ -2617,11 +2494,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify GBase 8a (MPP Columnar) self-healing for unresolved_fn."""
         failing = "SELECT NVL(col1, 'N/A') FROM t;"
-        raw_err = '42883: function nvl(text, text) does not exist'
+        raw_err = "42883: function nvl(text, text) does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8a")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8a", sandbox_verifier=sandbox_ok
         )
@@ -2635,12 +2514,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GBase 8a (MPP Columnar) self-healing for dup_key_conflict."""
-        failing = 'INSERT INTO t (id, val) VALUES (1, 100);'
-        raw_err = '23505: duplicate key violates unique constraint'
+        failing = "INSERT INTO t (id, val) VALUES (1, 100);"
+        raw_err = "23505: duplicate key violates unique constraint"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8a")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8a", sandbox_verifier=sandbox_ok
         )
@@ -2654,12 +2535,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GBase 8a (MPP Columnar) self-healing for deadlock_hint."""
-        failing = 'SELECT * FROM accounts FOR UPDATE;'
-        raw_err = '40P01: deadlock detected'
+        failing = "SELECT * FROM accounts FOR UPDATE;"
+        raw_err = "40P01: deadlock detected"
         diag = engine.diagnose_failure(raw_err, failing, "gbase8a")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gbase8a", sandbox_verifier=sandbox_ok
         )
@@ -2669,16 +2552,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "gbase8a"
 
-    def test_repair_highgo_missing_id(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_highgo_missing_id(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify HighGo DB (HGDB) self-healing for missing_id."""
-        failing = 'SELECT status_code FROM accounts;'
+        failing = "SELECT status_code FROM accounts;"
         raw_err = "42703: column 'status_code' does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "highgo")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "highgo", sandbox_verifier=sandbox_ok
         )
@@ -2688,16 +2571,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "highgo"
 
-    def test_repair_highgo_type_mismatch(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_highgo_type_mismatch(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify HighGo DB (HGDB) self-healing for type_mismatch."""
         failing = "SELECT * FROM tab WHERE id = '100';"
-        raw_err = '42804: cannot cast type text to integer'
+        raw_err = "42804: cannot cast type text to integer"
         diag = engine.diagnose_failure(raw_err, failing, "highgo")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "highgo", sandbox_verifier=sandbox_ok
         )
@@ -2707,16 +2590,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "highgo"
 
-    def test_repair_highgo_null_insert(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_highgo_null_insert(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify HighGo DB (HGDB) self-healing for null_insert."""
-        failing = 'INSERT INTO t (id, amt) VALUES (1, NULL);'
-        raw_err = '23502: null value violates not-null constraint'
+        failing = "INSERT INTO t (id, amt) VALUES (1, NULL);"
+        raw_err = "23502: null value violates not-null constraint"
         diag = engine.diagnose_failure(raw_err, failing, "highgo")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "highgo", sandbox_verifier=sandbox_ok
         )
@@ -2726,16 +2609,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "highgo"
 
-    def test_repair_highgo_string_trunc(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_highgo_string_trunc(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify HighGo DB (HGDB) self-healing for string_trunc."""
         failing = "INSERT INTO t (code) VALUES ('ABCDEFGHIJKLMNO123456');"
-        raw_err = '22001: value too long'
+        raw_err = "22001: value too long"
         diag = engine.diagnose_failure(raw_err, failing, "highgo")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "highgo", sandbox_verifier=sandbox_ok
         )
@@ -2745,16 +2628,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "highgo"
 
-    def test_repair_highgo_unresolved_fn(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_highgo_unresolved_fn(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify HighGo DB (HGDB) self-healing for unresolved_fn."""
         failing = "SELECT NVL(col1, 'N/A') FROM t;"
-        raw_err = '42883: function nvl(text, text) does not exist'
+        raw_err = "42883: function nvl(text, text) does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "highgo")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "highgo", sandbox_verifier=sandbox_ok
         )
@@ -2768,12 +2651,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify HighGo DB (HGDB) self-healing for dup_key_conflict."""
-        failing = 'INSERT INTO t (id, val) VALUES (1, 100);'
-        raw_err = '23505: duplicate key violates unique constraint'
+        failing = "INSERT INTO t (id, val) VALUES (1, 100);"
+        raw_err = "23505: duplicate key violates unique constraint"
         diag = engine.diagnose_failure(raw_err, failing, "highgo")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "highgo", sandbox_verifier=sandbox_ok
         )
@@ -2783,16 +2668,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "highgo"
 
-    def test_repair_highgo_deadlock_hint(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_highgo_deadlock_hint(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify HighGo DB (HGDB) self-healing for deadlock_hint."""
-        failing = 'SELECT * FROM accounts FOR UPDATE;'
-        raw_err = '40P01: deadlock detected'
+        failing = "SELECT * FROM accounts FOR UPDATE;"
+        raw_err = "40P01: deadlock detected"
         diag = engine.diagnose_failure(raw_err, failing, "highgo")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "highgo", sandbox_verifier=sandbox_ok
         )
@@ -2806,12 +2691,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify OceanBase (Oracle Mode) self-healing for missing_id."""
-        failing = 'SELECT status_code FROM accounts;'
+        failing = "SELECT status_code FROM accounts;"
         raw_err = "42703: column 'status_code' does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_oracle", sandbox_verifier=sandbox_ok
         )
@@ -2826,11 +2713,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify OceanBase (Oracle Mode) self-healing for type_mismatch."""
         failing = "SELECT * FROM tab WHERE id = '100';"
-        raw_err = '42804: cannot cast type text to integer'
+        raw_err = "42804: cannot cast type text to integer"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_oracle", sandbox_verifier=sandbox_ok
         )
@@ -2844,12 +2733,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify OceanBase (Oracle Mode) self-healing for null_insert."""
-        failing = 'INSERT INTO t (id, amt) VALUES (1, NULL);'
-        raw_err = '23502: null value violates not-null constraint'
+        failing = "INSERT INTO t (id, amt) VALUES (1, NULL);"
+        raw_err = "23502: null value violates not-null constraint"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_oracle", sandbox_verifier=sandbox_ok
         )
@@ -2864,11 +2755,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify OceanBase (Oracle Mode) self-healing for string_trunc."""
         failing = "INSERT INTO t (code) VALUES ('ABCDEFGHIJKLMNO123456');"
-        raw_err = '22001: value too long'
+        raw_err = "22001: value too long"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_oracle", sandbox_verifier=sandbox_ok
         )
@@ -2883,11 +2776,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify OceanBase (Oracle Mode) self-healing for unresolved_fn."""
         failing = "SELECT NVL(col1, 'N/A') FROM t;"
-        raw_err = '42883: function nvl(text, text) does not exist'
+        raw_err = "42883: function nvl(text, text) does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_oracle", sandbox_verifier=sandbox_ok
         )
@@ -2901,12 +2796,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify OceanBase (Oracle Mode) self-healing for dup_key_conflict."""
-        failing = 'INSERT INTO t (id, val) VALUES (1, 100);'
-        raw_err = '23505: duplicate key violates unique constraint'
+        failing = "INSERT INTO t (id, val) VALUES (1, 100);"
+        raw_err = "23505: duplicate key violates unique constraint"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_oracle", sandbox_verifier=sandbox_ok
         )
@@ -2920,12 +2817,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify OceanBase (Oracle Mode) self-healing for deadlock_hint."""
-        failing = 'SELECT * FROM accounts FOR UPDATE;'
-        raw_err = '40P01: deadlock detected'
+        failing = "SELECT * FROM accounts FOR UPDATE;"
+        raw_err = "40P01: deadlock detected"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_oracle", sandbox_verifier=sandbox_ok
         )
@@ -2939,12 +2838,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify OceanBase (MySQL Mode) self-healing for missing_id."""
-        failing = 'SELECT status_code FROM accounts;'
+        failing = "SELECT status_code FROM accounts;"
         raw_err = "42703: column 'status_code' does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_mysql", sandbox_verifier=sandbox_ok
         )
@@ -2959,11 +2860,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify OceanBase (MySQL Mode) self-healing for type_mismatch."""
         failing = "SELECT * FROM tab WHERE id = '100';"
-        raw_err = '42804: cannot cast type text to integer'
+        raw_err = "42804: cannot cast type text to integer"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_mysql", sandbox_verifier=sandbox_ok
         )
@@ -2977,12 +2880,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify OceanBase (MySQL Mode) self-healing for null_insert."""
-        failing = 'INSERT INTO t (id, amt) VALUES (1, NULL);'
-        raw_err = '23502: null value violates not-null constraint'
+        failing = "INSERT INTO t (id, amt) VALUES (1, NULL);"
+        raw_err = "23502: null value violates not-null constraint"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_mysql", sandbox_verifier=sandbox_ok
         )
@@ -2997,11 +2902,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify OceanBase (MySQL Mode) self-healing for string_trunc."""
         failing = "INSERT INTO t (code) VALUES ('ABCDEFGHIJKLMNO123456');"
-        raw_err = '22001: value too long'
+        raw_err = "22001: value too long"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_mysql", sandbox_verifier=sandbox_ok
         )
@@ -3016,11 +2923,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify OceanBase (MySQL Mode) self-healing for unresolved_fn."""
         failing = "SELECT NVL(col1, 'N/A') FROM t;"
-        raw_err = '42883: function nvl(text, text) does not exist'
+        raw_err = "42883: function nvl(text, text) does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_mysql", sandbox_verifier=sandbox_ok
         )
@@ -3034,12 +2943,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify OceanBase (MySQL Mode) self-healing for dup_key_conflict."""
-        failing = 'INSERT INTO t (id, val) VALUES (1, 100);'
-        raw_err = '23505: duplicate key violates unique constraint'
+        failing = "INSERT INTO t (id, val) VALUES (1, 100);"
+        raw_err = "23505: duplicate key violates unique constraint"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_mysql", sandbox_verifier=sandbox_ok
         )
@@ -3053,12 +2964,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify OceanBase (MySQL Mode) self-healing for deadlock_hint."""
-        failing = 'SELECT * FROM accounts FOR UPDATE;'
-        raw_err = '40P01: deadlock detected'
+        failing = "SELECT * FROM accounts FOR UPDATE;"
+        raw_err = "40P01: deadlock detected"
         diag = engine.diagnose_failure(raw_err, failing, "oceanbase_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "oceanbase_mysql", sandbox_verifier=sandbox_ok
         )
@@ -3072,12 +2985,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GaussDB (Oracle Mode) self-healing for missing_id."""
-        failing = 'SELECT status_code FROM accounts;'
+        failing = "SELECT status_code FROM accounts;"
         raw_err = "42703: column 'status_code' does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_oracle", sandbox_verifier=sandbox_ok
         )
@@ -3092,11 +3007,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify GaussDB (Oracle Mode) self-healing for type_mismatch."""
         failing = "SELECT * FROM tab WHERE id = '100';"
-        raw_err = '42804: cannot cast type text to integer'
+        raw_err = "42804: cannot cast type text to integer"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_oracle", sandbox_verifier=sandbox_ok
         )
@@ -3110,12 +3027,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GaussDB (Oracle Mode) self-healing for null_insert."""
-        failing = 'INSERT INTO t (id, amt) VALUES (1, NULL);'
-        raw_err = '23502: null value violates not-null constraint'
+        failing = "INSERT INTO t (id, amt) VALUES (1, NULL);"
+        raw_err = "23502: null value violates not-null constraint"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_oracle", sandbox_verifier=sandbox_ok
         )
@@ -3130,11 +3049,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify GaussDB (Oracle Mode) self-healing for string_trunc."""
         failing = "INSERT INTO t (code) VALUES ('ABCDEFGHIJKLMNO123456');"
-        raw_err = '22001: value too long'
+        raw_err = "22001: value too long"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_oracle", sandbox_verifier=sandbox_ok
         )
@@ -3149,11 +3070,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify GaussDB (Oracle Mode) self-healing for unresolved_fn."""
         failing = "SELECT NVL(col1, 'N/A') FROM t;"
-        raw_err = '42883: function nvl(text, text) does not exist'
+        raw_err = "42883: function nvl(text, text) does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_oracle", sandbox_verifier=sandbox_ok
         )
@@ -3167,12 +3090,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GaussDB (Oracle Mode) self-healing for dup_key_conflict."""
-        failing = 'INSERT INTO t (id, val) VALUES (1, 100);'
-        raw_err = '23505: duplicate key violates unique constraint'
+        failing = "INSERT INTO t (id, val) VALUES (1, 100);"
+        raw_err = "23505: duplicate key violates unique constraint"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_oracle", sandbox_verifier=sandbox_ok
         )
@@ -3186,12 +3111,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GaussDB (Oracle Mode) self-healing for deadlock_hint."""
-        failing = 'SELECT * FROM accounts FOR UPDATE;'
-        raw_err = '40P01: deadlock detected'
+        failing = "SELECT * FROM accounts FOR UPDATE;"
+        raw_err = "40P01: deadlock detected"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_oracle")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_oracle", sandbox_verifier=sandbox_ok
         )
@@ -3205,12 +3132,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GaussDB (MySQL Mode) self-healing for missing_id."""
-        failing = 'SELECT status_code FROM accounts;'
+        failing = "SELECT status_code FROM accounts;"
         raw_err = "42703: column 'status_code' does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_mysql", sandbox_verifier=sandbox_ok
         )
@@ -3225,11 +3154,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify GaussDB (MySQL Mode) self-healing for type_mismatch."""
         failing = "SELECT * FROM tab WHERE id = '100';"
-        raw_err = '42804: cannot cast type text to integer'
+        raw_err = "42804: cannot cast type text to integer"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_mysql", sandbox_verifier=sandbox_ok
         )
@@ -3243,12 +3174,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GaussDB (MySQL Mode) self-healing for null_insert."""
-        failing = 'INSERT INTO t (id, amt) VALUES (1, NULL);'
-        raw_err = '23502: null value violates not-null constraint'
+        failing = "INSERT INTO t (id, amt) VALUES (1, NULL);"
+        raw_err = "23502: null value violates not-null constraint"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_mysql", sandbox_verifier=sandbox_ok
         )
@@ -3263,11 +3196,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify GaussDB (MySQL Mode) self-healing for string_trunc."""
         failing = "INSERT INTO t (code) VALUES ('ABCDEFGHIJKLMNO123456');"
-        raw_err = '22001: value too long'
+        raw_err = "22001: value too long"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_mysql", sandbox_verifier=sandbox_ok
         )
@@ -3282,11 +3217,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify GaussDB (MySQL Mode) self-healing for unresolved_fn."""
         failing = "SELECT NVL(col1, 'N/A') FROM t;"
-        raw_err = '42883: function nvl(text, text) does not exist'
+        raw_err = "42883: function nvl(text, text) does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_mysql", sandbox_verifier=sandbox_ok
         )
@@ -3300,12 +3237,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GaussDB (MySQL Mode) self-healing for dup_key_conflict."""
-        failing = 'INSERT INTO t (id, val) VALUES (1, 100);'
-        raw_err = '23505: duplicate key violates unique constraint'
+        failing = "INSERT INTO t (id, val) VALUES (1, 100);"
+        raw_err = "23505: duplicate key violates unique constraint"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_mysql", sandbox_verifier=sandbox_ok
         )
@@ -3319,12 +3258,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify GaussDB (MySQL Mode) self-healing for deadlock_hint."""
-        failing = 'SELECT * FROM accounts FOR UPDATE;'
-        raw_err = '40P01: deadlock detected'
+        failing = "SELECT * FROM accounts FOR UPDATE;"
+        raw_err = "40P01: deadlock detected"
         diag = engine.diagnose_failure(raw_err, failing, "gaussdb_mysql")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "gaussdb_mysql", sandbox_verifier=sandbox_ok
         )
@@ -3334,16 +3275,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "gaussdb_mysql"
 
-    def test_repair_goldendb_missing_id(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_goldendb_missing_id(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify ZTE GoldenDB self-healing for missing_id."""
-        failing = 'SELECT status_code FROM accounts;'
+        failing = "SELECT status_code FROM accounts;"
         raw_err = "42703: column 'status_code' does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "goldendb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "goldendb", sandbox_verifier=sandbox_ok
         )
@@ -3358,11 +3299,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify ZTE GoldenDB self-healing for type_mismatch."""
         failing = "SELECT * FROM tab WHERE id = '100';"
-        raw_err = '42804: cannot cast type text to integer'
+        raw_err = "42804: cannot cast type text to integer"
         diag = engine.diagnose_failure(raw_err, failing, "goldendb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "goldendb", sandbox_verifier=sandbox_ok
         )
@@ -3372,16 +3315,16 @@ class TestMultiEngineRepairMatrix:
         assert receipt.verification_passed is True
         assert receipt.target_engine == "goldendb"
 
-    def test_repair_goldendb_null_insert(
-        self, engine: AutonomousDatabaseSelfHealingEngine
-    ) -> None:
+    def test_repair_goldendb_null_insert(self, engine: AutonomousDatabaseSelfHealingEngine) -> None:
         """Verify ZTE GoldenDB self-healing for null_insert."""
-        failing = 'INSERT INTO t (id, amt) VALUES (1, NULL);'
-        raw_err = '23502: null value violates not-null constraint'
+        failing = "INSERT INTO t (id, amt) VALUES (1, NULL);"
+        raw_err = "23502: null value violates not-null constraint"
         diag = engine.diagnose_failure(raw_err, failing, "goldendb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "goldendb", sandbox_verifier=sandbox_ok
         )
@@ -3396,11 +3339,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify ZTE GoldenDB self-healing for string_trunc."""
         failing = "INSERT INTO t (code) VALUES ('ABCDEFGHIJKLMNO123456');"
-        raw_err = '22001: value too long'
+        raw_err = "22001: value too long"
         diag = engine.diagnose_failure(raw_err, failing, "goldendb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "goldendb", sandbox_verifier=sandbox_ok
         )
@@ -3415,11 +3360,13 @@ class TestMultiEngineRepairMatrix:
     ) -> None:
         """Verify ZTE GoldenDB self-healing for unresolved_fn."""
         failing = "SELECT NVL(col1, 'N/A') FROM t;"
-        raw_err = '42883: function nvl(text, text) does not exist'
+        raw_err = "42883: function nvl(text, text) does not exist"
         diag = engine.diagnose_failure(raw_err, failing, "goldendb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "goldendb", sandbox_verifier=sandbox_ok
         )
@@ -3433,12 +3380,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify ZTE GoldenDB self-healing for dup_key_conflict."""
-        failing = 'INSERT INTO t (id, val) VALUES (1, 100);'
-        raw_err = '23505: duplicate key violates unique constraint'
+        failing = "INSERT INTO t (id, val) VALUES (1, 100);"
+        raw_err = "23505: duplicate key violates unique constraint"
         diag = engine.diagnose_failure(raw_err, failing, "goldendb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "goldendb", sandbox_verifier=sandbox_ok
         )
@@ -3452,12 +3401,14 @@ class TestMultiEngineRepairMatrix:
         self, engine: AutonomousDatabaseSelfHealingEngine
     ) -> None:
         """Verify ZTE GoldenDB self-healing for deadlock_hint."""
-        failing = 'SELECT * FROM accounts FOR UPDATE;'
-        raw_err = '40P01: deadlock detected'
+        failing = "SELECT * FROM accounts FOR UPDATE;"
+        raw_err = "40P01: deadlock detected"
         diag = engine.diagnose_failure(raw_err, failing, "goldendb")
         assert len(diag.failure_id) > 0
+
         def sandbox_ok(s: str) -> tuple[bool, str]:
-            return (True, '')
+            return (True, "")
+
         ok, rep, receipt = engine.autonomous_repair_and_verify(
             failing, raw_err, "goldendb", sandbox_verifier=sandbox_ok
         )
@@ -3466,6 +3417,7 @@ class TestMultiEngineRepairMatrix:
         assert receipt.zero_human_intervention is True
         assert receipt.verification_passed is True
         assert receipt.target_engine == "goldendb"
+
 
 class TestL5AutonomousMigrationStages:
     @pytest.fixture
@@ -3505,9 +3457,7 @@ class TestL5AutonomousMigrationStages:
                 "asset_id": "sp_calc_totals",
                 "asset_name": "sp_calc_totals",
                 "asset_kind": "PROCEDURE",
-                "source_ddl": (
-                    "CREATE OR REPLACE PROCEDURE sp_calc_totals AS BEGIN NULL; END;"
-                ),
+                "source_ddl": ("CREATE OR REPLACE PROCEDURE sp_calc_totals AS BEGIN NULL; END;"),
             },
             {
                 "asset_id": "trg_orders_audit",
@@ -3522,17 +3472,13 @@ class TestL5AutonomousMigrationStages:
                 "asset_id": "seq_order_id",
                 "asset_name": "seq_order_id",
                 "asset_kind": "SEQUENCE",
-                "source_ddl": (
-                    "CREATE SEQUENCE seq_order_id START WITH 1 INCREMENT BY 1;"
-                ),
+                "source_ddl": ("CREATE SEQUENCE seq_order_id START WITH 1 INCREMENT BY 1;"),
             },
         ]
         eng.register_source_assets(assets)
         return eng
 
-    def test_stage_1_inventory_discovery(
-        self, engine: AutonomousDatabaseMigrationEngine
-    ) -> None:
+    def test_stage_1_inventory_discovery(self, engine: AutonomousDatabaseMigrationEngine) -> None:
         engine._run_stage_inventory_discovery()
         rec = engine.stage_records[-1]
         assert rec.stage == AutonomousMigrationStage.INVENTORY_DISCOVERY
@@ -3543,9 +3489,7 @@ class TestL5AutonomousMigrationStages:
             assert isinstance(a, MigrationAsset)
             assert len(a.asset_id) > 0
 
-    def test_stage_2_ast_lowering(
-        self, engine: AutonomousDatabaseMigrationEngine
-    ) -> None:
+    def test_stage_2_ast_lowering(self, engine: AutonomousDatabaseMigrationEngine) -> None:
         engine._run_stage_inventory_discovery()
         engine._run_stage_ast_lowering()
         rec = engine.stage_records[-1]
@@ -3555,9 +3499,7 @@ class TestL5AutonomousMigrationStages:
             assert len(a.lowered_ddl) > 0
             assert a.status == MigrationStatus.LOWERED
 
-    def test_stage_3_invariant_extraction(
-        self, engine: AutonomousDatabaseMigrationEngine
-    ) -> None:
+    def test_stage_3_invariant_extraction(self, engine: AutonomousDatabaseMigrationEngine) -> None:
         engine._run_stage_inventory_discovery()
         engine._run_stage_ast_lowering()
         engine._run_stage_invariant_extraction()
@@ -3566,9 +3508,7 @@ class TestL5AutonomousMigrationStages:
         assert rec.success is True
         assert rec.assets_processed == 6
 
-    def test_stage_4_autonomous_repair(
-        self, engine: AutonomousDatabaseMigrationEngine
-    ) -> None:
+    def test_stage_4_autonomous_repair(self, engine: AutonomousDatabaseMigrationEngine) -> None:
         engine._run_stage_inventory_discovery()
         engine._run_stage_ast_lowering()
         engine._run_stage_autonomous_repair()
@@ -3576,9 +3516,7 @@ class TestL5AutonomousMigrationStages:
         assert rec.stage == AutonomousMigrationStage.AUTONOMOUS_REPAIR
         assert rec.success is True
 
-    def test_stage_5_ddl_execution(
-        self, engine: AutonomousDatabaseMigrationEngine
-    ) -> None:
+    def test_stage_5_ddl_execution(self, engine: AutonomousDatabaseMigrationEngine) -> None:
         engine._run_stage_inventory_discovery()
         engine._run_stage_ast_lowering()
         receipt = engine._run_stage_ddl_execution()
@@ -3588,9 +3526,7 @@ class TestL5AutonomousMigrationStages:
         assert rec.stage == AutonomousMigrationStage.DDL_EXECUTION
         assert rec.success is True
 
-    def test_stage_6_baseline_data_load(
-        self, engine: AutonomousDatabaseMigrationEngine
-    ) -> None:
+    def test_stage_6_baseline_data_load(self, engine: AutonomousDatabaseMigrationEngine) -> None:
         engine._run_stage_inventory_discovery()
         engine._run_stage_ast_lowering()
         engine._run_stage_baseline_data_load()
@@ -3602,9 +3538,7 @@ class TestL5AutonomousMigrationStages:
             assert t.row_count > 0
             assert len(t.checksum) > 0
 
-    def test_stage_7_cdc_replay(
-        self, engine: AutonomousDatabaseMigrationEngine
-    ) -> None:
+    def test_stage_7_cdc_replay(self, engine: AutonomousDatabaseMigrationEngine) -> None:
         engine._run_stage_inventory_discovery()
         events, divergences = engine._run_stage_cdc_replay()
         assert events > 0
@@ -3613,9 +3547,7 @@ class TestL5AutonomousMigrationStages:
         assert rec.stage == AutonomousMigrationStage.CDC_STREAM_REPLAY
         assert rec.success is True
 
-    def test_stage_8_concurrency_stress(
-        self, engine: AutonomousDatabaseMigrationEngine
-    ) -> None:
+    def test_stage_8_concurrency_stress(self, engine: AutonomousDatabaseMigrationEngine) -> None:
         receipt = engine._run_stage_concurrency_stress()
         assert isinstance(receipt, StressTestReceipt)
         assert receipt.latency_p95_ms <= 75.0
@@ -3623,15 +3555,14 @@ class TestL5AutonomousMigrationStages:
         assert rec.stage == AutonomousMigrationStage.CONCURRENCY_STRESS
         assert rec.success is True
 
-    def test_stage_9_cutover_certification(
-        self, engine: AutonomousDatabaseMigrationEngine
-    ) -> None:
+    def test_stage_9_cutover_certification(self, engine: AutonomousDatabaseMigrationEngine) -> None:
         dossier = engine.execute_full_migration()
         assert isinstance(dossier, AutonomousMigrationDossier)
         assert dossier.overall_success is True
         assert dossier.autonomy_level == "L5_AUTONOMOUS_ZERO_HUMAN"
         assert dossier.human_review_backlog_count == 0
         assert len(dossier.stages) == 9
+
 
 class TestEndToEndMigration13Targets:
     """End-to-end full migration scenarios across all 13 domestic databases."""
@@ -3704,12 +3635,14 @@ class TestEndToEndMigration13Targets:
             stress_duration_seconds=0.2,
         )
         engine = AutonomousDatabaseMigrationEngine(config=config)
-        assets = [{
-            "asset_id": "dm8_gl",
-            "asset_name": "dm8_gl",
-            "asset_kind": "TABLE",
-            "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
-        }]
+        assets = [
+            {
+                "asset_id": "dm8_gl",
+                "asset_name": "dm8_gl",
+                "asset_kind": "TABLE",
+                "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
+            }
+        ]
         engine.register_source_assets(assets)
         dossier = engine.execute_full_migration()
         assert dossier.asset_conservation_verified is True
@@ -3783,12 +3716,14 @@ class TestEndToEndMigration13Targets:
             stress_duration_seconds=0.2,
         )
         engine = AutonomousDatabaseMigrationEngine(config=config)
-        assets = [{
-            "asset_id": "kingbase_gl",
-            "asset_name": "kingbase_gl",
-            "asset_kind": "TABLE",
-            "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
-        }]
+        assets = [
+            {
+                "asset_id": "kingbase_gl",
+                "asset_name": "kingbase_gl",
+                "asset_kind": "TABLE",
+                "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
+            }
+        ]
         engine.register_source_assets(assets)
         dossier = engine.execute_full_migration()
         assert dossier.asset_conservation_verified is True
@@ -3862,12 +3797,14 @@ class TestEndToEndMigration13Targets:
             stress_duration_seconds=0.2,
         )
         engine = AutonomousDatabaseMigrationEngine(config=config)
-        assets = [{
-            "asset_id": "opengauss_gl",
-            "asset_name": "opengauss_gl",
-            "asset_kind": "TABLE",
-            "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
-        }]
+        assets = [
+            {
+                "asset_id": "opengauss_gl",
+                "asset_name": "opengauss_gl",
+                "asset_kind": "TABLE",
+                "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
+            }
+        ]
         engine.register_source_assets(assets)
         dossier = engine.execute_full_migration()
         assert dossier.asset_conservation_verified is True
@@ -3941,12 +3878,14 @@ class TestEndToEndMigration13Targets:
             stress_duration_seconds=0.2,
         )
         engine = AutonomousDatabaseMigrationEngine(config=config)
-        assets = [{
-            "asset_id": "tidb_gl",
-            "asset_name": "tidb_gl",
-            "asset_kind": "TABLE",
-            "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
-        }]
+        assets = [
+            {
+                "asset_id": "tidb_gl",
+                "asset_name": "tidb_gl",
+                "asset_kind": "TABLE",
+                "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
+            }
+        ]
         engine.register_source_assets(assets)
         dossier = engine.execute_full_migration()
         assert dossier.asset_conservation_verified is True
@@ -4020,12 +3959,14 @@ class TestEndToEndMigration13Targets:
             stress_duration_seconds=0.2,
         )
         engine = AutonomousDatabaseMigrationEngine(config=config)
-        assets = [{
-            "asset_id": "gbase8s_gl",
-            "asset_name": "gbase8s_gl",
-            "asset_kind": "TABLE",
-            "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
-        }]
+        assets = [
+            {
+                "asset_id": "gbase8s_gl",
+                "asset_name": "gbase8s_gl",
+                "asset_kind": "TABLE",
+                "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
+            }
+        ]
         engine.register_source_assets(assets)
         dossier = engine.execute_full_migration()
         assert dossier.asset_conservation_verified is True
@@ -4099,12 +4040,14 @@ class TestEndToEndMigration13Targets:
             stress_duration_seconds=0.2,
         )
         engine = AutonomousDatabaseMigrationEngine(config=config)
-        assets = [{
-            "asset_id": "gbase8c_gl",
-            "asset_name": "gbase8c_gl",
-            "asset_kind": "TABLE",
-            "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
-        }]
+        assets = [
+            {
+                "asset_id": "gbase8c_gl",
+                "asset_name": "gbase8c_gl",
+                "asset_kind": "TABLE",
+                "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
+            }
+        ]
         engine.register_source_assets(assets)
         dossier = engine.execute_full_migration()
         assert dossier.asset_conservation_verified is True
@@ -4178,12 +4121,14 @@ class TestEndToEndMigration13Targets:
             stress_duration_seconds=0.2,
         )
         engine = AutonomousDatabaseMigrationEngine(config=config)
-        assets = [{
-            "asset_id": "gbase8a_gl",
-            "asset_name": "gbase8a_gl",
-            "asset_kind": "TABLE",
-            "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
-        }]
+        assets = [
+            {
+                "asset_id": "gbase8a_gl",
+                "asset_name": "gbase8a_gl",
+                "asset_kind": "TABLE",
+                "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
+            }
+        ]
         engine.register_source_assets(assets)
         dossier = engine.execute_full_migration()
         assert dossier.asset_conservation_verified is True
@@ -4257,12 +4202,14 @@ class TestEndToEndMigration13Targets:
             stress_duration_seconds=0.2,
         )
         engine = AutonomousDatabaseMigrationEngine(config=config)
-        assets = [{
-            "asset_id": "highgo_gl",
-            "asset_name": "highgo_gl",
-            "asset_kind": "TABLE",
-            "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
-        }]
+        assets = [
+            {
+                "asset_id": "highgo_gl",
+                "asset_name": "highgo_gl",
+                "asset_kind": "TABLE",
+                "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
+            }
+        ]
         engine.register_source_assets(assets)
         dossier = engine.execute_full_migration()
         assert dossier.asset_conservation_verified is True
@@ -4336,12 +4283,14 @@ class TestEndToEndMigration13Targets:
             stress_duration_seconds=0.2,
         )
         engine = AutonomousDatabaseMigrationEngine(config=config)
-        assets = [{
-            "asset_id": "oceanbase_oracle_gl",
-            "asset_name": "oceanbase_oracle_gl",
-            "asset_kind": "TABLE",
-            "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
-        }]
+        assets = [
+            {
+                "asset_id": "oceanbase_oracle_gl",
+                "asset_name": "oceanbase_oracle_gl",
+                "asset_kind": "TABLE",
+                "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
+            }
+        ]
         engine.register_source_assets(assets)
         dossier = engine.execute_full_migration()
         assert dossier.asset_conservation_verified is True
@@ -4415,12 +4364,14 @@ class TestEndToEndMigration13Targets:
             stress_duration_seconds=0.2,
         )
         engine = AutonomousDatabaseMigrationEngine(config=config)
-        assets = [{
-            "asset_id": "oceanbase_mysql_gl",
-            "asset_name": "oceanbase_mysql_gl",
-            "asset_kind": "TABLE",
-            "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
-        }]
+        assets = [
+            {
+                "asset_id": "oceanbase_mysql_gl",
+                "asset_name": "oceanbase_mysql_gl",
+                "asset_kind": "TABLE",
+                "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
+            }
+        ]
         engine.register_source_assets(assets)
         dossier = engine.execute_full_migration()
         assert dossier.asset_conservation_verified is True
@@ -4494,12 +4445,14 @@ class TestEndToEndMigration13Targets:
             stress_duration_seconds=0.2,
         )
         engine = AutonomousDatabaseMigrationEngine(config=config)
-        assets = [{
-            "asset_id": "gaussdb_oracle_gl",
-            "asset_name": "gaussdb_oracle_gl",
-            "asset_kind": "TABLE",
-            "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
-        }]
+        assets = [
+            {
+                "asset_id": "gaussdb_oracle_gl",
+                "asset_name": "gaussdb_oracle_gl",
+                "asset_kind": "TABLE",
+                "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
+            }
+        ]
         engine.register_source_assets(assets)
         dossier = engine.execute_full_migration()
         assert dossier.asset_conservation_verified is True
@@ -4573,12 +4526,14 @@ class TestEndToEndMigration13Targets:
             stress_duration_seconds=0.2,
         )
         engine = AutonomousDatabaseMigrationEngine(config=config)
-        assets = [{
-            "asset_id": "gaussdb_mysql_gl",
-            "asset_name": "gaussdb_mysql_gl",
-            "asset_kind": "TABLE",
-            "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
-        }]
+        assets = [
+            {
+                "asset_id": "gaussdb_mysql_gl",
+                "asset_name": "gaussdb_mysql_gl",
+                "asset_kind": "TABLE",
+                "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
+            }
+        ]
         engine.register_source_assets(assets)
         dossier = engine.execute_full_migration()
         assert dossier.asset_conservation_verified is True
@@ -4652,16 +4607,19 @@ class TestEndToEndMigration13Targets:
             stress_duration_seconds=0.2,
         )
         engine = AutonomousDatabaseMigrationEngine(config=config)
-        assets = [{
-            "asset_id": "goldendb_gl",
-            "asset_name": "goldendb_gl",
-            "asset_kind": "TABLE",
-            "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
-        }]
+        assets = [
+            {
+                "asset_id": "goldendb_gl",
+                "asset_name": "goldendb_gl",
+                "asset_kind": "TABLE",
+                "source_ddl": "CREATE TABLE gl (id INT PRIMARY KEY, bal DECIMAL(16,2));",
+            }
+        ]
         engine.register_source_assets(assets)
         dossier = engine.execute_full_migration()
         assert dossier.asset_conservation_verified is True
         assert dossier.cdc_divergence_count == 0
+
 
 class TestCdcReplicationAndDataIntegrity:
     """Test CDC change capture, event replay, and row-level hash reconciliation."""
@@ -4720,16 +4678,15 @@ class TestCdcReplicationAndDataIntegrity:
 
     def test_cdc_table_hash_reconciliation(self, cdc_engine: ChinaDbCdcEngine) -> None:
         db = cdc_engine.orchestrator.get_database("dm8")
-        db.execute_sql(
-            "CREATE TABLE IF NOT EXISTS accounts (id INT PRIMARY KEY, val VARCHAR(10));"
-        )
+        db.execute_sql("CREATE TABLE IF NOT EXISTS accounts (id INT PRIMARY KEY, val VARCHAR(10));")
         db.execute_sql("INSERT INTO accounts VALUES (1, 'X'), (2, 'Y');")
-        src_rows = [{'id': 1, 'val': 'X'}, {'id': 2, 'val': 'Y'}]
+        src_rows = [{"id": 1, "val": "X"}, {"id": 2, "val": "Y"}]
         receipt = cdc_engine.reconcile_table_data(src_rows, "dm8", "accounts", ["id"])
         assert receipt.is_consistent is True
         assert receipt.matched_count == 2
         assert receipt.mismatched_count == 0
         assert receipt.source_table_digest == receipt.target_table_digest
+
 
 class TestConcurrencyStressEngine:
     """Test multi-worker high-concurrency transactional stress testing."""
@@ -4767,4 +4724,3 @@ class TestConcurrencyStressEngine:
         assert receipt.tps > 0
         assert receipt.latency_p95_ms <= 75.0
         assert receipt.conservation_invariant_holds is True
-

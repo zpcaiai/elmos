@@ -209,7 +209,6 @@ class SupplyChainLogisticsCorpus:
             WarehouseRecord("WH_CD_01", "West China Hub", "REG_WC", "Chengdu DC", 45000.0),
         ]
 
-
     @classmethod
     def get_seed_skus(cls, count: int = 50) -> list[SkuItemRecord]:
         """Generate master catalog SKUs."""
@@ -364,9 +363,7 @@ class SupplyChainLogisticsCorpus:
         return conserved, delta, msg
 
     @classmethod
-    def verify_atp_non_negativity(
-        cls, inv: list[InventoryAtpRecord]
-    ) -> tuple[bool, list[str]]:
+    def verify_atp_non_negativity(cls, inv: list[InventoryAtpRecord]) -> tuple[bool, list[str]]:
         """Verify that allocated quantity never exceeds physical on-hand stock."""
         errors: list[str] = []
         for r in inv:
@@ -427,9 +424,7 @@ class SupplyChainLogisticsCorpus:
                     {"sku_id": skus[(sku_i + 1) % len(skus)].sku_id, "ordered_qty": 10},
                 ]
 
-                ok, reason, allocated = cls.allocate_order_inventory_in_memory(
-                    inv_map, wh, items
-                )
+                ok, reason, allocated = cls.allocate_order_inventory_in_memory(inv_map, wh, items)
                 t1 = time.time()
                 latencies_ms.append((t1 - t0) * 1000.0)
 

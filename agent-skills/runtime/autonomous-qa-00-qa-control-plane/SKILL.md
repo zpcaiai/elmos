@@ -1,5 +1,8 @@
 ---
 name: "autonomous-qa-00-qa-control-plane"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Run 00-qa-control-plane through its exact repository-owned Autonomous QA handler."
 metadata:
   source_package: "elmos-autonomous-qa-self-healing-skills"
@@ -18,7 +21,7 @@ metadata:
   runtime_phase: "control"
   runtime_mutating: "true"
   runtime_operation: "elmos_autonomous_qa.trusted_services.control_plane_operation_contract"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_NOT_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "NOT_CERTIFIED"
 ---

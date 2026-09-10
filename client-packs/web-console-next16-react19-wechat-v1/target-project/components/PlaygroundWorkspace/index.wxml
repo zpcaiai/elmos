@@ -1,151 +1,16 @@
-<view class="space-y-6">
-  <view class="rounded-2xl border border-border bg-card p-6 shadow-sm">
-    <view class="flex flex-col gap-4 md_flex-row md_items-center md_justify-between">
-      <view>
-        <view class="inline-flex items-center gap-2 rounded-full border border-primary_20 bg-primary_10 px-3 py-1 text-xs font-semibold text-primary">
-          <Icon name="spark" class="h-3d_5 w-3d_5" />
-          <text>Static workbench preview · NOT_RUN</text>
-        </view>
-        <view class="mt-2 text-2xl font-bold tracking-tight text-foreground">跨语言转换与形式化验证准备工作台</view>
-        <view class="mt-1 text-sm text-muted-foreground">编辑输入、查看目标与证明规格示例；真实执行和证据只由受控 Runner 与独立门禁产生。</view>
-      </view>
-      <view class="flex items-center gap-3">
-        <button type="button" disabled="{{isProcessing}}" class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2d_5 text-sm font-semibold text-primary-foreground shadow-sm transition hover_bg-primary_90 disabled_opacity-50" bindtap="handleModernize">
-          <Icon name="spark" class="{{`h-4 w-4 ${isProcessing ? &quot;animate-spin&quot; : &quot;&quot;}`}}" />
-          <text>{{isProcessing ? "检查 Runner 绑定中..." : "检查真实执行条件"}}</text>
-        </button>
-      </view>
-    </view>
-    <view class="mt-6 flex flex-wrap gap-2 border-b border-border pb-3">
-      <button wx:for="{{PLAYGROUND_TABS}}" wx:for-item="tab" wx:key="tab.id" key="{{tab.id}}" type="button" aria-pressed="{{activeTab === tab.id}}" class="{{`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition ${
-                activeTab === tab.id
-                  ? &quot;bg-primary text-primary-foreground shadow-xs&quot;
-                  : &quot;text-muted-foreground hover:bg-muted hover:text-foreground&quot;
-              }`}}" bindtap="onTap">
-        <Icon name="{{tab.icon}}" class="h-4 w-4" />
-        <text>{{tab.label}}</text>
-      </button>
-    </view>
+<view class="card" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <view class="source-labels">
+    <text class="source-label">AST 拓扑与数据流</text>
+    <text class="source-label">Action Cache: CAS Enabled</text>
+    <text class="source-label">C# (.NET 9 / Modern)</text>
+    <text class="source-label">C# (.NET Core)</text>
+    <text class="source-label">COBOL (Mainframe / IBM)</text>
+    <text class="source-label">Canonical Type Algebra</text>
   </view>
-  <view role="status" aria-live="polite" class="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-    <text>{{executionState}}</text>
-    <text>· {{executionMessage}}</text>
+  <view class="actions">
+    <button wx:for="{{actions}}" wx:key="id" size="mini" data-action="{{item.id}}" bindtap="runAction">{{item.label}}</button>
   </view>
-  <view wx:if="{{activeTab === 'code'}}" class="grid grid-cols-1 gap-6 lg_grid-cols-2">
-    <view class="flex flex-col rounded-2xl border border-border bg-card p-5 shadow-xs">
-      <view class="mb-3 flex items-center justify-between">
-        <view class="flex items-center gap-2">
-          <text class="flex h-2d_5 w-2d_5 rounded-full bg-amber-500" />
-          <text htmlFor="playground-source-code" class="font-semibold text-foreground">源语言输入 (Source Code)</text>
-        </view>
-        <view id="playground-source-language" aria-label="源语言" value="{{sourceLang}}" class="rounded-lg border border-border bg-muted_50 px-3 py-1d_5 text-xs font-medium text-foreground focus_outline-hidden" bindchange="onChange">
-          <view value="java">Java (Spring / Enterprise)</view>
-          <view value="csharp">C# (.NET Core)</view>
-          <view value="cobol">COBOL (Mainframe / IBM)</view>
-        </view>
-      </view>
-      <textarea id="playground-source-code" aria-label="源代码输入" value="{{sourceCode}}" rows="{{16}}" class="w-full resize-y rounded-xl border border-border bg-muted_20 p-4 font-mono text-xs text-foreground focus_border-primary focus_outline-hidden" spellCheck="{{false}}" bindchange="onChange" />
-      <view class="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-        <text>Lines: {{sourceCode.split("\n").length}}</text>
-        <text>Parser: NOT_RUN</text>
-      </view>
-    </view>
-    <view class="flex flex-col rounded-2xl border border-border bg-card p-5 shadow-xs">
-      <view class="mb-3 flex items-center justify-between">
-        <view class="flex items-center gap-2">
-          <text class="flex h-2d_5 w-2d_5 rounded-full bg-emerald-500" />
-          <text htmlFor="playground-target-code" class="font-semibold text-foreground">静态目标示例（非转换结果）</text>
-          <text class="rounded-md bg-amber-500_10 px-2 py-0d_5 text---10px- font-semibold text-amber-700">NOT_RUN</text>
-        </view>
-        <view id="playground-target-language" aria-label="目标语言" value="{{targetLang}}" class="rounded-lg border border-border bg-muted_50 px-3 py-1d_5 text-xs font-medium text-foreground focus_outline-hidden" bindchange="onChange">
-          <view value="csharp">C# (.NET 9 / Modern)</view>
-          <view value="rust">Rust (2024 / Memory-Safe)</view>
-          <view value="go">Go (1.23 / Cloud-Native)</view>
-        </view>
-      </view>
-      <textarea id="playground-target-code" aria-label="静态目标代码示例" readOnly="true" value="{{targetCode}}" rows="{{16}}" class="w-full resize-y rounded-xl border border-border bg-muted_40 p-4 font-mono text-xs text-foreground focus_outline-hidden" spellCheck="{{false}}" />
-      <view class="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-        <text>Execution: NOT_RUN</text>
-        <text>Certification: NOT_CERTIFIED</text>
-      </view>
-    </view>
-  </view>
-  <view wx:if="{{activeTab === 'ast'}}" class="rounded-2xl border border-border bg-card p-6 shadow-xs">
-    <view class="mb-4 flex items-center justify-between">
-      <view class="text-base font-semibold text-foreground">多阶段语法语义拓扑与不变式传递链</view>
-      <text class="text-xs text-muted-foreground">Graph: Acyclic Transformation DAG</text>
-    </view>
-    <view class="grid grid-cols-1 gap-4 md_grid-cols-2 lg_grid-cols-3">
-      <view wx:for="{{astNodes}}" wx:for-item="node" wx:for-index="idx" wx:key="node.id" key="{{node.id}}" class="relative flex flex-col rounded-xl border border-border_80 bg-muted_20 p-4 transition hover_border-primary_50">
-        <view class="flex items-center justify-between">
-          <text class="text-xs font-mono text-muted-foreground">Step 0 {{idx + 1}}</text>
-          <text class="inline-flex items-center gap-1 rounded-full bg-emerald-500_10 px-2 py-0d_5 text---10px- font-medium text-emerald-600 dark_text-emerald-400"><Icon name="test" class="h-3 w-3" /> NOT_RUN</text>
-        </view>
-        <view class="mt-2 text-sm font-semibold text-foreground">{{node.label}}</view>
-        <view class="mt-1 text-xs text-muted-foreground">{{node.details}}</view>
-      </view>
-    </view>
-  </view>
-  <view wx:if="{{activeTab === 'lean4'}}" class="grid grid-cols-1 gap-6 lg_grid-cols-2">
-    <view class="rounded-2xl border border-border bg-card p-5 shadow-xs">
-      <view class="mb-3 flex items-center justify-between">
-        <text class="font-semibold text-foreground">Lean 4 形式化定理规格 (.lean)</text>
-        <text class="rounded-md bg-primary_10 px-2 py-0d_5 text-xs font-mono text-primary">Lean 4.8.0 Kernel</text>
-      </view>
-      <pre class="rounded-xl border border-border bg-muted_30 p-4 font-mono text-xs text-foreground overflow-x-auto">{{`-- SPECIFICATION EXAMPLE ONLY — NOT GENERATED OR CHECKED
-import Mathlib.Data.Real.Basic
-
-theorem PreserveNonNegativeBalance 
-  (balance : Real) (amount : Real)
-  (h_pos : amount > 0)
-  (h_sufficient : balance >= amount) :
-  balance - amount >= 0 := by
-  intro h1 h2
-  omega`}}</pre>
-    </view>
-    <view class="rounded-2xl border border-border bg-card p-5 shadow-xs">
-      <view class="mb-3 flex items-center justify-between">
-        <text class="font-semibold text-foreground">Dafny 严密方法契约 (.dfy)</text>
-        <text class="rounded-md bg-emerald-500_10 px-2 py-0d_5 text-xs font-mono text-emerald-600 dark_text-emerald-400">Dafny 4.4.0</text>
-      </view>
-      <pre class="rounded-xl border border-border bg-muted_30 p-4 font-mono text-xs text-foreground overflow-x-auto">{{`// SPECIFICATION EXAMPLE ONLY — NOT GENERATED OR VERIFIED
-method {:verify true} Withdraw(balance: int, amount: int) returns (newBal: int, ok: bool)
-  requires balance >= 0
-  requires amount > 0
-  ensures ok ==> newBal == balance - amount && newBal >= 0
-  ensures !ok ==> newBal == balance
-{
-  if balance >= amount {
-    newBal := balance - amount;
-    ok := true;
-  } else {
-    newBal := balance;
-    ok := false;
-  }
-}`}}</pre>
-    </view>
-  </view>
-  <view wx:if="{{activeTab === 'pr_daemon'}}" class="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
-    <view class="flex items-center justify-between">
-      <view>
-        <view class="text-base font-semibold text-foreground">Git PR 自愈流程静态示例</view>
-        <view class="text-xs text-muted-foreground">仅展示预期补丁形状；未接收 Webhook、未创建分支、未推送或审批 Pull Request。</view>
-      </view>
-      <text class="rounded-full bg-primary_10 px-3 py-1 text-xs font-semibold text-primary">SCM EFFECTS: NOT_RUN</text>
-    </view>
-    <view class="rounded-xl border border-border bg-muted_20 p-4">
-      <view class="text-xs font-mono text-muted-foreground uppercase tracking-wider">Illustrative Git Diff (not generated)</view>
-      <pre class="mt-2 text-xs font-mono text-foreground overflow-x-auto">{{`--- a/src/main/java/LegacyAccount.java
-+++ b/src/main/java/LegacyAccount.java
-@@ -1,3 +1,3 @@
- public class LegacyAccount {
--  public Vector<String> history = new Vector<>();
-+  public List<String> history = new ArrayList<>();
- }`}}</pre>
-    </view>
-    <view class="rounded-xl border border-emerald-500_30 bg-emerald-500_5 p-4">
-      <view class="text-xs font-semibold text-emerald-600 dark_text-emerald-400">SAMPLE_ONLY · Review NOT_RUN</view>
-      <view class="mt-1 text-xs text-muted-foreground">此示例没有执行规则检查，也没有创建或推送 `elmos-fix/pr-142` 分支；需要 SCM 授权、Runner 回执和独立复核后才能产生真实结论。</view>
-    </view>
-  </view>
+  <view wx:for="{{rows}}" wx:key="key" class="data-row"><text>{{item.key}}</text><text>{{item.value}}</text></view>
 </view>

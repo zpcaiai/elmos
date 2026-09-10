@@ -123,11 +123,11 @@ class GBase8sTargetLowerer(ChinaDbTargetLowerer):
     def _build_error_code_mappings(self) -> dict[str, str]:
         """Translate legacy DBMS error codes to GBase 8s / Informix error numbers."""
         return {
-            "ORA-00001": "-239",   # Duplicate key in index
-            "ORA-00942": "-206",   # Specified table is not in database
-            "ORA-00904": "-217",   # Column not found in any table
-            "ORA-01400": "-391",   # Cannot insert a null into column
-            "ORA-01403": "100",    # No records found
+            "ORA-00001": "-239",  # Duplicate key in index
+            "ORA-00942": "-206",  # Specified table is not in database
+            "ORA-00904": "-217",  # Column not found in any table
+            "ORA-01400": "-391",  # Cannot insert a null into column
+            "ORA-01403": "100",  # No records found
             "23505": "-239",
             "42P01": "-206",
             "42703": "-217",
@@ -153,8 +153,7 @@ class GBase8sTargetLowerer(ChinaDbTargetLowerer):
                 "WHERE tabid = (SELECT tabid FROM 'informix'.systables WHERE tabname = :tab_name)"
             ),
             "procedures": (
-                "SELECT procname AS routine_name FROM 'informix'.sysprocedures "
-                "WHERE procid >= 1"
+                "SELECT procname AS routine_name FROM 'informix'.sysprocedures WHERE procid >= 1"
             ),
             "constraints": (
                 "SELECT constrname AS constraint_name, constrtype AS constraint_type "
@@ -217,4 +216,3 @@ class GBase8sTargetLowerer(ChinaDbTargetLowerer):
         res = self.lower_data_types(source_sql, source_dialect)
         res = self.apply_custom_rules(res, source_dialect)
         return res
-

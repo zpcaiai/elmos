@@ -1,5 +1,8 @@
 ---
 name: miniapp-component-mapping-engine
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Map semantic UI roles and third-party components to native miniapp components
   or generated composites with prop, event, slot, accessibility, and behavior contracts.
   Use after IR validation and before code generation.

@@ -1,5 +1,8 @@
 ---
 name: legacy-web-14-environment-config-overlay-analysis
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for 环境配置叠加分析; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
   source_package: elmos.java-legacy-web.repository-modernization

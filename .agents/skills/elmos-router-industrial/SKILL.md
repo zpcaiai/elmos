@@ -1,5 +1,8 @@
 ---
 name: "elmos-router-industrial"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Master industrial model intelligence and routing subsystem for Elmos."
 metadata:
   source_package: "elmos-router-industrial-skillpack"
@@ -13,7 +16,7 @@ metadata:
   runtime_skill_key: "elmos-router-industrial"
   runtime_handler: "execute_elmos_router_industrial"
   runtime_phase: "orchestration"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "READY_FOR_RAMPING"
 ---

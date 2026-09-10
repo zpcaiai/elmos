@@ -35,9 +35,19 @@ class TestTargetRegistryAndFactory:
         targets = list_supported_targets()
         assert len(targets) == 13
         expected = [
-            "dm8", "gaussdb_mysql", "gaussdb_oracle", "gbase8a", "gbase8c",
-            "gbase8s", "goldendb", "highgo", "kingbase", "oceanbase_mysql",
-            "oceanbase_oracle", "opengauss", "tidb",
+            "dm8",
+            "gaussdb_mysql",
+            "gaussdb_oracle",
+            "gbase8a",
+            "gbase8c",
+            "gbase8s",
+            "goldendb",
+            "highgo",
+            "kingbase",
+            "oceanbase_mysql",
+            "oceanbase_oracle",
+            "opengauss",
+            "tidb",
         ]
         assert sorted(targets) == sorted(expected)
 
@@ -50,13 +60,14 @@ class TestTargetRegistryAndFactory:
             assert len(lowerer.family) > 0
 
     def test_get_chinadb_lowerer_invalid_target(self) -> None:
-        with pytest.raises(ValueError, match="Unsupported ChinaDB target 'unknown_db'"): 
+        with pytest.raises(ValueError, match="Unsupported ChinaDB target 'unknown_db'"):
             get_chinadb_lowerer("unknown_db")
 
     def test_target_families_distribution(self) -> None:
         targets = [get_chinadb_lowerer(t) for t in list_supported_targets()]
         families = {t.family for t in targets}
         assert len(families) >= 4
+
 
 class TestDm8TargetLowerer:
     """Comprehensive industrial test suite for Dameng 8 (DM8)."""
@@ -545,6 +556,7 @@ class TestDm8TargetLowerer:
         assert "orders" in lowered
         assert "order_items" in lowered
 
+
 class TestGaussDbMysqlTargetLowerer:
     """Comprehensive industrial test suite for GaussDB (MySQL Mode)."""
 
@@ -983,6 +995,7 @@ class TestGaussDbMysqlTargetLowerer:
         assert "customers" in lowered
         assert "orders" in lowered
         assert "order_items" in lowered
+
 
 class TestGaussDbOracleTargetLowerer:
     """Comprehensive industrial test suite for GaussDB (Oracle Mode)."""
@@ -1439,6 +1452,7 @@ class TestGaussDbOracleTargetLowerer:
         assert "orders" in lowered
         assert "order_items" in lowered
 
+
 class TestGBase8aTargetLowerer:
     """Comprehensive industrial test suite for GBase 8a (MPP)."""
 
@@ -1877,6 +1891,7 @@ class TestGBase8aTargetLowerer:
         assert "customers" in lowered
         assert "orders" in lowered
         assert "order_items" in lowered
+
 
 class TestGBase8cTargetLowerer:
     """Comprehensive industrial test suite for GBase 8c."""
@@ -2324,6 +2339,7 @@ class TestGBase8cTargetLowerer:
         assert "customers" in lowered
         assert "orders" in lowered
         assert "order_items" in lowered
+
 
 class TestGBase8sTargetLowerer:
     """Comprehensive industrial test suite for GBase 8s."""
@@ -2788,6 +2804,7 @@ class TestGBase8sTargetLowerer:
         assert "orders" in lowered
         assert "order_items" in lowered
 
+
 class TestGoldenDbTargetLowerer:
     """Comprehensive industrial test suite for ZTE GoldenDB."""
 
@@ -3235,6 +3252,7 @@ class TestGoldenDbTargetLowerer:
         assert "orders" in lowered
         assert "order_items" in lowered
 
+
 class TestHighGoTargetLowerer:
     """Comprehensive industrial test suite for HighGo DB (HGDB)."""
 
@@ -3681,6 +3699,7 @@ class TestHighGoTargetLowerer:
         assert "customers" in lowered
         assert "orders" in lowered
         assert "order_items" in lowered
+
 
 class TestKingbaseTargetLowerer:
     """Comprehensive industrial test suite for KingbaseES (V8/V9)."""
@@ -4185,6 +4204,7 @@ class TestKingbaseTargetLowerer:
         assert "orders" in lowered
         assert "order_items" in lowered
 
+
 class TestOceanBaseMysqlTargetLowerer:
     """Comprehensive industrial test suite for OceanBase (MySQL Mode)."""
 
@@ -4631,6 +4651,7 @@ class TestOceanBaseMysqlTargetLowerer:
         assert "customers" in lowered
         assert "orders" in lowered
         assert "order_items" in lowered
+
 
 class TestOceanBaseOracleTargetLowerer:
     """Comprehensive industrial test suite for OceanBase (Oracle Mode)."""
@@ -5086,6 +5107,7 @@ class TestOceanBaseOracleTargetLowerer:
         assert "customers" in lowered
         assert "orders" in lowered
         assert "order_items" in lowered
+
 
 class TestOpenGaussTargetLowerer:
     """Comprehensive industrial test suite for openGauss / MogDB."""
@@ -5574,6 +5596,7 @@ class TestOpenGaussTargetLowerer:
         assert "orders" in lowered
         assert "order_items" in lowered
 
+
 class TestTidbTargetLowerer:
     """Comprehensive industrial test suite for TiDB (v6/v7)."""
 
@@ -6045,6 +6068,7 @@ class TestTidbTargetLowerer:
         assert "orders" in lowered
         assert "order_items" in lowered
 
+
 class TestCrossDialectLoweringMatrix:
     """Parametrized matrix testing across all 13 domestic database targets."""
 
@@ -6093,4 +6117,3 @@ class TestCrossDialectLoweringMatrix:
         valid_sql = "BEGIN NULL; END;"
         ok, _ = lowerer.verify_syntax_heuristics(valid_sql)
         assert ok is True
-

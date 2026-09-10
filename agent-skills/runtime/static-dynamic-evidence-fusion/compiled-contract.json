@@ -1,0 +1,19 @@
+{
+  "package": "elmos-fde-autonomous-delivery-repository-refactoring-skills",
+  "version": "5.2.0",
+  "source_id": "static-dynamic-evidence-fusion",
+  "alias": "elmos-fde-static-dynamic-evidence-fusion",
+  "pack": "03-semantic-intelligence",
+  "is_workflow": false,
+  "dependencies": [
+    "polyglot-semantic-system-graph",
+    "runtime-observation-and-traffic-capture",
+    "git-history-ownership-change-coupling"
+  ],
+  "effect_boundary": "E3",
+  "routable": false,
+  "implementation_state": "LOCAL_CONTROL_PLANE",
+  "external_evidence": "NOT_RUN",
+  "independent_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

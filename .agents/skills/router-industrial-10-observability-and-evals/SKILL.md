@@ -1,5 +1,8 @@
 ---
 name: "router-industrial-10-observability-and-evals"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Collect latency percentiles, telemetry spans with prompt redaction, and task benchmark evals."
 metadata:
   source_package: "elmos-router-industrial-skillpack"
@@ -13,7 +16,7 @@ metadata:
   runtime_skill_key: "router-industrial-10-observability-and-evals"
   runtime_handler: "execute_10_observability_and_evals"
   runtime_phase: "observability"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "READY_FOR_RAMPING"
 ---

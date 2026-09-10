@@ -1,0 +1,18 @@
+{
+  "package": "elmos-fde-autonomous-delivery-repository-refactoring-skills",
+  "version": "5.2.0",
+  "source_id": "incident-triage-remediation-and-postmortem",
+  "alias": "elmos-fde-incident-triage-remediation-and-postmortem",
+  "pack": "06-verification-release-operations",
+  "is_workflow": false,
+  "dependencies": [
+    "runtime-observation-and-traffic-capture",
+    "shadow-dual-run-canary-rollback-preparation"
+  ],
+  "effect_boundary": "E3",
+  "routable": false,
+  "implementation_state": "LOCAL_CONTROL_PLANE",
+  "external_evidence": "NOT_RUN",
+  "independent_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

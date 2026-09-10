@@ -1,5 +1,8 @@
 ---
 name: "autonomous-qa-33-ci-cd-pr-integration"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Run 33-ci-cd-pr-integration through its exact repository-owned Autonomous QA handler."
 metadata:
   source_package: "elmos-autonomous-qa-self-healing-skills"
@@ -18,7 +21,7 @@ metadata:
   runtime_phase: "publishing"
   runtime_mutating: "true"
   runtime_operation: "external-plan:elmos_autonomous_qa.domain.plan_ci"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_NOT_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "NOT_CERTIFIED"
 ---

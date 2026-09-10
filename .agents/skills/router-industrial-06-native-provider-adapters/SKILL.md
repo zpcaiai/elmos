@@ -1,5 +1,8 @@
 ---
 name: "router-industrial-06-native-provider-adapters"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Execute high-throughput native provider adapters for OpenAI, Anthropic, and self-hosted engines."
 metadata:
   source_package: "elmos-router-industrial-skillpack"
@@ -13,7 +16,7 @@ metadata:
   runtime_skill_key: "router-industrial-06-native-provider-adapters"
   runtime_handler: "execute_06_native_provider_adapters"
   runtime_phase: "adapters"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "READY_FOR_RAMPING"
 ---

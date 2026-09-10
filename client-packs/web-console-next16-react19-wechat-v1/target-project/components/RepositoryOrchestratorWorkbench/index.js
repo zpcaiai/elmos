@@ -1,166 +1,122 @@
-// Top-level helpers and constants
-try { var initialRisk = {
-    security: "low",
-    dataMigration: "low",
-    concurrency: "low",
-    publicContract: "low",
-    blastRadius: "low",
-    longHorizon: false,
-}; } catch(e) {}
-try { var riskOptions = ["none", "low", "medium", "high", "critical"]; } catch(e) {}
-try { var readableReason = function readableReason(reason) {
-    return reason.replaceAll("_", " ").replaceAll(":", " · ");
-} } catch(e) {}
-try { var statusTone = function statusTone(status) {
-    if (status === "BLOCKED" || status === "NOT_CONFIGURED")
-        return "blocked";
-    if (status.startsWith("READY"))
-        return "ready";
-    return "pending";
-} } catch(e) {}
-try { var responseJson = async function responseJson(response) {
-    const mediaType = response.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase();
-    if (mediaType !== "application/json")
-        throw new Error("REPOSITORY_RESPONSE_MEDIA_TYPE_INVALID");
-    return response.json();
-} } catch(e) {}
-try { var failureMessage = function failureMessage(value, fallback) {
-    if (typeof value !== "object" || value === null || Array.isArray(value))
-        return fallback;
-    const message = value.message;
-    return typeof message === "string" && message.trim() ? message : fallback;
-} } catch(e) {}
+const { createHandPortComponent } = require("../../runtime/hand-port-runtime");
 
-Component({
-  options: {
-    multipleSlots: false,
-    styleIsolation: "apply-shared",
-  },
-  properties: {
-  },
-  data: {
-    catalog: null,
-    catalogError: null,
-    loading: true,
-    mode: "smart",
-    selectedModel: null,
-    fallbackEnabled: false,
-    optimizationProfile: "cost_performance",
-    verificationPolicy: "system_required_verifiers",
-    risk: {"security":"low","dataMigration":"low","concurrency":"low","publicContract":"low","blastRadius":"low","longHorizon":false},
-    result: null,
-    preflightError: null,
-    submitting: false,
-    selectedDescriptor: null,
-  },
-  lifetimes: {
-    attached() {
-      const setCatalog = (val) => { this.setData({ catalog: typeof val === "function" ? val(this.data.catalog) : val }); };
-      const setCatalogError = (val) => { this.setData({ catalogError: typeof val === "function" ? val(this.data.catalogError) : val }); };
-      const setLoading = (val) => { this.setData({ loading: typeof val === "function" ? val(this.data.loading) : val }); };
-      const setMode = (val) => { this.setData({ mode: typeof val === "function" ? val(this.data.mode) : val }); };
-      const setSelectedModel = (val) => { this.setData({ selectedModel: typeof val === "function" ? val(this.data.selectedModel) : val }); };
-      const setFallbackEnabled = (val) => { this.setData({ fallbackEnabled: typeof val === "function" ? val(this.data.fallbackEnabled) : val }); };
-      const setOptimizationProfile = (val) => { this.setData({ optimizationProfile: typeof val === "function" ? val(this.data.optimizationProfile) : val }); };
-      const setVerificationPolicy = (val) => { this.setData({ verificationPolicy: typeof val === "function" ? val(this.data.verificationPolicy) : val }); };
-      const setRisk = (val) => { this.setData({ risk: typeof val === "function" ? val(this.data.risk) : val }); };
-      const setResult = (val) => { this.setData({ result: typeof val === "function" ? val(this.data.result) : val }); };
-      const setPreflightError = (val) => { this.setData({ preflightError: typeof val === "function" ? val(this.data.preflightError) : val }); };
-      const setSubmitting = (val) => { this.setData({ submitting: typeof val === "function" ? val(this.data.submitting) : val }); };
-      // Lifecycle effect effect_0
-      (async () => {
-        try {
-          const controller = new AbortController();
-    async function loadCatalog() {
-        setLoading(true);
-        setCatalogError(null);
-        try {
-            const response = await fetch("/api/repository-orchestrator/models", {
-                method: "GET",
-                headers: { Accept: "application/json" },
-                cache: "no-store",
-                signal: controller.signal,
-            });
-            const raw = await responseJson(response);
-            if (!response.ok)
-                throw new Error(failureMessage(raw, "模型目录当前不可用。"));
-            const parsed = parseRepositoryModelCatalog(raw);
-            setCatalog(parsed);
-            setMode(parsed.defaultMode);
-            setOptimizationProfile(parsed.optimizationProfiles[0]);
-            setVerificationPolicy(parsed.verificationPolicies[0]);
-        }
-        catch (error) {
-            if (controller.signal.aborted)
-                return;
-            setCatalogError(error instanceof Error ? error.message : "模型目录当前不可用。");
-        }
-        finally {
-            if (!controller.signal.aborted)
-                setLoading(false);
-        }
+Component(createHandPortComponent({
+  "schemaVersion": "1.0",
+  "componentName": "RepositoryOrchestratorWorkbench",
+  "title": "/5",
+  "role": "workbench",
+  "source": {
+    "file": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+    "componentName": "RepositoryOrchestratorWorkbench",
+    "sha256": "sha256:94cf80c45cfde92de4a15528c7c6ebb7489e213e99c12216ec8135436695c10e",
+    "range": {
+      "start": 1677,
+      "end": 19957
     }
-    void loadCatalog();
-    return () => controller.abort();
-        } catch (err) {
-          // Handled mount effect
-        }
-      })().catch(() => {});
-    },
-    detached() {
-    },
   },
-  methods: {
-    updateRisk(field, value) {
-      try {
-        setRisk((current) => ({ ...current, [field]: value }));
-    setResult(null);
-      } catch (err) {
-        console.warn("updateRisk execution warning:", err);
-      }
-    },
-    async submitPreflight() {
-      try {
-        if (!catalog || !canPreflight)
-        return;
-    const request = {
-        schemaVersion: "1.0",
-        catalogVersion: catalog.catalogVersion,
-        selectionVersion: catalog.selectionVersion,
-        mode,
-        selectedModel: mode === "manual" ? selectedModel : null,
-        optimizationProfile,
-        fallbackPolicy: mode === "manual"
-            ? fallbackEnabled ? "smart_within_allowlist" : "strict"
-            : null,
-        verificationPolicy,
-        risk,
-    };
-    setSubmitting(true);
-    setPreflightError(null);
-    setResult(null);
-    try {
-        const response = await fetch("/api/repository-orchestrator/preflight", {
-            method: "POST",
-            headers: { Accept: "application/json", "Content-Type": "application/json" },
-            body: JSON.stringify(request),
-            cache: "no-store",
-        });
-        const raw = await responseJson(response);
-        if (!response.ok && response.status !== 400) {
-            throw new Error(failureMessage(raw, "仓库编排预检当前不可用。"));
-        }
-        setResult(parseRepositoryPreflightResult(raw));
-    }
-    catch (error) {
-        setPreflightError(error instanceof Error ? error.message : "仓库编排预检当前不可用。");
-    }
-    finally {
-        setSubmitting(false);
-    }
-      } catch (err) {
-        console.warn("submitPreflight execution warning:", err);
-      }
-    },
+  "blocker": {
+    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+    "reason": "state catalog has unsupported type \"RepositoryModelCatalog\"",
+    "category": "data-contracts"
   },
-});
+  "props": [],
+  "states": [
+    {
+      "name": "catalog",
+      "type": "RepositoryModelCatalog | null"
+    },
+    {
+      "name": "catalogError",
+      "type": "string | null"
+    },
+    {
+      "name": "loading",
+      "type": "inferred"
+    },
+    {
+      "name": "mode",
+      "type": "Mode"
+    },
+    {
+      "name": "selectedModel",
+      "type": "string | null"
+    },
+    {
+      "name": "fallbackEnabled",
+      "type": "inferred"
+    },
+    {
+      "name": "optimizationProfile",
+      "type": "RepositoryPreflightRequest[\"optimizationProfile\"]"
+    },
+    {
+      "name": "verificationPolicy",
+      "type": "RepositoryPreflightRequest[\"verificationPolicy\"]"
+    },
+    {
+      "name": "risk",
+      "type": "RepositoryRiskProfile"
+    },
+    {
+      "name": "result",
+      "type": "RepositoryPreflightResult | null"
+    },
+    {
+      "name": "preflightError",
+      "type": "string | null"
+    },
+    {
+      "name": "submitting",
+      "type": "inferred"
+    }
+  ],
+  "hooks": [
+    "useState",
+    "useEffect",
+    "useMemo"
+  ],
+  "resources": [
+    "NETWORK"
+  ],
+  "apiPaths": [
+    "/api/repository-orchestrator/models",
+    "/api/repository-orchestrator/preflight"
+  ],
+  "labels": [
+    "/5",
+    "/api/repository-orchestrator/models",
+    "/api/repository-orchestrator/preflight",
+    "1.0",
+    "784 路线精确语义重写",
+    "AST 抽象树提取与依赖图",
+    "Action Cache: ENABLED (SHA-256 CAS)",
+    "CERTIFIED",
+    "CLI 一键触发命令：",
+    "Content-Type",
+    "Cost",
+    "DAG 就绪度",
+    "ELMOS v3.0.0",
+    "FUZZ_PASSED",
+    "FinOps 计量",
+    "GET",
+    "INGESTED",
+    "INTERACTIVE PIPELINE SANDBOX",
+    "Immutable selection ·",
+    "METERED",
+    "Merkle 防篡改数字防伪",
+    "POST",
+    "Planning only",
+    "Polyglot 语义转换"
+  ],
+  "adapters": [
+    "wechat-cancellable-request-v1",
+    "wechat-css-module-token-map-v1",
+    "wechat-effect-resource-lifecycle-v1",
+    "wechat-plain-collection-projection-v1",
+    "wechat-typed-state-decoder-v1"
+  ],
+  "obligations": [
+    "RepositoryOrchestratorWorkbench:source-blocker"
+  ],
+  "irDigest": "sha256:a28d848f49a4a40f9ce97fb62bc16b4234fa934286a761b963d20e96cb92c87c"
+}));

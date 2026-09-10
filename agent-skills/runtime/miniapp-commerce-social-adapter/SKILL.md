@@ -1,5 +1,8 @@
 ---
 name: miniapp-commerce-social-adapter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Design and implement portable contracts for login, identity, sharing,
   content, products, carts, orders, payments, refunds, memberships, subscriptions,
   and platform-specific social entry points. Use when business flows span multiple

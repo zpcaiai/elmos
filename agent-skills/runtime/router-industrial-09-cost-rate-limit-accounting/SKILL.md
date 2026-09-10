@@ -1,5 +1,8 @@
 ---
 name: "router-industrial-09-cost-rate-limit-accounting"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Manage hierarchical budgets, rate limiters, token buckets, and append-only cost ledgers."
 metadata:
   source_package: "elmos-router-industrial-skillpack"
@@ -13,7 +16,7 @@ metadata:
   runtime_skill_key: "router-industrial-09-cost-rate-limit-accounting"
   runtime_handler: "execute_09_cost_rate_limit_accounting"
   runtime_phase: "accounting"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "READY_FOR_RAMPING"
 ---

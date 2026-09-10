@@ -1,5 +1,8 @@
 ---
 name: miniapp-ci-build-release
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Integrate platform toolchains into reproducible CI for lint, schema validation,
   native builds, previews, artifact signing, uploads, review submissions, staged release,
   rollback, and credential isolation. Use after local gates pass.

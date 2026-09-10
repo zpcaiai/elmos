@@ -10,13 +10,13 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any, Literal
 
 import sqlglot
-from .profiles import exact_profiles, profile_by_id
+
+from .profiles import profile_by_id
 
 PACKAGE = "elmos-b31-database-skills"
 RUNTIME_VERSION = "1.0.0"
@@ -80,7 +80,10 @@ def _validate_scope(payload: Mapping[str, Any]) -> dict[str, str]:
 
 # --- Handlers for all 22 B31 Skills ---
 
-def _handle_canonical_database_ir(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+
+def _handle_canonical_database_ir(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     model = payload.get("model", {})
     tables = model.get("tables", [])
     queries = model.get("queries", [])
@@ -100,7 +103,9 @@ def _handle_canonical_database_ir(payload: Mapping[str, Any], spec: B31SkillSpec
     )
 
 
-def _handle_constraint_index_partition_migration(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_constraint_index_partition_migration(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     source_dialect = payload.get("sourceDialect", "postgresql")
     target_dialect = payload.get("targetDialect", "dm8")
     constraints = payload.get("constraints", [])
@@ -114,13 +119,22 @@ def _handle_constraint_index_partition_migration(payload: Mapping[str, Any], spe
             "migratedConstraints": len(constraints),
             "migratedIndexes": len(indexes),
             "migratedPartitions": len(partitions),
-            "preservedSemantics": ["PRIMARY_KEY", "FOREIGN_KEY", "UNIQUE", "CHECK", "INDEX", "PARTITION"],
+            "preservedSemantics": [
+                "PRIMARY_KEY",
+                "FOREIGN_KEY",
+                "UNIQUE",
+                "CHECK",
+                "INDEX",
+                "PARTITION",
+            ],
         },
         checks=({"code": "CONSTRAINTS_PRESERVED", "status": "PASSED"},),
     )
 
 
-def _handle_data_contract_catalog_lineage(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_data_contract_catalog_lineage(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     catalog_name = payload.get("catalogName", "default")
     schemas = payload.get("schemas", ["public"])
     return B31HandlerOutcome(
@@ -136,7 +150,9 @@ def _handle_data_contract_catalog_lineage(payload: Mapping[str, Any], spec: B31S
     )
 
 
-def _handle_data_correctness_performance_cutover(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_data_correctness_performance_cutover(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     table_name = payload.get("table", "accounts")
     row_count = payload.get("rowCount", 1000)
     return B31HandlerOutcome(
@@ -153,7 +169,9 @@ def _handle_data_correctness_performance_cutover(payload: Mapping[str, Any], spe
     )
 
 
-def _handle_data_pipeline_migration(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_data_pipeline_migration(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     pipelines = payload.get("pipelines", ["daily_settlement"])
     target_engine = payload.get("targetEngine", "opengauss")
     return B31HandlerOutcome(
@@ -168,7 +186,9 @@ def _handle_data_pipeline_migration(payload: Mapping[str, Any], spec: B31SkillSp
     )
 
 
-def _handle_data_quality_repair(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_data_quality_repair(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     rules = payload.get("rules", ["non_null_pk", "positive_balance"])
     violations = payload.get("violations", [])
     return B31HandlerOutcome(
@@ -183,9 +203,11 @@ def _handle_data_quality_repair(payload: Mapping[str, Any], spec: B31SkillSpec) 
     )
 
 
-def _handle_database_certification_gate(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_database_certification_gate(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     pack_name = payload.get("packName", "postgresql-to-dm8")
-    evidence = payload.get("evidence", {})
+    _evidence = payload.get("evidence", {})
     return B31HandlerOutcome(
         state="LOCAL_COMPLETED",
         artifacts={
@@ -199,7 +221,9 @@ def _handle_database_certification_gate(payload: Mapping[str, Any], spec: B31Ski
     )
 
 
-def _handle_database_estate_discovery(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_database_estate_discovery(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     clusters = payload.get("clusters", ["primary-db"])
     return B31HandlerOutcome(
         state="LOCAL_COMPLETED",
@@ -213,7 +237,9 @@ def _handle_database_estate_discovery(payload: Mapping[str, Any], spec: B31Skill
     )
 
 
-def _handle_database_modernization_factory(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_database_modernization_factory(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     route_id = payload.get("routeId", "oracle-to-dm8")
     return B31HandlerOutcome(
         state="LOCAL_COMPLETED",
@@ -236,7 +262,9 @@ def _handle_database_modernization_factory(payload: Mapping[str, Any], spec: B31
     )
 
 
-def _handle_dialect_provider_capability_matrix(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_dialect_provider_capability_matrix(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     source_id = payload.get("sourceId", "oracle-26ai-ee")
     target_id = payload.get("targetId", "dm8")
     try:
@@ -275,7 +303,9 @@ def _handle_etl_elt_discovery(payload: Mapping[str, Any], spec: B31SkillSpec) ->
     )
 
 
-def _handle_orm_database_contract(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_orm_database_contract(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     framework = payload.get("framework", "mybatis")
     entity_mappings = payload.get("mappings", [{"entity": "Order", "table": "orders"}])
     return B31HandlerOutcome(
@@ -290,8 +320,10 @@ def _handle_orm_database_contract(payload: Mapping[str, Any], spec: B31SkillSpec
     )
 
 
-def _handle_query_plan_performance(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
-    query = payload.get("query", "SELECT * FROM orders WHERE id = ?")
+def _handle_query_plan_performance(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
+    _query = payload.get("query", "SELECT * FROM orders WHERE id = ?")
     return B31HandlerOutcome(
         state="LOCAL_COMPLETED",
         artifacts={
@@ -304,7 +336,9 @@ def _handle_query_plan_performance(payload: Mapping[str, Any], spec: B31SkillSpe
     )
 
 
-def _handle_query_semantic_migration(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_query_semantic_migration(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     sql = payload.get("sql", "SELECT NVL(amount, 0) FROM orders")
     source_dialect = payload.get("sourceDialect", "oracle")
     target_dialect = payload.get("targetDialect", "oracle")
@@ -325,7 +359,9 @@ def _handle_query_semantic_migration(payload: Mapping[str, Any], spec: B31SkillS
     )
 
 
-def _handle_relational_route_pack_certifier(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_relational_route_pack_certifier(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     pack_dir = payload.get("packDir", "database-packs/postgresql-to-dm8")
     return B31HandlerOutcome(
         state="LOCAL_COMPLETED",
@@ -339,7 +375,9 @@ def _handle_relational_route_pack_certifier(payload: Mapping[str, Any], spec: B3
     )
 
 
-def _handle_routine_trigger_migration(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_routine_trigger_migration(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     routine_name = payload.get("routineName", "calc_tax")
     source_type = payload.get("type", "procedure")
     return B31HandlerOutcome(
@@ -355,7 +393,9 @@ def _handle_routine_trigger_migration(payload: Mapping[str, Any], spec: B31Skill
     )
 
 
-def _handle_schema_table_column_migration(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_schema_table_column_migration(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     ddl = payload.get("ddl", "CREATE TABLE t (id NUMBER(19) PRIMARY KEY, name VARCHAR2(100))")
     try:
         transpiled = sqlglot.transpile(ddl, read="oracle", write="postgres")[0]
@@ -373,7 +413,9 @@ def _handle_schema_table_column_migration(payload: Mapping[str, Any], spec: B31S
     )
 
 
-def _handle_sequence_identity_generated_columns(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_sequence_identity_generated_columns(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     seq_name = payload.get("sequenceName", "seq_orders")
     return B31HandlerOutcome(
         state="LOCAL_COMPLETED",
@@ -388,7 +430,9 @@ def _handle_sequence_identity_generated_columns(payload: Mapping[str, Any], spec
     )
 
 
-def _handle_transaction_isolation_locking(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_transaction_isolation_locking(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     isolation = payload.get("isolationLevel", "READ_COMMITTED")
     return B31HandlerOutcome(
         state="LOCAL_COMPLETED",
@@ -402,7 +446,9 @@ def _handle_transaction_isolation_locking(payload: Mapping[str, Any], spec: B31S
     )
 
 
-def _handle_type_precision_null_collation(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_type_precision_null_collation(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     mappings = payload.get("types", [{"from": "NUMBER(10,2)", "to": "DECIMAL(10,2)"}])
     return B31HandlerOutcome(
         state="LOCAL_COMPLETED",
@@ -416,7 +462,9 @@ def _handle_type_precision_null_collation(payload: Mapping[str, Any], spec: B31S
     )
 
 
-def _handle_view_materialized_view_migration(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_view_materialized_view_migration(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     view_name = payload.get("viewName", "v_active_orders")
     is_materialized = payload.get("isMaterialized", False)
     return B31HandlerOutcome(
@@ -431,7 +479,9 @@ def _handle_view_materialized_view_migration(payload: Mapping[str, Any], spec: B
     )
 
 
-def _handle_warehouse_lakehouse_analytics(payload: Mapping[str, Any], spec: B31SkillSpec) -> B31HandlerOutcome:
+def _handle_warehouse_lakehouse_analytics(
+    payload: Mapping[str, Any], spec: B31SkillSpec
+) -> B31HandlerOutcome:
     format_type = payload.get("format", "parquet")
     table_name = payload.get("table", "fact_orders")
     return B31HandlerOutcome(
@@ -447,28 +497,132 @@ def _handle_warehouse_lakehouse_analytics(payload: Mapping[str, Any], spec: B31S
 
 
 B31_SKILL_SPECS: tuple[B31SkillSpec, ...] = (
-    B31SkillSpec("canonical-database-ir", "canonical-ir", "ir", "Canonical database and data-workload IR"),
-    B31SkillSpec("constraint-index-partition-migration", "constraint-migrator", "schema", "Constraints, indexes, partitions migration"),
-    B31SkillSpec("data-contract-catalog-lineage", "lineage-catalog", "catalog", "Catalog, contract and lineage tracking"),
-    B31SkillSpec("data-correctness-performance-cutover", "cutover-validator", "cutover", "Row-level data correctness and cutover verification"),
-    B31SkillSpec("data-pipeline-migration", "pipeline-migrator", "pipeline", "Data pipeline and ETL/ELT migration"),
-    B31SkillSpec("data-quality-repair", "quality-repair", "quality", "Data quality assertions and repair generation"),
-    B31SkillSpec("database-certification-gate", "gate-runner", "gate", "Batch 31 conservative certification gate"),
-    B31SkillSpec("database-estate-discovery", "estate-discovery", "discovery", "Database estate discovery and inventory"),
-    B31SkillSpec("database-modernization-factory", "factory-orchestrator", "factory", "Database modernization factory orchestrator"),
-    B31SkillSpec("dialect-provider-capability-matrix", "capability-matrix", "capability", "Dialect provider capability comparison matrix"),
-    B31SkillSpec("etl-elt-discovery", "etl-discovery", "discovery", "ETL/ELT discovery and dependency graph"),
-    B31SkillSpec("orm-database-contract", "orm-contract", "application", "ORM and database contract compatibility"),
-    B31SkillSpec("query-plan-performance", "query-plan", "performance", "Query plan and execution performance analysis"),
-    B31SkillSpec("query-semantic-migration", "query-migration", "transpile", "Semantic DML query migration across dialects"),
-    B31SkillSpec("relational-route-pack-certifier", "pack-certifier", "certification", "Relational route pack certification"),
-    B31SkillSpec("routine-trigger-migration", "routine-migrator", "routine", "Stored routine, package, and trigger migration"),
-    B31SkillSpec("schema-table-column-migration", "ddl-migrator", "ddl", "Schema, table, and column DDL migration"),
-    B31SkillSpec("sequence-identity-generated-columns", "sequence-migrator", "schema", "Sequence, identity, and generated columns migration"),
-    B31SkillSpec("transaction-isolation-locking", "transaction-isolation", "transaction", "Transaction isolation, locking, and concurrency"),
-    B31SkillSpec("type-precision-null-collation", "type-precision", "types", "Type precision, scale, nullability, and collation mapping"),
-    B31SkillSpec("view-materialized-view-migration", "view-migrator", "views", "View and materialized view migration"),
-    B31SkillSpec("warehouse-lakehouse-analytics", "lakehouse-analytics", "analytics", "Warehouse and lakehouse analytics modernization"),
+    B31SkillSpec(
+        "canonical-database-ir", "canonical-ir", "ir", "Canonical database and data-workload IR"
+    ),
+    B31SkillSpec(
+        "constraint-index-partition-migration",
+        "constraint-migrator",
+        "schema",
+        "Constraints, indexes, partitions migration",
+    ),
+    B31SkillSpec(
+        "data-contract-catalog-lineage",
+        "lineage-catalog",
+        "catalog",
+        "Catalog, contract and lineage tracking",
+    ),
+    B31SkillSpec(
+        "data-correctness-performance-cutover",
+        "cutover-validator",
+        "cutover",
+        "Row-level data correctness and cutover verification",
+    ),
+    B31SkillSpec(
+        "data-pipeline-migration",
+        "pipeline-migrator",
+        "pipeline",
+        "Data pipeline and ETL/ELT migration",
+    ),
+    B31SkillSpec(
+        "data-quality-repair",
+        "quality-repair",
+        "quality",
+        "Data quality assertions and repair generation",
+    ),
+    B31SkillSpec(
+        "database-certification-gate",
+        "gate-runner",
+        "gate",
+        "Batch 31 conservative certification gate",
+    ),
+    B31SkillSpec(
+        "database-estate-discovery",
+        "estate-discovery",
+        "discovery",
+        "Database estate discovery and inventory",
+    ),
+    B31SkillSpec(
+        "database-modernization-factory",
+        "factory-orchestrator",
+        "factory",
+        "Database modernization factory orchestrator",
+    ),
+    B31SkillSpec(
+        "dialect-provider-capability-matrix",
+        "capability-matrix",
+        "capability",
+        "Dialect provider capability comparison matrix",
+    ),
+    B31SkillSpec(
+        "etl-elt-discovery", "etl-discovery", "discovery", "ETL/ELT discovery and dependency graph"
+    ),
+    B31SkillSpec(
+        "orm-database-contract",
+        "orm-contract",
+        "application",
+        "ORM and database contract compatibility",
+    ),
+    B31SkillSpec(
+        "query-plan-performance",
+        "query-plan",
+        "performance",
+        "Query plan and execution performance analysis",
+    ),
+    B31SkillSpec(
+        "query-semantic-migration",
+        "query-migration",
+        "transpile",
+        "Semantic DML query migration across dialects",
+    ),
+    B31SkillSpec(
+        "relational-route-pack-certifier",
+        "pack-certifier",
+        "certification",
+        "Relational route pack certification",
+    ),
+    B31SkillSpec(
+        "routine-trigger-migration",
+        "routine-migrator",
+        "routine",
+        "Stored routine, package, and trigger migration",
+    ),
+    B31SkillSpec(
+        "schema-table-column-migration",
+        "ddl-migrator",
+        "ddl",
+        "Schema, table, and column DDL migration",
+    ),
+    B31SkillSpec(
+        "sequence-identity-generated-columns",
+        "sequence-migrator",
+        "schema",
+        "Sequence, identity, and generated columns migration",
+    ),
+    B31SkillSpec(
+        "transaction-isolation-locking",
+        "transaction-isolation",
+        "transaction",
+        "Transaction isolation, locking, and concurrency",
+    ),
+    B31SkillSpec(
+        "type-precision-null-collation",
+        "type-precision",
+        "types",
+        "Type precision, scale, nullability, and collation mapping",
+    ),
+    B31SkillSpec(
+        "view-materialized-view-migration",
+        "view-migrator",
+        "views",
+        "View and materialized view migration",
+    ),
+    B31SkillSpec(
+        "warehouse-lakehouse-analytics",
+        "lakehouse-analytics",
+        "analytics",
+        "Warehouse and lakehouse analytics modernization",
+    ),
 )
 
 B31_SKILLS_BY_ID: dict[str, B31SkillSpec] = {s.skill_id: s for s in B31_SKILL_SPECS}

@@ -1,5 +1,6 @@
 {
   "component": true,
-  "usingComponents": {},
-  "styleIsolation": "apply-shared"
+  "usingComponents": {
+    "frontend-transformation-studio": "/components/FrontendTransformationStudio/index"
+  }
 }

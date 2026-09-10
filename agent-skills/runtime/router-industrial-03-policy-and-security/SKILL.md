@@ -1,5 +1,8 @@
 ---
 name: "router-industrial-03-policy-and-security"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Enforce 15 hard policy filters, fail-closed data residency, security context, and secret redaction."
 metadata:
   source_package: "elmos-router-industrial-skillpack"
@@ -13,7 +16,7 @@ metadata:
   runtime_skill_key: "router-industrial-03-policy-and-security"
   runtime_handler: "execute_03_policy_and_security"
   runtime_phase: "policy"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "READY_FOR_RAMPING"
 ---

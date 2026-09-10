@@ -1,5 +1,8 @@
 ---
 name: "router-industrial-11-deployment-and-operations"
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Validate deployment readiness, health probes, zero-downtime reconfiguration, and graceful drain."
 metadata:
   source_package: "elmos-router-industrial-skillpack"
@@ -13,7 +16,7 @@ metadata:
   runtime_skill_key: "router-industrial-11-deployment-and-operations"
   runtime_handler: "execute_11_deployment_and_operations"
   runtime_phase: "operations"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "READY_FOR_RAMPING"
 ---

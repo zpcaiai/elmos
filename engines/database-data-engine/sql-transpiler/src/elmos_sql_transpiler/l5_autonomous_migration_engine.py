@@ -297,9 +297,7 @@ class AutonomousDatabaseMigrationEngine:
                     if "PROCEDURE" in tokens
                     else f"proc_{idx}"
                 )
-            elif any(
-                k in upper_prefix for k in ["CREATE FUNCTION", "CREATE OR REPLACE FUNCTION"]
-            ):
+            elif any(k in upper_prefix for k in ["CREATE FUNCTION", "CREATE OR REPLACE FUNCTION"]):
                 kind = MigrationAssetKind.FUNCTION
                 tokens = stmt.split()
                 name = (
@@ -307,9 +305,7 @@ class AutonomousDatabaseMigrationEngine:
                     if "FUNCTION" in tokens
                     else f"func_{idx}"
                 )
-            elif any(
-                k in upper_prefix for k in ["CREATE TRIGGER", "CREATE OR REPLACE TRIGGER"]
-            ):
+            elif any(k in upper_prefix for k in ["CREATE TRIGGER", "CREATE OR REPLACE TRIGGER"]):
                 kind = MigrationAssetKind.TRIGGER
                 tokens = stmt.split()
                 name = (
@@ -336,17 +332,16 @@ class AutonomousDatabaseMigrationEngine:
 
         return registered
 
-    def register_source_assets(
-        self, assets: list[dict[str, Any]]
-    ) -> list[MigrationAsset]:
+    def register_source_assets(self, assets: list[dict[str, Any]]) -> list[MigrationAsset]:
         """Register a list of asset dicts for migration."""
         res: list[MigrationAsset] = []
         for a in assets:
             kind_val = a.get("asset_kind", "TABLE")
-            if isinstance(kind_val, str):
-                kind = MigrationAssetKind(kind_val.upper())
-            else:
-                kind = kind_val
+            kind = (
+                MigrationAssetKind(kind_val.upper())
+                if isinstance(kind_val, str)
+                else kind_val
+            )
             asset = self.register_raw_asset(
                 asset_name=a.get("asset_name") or a.get("asset_id", "asset"),
                 asset_kind=kind,
@@ -485,9 +480,7 @@ class AutonomousDatabaseMigrationEngine:
             res = res.replace("VARCHAR2", "VARCHAR")
             res = res.replace("NUMBER", "DECIMAL")
             sysdate_target = (
-                "CURRENT_TIMESTAMP"
-                if target in ["opengauss", "highgo", "kingbase"]
-                else "NOW()"
+                "CURRENT_TIMESTAMP" if target in ["opengauss", "highgo", "kingbase"] else "NOW()"
             )
             res = res.replace("SYSDATE", sysdate_target)
             res = res.replace("NVL(", "COALESCE(")
@@ -541,9 +534,7 @@ class AutonomousDatabaseMigrationEngine:
         repaired = 0
 
         for asset in self.assets.values():
-            sim_err = self._preflight_syntax_check(
-                asset.lowered_ddl, self.config.target_engine
-            )
+            sim_err = self._preflight_syntax_check(asset.lowered_ddl, self.config.target_engine)
             if sim_err:
                 diag = self.healing_engine.diagnose_failure(
                     raw_error=sim_err,
@@ -553,9 +544,7 @@ class AutonomousDatabaseMigrationEngine:
                 asset.diagnostic_history.append(diag)
 
                 def verifier(candidate_sql: str) -> tuple[bool, str]:
-                    err = self._preflight_syntax_check(
-                        candidate_sql, self.config.target_engine
-                    )
+                    err = self._preflight_syntax_check(candidate_sql, self.config.target_engine)
                     return (err is None, err or "")
 
                 ok, rep_sql, receipt = self.healing_engine.autonomous_repair_and_verify(
@@ -661,9 +650,7 @@ class AutonomousDatabaseMigrationEngine:
         t0 = datetime.now(UTC)
 
         table_names = [
-            a.asset_name
-            for a in self.assets.values()
-            if a.asset_kind == MigrationAssetKind.TABLE
+            a.asset_name for a in self.assets.values() if a.asset_kind == MigrationAssetKind.TABLE
         ] or ["accounts"]
 
         target_tbl = table_names[0].lower()

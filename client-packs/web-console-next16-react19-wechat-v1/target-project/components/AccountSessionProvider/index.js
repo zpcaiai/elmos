@@ -1,92 +1,91 @@
-// Top-level helpers and constants
-try { var channelName = "elmos-account-session-v1"; } catch(e) {}
-try { var readSession = async function readSession() {
-    const response = await fetch("/api/auth/session", {
-        credentials: "same-origin",
-        cache: "no-store",
-    });
-    const payload = await response.json();
-    return payload;
-} } catch(e) {}
-try { var useAccountSession = function useAccountSession() {
-    const value = useContext(AccountSessionContext);
-    if (!value)
-        throw new Error("AccountSessionProvider is required");
-    return value;
-} } catch(e) {}
+const { createHandPortComponent } = require("../../runtime/hand-port-runtime");
 
-Component({
-  options: {
-    multipleSlots: false,
-    styleIsolation: "apply-shared",
+Component(createHandPortComponent({
+  "schemaVersion": "1.0",
+  "componentName": "AccountSessionProvider",
+  "title": "/api/auth/logout",
+  "role": "provider",
+  "source": {
+    "file": "app/components/AccountSessionProvider.tsx",
+    "componentName": "AccountSessionProvider",
+    "sha256": "sha256:5eeb7245de7ee2b85a5fde36819b059a1c2e1e437b5225f1648e2091efec1945",
+    "range": {
+      "start": 1234,
+      "end": 4969
+    }
   },
-  properties: {
-    children: {
-      type: null,
-      value: null,
+  "blocker": {
+    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+    "reason": "state status has unsupported type \"AccountSessionState[\\\"status\\\"]\"",
+    "category": "data-contracts"
+  },
+  "props": [
+    {
+      "name": "children",
+      "type": "React.ReactNode",
+      "optional": false
+    }
+  ],
+  "states": [
+    {
+      "name": "status",
+      "type": "AccountSessionState[\"status\"]"
     },
-  },
-  data: {
-    status: "loading",
-    principal: null,
-    expiresAt: null,
-    value: null,
-  },
-  lifetimes: {
-    attached() {
-      const setStatus = (val) => { this.setData({ status: typeof val === "function" ? val(this.data.status) : val }); };
-      const setPrincipal = (val) => { this.setData({ principal: typeof val === "function" ? val(this.data.principal) : val }); };
-      const setExpiresAt = (val) => { this.setData({ expiresAt: typeof val === "function" ? val(this.data.expiresAt) : val }); };
-      // Lifecycle effect effect_0
-      (async () => {
-        try {
-          void refresh();
-    const channel = typeof BroadcastChannel === "undefined"
-        ? null
-        : new BroadcastChannel(channelName);
-    const update = () => void refresh();
-    channel?.addEventListener("message", update);
-    window.addEventListener("storage", update);
-    return () => {
-        channel?.removeEventListener("message", update);
-        channel?.close();
-        window.removeEventListener("storage", update);
-    };
-        } catch (err) {
-          // Handled mount effect
-        }
-      })().catch(() => {});
-      // Lifecycle effect effect_1
-      (async () => {
-        try {
-          if (!expiresAt || status !== "authenticated")
-        return;
-    const expiry = Date.parse(expiresAt);
-    const delay = Math.max(15_000, Math.min(5 * 60_000, expiry - Date.now() - 2 * 60_000));
-    const timer = window.setTimeout(async () => {
-        const response = await fetch("/api/auth/refresh", {
-            method: "POST",
-            credentials: "same-origin",
-            headers: { "Content-Type": "application/json" },
-        });
-        if (response.ok) {
-            await refresh();
-        }
-        else {
-            setPrincipal(null);
-            setExpiresAt(null);
-            setStatus("anonymous");
-        }
-    }, delay);
-    return () => window.clearTimeout(timer);
-        } catch (err) {
-          // Handled mount effect
-        }
-      })().catch(() => {});
+    {
+      "name": "principal",
+      "type": "AccountSessionPrincipal | null"
     },
-    detached() {
-    },
-  },
-  methods: {
-  },
-});
+    {
+      "name": "expiresAt",
+      "type": "string | null"
+    }
+  ],
+  "hooks": [
+    "useState",
+    "useCallback",
+    "useEffect",
+    "useMemo"
+  ],
+  "resources": [
+    "SUBSCRIPTION",
+    "NETWORK",
+    "TIMER"
+  ],
+  "apiPaths": [
+    "/api/auth/logout",
+    "/api/auth/refresh",
+    "/api/auth/tenant"
+  ],
+  "labels": [
+    "/api/auth/logout",
+    "/api/auth/refresh",
+    "/api/auth/tenant",
+    "/login",
+    "Content-Type",
+    "POST",
+    "TENANT_SWITCH_REJECTED",
+    "anonymous",
+    "application/json",
+    "authenticated",
+    "elmos:account-session-updated",
+    "loading",
+    "logout",
+    "message",
+    "not-configured",
+    "same-origin",
+    "status",
+    "storage",
+    "tenant-switched",
+    "undefined"
+  ],
+  "adapters": [
+    "wechat-cancellable-request-v1",
+    "wechat-effect-resource-lifecycle-v1",
+    "wechat-named-slot-projection-v1",
+    "wechat-typed-state-decoder-v1"
+  ],
+  "obligations": [
+    "AccountSessionProvider:source-blocker"
+  ],
+  "irDigest": "sha256:ba8119cd660e0b55719ea5b2c5bc2d556c8e177029b6f52ecaa10f43289eefa0"
+}));

@@ -68,7 +68,7 @@ class OceanBaseOracleTargetLowerer(ChinaDbTargetLowerer):
             ),
             DialectLoweringRule(
                 rule_id="ob_ora_square_bracket",
-                description="Convert T-SQL [col] to double quotes \"col\"",
+                description='Convert T-SQL [col] to double quotes "col"',
                 pattern=r"\[([a-zA-Z0-9_]+)\]",
                 replacement=r'"\1"',
                 is_regex=True,
@@ -206,4 +206,3 @@ class OceanBaseOracleTargetLowerer(ChinaDbTargetLowerer):
         res = self.lower_data_types(source_sql, source_dialect)
         res = self.apply_custom_rules(res, source_dialect)
         return res
-

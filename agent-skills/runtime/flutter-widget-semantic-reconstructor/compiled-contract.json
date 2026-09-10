@@ -107,11 +107,11 @@
       "emitter": "emitPlatformMiniApp"
     }
   },
-  "contract_state": "HANDLER_IMPLEMENTED",
+  "contract_state": "VERIFIED",
   "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
-  "runtime_evidence_status": "DECLARED",
+  "runtime_evidence_status": "LOCAL_EXECUTED",
   "external_evidence_status": "NOT_RUN",
   "certification": "NOT_CERTIFIED",
   "side_effects_authorized": false,
-  "maximum_local_claim": "HANDLER_IMPLEMENTED_NOT_EXECUTED"
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED"
 }

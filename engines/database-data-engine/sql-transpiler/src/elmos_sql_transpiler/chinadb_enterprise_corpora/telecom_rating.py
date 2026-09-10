@@ -509,7 +509,6 @@ class TelecomRatingCorpus:
         wallets = cls.get_seed_wallets(subscribers)
         wallet_map = {f"{w.subscriber_id}_{w.unit_type}": w for w in wallets}
 
-
         latencies_ms: list[float] = []
         rated_voice_count = 0
         rated_data_count = 0

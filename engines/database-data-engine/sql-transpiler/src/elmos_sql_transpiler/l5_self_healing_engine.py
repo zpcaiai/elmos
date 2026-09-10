@@ -238,7 +238,6 @@ ERROR_PATTERNS: list[ErrorPatternDefinition] = [
         PatchRiskLevel.TRANSACTIONAL_COMPENSATING,
         "Serialization anomaly; inject retry harness or convert to READ COMMITTED.",
     ),
-
     # SQL Server (T-SQL) Error Signatures
     ErrorPatternDefinition(
         "MSSQL-207",
@@ -303,7 +302,6 @@ ERROR_PATTERNS: list[ErrorPatternDefinition] = [
         PatchRiskLevel.SAFE_TYPE_WIDENING,
         "String data truncated; widen target column or apply SUBSTRING safely.",
     ),
-
     # ChinaDB Proprietary Dialect Patterns (DM8, Kingbase, openGauss, GBase, GoldenDB)
     ErrorPatternDefinition(
         "DM-2106",
@@ -359,7 +357,6 @@ ERROR_PATTERNS: list[ErrorPatternDefinition] = [
         PatchRiskLevel.SAFE_DETERMINISTIC,
         "GoldenDB requires partition key in primary key; append shard key to composite PK.",
     ),
-
     # PostgreSQL / openGauss / KingbaseES / HighGo Error Signatures
     ErrorPatternDefinition(
         "PG-42P01",
@@ -442,7 +439,6 @@ ERROR_PATTERNS: list[ErrorPatternDefinition] = [
         PatchRiskLevel.SAFE_TYPE_WIDENING,
         "String exceeds length; widen target VARCHAR or cast to TEXT.",
     ),
-
     # MySQL / TiDB / OceanBase MySQL / GaussDB M / GoldenDB Error Signatures
     ErrorPatternDefinition(
         "MY-1054",
@@ -560,27 +556,25 @@ class AutonomousDatabaseSelfHealingEngine:
                 or norm_engine in pat.target_engines
                 or "all" in pat.target_engines
             )
-            if target_matches and re.search(
-                pat.regex_pattern, raw_error, re.IGNORECASE
-            ):
+            if target_matches and re.search(pat.regex_pattern, raw_error, re.IGNORECASE):
                 # Extract identifier if possible
-                    extracted: list[str] = []
-                    m = re.search(r"['\"]([a-zA-Z0-9_\.]+)['\"]", raw_error)
-                    if m:
-                        extracted.append(m.group(1))
+                extracted: list[str] = []
+                m = re.search(r"['\"]([a-zA-Z0-9_\.]+)['\"]", raw_error)
+                if m:
+                    extracted.append(m.group(1))
 
-                    return DiagnosticReport(
-                        failure_id=failure_id,
-                        matched_pattern_id=pat.pattern_id,
-                        category=pat.category,
-                        target_engine=target_engine,
-                        raw_error_message=raw_error,
-                        failing_sql_excerpt=failing_sql[:200],
-                        extracted_identifiers=extracted,
-                        suggested_patch_kind=pat.recommended_patch,
-                        risk_level=pat.default_risk,
-                        confidence_score=0.98,
-                    )
+                return DiagnosticReport(
+                    failure_id=failure_id,
+                    matched_pattern_id=pat.pattern_id,
+                    category=pat.category,
+                    target_engine=target_engine,
+                    raw_error_message=raw_error,
+                    failing_sql_excerpt=failing_sql[:200],
+                    extracted_identifiers=extracted,
+                    suggested_patch_kind=pat.recommended_patch,
+                    risk_level=pat.default_risk,
+                    confidence_score=0.98,
+                )
 
         # Generic syntax or execution fallback
         return DiagnosticReport(
@@ -811,16 +805,35 @@ class AutonomousDatabaseSelfHealingEngine:
         """Escape reserved identifiers according to target engine quoting style."""
         out = sql
         is_mysql_family = engine in (
-            "mysql", "tidb", "oceanbase-mysql", "gaussdb-m", "goldendb", "gbase-8a"
+            "mysql",
+            "tidb",
+            "oceanbase-mysql",
+            "gaussdb-m",
+            "goldendb",
+            "gbase-8a",
         )
         is_pg_family = engine in (
-            "postgresql", "opengauss", "kingbasees", "highgo-hgdb", "gbase-8c", "gbase-8s"
+            "postgresql",
+            "opengauss",
+            "kingbasees",
+            "highgo-hgdb",
+            "gbase-8c",
+            "gbase-8s",
         )
         is_oracle_family = engine in ("oracle", "dm8", "oceanbase-oracle", "gaussdb-oracle")
 
         reserved = [
-            "order", "group", "user", "limit", "offset", "key", "index",
-            "table", "schema", "check", "values"
+            "order",
+            "group",
+            "user",
+            "limit",
+            "offset",
+            "key",
+            "index",
+            "table",
+            "schema",
+            "check",
+            "values",
         ]
         for ident in identifiers:
             if ident.lower() not in reserved:
@@ -839,7 +852,12 @@ class AutonomousDatabaseSelfHealingEngine:
         """Inject explicit casts for common coercion ambiguities."""
         out = sql
         is_pg_family = engine in (
-            "postgresql", "opengauss", "kingbasees", "highgo-hgdb", "gbase-8c", "gbase-8s"
+            "postgresql",
+            "opengauss",
+            "kingbasees",
+            "highgo-hgdb",
+            "gbase-8c",
+            "gbase-8s",
         )
         if is_pg_family:
             out = re.sub(r"=\s*'(\d+)'", r"= \1", out)
@@ -863,10 +881,20 @@ class AutonomousDatabaseSelfHealingEngine:
         """Map proprietary functions to target dialect equivalents."""
         out = sql
         is_mysql_family = engine in (
-            "mysql", "tidb", "oceanbase-mysql", "gaussdb-m", "goldendb", "gbase-8a"
+            "mysql",
+            "tidb",
+            "oceanbase-mysql",
+            "gaussdb-m",
+            "goldendb",
+            "gbase-8a",
         )
         is_pg_family = engine in (
-            "postgresql", "opengauss", "kingbasees", "highgo-hgdb", "gbase-8c", "gbase-8s"
+            "postgresql",
+            "opengauss",
+            "kingbasees",
+            "highgo-hgdb",
+            "gbase-8c",
+            "gbase-8s",
         )
 
         if is_mysql_family:
@@ -891,10 +919,20 @@ class AutonomousDatabaseSelfHealingEngine:
         """Rewrite plain INSERT into target engine upsert."""
         out = sql
         is_mysql_family = engine in (
-            "mysql", "tidb", "oceanbase-mysql", "gaussdb-m", "goldendb", "gbase-8a"
+            "mysql",
+            "tidb",
+            "oceanbase-mysql",
+            "gaussdb-m",
+            "goldendb",
+            "gbase-8a",
         )
         is_pg_family = engine in (
-            "postgresql", "opengauss", "kingbasees", "highgo-hgdb", "gbase-8c", "gbase-8s"
+            "postgresql",
+            "opengauss",
+            "kingbasees",
+            "highgo-hgdb",
+            "gbase-8c",
+            "gbase-8s",
         )
 
         if is_mysql_family and "ON DUPLICATE KEY" not in out.upper():
