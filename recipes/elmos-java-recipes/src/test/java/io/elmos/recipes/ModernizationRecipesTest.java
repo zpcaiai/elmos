@@ -3,6 +3,7 @@ package io.elmos.recipes;
 import io.elmos.recipes.cloud.*;
 import io.elmos.recipes.jpa.*;
 import io.elmos.recipes.security.*;
+import io.elmos.recipes.xml.*;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.InMemoryExecutionContext;
 import org.openrewrite.SourceFile;
@@ -408,5 +409,45 @@ class ModernizationRecipesTest {
         String res = transformed.printAll();
 
         assertTrue(res.contains("@EnableConfigServer"));
+    }
+
+    @Test
+    void testSpringSecurityCorsCsrfBreachDefenseRecipe() {
+        String sourceText = """
+                package com.example;
+                import org.springframework.web.cors.CorsConfiguration;
+
+                public class CorsConfig {
+                    public void setup(CorsConfiguration config) {
+                        config.addAllowedOrigin("*");
+                    }
+                }
+                """;
+        SourceFile source = JavaParser.fromJavaVersion().build().parse(sourceText).findFirst().orElseThrow();
+        SourceFile transformed = (SourceFile) new SpringSecurityCorsCsrfBreachDefenseRecipe().getVisitor()
+                .visit(source, new InMemoryExecutionContext());
+        String res = transformed.printAll();
+
+        assertFalse(res.contains("addAllowedOrigin(\"*\")"));
+        assertTrue(res.contains("addAllowedOriginPattern(\"*\")"));
+    }
+
+    @Test
+    void testSpringXmlBeansToJavaConfigRecipe() {
+        String sourceText = """
+                package com.example;
+                import org.springframework.context.annotation.ImportResource;
+
+                @ImportResource("classpath:beans.xml")
+                public class LegacyConfig {
+                }
+                """;
+        SourceFile source = JavaParser.fromJavaVersion().build().parse(sourceText).findFirst().orElseThrow();
+        SourceFile transformed = (SourceFile) new SpringXmlBeansToJavaConfigRecipe().getVisitor()
+                .visit(source, new InMemoryExecutionContext());
+        String res = transformed.printAll();
+
+        assertFalse(res.contains("@ImportResource"));
+        assertTrue(res.contains("@Configuration"));
     }
 }
