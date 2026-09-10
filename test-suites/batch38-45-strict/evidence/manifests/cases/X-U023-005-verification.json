@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U023-005",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T02:23:51Z",
+  "notes": "Independently verified by Ethan: 全协议兼容矩阵 / security / 场景5"
+}

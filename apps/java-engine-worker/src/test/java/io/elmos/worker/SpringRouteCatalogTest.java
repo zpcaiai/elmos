@@ -347,14 +347,34 @@ class SpringRouteCatalogTest {
         for (SpringRoute route : SpringRouteCatalog.routes()) {
             if (!route.targetBoot().equals("4.1.0")) continue;
             assertTrue(route.implemented(), route.routeId());
-            if (route.routeId().equals("boot-2.7-maven-to-boot-4.1.0-java-21")) {
+            if (route.routeId().equals("boot-1.5-maven-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("1.5.22.RELEASE", route.verifiedSourceBoot());
+                assertEquals("8", route.verifiedSourceJava());
+            } else if (route.routeId().equals("boot-2.0-2.6-maven-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("2.3.12.RELEASE", route.verifiedSourceBoot());
+                assertEquals("11", route.verifiedSourceJava());
+            } else if (route.routeId().equals("boot-2.7-maven-to-boot-4.1.0-java-21")) {
                 assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
                 assertEquals("2.7.18", route.verifiedSourceBoot());
+                assertEquals("17", route.verifiedSourceJava());
+            } else if (route.routeId().equals("boot-3.0-3.4-maven-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("3.4.1", route.verifiedSourceBoot());
                 assertEquals("17", route.verifiedSourceJava());
             } else if (route.routeId().equals("boot-3.5-maven-to-boot-4.1.0-java-21")) {
                 assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
                 assertEquals("3.5.3", route.verifiedSourceBoot());
                 assertEquals("21", route.verifiedSourceJava());
+            } else if (route.routeId().equals("boot-2.x-gradle-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("2.7.18", route.verifiedSourceBoot());
+                assertEquals("17", route.verifiedSourceJava());
+            } else if (route.routeId().equals("spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("5.3.39", route.verifiedSourceBoot());
+                assertEquals("11", route.verifiedSourceJava());
             } else {
                 assertEquals(EvidenceStatus.NOT_RUN, route.routeEvidence(), route.routeId());
             }

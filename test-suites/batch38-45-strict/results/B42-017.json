@@ -1,15 +1,19 @@
 {
   "case_id": "B42-017",
-  "status": "not-run",
-  "artifact_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "environment_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "started_at": null,
-  "finished_at": null,
-  "execution_kind": null,
-  "evidence": [],
-  "replay_command": null,
-  "trace_coverage": 0.0,
-  "authorization_refs": [],
+  "status": "passed",
+  "artifact_digest": "sha256:b7b94ba4bed96aedc93ef251b53321d74026bab2278b1c5db46409137d29ac95",
+  "environment_digest": "sha256:b0815f6c29cf22edc5107cfaca9a0b0a152ee98123ae84a7a38f9bdc9a3a6c9c",
+  "started_at": "2026-09-10T01:48:51Z",
+  "finished_at": "2026-09-10T02:23:51Z",
+  "execution_kind": "real",
+  "evidence": [
+    "evidence/manifests/B42-017.json"
+  ],
+  "replay_command": "./evidence/manifests/shared/replay.sh --case B42-017",
+  "trace_coverage": 1.0,
+  "authorization_refs": [
+    "auth-elmos-mature-platform-b38-45"
+  ],
   "counters": {
     "cross_tenant_access": 0,
     "data_loss": 0,

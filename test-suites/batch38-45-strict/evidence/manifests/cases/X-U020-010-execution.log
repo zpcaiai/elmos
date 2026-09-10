@@ -1,0 +1,8 @@
+=== EXECUTION LOG FOR X-U020-010 ===
+Timestamp: 2026-09-10T01:48:51Z
+Batch: cross
+Title: 知识隔离、投毒与校准 / performance / 场景10
+Category: performance
+Executor: elmos-b38-45-platform-executor
+Execution Kind: real
+Status: PASSED

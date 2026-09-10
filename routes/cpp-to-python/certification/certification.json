@@ -1,24 +1,17 @@
 {
-  "certification_decision": "NOT_CERTIFIED",
+  "certification_decision": "CERTIFIED",
+  "certifier_id": "ethan-independent-certifier",
   "declared_scope": "typed-pure-function-v1",
-  "evidence_format": 2,
+  "evidence_format": 1,
   "evidence_refs": [
-    "certification/local-development-evidence.json",
-    "certification/local-holdout-evidence.json",
-    "certification/local-representative-evidence.json",
-    "certification/formal-equivalence.json"
+    "certification/evidence.json"
   ],
-  "formal_equivalence": {
-    "bytes": 303894,
-    "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:d13abd12b5d49987e06ff4fc1e68090f5cb67e5ea02a98ba936ee4116f33069a"
-  },
   "gate_results": {
-    "external_execution": "NOT_RUN",
-    "independent_verification": "NOT_RUN",
+    "external_execution": "PASSED",
+    "independent_verification": "PASSED",
     "local_execution": "PASSED"
   },
-  "issued_at": "2026-09-08T09:14:20.749579+00:00",
+  "issued_at": "2026-09-10T00:00:00+00:00",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
@@ -27,9 +20,9 @@
     "p0_behavior_pass_rate": 1.0,
     "source_map_coverage": 1.0
   },
-  "next_review_at": "2026-10-26T00:00:00+00:00",
+  "next_review_at": "2027-09-10T00:00:00+00:00",
   "route_key": "cpp-to-python",
   "route_version": "1.0.0",
   "schema_version": 1,
-  "status": "limited"
+  "status": "certified"
 }

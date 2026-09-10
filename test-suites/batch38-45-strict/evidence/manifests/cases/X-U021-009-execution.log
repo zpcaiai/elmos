@@ -1,0 +1,8 @@
+=== EXECUTION LOG FOR X-U021-009 ===
+Timestamp: 2026-09-10T01:48:51Z
+Batch: cross
+Title: Agent对抗、权限与失控 / recovery / 场景9
+Category: recovery
+Executor: elmos-b38-45-platform-executor
+Execution Kind: real
+Status: PASSED

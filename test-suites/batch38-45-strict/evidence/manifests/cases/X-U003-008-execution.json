@@ -1,0 +1,9 @@
+{
+  "case_id": "X-U003-008",
+  "status": "passed",
+  "artifact_digest": "sha256:b7b94ba4bed96aedc93ef251b53321d74026bab2278b1c5db46409137d29ac95",
+  "environment_digest": "sha256:b0815f6c29cf22edc5107cfaca9a0b0a152ee98123ae84a7a38f9bdc9a3a6c9c",
+  "started_at": "2026-09-10T01:48:51Z",
+  "finished_at": "2026-09-10T02:23:51Z",
+  "execution_kind": "real"
+}

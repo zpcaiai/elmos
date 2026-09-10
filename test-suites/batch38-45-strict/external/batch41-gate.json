@@ -1,0 +1,13 @@
+{
+  "batch": 41,
+  "packKey": "elmos-platform-knowledge-flywheel",
+  "eligible": true,
+  "status": "CERTIFIED",
+  "failures": [],
+  "evidenceRefs": [
+    "batch41-execution",
+    "batch41-provenance",
+    "batch41-verification"
+  ],
+  "externalOperationExecuted": false
+}

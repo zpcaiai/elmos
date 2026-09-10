@@ -1,0 +1,8 @@
+=== EXECUTION LOG FOR X-U020-007 ===
+Timestamp: 2026-09-10T01:48:51Z
+Batch: cross
+Title: 知识隔离、投毒与校准 / version-drift / 场景7
+Category: version-drift
+Executor: elmos-b38-45-platform-executor
+Execution Kind: real
+Status: PASSED

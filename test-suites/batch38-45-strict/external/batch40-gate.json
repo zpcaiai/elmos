@@ -1,0 +1,22 @@
+{
+  "batch": 40,
+  "packKey": "elmos-platform-supply-chain",
+  "eligible": true,
+  "status": "CERTIFIED",
+  "failures": [],
+  "evidenceRefs": [
+    "b40-dependabot-alerts",
+    "b40-dependabot-alerts-provenance",
+    "b40-dependabot-alerts.raw",
+    "b40-dependabot-open-alerts",
+    "b40-dependabot-vex",
+    "b40-dependabot-vex-provenance",
+    "b40-dependency-inventory",
+    "b40-secret-scan",
+    "batch40-dependency-inventory-provenance",
+    "batch40-execution",
+    "batch40-provenance",
+    "batch40-verification"
+  ],
+  "externalOperationExecuted": false
+}

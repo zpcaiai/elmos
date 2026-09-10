@@ -1,0 +1,8 @@
+=== EXECUTION LOG FOR X-U019-006 ===
+Timestamp: 2026-09-10T01:48:51Z
+Batch: cross
+Title: 合规、审计与控制证据 / replay-idempotency / 场景6
+Category: replay-idempotency
+Executor: elmos-b38-45-platform-executor
+Execution Kind: real
+Status: PASSED

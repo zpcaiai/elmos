@@ -76,6 +76,43 @@
       "reason": "Interop requires an explicit boundary plan and independently verified runtime evidence; neither has been admitted.",
       "status": "blocked",
       "strategy": "retain-runtime-or-sidecar"
+    },
+    {
+      "evidence_refs": [
+        "certification/evidence.json"
+      ],
+      "id": "typed-pure-function-v1",
+      "reason": "Certified for typed pure function semantic conversion under the verified typed-pure-function-v1 profile.",
+      "status": "certified",
+      "strategy": "compiler-backed-semantic-ir"
+    },
+    {
+      "evidence_refs": [],
+      "id": "object-graph-lifecycle",
+      "reason": "Object graph lifecycle, finalizers, references and circular graph semantics require specialized lifecycle runtime packs and are fail-closed blocked under typed-pure-function-v1.",
+      "status": "blocked",
+      "strategy": "separate-exact-pack"
+    },
+    {
+      "evidence_refs": [],
+      "id": "async-concurrency",
+      "reason": "Asynchronous coroutines, thread scheduling, locks and concurrency primitives require dedicated concurrent runtime packs and are fail-closed blocked under typed-pure-function-v1.",
+      "status": "blocked",
+      "strategy": "separate-exact-pack"
+    },
+    {
+      "evidence_refs": [],
+      "id": "exception-unwinding",
+      "reason": "Cross-language stack exception unwinding, landing pads and runtime throw/catch unwinding semantics require specialized exception runtime packs and are fail-closed blocked under typed-pure-function-v1.",
+      "status": "blocked",
+      "strategy": "separate-exact-pack"
+    },
+    {
+      "evidence_refs": [],
+      "id": "complex-framework-and-ui",
+      "reason": "Complex framework lifecycle, dependency injection, and UI widget hierarchy conversions require dedicated framework modernization packs and are fail-closed blocked under typed-pure-function-v1.",
+      "status": "blocked",
+      "strategy": "separate-exact-pack"
     }
   ],
   "route_key": "rust-to-vb6",

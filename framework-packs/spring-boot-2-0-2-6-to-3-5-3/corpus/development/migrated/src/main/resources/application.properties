@@ -1,0 +1,2 @@
+management.endpoints.web.exposure.include=health,info
+server.port=8080

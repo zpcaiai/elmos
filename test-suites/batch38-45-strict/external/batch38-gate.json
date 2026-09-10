@@ -1,0 +1,13 @@
+{
+  "batch": 38,
+  "packKey": "elmos-platform-deployment-matrix",
+  "eligible": true,
+  "status": "CERTIFIED",
+  "failures": [],
+  "evidenceRefs": [
+    "batch38-execution",
+    "batch38-provenance",
+    "batch38-verification"
+  ],
+  "externalOperationExecuted": false
+}

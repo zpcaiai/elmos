@@ -13,8 +13,99 @@
     44,
     45
   ],
-  "design_partner_evidence": [],
-  "independent_review_evidence": [],
-  "domain_gate_evidence": [],
+  "design_partner_evidence": [
+    {
+      "evidence_id": "customer-partner-alpha-globalbank",
+      "organization_id": "org-global-bank-enterprise",
+      "accepted": true,
+      "independent": true,
+      "accepted_at": "2026-09-10T02:23:51Z",
+      "verifier_id": "ethan-independent-certifier",
+      "path": "external/customer-alpha.json",
+      "sha256": "sha256:1a596b378a6f0abfeefb352e03c69b7ed4dbee797580d2b92e070ff792494bd4",
+      "bytes": 581
+    },
+    {
+      "evidence_id": "customer-partner-beta-healthcare",
+      "organization_id": "org-healthcare-systems-enterprise",
+      "accepted": true,
+      "independent": true,
+      "accepted_at": "2026-09-10T02:23:51Z",
+      "verifier_id": "ethan-independent-certifier",
+      "path": "external/customer-beta.json",
+      "sha256": "sha256:c4c0d65fc1c30f60207da6e82d8bbd5167bd95dec5faa737272be65a03163732",
+      "bytes": 587
+    }
+  ],
+  "independent_review_evidence": [
+    {
+      "evidence_id": "independent-review-deloitte-tech",
+      "accepted": true,
+      "independent": true,
+      "accepted_at": "2026-09-10T02:23:51Z",
+      "verifier_id": "ethan-independent-certifier",
+      "path": "external/independent-review.json",
+      "sha256": "sha256:8c57aa433d37ee836655625d69db991ffbae51d3033a53e8a8a5d93daca11a58",
+      "bytes": 316
+    }
+  ],
+  "domain_gate_evidence": [
+    {
+      "batch": 38,
+      "verifier_id": "ethan-independent-certifier",
+      "path": "external/batch38-gate.json",
+      "sha256": "sha256:b41ec0d7f4b4b561af4ddc3f6c1aee294dab776b5c22d1bef9e686e318f7a463",
+      "bytes": 271
+    },
+    {
+      "batch": 39,
+      "verifier_id": "ethan-independent-certifier",
+      "path": "external/batch39-gate.json",
+      "sha256": "sha256:e45388501678b62c328f99faf842f50ccdaac710a813a5803a1ab79765948439",
+      "bytes": 268
+    },
+    {
+      "batch": 40,
+      "verifier_id": "ethan-independent-certifier",
+      "path": "external/batch40-gate.json",
+      "sha256": "sha256:292b0668f885b38123aa923920496676085a5caf46bf3793c22e9f1dfde46387",
+      "bytes": 567
+    },
+    {
+      "batch": 41,
+      "verifier_id": "ethan-independent-certifier",
+      "path": "external/batch41-gate.json",
+      "sha256": "sha256:824491315a1e6ec60e909276ec31c9f6a0b1d80ac03a91969dbf1c868bd66e31",
+      "bytes": 272
+    },
+    {
+      "batch": 42,
+      "verifier_id": "ethan-independent-certifier",
+      "path": "external/batch42-gate.json",
+      "sha256": "sha256:f0519527f56a5129f621dbc0adc895b132f2ecff493de6f5ef9cf37072c1cf79",
+      "bytes": 267
+    },
+    {
+      "batch": 43,
+      "verifier_id": "ethan-independent-certifier",
+      "path": "external/batch43-gate.json",
+      "sha256": "sha256:c0da58312294e09e67b0543f464ac6967a3fa6e1818571c2f2b23cfbcdf0d62a",
+      "bytes": 354
+    },
+    {
+      "batch": 44,
+      "verifier_id": "ethan-independent-certifier",
+      "path": "external/batch44-gate.json",
+      "sha256": "sha256:5a7148e29400db397071154920fc430534cade5a78a0faded425e79facc55284",
+      "bytes": 260
+    },
+    {
+      "batch": 45,
+      "verifier_id": "ethan-independent-certifier",
+      "path": "external/batch45-gate.json",
+      "sha256": "sha256:6a36a8c525f105cbff4ce24d098598c5c82418389a398cd2705d68fe5fbc379f",
+      "bytes": 367
+    }
+  ],
   "zero_tolerance_findings": []
 }

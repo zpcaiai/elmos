@@ -1,0 +1,13 @@
+{
+  "batch": 44,
+  "packKey": "elmos-platform-finops",
+  "eligible": true,
+  "status": "CERTIFIED",
+  "failures": [],
+  "evidenceRefs": [
+    "batch44-execution",
+    "batch44-provenance",
+    "batch44-verification"
+  ],
+  "externalOperationExecuted": false
+}

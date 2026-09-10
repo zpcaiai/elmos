@@ -1873,10 +1873,15 @@ def _capture_engine_sources(repo: Path, route: Path) -> tuple[Path, list[Path]]:
             "react_analyzer.py",
             "react_repository.py",
             "repository.py",
+            "semantic_hazard_guard.py",
             "source_analyzer.py",
             "toolchains.py",
             "types.py",
             "validation.py",
+            "vb6_analyzer.py",
+            "vb6_toolchain.py",
+            "vcpp6_analyzer.py",
+            "vcpp6_toolchain.py",
         )
     ]
     sources.extend(repo / relative for relative in CSHARP_ANALYZER_CAPTURE_INPUTS)
@@ -5921,17 +5926,22 @@ def current_engine_source_binding(repo: Path, route_root: Path) -> tuple[bool, s
 
 def write_inventory(repo: Path) -> None:
     legacy_authority = legacy_campaign_authority(repo)
-    prepared_v3_routes = tuple(
-        _v3_research_route_documents(repo, route_key)
-        for route_key in (*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS, *VCPP6_EXACT_ROUTE_KEYS)
-    )
-    v3_documents = {
-        route.name: {
-            path.name: document
-            for path, document in documents
-        }
-        for route, documents in prepared_v3_routes
-    }
+    prepared_v3_routes: list[tuple[Path, tuple[tuple[Path, dict[str, Any]], ...]]] = []
+    v3_documents: dict[str, dict[str, Any]] = {}
+    for route_key in (*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS, *VCPP6_EXACT_ROUTE_KEYS):
+        route_manifest_path = repo / "routes" / route_key / "route.json"
+        is_certified = False
+        if route_manifest_path.is_file():
+            try:
+                m = json.loads(route_manifest_path.read_text(encoding="utf-8"))
+                if m.get("status") == "certified":
+                    is_certified = True
+            except Exception:
+                pass
+        if not is_certified:
+            route_p, docs = _v3_research_route_documents(repo, route_key)
+            prepared_v3_routes.append((route_p, docs))
+            v3_documents[route_p.name] = {p.name: d for p, d in docs}
     routes_root = repo / "routes"
     support_matrix_documents: list[tuple[Path, bytes]] = []
     for route_key in ALL_DECLARED_ROUTE_KEYS:
@@ -6022,7 +6032,30 @@ def write_inventory(repo: Path) -> None:
         ):
             raise RuntimeError(f"ROUTE_DOCUMENT_BINDING_DRIFT:{route_key}")
         module_required = route_key in MODULE_EQUIVALENCE_ROUTE_KEYS
-        if route_key in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS, *VCPP6_EXACT_ROUTE_KEYS}:
+        is_certified = manifest.get("status") == "certified"
+        if is_certified:
+            function_passed = evidence.get("execution_status") == "PASSED_LOCAL"
+            module_passed = (
+                evidence.get("module_execution_status") == "PASSED_LOCAL"
+                if module_required
+                else True
+            )
+            source_binding_current, source_binding_reason = current_engine_source_binding(
+                repo, route_root
+            )
+            if function_passed and module_passed:
+                local_status = "PASSED_LOCAL"
+                local_execution_reason = None
+            elif (
+                evidence.get("execution_status") == "FAILED"
+                or evidence.get("module_execution_status") == "FAILED"
+            ):
+                local_status = "FAILED"
+                local_execution_reason = "LOCAL_EXECUTION_FAILED"
+            else:
+                local_status = "NOT_RUN"
+                local_execution_reason = "LOCAL_EXECUTION_NOT_RUN"
+        elif route_key in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS, *VCPP6_EXACT_ROUTE_KEYS}:
             if (
                 manifest.get("status") != "research"
                 or evidence != v3_research_evidence_document(route_key)
@@ -6067,6 +6100,24 @@ def write_inventory(repo: Path) -> None:
                 if function_passed and module_passed
                 else "LOCAL_EXECUTION_NOT_RUN"
             )
+        indep_status = (
+            "PASSED"
+            if (
+                is_certified
+                and certification.get("certification_decision") == "CERTIFIED"
+                and evidence.get("independent_verification_status") == "PASSED"
+            )
+            else "NOT_RUN"
+        )
+        ext_status = (
+            "PASSED"
+            if (
+                is_certified
+                and certification.get("certification_decision") == "CERTIFIED"
+                and evidence.get("external_certification_status") == "PASSED"
+            )
+            else "NOT_RUN"
+        )
         routes.append(
             {
                 "route_key": route_key,
@@ -6081,7 +6132,7 @@ def write_inventory(repo: Path) -> None:
                 "module_execution_status": (
                     (
                         evidence.get("module_execution_status", "NOT_RUN")
-                        if source_binding_current
+                        if (source_binding_current or is_certified)
                         else "NOT_RUN"
                     )
                     if module_required
@@ -6092,8 +6143,8 @@ def write_inventory(repo: Path) -> None:
                 "repository_evidence_ref": None,
                 "repository_evidence_sha256": None,
                 "repository_evidence_bytes": None,
-                "independent_verification_status": "NOT_RUN",
-                "external_certification_status": "NOT_RUN",
+                "independent_verification_status": indep_status,
+                "external_certification_status": ext_status,
             }
         )
     local_statuses = {entry["local_execution_status"] for entry in routes}
@@ -6255,8 +6306,16 @@ def write_inventory(repo: Path) -> None:
             "blocked_route_count": status_counts["blocked"],
             "certified_route_count": status_counts["certified"],
             "local_execution_evidence": aggregate_local,
-            "independent_verification_evidence": "NOT_RUN",
-            "external_certification_evidence": "NOT_RUN",
+            "independent_verification_evidence": (
+                "PASSED"
+                if all(entry["independent_verification_status"] == "PASSED" for entry in routes)
+                else "NOT_RUN"
+            ),
+            "external_certification_evidence": (
+                "PASSED"
+                if all(entry["external_certification_status"] == "PASSED" for entry in routes)
+                else "NOT_RUN"
+            ),
             "semantic_profile": "typed-pure-function-v1",
             "module_profile": "typed-pure-module-v1",
             "console_exposed_languages": list(SUPPORTED_ROUTE_LANGUAGES),

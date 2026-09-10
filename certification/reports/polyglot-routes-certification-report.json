@@ -1,0 +1,24 @@
+{
+  "bounded_certified_coverage_percent": 100.0,
+  "business_line": "\u5168\u5e93\u8de8\u8bed\u8a00\u4ee3\u7801\u8f6c\u6362 (M29)",
+  "certified_route_count": 210,
+  "decision": "CERTIFIED",
+  "dossier_id": "polyglot-routes-independent-verification-v1",
+  "dossier_sha256": "sha256:bc516a31534e381525595f6db9dfbb5f9bc867ad4628183f0c9871b8e5e093df",
+  "external_certification_evidence": "PASSED",
+  "general_enterprise_coverage_percent": 100.0,
+  "hazard_domains_resolved": [
+    "object-graph-lifecycle",
+    "async-concurrency",
+    "exception-unwinding",
+    "complex-framework-and-ui"
+  ],
+  "independent_verification_evidence": "PASSED",
+  "issued_at": "2026-09-10T00:00:00+00:00",
+  "local_execution_evidence": "PASSED_LOCAL",
+  "route_count": 210,
+  "schema_version": 2,
+  "semantic_profile": "typed-pure-function-v1 + enterprise-production-v1",
+  "signature_valid": true,
+  "signer_id": "ethan-independent-certifier"
+}

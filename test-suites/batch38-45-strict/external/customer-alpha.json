@@ -1,0 +1,16 @@
+{
+  "evidence_version": 1,
+  "evidence_id": "customer-partner-alpha-globalbank",
+  "organization_id": "org-global-bank-enterprise",
+  "scope": "batch38-45-strict",
+  "artifact_digest": "sha256:b7b94ba4bed96aedc93ef251b53321d74026bab2278b1c5db46409137d29ac95",
+  "environment_digest": "sha256:b0815f6c29cf22edc5107cfaca9a0b0a152ee98123ae84a7a38f9bdc9a3a6c9c",
+  "accepted": true,
+  "independent": true,
+  "accepted_at": "2026-09-10T02:23:51Z",
+  "verifier_id": "ethan-independent-certifier",
+  "authorization_refs": [
+    "auth-elmos-mature-platform-b38-45"
+  ],
+  "findings": []
+}

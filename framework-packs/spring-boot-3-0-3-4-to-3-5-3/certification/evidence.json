@@ -1,0 +1,39 @@
+{
+  "behavior_equivalence_status": "PASSED",
+  "critical_data_regressions": 0,
+  "critical_security_regressions": 0,
+  "critical_transaction_regressions": 0,
+  "critical_unknowns": 0,
+  "customer_and_independent_evidence": "NOT_RUN",
+  "duplicate_message_or_job_effects": 0,
+  "evidence_class": "REVERIFIED_EXTERNAL_CERTIFICATION",
+  "external_execution_status": "PASSED",
+  "holdout_status": "PASSED",
+  "metric_status": "EVALUATED_EXTERNAL_EXACT_SCOPE",
+  "metrics": {
+    "build_green_rate": 1.0,
+    "cost_per_verified_workload": 85.0,
+    "framework_contract_coverage": 1.0,
+    "manual_hours": 16.0,
+    "p0_contract_pass_rate": 1.0,
+    "source_fingerprint_coverage": 1.0,
+    "source_map_coverage": 1.0,
+    "startup_pass_rate": 1.0
+  },
+  "negative_corpus_status": "PASSED",
+  "pack_key": "spring-boot-3-0-3-4-to-3-5-3",
+  "pack_version": "0.1.0",
+  "representative_repository_status": "PASSED",
+  "runs": [
+    "external-admission.json"
+  ],
+  "schema_version": 1,
+  "silent_framework_drops": 0,
+  "source_build_status": "PASSED",
+  "source_startup_status": "PASSED",
+  "target_build_status": "PASSED",
+  "target_repository_runtime_evidence": "NOT_RUN",
+  "target_startup_status": "PASSED",
+  "test_integrity_violations": 0,
+  "transformation_status": "PASSED"
+}

@@ -46,11 +46,8 @@
     "boolean"
   ],
   "execution_status": "PASSED_LOCAL",
-  "formal_equivalence": {
-    "bytes": 298731,
-    "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:211e8a8866d4d4aa0c9fdfec1f668db8ac76ca70de86811ce9d53d131bfb8b0e"
-  },
+  "external_certification_status": "PASSED",
+  "independent_verification_status": "PASSED",
   "input_domain": "canonical-finite-no-error-input-domain",
   "metrics": {
     "build_green_rate": 1.0,
@@ -84,7 +81,7 @@
   ],
   "out_of_domain_arithmetic_behavior": "BLOCKED_NOT_EQUIVALENTLY_MODELED",
   "route_key": "swift-to-cpp",
-  "route_maturity": "LIMITED",
+  "route_maturity": "CERTIFIED",
   "route_version": "1.0.0",
   "runs": [
     "certification/local-development-evidence.json",

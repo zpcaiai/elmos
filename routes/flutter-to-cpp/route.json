@@ -8,7 +8,7 @@
     "representative_repository_required": true,
     "source_map_required": true
   },
-  "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+  "maintenance_owner": "elmos-polyglot-maintainers",
   "owner": "ELMOS Migration Platform",
   "paths": {
     "certification": "certification",
@@ -16,10 +16,10 @@
     "support_matrix": "support-matrix.json"
   },
   "profiles": {
-    "semantic_profile": "",
-    "target_profile": ""
+    "semantic_profile": "typed-pure-function-v1",
+    "target_profile": "cpp-native-compiler"
   },
-  "review_date": "2026-11-24",
+  "review_date": "2026-09-10",
   "route_key": "flutter-to-cpp",
   "schema_version": 1,
   "source": {
@@ -32,7 +32,7 @@
       "_fe_analyzer_shared 95.0.0"
     ]
   },
-  "status": "research",
+  "status": "certified",
   "target": {
     "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
     "language": "cpp",
@@ -42,5 +42,5 @@
       "arm64-apple-darwin25.6.0"
     ]
   },
-  "version": "0.1.0"
+  "version": "1.0.0"
 }

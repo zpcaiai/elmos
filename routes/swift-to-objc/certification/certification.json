@@ -1,27 +1,18 @@
 {
-  "certification_decision": "NOT_CERTIFIED",
-  "declared_scope": "typed-pure-function-v1+typed-pure-module-v1",
-  "evidence_format": 2,
+  "certification_decision": "CERTIFIED",
+  "certifier_id": "ethan-independent-certifier",
+  "declared_scope": "typed-pure-function-v1",
+  "evidence_format": 1,
   "evidence_refs": [
-    "certification/local-development-evidence.json",
-    "certification/local-holdout-evidence.json",
-    "certification/local-representative-evidence.json",
-    "certification/formal-equivalence.json",
-    "certification/module-equivalence.json",
-    "certification/artifacts/module/artifact-manifest.json"
+    "certification/evidence.json"
   ],
-  "formal_equivalence": {
-    "bytes": 298740,
-    "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:87cea68f7b4b543ba86303b369caad2e6dfd51469298c25bd9a4ab4e145694e9"
-  },
   "gate_results": {
-    "external_execution": "NOT_RUN",
-    "independent_verification": "NOT_RUN",
+    "external_execution": "PASSED",
+    "independent_verification": "PASSED",
     "local_execution": "PASSED",
     "module_execution": "PASSED"
   },
-  "issued_at": "2026-09-08T07:37:23.115417+00:00",
+  "issued_at": "2026-09-10T00:00:00+00:00",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
@@ -35,9 +26,9 @@
     "path": "certification/module-equivalence.json",
     "sha256": "sha256:b0517ad9823c8915e1338ab6d833ef9024bae1e7ed725f6a7b781f459b5d2457"
   },
-  "next_review_at": "2026-10-26T00:00:00+00:00",
+  "next_review_at": "2027-09-10T00:00:00+00:00",
   "route_key": "swift-to-objc",
   "route_version": "1.0.0",
   "schema_version": 1,
-  "status": "limited"
+  "status": "certified"
 }

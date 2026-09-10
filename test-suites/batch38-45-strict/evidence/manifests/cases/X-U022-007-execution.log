@@ -1,0 +1,8 @@
+=== EXECUTION LOG FOR X-U022-007 ===
+Timestamp: 2026-09-10T01:48:51Z
+Batch: cross
+Title: 模型路由、预算与Kill Switch / version-drift / 场景7
+Category: version-drift
+Executor: elmos-b38-45-platform-executor
+Execution Kind: real
+Status: PASSED

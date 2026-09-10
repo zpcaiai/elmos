@@ -2,8 +2,8 @@
 
 Generated from the route's authoritative `../support-matrix.json`; this view does not create execution or certification evidence.
 
-- Source SHA-256: `sha256:331935f7d72409576554c1d25d1f98f078dfc5fe8a0df7baff38de6422f5f32f`
-- Source bytes: `3056`
+- Source SHA-256: `sha256:d7cdbea8c2be24f4d0b11a04ec15c08685bf8d6b127f49166b12d0872ce61693`
+- Source bytes: `4780`
 
 ## type-system
 
@@ -81,3 +81,38 @@ Generated from the route's authoritative `../support-matrix.json`; this view doe
 - Strategy: `retain-runtime-or-sidecar`
 - Evidence: None
 - Reason: Interop requires an explicit boundary plan and independently verified runtime evidence; neither has been admitted.
+
+## typed-pure-function-v1
+
+- Status: `certified`
+- Strategy: `compiler-backed-semantic-ir`
+- Evidence: `certification/evidence.json`
+- Reason: Certified for typed pure function semantic conversion under the verified typed-pure-function-v1 profile.
+
+## object-graph-lifecycle
+
+- Status: `blocked`
+- Strategy: `separate-exact-pack`
+- Evidence: None
+- Reason: Object graph lifecycle, finalizers, references and circular graph semantics require specialized lifecycle runtime packs and are fail-closed blocked under typed-pure-function-v1.
+
+## async-concurrency
+
+- Status: `blocked`
+- Strategy: `separate-exact-pack`
+- Evidence: None
+- Reason: Asynchronous coroutines, thread scheduling, locks and concurrency primitives require dedicated concurrent runtime packs and are fail-closed blocked under typed-pure-function-v1.
+
+## exception-unwinding
+
+- Status: `blocked`
+- Strategy: `separate-exact-pack`
+- Evidence: None
+- Reason: Cross-language stack exception unwinding, landing pads and runtime throw/catch unwinding semantics require specialized exception runtime packs and are fail-closed blocked under typed-pure-function-v1.
+
+## complex-framework-and-ui
+
+- Status: `blocked`
+- Strategy: `separate-exact-pack`
+- Evidence: None
+- Reason: Complex framework lifecycle, dependency injection, and UI widget hierarchy conversions require dedicated framework modernization packs and are fail-closed blocked under typed-pure-function-v1.

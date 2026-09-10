@@ -387,12 +387,12 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-to-boot-4.1.0.yml",
                     "io.elmos.openrewrite.SpringBoot1_5ToBoot4_1_0Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
+                    EvidenceStatus.PASSED_LOCAL, "1.5.22.RELEASE", "8",
                     "Direct user-facing edge with an ordered internal chain through Boot 2.0, "
-                            + "2.7, 3.5 and 4.0 before pinning Boot 4.1.0 / Java 21. This route is "
-                            + "executable but unverified: security, persistence, transactions, "
-                            + "messaging, custom auto-configuration and Boot 4.1 compatibility remain "
-                            + "explicit manual obligations.",
+                            + "2.7, 3.5 and 4.0 before pinning Boot 4.1.0 / Java 21. The exact "
+                            + "Boot 1.5.22.RELEASE / Java 8 tuple passed local source/target build, "
+                            + "startup and web behavior probes; security, persistence, transactions, "
+                            + "messaging, holdout and independent verification remain NOT_RUN.",
                     SourceFamily.SPRING_BOOT),
             new SpringRoute(
                     "boot-2.0-2.6-maven-to-boot-4.1.0-java-21",
@@ -403,10 +403,11 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-to-boot-4.1.0.yml",
                     "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot4_1_0Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
+                    EvidenceStatus.PASSED_LOCAL, "2.3.12.RELEASE", "11",
                     "Direct edge with an ordered internal chain through Boot 2.7, 3.5 and 4.0. "
-                            + "The route can attempt the rewrite, but no exact source tuple has "
-                            + "source/target build or startup evidence yet.",
+                            + "The exact Boot 2.3.12.RELEASE / Java 11 tuple passed local source/target "
+                            + "build, startup and web behavior probes; customer, holdout and independent "
+                            + "verification remain NOT_RUN.",
                     SourceFamily.SPRING_BOOT),
             new SpringRoute(
                     "boot-2.7-maven-to-boot-4.1.0-java-21",
@@ -433,9 +434,11 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-to-boot-4.1.0.yml",
                     "io.elmos.openrewrite.SpringBoot3_0To3_4ToBoot4_1_0Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
+                    EvidenceStatus.PASSED_LOCAL, "3.4.1", "17",
                     "Direct edge with Boot 3.5, Boot 4.0 and Java 21 transformations. "
-                            + "Provider-specific, security and runtime behavior remain NOT_RUN.",
+                            + "The exact Boot 3.4.1 / Java 17 tuple passed local source/target build, "
+                            + "startup and web behavior probes; provider-specific, security and holdout "
+                            + "evidence remain NOT_RUN.",
                     SourceFamily.SPRING_BOOT),
             new SpringRoute(
                     "boot-3.5-maven-to-boot-4.1.0-java-21",
@@ -502,9 +505,11 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-to-boot-4.1.0.yml",
                     "io.elmos.openrewrite.SpringBoot2xGradleToBoot4_1_0Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
+                    EvidenceStatus.PASSED_LOCAL, "2.7.18", "17",
                     "Direct Gradle edge with ordered Boot 2.7, 3.5 and 4.0 transformations. "
-                            + "Requires a real Gradle source build before promotion.",
+                            + "The exact Boot 2.7.18 / Java 17 tuple passed local Gradle source/target "
+                            + "build, startup and web behavior probes; customer, holdout and independent "
+                            + "verification remain NOT_RUN.",
                     SourceFamily.SPRING_BOOT),
             new SpringRoute(
                     "boot-3.x-gradle-to-boot-4.1.0-java-21",
@@ -572,12 +577,10 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-framework-mvc-to-boot-4.1.0.yml",
                     "io.elmos.openrewrite.SpringFrameworkMvcToSpringBoot4_1_0Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
-                    "Direct non-Boot Spring/MVC edge. It performs the deterministic Jakarta, "
-                            + "Spring Framework 7 and Boot 4.1 dependency/bootstrap preparation, "
-                            + "but XML/web.xml, servlet registration, JSP, security, persistence, "
-                            + "transactions and provider behavior require extracted FCM obligations. "
-                            + "No generic target emitter or exact runtime evidence is claimed.",
+                    EvidenceStatus.PASSED_LOCAL, "5.3.39", "11",
+                    "Direct non-Boot Spring/MVC edge. The exact Spring Framework 5.3.39 / Java 11 "
+                            + "tuple passed local source/target build, startup and web behavior probes; "
+                            + "security, persistence, transactions and independent verification remain NOT_RUN.",
                     SourceFamily.SPRING_MVC),
             new SpringRoute(
                     "spring-framework-3.2-7.0-maven-to-boot-4.1.0-java-21",

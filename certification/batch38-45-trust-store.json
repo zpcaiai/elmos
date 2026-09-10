@@ -1,0 +1,30 @@
+{
+  "store_version": 1,
+  "authorities": [
+    {
+      "signer_id": "ethan-independent-certifier",
+      "roles": [
+        "independent-certifier"
+      ],
+      "suites": [
+        "batch38-45-strict"
+      ],
+      "batches": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45
+      ],
+      "algorithm": "rsa-sha256",
+      "revoked": false,
+      "valid_from": "2026-08-11T02:33:51Z",
+      "valid_until": "2027-03-09T02:33:51Z",
+      "public_key": "keys/ethan-independent-certifier.pub.pem",
+      "public_key_sha256": "sha256:4b1bd04bcc0b63504f56cf35a2402abedcf52c6def9ca330b7f169d9b3071fef"
+    }
+  ]
+}

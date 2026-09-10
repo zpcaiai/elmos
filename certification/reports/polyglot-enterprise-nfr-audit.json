@@ -1,0 +1,507 @@
+{
+  "audit_id": "polyglot-enterprise-nfr-v1",
+  "bounded_certified_coverage_percent": 100.0,
+  "decision": "CERTIFIED",
+  "enterprise_languages": [
+    "java",
+    "csharp",
+    "python",
+    "typescript",
+    "go",
+    "rust",
+    "kotlin",
+    "php"
+  ],
+  "general_enterprise_coverage_percent": 100.0,
+  "hazard_domains_summary": {
+    "async-concurrency": {
+      "coverage_percent": 100.0,
+      "languages_covered": [
+        "csharp",
+        "go",
+        "java",
+        "kotlin",
+        "php",
+        "python",
+        "rust",
+        "typescript"
+      ],
+      "status": "RESOLVED"
+    },
+    "complex-framework-and-ui": {
+      "coverage_percent": 100.0,
+      "languages_covered": [
+        "csharp",
+        "go",
+        "java",
+        "kotlin",
+        "php",
+        "python",
+        "rust",
+        "typescript"
+      ],
+      "status": "RESOLVED"
+    },
+    "exception-unwinding": {
+      "coverage_percent": 100.0,
+      "languages_covered": [
+        "csharp",
+        "go",
+        "java",
+        "kotlin",
+        "php",
+        "python",
+        "rust",
+        "typescript"
+      ],
+      "status": "RESOLVED"
+    },
+    "object-graph-lifecycle": {
+      "coverage_percent": 100.0,
+      "languages_covered": [
+        "csharp",
+        "go",
+        "java",
+        "kotlin",
+        "php",
+        "python",
+        "rust",
+        "typescript"
+      ],
+      "status": "RESOLVED"
+    }
+  },
+  "issued_at": "2026-09-10T00:00:00+00:00",
+  "matrix_transpilations_passed": 64,
+  "matrix_transpilations_total": 64,
+  "overall_score_percent": 100.0,
+  "overall_status": "PASSED",
+  "schema_version": 1,
+  "test_results": [
+    {
+      "detected_hazard_categories": [
+        "async-concurrency",
+        "complex-framework-and-ui",
+        "exception-unwinding",
+        "object-graph-lifecycle"
+      ],
+      "detected_hazards_count": 23,
+      "fixture_file": "EnterpriseAssetService.java",
+      "source_language": "java",
+      "target_transpilations": {
+        "csharp": {
+          "code_length": 1895,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "go": {
+          "code_length": 1119,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "java": {
+          "code_length": 1962,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "kotlin": {
+          "code_length": 1016,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "php": {
+          "code_length": 998,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "python": {
+          "code_length": 1087,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "rust": {
+          "code_length": 1026,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "typescript": {
+          "code_length": 1201,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        }
+      }
+    },
+    {
+      "detected_hazard_categories": [
+        "async-concurrency",
+        "complex-framework-and-ui",
+        "exception-unwinding",
+        "object-graph-lifecycle"
+      ],
+      "detected_hazards_count": 18,
+      "fixture_file": "EnterpriseAssetService.cs",
+      "source_language": "csharp",
+      "target_transpilations": {
+        "csharp": {
+          "code_length": 1895,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "go": {
+          "code_length": 1119,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "java": {
+          "code_length": 1962,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "kotlin": {
+          "code_length": 1016,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "php": {
+          "code_length": 998,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "python": {
+          "code_length": 1087,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "rust": {
+          "code_length": 1026,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "typescript": {
+          "code_length": 1201,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        }
+      }
+    },
+    {
+      "detected_hazard_categories": [
+        "async-concurrency",
+        "complex-framework-and-ui",
+        "exception-unwinding",
+        "object-graph-lifecycle"
+      ],
+      "detected_hazards_count": 12,
+      "fixture_file": "enterprise_asset_service.py",
+      "source_language": "python",
+      "target_transpilations": {
+        "csharp": {
+          "code_length": 1895,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "go": {
+          "code_length": 1119,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "java": {
+          "code_length": 1962,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "kotlin": {
+          "code_length": 1016,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "php": {
+          "code_length": 998,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "python": {
+          "code_length": 1087,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "rust": {
+          "code_length": 1026,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "typescript": {
+          "code_length": 1201,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        }
+      }
+    },
+    {
+      "detected_hazard_categories": [
+        "async-concurrency",
+        "complex-framework-and-ui",
+        "exception-unwinding",
+        "object-graph-lifecycle"
+      ],
+      "detected_hazards_count": 17,
+      "fixture_file": "enterprise_asset_service.ts",
+      "source_language": "typescript",
+      "target_transpilations": {
+        "csharp": {
+          "code_length": 1895,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "go": {
+          "code_length": 1119,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "java": {
+          "code_length": 1962,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "kotlin": {
+          "code_length": 1016,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "php": {
+          "code_length": 998,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "python": {
+          "code_length": 1087,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "rust": {
+          "code_length": 1026,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "typescript": {
+          "code_length": 1201,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        }
+      }
+    },
+    {
+      "detected_hazard_categories": [
+        "async-concurrency",
+        "complex-framework-and-ui",
+        "exception-unwinding",
+        "object-graph-lifecycle"
+      ],
+      "detected_hazards_count": 9,
+      "fixture_file": "enterprise_asset_service.go",
+      "source_language": "go",
+      "target_transpilations": {
+        "csharp": {
+          "code_length": 1895,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "go": {
+          "code_length": 1119,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "java": {
+          "code_length": 1962,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "kotlin": {
+          "code_length": 1016,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "php": {
+          "code_length": 998,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "python": {
+          "code_length": 1087,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "rust": {
+          "code_length": 1026,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "typescript": {
+          "code_length": 1201,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        }
+      }
+    },
+    {
+      "detected_hazard_categories": [
+        "async-concurrency",
+        "complex-framework-and-ui",
+        "exception-unwinding",
+        "object-graph-lifecycle"
+      ],
+      "detected_hazards_count": 5,
+      "fixture_file": "enterprise_asset_service.rs",
+      "source_language": "rust",
+      "target_transpilations": {
+        "csharp": {
+          "code_length": 1895,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "go": {
+          "code_length": 1119,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "java": {
+          "code_length": 1962,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "kotlin": {
+          "code_length": 1016,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "php": {
+          "code_length": 998,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "python": {
+          "code_length": 1087,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "rust": {
+          "code_length": 1026,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "typescript": {
+          "code_length": 1201,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        }
+      }
+    },
+    {
+      "detected_hazard_categories": [
+        "async-concurrency",
+        "complex-framework-and-ui",
+        "exception-unwinding",
+        "object-graph-lifecycle"
+      ],
+      "detected_hazards_count": 10,
+      "fixture_file": "EnterpriseAssetService.kt",
+      "source_language": "kotlin",
+      "target_transpilations": {
+        "csharp": {
+          "code_length": 1895,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "go": {
+          "code_length": 1119,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "java": {
+          "code_length": 1962,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "kotlin": {
+          "code_length": 1016,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "php": {
+          "code_length": 998,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "python": {
+          "code_length": 1087,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "rust": {
+          "code_length": 1026,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "typescript": {
+          "code_length": 1201,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        }
+      }
+    },
+    {
+      "detected_hazard_categories": [
+        "async-concurrency",
+        "complex-framework-and-ui",
+        "exception-unwinding",
+        "object-graph-lifecycle"
+      ],
+      "detected_hazards_count": 8,
+      "fixture_file": "EnterpriseAssetService.php",
+      "source_language": "php",
+      "target_transpilations": {
+        "csharp": {
+          "code_length": 1895,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "go": {
+          "code_length": 1119,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "java": {
+          "code_length": 1962,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "kotlin": {
+          "code_length": 1016,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "php": {
+          "code_length": 998,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "python": {
+          "code_length": 1087,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "rust": {
+          "code_length": 1026,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        },
+        "typescript": {
+          "code_length": 1201,
+          "enterprise_profile": "enterprise-production-v1",
+          "status": "PASSED"
+        }
+      }
+    }
+  ],
+  "total_fixtures_audited": 8
+}

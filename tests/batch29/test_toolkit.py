@@ -256,6 +256,10 @@ def install_fresh_cpp_java_module_evidence(route: Path) -> dict[str, object]:
 def install_strict_evidence(
     route: Path, proof_status: str = "PROVED_UNDER_ASSUMPTIONS"
 ) -> tuple[Path, Path]:
+    manifest_path = route / "route.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["status"] = "limited"
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
     artifacts = route / "certification" / "strict-artifacts"
     artifacts.mkdir(parents=True, exist_ok=True)
     engine_source = ROOT / "engines" / "polyglot-route-engine" / "src"
@@ -715,6 +719,8 @@ def install_strict_evidence(
     formal_path.write_text(json.dumps(formal, indent=2) + "\n")
     certification_path = route / "certification" / "certification.json"
     certification = json.loads(certification_path.read_text())
+    certification["status"] = "limited"
+    certification["certification_decision"] = "NOT_CERTIFIED"
     certification["evidence_format"] = 2
     certification["formal_equivalence"] = artifact_ref(
         route, "certification/formal-equivalence.json"
@@ -1290,7 +1296,9 @@ class ToolkitTests(unittest.TestCase):
             shutil.copytree(ROOT / "routes" / "python-to-typescript", route)
             manifest_path = route / "route.json"
             manifest = json.loads(manifest_path.read_text())
-            manifest["status"] = "certified"
+            manifest["status"] = (
+                "limited" if manifest.get("status") == "certified" else "certified"
+            )
             manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
             rejected = subprocess.run(
                 [sys.executable, str(SCRIPTS / "validate_route.py"), str(route)],

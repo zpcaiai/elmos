@@ -1,0 +1,13 @@
+{
+  "batch": 42,
+  "packKey": "elmos-platform-agent-factory",
+  "eligible": true,
+  "status": "CERTIFIED",
+  "failures": [],
+  "evidenceRefs": [
+    "batch42-execution",
+    "batch42-provenance",
+    "batch42-verification"
+  ],
+  "externalOperationExecuted": false
+}

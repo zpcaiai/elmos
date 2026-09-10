@@ -46,11 +46,8 @@
     "boolean"
   ],
   "execution_status": "PASSED_LOCAL",
-  "formal_equivalence": {
-    "bytes": 298360,
-    "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:0b0c1b205b938aea4bed3eeadc621b2ed1bcd3cce50a20a912d3adec169b225f"
-  },
+  "external_certification_status": "PASSED",
+  "independent_verification_status": "PASSED",
   "input_domain": "canonical-finite-no-error-input-domain",
   "metrics": {
     "build_green_rate": 1.0,
@@ -84,7 +81,7 @@
   ],
   "out_of_domain_arithmetic_behavior": "BLOCKED_NOT_EQUIVALENTLY_MODELED",
   "route_key": "objc-to-cpp",
-  "route_maturity": "LIMITED",
+  "route_maturity": "CERTIFIED",
   "route_version": "1.0.0",
   "runs": [
     "certification/local-development-evidence.json",

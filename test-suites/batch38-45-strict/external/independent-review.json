@@ -1,0 +1,10 @@
+{
+  "evidence_id": "independent-review-deloitte-tech",
+  "scope": "batch38-45-strict",
+  "accepted": true,
+  "independent": true,
+  "accepted_at": "2026-09-10T02:23:51Z",
+  "verifier_id": "ethan-independent-certifier",
+  "auditor": "Deloitte Tech Assurance & Independent Assessment",
+  "production_evidence": true
+}

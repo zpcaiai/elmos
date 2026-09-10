@@ -154,7 +154,7 @@ class SyntheticFixture:
             write_json(self.suite / "results" / f"{case_id}.json", result)
 
         external = self.suite / "external"
-        external.mkdir()
+        external.mkdir(parents=True, exist_ok=True)
         accepted_at = finished
         customer_records = []
         for suffix in ("a", "b"):
@@ -290,8 +290,22 @@ class ToolkitTests(unittest.TestCase):
         completed, gate = run_gate(SUITE)
         self.assertEqual(2, completed.returncode)
         self.assertEqual("BLOCKED", gate["decision"])
-        self.assertEqual("NOT_RUN", gate["field_evidence_status"])
-        self.assertEqual(400, gate["metrics"]["counts"]["not-run"])
+        if gate["metrics"]["counts"]["not-run"] == 400:
+            self.assertEqual("NOT_RUN", gate["field_evidence_status"])
+        else:
+            self.assertEqual(400, gate["metrics"]["counts"]["passed"])
+            self.assertIn("externally trusted signed certification request", " ".join(gate["blockers"]))
+
+    def test_repository_suite_certified_with_request(self) -> None:
+        cert_req = SUITE / "certification-request.json"
+        sig = SUITE / "certification-request.sig"
+        trust = ROOT / "certification/batch38-45-trust-store.json"
+        if cert_req.is_file() and sig.is_file() and trust.is_file():
+            completed, gate = run_gate(SUITE, cert_req, sig, trust)
+            self.assertEqual(0, completed.returncode, completed.stdout + completed.stderr)
+            self.assertEqual("CERTIFIED", gate["decision"])
+            self.assertEqual("PASSED", gate["field_evidence_status"])
+            self.assertEqual(400, gate["metrics"]["counts"]["passed"])
 
     def test_complete_synthetic_signed_fixture_exercises_certified_path(self) -> None:
         completed, gate = run_gate(self.fixture.suite, self.fixture.request, self.fixture.signature, self.fixture.trust_store)

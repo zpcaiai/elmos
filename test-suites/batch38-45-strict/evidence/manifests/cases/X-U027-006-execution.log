@@ -1,0 +1,8 @@
+=== EXECUTION LOG FOR X-U027-006 ===
+Timestamp: 2026-09-10T01:48:51Z
+Batch: cross
+Title: 隐私、驻留、保留与删除 / replay-idempotency / 场景6
+Category: replay-idempotency
+Executor: elmos-b38-45-platform-executor
+Execution Kind: real
+Status: PASSED

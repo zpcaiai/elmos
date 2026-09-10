@@ -444,10 +444,33 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                     List.of(SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool) ? "verify" : "build"),
                     Duration.ofMinutes(30), buildTool);
             if (secondBuild.exitCode() != 0) {
-                recordCodingAgentCandidates(runRoot, request.organizationId(), identity.commitSha());
-                throw blocked(SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool)
-                                ? "MAVEN_COMMAND_FAILED" : "GRADLE_COMMAND_FAILED",
-                        "A required build/OpenRewrite command failed; inspect the redacted run log.");
+                control.stage(Stage.DIAGNOSTIC_TARGETED_REPAIR,
+                        "Target build failed; applying diagnostic targeted AST and configuration auto-repair");
+                SpringDiagnosticAutoRepairer.RepairResult repairResult =
+                        SpringDiagnosticAutoRepairer.repair(migrated, secondBuild.outputLines());
+                CommandOutcome thirdBuild = null;
+                if (repairResult.changesCount() > 0) {
+                    control.log("diagnostic auto-repair applied " + repairResult.changesCount()
+                            + " modifications across " + repairResult.modifiedFiles().size()
+                            + " files; retrying target build");
+                    thirdBuild = runBuildOutcome(migrated, targetJavaHome, toolHome, control,
+                            List.of(SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool) ? "verify" : "build"),
+                            Duration.ofMinutes(30), buildTool);
+                }
+                if (thirdBuild == null || thirdBuild.exitCode() != 0) {
+                    List<String> failedLines = thirdBuild != null ? thirdBuild.outputLines() : secondBuild.outputLines();
+                    control.stage(Stage.HANDOFF_GENERATION,
+                            "Build has unresolvable items; generating structured handoff work order");
+                    SpringHandoffLedger.HandoffManifest handoffManifest = SpringHandoffLedger.buildManifest(
+                            migrated, failedLines, repairResult.changesCount());
+                    writeJson(runRoot.resolve("evidence/spring-handoff.json"), handoffManifest);
+                    recordCodingAgentCandidates(runRoot, request.organizationId(), identity.commitSha());
+                    throw blocked(SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool)
+                                    ? "MAVEN_COMMAND_FAILED" : "GRADLE_COMMAND_FAILED",
+                            "A required build/OpenRewrite command failed; "
+                                    + handoffManifest.handoffItemsCount()
+                                    + " unresolvable items documented in evidence/spring-handoff.json.");
+                }
             }
         }
         TestSummary targetTests = testSummary(migrated);
@@ -1247,9 +1270,13 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             process = builder.start();
             control.process(process);
             Process observedProcess = process;
+            List<String> outputLines = Collections.synchronizedList(new ArrayList<>());
             output = Thread.ofVirtual().start(() -> {
                 try (var reader = observedProcess.inputReader(StandardCharsets.UTF_8)) {
-                    reader.lines().forEach(control::log);
+                    reader.lines().forEach(line -> {
+                        outputLines.add(line);
+                        control.log(line);
+                    });
                 } catch (IOException error) {
                     control.log("command output collection failed");
                 }
@@ -1261,7 +1288,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                 throw blocked("RUNNER_COMMAND_TIMEOUT", "The bounded Maven command exceeded its execution budget.");
             }
             output.join(Duration.ofSeconds(5));
-            return new CommandOutcome(process.exitValue());
+            return new CommandOutcome(process.exitValue(), List.copyOf(outputLines));
         } catch (BlockedException error) {
             throw error;
         } catch (InterruptedException error) {
@@ -1309,9 +1336,13 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             process = builder.start();
             control.process(process);
             Process observedProcess = process;
+            List<String> outputLines = Collections.synchronizedList(new ArrayList<>());
             output = Thread.ofVirtual().start(() -> {
                 try (var reader = observedProcess.inputReader(StandardCharsets.UTF_8)) {
-                    reader.lines().forEach(control::log);
+                    reader.lines().forEach(line -> {
+                        outputLines.add(line);
+                        control.log(line);
+                    });
                 } catch (IOException error) {
                     control.log("command output collection failed");
                 }
@@ -1323,7 +1354,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                 throw blocked("GRADLE_COMMAND_TIMEOUT", "The bounded Gradle command exceeded its execution budget.");
             }
             output.join(Duration.ofSeconds(5));
-            return new CommandOutcome(process.exitValue());
+            return new CommandOutcome(process.exitValue(), List.copyOf(outputLines));
         } catch (BlockedException error) {
             throw error;
         } catch (InterruptedException error) {
@@ -2815,7 +2846,11 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     }
 
     private record SourceIdentity(String commitSha, String treeSha) {}
-    private record CommandOutcome(int exitCode) {}
+    private record CommandOutcome(int exitCode, List<String> outputLines) {
+        CommandOutcome(int exitCode) {
+            this(exitCode, List.of());
+        }
+    }
     record CapabilityTestRun(List<String> testIdentities, long skipped) {
         CapabilityTestRun {
             testIdentities = List.copyOf(testIdentities);

@@ -1,0 +1,54 @@
+{
+  "capabilities": [
+    {
+      "id": "web-json-contract",
+      "obligations": [
+        "GET /orders/{id}",
+        "stable JSON field and value semantics"
+      ],
+      "source_traces": [
+        "OrderController.java"
+      ],
+      "status": "captured"
+    },
+    {
+      "id": "health-lifecycle",
+      "obligations": [
+        "GET /actuator/health returns UP after startup"
+      ],
+      "source_traces": [
+        "application.properties"
+      ],
+      "status": "captured"
+    },
+    {
+      "id": "configuration-runtime-contract",
+      "obligations": [
+        "management health endpoint exposure remains enabled",
+        "health details remain hidden",
+        "graceful shutdown remains enabled"
+      ],
+      "source_traces": [
+        "application.properties"
+      ],
+      "status": "captured"
+    }
+  ],
+  "contracts": [
+    "web-json-contract",
+    "configuration-runtime-contract",
+    "health-lifecycle"
+  ],
+  "exact_tuple": {
+    "framework": "spring-boot",
+    "runtime": "java",
+    "runtime_version": "8",
+    "version": "1.5.22.RELEASE"
+  },
+  "extraction_status": "STATIC_AND_SOURCE_BASELINE",
+  "pack_key": "spring-boot-1-5-to-3-5-3",
+  "schema_version": 1,
+  "source_commit": "5f0b5899d40af4ec3325fc5ee3cd77e3539d4263",
+  "source_snapshot_sha256": "3109207b53612874a2d3a3ead38e82eff8df6d2dad9243fe8b6fe9e1d5050dbc",
+  "unknowns": []
+}
