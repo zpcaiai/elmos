@@ -1,13 +1,7 @@
 ---
 name: conv-reference-implementation-release-train
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 管理内核、Runner、Reference Route、Evals、Design Partner和Handoff的同一发布列车。
 metadata:
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
-  production_certification: "NOT_CERTIFIED"
   source_package: batch46-product-convergence-complete-skills
   source_id: '1530'
   source_name: b46-reference-implementation-release-train

@@ -1,8 +1,5 @@
 ---
 name: conv-private-runner-reference-implementation
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 实现能安全处理客户真实代码的Enrollment、Attestation、Lease、Sandbox和Evidence执行面。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

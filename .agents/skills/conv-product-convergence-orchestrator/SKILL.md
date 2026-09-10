@@ -1,8 +1,5 @@
 ---
 name: conv-product-convergence-orchestrator
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 把Batch 1–45从能力全集收敛为统一内核、一条Reference Route和可验证实施计划。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

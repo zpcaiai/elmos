@@ -1,8 +1,5 @@
 ---
 name: conv-duplicate-skill-consolidation
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 把Evidence、Version、Gate、Policy、Rollback等重复基础能力收敛为共享Skill加领域Profile。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

@@ -1,8 +1,5 @@
 ---
 name: conv-global-evidence-graph
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 连接源码、语义、规则、生成代码、测试、审批、Release和生产部署。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

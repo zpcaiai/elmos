@@ -4110,3 +4110,250 @@ class FairnessJob:
     completed_at: str = ""
     preempted_by: str = ""  # job_id that caused preemption
     wait_time_seconds: float = 0.0
+
+
+# ─── AI Model Supply Chain Models ───────────────────────────────────
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import List, Dict
+
+class ModelProvenance(str, Enum):
+    FIRST_PARTY = "first_party"
+    OPEN_SOURCE = "open_source"
+    COMMERCIAL = "commercial"
+    FINE_TUNED = "fine_tuned"
+    UNKNOWN = "unknown"
+
+class ModelRiskLevel(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+    UNASSESSED = "unassessed"
+
+@dataclass
+class AiModelRecord:
+    model_id: str
+    name: str
+    version: str
+    provenance: ModelProvenance
+    framework: str = ""
+    parameters_count: int = 0
+    training_data_hash: str = ""
+    model_hash: str = ""
+    license_type: str = ""
+    risk_level: ModelRiskLevel = ModelRiskLevel.UNASSESSED
+    vulnerabilities: List[str] = field(default_factory=list)
+    dependencies: List[str] = field(default_factory=list)
+    approved: bool = False
+    approved_by: str = ""
+    registered_at: str = ""
+
+@dataclass
+class ModelScanResult:
+    scan_id: str
+    model_id: str
+    scanner: str
+    passed: bool = False
+    findings: List[str] = field(default_factory=list)
+    scanned_at: str = ""
+    confidence: float = 0.0
+
+# ─── Human Approval Takeover Models ─────────────────────────────────
+
+class ApprovalStatus(str, Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    ESCALATED = "escalated"
+    EXPIRED = "expired"
+    AUTO_APPROVED = "auto_approved"
+
+class TakeoverReason(str, Enum):
+    SAFETY = "safety"
+    COST_THRESHOLD = "cost_threshold"
+    POLICY_VIOLATION = "policy_violation"
+    ERROR_RATE = "error_rate"
+    MANUAL_REQUEST = "manual_request"
+    COMPLIANCE = "compliance"
+
+@dataclass
+class ApprovalRequest:
+    request_id: str
+    action_description: str
+    requester: str  # agent or system
+    approver: str = ""  # human approver
+    status: ApprovalStatus = ApprovalStatus.PENDING
+    risk_level: str = "medium"  # low, medium, high, critical
+    auto_approve_threshold: str = "low"  # auto-approve if risk <= threshold
+    created_at: str = ""
+    decided_at: str = ""
+    expires_at: str = ""
+    decision_reason: str = ""
+    context: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class TakeoverEvent:
+    event_id: str
+    reason: TakeoverReason
+    triggered_by: str  # human who took over
+    agent_id: str  # agent being taken over
+    started_at: str = ""
+    ended_at: str = ""
+    actions_taken: List[str] = field(default_factory=list)
+    outcome: str = ""  # resolved, escalated, rollback
+
+
+# ─── Privacy Preserving Learning Models ─────────────────────────────
+
+class PrivacyMechanism(str, Enum):
+    DIFFERENTIAL_PRIVACY = "differential_privacy"
+    FEDERATED_AVERAGING = "federated_averaging"
+    SECURE_AGGREGATION = "secure_aggregation"
+    HOMOMORPHIC = "homomorphic"
+    LOCAL_DP = "local_dp"
+
+class FederatedRoundStatus(str, Enum):
+    INITIALIZED = "initialized"
+    DISTRIBUTING = "distributing"
+    TRAINING = "training"
+    AGGREGATING = "aggregating"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+@dataclass
+class PrivacyBudget:
+    budget_id: str
+    tenant_id: str
+    epsilon_total: float = 10.0
+    epsilon_used: float = 0.0
+    delta: float = 1e-5
+    mechanism: PrivacyMechanism = PrivacyMechanism.DIFFERENTIAL_PRIVACY
+    queries_allowed: int = 1000
+    queries_used: int = 0
+    reset_interval_hours: int = 24
+    created_at: str = ""
+
+@dataclass
+class FederatedParticipant:
+    participant_id: str
+    tenant_id: str
+    data_size: int = 0
+    model_version: int = 0
+    last_contribution_at: str = ""
+    contribution_count: int = 0
+    dropped_rounds: int = 0
+    active: bool = True
+
+@dataclass
+class FederatedRound:
+    round_id: str
+    round_number: int
+    status: FederatedRoundStatus = FederatedRoundStatus.INITIALIZED
+    participants: List[str] = field(default_factory=list)
+    min_participants: int = 2
+    model_version_in: int = 0
+    model_version_out: int = 0
+    epsilon_spent: float = 0.0
+    noise_multiplier: float = 1.0
+    started_at: str = ""
+    completed_at: str = ""
+    aggregation_weights: Dict[str, float] = field(default_factory=dict)
+
+
+# ─── Automated Upgrade Tooling Models ───────────────────────────────
+
+class UpgradeToolAction(str, Enum):
+    PRE_CHECK = "pre_check"
+    BACKUP = "backup"
+    SCHEMA_MIGRATE = "schema_migrate"
+    CODE_PATCH = "code_patch"
+    CONFIG_UPDATE = "config_update"
+    RESTART = "restart"
+    HEALTH_CHECK = "health_check"
+    ROLLBACK = "rollback"
+    POST_CHECK = "post_check"
+
+class UpgradeToolStatus(str, Enum):
+    PENDING = "pending"
+    RUNNING = "running"
+    SUCCESS = "success"
+    FAILED = "failed"
+    SKIPPED = "skipped"
+    ROLLED_BACK = "rolled_back"
+
+@dataclass
+class UpgradeStep:
+    step_id: str
+    action: UpgradeToolAction
+    description: str
+    order: int = 0
+    status: UpgradeToolStatus = UpgradeToolStatus.PENDING
+    duration_seconds: float = 0.0
+    error_message: str = ""
+    rollback_step_id: str = ""
+    preconditions: List[str] = field(default_factory=list)
+    idempotent: bool = True
+    timeout_seconds: int = 300
+
+@dataclass
+class UpgradePlaybook:
+    playbook_id: str
+    name: str
+    from_version: str
+    to_version: str
+    steps: List[str] = field(default_factory=list)
+    current_step_index: int = 0
+    status: UpgradeToolStatus = UpgradeToolStatus.PENDING
+    started_at: str = ""
+    completed_at: str = ""
+    dry_run: bool = False
+    auto_rollback: bool = True
+    total_duration_seconds: float = 0.0
+
+# ─── Database Migration Compatibility Models ────────────────────────
+
+class MigrationCompatLevel(str, Enum):
+    FULLY_COMPATIBLE = "fully_compatible"
+    BACKWARD_COMPATIBLE = "backward_compatible"
+    BREAKING = "breaking"
+    UNKNOWN = "unknown"
+
+class MigrationSchemaChangeType(str, Enum):
+    ADD_COLUMN = "add_column"
+    DROP_COLUMN = "drop_column"
+    MODIFY_COLUMN = "modify_column"
+    ADD_TABLE = "add_table"
+    DROP_TABLE = "drop_table"
+    ADD_INDEX = "add_index"
+    DROP_INDEX = "drop_index"
+    ADD_CONSTRAINT = "add_constraint"
+    DROP_CONSTRAINT = "drop_constraint"
+    RENAME = "rename"
+
+@dataclass
+class MigrationSchemaChange:
+    change_id: str
+    change_type: MigrationSchemaChangeType
+    table_name: str
+    column_name: str = ""
+    old_type: str = ""
+    new_type: str = ""
+    nullable: bool = True
+    has_default: bool = False
+    compatibility: MigrationCompatLevel = MigrationCompatLevel.UNKNOWN
+
+@dataclass
+class DbMigrationScript:
+    script_id: str
+    version: str
+    description: str
+    changes: List[str] = field(default_factory=list)  # change_ids
+    up_sql: str = ""
+    down_sql: str = ""
+    estimated_duration_seconds: int = 0
+    requires_downtime: bool = False
+    reviewed: bool = False
+    applied: bool = False
+    applied_at: str = ""
+    rollback_tested: bool = False

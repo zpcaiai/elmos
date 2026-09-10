@@ -1,8 +1,5 @@
 ---
 name: conv-cross-batch-integration-anti-fragmentation
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 验证独立Pack和Gate组合后仍能形成一个可运行产品。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

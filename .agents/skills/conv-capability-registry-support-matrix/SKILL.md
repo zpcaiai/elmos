@@ -1,8 +1,5 @@
 ---
 name: conv-capability-registry-support-matrix
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 向产品、客户和Codex提供唯一可信的能力、版本、支持状态和限制来源。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

@@ -1,13 +1,7 @@
 ---
 name: conv-customer-success-sla-operations-proof
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 验证上线后SLO、Support、Incident、恢复、升级和客户价值持续实现。
 metadata:
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
-  production_certification: "NOT_CERTIFIED"
   source_package: batch46-product-convergence-complete-skills
   source_id: '1534'
   source_name: b46-customer-success-sla-operations-proof

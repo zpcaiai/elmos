@@ -1,8 +1,5 @@
 ---
 name: conv-java-spring-csharp-reference-route
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 用一个10万–50万行、5–20模块真实系统证明产品主链。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

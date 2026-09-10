@@ -1,8 +1,5 @@
 ---
 name: conv-customer-handoff-operability
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 证明目标团队能独立Build、修改、发布、排障和升级，而非永久依赖迁移团队。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

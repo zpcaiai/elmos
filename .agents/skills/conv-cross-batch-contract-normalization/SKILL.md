@@ -1,8 +1,5 @@
 ---
 name: conv-cross-batch-contract-normalization
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 统一ID、状态、Owner、Digest、时间、版本、Error和Event命名。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

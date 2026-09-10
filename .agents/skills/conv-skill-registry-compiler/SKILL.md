@@ -1,8 +1,5 @@
 ---
 name: conv-skill-registry-compiler
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 把Skill从Prompt文件升级为可版本、可依赖、可权限审查、可编译的资产。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

@@ -1,8 +1,5 @@
 ---
 name: conv-global-project-lifecycle
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 将发现、评估、迁移、验证、上线、退役和验收统一为一条产品级状态机。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 
