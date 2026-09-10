@@ -3600,3 +3600,266 @@ class PricingSimulation:
     monthly_cost: float = 0.0
     annual_cost: float = 0.0
     cost_per_seat: float = 0.0
+
+
+# ─── SAST Integration Models ─────────────────────────────────────────
+
+class SastSeverity(str, Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    INFO = "info"
+
+class SastCategory(str, Enum):
+    INJECTION = "injection"
+    XSS = "xss"
+    AUTH_BYPASS = "auth_bypass"
+    CRYPTO = "crypto"
+    PATH_TRAVERSAL = "path_traversal"
+    SSRF = "ssrf"
+    DESERIALIZATION = "deserialization"
+    HARDCODED_SECRET = "hardcoded_secret"
+    BUFFER_OVERFLOW = "buffer_overflow"
+    RACE_CONDITION = "race_condition"
+
+class SastFindingState(str, Enum):
+    OPEN = "open"
+    CONFIRMED = "confirmed"
+    FALSE_POSITIVE = "false_positive"
+    FIXED = "fixed"
+    ACCEPTED_RISK = "accepted_risk"
+
+@dataclass
+class SastFinding:
+    finding_id: str
+    category: SastCategory
+    severity: SastSeverity
+    file_path: str
+    line_number: int
+    code_snippet: str = ""
+    description: str = ""
+    cwe_id: str = ""  # CWE-79 etc.
+    state: SastFindingState = SastFindingState.OPEN
+    tool_name: str = ""
+    confidence: float = 0.0  # 0-1
+    remediation: str = ""
+    detected_at: str = ""
+    resolved_at: str = ""
+
+@dataclass
+class SastScanRun:
+    scan_id: str
+    project_name: str
+    branch: str = "main"
+    commit_sha: str = ""
+    tool_name: str = ""
+    started_at: str = ""
+    completed_at: str = ""
+    total_findings: int = 0
+    critical_count: int = 0
+    high_count: int = 0
+
+@dataclass
+class SastPolicy:
+    policy_id: str
+    max_critical: int = 0
+    max_high: int = 0
+    block_on_new_critical: bool = True
+    require_cwe_mapping: bool = True
+    min_confidence: float = 0.5
+
+
+# ─── Economics Profitability Certification Models ──────────────────
+
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import List, Dict, Optional
+
+class ProfitabilityMetric(str, Enum):
+    GROSS_MARGIN = "gross_margin"
+    CONTRIBUTION_MARGIN = "contribution_margin"
+    UNIT_ECONOMICS = "unit_economics"
+    CAC_PAYBACK = "cac_payback"
+    LTV_CAC_RATIO = "ltv_cac_ratio"
+    BURN_RATE = "burn_rate"
+
+class EconCertLevel(str, Enum):
+    NOT_VIABLE = "not_viable"
+    MARGINAL = "marginal"
+    VIABLE = "viable"
+    PROFITABLE = "profitable"
+    HIGHLY_PROFITABLE = "highly_profitable"
+
+@dataclass
+class RevenueRecord:
+    record_id: str
+    product_id: str
+    period: str
+    revenue: float = 0.0
+    cogs: float = 0.0
+    gross_profit: float = 0.0
+    customers: int = 0
+    churn_count: int = 0
+    cac: float = 0.0
+    ltv: float = 0.0
+
+@dataclass
+class EconCertification:
+    cert_id: str
+    product_id: str
+    level: EconCertLevel = EconCertLevel.NOT_VIABLE
+    gross_margin_pct: float = 0.0
+    ltv_cac_ratio: float = 0.0
+    unit_economics_positive: bool = False
+    burn_rate_monthly: float = 0.0
+    months_to_profitability: int = 0
+    certified: bool = False
+    certified_at: str = ""
+    notes: str = ""
+
+
+# ─── Plane Topology Governance Models ───────────────────────────────
+
+class PlaneFunction(str, Enum):
+    CONTROL = "control"
+    DATA = "data"
+    MANAGEMENT = "management"
+    OBSERVABILITY = "observability"
+    SECURITY = "security"
+
+class PlaneIsolation(str, Enum):
+    DEDICATED = "dedicated"
+    SHARED = "shared"
+    HYBRID = "hybrid"
+
+@dataclass
+class PlaneDefinition:
+    plane_id: str
+    name: str
+    function: PlaneFunction
+    isolation: PlaneIsolation = PlaneIsolation.DEDICATED
+    components: List[str] = field(default_factory=list)
+    allowed_dependencies: List[str] = field(default_factory=list)  # plane_ids this plane may call
+    forbidden_dependencies: List[str] = field(default_factory=list)
+    max_latency_ms: float = 0.0
+    requires_mtls: bool = False
+
+@dataclass
+class PlaneGovernanceTopology:
+    topology_id: str
+    name: str
+    plane_ids: List[str] = field(default_factory=list)
+    violations: List[str] = field(default_factory=list)
+    compliant: bool = False
+    evaluated_at: str = ""
+
+@dataclass
+class PlaneViolation:
+    violation_id: str
+    source_plane: str
+    target_plane: str
+    rule: str  # e.g. 'forbidden_dependency', 'missing_mtls', 'circular'
+    description: str = ""
+    severity: str = "high"
+
+# ─── Customer Status Communication Models ───────────────────────────
+
+class StatusPageState(str, Enum):
+    OPERATIONAL = "operational"
+    DEGRADED = "degraded"
+    PARTIAL_OUTAGE = "partial_outage"
+    MAJOR_OUTAGE = "major_outage"
+    MAINTENANCE = "maintenance"
+
+class CommunicationType(str, Enum):
+    STATUS_UPDATE = "status_update"
+    INCIDENT_NOTICE = "incident_notice"
+    MAINTENANCE_NOTICE = "maintenance_notice"
+    RESOLUTION_NOTICE = "resolution_notice"
+    RCA_REPORT = "rca_report"
+
+@dataclass
+class ServiceStatus:
+    service_id: str
+    service_name: str
+    state: StatusPageState = StatusPageState.OPERATIONAL
+    message: str = ""
+    updated_at: str = ""
+    incident_id: str = ""
+
+@dataclass
+class StatusCommunication:
+    comm_id: str
+    comm_type: CommunicationType
+    title: str
+    body: str
+    affected_services: List[str] = field(default_factory=list)
+    audience: str = "all"  # all, affected, internal
+    published: bool = False
+    published_at: str = ""
+    author: str = ""
+
+@dataclass
+class MaintenanceWindow:
+    window_id: str
+    title: str
+    service_ids: List[str] = field(default_factory=list)
+    scheduled_start: str = ""
+    scheduled_end: str = ""
+    actual_start: str = ""
+    actual_end: str = ""
+    status: str = "scheduled"  # scheduled, in_progress, completed, cancelled
+
+# ─── Budget Quota Guardrail Models ──────────────────────────────────
+
+class QuotaResourceType(str, Enum):
+    COMPUTE = "compute"
+    STORAGE = "storage"
+    NETWORK = "network"
+    API_CALLS = "api_calls"
+    MODEL_TOKENS = "model_tokens"
+    SEATS = "seats"
+    PROJECTS = "projects"
+
+class GuardrailAction(str, Enum):
+    ALLOW = "allow"
+    WARN = "warn"
+    THROTTLE = "throttle"
+    DENY = "deny"
+    NOTIFY = "notify"
+
+@dataclass
+class QuotaDefinition:
+    quota_id: str
+    resource_type: QuotaResourceType
+    tenant_id: str
+    limit: float
+    current_usage: float = 0.0
+    warn_threshold_pct: float = 80.0
+    hard_limit_pct: float = 100.0
+    period: str = "monthly"  # daily, weekly, monthly, annual
+    rollover: bool = False
+
+@dataclass
+class BudgetAllocation:
+    budget_id: str
+    tenant_id: str
+    total_budget: float
+    spent: float = 0.0
+    reserved: float = 0.0
+    currency: str = "USD"
+    period: str = "monthly"
+    alert_threshold_pct: float = 80.0
+
+@dataclass
+class GuardrailDecision:
+    decision_id: str
+    tenant_id: str
+    resource_type: QuotaResourceType
+    requested_amount: float
+    action: GuardrailAction
+    reason: str = ""
+    remaining_quota: float = 0.0
+    remaining_budget: float = 0.0
+    timestamp: str = ""
