@@ -10,13 +10,13 @@ import hashlib
 import json
 import time
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from .chinadb_container_orchestrator import ChinaDbContainerOrchestrator
 
 
-class CdcOpType(str, Enum):
+class CdcOpType(StrEnum):
     INSERT = "INSERT"
     UPDATE = "UPDATE"
     DELETE = "DELETE"
@@ -127,8 +127,12 @@ class ChinaDbCdcEngine:
                 mismatched += 1
 
         # Table level Merkle digests
-        source_table_digest = hashlib.sha256("".join(sorted(source_hashes.values())).encode("utf-8")).hexdigest()
-        target_table_digest = hashlib.sha256("".join(sorted(target_hashes.values())).encode("utf-8")).hexdigest()
+        source_table_digest = hashlib.sha256(
+            "".join(sorted(source_hashes.values())).encode("utf-8")
+        ).hexdigest()
+        target_table_digest = hashlib.sha256(
+            "".join(sorted(target_hashes.values())).encode("utf-8")
+        ).hexdigest()
 
         is_consistent = (mismatched == 0) and (len(source_records) == len(target_records))
 
@@ -157,7 +161,6 @@ class ChinaDbCdcEngine:
                 norm[k] = None
         canonical = json.dumps(norm, sort_keys=True)
         return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
-
 
     def _sql_format_val(self, val: Any) -> str:
         if val is None:

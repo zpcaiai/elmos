@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from elmos_sql_transpiler.chinadb_adapters import CHINADB_LOCAL_ADAPTERS
 from elmos_sql_transpiler.chinadb_container_orchestrator import ChinaDbContainerOrchestrator
 from elmos_sql_transpiler.chinadb_ddl_executor import ChinaDbDdlExecutor
@@ -38,11 +36,15 @@ def test_protocol_lab_basic_ddl_dml():
     target = "opengauss"
 
     # DDL
-    lab.execute(target, "CREATE TABLE users (id VARCHAR(32) PRIMARY KEY, name VARCHAR(100), age INT);")
+    lab.execute(
+        target, "CREATE TABLE users (id VARCHAR(32) PRIMARY KEY, name VARCHAR(100), age INT);"
+    )
     lab.execute(target, "CREATE INDEX idx_users_name ON users (name);")
 
     # DML Insert
-    _, _, aff1 = lab.execute(target, "INSERT INTO users (id, name, age) VALUES ('U1', 'Alice', 30);")
+    _, _, aff1 = lab.execute(
+        target, "INSERT INTO users (id, name, age) VALUES ('U1', 'Alice', 30);"
+    )
     _, _, aff2 = lab.execute(target, "INSERT INTO users (id, name, age) VALUES ('U2', 'Bob', 25);")
     assert aff1 == 1
     assert aff2 == 1

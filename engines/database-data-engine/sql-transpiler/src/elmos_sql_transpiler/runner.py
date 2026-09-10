@@ -1015,9 +1015,7 @@ def _performance_environment_evidence() -> dict[str, Any]:
     opt_in = os.environ.get("ELMOS_PERFORMANCE_QUALIFICATION") == "1"
     runner_class = os.environ.get("ELMOS_PERFORMANCE_RUNNER_CLASS")
     runner_id = os.environ.get("ELMOS_PERFORMANCE_RUNNER_ID")
-    runner_attestation_digest = os.environ.get(
-        "ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST"
-    )
+    runner_attestation_digest = os.environ.get("ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST")
     cpu_count = max(1, os.cpu_count() or 1)
     load_averages = list(os.getloadavg()) if hasattr(os, "getloadavg") else []
     raw_threshold = os.environ.get(

@@ -71,9 +71,11 @@ def _digest_text(value: str) -> str:
 
 
 def _catalog_text() -> str:
-    return files("elmos_sql_transpiler").joinpath(
-        "data/chinadb-commercial-v1.json"
-    ).read_text(encoding="utf-8")
+    return (
+        files("elmos_sql_transpiler")
+        .joinpath("data/chinadb-commercial-v1.json")
+        .read_text(encoding="utf-8")
+    )
 
 
 def _object_list(value: object, *, name: str) -> list[dict[str, Any]]:
@@ -220,14 +222,8 @@ def _is_floating(value: str) -> bool:
 
 
 def _require_exact_context(name: str, value: str) -> None:
-    if (
-        _is_floating(value)
-        or len(value) > 128
-        or _EXACT_CONTEXT_PATTERN.fullmatch(value) is None
-    ):
-        raise ValueError(
-            f"{name} must be a concrete non-floating token of at most 128 characters"
-        )
+    if _is_floating(value) or len(value) > 128 or _EXACT_CONTEXT_PATTERN.fullmatch(value) is None:
+        raise ValueError(f"{name} must be a concrete non-floating token of at most 128 characters")
 
 
 def _validate_request(request: CommercialAssessRequest) -> dict[str, Any]:
@@ -703,9 +699,7 @@ def assess_commercial(
                 read=target_dialect,
                 error_level=ErrorLevel.RAISE,
             )
-            target_statements = [
-                item for item in parsed_target if isinstance(item, exp.Expression)
-            ]
+            target_statements = [item for item in parsed_target if isinstance(item, exp.Expression)]
             if len(target_statements) != 1:
                 raise UnsupportedError("target re-parse did not yield exactly one statement")
             target_sql_parts.append(generated.rstrip(";"))

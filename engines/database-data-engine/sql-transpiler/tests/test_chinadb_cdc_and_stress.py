@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from elmos_sql_transpiler.chinadb_cdc_engine import CdcOpType, ChangeEvent, ChinaDbCdcEngine
 from elmos_sql_transpiler.chinadb_container_orchestrator import ChinaDbContainerOrchestrator
 from elmos_sql_transpiler.chinadb_stress_engine import ChinaDbStressEngine
@@ -16,7 +14,10 @@ def test_cdc_event_application_and_row_hash_reconciliation():
 
     # Setup initial table
     orchestrator.execute_query(target, "DROP TABLE IF EXISTS customers;")
-    orchestrator.execute_query(target, "CREATE TABLE customers (cust_id VARCHAR(32) PRIMARY KEY, name VARCHAR(100), balance NUMERIC(12, 2));")
+    orchestrator.execute_query(
+        target,
+        "CREATE TABLE customers (cust_id VARCHAR(32) PRIMARY KEY, name VARCHAR(100), balance NUMERIC(12, 2));",
+    )
 
     # 1. Apply batch of CDC INSERT events
     events = [

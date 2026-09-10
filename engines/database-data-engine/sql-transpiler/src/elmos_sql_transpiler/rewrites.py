@@ -30,6 +30,7 @@ pinned parser happens to raise:
   provides. It fails closed. Numeric ``TRUNC(x, d)`` parses to a typed
   ``Trunc`` node and is not touched.
 """
+
 from __future__ import annotations
 
 import re
@@ -116,11 +117,7 @@ def _materialized_args(node: exp.Expression, allowed: frozenset[str]) -> set[str
     (``siblings`` on ``Order`` is the common one); those carry no semantics
     and must not trip the unmappable-argument guard.
     """
-    return {
-        key
-        for key, value in node.args.items()
-        if value is not None and key not in allowed
-    }
+    return {key for key, value in node.args.items() if value is not None and key not in allowed}
 
 
 def canonicalize_aggregate_order(
@@ -157,17 +154,13 @@ def canonicalize_aggregate_order(
             if order_extra:
                 raise RewriteBlocked(
                     "AGGREGATE_ORDER_UNMAPPABLE",
-                    "aggregate ORDER BY carries argument(s) the canonical shape "
-                    "cannot represent",
+                    "aggregate ORDER BY carries argument(s) the canonical shape cannot represent",
                 )
             separator_literal = order.args.get("this")
-            if separator_literal is not None and not isinstance(
-                separator_literal, exp.Literal
-            ):
+            if separator_literal is not None and not isinstance(separator_literal, exp.Literal):
                 raise RewriteBlocked(
                     "AGGREGATE_ORDER_UNMAPPABLE",
-                    "the separator carried inside the aggregate ORDER BY is not "
-                    "a literal",
+                    "the separator carried inside the aggregate ORDER BY is not a literal",
                 )
             expressions = order.args.get("expressions") or []
             if not expressions:
@@ -181,11 +174,7 @@ def canonicalize_aggregate_order(
                     this=this.copy() if this is not None else None,
                     expressions=[item.copy() for item in expressions],
                 ),
-                separator=(
-                    separator_literal.copy()
-                    if separator_literal is not None
-                    else None
-                ),
+                separator=(separator_literal.copy() if separator_literal is not None else None),
             )
             node.replace(replacement)
             if AGGREGATE_ORDER_RULE not in fired:
@@ -226,8 +215,7 @@ def lower_sqlite_group_concat_order(
         if order_extra:
             raise RewriteBlocked(
                 "AGGREGATE_ORDER_UNMAPPABLE",
-                "aggregate ORDER BY carries argument(s) the SQLite lowering "
-                "cannot represent",
+                "aggregate ORDER BY carries argument(s) the SQLite lowering cannot represent",
             )
         expressions = this.args.get("expressions") or []
         if not expressions:

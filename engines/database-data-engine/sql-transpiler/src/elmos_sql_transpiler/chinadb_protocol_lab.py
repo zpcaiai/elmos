@@ -10,16 +10,13 @@ real DDL, DML, transaction boundaries, and row-level queries.
 
 from __future__ import annotations
 
-import hashlib
-import json
 import logging
 import re
 import socket
 import struct
 import threading
-import time
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +24,7 @@ logger = logging.getLogger(__name__)
 # -----------------------------------------------------------------------------
 # Internal In-Memory Relational Engine for Protocol Lab
 # -----------------------------------------------------------------------------
+
 
 @dataclass
 class ColumnDef:
@@ -77,14 +75,20 @@ class ProtocolLabDatabase:
 
             # 4. CREATE PROCEDURE / FUNCTION
             if upper.startswith("CREATE") and ("PROCEDURE" in upper or "FUNCTION" in upper):
-                m = re.search(r"CREATE\s+(?:OR\s+REPLACE\s+)?(?:PROCEDURE|FUNCTION)\s+([A-Za-z0-9_]+)", clean, re.I)
+                m = re.search(
+                    r"CREATE\s+(?:OR\s+REPLACE\s+)?(?:PROCEDURE|FUNCTION)\s+([A-Za-z0-9_]+)",
+                    clean,
+                    re.I,
+                )
                 name = m.group(1) if m else "unnamed_routine"
                 self.routines[name] = clean
                 return [], [], 0
 
             # 5. CREATE TRIGGER
             if upper.startswith("CREATE") and "TRIGGER" in upper:
-                m = re.search(r"CREATE\s+(?:OR\s+REPLACE\s+)?TRIGGER\s+([A-Za-z0-9_]+)", clean, re.I)
+                m = re.search(
+                    r"CREATE\s+(?:OR\s+REPLACE\s+)?TRIGGER\s+([A-Za-z0-9_]+)", clean, re.I
+                )
                 name = m.group(1) if m else "unnamed_trigger"
                 self.triggers[name] = clean
                 return [], [], 0
@@ -106,14 +110,20 @@ class ProtocolLabDatabase:
                 return self._handle_select(clean)
 
             # 10. COMMIT / ROLLBACK / BEGIN / SET
-            if upper in ("COMMIT", "ROLLBACK", "BEGIN", "START TRANSACTION") or upper.startswith("SET "):
+            if upper in ("COMMIT", "ROLLBACK", "BEGIN", "START TRANSACTION") or upper.startswith(
+                "SET "
+            ):
                 return [], [], 0
 
             # Default fallback: acknowledge
             return [], [], 0
 
     def _handle_create_table(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
-        m = re.search(r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)\s*\((.*)\)", sql, re.I | re.S)
+        m = re.search(
+            r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)\s*\((.*)\)",
+            sql,
+            re.I | re.S,
+        )
         if not m:
             return [], [], 0
         table_name = m.group(2).lower()
@@ -129,14 +139,22 @@ class ProtocolLabDatabase:
             if item_u.startswith("PRIMARY KEY"):
                 pk_match = re.search(r"PRIMARY\s+KEY\s*\((.*?)\)", item, re.I)
                 if pk_match:
-                    table.primary_key_cols = [c.strip().lower() for c in pk_match.group(1).split(",")]
+                    table.primary_key_cols = [
+                        c.strip().lower() for c in pk_match.group(1).split(",")
+                    ]
                 continue
             if item_u.startswith("CONSTRAINT") and "PRIMARY KEY" in item_u:
                 pk_match = re.search(r"PRIMARY\s+KEY\s*\((.*?)\)", item, re.I)
                 if pk_match:
-                    table.primary_key_cols = [c.strip().lower() for c in pk_match.group(1).split(",")]
+                    table.primary_key_cols = [
+                        c.strip().lower() for c in pk_match.group(1).split(",")
+                    ]
                 continue
-            if item_u.startswith("FOREIGN KEY") or item_u.startswith("CONSTRAINT") or item_u.startswith("CHECK"):
+            if (
+                item_u.startswith("FOREIGN KEY")
+                or item_u.startswith("CONSTRAINT")
+                or item_u.startswith("CHECK")
+            ):
                 continue
 
             tokens = item.split()
@@ -144,7 +162,9 @@ class ProtocolLabDatabase:
             ctype = tokens[1] if len(tokens) > 1 else "VARCHAR"
             is_pk = "PRIMARY KEY" in item_u
             is_null = "NOT NULL" not in item_u
-            table.columns[cname] = ColumnDef(name=cname, data_type=ctype, is_nullable=is_null, is_primary_key=is_pk)
+            table.columns[cname] = ColumnDef(
+                name=cname, data_type=ctype, is_nullable=is_null, is_primary_key=is_pk
+            )
             if is_pk and cname not in table.primary_key_cols:
                 table.primary_key_cols.append(cname)
 
@@ -170,14 +190,20 @@ class ProtocolLabDatabase:
         return items
 
     def _handle_drop_table(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
-        m = re.search(r"DROP\s+TABLE\s+(?:IF\s+EXISTS\s+)?(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)", sql, re.I)
+        m = re.search(
+            r"DROP\s+TABLE\s+(?:IF\s+EXISTS\s+)?(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)", sql, re.I
+        )
         if m:
             tname = m.group(2).lower()
             self.tables.pop(tname, None)
         return [], [], 0
 
     def _handle_create_index(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
-        m = re.search(r"CREATE\s+(?:UNIQUE\s+)?INDEX\s+([A-Za-z0-9_]+)\s+ON\s+([A-Za-z0-9_]+)\s*\((.*?)\)", sql, re.I)
+        m = re.search(
+            r"CREATE\s+(?:UNIQUE\s+)?INDEX\s+([A-Za-z0-9_]+)\s+ON\s+([A-Za-z0-9_]+)\s*\((.*?)\)",
+            sql,
+            re.I,
+        )
         if m:
             idx_name = m.group(1).lower()
             tname = m.group(2).lower()
@@ -187,7 +213,11 @@ class ProtocolLabDatabase:
         return [], [], 0
 
     def _handle_insert(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
-        m = re.search(r"INSERT\s+INTO\s+(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)\s*(?:\((.*?)\))?\s*VALUES\s*(.*)", sql, re.I | re.S)
+        m = re.search(
+            r"INSERT\s+INTO\s+(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)\s*(?:\((.*?)\))?\s*VALUES\s*(.*)",
+            sql,
+            re.I | re.S,
+        )
         if not m:
             return [], [], 0
         tname = m.group(2).lower()
@@ -236,7 +266,9 @@ class ProtocolLabDatabase:
         return [], [], affected
 
     def _handle_update(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
-        m = re.search(r"UPDATE\s+([A-Za-z0-9_]+)\s+SET\s+(.*?)(?:\s+WHERE\s+(.*))?$", sql, re.I | re.S)
+        m = re.search(
+            r"UPDATE\s+([A-Za-z0-9_]+)\s+SET\s+(.*?)(?:\s+WHERE\s+(.*))?$", sql, re.I | re.S
+        )
         if not m:
             return [], [], 0
         tname = m.group(1).lower()
@@ -259,7 +291,9 @@ class ProtocolLabDatabase:
             if self._matches_where(row, where_str):
                 for k, v in assignments.items():
                     # Handle basic arithmetic like balance = balance - 100
-                    if isinstance(row.get(k), (int, float)) or (isinstance(row.get(k), str) and row.get(k, "").replace(".", "", 1).isdigit()):
+                    if isinstance(row.get(k), (int, float)) or (
+                        isinstance(row.get(k), str) and row.get(k, "").replace(".", "", 1).isdigit()
+                    ):
                         try:
                             cur_v = float(row.get(k, 0))
                             if "+" in v:
@@ -312,7 +346,11 @@ class ProtocolLabDatabase:
                 cnt = len(tbl.rows) if tbl else 0
                 return ["count"], [(cnt,)], 1
 
-        m = re.search(r"SELECT\s+(.*?)\s+FROM\s+([A-Za-z0-9_]+)(?:\s+WHERE\s+(.*?))?(?:\s+ORDER\s+BY\s+.*)?(?:\s+LIMIT\s+.*)?$", sql, re.I | re.S)
+        m = re.search(
+            r"SELECT\s+(.*?)\s+FROM\s+([A-Za-z0-9_]+)(?:\s+WHERE\s+(.*?))?(?:\s+ORDER\s+BY\s+.*)?(?:\s+LIMIT\s+.*)?$",
+            sql,
+            re.I | re.S,
+        )
         if not m:
             return ["result"], [("OK",)], 1
         cols_req = m.group(1).strip()
@@ -326,7 +364,9 @@ class ProtocolLabDatabase:
         matching_rows = [r for r in table.rows if self._matches_where(r, where_str)]
 
         if cols_req == "*":
-            col_names = list(table.columns.keys()) or (list(matching_rows[0].keys()) if matching_rows else ["id"])
+            col_names = list(table.columns.keys()) or (
+                list(matching_rows[0].keys()) if matching_rows else ["id"]
+            )
         else:
             col_names = [c.strip().strip('"`[]').lower() for c in cols_req.split(",")]
 
@@ -356,6 +396,7 @@ class ProtocolLabDatabase:
 # -----------------------------------------------------------------------------
 # Dual-Track Wire Protocol Servers
 # -----------------------------------------------------------------------------
+
 
 class PostgresWireProtocolHandler:
     """Implements PostgreSQL Wire Protocol v3 over socket."""
@@ -418,9 +459,13 @@ class PostgresWireProtocolHandler:
                         for c in col_names:
                             name_b = c.encode("utf-8") + b"\x00"
                             field_bytes.extend(name_b)
-                            field_bytes.extend(struct.pack("!IHIHIH", 0, 0, 25, 65535, -1, 0))  # 25 = text
+                            field_bytes.extend(
+                                struct.pack("!IHIHIH", 0, 0, 25, 65535, -1, 0)
+                            )  # 25 = text
                         desc_payload = struct.pack("!H", num_fields) + bytes(field_bytes)
-                        client_sock.sendall(b"T" + struct.pack("!I", 4 + len(desc_payload)) + desc_payload)
+                        client_sock.sendall(
+                            b"T" + struct.pack("!I", 4 + len(desc_payload)) + desc_payload
+                        )
 
                         # DataRow 'D'
                         for r in rows:
@@ -433,7 +478,9 @@ class PostgresWireProtocolHandler:
                                     s_val = str(val).encode("utf-8")
                                     row_b.extend(struct.pack("!i", len(s_val)))
                                     row_b.extend(s_val)
-                            client_sock.sendall(b"D" + struct.pack("!I", 4 + len(row_b)) + bytes(row_b))
+                            client_sock.sendall(
+                                b"D" + struct.pack("!I", 4 + len(row_b)) + bytes(row_b)
+                            )
 
                     # CommandComplete 'C'
                     tag = f"SELECT {len(rows)}" if col_names else f"OK {affected}"
@@ -478,9 +525,19 @@ class MysqlWireProtocolHandler:
             auth_plugin = b"mysql_native_password\x00"
 
             handshake_payload = (
-                proto_version + serv_version + thread_id + auth_part1 + filler +
-                cap_low + charset + status + cap_high + auth_len + reserved +
-                auth_part2 + auth_plugin
+                proto_version
+                + serv_version
+                + thread_id
+                + auth_part1
+                + filler
+                + cap_low
+                + charset
+                + status
+                + cap_high
+                + auth_len
+                + reserved
+                + auth_part2
+                + auth_plugin
             )
             hdr = struct.pack("<I", len(handshake_payload))[:3] + bytes([seq])
             client_sock.sendall(hdr + handshake_payload)
@@ -528,22 +585,36 @@ class MysqlWireProtocolHandler:
                     else:
                         # Column count
                         cnt_p = bytes([len(col_names)])
-                        client_sock.sendall(struct.pack("<I", len(cnt_p))[:3] + bytes([seq]) + cnt_p)
+                        client_sock.sendall(
+                            struct.pack("<I", len(cnt_p))[:3] + bytes([seq]) + cnt_p
+                        )
                         seq += 1
 
                         # Column definitions
                         for c in col_names:
                             c_bytes = c.encode("utf-8")
                             col_def = (
-                                b"\x03def" + b"\x00" + b"\x00" + c_bytes + b"\x00" + c_bytes + b"\x00" +
-                                b"\x0c\x21\x00" + struct.pack("<I", 255) + b"\xfd\x00\x00\x00"  # VARCHAR
+                                b"\x03def"
+                                + b"\x00"
+                                + b"\x00"
+                                + c_bytes
+                                + b"\x00"
+                                + c_bytes
+                                + b"\x00"
+                                + b"\x0c\x21\x00"
+                                + struct.pack("<I", 255)
+                                + b"\xfd\x00\x00\x00"  # VARCHAR
                             )
-                            client_sock.sendall(struct.pack("<I", len(col_def))[:3] + bytes([seq]) + col_def)
+                            client_sock.sendall(
+                                struct.pack("<I", len(col_def))[:3] + bytes([seq]) + col_def
+                            )
                             seq += 1
 
                         # EOF
                         eof_p = b"\xfe\x00\x00\x02\x00"
-                        client_sock.sendall(struct.pack("<I", len(eof_p))[:3] + bytes([seq]) + eof_p)
+                        client_sock.sendall(
+                            struct.pack("<I", len(eof_p))[:3] + bytes([seq]) + eof_p
+                        )
                         seq += 1
 
                         # Rows
@@ -556,11 +627,15 @@ class MysqlWireProtocolHandler:
                                     sv = str(v).encode("utf-8")
                                     r_b.append(len(sv))
                                     r_b.extend(sv)
-                            client_sock.sendall(struct.pack("<I", len(r_b))[:3] + bytes([seq]) + bytes(r_b))
+                            client_sock.sendall(
+                                struct.pack("<I", len(r_b))[:3] + bytes([seq]) + bytes(r_b)
+                            )
                             seq += 1
 
                         # Final EOF
-                        client_sock.sendall(struct.pack("<I", len(eof_p))[:3] + bytes([seq]) + eof_p)
+                        client_sock.sendall(
+                            struct.pack("<I", len(eof_p))[:3] + bytes([seq]) + eof_p
+                        )
 
         except Exception as exc:
             logger.debug(f"MySQL Wire connection closed: {exc}")
@@ -571,6 +646,7 @@ class MysqlWireProtocolHandler:
 # -----------------------------------------------------------------------------
 # Headless ChinaDB Protocol Lab Controller
 # -----------------------------------------------------------------------------
+
 
 @dataclass
 class ChinaDbInstance:
@@ -652,7 +728,9 @@ class ChinaDbProtocolLab:
                 while instance.is_running:
                     try:
                         client, _ = s.accept()
-                        t = threading.Thread(target=handler.handle_connection, args=(client,), daemon=True)
+                        t = threading.Thread(
+                            target=handler.handle_connection, args=(client,), daemon=True
+                        )
                         t.start()
                     except Exception:
                         break

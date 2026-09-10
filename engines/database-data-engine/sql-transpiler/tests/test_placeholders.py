@@ -4,6 +4,7 @@ All four were reproduced against sqlglot before being fixed; none of them is a
 syntax error, so neither the emit leg nor the target re-parse leg could see
 any of them.
 """
+
 from __future__ import annotations
 
 import re
@@ -194,9 +195,7 @@ def test_integer_division_is_not_reported_when_both_sides_agree() -> None:
 def test_identifier_case_folding_difference_is_reported() -> None:
     # postgres folds `Foo` to `foo`; MySQL keeps `Foo` and is case-sensitive
     # for table names on Linux.
-    assert "IDENTIFIER_CASE_FOLDING_DIFFERS" in _codes(
-        "SELECT Foo FROM Bar ORDER BY Foo", PG, MY
-    )
+    assert "IDENTIFIER_CASE_FOLDING_DIFFERS" in _codes("SELECT Foo FROM Bar ORDER BY Foo", PG, MY)
 
 
 def test_identifier_case_folding_is_not_reported_for_already_folded_sql() -> None:

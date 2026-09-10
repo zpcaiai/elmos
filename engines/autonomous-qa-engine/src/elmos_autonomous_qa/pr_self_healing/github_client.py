@@ -203,6 +203,16 @@ class MockGitHubTransport(GitHubTransport):
             payload = json.loads(data.decode("utf-8")) if data else {}
             return 200, {"content-type": "application/json"}, json.dumps(payload.get("labels", [])).encode("utf-8")
 
+        # Statuses: POST /repos/{owner}/{repo}/statuses/{sha}
+        if re.search(r"/repos/[^/]+/[^/]+/statuses/[^/]+$", path) and method == "POST":
+            payload = json.loads(data.decode("utf-8")) if data else {}
+            status_data = {
+                "state": payload.get("state", "success"),
+                "context": payload.get("context", "default"),
+                "description": payload.get("description", ""),
+            }
+            return 201, {"content-type": "application/json"}, json.dumps(status_data).encode("utf-8")
+
         # Default fallback: 200 OK with empty json
         return 200, {"content-type": "application/json"}, b'{"status": "ok"}'
 
@@ -376,6 +386,22 @@ class GitHubClient:
             base_branch=base_branch,
             state=res.get("state", "open"),
             is_draft=res.get("draft", draft),
+            labels=[lb.get("name", "") if isinstance(lb, Mapping) else str(lb) for lb in res.get("labels", [])],
+        )
+
+    def get_pull_request(self, owner: str, repo: str, pr_number: int) -> PullRequestInfo:
+        """Fetch details of an existing Pull Request."""
+        path = f"/repos/{owner}/{repo}/pulls/{pr_number}"
+        res = self._send("GET", path)
+        return PullRequestInfo(
+            number=res.get("number", pr_number),
+            title=res.get("title", ""),
+            body=res.get("body", ""),
+            html_url=res.get("html_url", ""),
+            head_branch=res.get("head", {}).get("ref", ""),
+            base_branch=res.get("base", {}).get("ref", ""),
+            state=res.get("state", "open"),
+            is_draft=res.get("draft", False),
             labels=[lb.get("name", "") if isinstance(lb, Mapping) else str(lb) for lb in res.get("labels", [])],
         )
 

@@ -1,0 +1,18 @@
+[2026-09-10T08:18:04.003562Z][GLOBAL-BANK-DRILL] Initializing partner environment for org-global-bank-enterprise...
+[2026-09-10T08:18:04.003585Z][GLOBAL-BANK-DRILL] Authenticating Global Bank core banking integration service via OIDC...
+[2026-09-10T08:18:04.061350Z][GLOBAL-BANK-DRILL] OIDC Token Validation: OK: Validated (Issuer: https://auth.enterprise.elmos.io, Sub: svc-core-banking-prod)
+[2026-09-10T08:18:04.061376Z][GLOBAL-BANK-DRILL] Creating dedicated HSM-backed KEK for Ledger Transactions...
+[2026-09-10T08:18:04.061725Z][GLOBAL-BANK-DRILL] Synthesized 250 financial ledger transactions across US-EAST-1 and EU-WEST-1
+[2026-09-10T08:18:04.061780Z][GLOBAL-BANK-DRILL] Active Raft Leader: us-node-1 (Region: us-east-1) Monotonic Fencing Token: 1001
+[2026-09-10T08:18:04.061803Z][GLOBAL-BANK-DRILL] Baseline Ledger Replication: OK: Replicated to 7/7 nodes (quorum=4)
+[2026-09-10T08:18:04.061806Z][GLOBAL-BANK-DRILL] INJECTING DISASTER: Complete catastrophic blackout of US-EAST-1 primary data center...
+[2026-09-10T08:18:04.064005Z][GLOBAL-BANK-DRILL] Regional Failover Drill Complete:
+[2026-09-10T08:18:04.064009Z][GLOBAL-BANK-DRILL]   - Measured RTO (Recovery Time): 0.002 seconds (Target <= 15.0s: True)
+[2026-09-10T08:18:04.064012Z][GLOBAL-BANK-DRILL]   - Measured RPO (Data Currency): 0.000 seconds (Target <= 5.0s: True)
+[2026-09-10T08:18:04.064016Z][GLOBAL-BANK-DRILL]   - Financial Data Reconciliation: DataLoss=False
+[2026-09-10T08:18:04.064018Z][GLOBAL-BANK-DRILL]   - Primary Merkle Root: 4af1846b4e22e33be858084e8bb1f0f81d64e8c780138e353c04882d101615ad
+[2026-09-10T08:18:04.064019Z][GLOBAL-BANK-DRILL]   - Standby Merkle Root: 4af1846b4e22e33be858084e8bb1f0f81d64e8c780138e353c04882d101615ad
+[2026-09-10T08:18:04.064023Z][GLOBAL-BANK-DRILL]   - Reconciliation Verdict: 100% Bit-Identical Financial Ledger (0.00 lost transactions)
+[2026-09-10T08:18:04.064039Z][GLOBAL-BANK-DRILL] Cryptographic Audit Ledger: Audit chain valid across 2 entries (2 entries verified)
+[2026-09-10T08:18:04.064044Z][GLOBAL-BANK-DRILL] Global Bank Corp UAT Drill completed successfully in 0.22 seconds.
+[2026-09-10T08:18:04.064704Z][GLOBAL-BANK-DRILL] Saved authentic Global Bank UAT evidence to /Users/stephen/DevProjects/AIProjects/elmos/test-suites/batch38-45-strict/external/customer-alpha.json

@@ -326,10 +326,7 @@ def test_remaining_local_ready_routes_execute_and_stay_uncertified(
     ready = {item["profileId"] for item in capabilities["ready"]}
     needed = {source_profile, target_profile}
     if not needed <= ready:
-        pytest.skip(
-            "pinned local runtimes are absent; "
-            "runtime evidence stays NOT_RUN on this host"
-        )
+        pytest.skip("pinned local runtimes are absent; runtime evidence stays NOT_RUN on this host")
 
     output = tmp_path / f"{source_profile}--to--{target_profile}"
     result = verify_route(source_profile, target_profile, output)

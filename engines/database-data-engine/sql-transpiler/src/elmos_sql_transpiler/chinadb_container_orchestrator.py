@@ -8,7 +8,6 @@ when containers are unavailable.
 
 from __future__ import annotations
 
-import os
 import shutil
 import subprocess
 import time
@@ -72,7 +71,9 @@ class ChinaDbContainerOrchestrator:
             details={"version": "1.0-industrial", "wire_ready": True},
         )
 
-    def execute_query(self, target_id: str, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
+    def execute_query(
+        self, target_id: str, sql: str
+    ) -> tuple[list[str], list[tuple[Any, ...]], int]:
         """Execute query against target instance."""
         # Check if container execution is active, else use ProtocolLab
         return self.protocol_lab.execute(target_id, sql)

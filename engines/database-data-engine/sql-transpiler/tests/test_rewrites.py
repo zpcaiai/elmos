@@ -46,9 +46,7 @@ class TestGroupConcatAggregateOrder:
         assert result.target_sql is not None
         assert "GROUP_CONCAT(name, ',' ORDER BY name)" in " ".join(result.target_sql.split())
         assert "SQLITE_AGGREGATE_ORDER_LOWERED" in result.statements[0].obligations
-        assert SQLITE_LOWERING_RULE in {
-            trace["ruleId"] for trace in result.metadata["ruleTrace"]
-        }
+        assert SQLITE_LOWERING_RULE in {trace["ruleId"] for trace in result.metadata["ruleTrace"]}
 
     def test_multi_term_descending_order_and_custom_separator_survive(self) -> None:
         result = _transpile(
@@ -91,9 +89,7 @@ class TestGroupConcatAggregateOrder:
         flattened = " ".join(result.target_sql.split())
         assert "ORDER BY name SEPARATOR ','" in flattened
         assert "AGGREGATE_ORDER_CANONICALIZED" in result.statements[0].obligations
-        assert AGGREGATE_ORDER_RULE in {
-            trace["ruleId"] for trace in result.metadata["ruleTrace"]
-        }
+        assert AGGREGATE_ORDER_RULE in {trace["ruleId"] for trace in result.metadata["ruleTrace"]}
 
     def test_sqlite_source_to_sqlserver_uses_within_group(self) -> None:
         result = _transpile(
@@ -175,9 +171,7 @@ class TestRealSqliteExecution:
 
     def _connection(self) -> sqlite3.Connection:
         if _sqlite_version() < _SQLITE_AGGREGATE_ORDER_MIN:
-            pytest.skip(
-                f"host sqlite {sqlite3.sqlite_version} predates 3.44 aggregate ORDER BY"
-            )
+            pytest.skip(f"host sqlite {sqlite3.sqlite_version} predates 3.44 aggregate ORDER BY")
         connection = sqlite3.connect(":memory:")
         connection.execute("CREATE TABLE customers (tenant TEXT, name TEXT)")
         connection.executemany(
@@ -212,8 +206,7 @@ class TestRealSqliteExecution:
         connection = self._connection()
         try:
             target_sql = self._emit(
-                "SELECT GROUP_CONCAT(name ORDER BY tenant, name DESC SEPARATOR '|') "
-                "FROM customers"
+                "SELECT GROUP_CONCAT(name ORDER BY tenant, name DESC SEPARATOR '|') FROM customers"
             )
             rows = connection.execute(target_sql).fetchall()
             assert rows == [("charlie|bravo|delta|alpha",)]

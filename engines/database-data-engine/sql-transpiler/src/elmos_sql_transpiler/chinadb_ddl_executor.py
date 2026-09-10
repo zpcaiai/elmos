@@ -67,19 +67,23 @@ class ChinaDbDdlExecutor:
             try:
                 self.orchestrator.execute_query(target_id, clean)
                 success += 1
-                details.append({
-                    "statement": clean[:80],
-                    "status": "SUCCESS",
-                    "digest": stmt_hash,
-                })
+                details.append(
+                    {
+                        "statement": clean[:80],
+                        "status": "SUCCESS",
+                        "digest": stmt_hash,
+                    }
+                )
             except Exception as exc:
                 failed += 1
-                details.append({
-                    "statement": clean[:80],
-                    "status": "FAILED",
-                    "error": str(exc),
-                    "digest": stmt_hash,
-                })
+                details.append(
+                    {
+                        "statement": clean[:80],
+                        "status": "FAILED",
+                        "error": str(exc),
+                        "digest": stmt_hash,
+                    }
+                )
 
         duration_ms = (time.perf_counter() - t0) * 1000.0
 
@@ -94,7 +98,9 @@ class ChinaDbDdlExecutor:
             }
             for tname, tbl in db.tables.items()
         }
-        schema_digest = hashlib.sha256(json.dumps(schema_snapshot, sort_keys=True).encode("utf-8")).hexdigest()
+        schema_digest = hashlib.sha256(
+            json.dumps(schema_snapshot, sort_keys=True).encode("utf-8")
+        ).hexdigest()
 
         return DdlExecutionReceipt(
             target_id=target_id,

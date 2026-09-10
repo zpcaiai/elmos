@@ -400,6 +400,8 @@ class ReconciliationResult:
     divergent_keys: List[str]
     rpo_divergence_seconds: float
     data_loss_detected: bool = False
+    primary_root_hash: str = ""
+    replica_root_hash: str = ""
 
 
 @dataclass

@@ -83,6 +83,8 @@ class DisasterRecoveryRunner:
                 divergent_keys=[],
                 rpo_divergence_seconds=0.0,
                 data_loss_detected=False,
+                primary_root_hash=source_tree.hash_value,
+                replica_root_hash=replica_tree.hash_value,
             )
 
         # Trees diverge: find divergent keys
@@ -104,6 +106,8 @@ class DisasterRecoveryRunner:
             divergent_keys=divergent,
             rpo_divergence_seconds=rpo_div,
             data_loss_detected=data_loss,
+            primary_root_hash=source_tree.hash_value,
+            replica_root_hash=replica_tree.hash_value,
         )
 
     def execute_disaster_recovery_drill(

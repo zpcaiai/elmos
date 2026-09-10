@@ -536,9 +536,7 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                     )
                 )
 
-            conversion = routines.convert(
-                canonical_statement, source.dialect, target.dialect
-            )
+            conversion = routines.convert(canonical_statement, source.dialect, target.dialect)
             if conversion is not None:
                 generated = conversion.sql
                 skip_following_end = conversion.skip_following_end
