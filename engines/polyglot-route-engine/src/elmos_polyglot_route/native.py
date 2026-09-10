@@ -5710,7 +5710,8 @@ def _go_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
         or any(not isinstance(argument, str) or not argument for argument in arguments)
         or any("\n" in argument or "\r" in argument or "\x00" in argument for argument in arguments)
         or (len(arguments) == 3 and arguments[2] != "--emitted-target")
-        or arguments[1] in {"--inventory", "--emitted-target"}
+        or arguments[1] == "--emitted-target"
+        or (len(arguments) == 3 and arguments[1] == "--inventory")
     ):
         raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
     source = Path(arguments[0])
@@ -5720,6 +5721,8 @@ def _go_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
         raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID") from error
     if not source.is_absolute() or source != resolved or source.is_symlink() or not source.is_file():
         raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+    if arguments[1] == "--inventory":
+        return frozenset()
     selector = arguments[1]
     names = selector.removeprefix("--functions=").split(",") if selector.startswith("--functions=") else [selector]
     if not names or any(not name or name.startswith("--") for name in names) or len(names) != len(set(names)):
@@ -5781,7 +5784,8 @@ def _rust_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
         or any(not isinstance(argument, str) or not argument for argument in arguments)
         or any("\n" in argument or "\r" in argument or "\x00" in argument for argument in arguments)
         or (len(arguments) == 3 and arguments[2] != "--emitted-target")
-        or arguments[1] in {"--inventory", "--emitted-target"}
+        or arguments[1] == "--emitted-target"
+        or (len(arguments) == 3 and arguments[1] == "--inventory")
     ):
         raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
     source = Path(arguments[0])
@@ -5791,6 +5795,8 @@ def _rust_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
         raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID") from error
     if not source.is_absolute() or source != resolved or source.is_symlink() or not source.is_file():
         raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
+    if arguments[1] == "--inventory":
+        return frozenset()
     selector = arguments[1]
     names = selector.removeprefix("--functions=").split(",") if selector.startswith("--functions=") else [selector]
     if not names or any(not name or name.startswith("--") for name in names) or len(names) != len(set(names)):
