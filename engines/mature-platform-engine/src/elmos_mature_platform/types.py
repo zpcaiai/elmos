@@ -1361,3 +1361,300 @@ class SchemaBreakingChange:
     field_path: str
     description: str
     severity: str  # breaking, deprecated, compatible
+
+
+# ─── Backup & Restore Models ──────────────────────────────────────────
+
+class BackupType(str, Enum):
+    FULL = "full"
+    INCREMENTAL = "incremental"
+    DIFFERENTIAL = "differential"
+    SNAPSHOT = "snapshot"
+
+class RestoreVerdict(str, Enum):
+    SUCCESS = "success"
+    PARTIAL = "partial"
+    FAILED = "failed"
+    INTEGRITY_MISMATCH = "integrity_mismatch"
+
+@dataclass
+class BackupRecord:
+    backup_id: str
+    backup_type: BackupType
+    source_name: str
+    size_bytes: int
+    checksum_sha256: str
+    created_at: str
+    retention_days: int = 90
+    encrypted: bool = True
+    kms_key_id: str = ""
+    region: str = ""
+    parent_backup_id: Optional[str] = None  # For incremental
+
+@dataclass
+class RestoreRequest:
+    restore_id: str
+    backup_id: str
+    target_name: str
+    point_in_time: Optional[str] = None  # ISO datetime for PITR
+    isolated_environment: bool = True
+
+@dataclass
+class RestoreResult:
+    restore_id: str
+    verdict: RestoreVerdict
+    restored_rows: int = 0
+    elapsed_seconds: float = 0.0
+    checksum_verified: bool = False
+    integrity_errors: List[str] = field(default_factory=list)
+    rto_met: bool = False
+    rpo_met: bool = False
+    actual_rto_seconds: float = 0.0
+    actual_rpo_seconds: float = 0.0
+
+@dataclass
+class DrDrillResult:
+    drill_id: str
+    drill_type: str  # restore_drill, failover_drill, pitr_drill
+    target_rto_seconds: float
+    target_rpo_seconds: float
+    actual_rto_seconds: float
+    actual_rpo_seconds: float
+    rto_met: bool
+    rpo_met: bool
+    passed: bool
+    findings: List[str] = field(default_factory=list)
+
+
+
+# ─── Error Budget Governance Models ───────────────────────────────────
+
+class BurnRateWindow(str, Enum):
+    ONE_HOUR = "1h"
+    SIX_HOURS = "6h"
+    ONE_DAY = "1d"
+    SEVEN_DAYS = "7d"
+    THIRTY_DAYS = "30d"
+
+class ReleaseFreezeAction(str, Enum):
+    FREEZE = "freeze"
+    WARN = "warn"
+    ALLOW = "allow"
+
+@dataclass
+class ErrorBudgetSlo:
+    slo_id: str
+    service_name: str
+    indicator: str  # availability, latency_p99, error_rate
+    target: float  # 99.9, 99.95, etc.
+    window_days: int = 30
+    budget_remaining_pct: float = 100.0
+    consumed_budget_pct: float = 0.0
+
+@dataclass
+class BurnRateAlert:
+    slo_id: str
+    window: BurnRateWindow
+    burn_rate: float  # >1.0 means burning faster than budget allows
+    remaining_budget_pct: float
+    alert_severity: str  # page, ticket, log
+    projected_exhaustion_hours: float = 0.0
+
+@dataclass
+class ReleaseFreezeDecision:
+    service_name: str
+    action: ReleaseFreezeAction
+    reason: str
+    remaining_budget_pct: float
+    override_allowed: bool = False
+    waiver_id: Optional[str] = None
+
+@dataclass
+class ErrorBudgetWaiver:
+    waiver_id: str
+    service_name: str
+    reason: str
+    approved_by: str
+    expires_at: str
+    max_deploys: int = 1
+    deploys_used: int = 0
+
+
+# ─── Autoscaling & Capacity Control Models ────────────────────────────
+
+class ScalingDirection(str, Enum):
+    SCALE_UP = "scale_up"
+    SCALE_DOWN = "scale_down"
+    NO_CHANGE = "no_change"
+
+class ScalingTrigger(str, Enum):
+    CPU_THRESHOLD = "cpu_threshold"
+    MEMORY_THRESHOLD = "memory_threshold"
+    QUEUE_DEPTH = "queue_depth"
+    REQUEST_RATE = "request_rate"
+    SCHEDULE = "schedule"
+    MANUAL = "manual"
+
+@dataclass
+class ScalingPolicy:
+    policy_id: str
+    service_name: str
+    trigger: ScalingTrigger
+    threshold_value: float
+    min_instances: int = 1
+    max_instances: int = 100
+    cooldown_seconds: float = 300.0
+    scale_up_increment: int = 1
+    scale_down_increment: int = 1
+
+@dataclass
+class ScalingDecision:
+    decision_id: str
+    service_name: str
+    direction: ScalingDirection
+    current_instances: int
+    target_instances: int
+    trigger: ScalingTrigger
+    trigger_value: float
+    policy_id: str
+    timestamp: str = ""
+    blocked: bool = False
+    block_reason: str = ""
+
+@dataclass
+class AutoscalingCapacityPlan:
+    plan_id: str
+    service_name: str
+    current_capacity: int
+    projected_peak_load: float
+    recommended_capacity: int
+    headroom_pct: float = 20.0
+    estimated_monthly_cost: float = 0.0
+
+@dataclass
+class FairSchedulingQuota:
+    tenant_id: str
+    service_name: str
+    guaranteed_instances: int
+    max_burst_instances: int
+    current_usage: int = 0
+    weight: float = 1.0
+
+# ─── API Compatibility Gate Models ────────────────────────────────────
+
+class ApiCompatChangeType(str, Enum):
+    ENDPOINT_ADDED = "endpoint_added"
+    ENDPOINT_REMOVED = "endpoint_removed"
+    FIELD_ADDED = "field_added"
+    FIELD_REMOVED = "field_removed"
+    FIELD_TYPE_CHANGED = "field_type_changed"
+    REQUIRED_FIELD_ADDED = "required_field_added"
+    ENUM_VALUE_ADDED = "enum_value_added"
+    ENUM_VALUE_REMOVED = "enum_value_removed"
+    RESPONSE_CODE_CHANGED = "response_code_changed"
+
+class CompatibilityVerdict(str, Enum):
+    COMPATIBLE = "compatible"
+    BREAKING = "breaking"
+    DEPRECATED = "deprecated"
+    REQUIRES_MIGRATION = "requires_migration"
+
+@dataclass
+class ApiChange:
+    change_id: str
+    change_type: ApiCompatChangeType
+    path: str  # /api/v2/users, field: user.email
+    description: str
+    verdict: CompatibilityVerdict
+    migration_guide: str = ""
+
+@dataclass
+class SdkCompatibilityMatrix:
+    sdk_name: str
+    sdk_version: str
+    api_versions_supported: List[str] = field(default_factory=list)
+    deprecated_apis_used: List[str] = field(default_factory=list)
+    breaking_changes_affected: List[str] = field(default_factory=list)
+
+@dataclass
+class EventSchemaChange:
+    event_type: str
+    field_path: str
+    change: ApiCompatChangeType
+    backward_compatible: bool
+    forward_compatible: bool
+
+@dataclass
+class CompatibilityGateResult:
+    gate_id: str
+    passed: bool
+    total_changes: int = 0
+    breaking_changes: int = 0
+    compatible_changes: int = 0
+    deprecated_changes: int = 0
+    blocking_changes: List[ApiChange] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
+
+
+# ─── Compliance & Audit Evidence Models ───────────────────────────────
+
+class ComplianceFramework(str, Enum):
+    SOC2_TYPE2 = "soc2_type2"
+    ISO27001 = "iso27001"
+    HIPAA = "hipaa"
+    PCI_DSS = "pci_dss"
+    GDPR = "gdpr"
+    NIST_CSF = "nist_csf"
+    FedRAMP = "fedramp"
+
+class ControlStatus(str, Enum):
+    IMPLEMENTED = "implemented"
+    PARTIALLY_IMPLEMENTED = "partially_implemented"
+    PLANNED = "planned"
+    NOT_APPLICABLE = "not_applicable"
+    FAILED = "failed"
+
+@dataclass
+class ComplianceControl:
+    control_id: str
+    framework: ComplianceFramework
+    title: str
+    description: str
+    status: ControlStatus
+    evidence_ids: List[str] = field(default_factory=list)
+    owner: str = ""
+    last_assessed: str = ""
+
+@dataclass
+class AuditEvidence:
+    evidence_id: str
+    control_id: str
+    evidence_type: str  # screenshot, log, config, test_result, document
+    description: str
+    content_hash: str
+    collected_at: str
+    collector: str  # automated, manual
+    retention_days: int = 365
+
+@dataclass
+class AuditFinding:
+    finding_id: str
+    control_id: str
+    severity: str  # critical, high, medium, low, informational
+    description: str
+    remediation_plan: str = ""
+    due_date: str = ""
+    status: str = "open"  # open, in_progress, remediated, accepted_risk
+
+@dataclass
+class ComplianceReport:
+    report_id: str
+    framework: ComplianceFramework
+    assessment_date: str
+    total_controls: int = 0
+    implemented: int = 0
+    partially_implemented: int = 0
+    failed: int = 0
+    not_applicable: int = 0
+    coverage_pct: float = 0.0
+    findings: List[AuditFinding] = field(default_factory=list)
