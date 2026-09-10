@@ -468,3 +468,99 @@ class NativeBridge:
         finally:
             if os.path.exists(temp_path):
                 os.remove(temp_path)
+
+    # --------------------------------------------------------------------------
+    # Java via javac Tree API Analyzer
+    # --------------------------------------------------------------------------
+    @classmethod
+    def parse_java_with_javac(cls, source_code: str) -> Optional[UniversalModule]:
+        """Parses Java source using the compiled javac Tree API Analyzer."""
+        class_dir = NATIVE_DIR / "java"
+        if not (class_dir / "Analyzer.class").exists():
+            return None
+
+        import re
+        c_match = re.search(r'(?:public\s+)?class\s+([A-Za-z_][A-Za-z0-9_]*)', source_code)
+        class_name = c_match.group(1) if c_match else "MainClass"
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            file_path = os.path.join(tmpdir, f"{class_name}.java")
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(source_code)
+
+            try:
+                inv_res = subprocess.run(
+                    ["java", "-cp", str(class_dir), "Analyzer", file_path, "--inventory"],
+                    capture_output=True, text=True, timeout=10
+                )
+                if inv_res.returncode != 0:
+                    return None
+
+                inv_data = json.loads(inv_res.stdout)
+                module = UniversalModule(name="JavaModule", source_language="java")
+                target_cls = UniversalClass(name=class_name)
+                module.classes.append(target_cls)
+
+                for subj in inv_data.get("subjects", []):
+                    kind = subj.get("declaration_kind")
+                    name = subj.get("name")
+                    if kind == "method" and subj.get("analyzable"):
+                        fn_res = subprocess.run(
+                            ["java", "-cp", str(class_dir), "Analyzer", file_path, name],
+                            capture_output=True, text=True, timeout=10
+                        )
+                        if fn_res.returncode == 0:
+                            fn_data = json.loads(fn_res.stdout)
+                            for fn_item in fn_data.get("functions", []):
+                                u_meth = cls._convert_syn_function(fn_item)
+                                target_cls.methods.append(u_meth)
+                return module
+            except Exception as ex:
+                logger.debug("Exception running Java javac bridge: %s", ex)
+                return None
+
+    # --------------------------------------------------------------------------
+    # C# via Roslyn Analyzer DLL
+    # --------------------------------------------------------------------------
+    @classmethod
+    def parse_csharp_with_roslyn(cls, source_code: str) -> Optional[UniversalModule]:
+        """Parses C# source using the compiled Roslyn analyzer DLL."""
+        dll_path = NATIVE_DIR / "csharp" / "bin" / "Debug" / "net10.0" / "Elmos.Csharp.EmittedAnalyzer.dll"
+        if not dll_path.exists():
+            return None
+
+        import re
+        c_match = re.search(r'(?:public\s+)?class\s+([A-Za-z_][A-Za-z0-9_]*)', source_code)
+        class_name = c_match.group(1) if c_match else "MainClass"
+
+        # Find candidate method names
+        m_names = re.findall(r'(?:public|private|static)\s+(?:long|int|double|bool|string|void)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(', source_code)
+
+        with tempfile.NamedTemporaryFile("w", suffix=".cs", delete=False, encoding="utf-8") as f:
+            f.write(source_code)
+            f.flush()
+            temp_path = f.name
+
+        try:
+            module = UniversalModule(name="CsharpModule", source_language="csharp")
+            target_cls = UniversalClass(name=class_name)
+            module.classes.append(target_cls)
+
+            for m_name in m_names:
+                res = subprocess.run(
+                    ["dotnet", str(dll_path), temp_path, m_name, "--emitted-target"],
+                    capture_output=True, text=True, timeout=10
+                )
+                if res.returncode == 0:
+                    data = json.loads(res.stdout)
+                    for fn_item in data.get("functions", []):
+                        u_meth = cls._convert_syn_function(fn_item)
+                        target_cls.methods.append(u_meth)
+            return module
+        except Exception as ex:
+            logger.debug("Exception running C# Roslyn bridge: %s", ex)
+            return None
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+

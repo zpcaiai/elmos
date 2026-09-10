@@ -32,6 +32,7 @@ from ..ir import (
     VarDeclStmt,
 )
 from .base import BaseAstParser
+from .native_bridge import NativeBridge
 
 
 class RustAstParser(BaseAstParser):
@@ -41,6 +42,11 @@ class RustAstParser(BaseAstParser):
         super().__init__('rust')
 
     def parse(self, source_code: str) -> UniversalModule:
+        # 1. Attempt genuine native syn AST compiler first
+        native_mod = NativeBridge.parse_rust_with_syn(source_code)
+        if native_mod and (native_mod.classes or native_mod.free_functions):
+            return native_mod
+
         module = UniversalModule(name='RustModule', source_language='rust')
 
         # Uses

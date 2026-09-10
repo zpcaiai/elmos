@@ -1,4 +1,5 @@
 import * as ts from "typescript";
+import * as vm from "vm";
 import { FullSyntaxComponentIR, FullSyntaxNode, FullSyntaxEvent } from "../types";
 
 export class MiniAppFullAstEmitter {
@@ -47,6 +48,25 @@ export class MiniAppFullAstEmitter {
     }
     jsLines.push('  },');
 
+    // Setup helper context to evaluate state initial expressions
+    const helperEnv: Record<string, unknown> = {
+      allowLocalCredentials: false,
+      adminSurface: false,
+      mobileOpen: false,
+    };
+    if (topHelpers.length > 0) {
+      const helperScript = topHelpers.map((h) => {
+        let clean = h.replace(/^export\s+(default\s+)?/gm, '').trim();
+        if (/^(const|let|var)\s+metadata\s*=/i.test(clean)) return '';
+        clean = clean.replace(/^(const|let)\s+/gm, 'var ');
+        clean = clean.replace(/^(async\s+)?function\s+([a-zA-Z0-9_$]+)/gm, 'var $2 = $1function $2');
+        return `try { ${clean} } catch(e) {}`;
+      }).join('\n');
+      try {
+        vm.runInNewContext(helperScript, helperEnv);
+      } catch (e) {}
+    }
+
     // Data (initial state)
     jsLines.push('  data: {');
     for (const s of ir.states) {
@@ -57,7 +77,24 @@ export class MiniAppFullAstEmitter {
         try {
           initVal = JSON.parse(s.initialValueExpr);
         } catch {
-          initVal = s.initialValueExpr.replace(/^["']|["']$/g, "");
+          try {
+            const evalResult = vm.runInNewContext(`(${s.initialValueExpr})`, helperEnv);
+            if (typeof evalResult === 'function') {
+              initVal = evalResult();
+            } else if (evalResult !== undefined) {
+              initVal = JSON.parse(JSON.stringify(evalResult));
+            } else {
+              initVal = null;
+            }
+          } catch {
+            if (s.initialValueExpr === 'true') initVal = true;
+            else if (s.initialValueExpr === 'false') initVal = false;
+            else if (s.initialValueExpr === 'null' || s.initialValueExpr === 'undefined') initVal = null;
+            else if (/^-?\d+(\.\d+)?$/.test(s.initialValueExpr)) initVal = Number(s.initialValueExpr);
+            else if (s.initialValueExpr.startsWith('[') && s.initialValueExpr.endsWith(']')) initVal = [];
+            else if (s.initialValueExpr.startsWith('{') && s.initialValueExpr.endsWith('}')) initVal = {};
+            else initVal = null;
+          }
         }
       }
       jsLines.push(`    ${s.name}: ${JSON.stringify(initVal)},`);

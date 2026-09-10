@@ -159,10 +159,7 @@ func (a *AccountAggregate) AvailableBalance() int64 {
 }
 
 func (a *AccountAggregate) calculateAvailableBalance() int64 {
-	if a.Type.NormalBalance() == DirectionDebit {
-		return a.PostedBalance + a.PendingCredit - a.PendingDebit - a.HeldAmount + a.OverdraftLimit
-	}
-	return a.PostedBalance + a.PendingCredit - a.PendingDebit - a.HeldAmount
+	return a.PostedBalance + a.PendingCredit - a.PendingDebit - a.HeldAmount + a.OverdraftLimit
 }
 
 // CheckDebitAllowed verifies if a debit operation can proceed without violating funds constraints.

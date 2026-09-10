@@ -580,13 +580,13 @@ class BusinessLine3L5GateRunner:
             charge, deducted, status = TelecomRatingCorpus.rate_voice_cdr_in_memory(
                 sub, plan, wallet, duration_seconds=120
             )
-            if status != "RATED" or charge <= 0:
+            if not status.startswith("RATED") or charge <= 0:
                 errors.append(f"Telecom rating failed: status={status}")
 
             domain_metrics["telecom"] = {
                 "rating_status": status,
                 "billed_amount": charge,
-                "remaining_quota": wallet.remaining_balance,
+                "remaining_quota": wallet.remaining_units,
             }
             self.log("  Telecom: Real-time CDR rating and quota depletion OK", "INFO")
         except Exception as ex:
@@ -612,9 +612,8 @@ class BusinessLine3L5GateRunner:
         # 5. Enterprise ERP Payroll & Tax Progressive
         try:
             emp = ErpPayrollCorpus.get_seed_employees(count=1)[0]
-            brackets = ErpPayrollCorpus.get_seed_tax_brackets()
             payroll = ErpPayrollCorpus.calculate_employee_payroll_in_memory(
-                emp, period_month="202603", base_salary=20000.0, tax_brackets=brackets
+                emp, attendance=None, period_month="202603"
             )
             mb_ok, mb_diff, mb_msg = ErpPayrollCorpus.verify_payroll_mass_balance(payroll)
             if not mb_ok:

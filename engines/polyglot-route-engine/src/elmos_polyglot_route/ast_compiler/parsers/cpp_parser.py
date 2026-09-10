@@ -10,6 +10,7 @@ from ..ir import (
     ExprStmt, RawSnippetStmt, MethodCallExpr, IdentifierExpr, LiteralExpr
 )
 from .base import BaseAstParser
+from .native_bridge import NativeBridge
 
 
 class CppAstParser(BaseAstParser):
@@ -19,6 +20,11 @@ class CppAstParser(BaseAstParser):
         super().__init__("cpp")
 
     def parse(self, source_code: str) -> UniversalModule:
+        # 1. Attempt genuine native Clang compiler AST first
+        native_mod = NativeBridge.parse_cpp_with_clang(source_code)
+        if native_mod and (native_mod.classes or native_mod.free_functions):
+            return native_mod
+
         module = UniversalModule(name="cpp_module", source_language="cpp")
         
         # 1. Imports / Includes

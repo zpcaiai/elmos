@@ -78,7 +78,11 @@ export class HeadlessMiniProgramSandbox {
     };
   }
 
-  private createModuleLoader(baseContext: Record<string, unknown>, errors: string[]) {
+  private createModuleLoader(
+    baseContext: Record<string, unknown>,
+    errors: string[],
+    moduleContexts?: Map<string, Record<string, unknown>>
+  ) {
     const loadedModules = new Map<string, unknown>();
 
     const loadFile = (filePath: string): unknown => {
@@ -170,6 +174,9 @@ export class HeadlessMiniProgramSandbox {
         vm.runInContext(code, proxyContext);
         const res = (modContext.module as { exports: unknown }).exports;
         loadedModules.set(filePath, res);
+        if (moduleContexts) {
+          moduleContexts.set(filePath, modContext);
+        }
         return res;
       } catch (err) {
         errors.push(`Error executing ${filePath}: ${(err as Error).message}`);
@@ -274,7 +281,8 @@ export class HeadlessMiniProgramSandbox {
       Promise: global.Promise,
     };
 
-    const loadFile = this.createModuleLoader(sandboxContext, errors);
+    const moduleContexts = new Map<string, Record<string, unknown>>();
+    const loadFile = this.createModuleLoader(sandboxContext, errors, moduleContexts);
     try {
       loadFile(jsFile);
     } catch (err) {
@@ -411,7 +419,14 @@ export class HeadlessMiniProgramSandbox {
     if (fs.existsSync(wxmlFile)) {
       try {
         const rawWxml = fs.readFileSync(wxmlFile, "utf8");
-        renderedWxml = evaluateWxmlTemplate(rawWxml, instance.data as Record<string, unknown>, path.dirname(wxmlFile));
+        const modCtx = moduleContexts.get(jsFile) || {};
+        const evaluationScope = {
+          ...sandboxContext,
+          ...modCtx,
+          ...((compDef.methods || {}) as Record<string, unknown>),
+          ...(instance.data as Record<string, unknown>),
+        };
+        renderedWxml = evaluateWxmlTemplate(rawWxml, evaluationScope, path.dirname(wxmlFile));
       } catch (err) {
         errors.push(`WXML evaluation error: ${(err as Error).message}`);
       }
