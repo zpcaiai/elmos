@@ -277,3 +277,6 @@ class StateMachineEngine:
         if aggregate_id:
             return [log for log in self._audit_ledger if log.aggregate_id == aggregate_id]
         return list(self._audit_ledger)
+
+    def get_audit_ledger(self) -> List[StateTransitionLog]:
+        return list(self._audit_ledger)
