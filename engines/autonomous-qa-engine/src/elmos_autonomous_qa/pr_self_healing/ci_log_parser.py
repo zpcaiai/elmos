@@ -80,6 +80,13 @@ class CILogParser:
         traces: list[FailureTrace] = []
         # Look for FAILED sections: FAILED tests/test_foo.py::test_bar - AssertionError: ...
         failed_lines = re.findall(r"FAILED\s+([^\s:]+)::([^\s\-]+)(?:\s*-\s*([^\n]+))?", text)
+        if not failed_lines:
+            header_blocks = re.findall(r"_{3,}\s+([A-Za-z0-9_]+)\s+_{3,}(.*?)(?=_{3,}|={3,}|$)", text, re.DOTALL)
+            for func_name, block_text in header_blocks:
+                loc_match = re.search(r"^\s*([A-Za-z0-9_./\-]+\.py):(\d+):\s*([A-Za-z0-9_.]+)", block_text, re.MULTILINE)
+                file_path = loc_match.group(1) if loc_match else "unknown_test.py"
+                failed_lines.append((file_path, func_name, ""))
+
         for file_path, func_name, inline_msg in failed_lines:
             # Locate full failure block for this test
             block_pattern = rf"_{3,}\s+{re.escape(func_name)}\s+_{3,}(.*?)(?:_{3,}|$)"

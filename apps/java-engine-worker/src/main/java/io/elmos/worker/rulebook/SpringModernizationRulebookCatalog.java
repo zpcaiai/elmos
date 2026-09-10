@@ -66,7 +66,22 @@ public final class SpringModernizationRulebookCatalog {
             if (sourceContent == null || sourceContent.isEmpty() || sourcePattern == null || sourcePattern.isEmpty()) {
                 return false;
             }
-            return sourceContent.contains(sourcePattern);
+            if (sourceContent.contains(sourcePattern)) {
+                return true;
+            }
+            if (sourcePattern.startsWith("@") && sourcePattern.contains("(")) {
+                String annotationName = sourcePattern.substring(0, sourcePattern.indexOf('('));
+                if (sourceContent.contains(annotationName)) {
+                    return true;
+                }
+            }
+            if (sourcePattern.contains("(") && !sourcePattern.startsWith("@")) {
+                String methodName = sourcePattern.substring(0, sourcePattern.indexOf('('));
+                if (sourceContent.contains(methodName + "(")) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
