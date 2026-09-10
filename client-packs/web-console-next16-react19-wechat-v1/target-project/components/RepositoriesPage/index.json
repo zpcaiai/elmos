@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "repository-workspace-studio": "/components/RepositoryWorkspaceStudio/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

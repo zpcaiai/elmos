@@ -1,25 +1,25 @@
 // Top-level helpers and constants
-try { const chunkBytes = 256 * 1024; } catch(e) {}
-try { const maximumProcessableAssetBytes = 64 * 1024 * 1024; } catch(e) {}
-try { const maximumBatchAssets = 256; } catch(e) {}
-try { const maximumBatchBytes = 512 * 1024 * 1024; } catch(e) {}
-try { const maximumSkillResponseBytes = 4 * 1024 * 1024; } catch(e) {}
-try { const maximumReviewQueueTasks = 10_000; } catch(e) {}
-try { const maximumReviewQueuePages = 50; } catch(e) {}
-try { const maximumReviewSources = 1_000; } catch(e) {}
-try { const maximumReviewSourcePages = 5; } catch(e) {}
-try { const maximumStoredReviewClaims = 100; } catch(e) {}
-try { const maximumStoredReviewEnqueueAttempts = 100; } catch(e) {}
-try { const reviewClaimLeaseSeconds = 900; } catch(e) {}
-try { const skillRequestTimeoutMs = 60_000; } catch(e) {}
-try { const pendingReviewClaimRecoveryMs = (reviewClaimLeaseSeconds * 1000
+try { var chunkBytes = 256 * 1024; } catch(e) {}
+try { var maximumProcessableAssetBytes = 64 * 1024 * 1024; } catch(e) {}
+try { var maximumBatchAssets = 256; } catch(e) {}
+try { var maximumBatchBytes = 512 * 1024 * 1024; } catch(e) {}
+try { var maximumSkillResponseBytes = 4 * 1024 * 1024; } catch(e) {}
+try { var maximumReviewQueueTasks = 10_000; } catch(e) {}
+try { var maximumReviewQueuePages = 50; } catch(e) {}
+try { var maximumReviewSources = 1_000; } catch(e) {}
+try { var maximumReviewSourcePages = 5; } catch(e) {}
+try { var maximumStoredReviewClaims = 100; } catch(e) {}
+try { var maximumStoredReviewEnqueueAttempts = 100; } catch(e) {}
+try { var reviewClaimLeaseSeconds = 900; } catch(e) {}
+try { var skillRequestTimeoutMs = 60_000; } catch(e) {}
+try { var pendingReviewClaimRecoveryMs = (reviewClaimLeaseSeconds * 1000
     + skillRequestTimeoutMs
     + 2 * 60 * 1000); } catch(e) {}
-try { const webBffRoute = "/api/multimodal-intake/v1/execute"; } catch(e) {}
-try { const browserRequestSchemaVersion = "multimodal-intake-browser-request-v1"; } catch(e) {}
-try { const recoveryDatabaseName = "elmos-multimodal-intake-recovery-v1"; } catch(e) {}
-try { const recoveryStoreName = "upload-recovery"; } catch(e) {}
-try { const recoveryRecordKeys = new Set([
+try { var webBffRoute = "/api/multimodal-intake/v1/execute"; } catch(e) {}
+try { var browserRequestSchemaVersion = "multimodal-intake-browser-request-v1"; } catch(e) {}
+try { var recoveryDatabaseName = "elmos-multimodal-intake-recovery-v1"; } catch(e) {}
+try { var recoveryStoreName = "upload-recovery"; } catch(e) {}
+try { var recoveryRecordKeys = new Set([
     "schemaVersion",
     "identityScope",
     "fileFingerprint",
@@ -41,11 +41,11 @@ try { const recoveryRecordKeys = new Set([
     "modelReadAllowed",
     "updatedAt",
 ]); } catch(e) {}
-try { const legacyReviewClaimStorageKey = "elmos-multimodal-review-claims-v1"; } catch(e) {}
-try { const reviewClaimStoragePrefix = "elmos-multimodal-review-claims-v2"; } catch(e) {}
-try { const legacyReviewEnqueueStoragePrefix = "elmos-multimodal-review-enqueue-v1"; } catch(e) {}
-try { const reviewEnqueueStoragePrefix = "elmos-multimodal-review-enqueue-v2"; } catch(e) {}
-try { const reviewClaimKeys = new Set([
+try { var legacyReviewClaimStorageKey = "elmos-multimodal-review-claims-v1"; } catch(e) {}
+try { var reviewClaimStoragePrefix = "elmos-multimodal-review-claims-v2"; } catch(e) {}
+try { var legacyReviewEnqueueStoragePrefix = "elmos-multimodal-review-enqueue-v1"; } catch(e) {}
+try { var reviewEnqueueStoragePrefix = "elmos-multimodal-review-enqueue-v2"; } catch(e) {}
+try { var reviewClaimKeys = new Set([
     "schema_version",
     "identity_scope",
     "project_id",
@@ -57,7 +57,7 @@ try { const reviewClaimKeys = new Set([
     "fence",
     "expires_at",
 ]); } catch(e) {}
-try { const reviewEnqueueAttemptKeys = new Set([
+try { var reviewEnqueueAttemptKeys = new Set([
     "schema_version",
     "identity_scope",
     "project_scope_digest",
@@ -67,108 +67,108 @@ try { const reviewEnqueueAttemptKeys = new Set([
     "execute_idempotency_key",
     "created_at",
 ]); } catch(e) {}
-try { const reviewSourceEnqueueInputKeys = new Set([
+try { var reviewSourceEnqueueInputKeys = new Set([
     "content_id", "expected_asset_version", "target_kind", "target_digest",
     "expected_head_version", "expected_snapshot_id", "expected_snapshot_digest",
     "expected_head_value_digest", "original_value_digest", "reason",
 ]); } catch(e) {}
-try { const reviewEnqueuePreparationFields = new Set([
+try { var reviewEnqueuePreparationFields = new Set([
     "schema_version", "recovery_handle", "request_digest", "state", "safe_to_clear",
     "expires_at", "prepared_at", "executed_at", "task_id", "enqueue_input",
 ]); } catch(e) {}
-try { const reviewEnqueuePreparationAbsenceFields = new Set([
+try { var reviewEnqueuePreparationAbsenceFields = new Set([
     "schema_version", "recovery_handle", "state", "safe_to_clear",
 ]); } catch(e) {}
-try { const reviewTaskStates = new Set([
+try { var reviewTaskStates = new Set([
     "QUEUED", "CLAIMED", "EDITED", "APPROVED", "REJECTED", "REOPENED",
     "REVERTING", "REVERTED",
 ]); } catch(e) {}
-try { const reviewTaskFullFields = new Set([
+try { var reviewTaskFullFields = new Set([
     "task_id", "tenant_id", "project_id", "asset_id", "target_kind", "target",
     "original_value", "source_digest", "source_ref", "confidence", "reason", "state",
     "current_correction_version", "current_correction_digest", "effective_version",
     "effective_digest", "claim_actor_id", "claim_fence", "claim_expires_at", "version",
     "created_by", "created_at", "updated_at", "closed_at",
 ]); } catch(e) {}
-try { const reviewTaskSummaryFields = new Set([
+try { var reviewTaskSummaryFields = new Set([
     "schema_version", "task_id", "asset_id", "target_kind", "source_digest", "confidence",
     "reason", "state", "current_correction_version", "current_correction_digest",
     "effective_version", "effective_digest", "claim_actor_id", "claim_fence",
     "claim_expires_at", "version", "created_at", "updated_at", "closed_at",
 ]); } catch(e) {}
-try { const reviewSourceRefFields = new Set([
+try { var reviewSourceRefFields = new Set([
     "schema_version", "content_id", "content_version", "content_digest", "asset_sha256",
     "target_kind", "target_digest", "snapshot_id", "snapshot_digest", "head_version",
     "head_value_digest", "source_digest", "provenance_digest",
     "original_value_client_digest", "original_value_digest_contract",
 ]); } catch(e) {}
-try { const reviewSourceSummaryFields = new Set([
+try { var reviewSourceSummaryFields = new Set([
     "schema_version", "content_id", "content_version", "target_kind", "target",
     "target_digest", "confidence", "head_version", "head_direction",
     "head_correction_version", "original_value_client_digest",
     "original_value_digest_contract", "source_ref",
 ]); } catch(e) {}
-try { const reviewSourceDetailFields = new Set([...reviewSourceSummaryFields, "original_value"]); } catch(e) {}
-try { const reviewCorrectionFields = new Set([
+try { var reviewSourceDetailFields = new Set([...reviewSourceSummaryFields, "original_value"]); } catch(e) {}
+try { var reviewCorrectionFields = new Set([
     "correction_id", "tenant_id", "project_id", "task_id", "correction_version",
     "parent_correction_version", "target_kind", "target", "original_value",
     "corrected_value", "source_digest", "actor_id", "reason", "created_at",
     "correction_digest",
 ]); } catch(e) {}
-try { const reviewDecisionFields = new Set([
+try { var reviewDecisionFields = new Set([
     "decision_id", "tenant_id", "project_id", "task_id", "decision_version",
     "decision", "prior_state", "next_state", "correction_version",
     "correction_digest", "source_digest", "actor_id", "reason", "created_at",
 ]); } catch(e) {}
-try { const reviewPropagationSummaryFields = new Set([
+try { var reviewPropagationSummaryFields = new Set([
     "propagation_id", "task_id", "decision_id", "correction_version", "channel",
     "direction", "payload_digest", "effective_value_digest", "state", "claim_fence",
     "claim_expires_at", "dispatch_started_at", "failure_code", "reconciliation_required",
     "version", "updated_at",
 ]); } catch(e) {}
-try { const reviewEffectiveFields = new Set([
+try { var reviewEffectiveFields = new Set([
     "materialized", "state", "effective_version", "effective_value",
     "effective_value_digest", "channels",
 ]); } catch(e) {}
-try { const reviewEffectiveChannelFields = new Set([
+try { var reviewEffectiveChannelFields = new Set([
     "channel", "source_decision_id", "correction_version", "direction",
     "effective_value_digest", "version", "updated_at",
 ]); } catch(e) {}
-try { const supportedExtensions = new Set([
+try { var supportedExtensions = new Set([
     "txt", "md", "markdown", "mdx", "log", "pdf", "doc", "docx",
     "png", "jpg", "jpeg", "webp", "heic", "tiff", "bmp", "svg",
     "mp3", "wav", "m4a", "aac", "flac", "ogg", "opus",
     "zip", "tar", "tar.gz", "gz", "tgz",
 ]); } catch(e) {}
-try { function safeProject(value) {
+try { var safeProject = function safeProject(value) {
     return /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(value);
 } } catch(e) {}
-try { function relativePath(file) {
+try { var relativePath = function relativePath(file) {
     const candidate = file.webkitRelativePath || file.name;
     return candidate.replaceAll("\\", "/").replace(/^\/+/, "");
 } } catch(e) {}
-try { function extensionOf(file) {
+try { var extensionOf = function extensionOf(file) {
     const suffixes = file.name.toLocaleLowerCase("en-US").split(".");
     if (suffixes.length > 2 && suffixes.slice(-2).join(".") === "tar.gz")
         return "tar.gz";
     return suffixes.length > 1 ? suffixes.at(-1) ?? "" : "";
 } } catch(e) {}
-try { function bytesToBase64(bytes) {
+try { var bytesToBase64 = function bytesToBase64(bytes) {
     let binary = "";
     for (let offset = 0; offset < bytes.length; offset += 0x8000) {
         binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
     }
     return btoa(binary);
 } } catch(e) {}
-try { async function sha256(buffer) {
+try { var sha256 = async function sha256(buffer) {
     const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", buffer));
     return [...digest].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 } } catch(e) {}
-try { async function fingerprintFile(file) {
+try { var fingerprintFile = async function fingerprintFile(file) {
     const identity = `${relativePath(file)}\u0000${file.size}\u0000${file.lastModified}`;
     return sha256(new TextEncoder().encode(identity).buffer);
 } } catch(e) {}
-try { const fileHashWorkerSource = `
+try { var fileHashWorkerSource = `
 self.onmessage = async (event) => {
   try {
     const file = event.data;
@@ -181,7 +181,7 @@ self.onmessage = async (event) => {
   }
 };
 `; } catch(e) {}
-try { async function sha256FileOffMainThread(file) {
+try { var sha256FileOffMainThread = async function sha256FileOffMainThread(file) {
     if (typeof Worker === "undefined" || typeof URL.createObjectURL !== "function") {
         throw new Error("FILE_HASH_WORKER_UNAVAILABLE");
     }
@@ -209,19 +209,19 @@ try { async function sha256FileOffMainThread(file) {
         URL.revokeObjectURL(workerUrl);
     }
 } } catch(e) {}
-try { function boundedOpaque(value) {
+try { var boundedOpaque = function boundedOpaque(value) {
     return typeof value === "string"
         && value.length > 0
         && value.length <= 512
         && !/[\u0000-\u001f\u007f]/.test(value);
 } } catch(e) {}
-try { function reviewClaimStorageKey(identityScope) {
+try { var reviewClaimStorageKey = function reviewClaimStorageKey(identityScope) {
     return `${reviewClaimStoragePrefix}:${identityScope}`;
 } } catch(e) {}
-try { function reviewEnqueueStorageKey(identityScope) {
+try { var reviewEnqueueStorageKey = function reviewEnqueueStorageKey(identityScope) {
     return `${reviewEnqueueStoragePrefix}:${identityScope}`;
 } } catch(e) {}
-try { function structurallyValidReviewEnqueueAttempt(value) {
+try { var structurallyValidReviewEnqueueAttempt = function structurallyValidReviewEnqueueAttempt(value) {
     if (!value || typeof value !== "object" || Array.isArray(value))
         return false;
     const attempt = value;
@@ -246,7 +246,7 @@ try { function structurallyValidReviewEnqueueAttempt(value) {
         && attempt.created_at >= 0
         && attempt.created_at <= Date.now() + 60_000;
 } } catch(e) {}
-try { function structurallyValidReviewSourceEnqueueInput(value) {
+try { var structurallyValidReviewSourceEnqueueInput = function structurallyValidReviewSourceEnqueueInput(value) {
     if (!value || typeof value !== "object" || Array.isArray(value))
         return false;
     const input = value;
@@ -269,7 +269,7 @@ try { function structurallyValidReviewSourceEnqueueInput(value) {
         && sha256ReferencePattern.test(input.original_value_digest)
         && exactRequiredText(input.reason, 2_000);
 } } catch(e) {}
-try { function loadReviewEnqueueAttempts(identityScope) {
+try { var loadReviewEnqueueAttempts = function loadReviewEnqueueAttempts(identityScope) {
     if (typeof sessionStorage === "undefined")
         return {};
     const storageKey = reviewEnqueueStorageKey(identityScope);
@@ -310,7 +310,7 @@ try { function loadReviewEnqueueAttempts(identityScope) {
             : new Error("HUMAN_REVIEW_ENQUEUE_RECOVERY_CORRUPT");
     }
 } } catch(e) {}
-try { function persistReviewEnqueueAttempts(identityScope, attempts) {
+try { var persistReviewEnqueueAttempts = function persistReviewEnqueueAttempts(identityScope, attempts) {
     const values = Object.values(attempts);
     if (typeof sessionStorage === "undefined"
         || values.length > maximumStoredReviewEnqueueAttempts
@@ -326,17 +326,17 @@ try { function persistReviewEnqueueAttempts(identityScope, attempts) {
         return false;
     }
 } } catch(e) {}
-try { async function reviewEnqueueRequestDigest(input) {
+try { var reviewEnqueueRequestDigest = async function reviewEnqueueRequestDigest(input) {
     return `sha256:${await sha256(new TextEncoder().encode(canonicalStrictJson(input)).buffer)}`;
 } } catch(e) {}
-try { async function reviewProjectScopeDigest(identityScope, projectId) {
+try { var reviewProjectScopeDigest = async function reviewProjectScopeDigest(identityScope, projectId) {
     return `sha256:${await sha256(new TextEncoder().encode(canonicalStrictJson({
         schema_version: "multimodal-review-project-scope-v1",
         identity_scope: identityScope,
         project_id: projectId,
     })).buffer)}`;
 } } catch(e) {}
-try { async function validatedReviewEnqueuePreparation(value, attempt, expectedStates) {
+try { var validatedReviewEnqueuePreparation = async function validatedReviewEnqueuePreparation(value, attempt, expectedStates) {
     if (!value || typeof value !== "object" || Array.isArray(value)) {
         throw new Error("HUMAN_REVIEW_ENQUEUE_PREPARATION_INVALID");
     }
@@ -371,7 +371,7 @@ try { async function validatedReviewEnqueuePreparation(value, attempt, expectedS
         throw new Error("HUMAN_REVIEW_ENQUEUE_PREPARATION_INVALID");
     return { preparation, input };
 } } catch(e) {}
-try { function exactReviewEnqueuePreparationAbsence(value, attempt) {
+try { var exactReviewEnqueuePreparationAbsence = function exactReviewEnqueuePreparationAbsence(value, attempt) {
     if (!value || typeof value !== "object" || Array.isArray(value))
         return false;
     const preparation = value;
@@ -381,7 +381,7 @@ try { function exactReviewEnqueuePreparationAbsence(value, attempt) {
         && preparation.state === "ABSENT"
         && preparation.safe_to_clear === true;
 } } catch(e) {}
-try { const jobProgressResultByState = Object.freeze({
+try { var jobProgressResultByState = Object.freeze({
     QUEUED: "NOT_RUN",
     RUNNING: "NOT_RUN",
     COMPLETED: "PASSED",
@@ -391,7 +391,7 @@ try { const jobProgressResultByState = Object.freeze({
     FAILED: "FAILED",
     CANCELLED: "BLOCKED",
 }); } catch(e) {}
-try { async function validatedJobProgressEvent(source, jobId, lastEventId) {
+try { var validatedJobProgressEvent = async function validatedJobProgressEvent(source, jobId, lastEventId) {
     const value = parseStrictJson(source, { maximumDepth: 4, maximumNodes: 32 });
     if (!value || typeof value !== "object" || Array.isArray(value)) {
         throw new Error("MULTIMODAL_PROGRESS_EVENT_INVALID");
@@ -436,7 +436,7 @@ try { async function validatedJobProgressEvent(source, jobId, lastEventId) {
         throw new Error("MULTIMODAL_PROGRESS_EVENT_DIGEST_INVALID");
     return event;
 } } catch(e) {}
-try { function structurallyValidReviewClaim(value) {
+try { var structurallyValidReviewClaim = function structurallyValidReviewClaim(value) {
     if (!value || typeof value !== "object" || Array.isArray(value))
         return false;
     const claim = value;
@@ -473,7 +473,7 @@ try { function structurallyValidReviewClaim(value) {
         return false;
     return true;
 } } catch(e) {}
-try { function validReviewClaim(value, identityScope, now = Date.now()) {
+try { var validReviewClaim = function validReviewClaim(value, identityScope, now = Date.now()) {
     if (!structurallyValidReviewClaim(value) || value.identity_scope !== identityScope)
         return false;
     if (value.fence === undefined) {
@@ -481,7 +481,7 @@ try { function validReviewClaim(value, identityScope, now = Date.now()) {
     }
     return Date.parse(value.expires_at) > now;
 } } catch(e) {}
-try { function loadReviewClaims(identityScope) {
+try { var loadReviewClaims = function loadReviewClaims(identityScope) {
     if (typeof sessionStorage === "undefined")
         return {};
     try {
@@ -525,7 +525,7 @@ try { function loadReviewClaims(identityScope) {
         return {};
     }
 } } catch(e) {}
-try { function persistReviewClaims(claims, identityScope) {
+try { var persistReviewClaims = function persistReviewClaims(claims, identityScope) {
     if (typeof sessionStorage === "undefined")
         return false;
     const values = Object.values(claims);
@@ -541,7 +541,7 @@ try { function persistReviewClaims(claims, identityScope) {
         return false;
     }
 } } catch(e) {}
-try { function validRecoveryRecord(value) {
+try { var validRecoveryRecord = function validRecoveryRecord(value) {
     if (!value || typeof value !== "object" || Array.isArray(value))
         return false;
     const record = value;
@@ -598,7 +598,7 @@ try { function validRecoveryRecord(value) {
         return false;
     return true;
 } } catch(e) {}
-try { function recoveryStorageKey(record) {
+try { var recoveryStorageKey = function recoveryStorageKey(record) {
     return JSON.stringify([
         record.identityScope,
         record.projectId,
@@ -606,7 +606,7 @@ try { function recoveryStorageKey(record) {
         record.fileFingerprint,
     ]);
 } } catch(e) {}
-try { function openRecoveryDatabase() {
+try { var openRecoveryDatabase = function openRecoveryDatabase() {
     if (typeof indexedDB === "undefined")
         return Promise.reject(new Error("RECOVERY_STORE_UNAVAILABLE"));
     return new Promise((resolve, reject) => {
@@ -627,7 +627,7 @@ try { function openRecoveryDatabase() {
         request.onblocked = () => reject(new Error("RECOVERY_STORE_BLOCKED"));
     });
 } } catch(e) {}
-try { async function readRecoveryValues() {
+try { var readRecoveryValues = async function readRecoveryValues() {
     const database = await openRecoveryDatabase();
     return new Promise((resolve, reject) => {
         const transaction = database.transaction(recoveryStoreName, "readonly");
@@ -640,7 +640,7 @@ try { async function readRecoveryValues() {
         transaction.onabort = () => { database.close(); reject(new Error("RECOVERY_STORE_READ_FAILED")); };
     });
 } } catch(e) {}
-try { async function replaceRecoveryValues(records) {
+try { var replaceRecoveryValues = async function replaceRecoveryValues(records) {
     const database = await openRecoveryDatabase();
     await new Promise((resolve, reject) => {
         const transaction = database.transaction(recoveryStoreName, "readwrite");
@@ -653,7 +653,7 @@ try { async function replaceRecoveryValues(records) {
         transaction.onabort = () => { database.close(); reject(new Error("RECOVERY_STORE_WRITE_FAILED")); };
     });
 } } catch(e) {}
-try { async function putRecoveryValue(record) {
+try { var putRecoveryValue = async function putRecoveryValue(record) {
     const database = await openRecoveryDatabase();
     await new Promise((resolve, reject) => {
         const transaction = database.transaction(recoveryStoreName, "readwrite");
@@ -663,7 +663,7 @@ try { async function putRecoveryValue(record) {
         transaction.onabort = () => { database.close(); reject(new Error("RECOVERY_STORE_WRITE_FAILED")); };
     });
 } } catch(e) {}
-try { async function deleteRecoveryValue(record) {
+try { var deleteRecoveryValue = async function deleteRecoveryValue(record) {
     const database = await openRecoveryDatabase();
     await new Promise((resolve, reject) => {
         const transaction = database.transaction(recoveryStoreName, "readwrite");
@@ -678,14 +678,14 @@ try { async function deleteRecoveryValue(record) {
         transaction.onabort = () => { database.close(); reject(new Error("RECOVERY_STORE_WRITE_FAILED")); };
     });
 } } catch(e) {}
-try { function nestedRecord(response) {
+try { var nestedRecord = function nestedRecord(response) {
     for (const candidate of [response.output, response.outputs, response.data, response.result]) {
         if (candidate && typeof candidate === "object" && !Array.isArray(candidate))
             return candidate;
     }
     return response;
 } } catch(e) {}
-try { function projectPackagePage(response) {
+try { var projectPackagePage = function projectPackagePage(response) {
     const output = nestedRecord(response);
     const items = output.items;
     const packageVersion = output.package_version;
@@ -719,7 +719,7 @@ try { function projectPackagePage(response) {
         collection_digest: collectionDigest,
     };
 } } catch(e) {}
-try { function processingEstimate(response, inputDigest) {
+try { var processingEstimate = function processingEstimate(response, inputDigest) {
     const output = nestedRecord(response);
     const ledger = output.ledger;
     const p50 = output.remaining_seconds_p50;
@@ -756,7 +756,7 @@ try { function processingEstimate(response, inputDigest) {
         estimateDigest,
     };
 } } catch(e) {}
-try { function estimateFileType(file) {
+try { var estimateFileType = function estimateFileType(file) {
     const extension = extensionOf(file);
     if (["png", "jpg", "jpeg", "webp", "heic", "tiff", "bmp", "svg"].includes(extension)) {
         return "image/*";
@@ -772,14 +772,14 @@ try { function estimateFileType(file) {
         return "application/archive";
     return "text/plain";
 } } catch(e) {}
-try { function formatEstimateDuration(seconds) {
+try { var formatEstimateDuration = function formatEstimateDuration(seconds) {
     if (seconds < 60)
         return `${Math.ceil(seconds)} 秒`;
     if (seconds < 3_600)
         return `${Math.ceil(seconds / 60)} 分钟`;
     return `${(seconds / 3_600).toFixed(1)} 小时`;
 } } catch(e) {}
-try { function responseString(response, ...keys) {
+try { var responseString = function responseString(response, ...keys) {
     const sources = [response, nestedRecord(response)];
     for (const source of sources) {
         for (const key of keys) {
@@ -790,13 +790,13 @@ try { function responseString(response, ...keys) {
     }
     return undefined;
 } } catch(e) {}
-try { function outputRecord(response, key) {
+try { var outputRecord = function outputRecord(response, key) {
     const value = nestedRecord(response)[key];
     return value && typeof value === "object" && !Array.isArray(value)
         ? value
         : undefined;
 } } catch(e) {}
-try { function exactReviewOutput(response, keys) {
+try { var exactReviewOutput = function exactReviewOutput(response, keys) {
     const output = nestedRecord(response);
     if (Object.keys(output).length !== keys.length
         || Object.keys(output).some((key) => !keys.includes(key))) {
@@ -804,10 +804,10 @@ try { function exactReviewOutput(response, keys) {
     }
     return output;
 } } catch(e) {}
-try { const reviewPropagationChannels = new Set([
+try { var reviewPropagationChannels = new Set([
     "content-index", "requirements", "project-memory", "downstream",
 ]); } catch(e) {}
-try { function validReviewPropagations(value, taskId, options) {
+try { var validReviewPropagations = function validReviewPropagations(value, taskId, options) {
     if (!Array.isArray(value))
         return false;
     const ids = new Set();
@@ -876,7 +876,7 @@ try { function validReviewPropagations(value, taskId, options) {
         && payloadDigests.size === reviewPropagationChannels.size
         && effectiveDigests.size === 1);
 } } catch(e) {}
-try { function validHistoricalPropagationBatches(value, taskId) {
+try { var validHistoricalPropagationBatches = function validHistoricalPropagationBatches(value, taskId) {
     if (!validReviewPropagations(value, taskId, { exactBatch: false }))
         return false;
     const groups = new Map();
@@ -900,14 +900,14 @@ try { function validHistoricalPropagationBatches(value, taskId) {
     }
     return true;
 } } catch(e) {}
-try { function positiveInteger(value) {
+try { var positiveInteger = function positiveInteger(value) {
     return typeof value === "number" && Number.isSafeInteger(value) && value > 0 ? value : undefined;
 } } catch(e) {}
-try { const reviewTargetKinds = new Set([
+try { var reviewTargetKinds = new Set([
     "TEXT", "SPEAKER", "TIME_RANGE", "BBOX", "TABLE", "REQUIREMENT", "CONFLICT",
 ]); } catch(e) {}
-try { const sha256ReferencePattern = /^sha256:[0-9a-f]{64}$/; } catch(e) {}
-try { function exactReviewTarget(kind, value) {
+try { var sha256ReferencePattern = /^sha256:[0-9a-f]{64}$/; } catch(e) {}
+try { var exactReviewTarget = function exactReviewTarget(kind, value) {
     if (!value || typeof value !== "object" || Array.isArray(value))
         return false;
     const target = value;
@@ -943,7 +943,7 @@ try { function exactReviewTarget(kind, value) {
     }
     return exactKeys("conflict_id") && resourceId(target.conflict_id);
 } } catch(e) {}
-try { function exactTimestamp(value) {
+try { var exactTimestamp = function exactTimestamp(value) {
     if (typeof value !== "string" || !boundedOpaque(value))
         return false;
     const matched = /^(\d{4})-(\d{2})-(\d{2})T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.exec(value);
@@ -958,17 +958,17 @@ try { function exactTimestamp(value) {
     const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     return day >= 1 && day <= days[month - 1];
 } } catch(e) {}
-try { function exactRequiredText(value, maximumBytes) {
+try { var exactRequiredText = function exactRequiredText(value, maximumBytes) {
     return typeof value === "string"
         && value.length > 0
         && value === value.trim()
         && new TextEncoder().encode(value).byteLength <= maximumBytes;
 } } catch(e) {}
-try { function exactObjectFields(value, fields) {
+try { var exactObjectFields = function exactObjectFields(value, fields) {
     return Object.keys(value).length === fields.size
         && Object.keys(value).every((key) => fields.has(key));
 } } catch(e) {}
-try { function exactReviewSourceRef(value, task) {
+try { var exactReviewSourceRef = function exactReviewSourceRef(value, task) {
     if (!value || typeof value !== "object" || Array.isArray(value))
         return false;
     const source = value;
@@ -990,7 +990,7 @@ try { function exactReviewSourceRef(value, task) {
         && source.original_value_digest_contract === "sha256:rfc8785-ijson-safeint-v1"
         && digestFields.every((field) => (typeof source[field] === "string" && sha256ReferencePattern.test(source[field])));
 } } catch(e) {}
-try { function reviewSource(value) {
+try { var reviewSource = function reviewSource(value) {
     if (!value || typeof value !== "object" || Array.isArray(value))
         return undefined;
     const candidate = value;
@@ -1062,10 +1062,10 @@ try { function reviewSource(value) {
         detail_loaded: detail,
     };
 } } catch(e) {}
-try { function reviewSourceKey(source) {
+try { var reviewSourceKey = function reviewSourceKey(source) {
     return `${source.target_kind}:${source.target_digest}:${source.head_version}`;
 } } catch(e) {}
-try { async function validatedReviewSource(value, expected) {
+try { var validatedReviewSource = async function validatedReviewSource(value, expected) {
     const source = reviewSource(value);
     if (!source
         || source.content_id !== expected.contentId
@@ -1100,7 +1100,7 @@ try { async function validatedReviewSource(value, expected) {
     }
     return source;
 } } catch(e) {}
-try { function reviewTask(value, expectedScope) {
+try { var reviewTask = function reviewTask(value, expectedScope) {
     if (!value || typeof value !== "object" || Array.isArray(value))
         return undefined;
     const candidate = value;
@@ -1206,7 +1206,7 @@ try { function reviewTask(value, expectedScope) {
         detail_loaded: !summary,
     };
 } } catch(e) {}
-try { function exactCurrentReviewCorrection(value, task) {
+try { var exactCurrentReviewCorrection = function exactCurrentReviewCorrection(value, task) {
     if (!value || typeof value !== "object" || Array.isArray(value))
         return false;
     const correction = value;
@@ -1229,7 +1229,7 @@ try { function exactCurrentReviewCorrection(value, task) {
         && exactTimestamp(correction.created_at)
         && correction.correction_digest === task.current_correction_digest;
 } } catch(e) {}
-try { function exactReviewCorrection(value, priorTask, nextTask, correctedValue, reason) {
+try { var exactReviewCorrection = function exactReviewCorrection(value, priorTask, nextTask, correctedValue, reason) {
     if (!exactCurrentReviewCorrection(value, nextTask))
         return false;
     const correction = value;
@@ -1250,7 +1250,7 @@ try { function exactReviewCorrection(value, priorTask, nextTask, correctedValue,
         && correction.reason === reason
         && correction.correction_digest === nextTask.current_correction_digest;
 } } catch(e) {}
-try { function exactReviewDecision(value, priorTask, nextTask, operation, reason, currentCorrection, trustedActorId) {
+try { var exactReviewDecision = function exactReviewDecision(value, priorTask, nextTask, operation, reason, currentCorrection, trustedActorId) {
     if (!value || typeof value !== "object" || Array.isArray(value))
         return false;
     const decision = value;
@@ -1286,7 +1286,7 @@ try { function exactReviewDecision(value, priorTask, nextTask, operation, reason
         && (!(operation === "approve" || operation === "revert")
             || expectedCorrectionVersion !== null && expectedCorrectionDigest !== null);
 } } catch(e) {}
-try { function exactReviewEffective(value, task, propagations) {
+try { var exactReviewEffective = function exactReviewEffective(value, task, propagations) {
     if (!value || typeof value !== "object" || Array.isArray(value))
         return false;
     const effective = value;
@@ -1358,7 +1358,7 @@ try { function exactReviewEffective(value, task, propagations) {
     return sourceBatch.length === reviewPropagationChannels.size
         && sourceChannels.size === reviewPropagationChannels.size;
 } } catch(e) {}
-try { function reviewTaskDynamicState(task) {
+try { var reviewTaskDynamicState = function reviewTaskDynamicState(task) {
     return {
         state: task.state,
         current_correction_version: task.current_correction_version,
@@ -1372,7 +1372,7 @@ try { function reviewTaskDynamicState(task) {
         closed_at: task.closed_at ?? null,
     };
 } } catch(e) {}
-try { function exactReviewCursor(value, expectedFilterDigest, lastTask) {
+try { var exactReviewCursor = function exactReviewCursor(value, expectedFilterDigest, lastTask) {
     if (!/^[A-Za-z0-9_-]{1,4096}$/.test(value))
         return false;
     try {
@@ -1401,7 +1401,7 @@ try { function exactReviewCursor(value, expectedFilterDigest, lastTask) {
         return false;
     }
 } } catch(e) {}
-try { function exactReviewSourceCursor(value, expectedFilterDigest, expectedCollectionDigest, expectedCollectionGeneration, lastSource) {
+try { var exactReviewSourceCursor = function exactReviewSourceCursor(value, expectedFilterDigest, expectedCollectionDigest, expectedCollectionGeneration, lastSource) {
     if (!/^[A-Za-z0-9_-]{1,4096}$/.test(value))
         return undefined;
     try {
@@ -1442,7 +1442,7 @@ try { function exactReviewSourceCursor(value, expectedFilterDigest, expectedColl
         return undefined;
     }
 } } catch(e) {}
-try { function strictSkillResponse(value, httpOk, expectedSkill, expectedOperation) {
+try { var strictSkillResponse = function strictSkillResponse(value, httpOk, expectedSkill, expectedOperation) {
     if (!value || typeof value !== "object" || Array.isArray(value)) {
         throw new Error("MULTIMODAL_RESPONSE_INVALID");
     }
@@ -1522,7 +1522,7 @@ try { function strictSkillResponse(value, httpOk, expectedSkill, expectedOperati
     }
     return response;
 } } catch(e) {}
-try { async function readSkillResponse(response, expectedSkill, expectedOperation) {
+try { var readSkillResponse = async function readSkillResponse(response, expectedSkill, expectedOperation) {
     const mediaType = response.headers.get("content-type")?.split(";", 1)[0].trim().toLowerCase();
     if (mediaType !== "application/json")
         throw new Error("MULTIMODAL_RESPONSE_MEDIA_TYPE_INVALID");
@@ -1590,7 +1590,7 @@ try { async function readSkillResponse(response, expectedSkill, expectedOperatio
         throw error;
     }
 } } catch(e) {}
-try { async function executeSkill(projectId, skill, operation, input, idempotencyKey) {
+try { var executeSkill = async function executeSkill(projectId, skill, operation, input, idempotencyKey) {
     const controller = new AbortController();
     const timer = window.setTimeout(() => controller.abort("MULTIMODAL_REQUEST_TIMEOUT"), skillRequestTimeoutMs);
     try {
@@ -1634,7 +1634,7 @@ try { async function executeSkill(projectId, skill, operation, input, idempotenc
         window.clearTimeout(timer);
     }
 } } catch(e) {}
-try { function phaseFrom(response) {
+try { var phaseFrom = function phaseFrom(response) {
     const status = (response.status ?? response.state ?? responseString(response, "status", "state", "asset_status", "result_status", "job_status") ?? "").toUpperCase();
     if (["READY", "SUCCEEDED", "PASSED", "COMPLETED", "CODE_IMPLEMENTED_LOCAL"].includes(status))
         return "READY";
@@ -1646,7 +1646,7 @@ try { function phaseFrom(response) {
         return "QUARANTINED";
     return "BLOCKED";
 } } catch(e) {}
-try { function failureDetails(error, fallback) {
+try { var failureDetails = function failureDetails(error, fallback) {
     const payload = error?.payload;
     const code = payload
         ? responseString(payload, "code", "error_code") ?? fallback

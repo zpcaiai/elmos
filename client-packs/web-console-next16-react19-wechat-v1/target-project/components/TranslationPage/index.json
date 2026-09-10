@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "translation-studio": "/components/TranslationStudio/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

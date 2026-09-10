@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const dynamic = "force-dynamic"; } catch(e) {}
+try { var dynamic = "force-dynamic"; } catch(e) {}
 
 Component({
   options: {

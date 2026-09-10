@@ -1,92 +1,73 @@
-const { createHandPortComponent } = require("../../runtime/hand-port-runtime");
+// Top-level helpers and constants
+try { var jobStatuses = [
+    ["ALL", "全部状态"],
+    ["QUEUED", "排队 QUEUED"],
+    ["CLAIMED", "已认领 CLAIMED"],
+    ["RUNNING", "执行中 RUNNING"],
+    ["SUCCEEDED", "成功 SUCCEEDED"],
+    ["PARTIAL", "部分成功 PARTIAL"],
+    ["FAILED", "失败 FAILED"],
+    ["CANCELLED", "已取消 CANCELLED"],
+    ["LOST", "丢失 LOST"],
+]; } catch(e) {}
+try { var yuan = function yuan(minor) {
+    if (minor === null || minor === undefined)
+        return "未计费";
+    const value = typeof minor === "number" ? minor : Number(minor);
+    if (!Number.isFinite(value))
+        return "未计费";
+    return (value / 100).toLocaleString("zh-CN", {
+        style: "currency",
+        currency: "CNY",
+        minimumFractionDigits: 2,
+    });
+} } catch(e) {}
+try { var moment = function moment(value) {
+    if (!value)
+        return "—";
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? "—" : parsed.toLocaleString("zh-CN", { hour12: false });
+} } catch(e) {}
+try { var elapsed = function elapsed(row) {
+    if (!row.startedAt)
+        return "—";
+    const started = new Date(row.startedAt);
+    if (Number.isNaN(started.getTime()))
+        return "—";
+    const end = row.finishedAt ? new Date(row.finishedAt) : new Date();
+    if (Number.isNaN(end.getTime()))
+        return "—";
+    const seconds = Math.max(0, Math.round((end.getTime() - started.getTime()) / 1000));
+    return `${seconds}s`;
+} } catch(e) {}
 
-Component(createHandPortComponent({
-  "schemaVersion": "1.0",
-  "componentName": "PlatformJobsPanel",
-  "title": "25",
-  "role": "table",
-  "source": {
-    "file": "app/admin/PlatformJobsPanel.tsx",
-    "componentName": "PlatformJobsPanel",
-    "sha256": "sha256:3233268915de085f38d5e618a88ad6d47793570299b8bc8116bf950f1f837332",
-    "range": {
-      "start": 2139,
-      "end": 7774
-    }
+Component({
+  options: {
+    multipleSlots: false,
+    styleIsolation: "apply-shared",
   },
-  "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
-    "reason": "expression kind CallExpression is outside certified-component-v1",
-    "category": "effects-and-resources"
+  properties: {
   },
-  "props": [],
-  "states": [
-    {
-      "name": "rows",
-      "type": "JobRow[]"
+  data: {
+    rows: [],
+    loaded: false,
+    status: "ALL",
+    organization: "",
+    denial: "",
+    busy: false,
+  },
+  lifetimes: {
+    attached() {
+      const setRows = (val) => { this.setData({ rows: typeof val === "function" ? val(this.data.rows) : val }); };
+      const setLoaded = (val) => { this.setData({ loaded: typeof val === "function" ? val(this.data.loaded) : val }); };
+      const setStatus = (val) => { this.setData({ status: typeof val === "function" ? val(this.data.status) : val }); };
+      const setOrganization = (val) => { this.setData({ organization: typeof val === "function" ? val(this.data.organization) : val }); };
+      const setDenial = (val) => { this.setData({ denial: typeof val === "function" ? val(this.data.denial) : val }); };
+      const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
     },
-    {
-      "name": "loaded",
-      "type": "inferred"
+    detached() {
     },
-    {
-      "name": "status",
-      "type": "string"
-    },
-    {
-      "name": "organization",
-      "type": "inferred"
-    },
-    {
-      "name": "denial",
-      "type": "inferred"
-    },
-    {
-      "name": "busy",
-      "type": "inferred"
-    }
-  ],
-  "hooks": [
-    "useState",
-    "useCallback"
-  ],
-  "resources": [],
-  "apiPaths": [],
-  "labels": [
-    "25",
-    "ALL",
-    "FAILED",
-    "LOST",
-    "PLATFORM EXECUTION",
-    "PLATFORM_JOBS_UNREACHABLE",
-    "[A-Za-z0-9][A-Za-z0-9._:-]{0,127}",
-    "alert",
-    "button",
-    "database",
-    "no-store",
-    "organizationId",
-    "overline",
-    "refresh",
-    "search",
-    "secondary-button",
-    "status",
-    "。跨组织任务视图需要平台管理员身份， 与本组织的运营角色是两回事。",
-    "业务线",
-    "任务",
-    "全平台任务执行",
-    "全平台任务状态",
-    "创建",
-    "失败码"
-  ],
-  "adapters": [
-    "wechat-css-module-token-map-v1",
-    "wechat-effect-resource-lifecycle-v1",
-    "wechat-plain-collection-projection-v1",
-    "wechat-scroll-row-table-v1",
-    "wechat-typed-state-decoder-v1"
-  ],
-  "obligations": [
-    "PlatformJobsPanel:source-blocker"
-  ],
-  "irDigest": "sha256:98b0fba6ae3ccaeead373b86ace7de1d75d82364ba3ad210fef6847c007f41bc"
-}));
+  },
+  methods: {
+  },
+});

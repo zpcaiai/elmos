@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const workspaces = [
+try { var workspaces = [
     {
         eyebrow: "BATCH 30 · SPRING",
         title: "Spring 老项目翻新",
@@ -46,7 +46,7 @@ try { const workspaces = [
         meta: "Fail closed · External evidence NOT_RUN",
     },
 ]; } catch(e) {}
-try { const attention = [
+try { var attention = [
     ["转换路线独立验证", "15 语言 / 210 路线已接入；本地通过 Profile 为 0，客户仓库与独立验证全部未运行", "NOT_RUN"],
     ["Spring 外部 Runner 证据", "实验 Pack 已闭环，真实客户仓库、holdout 与独立执行未运行", "NOT_RUN"],
     ["多语言生成外部工具链", "浏览器只准备受控交接，不执行生成", "NOT_RUN"],

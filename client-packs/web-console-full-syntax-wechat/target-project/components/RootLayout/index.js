@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const viewport = {
+try { var viewport = {
     colorScheme: "light dark",
     themeColor: [
         { media: "(prefers-color-scheme: light)", color: "#f4f6f8" },

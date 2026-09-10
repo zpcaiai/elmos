@@ -1,10 +1,10 @@
 // Top-level helpers and constants
-try { function idempotencyKey(prefix, current) {
+try { var idempotencyKey = function idempotencyKey(prefix, current) {
     if (current.current === null)
         current.current = `${prefix}-${crypto.randomUUID()}`;
     return current.current;
 } } catch(e) {}
-try { async function json(response) {
+try { var json = async function json(response) {
     try {
         return await response.json();
     }
@@ -12,14 +12,14 @@ try { async function json(response) {
         return {};
     }
 } } catch(e) {}
-try { function errorMessage(payload, fallback) {
+try { var errorMessage = function errorMessage(payload, fallback) {
     if (payload.code === "TRIAL_ALREADY_USED")
         return "该组织或已验证身份已使用过免费体验。";
     if (payload.code === "ACCOUNT_SESSION_REQUIRED")
         return "请先登录后再管理套餐。";
     return payload.message || fallback;
 } } catch(e) {}
-try { function isTrustedCheckoutHost(provider, hostname) {
+try { var isTrustedCheckoutHost = function isTrustedCheckoutHost(provider, hostname) {
     if (provider === "STRIPE_CHECKOUT") {
         return hostname === "stripe.com" || hostname.endsWith(".stripe.com");
     }
@@ -32,7 +32,7 @@ try { function isTrustedCheckoutHost(provider, hostname) {
     // 微信 Native 不走跳转，走到这里说明上游给错了形态
     return false;
 } } catch(e) {}
-try { function planName(planId) {
+try { var planName = function planName(planId) {
     if (planId === "elmos-free-trial")
         return "免费体验";
     if (planId === "elmos-pro-monthly")
@@ -41,7 +41,7 @@ try { function planName(planId) {
         return "专业年付";
     return planId;
 } } catch(e) {}
-try { function formatDate(value) {
+try { var formatDate = function formatDate(value) {
     const parsed = new Date(value);
     return Number.isFinite(parsed.getTime())
         ? new Intl.DateTimeFormat("zh-CN", { dateStyle: "long" }).format(parsed)

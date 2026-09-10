@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { function isStoredDraft(value) {
+try { var isStoredDraft = function isStoredDraft(value) {
     if (!value || typeof value !== "object")
         return false;
     const draft = value;
@@ -11,7 +11,7 @@ try { function isStoredDraft(value) {
         && (draft.capabilityId === null || typeof draft.capabilityId === "string")
         && typeof draft.createdAt === "string";
 } } catch(e) {}
-try { const extensions = [
+try { var extensions = [
     { name: "ChinaDB Commercial Migration", publisher: "ELMOS First-party", type: "SQL 转换增强", description: "13 个国产目标身份已登记；仅在显式兼容模式下进行有限 SQL 发射，不代表厂商原生适配，实库执行与认证保持 NOT_RUN。", version: "1.0.0", compatibility: "Batch 31 · COMPATIBILITY_MODE", status: "EXPERIMENTAL", icon: "database" },
     { name: "Language Adapter SDK", publisher: "ELMOS First-party", type: "语言适配器", description: "对接解析器、PSP、类型语义和发射器，并保留未知语义。", version: "0.1.0", compatibility: "Platform 0.1", status: "EXPERIMENTAL", icon: "code" },
     { name: "Evidence Collector SDK", publisher: "ELMOS First-party", type: "证据采集器", description: "采集原生证据并与归一化记录分离，保留首个失败。", version: "0.1.0", compatibility: "Platform 0.1", status: "REVIEW", icon: "file" },

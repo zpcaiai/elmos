@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "modernization-proof-studio": "/components/ModernizationProofStudio/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

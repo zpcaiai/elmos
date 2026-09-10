@@ -1,12 +1,34 @@
-<view class="card" data-component="{{componentName}}">
-  <button class="heading" bindtap="toggleExpanded" aria-expanded="{{expanded}}">{{title}}</button>
-  <view wx:if="{{expanded}}" class="content">
-    <text class="source-label">evidence-edge-details</text>
-    <text class="source-label">evidence-graph-card</text>
-    <text class="source-label">evidence-graph-layer</text>
-    <text class="source-label">evidence-graph-layers</text>
-    <text class="source-label">evidence-graph-node</text>
-    <text class="source-label">evidence-layer-label</text>
-    <view wx:for="{{rows}}" wx:key="key"><text>{{item.key}}: {{item.value}}</text></view>
+<figure class="evidence-graph-card">
+  <figcaption>
+    <text>
+      <text>{{title}}</text>
+      <text>{{description}}</text>
+    </text>
+    <StatusMark status="{{status}}" compact="true" />
+  </figcaption>
+  <EmptyEvidence wx:if="{{nodes.length === 0}}" title="{{`${title}尚无数据`}}" detail="服务端未返回经过校验的结构化图；不会从文件名或日志推断关系。" />
+  <view wx:else class="evidence-graph-layers" aria-label="{{`${title}节点，共 ${nodes.length} 个，可横向滚动`}}" tabIndex="{{0}}">
+    <view wx:for="{{layers}}" wx:for-item="layer" wx:for-index="index" wx:key="layer.id" class="evidence-graph-layer" key="{{`${title}-layer-${index}`}}">
+      <text class="evidence-layer-label">层级 {{index + 1}}</text>
+      <view>
+        <view wx:for="{{layer}}" wx:for-item="node" wx:key="node.id" class="evidence-graph-node" key="{{node.id}}">
+          <text class="evidence-node-kind">{{node.kind}}</text>
+          <text>{{node.label}}</text>
+          <text>{{node.detail}}</text>
+          <StatusMark status="{{node.status}}" compact="true" />
+        </view>
+      </view>
+    </view>
   </view>
-</view>
+  <view wx:if="{{edges.length > 0}}" class="evidence-edge-details">
+    <view>查看全部关系 · {{edges.length}}</view>
+    <view>
+      <view wx:for="{{edges}}" wx:for-item="edge" wx:for-index="index" wx:key="edge.id" key="{{`${edge.from}-${edge.to}-${edge.label}-${index}`}}">
+        <text>{{nodesById.get(edge.from)?.label ?? edge.from}}</text>
+        <text aria-label="{{edge.label}}">→</text>
+        <text>{{nodesById.get(edge.to)?.label ?? edge.to}}</text>
+        <text>{{edge.label}}</text>
+      </view>
+    </view>
+  </view>
+</figure>

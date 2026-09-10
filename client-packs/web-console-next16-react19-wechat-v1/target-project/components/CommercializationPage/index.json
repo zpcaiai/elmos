@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "commercialization-console": "/components/CommercializationConsole/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

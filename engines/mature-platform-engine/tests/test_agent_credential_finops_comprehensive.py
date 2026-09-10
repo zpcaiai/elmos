@@ -68,7 +68,7 @@ class TestGovernedAgentFactory(unittest.TestCase):
         # execute_command
         auth_exec, msg_exec = self.factory.authorize_tool_call("agent-2", "execute_command", "tenant-1")
         self.assertFalse(auth_exec)
-        self.assertIn("insufficient", msg_exec)
+        self.assertIn("INSUFFICIENT", msg_exec)
 
     def test_kill_switch_verify_killed(self):
         """Kill switch: verify agent marked as killed"""

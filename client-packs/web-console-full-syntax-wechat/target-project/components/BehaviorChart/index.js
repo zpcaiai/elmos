@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const statusPresentation = {
+try { var statusPresentation = {
     PASSED: { label: "已通过", short: "通过", tone: "passed" },
     FAILED: { label: "失败", short: "失败", tone: "failed" },
     BLOCKED: { label: "阻断", short: "阻断", tone: "blocked" },
@@ -10,7 +10,7 @@ try { const statusPresentation = {
     REPRESENTED: { label: "已表示", short: "已表示", tone: "represented" },
     DECLARED: { label: "已声明", short: "已声明", tone: "declared" },
 }; } catch(e) {}
-try { const generationLanguageLabels = {
+try { var generationLanguageLabels = {
     java: "Java",
     python: "Python",
     csharp: "C#",
@@ -20,7 +20,7 @@ try { const generationLanguageLabels = {
     php: "PHP",
     rust: "Rust",
 }; } catch(e) {}
-try { const segmentOrder = [
+try { var segmentOrder = [
     "PASSED",
     "FAILED",
     "BLOCKED",
@@ -28,10 +28,10 @@ try { const segmentOrder = [
     "UNKNOWN",
     "NOT_APPLICABLE",
 ]; } catch(e) {}
-try { function finiteCount(value) {
+try { var finiteCount = function finiteCount(value) {
     return Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
 } } catch(e) {}
-try { function graphLayers(nodes, edges) {
+try { var graphLayers = function graphLayers(nodes, edges) {
     const nodeIds = new Set(nodes.map((node) => node.id));
     const depth = new Map(nodes.map((node) => [node.id, 0]));
     for (let pass = 0; pass < nodes.length; pass += 1) {
@@ -57,7 +57,7 @@ try { function graphLayers(nodes, edges) {
         .sort(([left], [right]) => left - right)
         .map(([, layerNodes]) => layerNodes.sort((left, right) => left.label.localeCompare(right.label)));
 } } catch(e) {}
-try { function projectStructureGraph(structure) {
+try { var projectStructureGraph = function projectStructureGraph(structure) {
     return {
         nodes: structure.nodes.map((node) => ({
             id: node.id,
@@ -69,7 +69,7 @@ try { function projectStructureGraph(structure) {
         edges: structure.edges.map((edge) => ({ ...edge, label: edge.type })),
     };
 } } catch(e) {}
-try { function fallbackStructureGraph(structure) {
+try { var fallbackStructureGraph = function fallbackStructureGraph(structure) {
     return {
         nodes: structure.nodes.map((node) => ({
             id: node.id,
@@ -81,7 +81,7 @@ try { function fallbackStructureGraph(structure) {
         edges: structure.edges.map((edge) => ({ ...edge, label: edge.relation })),
     };
 } } catch(e) {}
-try { function dependencyGraph(graph) {
+try { var dependencyGraph = function dependencyGraph(graph) {
     return {
         nodes: graph.nodes.map((node) => ({
             id: node.id,
@@ -97,7 +97,7 @@ try { function dependencyGraph(graph) {
         })),
     };
 } } catch(e) {}
-try { function matrixLanguages(behavior) {
+try { var matrixLanguages = function matrixLanguages(behavior) {
     const languages = [];
     for (const language of [
         ...behavior.targets.map((target) => target.language),

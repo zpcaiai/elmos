@@ -1,6 +1,6 @@
 // Top-level helpers and constants
-try { const latestRunStorageKey = "elmos.spring.latest-run-id"; } catch(e) {}
-try { function buildStageCards(capability, target) {
+try { var latestRunStorageKey = "elmos.spring.latest-run-id"; } catch(e) {}
+try { var buildStageCards = function buildStageCards(capability, target) {
     const verifiedRoutes = capability?.routes?.filter((route) => route.evidenceStatus === "PASSED_LOCAL").length ?? (capability ? 1 : 0);
     const source = capability
         ? `${capability.routes?.length ?? 1} 条声明路线；${verifiedRoutes} 个精确点有本地工程证据`
@@ -26,14 +26,14 @@ try { function buildStageCards(capability, target) {
         { stages: ["STOP_APPLICATION"], title: "日志 / 停止 / 重试", detail: "实时脱敏日志、优雅停止与新的可追溯尝试。" },
     ];
 } } catch(e) {}
-try { function routeSourceFamilyLabel(route) {
+try { var routeSourceFamilyLabel = function routeSourceFamilyLabel(route) {
     if (route.sourceFrameworkFamily === "spring-mvc")
         return "Spring Framework MVC";
     if (route.sourceFrameworkFamily === "spring-framework")
         return "Spring Framework";
     return "Spring Boot";
 } } catch(e) {}
-try { function routeSourceConstraintLabel(route) {
+try { var routeSourceConstraintLabel = function routeSourceConstraintLabel(route) {
     if (route.exactSourceVersion)
         return `exact ${route.exactSourceVersion}`;
     if (route.sourceConstraint?.startsWith("exact:")) {
@@ -42,18 +42,18 @@ try { function routeSourceConstraintLabel(route) {
     return route.sourceConstraint
         ?? `[${route.sourceBootMinInclusive}, ${route.sourceBootMaxExclusive})`;
 } } catch(e) {}
-try { function routeEvidenceLabel(route) {
+try { var routeEvidenceLabel = function routeEvidenceLabel(route) {
     const sourceFamily = routeSourceFamilyLabel(route);
     return route.evidenceStatus === "PASSED_LOCAL"
         ? `PASSED_LOCAL @ ${sourceFamily} ${route.verifiedSourceSpringBoot} / Java ${route.verifiedSourceJava}`
         : `${route.evidenceStatus} · ${sourceFamily}`;
 } } catch(e) {}
-try { function routeLaunchStatus(route) {
+try { var routeLaunchStatus = function routeLaunchStatus(route) {
     if (route.launchStatus)
         return route.launchStatus;
     return route.evidenceStatus === "NOT_IMPLEMENTED" ? "INVENTORY_ONLY" : "EXPERIMENTAL";
 } } catch(e) {}
-try { function fingerprintSourceLabel(fingerprint) {
+try { var fingerprintSourceLabel = function fingerprintSourceLabel(fingerprint) {
     const version = fingerprint.sourceFrameworkVersion?.trim()
         || fingerprint.springBootVersion.trim()
         || "UNKNOWN";
@@ -63,23 +63,23 @@ try { function fingerprintSourceLabel(fingerprint) {
             ? `Spring Framework ${version}`
             : `Spring Boot ${version}`;
 } } catch(e) {}
-try { const orderedStages = [
+try { var orderedStages = [
     "IMPORT_GIT", "LOCK_SNAPSHOT", "FINGERPRINT", "SOURCE_BASELINE", "EXTRACT_FCM",
     "OPENREWRITE", "BUILD_AND_TEST", "DETERMINISTIC_REPAIR", "PACKAGE_ARTIFACT",
     "INDEPENDENT_VALIDATION", "READY", "START_APPLICATION", "HEALTH_CHECK", "STOP_APPLICATION",
 ]; } catch(e) {}
-try { function randomKey(prefix) {
+try { var randomKey = function randomKey(prefix) {
     return `${prefix}-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`;
 } } catch(e) {}
-try { function shortDigest(value) {
+try { var shortDigest = function shortDigest(value) {
     return value ? `${value.slice(0, 12)}…${value.slice(-8)}` : "等待生成";
 } } catch(e) {}
-try { function formatBytes(value) {
+try { var formatBytes = function formatBytes(value) {
     if (!value)
         return "等待生成";
     return value < 1024 * 1024 ? `${Math.ceil(value / 1024)} KB` : `${(value / 1024 / 1024).toFixed(1)} MB`;
 } } catch(e) {}
-try { async function api(url, init, credentials) {
+try { var api = async function api(url, init, credentials) {
     const response = await fetch(url, {
         cache: "no-store",
         ...init,

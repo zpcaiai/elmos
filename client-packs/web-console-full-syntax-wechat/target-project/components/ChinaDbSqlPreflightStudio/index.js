@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const targetPresets = {
+try { var targetPresets = {
     dm8: {
         targetVersion: "8.1.3.140",
         targetEdition: "enterprise",
@@ -118,14 +118,14 @@ try { const targetPresets = {
         targetTimeZone: "Asia/Shanghai",
     },
 }; } catch(e) {}
-try { const initialFields = {
+try { var initialFields = {
     queryId: "web-sql-preflight",
     sourceProfile: "oracle-26ai-ee",
     targetId: "dm8",
     ...targetPresets.dm8,
     sql: "SELECT 1 FROM t\n",
 }; } catch(e) {}
-try { const fieldErrors = {
+try { var fieldErrors = {
     ACCOUNT_SESSION_REQUIRED: "请先登录企业账户，再运行 SQL 预检。",
     ACCOUNT_PERMISSION_REQUIRED: "当前账户缺少 SQL 迁移预检权限。",
     CSRF_ORIGIN_REJECTED: "请求未通过同源校验，请刷新页面后重试。",
@@ -140,7 +140,7 @@ try { const fieldErrors = {
     CHINADB_SQL_UPSTREAM_TIMEOUT: "预检服务在 15 秒内未返回，请稍后重试。",
     BUSINESS_AUDIT_UNAVAILABLE: "业务审计当前不可用，本次预检未执行。",
 }; } catch(e) {}
-try { const verificationLabels = {
+try { var verificationLabels = {
     sourceParse: "源 SQL 解析",
     targetAdapter: "目标适配器",
     targetEmit: "目标 SQL 发射",
@@ -150,10 +150,10 @@ try { const verificationLabels = {
     resultEquivalence: "结果等价",
     externalExecution: "外部执行",
 }; } catch(e) {}
-try { function isRecord(value) {
+try { var isRecord = function isRecord(value) {
     return typeof value === "object" && value !== null && !Array.isArray(value);
 } } catch(e) {}
-try { async function responseJson(response) {
+try { var responseJson = async function responseJson(response) {
     const text = await response.text();
     try {
         return JSON.parse(text);
@@ -162,7 +162,7 @@ try { async function responseJson(response) {
         throw new Error("CHINADB_SQL_RESPONSE_UNPARSEABLE");
     }
 } } catch(e) {}
-try { function errorMessage(error) {
+try { var errorMessage = function errorMessage(error) {
     if (error instanceof ChinaDbSqlPolicyError) {
         return fieldErrors[error.errorCode] ?? `请求未通过安全校验（${error.errorCode}）。`;
     }
@@ -176,13 +176,13 @@ try { function errorMessage(error) {
         return fieldErrors[error.message];
     return "SQL 预检当前不可用；未生成目标 SQL，也未触发外部执行。";
 } } catch(e) {}
-try { function apiError(payload, fallback) {
+try { var apiError = function apiError(payload, fallback) {
     if (!isRecord(payload))
         return new Error(fallback);
     const code = typeof payload.errorCode === "string" ? payload.errorCode : fallback;
     return new Error(code);
 } } catch(e) {}
-try { async function sha256Text(value) {
+try { var sha256Text = async function sha256Text(value) {
     const bytes = new TextEncoder().encode(value);
     const hashed = await crypto.subtle.digest("SHA-256", bytes);
     return `sha256:${Array.from(new Uint8Array(hashed), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;

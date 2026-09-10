@@ -1,15 +1,45 @@
-<view class="card" data-component="{{componentName}}">
-  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
-  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
-  <view class="chart" wx:if="{{rows.length}}">
-    <view wx:for="{{rows}}" wx:key="key" class="bar-row"><text class="bar-label">{{item.key}}</text><view class="bar" style="width: {{item.width}}%"></view><text>{{item.value}}</text></view>
+<view class="project-evidence-charts" aria-labelledby="project-evidence-title">
+  <view class="evidence-section-heading">
+    <text>
+      <view id="project-evidence-title">项目结构与等价证据</view>
+      <text>{{insights.stage}} · 结论上限 {{insights.claim_ceiling}}</text>
+    </text>
+    <text class="evidence-heading-statuses">
+      <StatusMark status="{{structureStatus}}" compact="true" />
+      <StatusMark status="{{insights.certification_status === &quot;NOT_CERTIFIED&quot; ? &quot;NOT_RUN&quot; : &quot;UNKNOWN&quot;}}" compact="true" />
+    </text>
   </view>
-  <view wx:else class="source-labels">
-    <text class="source-label">NOT_CERTIFIED</text>
-    <text class="source-label">NOT_RUN</text>
-    <text class="source-label">PASSED</text>
-    <text class="source-label">UNKNOWN</text>
-    <text class="source-label">evidence-boundary</text>
-    <text class="source-label">evidence-coverage-grid</text>
+  <view class="evidence-graph-grid">
+    <EvidenceGraph title="{{insights.project_structure ? &quot;完整项目结构&quot; : &quot;生成流程结构（兼容视图）&quot;}}" description="{{insights.project_structure
+            ? `${insights.project_structure.coverage.classified_file_count} / ${insights.project_structure.coverage.managed_file_count} 个托管文件已分类`
+            : `${insights.structure.node_count} 个节点 · ${insights.structure.edge_count} 条关系`}}" nodes="{{preferredStructure.nodes}}" edges="{{preferredStructure.edges}}" status="{{structureStatus}}" />
+    <EvidenceGraph wx:if="{{dependencies}}" title="声明依赖图" description="{{`${dependencies.nodes.length} 个坐标 · ${dependencies.edges.length} 条声明关系 · 完整解析 ${insights.declared_dependencies?.complete ? &quot;是&quot; : &quot;否&quot;}`}}" nodes="{{dependencies.nodes}}" edges="{{dependencies.edges}}" status="{{insights.declared_dependencies?.resolution.status ?? &quot;NOT_RUN&quot;}}" />
+    <figure wx:else class="evidence-graph-card">
+      <figcaption>
+        <text>
+          <text>声明依赖图</text>
+          <text>仅接受服务端校验后的声明依赖</text>
+        </text>
+        <StatusMark status="NOT_RUN" compact="true" />
+      </figcaption>
+      <EmptyEvidence title="声明依赖尚未返回" detail="不会从 package 文件名或构建日志推断依赖完整性。" />
+    </figure>
+  </view>
+  <view class="evidence-dimension" aria-labelledby="generation-coverage-title">
+    <view class="evidence-section-heading">
+      <text>
+        <view id="generation-coverage-title">多维完成度</view>
+        <text>每个维度使用独立且精确的分母</text>
+      </text>
+    </view>
+    <view class="evidence-coverage-grid">
+      <CoverageMeter wx:for="{{insights.coverage}}" wx:for-item="dimension" wx:key="dimension.id" key="{{dimension.id}}" label="{{dimension.label}}" status="{{dimension.status}}" passed="{{dimension.passed}}" total="{{dimension.total}}" />
+    </view>
+  </view>
+  <SemanticMappingChart semantic="{{insights.semantic}}" />
+  <BehaviorChart behavior="{{insights.behavior}}" />
+  <view class="evidence-boundary" role="note">
+    <text>证据边界</text>
+    <text>外部验证 {{insights.external_verification_status}} · 认证 {{insights.certification_status}}</text>
   </view>
 </view>

@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const sampleMutants = [
+try { var sampleMutants = [
     {
         id: "MUT-001",
         operator: "CONDITION_NEGATION",
@@ -33,7 +33,7 @@ try { const sampleMutants = [
         status: "SURVIVED",
     },
 ]; } catch(e) {}
-try { const sampleDiffs = [
+try { var sampleDiffs = [
     {
         endpoint: "POST /api/v1/orders",
         category: "FIELD_REMOVED",

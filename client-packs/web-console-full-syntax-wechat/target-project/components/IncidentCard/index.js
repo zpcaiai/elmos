@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const lines = [
+try { var lines = [
     ["ALL", "全部业务线"],
     ["SPRING_MODERNIZATION", "Spring 老项目翻新"],
     ["LANGUAGE_TRANSLATION", "全库跨语言转换"],
@@ -21,9 +21,9 @@ try { const lines = [
     ["PRODUCT_OVERVIEW", "产品总览"],
     ["ADMIN_OPERATIONS", "管理端"],
 ]; } catch(e) {}
-try { const lineLabels = Object.fromEntries(lines); } catch(e) {}
-try { const roleRank = { VIEWER: 1, OPERATOR: 2, APPROVER: 3 }; } catch(e) {}
-try { const jobBusinessLines = [
+try { var lineLabels = Object.fromEntries(lines); } catch(e) {}
+try { var roleRank = { VIEWER: 1, OPERATOR: 2, APPROVER: 3 }; } catch(e) {}
+try { var jobBusinessLines = [
     ["ALL", "全部作业类型"],
     ["GENERATION", "项目生成"],
     ["TRANSLATION", "跨语言转换"],
@@ -31,7 +31,7 @@ try { const jobBusinessLines = [
     ["REPOSITORY_WORKSPACE", "仓库工作区"],
     ["MODERNIZATION_PROOF", "现代化证明"],
 ]; } catch(e) {}
-try { const jobStatuses = [
+try { var jobStatuses = [
     ["ALL", "全部状态"],
     ["QUEUED", "排队"],
     ["CLAIMED", "已租约"],
@@ -42,12 +42,12 @@ try { const jobStatuses = [
     ["CANCELLED", "已取消"],
     ["LOST", "租约丢失"],
 ]; } catch(e) {}
-try { const knownJobBusinessLines = new Set(jobBusinessLines.slice(1).map(([value]) => value)); } catch(e) {}
-try { const knownJobStatuses = new Set(jobStatuses.slice(1).map(([value]) => value)); } catch(e) {}
-try { const terminalJobStatuses = new Set([
+try { var knownJobBusinessLines = new Set(jobBusinessLines.slice(1).map(([value]) => value)); } catch(e) {}
+try { var knownJobStatuses = new Set(jobStatuses.slice(1).map(([value]) => value)); } catch(e) {}
+try { var terminalJobStatuses = new Set([
     "SUCCEEDED", "PARTIAL", "FAILED", "CANCELLED", "LOST",
 ]); } catch(e) {}
-try { const runnerFleetStatuses = [
+try { var runnerFleetStatuses = [
     ["ALL", "全部 Runner 状态"],
     ["REGISTERED", "已注册 / 待验证"],
     ["READY", "可调度"],
@@ -56,13 +56,13 @@ try { const runnerFleetStatuses = [
     ["LOST", "已失联"],
     ["RETIRED", "已退役"],
 ]; } catch(e) {}
-try { const knownRunnerFleetStatuses = new Set(runnerFleetStatuses.slice(1).map(([value]) => value)); } catch(e) {}
-try { function csvCell(value) {
+try { var knownRunnerFleetStatuses = new Set(runnerFleetStatuses.slice(1).map(([value]) => value)); } catch(e) {}
+try { var csvCell = function csvCell(value) {
     if (value === null || value === undefined)
         return '""';
     return `"${String(value).replace(/"/g, '""')}"`;
 } } catch(e) {}
-try { function downloadCsv(rows, days) {
+try { var downloadCsv = function downloadCsv(rows, days) {
     const header = EXPORT_COLUMNS.join(",");
     const body = rows
         .map((row) => EXPORT_COLUMNS.map((column) => csvCell(row[column])).join(","))
@@ -73,7 +73,7 @@ try { function downloadCsv(rows, days) {
     });
     triggerBrowserDownload(blob, `elmos-audit-${days}d-${new Date().toISOString().slice(0, 10)}.csv`);
 } } catch(e) {}
-try { const adminSections = [
+try { var adminSections = [
     ["USERS", "用户与租户"],
     ["TASKS", "任务队列"],
     ["REPOSITORIES", "仓库"],
@@ -83,7 +83,7 @@ try { const adminSections = [
     ["FINANCE", "财务对账"],
     ["CONFIG", "配置与门禁"],
 ]; } catch(e) {}
-try { function formatTime(value) {
+try { var formatTime = function formatTime(value) {
     return new Intl.DateTimeFormat("zh-CN", {
         month: "2-digit",
         day: "2-digit",
@@ -93,10 +93,10 @@ try { function formatTime(value) {
         hour12: false,
     }).format(new Date(value));
 } } catch(e) {}
-try { function displayTarget(value) {
+try { var displayTarget = function displayTarget(value) {
     return value.length > 54 ? `${value.slice(0, 51)}…` : value;
 } } catch(e) {}
-try { function isReconciliationCase(value) {
+try { var isReconciliationCase = function isReconciliationCase(value) {
     if (typeof value !== "object" || value === null || Array.isArray(value))
         return false;
     const item = value;
@@ -112,10 +112,10 @@ try { function isReconciliationCase(value) {
         && (item.resolverActorId === null || (typeof item.resolverActorId === "string" && item.resolverActorId.length <= 128))
         && (item.resolutionRef === null || (typeof item.resolutionRef === "string" && item.resolutionRef.length <= 255));
 } } catch(e) {}
-try { function isNullableTime(value) {
+try { var isNullableTime = function isNullableTime(value) {
     return value === null || (typeof value === "string" && Number.isFinite(Date.parse(value)));
 } } catch(e) {}
-try { function isOperationsJob(value) {
+try { var isOperationsJob = function isOperationsJob(value) {
     if (typeof value !== "object" || value === null || Array.isArray(value))
         return false;
     const item = value;
@@ -143,7 +143,7 @@ try { function isOperationsJob(value) {
         && typeof item.cancelRequested === "boolean"
         && Number.isInteger(item.stateVersion);
 } } catch(e) {}
-try { function isRunnerFleetNode(value) {
+try { var isRunnerFleetNode = function isRunnerFleetNode(value) {
     if (typeof value !== "object" || value === null || Array.isArray(value))
         return false;
     const node = value;

@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const initialRisk = {
+try { var initialRisk = {
     security: "low",
     dataMigration: "low",
     concurrency: "low",
@@ -7,24 +7,24 @@ try { const initialRisk = {
     blastRadius: "low",
     longHorizon: false,
 }; } catch(e) {}
-try { const riskOptions = ["none", "low", "medium", "high", "critical"]; } catch(e) {}
-try { function readableReason(reason) {
+try { var riskOptions = ["none", "low", "medium", "high", "critical"]; } catch(e) {}
+try { var readableReason = function readableReason(reason) {
     return reason.replaceAll("_", " ").replaceAll(":", " · ");
 } } catch(e) {}
-try { function statusTone(status) {
+try { var statusTone = function statusTone(status) {
     if (status === "BLOCKED" || status === "NOT_CONFIGURED")
         return "blocked";
     if (status.startsWith("READY"))
         return "ready";
     return "pending";
 } } catch(e) {}
-try { async function responseJson(response) {
+try { var responseJson = async function responseJson(response) {
     const mediaType = response.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase();
     if (mediaType !== "application/json")
         throw new Error("REPOSITORY_RESPONSE_MEDIA_TYPE_INVALID");
     return response.json();
 } } catch(e) {}
-try { function failureMessage(value, fallback) {
+try { var failureMessage = function failureMessage(value, fallback) {
     if (typeof value !== "object" || value === null || Array.isArray(value))
         return fallback;
     const message = value.message;

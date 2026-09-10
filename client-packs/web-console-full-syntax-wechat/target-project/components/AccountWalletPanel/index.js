@@ -1,18 +1,18 @@
 // Top-level helpers and constants
-try { const entryLabels = {
+try { var entryLabels = {
     TOPUP_SETTLED: "充值入账",
     CONSUME: "任务消费",
     REFUND: "退款",
     ADMIN_ADJUSTMENT: "人工调整",
     TRIAL_GRANT: "试用赠送",
 }; } catch(e) {}
-try { function toNumber(minor) {
+try { var toNumber = function toNumber(minor) {
     if (minor === null || minor === undefined)
         return null;
     const value = typeof minor === "number" ? minor : Number(minor);
     return Number.isFinite(value) ? value : null;
 } } catch(e) {}
-try { function yuan(minor) {
+try { var yuan = function yuan(minor) {
     const value = toNumber(minor);
     if (value === null)
         return "—";
@@ -22,7 +22,7 @@ try { function yuan(minor) {
         minimumFractionDigits: 2,
     });
 } } catch(e) {}
-try { function moment(value) {
+try { var moment = function moment(value) {
     if (!value)
         return "—";
     const parsed = new Date(value);

@@ -1,132 +1,123 @@
-const { createHandPortComponent } = require("../../runtime/hand-port-runtime");
+// Top-level helpers and constants
+try { var clock = function clock(seconds) {
+    const safe = Math.max(0, Math.floor(seconds));
+    return `${String(Math.floor(safe / 60)).padStart(2, "0")}:${String(safe % 60).padStart(2, "0")}`;
+} } catch(e) {}
+try { var readJson = async function readJson(response) {
+    const payload = (await response.json());
+    if (!response.ok || payload.status === "BLOCKED") {
+        throw new Error(payload.reason ?? `HTTP_${response.status}`);
+    }
+    return payload;
+} } catch(e) {}
 
-Component(createHandPortComponent({
-  "schemaVersion": "1.0",
-  "componentName": "SmokeRunButton",
-  "title": "/api/smoke/capability",
-  "role": "disclosure",
-  "source": {
-    "file": "app/components/SmokeRunButton.tsx",
-    "componentName": "SmokeRunButton",
-    "sha256": "sha256:db3b9af0bb07b114d7fba77f72d2022b8a831fcc5d55c637be7689f0b3f43819",
-    "range": {
-      "start": 1455,
-      "end": 17486
-    }
+Component({
+  options: {
+    multipleSlots: false,
+    styleIsolation: "apply-shared",
   },
-  "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-    "reason": "state capability has unsupported type \"SmokeCapabilityResponse\"",
-    "category": "data-contracts"
+  properties: {
+    projectRef: {
+      type: null,
+      value: null,
+    },
   },
-  "props": [
-    {
-      "name": "projectRef",
-      "type": "string",
-      "optional": false
-    }
-  ],
-  "states": [
-    {
-      "name": "capability",
-      "type": "SmokeCapabilityResponse | null"
+  data: {
+    capability: null,
+    pack: null,
+    session: null,
+    evidence: null,
+    entry: "",
+    error: null,
+    busy: false,
+    remaining: 0,
+    extendOpen: false,
+    extendSeconds: 300,
+    extendReason: "",
+    extendActor: "",
+    expiresAtRef: {"current":null},
+    selectedEntry: null,
+  },
+  lifetimes: {
+    attached() {
+      const setCapability = (val) => { this.setData({ capability: typeof val === "function" ? val(this.data.capability) : val }); };
+      const setPack = (val) => { this.setData({ pack: typeof val === "function" ? val(this.data.pack) : val }); };
+      const setSession = (val) => { this.setData({ session: typeof val === "function" ? val(this.data.session) : val }); };
+      const setEvidence = (val) => { this.setData({ evidence: typeof val === "function" ? val(this.data.evidence) : val }); };
+      const setEntry = (val) => { this.setData({ entry: typeof val === "function" ? val(this.data.entry) : val }); };
+      const setError = (val) => { this.setData({ error: typeof val === "function" ? val(this.data.error) : val }); };
+      const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
+      const setRemaining = (val) => { this.setData({ remaining: typeof val === "function" ? val(this.data.remaining) : val }); };
+      const setExtendOpen = (val) => { this.setData({ extendOpen: typeof val === "function" ? val(this.data.extendOpen) : val }); };
+      const setExtendSeconds = (val) => { this.setData({ extendSeconds: typeof val === "function" ? val(this.data.extendSeconds) : val }); };
+      const setExtendReason = (val) => { this.setData({ extendReason: typeof val === "function" ? val(this.data.extendReason) : val }); };
+      const setExtendActor = (val) => { this.setData({ extendActor: typeof val === "function" ? val(this.data.extendActor) : val }); };
+      const expiresAtRef = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      // Lifecycle effect effect_0
+      (async () => {
+        try {
+          let cancelled = false;
+    (async () => {
+        try {
+            const [capabilityResponse, packResponse] = await Promise.all([
+                fetch("/api/smoke/capability", { cache: "no-store" }),
+                fetch(`/api/smoke/pack?projectRef=${encodeURIComponent(projectRef)}`, { cache: "no-store" }),
+            ]);
+            const nextCapability = await readJson(capabilityResponse);
+            const nextPack = await readJson(packResponse);
+            if (cancelled)
+                return;
+            setCapability(nextCapability);
+            setPack(nextPack);
+            setEntry(nextPack.defaultEntry ?? nextPack.entries.find((item) => item.status === "available")?.entry ?? "");
+        }
+        catch (loadError) {
+            if (!cancelled)
+                setError(loadError instanceof Error ? loadError.message : "SMOKE_LOAD_FAILED");
+        }
+    })();
+    return () => { cancelled = true; };
+        } catch (err) {
+          // Handled mount effect
+        }
+      })().catch(() => {});
+      // Lifecycle effect effect_1
+      (async () => {
+        try {
+          if (!session || !LIVE_STATES.has(session.state))
+        return;
+    const timer = window.setInterval(async () => {
+        try {
+            const next = await readJson(await fetch(`/api/smoke/sessions/${session.sessionId}`, { cache: "no-store" }));
+            applySession(next);
+        }
+        catch {
+            /* transient poll failure: the local countdown keeps running */
+        }
+    }, 3_000);
+    return () => window.clearInterval(timer);
+        } catch (err) {
+          // Handled mount effect
+        }
+      })().catch(() => {});
+      // Lifecycle effect effect_2
+      (async () => {
+        try {
+          if (!session || !LIVE_STATES.has(session.state))
+        return;
+    const timer = window.setInterval(() => {
+        const expiresAt = expiresAtRef.current;
+        setRemaining(expiresAt ? Math.max(0, Math.round(expiresAt * 1_000 - Date.now()) / 1_000) : 0);
+    }, 1_000);
+    return () => window.clearInterval(timer);
+        } catch (err) {
+          // Handled mount effect
+        }
+      })().catch(() => {});
     },
-    {
-      "name": "pack",
-      "type": "SmokePackSummary | null"
+    detached() {
     },
-    {
-      "name": "session",
-      "type": "SmokeSession | null"
-    },
-    {
-      "name": "evidence",
-      "type": "SmokeEvidenceBundle | null"
-    },
-    {
-      "name": "entry",
-      "type": "SmokeEntry | \"\""
-    },
-    {
-      "name": "error",
-      "type": "string | null"
-    },
-    {
-      "name": "busy",
-      "type": "inferred"
-    },
-    {
-      "name": "remaining",
-      "type": "inferred"
-    },
-    {
-      "name": "extendOpen",
-      "type": "inferred"
-    },
-    {
-      "name": "extendSeconds",
-      "type": "inferred"
-    },
-    {
-      "name": "extendReason",
-      "type": "inferred"
-    },
-    {
-      "name": "extendActor",
-      "type": "inferred"
-    }
-  ],
-  "hooks": [
-    "useState",
-    "useRef",
-    "useEffect",
-    "useCallback",
-    "useMemo"
-  ],
-  "resources": [
-    "NETWORK",
-    "TIMER"
-  ],
-  "apiPaths": [
-    "/api/smoke/capability",
-    "/api/smoke/sessions"
-  ],
-  "labels": [
-    "/api/smoke/capability",
-    "/api/smoke/sessions",
-    "AVAILABLE",
-    "NOT_RUN",
-    "POST",
-    "SMOKE_ACTION_FAILED",
-    "SMOKE_EVIDENCE_FAILED",
-    "SMOKE_LOAD_FAILED",
-    "STARTING",
-    "_blank",
-    "absent",
-    "application/json",
-    "available",
-    "button",
-    "button button-primary",
-    "button button-secondary",
-    "content-type",
-    "expired",
-    "failed",
-    "lease-result.json",
-    "manual",
-    "no-store",
-    "noreferrer",
-    "result.json"
-  ],
-  "adapters": [
-    "wechat-cancellable-request-v1",
-    "wechat-controlled-disclosure-v1",
-    "wechat-css-module-token-map-v1",
-    "wechat-effect-resource-lifecycle-v1",
-    "wechat-plain-collection-projection-v1",
-    "wechat-typed-state-decoder-v1"
-  ],
-  "obligations": [
-    "SmokeRunButton:source-blocker"
-  ],
-  "irDigest": "sha256:8462c13edbd2efe5e3092553c9784c9e251f054e65b748c8c688712b311e59e0"
-}));
+  },
+  methods: {
+  },
+});

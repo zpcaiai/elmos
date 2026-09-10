@@ -1,6 +1,6 @@
 // Top-level helpers and constants
-try { const routeIds = new Set(directedLanguageRoutes.map((route) => route.id)); } catch(e) {}
-try { function isSafeRepositoryRef(value) {
+try { var routeIds = new Set(directedLanguageRoutes.map((route) => route.id)); } catch(e) {}
+try { var isSafeRepositoryRef = function isSafeRepositoryRef(value) {
     if (value.length < 3
         || value.length > 180
         || /[\s\\?#]/.test(value)
@@ -20,7 +20,7 @@ try { function isSafeRepositoryRef(value) {
         return false;
     }
 } } catch(e) {}
-try { function isStoredHandoff(value) {
+try { var isStoredHandoff = function isStoredHandoff(value) {
     if (!value || typeof value !== "object")
         return false;
     const stored = value;
@@ -45,7 +45,7 @@ try { function isStoredHandoff(value) {
         && typeof stored.createdAt === "string"
         && !Number.isNaN(Date.parse(stored.createdAt));
 } } catch(e) {}
-try { function routeCellLabel(route) {
+try { var routeCellLabel = function routeCellLabel(route) {
     if (!route)
         return "NO ROUTE";
     if (route.localExecution === "PASSED")
@@ -54,14 +54,14 @@ try { function routeCellLabel(route) {
         return "LOCAL FAIL";
     return "NOT_RUN";
 } } catch(e) {}
-try { function routeCellIcon(route) {
+try { var routeCellIcon = function routeCellIcon(route) {
     if (!route)
         return "close";
     if (route.localExecution === "PASSED")
         return "check";
     return "lock";
 } } catch(e) {}
-try { async function verifiedDownloadBlob(response, expectedBytes, expectedSha256, maximumBytes, errorCode) {
+try { var verifiedDownloadBlob = async function verifiedDownloadBlob(response, expectedBytes, expectedSha256, maximumBytes, errorCode) {
     if (!response.body
         || !Number.isSafeInteger(expectedBytes)
         || expectedBytes < 1
@@ -94,7 +94,7 @@ try { async function verifiedDownloadBlob(response, expectedBytes, expectedSha25
     }
     return new Blob(chunks, { type: response.headers.get("content-type") ?? "application/octet-stream" });
 } } catch(e) {}
-try { function translationRunnerFailureMessage(reason) {
+try { var translationRunnerFailureMessage = function translationRunnerFailureMessage(reason) {
     if (reason === "FUNCTIONAL_OBLIGATION_LIMIT_EXCEEDED") {
         return "单任务最多处理 10,000 个已报告功能义务行（5 个分片 × 每片 2,000）。请先按仓库、模块或授权工作区拆成多个独立任务，再逐个提交；本次未接受转换或计费，也未开始原生编译或代码生成。";
     }

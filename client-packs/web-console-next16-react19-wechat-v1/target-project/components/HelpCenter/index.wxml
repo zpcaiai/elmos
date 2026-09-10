@@ -1,7 +1,84 @@
-<view class="card" data-component="{{componentName}}">
-  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
-  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
-  <scroll-view scroll-x class="table-scroll">
-    <view wx:for="{{rows}}" wx:key="key" class="table-row"><text class="table-key">{{item.key}}</text><text>{{item.value}}</text></view>
-  </scroll-view>
+<view class="page-stack help-center">
+  <view class="page-header">
+    <view>
+      <text class="overline">{{english ? "Guidance · Evidence boundaries" : "操作指南 · 证据边界"}}</text>
+      <view>{{english ? "Help and readiness" : "帮助与就绪状态"}}</view>
+      <view>{{english
+              ? "Use the four business lines and controlled repository workflow safely. Local engineering evidence is shown separately from external execution."
+              : "安全使用四条业务线与受控仓库流程。本地工程证据与外部执行证据严格分开显示。"}}</view>
+    </view>
+  </view>
+  <view class="help-section" aria-labelledby="help-lines-title">
+    <view class="section-heading">
+      <view>
+        <text class="overline">01</text>
+        <view id="help-lines-title">{{english ? "Choose a business line" : "选择业务线"}}</view>
+      </view>
+    </view>
+    <view class="help-line-grid">
+      <view wx:for="{{businessLines}}" wx:for-item="line" wx:key="line.id" key="{{line.href}}">
+        <view>{{english ? line.en : line.zh}}</view>
+        <view>{{english ? line.enDescription : line.zhDescription}}</view>
+        <navigator class="text-link" href="{{line.href}}">{{english ? "Open workspace" : "打开工作区"}} →</navigator>
+      </view>
+    </view>
+  </view>
+  <view class="help-section" aria-labelledby="help-delivery-title">
+    <view class="section-heading">
+      <view>
+        <text class="overline">02</text>
+        <view id="help-delivery-title">{{english ? "Controlled repository delivery" : "受控仓库交付"}}</view>
+      </view>
+      <navigator wx:if="{{hasAdminAccess}}" class="text-link" href="/repositories">{{english ? "Open repository workspace" : "打开仓库工作区"}}</navigator>
+    </view>
+    <view class="help-steps">
+      <view wx:for="{{deliverySteps}}" wx:for-item="[number, zh, en]" wx:key="[number, zh, en].id" key="{{number}}">
+        <text>{{number}}</text>
+        <text>{{english ? en : zh}}</text>
+      </view>
+    </view>
+    <view class="help-boundary">{{english
+            ? "Merge, deployment, infrastructure apply, and production database migration are not automatic effects of this workflow."
+            : "合并、部署、基础设施应用和生产数据库迁移都不是该流程的自动副作用。"}}</view>
+  </view>
+  <view class="help-section" aria-labelledby="help-readiness-title">
+    <view class="section-heading">
+      <view>
+        <text class="overline">03</text>
+        <view id="help-readiness-title">{{english ? "Evidence and remaining external gates" : "证据与剩余外部门禁"}}</view>
+      </view>
+    </view>
+    <view class="help-table-wrap" tabIndex="{{0}}" role="region" aria-label="{{english ? &quot;Readiness evidence table&quot; : &quot;就绪证据表&quot;}}">
+      <view class="help-readiness-table">
+        <view>
+          <view>
+            <view scope="col">{{english ? "Area" : "环节"}}</view>
+            <view scope="col">{{english ? "Current local evidence" : "当前本地证据"}}</view>
+            <view scope="col">{{english ? "External boundary" : "外部边界"}}</view>
+          </view>
+        </view>
+        <view>
+          <view wx:for="{{readiness}}" wx:for-item="row" wx:key="row.id" key="{{row[0]}}">
+            <view scope="row">{{english ? row[3] : row[0]}}</view>
+            <view>{{english ? row[4] : row[1]}}</view>
+            <view>
+              <code>{{english ? row[5] : row[2]}}</code>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="help-section help-admin" aria-labelledby="help-admin-title">
+    <view>
+      <text class="overline">04</text>
+      <view id="help-admin-title">{{english ? "Operate and diagnose" : "运营与诊断"}}</view>
+      <view>{{english
+              ? "The admin console exposes tenant-scoped users/session context, tasks, repositories, audit, alerts, usage, and sanitized configuration."
+              : "管理端按租户展示用户/会话上下文、任务、仓库、审计、告警、用量与脱敏配置。"}}</view>
+    </view>
+    <navigator class="{{`button ${hasAdminAccess ? &quot;button-primary&quot; : &quot;admin-entry-button&quot;}`}}" href="{{hasAdminAccess ? &quot;/admin&quot; : &quot;/admin/login&quot;}}">{{hasAdminAccess
+            ? (english ? "Open operations admin" : "打开运营管理端")
+            : (english ? "Administrator sign in" : "前往管理员登录")}}</navigator>
+  </view>
 </view>

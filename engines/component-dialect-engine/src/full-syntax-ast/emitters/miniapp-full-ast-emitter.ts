@@ -11,8 +11,10 @@ export class MiniAppFullAstEmitter {
     if (topHelpers.length > 0) {
       jsLines.push('// Top-level helpers and constants');
       for (const h of topHelpers) {
-        const clean = h.replace(/^export\s+(default\s+)?/gm, '').trim();
+        let clean = h.replace(/^export\s+(default\s+)?/gm, '').trim();
         if (/^(const|let|var)\s+metadata\s*=/i.test(clean)) continue;
+        clean = clean.replace(/^(const|let)\s+/gm, 'var ');
+        clean = clean.replace(/^(async\s+)?function\s+([a-zA-Z0-9_$]+)/gm, 'var $2 = $1function $2');
         jsLines.push(`try { ${clean} } catch(e) {}`);
       }
       jsLines.push('');

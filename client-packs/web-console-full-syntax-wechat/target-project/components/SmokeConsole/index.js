@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const projectRefPattern = /^[a-z0-9][a-z0-9._/-]{2,180}$/i; } catch(e) {}
+try { var projectRefPattern = /^[a-z0-9][a-z0-9._/-]{2,180}$/i; } catch(e) {}
 
 Component({
   options: {

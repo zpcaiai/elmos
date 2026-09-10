@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "spring-modernization-studio": "/components/SpringModernizationStudio/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

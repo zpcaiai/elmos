@@ -1,13 +1,86 @@
-<view class="shell" data-component="{{componentName}}">
-  <view class="heading"><text>{{title}}</text></view>
-  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
-  <slot />
-  <view class="source-labels">
-    <text class="source-label">/api/auth/login</text>
-    <text class="source-label">Enterprise identity</text>
-    <text class="source-label">alert</text>
-    <text class="source-label">auth-card</text>
-    <text class="source-label">auth-error</text>
-    <text class="source-label">auth-form</text>
+<view class="auth-page user-auth-page" aria-labelledby="login-title">
+  <view class="auth-card user-auth-card">
+    <text class="eyebrow">USER ACCESS · EMAIL</text>
+    <view id="login-title">用户登录</view>
+    <view>使用已注册邮箱进入 ELMOS 用户控制中心。租户、角色和权限只由服务端已验证的账户会话决定。</view>
+    <view class="user-scope-notice" role="note">
+      <text>登录后可以使用的功能</text>
+      <text>Spring 老项目翻新、全库跨语言转换、多语言项目生成、国产数据库 SQL 转换。</text>
+      <text>其余页面（代码仓库工作区、多模态输入、任务编排与模型路由、前端转换工厂、功能能力中心、套餐与用量、账户与组织）以及平台运营页面（运营管理端、观测存证、契约治理、商业化控制面、证据闭环、验证沙箱、冒烟运行）不对用户账户开放，仅管理员账户登录后可见。</text>
+    </view>
+    <view wx:if="{{error}}" class="auth-error" role="alert">{{error}}</view>
+    <view wx:if="{{parameters.registered === '1'}}" class="auth-success" role="status">账户已创建，请使用新账户登录。</view>
+    <form wx:if="{{parameters.verify === '1' && descopeReady}}" class="auth-form otp-verify-form" method="post" action="/api/auth/descope/otp/verify">
+      <view>输入一次性验证码</view>
+      <view>验证码已发送到刚才验证的邮箱或手机。验证码和登录标识由加密的 HttpOnly 会话绑定。</view>
+      <text>
+        <text>验证码</text>
+        <input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{4,10}" minLength="{{4}}" maxLength="{{10}}" required="true" autoFocus="true" />
+      </text>
+      <button class="button button-primary" type="submit">验证并进入用户中心</button>
+      <navigator class="text-link" href="{{`/login?${new URLSearchParams({ returnTo })}`}}">重新选择登录方式</navigator>
+    </form>
+    <view wx:if="{{descopeReady && parameters.verify !== '1'}}" class="auth-method-grid" aria-label="用户登录方式">
+      <form class="auth-method-card" method="post" action="/api/auth/descope/otp/start">
+        <text class="auth-method-icon" aria-hidden="true">@</text>
+        <view>邮箱验证码登录</view>
+        <view>无需密码，验证码发送到已注册邮箱。</view>
+        <input type="hidden" name="channel" value="EMAIL" />
+        <input type="hidden" name="intent" value="LOGIN" />
+        <input type="hidden" name="loginMode" value="USER" />
+        <input type="hidden" name="returnTo" value="{{returnTo}}" />
+        <text>
+          <text>邮箱</text>
+          <input name="loginId" type="email" autoComplete="email" maxLength="{{254}}" required="true" />
+        </text>
+        <button class="button button-primary" type="submit">发送邮箱验证码</button>
+      </form>
+      <form class="auth-method-card" method="post" action="/api/auth/descope/otp/start">
+        <text class="auth-method-icon" aria-hidden="true">☎</text>
+        <view>手机号验证码登录</view>
+        <view>使用含国家区号的手机号接收短信验证码。</view>
+        <input type="hidden" name="channel" value="SMS" />
+        <input type="hidden" name="intent" value="LOGIN" />
+        <input type="hidden" name="loginMode" value="USER" />
+        <input type="hidden" name="returnTo" value="{{returnTo}}" />
+        <text>
+          <text>手机号</text>
+          <input name="loginId" type="tel" inputMode="tel" autoComplete="tel" placeholder="+8613812345678" maxLength="{{18}}" required="true" />
+        </text>
+        <button class="button button-secondary" type="submit">发送短信验证码</button>
+      </form>
+      <form class="{{`auth-method-card wechat-auth-card${wechatReady ? &quot;&quot; : &quot; auth-method-disabled&quot;}`}}" method="post" action="/api/auth/descope/wechat/start">
+        <text class="auth-method-icon wechat-icon" aria-hidden="true">微</text>
+        <view>微信扫码登录</view>
+        <view>{{wechatReady ? "跳转到微信开放平台二维码，扫码确认后返回 ELMOS。" : "代码已接入；配置微信开放平台 AppID 与密钥后启用真实二维码。"}}</view>
+        <input type="hidden" name="intent" value="LOGIN" />
+        <input type="hidden" name="returnTo" value="{{returnTo}}" />
+        <button class="button wechat-login-button" type="submit" disabled="{{!wechatReady}}">{{wechatReady ? "打开微信登录二维码" : "微信凭据待配置"}}</button>
+      </form>
+    </view>
+    <navigator wx:if="{{configured && !descopeReady}}" class="button button-primary" href="{{`/api/auth/login?${new URLSearchParams({ returnTo })}`}}">使用企业账户登录用户中心</navigator>
+    <form wx:if="{{localConfigured}}" class="auth-form" method="post" action="/api/auth/login">
+      <view>测试账号登录</view>
+      <view>支持测试账号（用户名：test，密码：test）直接登录体验 C 端功能。</view>
+      <input type="hidden" name="returnTo" value="{{returnTo}}" />
+      <text>
+        <text>账号 / 邮箱</text>
+        <input name="email" type="text" defaultValue="test" autoComplete="username" maxLength="{{254}}" required="true" />
+      </text>
+      <text>
+        <text>密码</text>
+        <input name="password" type="password" autoComplete="current-password" required="true" />
+      </text>
+      <button class="button button-primary" type="submit">使用测试账号登录</button>
+    </form>
+    <view wx:if="{{(descopeReady || registrationConfigured)}}" class="auth-links">
+      <text>还没有账户？</text>
+      <navigator class="text-link" href="{{`/register?${new URLSearchParams({ returnTo })}`}}">使用邮箱、手机号或微信注册</navigator>
+    </view>
+    <view wx:if="{{!descopeReady && !configured && !localConfigured}}" class="auth-not-configured" role="status">
+      <text>身份提供商未配置</text>
+      <text>需要设置精确的 issuer、授权端点、令牌端点、JWKS、client 和回调地址。</text>
+    </view>
+    <text>普通用户登录不会授予管理员权限。管理员登录使用完全独立的入口与页面，本页面不提供管理员登录功能。未登录、令牌过期、权限不足或租户不匹配时，服务端 API 均会拒绝操作。</text>
   </view>
 </view>

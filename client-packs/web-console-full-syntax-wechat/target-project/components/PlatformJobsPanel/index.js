@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const jobStatuses = [
+try { var jobStatuses = [
     ["ALL", "全部状态"],
     ["QUEUED", "排队 QUEUED"],
     ["CLAIMED", "已认领 CLAIMED"],
@@ -10,7 +10,7 @@ try { const jobStatuses = [
     ["CANCELLED", "已取消 CANCELLED"],
     ["LOST", "丢失 LOST"],
 ]; } catch(e) {}
-try { function yuan(minor) {
+try { var yuan = function yuan(minor) {
     if (minor === null || minor === undefined)
         return "未计费";
     const value = typeof minor === "number" ? minor : Number(minor);
@@ -22,13 +22,13 @@ try { function yuan(minor) {
         minimumFractionDigits: 2,
     });
 } } catch(e) {}
-try { function moment(value) {
+try { var moment = function moment(value) {
     if (!value)
         return "—";
     const parsed = new Date(value);
     return Number.isNaN(parsed.getTime()) ? "—" : parsed.toLocaleString("zh-CN", { hour12: false });
 } } catch(e) {}
-try { function elapsed(row) {
+try { var elapsed = function elapsed(row) {
     if (!row.startedAt)
         return "—";
     const started = new Date(row.startedAt);

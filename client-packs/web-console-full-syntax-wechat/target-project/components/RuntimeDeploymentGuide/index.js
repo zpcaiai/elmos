@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { function hardware(cpu, memoryGb, diskGb) {
+try { var hardware = function hardware(cpu, memoryGb, diskGb) {
     return `${cpu} vCPU · ${memoryGb} GB RAM · ${diskGb} GB 磁盘`;
 } } catch(e) {}
 

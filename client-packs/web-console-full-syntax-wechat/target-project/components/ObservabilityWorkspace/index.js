@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const sampleSpans = [
+try { var sampleSpans = [
     {
         id: "span-01",
         name: "elmos.pipeline.cst_parsing",

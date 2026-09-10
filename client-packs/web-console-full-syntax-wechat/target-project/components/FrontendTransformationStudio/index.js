@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const deliveryStages = [
+try { var deliveryStages = [
     { range: "G01–G04", title: "发现与类型化", detail: "仓库、框架、依赖、UI Interaction IR 与六类源适配器" },
     { range: "G05–G12", title: "规划与生成内核", detail: "差距决策、目标架构、生成、组件、状态、边界与平台能力" },
     { range: "G13–G17", title: "30 条有向路线", detail: "Vue 2、Vue 3、React、小程序、ArkUI 与 Flutter 两两转换" },
@@ -7,10 +7,10 @@ try { const deliveryStages = [
     { range: "G21–G26", title: "产品与体验闭环", detail: "需求、业务、数据、管理端、可用性、无障碍与回归资格" },
     { range: "G27–G30", title: "生产就绪外部门禁", detail: "性能、韧性、安全与 SRE；需要授权的真实环境证据" },
 ]; } catch(e) {}
-try { function lower(value) {
+try { var lower = function lower(value) {
     return value.toLocaleLowerCase("zh-CN");
 } } catch(e) {}
-try { const contractExamples = {
+try { var contractExamples = {
     invariants: [{ id: "tenant-scope", satisfied: true }],
     inventory: { workspaceKind: "monorepo", packages: [], routes: [], components: [] },
     target: { stack: "React", version: "19.2.7", language: "TypeScript" },
@@ -41,7 +41,7 @@ try { const contractExamples = {
     slos: [{ serviceId: "frontend", target: 0.999 }],
     runbooks: [{ id: "frontend-errors", serviceId: "frontend" }],
 }; } catch(e) {}
-try { function initialContractInput(skill) {
+try { var initialContractInput = function initialContractInput(skill) {
     if (!skill)
         return "{}";
     const entries = skill.executionContract.inputContract.required
@@ -49,7 +49,7 @@ try { function initialContractInput(skill) {
         .map(key => [key, contractExamples[key] ?? {}]);
     return JSON.stringify(Object.fromEntries(entries), null, 2);
 } } catch(e) {}
-try { function canonicalInput(value) {
+try { var canonicalInput = function canonicalInput(value) {
     if (Array.isArray(value))
         return `[${value.map(canonicalInput).join(",")}]`;
     if (value && typeof value === "object") {

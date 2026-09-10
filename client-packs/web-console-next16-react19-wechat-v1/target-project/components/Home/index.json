@@ -1,7 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "icon": "/components/Icon/index",
-    "status-chip": "/components/StatusChip/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

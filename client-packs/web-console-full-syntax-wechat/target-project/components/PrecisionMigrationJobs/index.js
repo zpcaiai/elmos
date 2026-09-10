@@ -1,6 +1,6 @@
 // Top-level helpers and constants
-try { const terminal = new Set(["SUCCEEDED", "FAILED", "BLOCKED", "CANCELLED"]); } catch(e) {}
-try { function artifactName(artifact) {
+try { var terminal = new Set(["SUCCEEDED", "FAILED", "BLOCKED", "CANCELLED"]); } catch(e) {}
+try { var artifactName = function artifactName(artifact) {
     if (!artifact.uri)
         return null;
     try {

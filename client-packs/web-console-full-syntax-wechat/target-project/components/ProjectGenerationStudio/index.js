@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const plannedAssets = [
+try { var plannedAssets = [
     { icon: "workflow", title: "需求与资产图", detail: "PSIR、Blueprint 与来源追踪" },
     { icon: "code", title: "CRUD 与健康检查", detail: "多实体接口与 OpenAPI" },
     { icon: "test", title: "测试与构建", detail: "单元测试、CI 与 Makefile" },
@@ -7,9 +7,9 @@ try { const plannedAssets = [
     { icon: "cloud", title: "运行清单", detail: "Kubernetes 探针与资源" },
     { icon: "file", title: "证据与归档", detail: "逐目标结果与可交付 ZIP" },
 ]; } catch(e) {}
-try { const generationTargetIds = new Set(generationTargets.map((target) => target.id)); } catch(e) {}
-try { const repositoryWorkspaceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i; } catch(e) {}
-try { function browserArtifactTicket(value) {
+try { var generationTargetIds = new Set(generationTargets.map((target) => target.id)); } catch(e) {}
+try { var repositoryWorkspaceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i; } catch(e) {}
+try { var browserArtifactTicket = function browserArtifactTicket(value) {
     if (!value || typeof value !== "object")
         throw new Error("ARTIFACT_TICKET_INVALID");
     const ticket = value;
@@ -47,7 +47,7 @@ try { function browserArtifactTicket(value) {
     }
     return ticket;
 } } catch(e) {}
-try { async function readBoundedArtifact(response, expectedBytes) {
+try { var readBoundedArtifact = async function readBoundedArtifact(response, expectedBytes) {
     if (!Number.isSafeInteger(expectedBytes)
         || expectedBytes <= 0
         || expectedBytes > MAX_BROWSER_ARTIFACT_BYTES) {
@@ -83,7 +83,7 @@ try { async function readBoundedArtifact(response, expectedBytes) {
         throw new Error("ARTIFACT_LENGTH_MISMATCH");
     return data.buffer;
 } } catch(e) {}
-try { function isStoredSourceReference(value) {
+try { var isStoredSourceReference = function isStoredSourceReference(value) {
     if (!value || typeof value !== "object")
         return false;
     const source = value;
@@ -99,7 +99,7 @@ try { function isStoredSourceReference(value) {
         && typeof source.truncated === "boolean"
         && Array.isArray(source.warnings);
 } } catch(e) {}
-try { function isStoredGenerationDraft(value) {
+try { var isStoredGenerationDraft = function isStoredGenerationDraft(value) {
     if (!value || typeof value !== "object")
         return false;
     const draft = value;
@@ -121,10 +121,10 @@ try { function isStoredGenerationDraft(value) {
                 && typeof draft.sourceBundleSha256 === "string"
                 && /^[a-f0-9]{64}$/.test(draft.sourceBundleSha256)));
 } } catch(e) {}
-try { function shellQuote(value) {
+try { var shellQuote = function shellQuote(value) {
     return `'${value.replaceAll("'", "'\\''")}'`;
 } } catch(e) {}
-try { function runnerReasonMessage(reason) {
+try { var runnerReasonMessage = function runnerReasonMessage(reason) {
     if (!reason)
         return "";
     if (reason.includes("ROOTLESS_CONTAINER_ENGINE_REQUIRED")) {
@@ -141,7 +141,7 @@ try { function runnerReasonMessage(reason) {
     }
     return reason;
 } } catch(e) {}
-try { function buildWorkflowCommands(draft) {
+try { var buildWorkflowCommands = function buildWorkflowCommands(draft) {
     const workspace = `generated/${draft.name}`;
     return [
         {

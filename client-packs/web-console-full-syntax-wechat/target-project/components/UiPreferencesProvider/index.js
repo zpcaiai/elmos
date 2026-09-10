@@ -1,7 +1,7 @@
 // Top-level helpers and constants
-try { const localeKey = "elmos:ui-locale:v1"; } catch(e) {}
-try { const themeKey = "elmos:ui-theme:v1"; } catch(e) {}
-try { function storedLocale() {
+try { var localeKey = "elmos:ui-locale:v1"; } catch(e) {}
+try { var themeKey = "elmos:ui-theme:v1"; } catch(e) {}
+try { var storedLocale = function storedLocale() {
     try {
         return localStorage.getItem(localeKey) === "en" ? "en" : "zh-CN";
     }
@@ -9,7 +9,7 @@ try { function storedLocale() {
         return "zh-CN";
     }
 } } catch(e) {}
-try { function storedTheme() {
+try { var storedTheme = function storedTheme() {
     try {
         return localStorage.getItem(themeKey) === "dark" ? "dark" : "light";
     }
@@ -17,7 +17,7 @@ try { function storedTheme() {
         return "light";
     }
 } } catch(e) {}
-try { function useUiPreferences() {
+try { var useUiPreferences = function useUiPreferences() {
     const value = useContext(PreferencesContext);
     if (!value)
         throw new Error("UI_PREFERENCES_PROVIDER_MISSING");

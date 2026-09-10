@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "governance-workspace": "/components/GovernanceWorkspace/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

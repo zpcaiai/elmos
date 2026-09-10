@@ -1,9 +1,9 @@
 // Top-level helpers and constants
-try { function clock(seconds) {
+try { var clock = function clock(seconds) {
     const safe = Math.max(0, Math.floor(seconds));
     return `${String(Math.floor(safe / 60)).padStart(2, "0")}:${String(safe % 60).padStart(2, "0")}`;
 } } catch(e) {}
-try { async function readJson(response) {
+try { var readJson = async function readJson(response) {
     const payload = (await response.json());
     if (!response.ok || payload.status === "BLOCKED") {
         throw new Error(payload.reason ?? `HTTP_${response.status}`);

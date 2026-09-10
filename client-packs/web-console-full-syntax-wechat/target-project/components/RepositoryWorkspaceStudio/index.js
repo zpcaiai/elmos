@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const categoryLabels = {
+try { var categoryLabels = {
     SOURCE: "源代码",
     DOCUMENTATION: "说明文档",
     CONFIGURATION: "配置文件",
@@ -8,16 +8,16 @@ try { const categoryLabels = {
     TEST: "测试",
     OTHER: "其他",
 }; } catch(e) {}
-try { const workspaceStorageKey = "elmos:repository-workspace-id:v1"; } catch(e) {}
-try { const workspaceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i; } catch(e) {}
-try { function base64Utf8(value) {
+try { var workspaceStorageKey = "elmos:repository-workspace-id:v1"; } catch(e) {}
+try { var workspaceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i; } catch(e) {}
+try { var base64Utf8 = function base64Utf8(value) {
     const bytes = new TextEncoder().encode(value);
     let binary = "";
     for (const byte of bytes)
         binary += String.fromCharCode(byte);
     return btoa(binary);
 } } catch(e) {}
-try { function normalizeWorkspace(response) {
+try { var normalizeWorkspace = function normalizeWorkspace(response) {
     return {
         ...response,
         // Responses created before controlled delivery was introduced did not

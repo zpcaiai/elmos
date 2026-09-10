@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const businessLines = [
+try { var businessLines = [
     {
         href: "/generation",
         zh: "多语言项目生成",
@@ -29,14 +29,14 @@ try { const businessLines = [
         enDescription: "Emit local target SQL under an explicit compatibility mode; live execution and certification stay NOT_RUN.",
     },
 ]; } catch(e) {}
-try { const deliverySteps = [
+try { var deliverySteps = [
     ["1", "拉取精确提交", "Clone exact commit"],
     ["2", "只修改已批准路径", "Change approved paths only"],
     ["3", "本地提交并回读 HEAD", "Commit and re-read HEAD"],
     ["4", "非强制推送并校验远端 SHA", "Non-force push and verify remote SHA"],
     ["5", "幂等创建 PR", "Create an idempotent PR"],
 ]; } catch(e) {}
-try { const readiness = [
+try { var readiness = [
     ["登录、租户与权限", "本地实现并有测试", "外部 IdP 全目录同步 NOT_RUN", "Identity, tenant, and permissions", "Locally implemented and tested", "External IdP directory sync NOT_RUN"],
     ["Git 仓库交付", "真实本地 Git 仓库通过", "GitHub / Gitee 现场执行 NOT_RUN", "Git delivery", "Real local Git fixture passed", "Live GitHub / Gitee execution NOT_RUN"],
     ["四条业务线持久队列", "租约、TTL、容量与恢复通过", "多副本共享卷故障演练 NOT_RUN", "Durable queues", "Lease, TTL, capacity, and recovery passed", "Multi-replica shared-volume drill NOT_RUN"],

@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { const statusLabels = {
+try { var statusLabels = {
     READY: "契约就绪",
     ENFORCED: "已强制",
     BLOCKED: "已阻断",

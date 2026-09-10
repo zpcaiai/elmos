@@ -1,5 +1,5 @@
 // Top-level helpers and constants
-try { function yuan(minor) {
+try { var yuan = function yuan(minor) {
     if (minor === null || minor === undefined)
         return "—";
     const value = typeof minor === "number" ? minor : Number(minor);
@@ -11,13 +11,13 @@ try { function yuan(minor) {
         minimumFractionDigits: 2,
     });
 } } catch(e) {}
-try { function moment(value) {
+try { var moment = function moment(value) {
     if (!value)
         return "—";
     const parsed = new Date(value);
     return Number.isNaN(parsed.getTime()) ? "—" : parsed.toLocaleString("zh-CN", { hour12: false });
 } } catch(e) {}
-try { async function readRows(response) {
+try { var readRows = async function readRows(response) {
     const payload = (await response.json().catch(() => null));
     if (!response.ok) {
         return {

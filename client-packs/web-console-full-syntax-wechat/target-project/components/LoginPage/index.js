@@ -1,6 +1,6 @@
 // Top-level helpers and constants
-try { const dynamic = "force-dynamic"; } catch(e) {}
-try { const errorMessages = {
+try { var dynamic = "force-dynamic"; } catch(e) {}
+try { var errorMessages = {
     OIDC_AUTHORIZATION_REJECTED: "身份提供商拒绝了本次登录。",
     OIDC_CALLBACK_INVALID: "登录回调缺少必要参数，请重新开始。",
     OIDC_CALLBACK_FAILED: "登录校验失败，请重新尝试或联系管理员。",
