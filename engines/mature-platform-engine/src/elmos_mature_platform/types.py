@@ -353,13 +353,30 @@ class CredentialTriageCase:
 
 @dataclass
 class SbomComponent:
-    component_id: str
-    name: str
-    version: str
-    purl: str
-    sha256: str
-    license: str
+    component_id: str = ""
+    name: str = ""
+    version: str = ""
+    purl: str = ""
+    sha256: str = ""
+    license: str = ""
     cves: List[str] = field(default_factory=list)
+    license_id: str = ""
+    direct: bool = True
+    checksum_sha256: str = ""
+
+    def __post_init__(self) -> None:
+        if not self.component_id and self.purl:
+            self.component_id = self.purl
+        if not self.purl and self.component_id:
+            self.purl = self.component_id
+        if not self.license_id and self.license:
+            self.license_id = self.license
+        if not self.license and self.license_id:
+            self.license = self.license_id
+        if not self.checksum_sha256 and self.sha256:
+            self.checksum_sha256 = self.sha256
+        if not self.sha256 and self.checksum_sha256:
+            self.sha256 = self.checksum_sha256
 
 
 @dataclass
@@ -752,13 +769,25 @@ class ThreatModelEntry:
 class VexStatement:
     """Vulnerability Exploitability eXchange statement."""
     vex_id: str
-    cve_id: str
-    product_id: str
-    status: str  # not_affected, affected, fixed, under_investigation
-    justification: Optional[VexJustification] = None
+    cve_id: str = ""
+    product_id: str = ""
+    status: Any = "under_investigation"  # not_affected, affected, fixed, under_investigation, or VulnStatus
+    justification: Optional[SbomVexJustification] = None
     impact_statement: str = ""
     action_statement: str = ""
     timestamp: str = ""
+    vuln_id: str = ""
+    created_at: str = ""
+
+    def __post_init__(self) -> None:
+        if not self.cve_id and self.vuln_id:
+            self.cve_id = self.vuln_id
+        if not self.vuln_id and self.cve_id:
+            self.vuln_id = self.cve_id
+        if not self.timestamp and self.created_at:
+            self.timestamp = self.created_at
+        if not self.created_at and self.timestamp:
+            self.created_at = self.timestamp
 
 @dataclass
 class ComplianceControlMapping:
@@ -2794,3 +2823,256 @@ class TcoComparison:
     proposed_tco: float = 0.0
     savings: float = 0.0
     savings_percentage: float = 0.0
+
+# ─── Problem Root Cause Models ──────────────────────────────────────
+
+class ProblemStatus(str, Enum):
+    OPEN = "open"
+    INVESTIGATING = "investigating"
+    ROOT_CAUSE_IDENTIFIED = "root_cause_identified"
+    FIX_IN_PROGRESS = "fix_in_progress"
+    RESOLVED = "resolved"
+    CLOSED = "closed"
+
+class ProblemPriority(str, Enum):
+    P1 = "p1"
+    P2 = "p2"
+    P3 = "p3"
+    P4 = "p4"
+
+@dataclass
+class ProblemRecord:
+    problem_id: str
+    title: str
+    description: str
+    priority: ProblemPriority
+    status: ProblemStatus = ProblemStatus.OPEN
+    affected_services: List[str] = field(default_factory=list)
+    related_incidents: List[str] = field(default_factory=list)
+    root_cause: str = ""
+    fix_description: str = ""
+    owner: str = ""
+    created_at: str = ""
+    resolved_at: str = ""
+    recurrence_count: int = 0
+
+@dataclass
+class RcaFinding:
+    finding_id: str
+    problem_id: str
+    category: str  # human, process, technology, external
+    description: str
+    evidence: List[str] = field(default_factory=list)
+    contributing_factor: bool = False
+    root_cause: bool = False
+
+@dataclass
+class CorrectiveAction:
+    action_id: str
+    problem_id: str
+    description: str
+    owner: str
+    deadline: str = ""
+    completed: bool = False
+    verified: bool = False
+    effectiveness_score: float = 0.0  # 0-1
+
+# ─── Agent Budget & Resource Limits Models ──────────────────────────
+
+class ResourceType(str, Enum):
+    TOKENS = "tokens"
+    API_CALLS = "api_calls"
+    COMPUTE_SECONDS = "compute_seconds"
+    STORAGE_BYTES = "storage_bytes"
+    TOOL_INVOCATIONS = "tool_invocations"
+
+class BudgetPeriod(str, Enum):
+    PER_REQUEST = "per_request"
+    HOURLY = "hourly"
+    DAILY = "daily"
+    MONTHLY = "monthly"
+
+class BudgetAction(str, Enum):
+    ALLOW = "allow"
+    THROTTLE = "throttle"
+    DENY = "deny"
+    ALERT = "alert"
+
+@dataclass
+class AgentBudget:
+    budget_id: str
+    agent_id: str
+    resource_type: ResourceType
+    period: BudgetPeriod
+    limit: float
+    used: float = 0.0
+    remaining: float = 0.0
+    warning_threshold_pct: float = 80.0
+    hard_limit: bool = True
+    created_at: str = ""
+    reset_at: str = ""
+
+@dataclass
+class ResourceConsumption:
+    consumption_id: str
+    agent_id: str
+    resource_type: ResourceType
+    amount: float
+    task_id: str = ""
+    timestamp: str = ""
+
+@dataclass
+class BudgetDecision:
+    agent_id: str
+    resource_type: ResourceType
+    requested: float
+    action: BudgetAction
+    remaining_after: float = 0.0
+    reason: str = ""
+
+# ─── Pattern & Antipattern Models ───────────────────────────────────
+
+class PatternType(str, Enum):
+    DESIGN = "design"
+    ARCHITECTURE = "architecture"
+    CODE = "code"
+    TESTING = "testing"
+    DEPLOYMENT = "deployment"
+    SECURITY = "security"
+    DATA = "data"
+
+class PatternConfidence(str, Enum):
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    EXPERIMENTAL = "experimental"
+
+@dataclass
+class PatternRecord:
+    pattern_id: str
+    name: str
+    pattern_type: PatternType
+    description: str
+    is_antipattern: bool = False
+    confidence: PatternConfidence = PatternConfidence.MEDIUM
+    occurrences: int = 0
+    tags: List[str] = field(default_factory=list)
+    languages: List[str] = field(default_factory=list)
+    example_code: str = ""
+    fix_suggestion: str = ""  # for antipatterns
+    first_seen: str = ""
+    last_seen: str = ""
+    source_repos: List[str] = field(default_factory=list)
+
+@dataclass
+class PatternMatch:
+    match_id: str
+    pattern_id: str
+    file_path: str
+    line_start: int = 0
+    line_end: int = 0
+    snippet: str = ""
+    confidence_score: float = 0.0
+    repo_name: str = ""
+
+@dataclass
+class PatternRule:
+    rule_id: str
+    pattern_id: str
+    detector_type: str = ""  # regex, ast, semantic
+    detector_config: str = ""
+    enabled: bool = True
+    severity: str = "info"  # error, warning, info
+
+
+# ─── SBOM & Vulnerability Models ────────────────────────────────────
+
+class SbomFormat(str, Enum):
+    SPDX = "spdx"
+    CYCLONEDX = "cyclonedx"
+    SWID = "swid"
+
+class VulnStatus(str, Enum):
+    OPEN = "open"
+    IN_PROGRESS = "in_progress"
+    PATCHED = "patched"
+    MITIGATED = "mitigated"
+    WONT_FIX = "wont_fix"
+    FALSE_POSITIVE = "false_positive"
+
+class SbomVexJustification(str, Enum):
+    COMPONENT_NOT_PRESENT = "component_not_present"
+    VULNERABLE_CODE_NOT_PRESENT = "vulnerable_code_not_present"
+    VULNERABLE_CODE_NOT_IN_EXECUTE_PATH = "vulnerable_code_not_in_execute_path"
+    VULNERABLE_CODE_CANNOT_BE_CONTROLLED = "vulnerable_code_cannot_be_controlled"
+    INLINE_MITIGATIONS_ALREADY_EXIST = "inline_mitigations_already_exist"
+
+@dataclass
+class SbomDocument:
+    sbom_id: str
+    format: SbomFormat
+    artifact_name: str
+    artifact_version: str
+    components: List[str] = field(default_factory=list)  # purls
+    created_at: str = ""
+    tool_name: str = ""
+    tool_version: str = ""
+
+@dataclass
+class VulnerabilityRecord:
+    vuln_id: str  # CVE-2024-XXXX
+    affected_purl: str
+    severity: str = ""  # critical, high, medium, low
+    cvss_score: float = 0.0
+    status: VulnStatus = VulnStatus.OPEN
+    fixed_version: str = ""
+    patch_available: bool = False
+    exploitability: str = ""  # active, proof_of_concept, unproven
+    first_detected: str = ""
+    sla_deadline: str = ""
+
+
+# ─── Zero Downtime Upgrade Models ───────────────────────────────────
+
+class ZDUpgradeStrategy(str, Enum):
+    ROLLING = "rolling"
+    BLUE_GREEN = "blue_green"
+    CANARY = "canary"
+    IN_PLACE = "in_place"
+
+class ZDUpgradePhase(str, Enum):
+    PLANNING = "planning"
+    PRE_CHECK = "pre_check"
+    DEPLOYING = "deploying"
+    VERIFYING = "verifying"
+    DRAINING = "draining"
+    SWITCHING = "switching"
+    COMPLETED = "completed"
+    ROLLED_BACK = "rolled_back"
+    FAILED = "failed"
+
+@dataclass
+class UpgradeTarget:
+    target_id: str
+    service_name: str
+    current_version: str
+    target_version: str
+    strategy: ZDUpgradeStrategy
+    phase: ZDUpgradePhase = ZDUpgradePhase.PLANNING
+    instances_total: int = 1
+    instances_upgraded: int = 0
+    health_check_url: str = ""
+    drain_timeout_seconds: int = 30
+    max_unavailable_pct: float = 25.0
+    started_at: str = ""
+    completed_at: str = ""
+    error_message: str = ""
+
+@dataclass
+class UpgradeHealthCheck:
+    target_id: str
+    instance_id: str
+    healthy: bool
+    response_time_ms: float = 0.0
+    error_rate_pct: float = 0.0
+    checked_at: str = ""
