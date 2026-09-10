@@ -47,7 +47,7 @@ Component({
     fallbackEnabled: false,
     optimizationProfile: "cost_performance",
     verificationPolicy: "system_required_verifiers",
-    risk: "initialRisk",
+    risk: {"security":"low","dataMigration":"low","concurrency":"low","publicContract":"low","blastRadius":"low","longHorizon":false},
     result: null,
     preflightError: null,
     submitting: false,

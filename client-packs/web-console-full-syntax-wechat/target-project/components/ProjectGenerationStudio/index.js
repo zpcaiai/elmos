@@ -215,7 +215,7 @@ Component({
     githubToken: "",
     githubConfirmed: false,
     githubBusy: false,
-    githubIdempotencyKey: "() => crypto.randomUUID()",
+    githubIdempotencyKey: null,
     feedback: "",
     targetError: "",
     feedbackTimer: {"current":null},

@@ -495,6 +495,18 @@ function evalExpr(expr: string, scope: Record<string, unknown>): unknown {
     const safeExpr = trimmed
       .replace(/\?\./g, ".")
       .replace(/(?<=[a-zA-Z0-9_\)\]])\.(?=[a-zA-Z_$])/g, "?.");
+    const funcCalls = safeExpr.match(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g);
+    if (funcCalls) {
+      for (const fc of funcCalls) {
+        const fnName = fc.replace(/\s*\($/, "");
+        if (
+          !(fnName in defaultScope) &&
+          !/^(Math|String|Number|Array|Boolean|JSON|parseInt|parseFloat|encodeURIComponent|decodeURIComponent)$/.test(fnName)
+        ) {
+          defaultScope[fnName] = (..._args: unknown[]) => undefined;
+        }
+      }
+    }
     const fn = new Function('scope', `with(scope) { try { return (${safeExpr}); } catch(e) { return undefined; } }`);
     const res = fn(proxy);
     if (res !== undefined) return res;

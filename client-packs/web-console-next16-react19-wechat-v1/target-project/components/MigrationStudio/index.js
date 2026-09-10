@@ -31,7 +31,7 @@ Component({
     query: "",
     statusFilter: "ALL",
     selected: "M36",
-    capabilities: "fallbackCapabilities",
+    capabilities: null,
     source: "REPOSITORY_CONTRACT",
     note: "正在读取能力契约…",
     dialogOpen: false,

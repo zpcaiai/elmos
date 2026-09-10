@@ -32,6 +32,7 @@ from ..ir import (
     VarDeclStmt,
 )
 from .base import BaseAstParser
+from .native_bridge import NativeBridge
 
 
 class CSharpAstParser(BaseAstParser):
@@ -41,6 +42,11 @@ class CSharpAstParser(BaseAstParser):
         super().__init__('csharp')
 
     def parse(self, source_code: str) -> UniversalModule:
+        # 1. Attempt genuine native Roslyn compiler first
+        native_mod = NativeBridge.parse_csharp_with_roslyn(source_code)
+        if native_mod and (native_mod.classes or native_mod.free_functions):
+            return native_mod
+
         module = UniversalModule(name='CSharpModule', source_language='csharp')
 
         # Usings

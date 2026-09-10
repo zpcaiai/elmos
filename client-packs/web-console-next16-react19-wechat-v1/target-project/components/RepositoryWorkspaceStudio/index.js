@@ -58,7 +58,7 @@ Component({
     baseBranch: "main",
     pullRequestTitle: "ELMOS: implement approved changes",
     pullRequestBody: "This pull request was prepared from a tenant-bound ELMOS workspace. Merge and deployment remain separate reviewed actions.",
-    pullRequestKey: "() => crypto.randomUUID()",
+    pullRequestKey: null,
     files: null,
   },
   lifetimes: {

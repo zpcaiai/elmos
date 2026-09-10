@@ -33,7 +33,7 @@ Component({
   properties: {
   },
   data: {
-    payload: "{\n    source: \"REPOSITORY_CONTRACT\",\n    fetchedAt: new Date(0).toISOString(),\n    namespace: \"Product Batch B34-B38\",\n    decisionCeiling: \"READY_FOR_EXTERNAL_GATE_OR_HUMAN_DECISION\",\n    externalExecutionEvidence: \"NOT_RUN\",\n    stages: fallbackStages,\n    note: \"正在读取控制面能力…\",\n  }",
+    payload: {},
     selected: "B37",
     refreshing: false,
   },

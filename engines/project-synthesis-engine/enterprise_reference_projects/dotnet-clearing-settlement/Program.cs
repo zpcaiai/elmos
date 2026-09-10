@@ -24,6 +24,8 @@ public static class Program
         await DefaultWaterfallTests.RunAsync();
         await NovationIntegrityTests.RunAsync();
         DvpAndStressTests.Run();
+        HistoricalVaRTests.Run();
+        SimmAndRegulatoryTests.Run();
 
         Console.WriteLine("\n[Running Live Multi-Member Clearing Demo]");
         await RunLiveClearingDemoAsync();

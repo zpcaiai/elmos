@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
-  "timestamp": "2026-09-10T09:38:58.321Z",
+  "timestamp": "2026-09-10T09:45:48.961Z",
   "packKey": "web-console-next16-react19-wechat-v1",
   "totals": {
     "totalComponents": 71,
     "l3FirstScreenZeroErrorsCount": 71,
     "l3MountPassRatePercent": 100,
-    "l4DifferentialEquivalentCount": 71,
-    "l4DifferentialPassRatePercent": 100,
+    "l4DifferentialEquivalentCount": 68,
+    "l4DifferentialPassRatePercent": 95.77,
     "dispositionBreakdown": {
       "automatic": {
         "total": 71,
         "l3Passed": 71,
-        "l4Passed": 71,
-        "l4PassRatePercent": 100
+        "l4Passed": 68,
+        "l4PassRatePercent": 95.77
       },
       "handPorted": {
         "total": 0,
@@ -24,10 +24,10 @@
     },
     "dualTrackDelivery": {
       "totalDelivered": 71,
-      "automaticL4Passed": 71,
+      "automaticL4Passed": 68,
       "handPortedGoldenPassed": 0,
-      "compositeCertifiedCount": 71,
-      "compositeCertifiedRatePercent": 100
+      "compositeCertifiedCount": 68,
+      "compositeCertifiedRatePercent": 95.77
     }
   },
   "components": [
@@ -584,10 +584,10 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 0.9856,
-      "textSimilarity": 1,
-      "structuralSimilarity": 0.9639,
+      "l4Equivalent": false,
+      "consistencyScore": 0.9776,
+      "textSimilarity": 0.9908,
+      "structuralSimilarity": 0.963,
       "diagnostics": []
     },
     {
@@ -636,11 +636,13 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 0.9967,
-      "textSimilarity": 1,
-      "structuralSimilarity": 1,
-      "diagnostics": []
+      "l4Equivalent": false,
+      "consistencyScore": 0.921,
+      "textSimilarity": 0.8929,
+      "structuralSimilarity": 0.9216,
+      "diagnostics": [
+        "Composite semantic score 0.921 is below L4 threshold (0.95)."
+      ]
     },
     {
       "componentName": "ObservabilityPage",
@@ -766,11 +768,13 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 0.9885,
-      "textSimilarity": 1,
+      "l4Equivalent": false,
+      "consistencyScore": 0.9298,
+      "textSimilarity": 0.8043,
       "structuralSimilarity": 1,
-      "diagnostics": []
+      "diagnostics": [
+        "Composite semantic score 0.9298 is below L4 threshold (0.95)."
+      ]
     },
     {
       "componentName": "UsageMeter",

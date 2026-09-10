@@ -197,7 +197,7 @@ Component({
   },
   data: {
     capabilities: null,
-    fields: "initialFields",
+    fields: {"queryId":"web-sql-preflight","sourceProfile":"oracle-26ai-ee","targetId":"dm8","targetVersion":"8.1.3.140","targetEdition":"enterprise","compatibilityMode":"oracle-compatible-explicit","targetDriver":"dmjdbc-8.1.3.140","targetCharset":"UTF-8","targetCollation":"BINARY","targetTimeZone":"Asia/Shanghai","sql":"SELECT 1 FROM t\n"},
     parameters: [],
     result: null,
     loadingCapabilities: true,

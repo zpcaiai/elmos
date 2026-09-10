@@ -45,7 +45,7 @@ Component({
   properties: {
   },
   data: {
-    selectedSpan: "sampleSpans[2]",
+    selectedSpan: {"id":"span-03","name":"elmos.pipeline.smt_verification","durationMs":12.5,"status":"SAMPLE_ONLY","attributes":{"sample.solver":"z3","verification.status":"NOT_RUN"}},
     activeTab: "traces",
     totalDuration: null,
   },

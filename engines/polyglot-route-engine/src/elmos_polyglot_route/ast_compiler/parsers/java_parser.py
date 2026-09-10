@@ -32,19 +32,25 @@ from ..ir import (
     VarDeclStmt,
 )
 from .base import BaseAstParser
+from .native_bridge import NativeBridge
 
 
 class JavaAstParser(BaseAstParser):
-    """Parses Java code into Universal AST IR."""
+    """Parses Java classes, Spring controllers, and methods into Universal AST IR."""
 
     def __init__(self) -> None:
         super().__init__('java')
 
     def parse(self, source_code: str) -> UniversalModule:
+        # 1. Attempt genuine native javac Tree API compiler first
+        native_mod = NativeBridge.parse_java_with_javac(source_code)
+        if native_mod and (native_mod.classes or native_mod.free_functions):
+            return native_mod
+
         module = UniversalModule(name='JavaModule', source_language='java')
 
         # Package
-        pkg_match = re.search(r'package\s+([a-zA-Z0-9_.]+)\s*;', source_code)
+        pkg_match = re.search(r' package\s+([a-zA-Z0-9_.]+)\s*;', source_code)
         if pkg_match:
             module.package_name = pkg_match.group(1)
 
