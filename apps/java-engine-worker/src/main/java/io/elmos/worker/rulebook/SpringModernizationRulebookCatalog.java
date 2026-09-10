@@ -81,6 +81,15 @@ public final class SpringModernizationRulebookCatalog {
     private static final Map<RuleCategory, List<ModernizationRule>> RULES_BY_CATEGORY = new EnumMap<>(RuleCategory.class);
 
     static {
+        initSecurityRules();
+        initJpaRules();
+        initCloudRules();
+        initXmlRules();
+        initCoreRules();
+        initActuatorRules();
+    }
+
+    private static void initSecurityRules() {
         register(new ModernizationRule(
                 "SEC-001",
                 RuleCategory.SECURITY,
@@ -89,10 +98,7 @@ public final class SpringModernizationRulebookCatalog {
                 4,
                 "WebSecurityConfigurerAdapter has been completely removed in Spring Security 6.x. Security configurations must declare a @Bean SecurityFilterChain instead.",
                 "extends WebSecurityConfigurerAdapter",
-                "@Bean
-public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    return http.build();
-}",
+                "@Bean\npublic SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n    return http.build();\n}",
                 "io.elmos.recipes.security.SpringSecurityFilterChainRecipe",
                 "Eliminate inheritance from WebSecurityConfigurerAdapter and provide a SecurityFilterChain bean.",
                 "Revert to WebSecurityConfigurerAdapter if targeting Spring Boot 2.7.x maintenance.",
@@ -148,10 +154,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 3,
                 "Configuring AuthenticationManagerBuilder via configure(AuthenticationManagerBuilder) is deprecated in favor of exposing an AuthenticationManager @Bean.",
                 "protected void configure(AuthenticationManagerBuilder auth) { auth.userDetailsService(...); }",
-                "@Bean
-public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-    return config.getAuthenticationManager();
-}",
+                "@Bean\npublic AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {\n    return config.getAuthenticationManager();\n}",
                 "io.elmos.recipes.security.SpringSecurityAuthenticationRecipe",
                 "Declare AuthenticationManager as a @Bean using AuthenticationConfiguration or DaoAuthenticationProvider.",
                 "Restore configure(AuthenticationManagerBuilder) override.",
@@ -319,8 +322,7 @@ public AuthenticationManager authenticationManager(AuthenticationConfiguration c
                 3,
                 "DefaultMethodSecurityExpressionHandler registration in Spring Security 6 must be wired via MethodSecurityExpressionHandler @Bean.",
                 "class CustomSecurityConfig extends GlobalMethodSecurityConfiguration",
-                "@Bean
-static MethodSecurityExpressionHandler methodSecurityExpressionHandler() { return new DefaultMethodSecurityExpressionHandler(); }",
+                "@Bean\nstatic MethodSecurityExpressionHandler methodSecurityExpressionHandler() { return new DefaultMethodSecurityExpressionHandler(); }",
                 "io.elmos.worker.security.SpringSecurityFilterChainModernizer",
                 "Declare MethodSecurityExpressionHandler as a static @Bean.",
                 "Restore GlobalMethodSecurityConfiguration inheritance.",
@@ -502,13 +504,15 @@ static MethodSecurityExpressionHandler methodSecurityExpressionHandler() { retur
                 2,
                 "Ensure multiple SecurityFilterChain beans have explicit @Order annotations to avoid ambiguous filter precedence.",
                 "@Bean public SecurityFilterChain chainOne(HttpSecurity http) ...",
-                "@Bean @Order(1) public SecurityFilterChain apiFilterChain(HttpSecurity http) ...
-@Bean @Order(2) public SecurityFilterChain defaultFilterChain(HttpSecurity http) ...",
+                "@Bean @Order(1) public SecurityFilterChain apiFilterChain(HttpSecurity http) ...\n@Bean @Order(2) public SecurityFilterChain defaultFilterChain(HttpSecurity http) ...",
                 "io.elmos.recipes.security.SpringSecurityCustomFilterOrderRecipe",
                 "Add @Order annotation to all SecurityFilterChain beans.",
                 "Remove @Order annotations.",
                 "https://docs.spring.io/spring-security/reference/servlet/configuration/java.html#multiple-httpsecurity"
         ));
+    }
+
+    private static void initJpaRules() {
         register(new ModernizationRule(
                 "JPA-001",
                 RuleCategory.JPA_HIBERNATE,
@@ -782,8 +786,7 @@ static MethodSecurityExpressionHandler methodSecurityExpressionHandler() { retur
                 RuleSeverity.MAJOR,
                 2,
                 "Configure spring.jpa.properties.hibernate.jdbc.batch_size=50 and order_inserts/order_updates for high throughput.",
-                "spring.jpa.properties.hibernate.jdbc.batch_size=50
-spring.jpa.properties.hibernate.order_inserts=true",
+                "spring.jpa.properties.hibernate.jdbc.batch_size=50\nspring.jpa.properties.hibernate.order_inserts=true",
                 "Enable JDBC batch size and ordering properties.",
                 "io.elmos.worker.jpa.SpringJpaHibernateQueryModernizer",
                 "Set batch_size and order_inserts/updates in application properties.",
@@ -811,8 +814,7 @@ spring.jpa.properties.hibernate.order_inserts=true",
                 RuleSeverity.MAJOR,
                 2,
                 "Explicitly configure LockModeType.PESSIMISTIC_WRITE with javax.persistence.lock.timeout hint.",
-                "@Lock(LockModeType.PESSIMISTIC_WRITE)
-@QueryHints(@QueryHint(name = \"jakarta.persistence.lock.timeout\", value = \"5000\"))",
+                "@Lock(LockModeType.PESSIMISTIC_WRITE)\n@QueryHints(@QueryHint(name = \"jakarta.persistence.lock.timeout\", value = \"5000\"))",
                 "Set lock timeout on pessimistic queries to prevent database deadlocks.",
                 "io.elmos.worker.jpa.SpringJpaHibernateQueryModernizer",
                 "Add lock timeout query hint to pessimistic lock queries.",
@@ -924,14 +926,16 @@ spring.jpa.properties.hibernate.order_inserts=true",
                 RuleSeverity.CRITICAL,
                 3,
                 "Configure HikariCP maximumPoolSize, minimumIdle, idleTimeout, and maxLifetime for Spring Boot 3/4 defaults.",
-                "spring.datasource.hikari.maximum-pool-size=20
-spring.datasource.hikari.minimum-idle=5",
+                "spring.datasource.hikari.maximum-pool-size=20\nspring.datasource.hikari.minimum-idle=5",
                 "Tune HikariCP parameters for enterprise database workloads.",
                 "io.elmos.worker.jpa.SpringJpaHibernateQueryModernizer",
                 "Apply recommended HikariCP connection pool settings in application.yml.",
                 "Revert to default unconfigured pool settings.",
                 "https://github.com/brettwooldridge/HikariCP#configuration-knobs-baby"
         ));
+    }
+
+    private static void initCloudRules() {
         register(new ModernizationRule(
                 "CLD-001",
                 RuleCategory.SPRING_CLOUD,
@@ -1009,10 +1013,8 @@ spring.datasource.hikari.minimum-idle=5",
                 RuleSeverity.BLOCKER,
                 3,
                 "Spring Cloud no longer reads bootstrap.yml by default. Migrate Config Server connections to spring.config.import=optional:configserver: in application.yml.",
-                "# in bootstrap.yml
-spring.cloud.config.uri=http://localhost:8888",
-                "# in application.yml
-spring.config.import=optional:configserver:http://localhost:8888",
+                "# in bootstrap.yml\nspring.cloud.config.uri=http://localhost:8888",
+                "# in application.yml\nspring.config.import=optional:configserver:http://localhost:8888",
                 "io.elmos.recipes.cloud.SpringCloudConfigBootstrapRecipe",
                 "Migrate properties from bootstrap.yml to application.yml with spring.config.import.",
                 "Add spring-cloud-starter-bootstrap to preserve legacy behavior.",
@@ -1026,8 +1028,7 @@ spring.config.import=optional:configserver:http://localhost:8888",
                 3,
                 "Spring Cloud Sleuth is replaced in Boot 3/4 by Micrometer Tracing with Brave or OpenTelemetry bridge.",
                 "<artifactId>spring-cloud-starter-sleuth</artifactId>",
-                "<artifactId>micrometer-tracing-bridge-otel</artifactId>
-<artifactId>opentelemetry-exporter-otlp</artifactId>",
+                "<artifactId>micrometer-tracing-bridge-otel</artifactId>\n<artifactId>opentelemetry-exporter-otlp</artifactId>",
                 "io.elmos.recipes.cloud.SpringCloudDistributedTracingRecipe",
                 "Replace Sleuth with micrometer-tracing-bridge-otel and exporter.",
                 "Restore spring-cloud-starter-sleuth.",
@@ -1041,8 +1042,7 @@ spring.config.import=optional:configserver:http://localhost:8888",
                 2,
                 "Netflix Archaius is removed. Use Spring Boot @ConfigurationProperties with @RefreshScope.",
                 "DynamicPropertyFactory.getInstance().getStringProperty(\"key\", \"default\");",
-                "@ConfigurationProperties(prefix = \"app\")
-public class AppConfig { ... }",
+                "@ConfigurationProperties(prefix = \"app\")\npublic class AppConfig { ... }",
                 "io.elmos.worker.cloud.SpringCloudMicroservicesModernizer",
                 "Replace Archaius dynamic properties with typed Spring @ConfigurationProperties.",
                 "Restore Archaius library.",
@@ -1097,8 +1097,7 @@ public class AppConfig { ... }",
                 RuleSeverity.MAJOR,
                 2,
                 "Configure Resilience4j @Retry with exponential backoff and maxAttempts in application.yml.",
-                "resilience4j.retry.instances.default.maxAttempts=3
-resilience4j.retry.instances.default.waitDuration=500ms",
+                "resilience4j.retry.instances.default.maxAttempts=3\nresilience4j.retry.instances.default.waitDuration=500ms",
                 "Add Resilience4j retry configuration block.",
                 "io.elmos.recipes.cloud.SpringCloudHystrixToResilience4jRecipe",
                 "Configure retry parameters in application.yml.",
@@ -1294,8 +1293,7 @@ resilience4j.retry.instances.default.waitDuration=500ms",
                 RuleSeverity.MAJOR,
                 2,
                 "Configure Eureka server peer node replication timeout and retry parameters for high availability.",
-                "eureka.server.peerNodeConnectTimeoutMs=2000
-eureka.server.peerNodeReadTimeoutMs=2000",
+                "eureka.server.peerNodeConnectTimeoutMs=2000\neureka.server.peerNodeReadTimeoutMs=2000",
                 "Tune Eureka server peer communication timeouts.",
                 "io.elmos.recipes.cloud.SpringCloudEurekaDiscoveryRecipe",
                 "Configure peer node connection settings in eureka server yml.",
@@ -1351,14 +1349,16 @@ eureka.server.peerNodeReadTimeoutMs=2000",
                 RuleSeverity.MAJOR,
                 2,
                 "Ensure DiscoveryClient deregistration hook completes before server port shutdown occurs.",
-                "server.shutdown=graceful
-spring.lifecycle.timeout-per-shutdown-phase=20s",
+                "server.shutdown=graceful\nspring.lifecycle.timeout-per-shutdown-phase=20s",
                 "Configure graceful shutdown and phase timeout.",
                 "io.elmos.worker.cloud.SpringCloudMicroservicesModernizer",
                 "Add server.shutdown=graceful to application properties.",
                 "Allow abrupt process termination.",
                 "https://docs.spring.io/spring-boot/docs/current/reference/html/web.html#web.graceful-shutdown"
         ));
+    }
+
+    private static void initXmlRules() {
         register(new ModernizationRule(
                 "XML-001",
                 RuleCategory.XML_JAVACONFIG,
@@ -1367,8 +1367,7 @@ spring.lifecycle.timeout-per-shutdown-phase=20s",
                 4,
                 "Convert legacy Spring XML beans configuration files to modern JavaConfig @Configuration classes.",
                 "<beans xmlns=\"http://www.springframework.org/schema/beans\"> ... </beans>",
-                "@Configuration
-public class AppConfig { ... }",
+                "@Configuration\npublic class AppConfig { ... }",
                 "io.elmos.worker.xml.SpringXmlToJavaConfigConverter",
                 "Generate @Configuration Java class from root XML document.",
                 "Retain legacy XML and import via @ImportResource.",
@@ -1382,8 +1381,7 @@ public class AppConfig { ... }",
                 3,
                 "Convert <bean id=\"...\" class=\"...\"> elements to corresponding @Bean methods in @Configuration classes.",
                 "<bean id=\"orderService\" class=\"com.example.OrderServiceImpl\"/>",
-                "@Bean
-public OrderService orderService() { return new OrderServiceImpl(); }",
+                "@Bean\npublic OrderService orderService() { return new OrderServiceImpl(); }",
                 "io.elmos.worker.xml.SpringXmlToJavaConfigConverter",
                 "Extract bean id and class, emitting @Bean method definition.",
                 "Restore XML bean declaration.",
@@ -1425,8 +1423,7 @@ public OrderService orderService() { return new OrderServiceImpl(); }",
                 3,
                 "Convert <mvc:annotation-driven/> to @EnableWebMvc and WebMvcConfigurer bean implementation.",
                 "<mvc:annotation-driven/>",
-                "@EnableWebMvc
-public class WebConfig implements WebMvcConfigurer { ... }",
+                "@EnableWebMvc\npublic class WebConfig implements WebMvcConfigurer { ... }",
                 "io.elmos.worker.xml.SpringXmlToJavaConfigConverter",
                 "Annotate configuration with @EnableWebMvc and implement WebMvcConfigurer.",
                 "Restore mvc:annotation-driven in XML.",
@@ -1477,7 +1474,7 @@ public class WebConfig implements WebMvcConfigurer { ... }",
         register(new ModernizationRule(
                 "XML-009",
                 RuleCategory.XML_JAVACONFIG,
-                "<bean class="...CommonsMultipartResolver"> to StandardServletMultipartResolver",
+                "<bean class=\"...CommonsMultipartResolver\"> to StandardServletMultipartResolver",
                 RuleSeverity.CRITICAL,
                 2,
                 "CommonsMultipartResolver was removed in Spring 6. Replace with StandardServletMultipartResolver @Bean.",
@@ -1491,7 +1488,7 @@ public class WebConfig implements WebMvcConfigurer { ... }",
         register(new ModernizationRule(
                 "XML-010",
                 RuleCategory.XML_JAVACONFIG,
-                "<bean class="...InternalResourceViewResolver"> to ViewResolver Registry",
+                "<bean class=\"...InternalResourceViewResolver\"> to ViewResolver Registry",
                 RuleSeverity.MAJOR,
                 2,
                 "Convert InternalResourceViewResolver bean declaration into configureViewResolvers(ViewResolverRegistry registry) method.",
@@ -1575,7 +1572,7 @@ public class WebConfig implements WebMvcConfigurer { ... }",
         register(new ModernizationRule(
                 "XML-016",
                 RuleCategory.XML_JAVACONFIG,
-                "<import resource="..."> to @Import Annotation",
+                "<import resource=\"...\"> to @Import Annotation",
                 RuleSeverity.MAJOR,
                 2,
                 "Convert <import resource=\"services.xml\"/> to @Import(ServicesConfig.class) on Java configuration.",
@@ -1712,6 +1709,9 @@ public class WebConfig implements WebMvcConfigurer { ... }",
                 "Restore web.xml deployment descriptor.",
                 "https://docs.spring.io/spring-boot/docs/current/reference/html/howto.html#howto.traditional-deployment"
         ));
+    }
+
+    private static void initCoreRules() {
         register(new ModernizationRule(
                 "COR-001",
                 RuleCategory.CORE_FRAMEWORK,
@@ -1992,6 +1992,9 @@ public class WebConfig implements WebMvcConfigurer { ... }",
                 "Allow uncaught async exceptions to be silently dropped.",
                 "https://docs.spring.io/spring-framework/reference/integration/scheduling.html#scheduling-annotation-support-async"
         ));
+    }
+
+    private static void initActuatorRules() {
         register(new ModernizationRule(
                 "ACT-001",
                 RuleCategory.ACTUATOR_OBSERVABILITY,
@@ -1999,8 +2002,7 @@ public class WebConfig implements WebMvcConfigurer { ... }",
                 RuleSeverity.CRITICAL,
                 2,
                 "Isolate management endpoints on a distinct port (e.g. management.server.port=8081) and path (/actuator).",
-                "management.server.port=8081
-management.endpoints.web.base-path=/actuator",
+                "management.server.port=8081\nmanagement.endpoints.web.base-path=/actuator",
                 "Configure management port and base path in application.yml.",
                 "io.elmos.worker.SpringDiagnosticAutoRepairer",
                 "Set management.server.port and base-path properties.",
@@ -2028,8 +2030,7 @@ management.endpoints.web.base-path=/actuator",
                 RuleSeverity.MAJOR,
                 2,
                 "Configure PrometheusMeterRegistry with common tags (application, environment, region).",
-                "management.prometheus.metrics.export.enabled=true
-management.metrics.tags.application=${spring.application.name}",
+                "management.prometheus.metrics.export.enabled=true\nmanagement.metrics.tags.application=${spring.application.name}",
                 "Add Prometheus meter registry configuration and common tags.",
                 "io.elmos.worker.SpringDiagnosticAutoRepairer",
                 "Enable Prometheus export and common metric tags.",
@@ -2085,8 +2086,7 @@ management.metrics.tags.application=${spring.application.name}",
                 RuleSeverity.CRITICAL,
                 2,
                 "Enable graceful shutdown to allow active HTTP requests and background tasks to complete before container termination.",
-                "server.shutdown=graceful
-spring.lifecycle.timeout-per-shutdown-phase=30s",
+                "server.shutdown=graceful\nspring.lifecycle.timeout-per-shutdown-phase=30s",
                 "Configure graceful shutdown in application.properties.",
                 "io.elmos.worker.SpringDiagnosticAutoRepairer",
                 "Add server.shutdown=graceful and phase timeout.",
@@ -2156,8 +2156,7 @@ spring.lifecycle.timeout-per-shutdown-phase=30s",
                 RuleSeverity.MAJOR,
                 2,
                 "Configure Micrometer Tracing baggage fields (e.g. tenant-id, request-id) for remote network propagation.",
-                "management.tracing.baggage.remote-fields=tenant-id,user-id
-management.tracing.baggage.correlation.fields=tenant-id,user-id",
+                "management.tracing.baggage.remote-fields=tenant-id,user-id\nmanagement.tracing.baggage.correlation.fields=tenant-id,user-id",
                 "Declare remote baggage fields in application properties.",
                 "io.elmos.worker.SpringDiagnosticAutoRepairer",
                 "Set management.tracing.baggage properties.",
@@ -2185,8 +2184,7 @@ management.tracing.baggage.correlation.fields=tenant-id,user-id",
                 RuleSeverity.CRITICAL,
                 3,
                 "Configure server.ssl with PKCS12 keystore and strict TLS 1.3 protocol suite for zero-trust microservice networks.",
-                "server.ssl.enabled-protocols=TLSv1.3
-server.ssl.key-store-type=PKCS12",
+                "server.ssl.enabled-protocols=TLSv1.3\nserver.ssl.key-store-type=PKCS12",
                 "Set TLSv1.3 and PKCS12 keystore type in application properties.",
                 "io.elmos.worker.SpringDiagnosticAutoRepairer",
                 "Enforce TLSv1.3 on embedded web server.",

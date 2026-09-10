@@ -126,10 +126,11 @@ class FinOpsEconomicsEngine:
         self._log(f"Billing reconciliation for tenant {tenant_id}: Reconciled={is_reconciled}, Discrepancies={len(discrepancies)}")
         return is_reconciled, total_discrepancy, discrepancies
 
-    def compute_gross_margin(self, period: str, total_revenue: float) -> MarginReport:
+    def compute_gross_margin(self, period: str, total_revenue: float, tenant_id: Optional[str] = None) -> MarginReport:
         """Computes platform gross margin and evaluates commercial profitability."""
-        infra_costs = sum(r.total_cost for r in self.usage_records)
-        third_party_costs = sum(r.total_cost for r in self.usage_records if r.resource_type == "token_count") * 0.4
+        records = [r for r in self.usage_records if tenant_id is None or r.tenant_id == tenant_id]
+        infra_costs = sum(r.total_cost for r in records)
+        third_party_costs = sum(r.total_cost for r in records if r.resource_type == "token_count") * 0.4
         total_cogs = infra_costs + third_party_costs
         gross_profit = total_revenue - total_cogs
         margin_pct = (gross_profit / max(1.0, total_revenue)) * 100.0
@@ -144,5 +145,5 @@ class FinOpsEconomicsEngine:
             gross_margin_percentage=margin_pct,
             margin_threshold_compliant=compliant,
         )
-        self._log(f"Margin report for {period}: Revenue=${total_revenue:,.2f}, COGS=${total_cogs:,.2f}, Margin={margin_pct:.1f}%, Compliant={compliant}")
+        self._log(f"Margin report for {period} (tenant={tenant_id}): Revenue=${total_revenue:,.2f}, COGS=${total_cogs:,.2f}, Margin={margin_pct:.1f}%, Compliant={compliant}")
         return report

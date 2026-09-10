@@ -333,7 +333,11 @@ def evaluate_chinadb_infrastructure(
                     "statementsSucceeded": ddl_receipt.successful_statements,
                     "schemaDigest": ddl_receipt.schema_digest,
                     "tablesFound": ddl_receipt.verified_tables,
-                    "accountPrimaryKeyVerified": inspect_acc.columns["acc_no"].is_primary_key if inspect_acc else False,
+                    "accountPrimaryKeyVerified": inspect_acc.columns[
+                        "acc_no"
+                    ].is_primary_key
+                    if inspect_acc
+                    else False,
                 },
                 "cdc": {
                     "tablesReconciled": reconciliation_receipt.tables_reconciled,

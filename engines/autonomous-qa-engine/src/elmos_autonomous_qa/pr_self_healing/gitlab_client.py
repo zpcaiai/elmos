@@ -352,6 +352,32 @@ class GitLabClient:
         path = f"/projects/{pid}/merge_requests/{mr_iid}/notes"
         return self._send("POST", path, {"body": body})
 
+    def accept_merge_request(self, project_id: str | int, mr_iid: int) -> dict[str, Any]:
+        """Accept and merge the given merge request."""
+        pid = urllib.parse.quote(str(project_id), safe="")
+        path = f"/projects/{pid}/merge_requests/{mr_iid}/merge"
+        return self._send("PUT", path)
+
+    def set_commit_status(
+        self,
+        project_id: str | int,
+        sha: str,
+        state: str,
+        ref: str = "main",
+        name: str = "default",
+        description: str = "",
+    ) -> dict[str, Any]:
+        """Set build/commit status on GitLab."""
+        pid = urllib.parse.quote(str(project_id), safe="")
+        path = f"/projects/{pid}/statuses/{sha}"
+        payload = {
+            "state": state,
+            "ref": ref,
+            "name": name,
+            "description": description,
+        }
+        return self._send("POST", path, payload)
+
     def post_mr_discussion(
         self,
         project_id: str | int,

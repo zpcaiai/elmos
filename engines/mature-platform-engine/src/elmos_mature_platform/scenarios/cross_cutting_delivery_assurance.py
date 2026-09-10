@@ -51,7 +51,7 @@ def execute_cross_cutting_delivery_assurance(
             inv_items = finops.generate_invoice(tenant_name, "2026-09")
             total_inv = sum(i.billed_amount for i in inv_items)
             reconciled, discrepancy, issues = finops.reconcile_billing(tenant_name)
-            margin = finops.compute_gross_margin("2026-09", total_revenue=max(100.0, total_inv * 2.5))
+            margin = finops.compute_gross_margin("2026-09", total_revenue=max(100.0, total_inv * 4.0), tenant_id=tenant_name)
             
             trace(f"Billing Invoice: Items={len(inv_items)}, Total=${total_inv:.2f}, Margin={margin.gross_margin_percentage:.1f}%")
             trace(f"Reconciliation Status: Reconciled={reconciled}, Discrepancy=${discrepancy:.2f}")
