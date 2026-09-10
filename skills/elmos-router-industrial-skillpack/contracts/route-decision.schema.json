@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/route-decision-v1.json",
+  "title": "RouteDecision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "decisionId",
+    "selectedDeploymentId",
+    "selectedLane",
+    "policyVersion",
+    "registryVersion",
+    "candidates",
+    "fallbackDeploymentIds",
+    "decidedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1"
+    },
+    "decisionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "selectedDeploymentId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "selectedLane": {
+      "enum": [
+        "NATIVE_DIRECT",
+        "LITELLM",
+        "OPENROUTER",
+        "SELF_HOSTED"
+      ]
+    },
+    "policyVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "registryVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "healthSnapshotVersion": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "costSnapshotVersion": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fallbackDeploymentIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "deploymentId",
+          "eligible"
+        ],
+        "properties": {
+          "deploymentId": {
+            "type": "string"
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "denialReasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "score": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "scoreBreakdown": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "decidedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

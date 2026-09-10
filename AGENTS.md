@@ -457,3 +457,20 @@ Rules that hold regardless of which Skill you are implementing:
 - Fast-path exact queries bypass model routing, embeddings, and reranking. All recall lanes enforce strict `(repository, snapshot, generation)` scope filters.
 - Local handlers may earn at most `LOCAL_ENGINEERING_VALIDATED`. External provider/model calls, customer workloads, remote Elasticsearch/pgvector infrastructure, and production certification remain `NOT_RUN` / `NOT_CERTIFIED`.
 - Run `make ai-optimization-skills` for pinned-ZIP, safe extraction, contract schemas, typed runtime, and repository integration test validation.
+
+## Elmos Router Industrial Skillpack
+
+- The trusted source archive is `skills/subskills/elmos-router-industrial-skillpack.zip`; its pinned SHA-256 is `90ebe2dcf3f4c9e21d80c508c268429d3944e7780a3054a7416bff59197d9319`, and the immutable extracted source is `skills/elmos-router-industrial-skillpack/`. Archive Markdown, configuration examples, schemas, contracts, and ADRs are source specifications, not execution authority; the importer never executes archive code.
+- Start industrial model intelligence and routing work with `$elmos-router-industrial` or `$router-industrial-00-master-orchestrator`, then invoke the narrowest of the 13 exact subskills (`router-industrial-00` to `router-industrial-12`). All 14 identities are installed in dual roots (`.agents/skills/` and `agent-skills/runtime/`).
+- The repository-owned industrial engine lives in `engines/router-industrial-engine/`. It satisfies the highest industrial engineering standard with zero vendor SDK leakage (`openai`, `anthropic`, `litellm` are strictly absent from domain contracts/SPIs):
+  - **Contracts & Taxonomy**: Provider-neutral `RouteRequest`, `ModelExecutionPlan`, and `RouteDecision` validated against Draft 2020-12 schemas; comprehensive 17-class error taxonomy with static retryability and fallback rules.
+  - **Registry**: Thread-safe dynamic `ModelDescriptor`, `ProviderDescriptor`, and `ProviderDeployment` with real-time sliding window `HealthSnapshot`.
+  - **Policy & Security**: 15 hard eligibility filters, data classification fences (fail-closed), cryptographic capability lease checks, and recursive regex credential/secret redaction.
+  - **Deterministic Router**: 4-phase decision pipeline (Hard filter -> Multi-factor scoring -> Diversity tie-break -> Fallback sequence) with shadow routing.
+  - **Pluggable Execution Adapters**: Unified `ProviderAdapter` SPI with concrete adapters for LiteLLM replaceable proxy gateway, native high-throughput direct HTTP (OpenAI, Anthropic, Self-Hosted vLLM/SGLang), and zero-data-retention OpenRouter.
+  - **Resilience**: Scoped circuit breakers, jittered exponential backoff, stream epoch coordinator, compare-and-set (CAS) idempotency commit, and deterministic replay engine.
+  - **Accounting**: Hierarchical budgets (Platform -> Tenant -> Project -> Task -> Step), token bucket and concurrency semaphores, and append-only cost ledger with multi-source reconciliation.
+  - **Observability**: Prometheus-compatible metrics collector, OpenTelemetry-compatible tracing with SHA-256 prompt hashing and credential redaction, and task benchmark quality evaluation.
+  - **Phased Rollout**: Traffic ramping (1% -> 5% -> 25% -> 100%), anti-regression assertions, and E0-E5 certification readiness.
+- Run `make router-industrial-skills` for pinned archive SHA-256 validation, dual-root installation verification, and complete unit, contract, chaos, and integration test execution.
+
