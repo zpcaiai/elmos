@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/61-fixture-corpus-and-mutation-tests/SKILL.md"
   source_sha256: "sha256:ae53be02649600da79b300d1a8cf034362fcc8e488f3008c576151b4ac29fa33"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # Commercial Fixture Corpus & Mutation Tests
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `61-fixture-corpus-and-mutation-tests`
 - **Version:** `1.0.0`
 - **Category:** quality
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 
 ## Objective
 

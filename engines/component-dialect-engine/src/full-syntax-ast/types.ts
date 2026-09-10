@@ -15,8 +15,8 @@
  * - WeChat Mini Program (.wxml, .js, .wxss, .json)
  */
 
-export type SourceFramework = "react" | "vue3" | "vue2" | "angular" | "svelte" | "miniprogram" | "miniapp";
-export type TargetFramework = "vue3" | "react" | "miniprogram" | "miniapp" | "arkui" | "flutter";
+export type SourceFramework = "react" | "vue3" | "vue2" | "angular" | "angular18" | "svelte" | "svelte5" | "miniprogram" | "miniapp" | "arkui";
+export type TargetFramework = "vue3" | "react" | "miniprogram" | "miniapp" | "arkui" | "flutter" | "svelte5" | "angular18";
 
 export interface FullSyntaxProp {
   name: string;

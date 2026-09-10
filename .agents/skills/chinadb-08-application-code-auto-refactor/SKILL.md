@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/08-application-code-auto-refactor/SKILL.md"
   source_sha256: "sha256:d623a66881810eb1d170722fd0cf4a7991a3f1c230828aea8343d5115138ab10"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # Application Code Automatic Refactoring
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `08-application-code-auto-refactor`
 - **Version:** `1.0.0`
 - **Category:** core/application
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 
 ## Objective
 

@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/04-data-movement-cdc/SKILL.md"
   source_sha256: "sha256:fc1c32c0fc0e7d89e92ba7a519f9d0c27b73ba02de8aa5b20f8ade3ce1778a2f"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # Commercial Data Movement & CDC
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `04-data-movement-cdc`
 - **Version:** `1.0.0`
 - **Category:** core/data
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 
 ## Objective
 

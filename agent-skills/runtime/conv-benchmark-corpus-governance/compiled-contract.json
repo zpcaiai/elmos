@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0.0",
+  "skill_name": "conv-benchmark-corpus-governance",
+  "batch_title": "Product Convergence Orchestration & Architecture",
+  "implementation_state": "VERIFIED",
+  "external_evidence_status": "LOCAL_EXECUTED",
+  "production_certification": "NOT_CERTIFIED",
+  "runtime_handler": "scripts.product_convergence.conv_skill_runtime.ConvSkillRuntime._handle_benchmark_corpus_governance",
+  "fail_closed_policy": "FAIL_CLOSED_ON_UNKNOWN_STATUS"
+}

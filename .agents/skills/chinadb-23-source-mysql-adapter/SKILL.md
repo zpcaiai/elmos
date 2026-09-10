@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/23-source-mysql-adapter/SKILL.md"
   source_sha256: "sha256:2e47c9536a1fa5e84e9faddbec5c936a08bd65efcc4af80b1b8b400dbde04d7e"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # MySQL / MariaDB Source Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `23-source-mysql-adapter`
 - **Version:** `1.0.0`
 - **Category:** source-adapter
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 - **Depends on:** `01-estate-inventory-assessment`, `02-semantic-db-ir`
 
 ## Objective
