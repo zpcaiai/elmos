@@ -3008,6 +3008,15 @@ class SbomVexJustification(str, Enum):
     INLINE_MITIGATIONS_ALREADY_EXIST = "inline_mitigations_already_exist"
 
 @dataclass
+class SbomPackageComponent:
+    purl: str  # pkg:npm/express@4.18.2
+    name: str
+    version: str
+    license_id: str = ""
+    direct: bool = True
+    checksum_sha256: str = ""
+
+@dataclass
 class SbomDocument:
     sbom_id: str
     format: SbomFormat
@@ -3030,6 +3039,15 @@ class VulnerabilityRecord:
     exploitability: str = ""  # active, proof_of_concept, unproven
     first_detected: str = ""
     sla_deadline: str = ""
+@dataclass
+class SbomVexStatement:
+    vex_id: str
+    vuln_id: str
+    status: VulnStatus
+    justification: Optional[SbomVexJustification] = None
+    impact_statement: str = ""
+    action_statement: str = ""
+    created_at: str = ""
 
 
 # ─── Zero Downtime Upgrade Models ───────────────────────────────────
