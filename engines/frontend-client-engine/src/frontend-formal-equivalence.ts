@@ -1091,12 +1091,30 @@ export function runFrontendSolver(smt2: string, options: FrontendSolverOptions =
   const candidates = command.includes("/")
     ? [resolve(command)]
     : (process.env.PATH ?? "").split(":").filter(Boolean).map(directory => join(directory, command));
+  const validExecutables: { path: string; digest: string }[] = [];
   for (const candidate of candidates) {
     try {
       accessSync(candidate, fsConstants.X_OK);
-      binaryPath = realpathSync(candidate);
-      break;
+      const resolved = realpathSync(candidate);
+      if (basename(resolved) === "z3") {
+        const digest = bytesDigest(readFileSync(resolved));
+        if (lockedZ3BinaryDigests.has(digest)) {
+          validExecutables.push({ path: resolved, digest });
+        }
+      }
     } catch { /* continue bounded PATH search */ }
+  }
+  const preferred = validExecutables.find(e => e.digest === lockedZ3BinaryDigest) ?? validExecutables[0];
+  if (preferred) {
+    binaryPath = preferred.path;
+  } else {
+    for (const candidate of candidates) {
+      try {
+        accessSync(candidate, fsConstants.X_OK);
+        binaryPath = realpathSync(candidate);
+        break;
+      } catch { /* continue bounded PATH search */ }
+    }
   }
   if (binaryPath === undefined) return rejected("MISSING", "locked Z3 executable is missing");
   const binaryDigest = bytesDigest(readFileSync(binaryPath));
