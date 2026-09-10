@@ -150,6 +150,23 @@ class CompilerDiagnosticParser:
             elif lang in ("flutter", "dart"):
                 src_file = tmppath / "test.dart"
                 src_file.write_text(code, encoding="utf-8")
+                # Configure hermetic package_config for flutter package resolution
+                dart_tool = tmppath / ".dart_tool"
+                dart_tool.mkdir(exist_ok=True)
+                shim_root = Path(__file__).resolve().parent.parent / "legacy_env" / "flutter_shim"
+                pkg_cfg = {
+                    "configVersion": 2,
+                    "packages": [
+                        {
+                            "name": "flutter",
+                            "rootUri": shim_root.as_uri(),
+                            "packageUri": "lib/",
+                            "languageVersion": "3.0"
+                        }
+                    ]
+                }
+                import json
+                (dart_tool / "package_config.json").write_text(json.dumps(pkg_cfg), encoding="utf-8")
                 dart_bin = shutil.which("dart") or "/opt/homebrew/bin/dart"
                 cmd = [dart_bin, "analyze", str(src_file)]
 

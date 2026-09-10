@@ -41,6 +41,20 @@ export class WebSSREvaluator {
       ...(typeof context.state === 'object' ? context.state : {})
     };
 
+    if (ir.computed) {
+      for (const c of ir.computed) {
+        if (!(c.name in scope)) {
+          let fallbackVal: any = null;
+          if (c.name.endsWith("List") || c.name.endsWith("Items") || c.name.endsWith("Commands") || c.name.endsWith("Navigation")) {
+            fallbackVal = [];
+          } else if (c.name.startsWith("is") || c.name.startsWith("has") || c.name === "english") {
+            fallbackVal = false;
+          }
+          scope[c.name] = fallbackVal;
+        }
+      }
+    }
+
     const root = new DOMNode('element', 'div');
     root.setAttribute('class', `component-${ir.componentName.toLowerCase()}`);
 

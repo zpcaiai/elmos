@@ -491,7 +491,7 @@ export class HeadlessBoxLayoutEngine {
 
   private static isInlineTag(tag?: string): boolean {
     if (!tag) return true;
-    return ['span', 'a', 'text', 'strong', 'em', 'b', 'i', 'label', 'icon'].includes(tag);
+    return ['span', 'a', 'link', 'navigator', 'text', 'strong', 'em', 'b', 'i', 'label', 'icon'].includes(tag.toLowerCase());
   }
 
   private static parseDimension(val?: string, ref = 0): number | null {

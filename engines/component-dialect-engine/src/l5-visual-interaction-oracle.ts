@@ -115,7 +115,11 @@ export class L5VisualInteractionOracle {
 
     const wrapper = new DOMNode("element", "div");
     for (const node of parsedNodes) {
-      wrapper.appendChild(node);
+      if (node.nodeType === "element" && (node.getAttribute("class") || "").startsWith("component-") && node.children.length === 1) {
+        wrapper.appendChild(node.children[0]!);
+      } else {
+        wrapper.appendChild(node);
+      }
     }
 
     HeadlessBoxLayoutEngine.computeLayout(wrapper, this.viewport.width, this.viewport.height);
@@ -127,7 +131,8 @@ export class L5VisualInteractionOracle {
       if (node.nodeType === "element") {
         const rect = node.computedLayout?.rect || { x: 0, y: 0, width: 0, height: 0 };
         const tagName = (node.tagName || "div").toLowerCase();
-        let bgColor = tagName === "button" ? 0x3568d4ff : 0xffffffff;
+        let bgColor = 0;
+        if (tagName === "button") bgColor = 0x3568d4ff;
         const style = node.style || {};
         if (style["background-color"]) {
           const hex = style["background-color"].replace("#", "");
@@ -135,10 +140,12 @@ export class L5VisualInteractionOracle {
             bgColor = (parseInt(hex, 16) << 8) | 0xff;
           }
         }
+        const hasChildElements = node.children.some((c) => c.nodeType === "element");
+        const text = (!hasChildElements ? (node.textContent || "").trim() : "").slice(0, 100);
         const box: LayoutBox = {
           id: `box-${boxIndex++}`,
           tag: tagName,
-          text: (node.nodeValue || "").slice(0, 100),
+          text,
           x: rect.x,
           y: rect.y,
           width: rect.width,
@@ -191,9 +198,23 @@ export class L5VisualInteractionOracle {
       const startRow = Math.max(0, Math.floor(child.y * scaleY));
       const endRow = Math.min(rows, Math.ceil((child.y + child.height) * scaleY));
 
-      for (let r = startRow; r < endRow; r++) {
-        for (let c = startCol; c < endCol; c++) {
-          grid[r * cols + c] = child.bgColor;
+      // Paint background if not transparent
+      if (child.bgColor !== 0) {
+        for (let r = startRow; r < endRow; r++) {
+          for (let c = startCol; c < endCol; c++) {
+            grid[r * cols + c] = child.bgColor;
+          }
+        }
+      }
+
+      // Paint text ink if present
+      if (child.text) {
+        const textColEnd = Math.min(endCol, Math.max(startCol + 1, Math.floor((child.x + child.text.length * 8) * scaleX)));
+        const textRowEnd = Math.min(endRow, Math.max(startRow + 1, Math.floor((child.y + 14) * scaleY)));
+        for (let r = startRow; r < textRowEnd; r++) {
+          for (let c = startCol; c < textColEnd; c++) {
+            grid[r * cols + c] = child.textColor;
+          }
         }
       }
     }
