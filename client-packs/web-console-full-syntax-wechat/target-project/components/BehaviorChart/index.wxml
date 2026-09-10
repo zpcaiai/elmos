@@ -1,9 +1,6 @@
 <view class="evidence-dimension" aria-labelledby="generation-behavior-title">
   <view class="evidence-section-heading">
-    <text>
-      <view id="generation-behavior-title">本地行为验证与跨目标等价</view>
-      <text>单目标原生检查通过不会自动提升 NxN 等价状态</text>
-    </text>
+    <text><view id="generation-behavior-title">本地行为验证与跨目标等价</view> <text>单目标原生检查通过不会自动提升 NxN 等价状态</text></text>
     <StatusMark status="{{behavior.status}}" compact="true" />
   </view>
   <view class="evidence-target-grid">

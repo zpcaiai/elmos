@@ -87,13 +87,24 @@ export class MiniAppFullAstEmitter {
               initVal = null;
             }
           } catch {
-            if (s.initialValueExpr === 'true') initVal = true;
-            else if (s.initialValueExpr === 'false') initVal = false;
-            else if (s.initialValueExpr === 'null' || s.initialValueExpr === 'undefined') initVal = null;
-            else if (/^-?\d+(\.\d+)?$/.test(s.initialValueExpr)) initVal = Number(s.initialValueExpr);
-            else if (s.initialValueExpr.startsWith('[') && s.initialValueExpr.endsWith(']')) initVal = [];
-            else if (s.initialValueExpr.startsWith('{') && s.initialValueExpr.endsWith('}')) initVal = {};
-            else initVal = null;
+            const raw = (s.initialValueExpr || '').trim();
+            if (raw === 'true') initVal = true;
+            else if (raw === 'false') initVal = false;
+            else if (raw === 'null' || raw === 'undefined') initVal = null;
+            else if (/^-?\d+(\.\d+)?$/.test(raw)) initVal = Number(raw);
+            else if (raw.startsWith('[') && raw.endsWith(']')) initVal = [];
+            else if (raw.startsWith('{') && raw.endsWith('}')) initVal = {};
+            else if (
+              raw.endsWith('s') ||
+              raw.endsWith('List') ||
+              raw.endsWith('Items') ||
+              raw.startsWith('visible') ||
+              raw.startsWith('filtered')
+            ) {
+              initVal = [];
+            } else {
+              initVal = null;
+            }
           }
         }
       }
@@ -103,7 +114,19 @@ export class MiniAppFullAstEmitter {
     for (const c of ir.computed) {
       if (!ir.states.some((s) => s.name === c.name)) {
         let fallbackVal: unknown = null;
-        if (c.name.endsWith("List") || c.name.endsWith("Items") || c.name.endsWith("Commands")) {
+        if (
+          c.name.startsWith("visible") ||
+          c.name.startsWith("filtered") ||
+          c.name.endsWith("List") ||
+          c.name.endsWith("Items") ||
+          c.name.endsWith("Commands") ||
+          c.name.endsWith("Navigation") ||
+          c.name.endsWith("Capabilities") ||
+          c.name.endsWith("Stages") ||
+          c.name.endsWith("Targets") ||
+          c.name.endsWith("Tasks") ||
+          c.name.endsWith("Drafts")
+        ) {
           fallbackVal = [];
         } else if (c.name.startsWith("is") || c.name.startsWith("has") || c.name === "english") {
           fallbackVal = false;
@@ -325,6 +348,15 @@ export class MiniAppFullAstEmitter {
       return `${indent}<${tag}${attrStr}>{{${exprVal}}}</${tag}>`;
     }
 
+    if (tag === "text") {
+      const inlineContent = validChildren.map((c) => {
+        if (c.kind === "text") return escapeXml((c.text || "").trim());
+        if (c.kind === "expression") return `{{${(c.expression || "").trim()}}}`;
+        return this.emitWxmlNode(c, 0).trim();
+      }).join(" ");
+      return `${indent}<text${attrStr}>${inlineContent}</text>`;
+    }
+
     const allTextOrExpr = validChildren.every((c) => c.kind === "text" || c.kind === "expression");
     if (allTextOrExpr) {
       const inlineContent = validChildren.map((c) => {
@@ -405,6 +437,25 @@ export class MiniAppFullAstEmitter {
     if (validChildren.length === 1 && firstChildDirective && firstChildDirective.kind === "expression") {
       const exprVal = (firstChildDirective.expression || "").trim();
       return `${indent}<${tag}${attrStr}>{{${exprVal}}}</${tag}>`;
+    }
+
+    if (tag === "text") {
+      const inlineContent = validChildren.map((c) => {
+        if (c.kind === "text") return escapeXml((c.text || "").trim());
+        if (c.kind === "expression") return `{{${(c.expression || "").trim()}}}`;
+        return this.emitWxmlNode(c, 0).trim();
+      }).join(" ");
+      return `${indent}<text${attrStr}>${inlineContent}</text>`;
+    }
+
+    const allTextOrExpr = validChildren.every((c) => c.kind === "text" || c.kind === "expression");
+    if (allTextOrExpr) {
+      const inlineContent = validChildren.map((c) => {
+        if (c.kind === "text") return escapeXml((c.text || "").trim());
+        if (c.kind === "expression") return `{{${(c.expression || "").trim()}}}`;
+        return "";
+      }).join(" ");
+      return `${indent}<${tag}${attrStr}>${inlineContent}</${tag}>`;
     }
 
     const childStrs = validChildren.map((c) => this.emitWxmlNode(c, indentLevel + 2)).filter(Boolean);

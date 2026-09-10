@@ -52,11 +52,7 @@
           <text>{{formatCny(plan.priceFen)}}</text>
           <text>/ {{plan.billingLabel}}</text>
         </view>
-        <view wx:if="{{plan.planId === 'elmos-pro-annual'}}" class="{{'savings'}}">
-          <text>折合</text>
-          <text>{{formatCny(plan.effectiveMonthlyFen)}}</text>
-          <text>/月，比连续月付节省 ¥258.00</text>
-        </view>
+        <view wx:if="{{plan.planId === 'elmos-pro-annual'}}" class="{{'savings'}}">折合 {{formatCny(plan.effectiveMonthlyFen)}} /月，比连续月付节省 ¥258.00</view>
         <view wx:if="{{plan.planId === 'elmos-free-trial'}}" class="{{'savings'}}">一次性额度 · 到期不自动扣费</view>
         <view wx:if="{{plan.planId === 'elmos-pro-monthly'}}" class="{{'savings'}}">随时按月评估 · 不自动超额计费</view>
         <view class="{{'quotaPanel'}}" aria-label="{{`${plan.name}用量额度`}}">
@@ -71,14 +67,7 @@
             <text>{{plan.allowanceWindow === "MONTHLY" ? "每月重置" : "14 天总额"}}</text>
           </view>
         </view>
-        <view wx:if="{{plan.allowanceWindow === 'MONTHLY'}}" class="{{'annualCeiling'}}">
-          <text>{{plan.planId === "elmos-pro-annual" ? "年度合同上限" : "连续使用 12 个月"}}</text>
-          <text>：</text>
-          <text>{{formatQuota(plan.annualTokens)}}</text>
-          <text>token ·</text>
-          <text>{{formatQuota(plan.annualCredits)}}</text>
-          <text>credits</text>
-        </view>
+        <view wx:if="{{plan.allowanceWindow === 'MONTHLY'}}" class="{{'annualCeiling'}}">{{plan.planId === "elmos-pro-annual" ? "年度合同上限" : "连续使用 12 个月"}} ： {{formatQuota(plan.annualTokens)}} token · {{formatQuota(plan.annualCredits)}} credits</view>
         <view class="{{'featureList'}}">
           <view wx:for="{{plan.features}}" wx:for-item="feature" wx:key="feature.id" key="{{feature}}">
             <Icon name="check" size="{{15}}" />

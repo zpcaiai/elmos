@@ -5,18 +5,9 @@
     <view>每 5 秒读取一次 PostgreSQL 原子计量账本。已结算与处理中额度分别显示； 页面隐藏时暂停刷新，返回后立即同步。</view>
   </view>
   <form wx:if="{{allowLocalCredentials && !session}}" class="{{'connection'}}" bindsubmit="connect">
-    <text>
-      <text>本地租户标识</text>
-      <input aria-label="用量租户标识" value="{{form.tenantId}}" pattern="[A-Za-z0-9][A-Za-z0-9._:-]{0,127}" required="true" autoComplete="off" bindchange="onChange" />
-    </text>
-    <text>
-      <text>本地用户标识</text>
-      <input aria-label="用量用户标识" value="{{form.actorId}}" pattern="[A-Za-z0-9][A-Za-z0-9._:-]{0,127}" required="true" autoComplete="off" bindchange="onChange" />
-    </text>
-    <text class="{{'tokenField'}}">
-      <text>本地短期令牌</text>
-      <input aria-label="用量短期访问令牌" type="password" value="{{form.token}}" minLength="{{24}}" required="true" autoComplete="off" bindchange="onChange" />
-    </text>
+    <text><text>本地租户标识</text> <input aria-label="用量租户标识" value="{{form.tenantId}}" pattern="[A-Za-z0-9][A-Za-z0-9._:-]{0,127}" required="true" autoComplete="off" bindchange="onChange" /></text>
+    <text><text>本地用户标识</text> <input aria-label="用量用户标识" value="{{form.actorId}}" pattern="[A-Za-z0-9][A-Za-z0-9._:-]{0,127}" required="true" autoComplete="off" bindchange="onChange" /></text>
+    <text class="{{'tokenField'}}"><text>本地短期令牌</text> <input aria-label="用量短期访问令牌" type="password" value="{{form.token}}" minLength="{{24}}" required="true" autoComplete="off" bindchange="onChange" /></text>
     <button class="button button-primary" type="submit">
       <text>连接本地用量</text>
       <Icon name="arrow" size="{{15}}" />
@@ -67,16 +58,8 @@
       <UsageMeter label="平台 Credits" unit="credits" measure="{{snapshot.credits}}" />
     </view>
     <view class="{{'evidenceLine'}}">
-      <text>
-        <Icon name="check" size="{{14}}" />
-        <text>已对账事件</text>
-        <text>{{snapshot.reconciledEventCount}}</text>
-      </text>
-      <text>
-        <Icon name="clock" size="{{14}}" />
-        <text>未对账事件</text>
-        <text>{{snapshot.unreconciledEventCount}}</text>
-      </text>
+      <text><Icon name="check" size="{{14}}" /> 已对账事件 {{snapshot.reconciledEventCount}}</text>
+      <text><Icon name="clock" size="{{14}}" /> 未对账事件 {{snapshot.unreconciledEventCount}}</text>
       <text>事件水位 {{snapshot.eventWatermark ? localTime(snapshot.eventWatermark) : "暂无事件"}}</text>
     </view>
   </block>
@@ -145,21 +128,10 @@
           <text>达到所选比例时发送一次提醒；100% 仍由数据库硬停止。</text>
         </view>
         <view class="{{'thresholds'}}">
-          <text wx:for="{{alertThresholds}}" wx:for-item="threshold" wx:key="threshold.id" key="{{threshold}}">
-            <input type="checkbox" checked="{{insights.preference.thresholdBps.includes(threshold)}}" bindchange="onChange" />
-            <text>{{threshold / 100}}</text>
-            <text>%</text>
-          </text>
+          <text wx:for="{{alertThresholds}}" wx:for-item="threshold" wx:key="threshold.id" key="{{threshold}}"><input type="checkbox" checked="{{insights.preference.thresholdBps.includes(threshold)}}" bindchange="onChange" /> {{threshold / 100}} %</text>
         </view>
-        <text class="{{'channel'}}">
-          <input type="checkbox" checked="{{insights.preference.inAppEnabled}}" bindchange="onChange" />
-          <text>站内提醒</text>
-        </text>
-        <text class="{{'channel'}}">
-          <input type="checkbox" checked="{{insights.preference.emailEnabled}}" disabled="{{!emailAlertsEnabled}}" bindchange="onChange" />
-          <text>邮件提醒</text>
-          <text>{{emailAlertsEnabled ? "" : "（未配置）"}}</text>
-        </text>
+        <text class="{{'channel'}}"><input type="checkbox" checked="{{insights.preference.inAppEnabled}}" bindchange="onChange" /> 站内提醒</text>
+        <text class="{{'channel'}}"><input type="checkbox" checked="{{insights.preference.emailEnabled}}" disabled="{{!emailAlertsEnabled}}" bindchange="onChange" /> 邮件提醒 {{emailAlertsEnabled ? "" : "（未配置）"}}</text>
         <button class="button button-primary" type="button" disabled="{{savingAlerts}}" bindtap="onTap">{{savingAlerts ? "保存中" : "保存提醒"}}</button>
       </view>
     </block>

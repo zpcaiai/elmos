@@ -30,69 +30,26 @@
       </view>
       <fieldset class="{{'modeFieldset'}}">
         <legend class="sr-only">选择 Smart 或手动模型模式</legend>
-        <text class="{{`${'modeCard'} ${mode === &quot;smart&quot; ? 'selected' : &quot;&quot;}`}}">
-          <input type="radio" name="execution-mode" value="smart" checked="{{mode === &quot;smart&quot;}}" bindchange="onChange" />
-          <text class="{{'modeCopy'}}">
-            <text>
-              <text>Smart — 每个任务的最佳价值</text>
-              <text>推荐</text>
-            </text>
-            <text>后端在固定目录内按原子任务、风险下限与成本性能独立路由。</text>
-          </text>
-        </text>
-        <text class="{{`${'modeCard'} ${mode === &quot;manual&quot; ? 'selected' : &quot;&quot;}`}}">
-          <input type="radio" name="execution-mode" value="manual" checked="{{mode === &quot;manual&quot;}}" bindchange="onChange" />
-          <text class="{{'modeCopy'}}">
-            <text>
-              <text>手动选择主实现模型</text>
-              <text>严格锁定</text>
-            </text>
-            <text>默认不会静默切换；必需的独立验证仍可由系统策略指定。</text>
-          </text>
-        </text>
+        <text class="{{`${'modeCard'} ${mode === &quot;smart&quot; ? 'selected' : &quot;&quot;}`}}"><input type="radio" name="execution-mode" value="smart" checked="{{mode === &quot;smart&quot;}}" bindchange="onChange" /> <text class="{{'modeCopy'}}"><text><text>Smart — 每个任务的最佳价值</text> <text>推荐</text></text> <text>后端在固定目录内按原子任务、风险下限与成本性能独立路由。</text></text></text>
+        <text class="{{`${'modeCard'} ${mode === &quot;manual&quot; ? 'selected' : &quot;&quot;}`}}"><input type="radio" name="execution-mode" value="manual" checked="{{mode === &quot;manual&quot;}}" bindchange="onChange" /> <text class="{{'modeCopy'}}"><text><text>手动选择主实现模型</text> <text>严格锁定</text></text> <text>默认不会静默切换；必需的独立验证仍可由系统策略指定。</text></text></text>
       </fieldset>
       <view class="{{'modelGrid'}}" aria-label="后端模型目录">
-        <text wx:for="{{catalog.models}}" wx:for-item="model" wx:key="model.id" class="{{`${'modelCard'} ${selectedModel === model.alias ? 'selectedModel' : &quot;&quot;}`}}" key="{{model.alias}}" title="{{model.reasons.map(readableReason).join(&quot;; &quot;)}}">
-          <text class="{{'modelTitle'}}">
-            <input type="radio" name="manual-model" value="{{model.alias}}" disabled="{{mode !== &quot;manual&quot; || !model.selectable}}" checked="{{selectedModel === model.alias}}" bindchange="onChange" />
-            <text>
-              <text>{{model.displayName}}</text>
-              <code>{{model.alias}}</code>
-            </text>
-          </text>
-          <text class="{{'modelMeta'}}">
-            <text>{{model.provider}}</text>
-            <text>Cost {{model.relativeCostTier}} /5</text>
-            <text>{{model.highestRoutingTier}}</text>
-          </text>
-          <text>{{model.roleHint.replaceAll("_", " ")}}</text>
-          <text class="{{'unavailable'}}">{{model.status}}</text>
-          <view>
-            <view wx:for="{{model.reasons.slice(0, 3)}}" wx:for-item="reason" wx:key="reason.id" key="{{reason}}">{{readableReason(reason)}}</view>
-          </view>
-        </text>
+        <text wx:for="{{catalog.models}}" wx:for-item="model" wx:key="model.id" class="{{`${'modelCard'} ${selectedModel === model.alias ? 'selectedModel' : &quot;&quot;}`}}" key="{{model.alias}}" title="{{model.reasons.map(readableReason).join(&quot;; &quot;)}}"><text class="{{'modelTitle'}}"><input type="radio" name="manual-model" value="{{model.alias}}" disabled="{{mode !== &quot;manual&quot; || !model.selectable}}" checked="{{selectedModel === model.alias}}" bindchange="onChange" /> <text><text>{{model.displayName}}</text> <code>{{model.alias}}</code></text></text> <text class="{{'modelMeta'}}"><text>{{model.provider}}</text> <text>Cost {{model.relativeCostTier}} /5</text> <text>{{model.highestRoutingTier}}</text></text> <text>{{model.roleHint.replaceAll("_", " ")}}</text> <text class="{{'unavailable'}}">{{model.status}}</text> <view>
+  <view wx:for="{{model.reasons.slice(0, 3)}}" wx:for-item="reason" wx:key="reason.id" key="{{reason}}">{{readableReason(reason)}}</view>
+</view></text>
       </view>
       <view class="{{'policyRow'}}">
-        <text wx:if="{{mode === 'manual'}}" class="{{'toggle'}}">
-          <input type="checkbox" checked="{{fallbackEnabled}}" bindchange="onChange" />
-          <text>模型失败时允许 allowlist 内智能 fallback</text>
-        </text>
+        <text wx:if="{{mode === 'manual'}}" class="{{'toggle'}}"><input type="checkbox" checked="{{fallbackEnabled}}" bindchange="onChange" /> <text>模型失败时允许 allowlist 内智能 fallback</text></text>
         <view wx:else class="{{'routerPolicy'}}">
           <text>Smart 使用服务端 router policy</text>
           <text>调用方不能关闭强制风险门、预算硬停止或有界升级策略。</text>
         </view>
-        <text>
-          <text>优化策略</text>
-          <view value="{{optimizationProfile}}" bindchange="onChange">
-            <view wx:for="{{catalog.optimizationProfiles}}" wx:for-item="profile" wx:key="profile.id" key="{{profile}}">{{profile}}</view>
-          </view>
-        </text>
-        <text>
-          <text>验证策略</text>
-          <view value="{{verificationPolicy}}" bindchange="onChange">
-            <view wx:for="{{catalog.verificationPolicies}}" wx:for-item="policy" wx:key="policy.id" key="{{policy}}">{{policy}}</view>
-          </view>
-        </text>
+        <text><text>优化策略</text> <view value="{{optimizationProfile}}" bindchange="onChange">
+  <view wx:for="{{catalog.optimizationProfiles}}" wx:for-item="profile" wx:key="profile.id" key="{{profile}}">{{profile}}</view>
+</view></text>
+        <text><text>验证策略</text> <view value="{{verificationPolicy}}" bindchange="onChange">
+  <view wx:for="{{catalog.verificationPolicies}}" wx:for-item="policy" wx:key="policy.id" key="{{policy}}">{{policy}}</view>
+</view></text>
       </view>
     </view>
     <view class="{{'riskSection'}}" aria-labelledby="risk-heading">
@@ -110,16 +67,10 @@
                 ['concurrency', '并发'],
                 ['publicContract', '公共契约'],
                 ['blastRadius', '爆炸半径'],
-              ] as const)}}" wx:for-item="[field, label]" wx:key="[field, label].id" key="{{field}}">
-          <text>{{label}}</text>
-          <view value="{{risk[field]}}" bindchange="onChange">
-            <view wx:for="{{riskOptions}}" wx:for-item="level" wx:key="level.id" key="{{level}}">{{level}}</view>
-          </view>
-        </text>
-        <text class="{{'longHorizon'}}">
-          <input type="checkbox" checked="{{risk.longHorizon}}" bindchange="onChange" />
-          <text>长周期迁移 / long horizon</text>
-        </text>
+              ] as const)}}" wx:for-item="[field, label]" wx:key="[field, label].id" key="{{field}}"><text>{{label}}</text> <view value="{{risk[field]}}" bindchange="onChange">
+  <view wx:for="{{riskOptions}}" wx:for-item="level" wx:key="level.id" key="{{level}}">{{level}}</view>
+</view></text>
+        <text class="{{'longHorizon'}}"><input type="checkbox" checked="{{risk.longHorizon}}" bindchange="onChange" /> <text>长周期迁移 / long horizon</text></text>
       </view>
       <view class="{{'preflightAction'}}">
         <view>{{mode === "manual" && !selectedDescriptor?.selectable
@@ -183,10 +134,7 @@
         </view>
       </view>
       <view class="{{'evidenceStrip'}}" aria-label="副作用与证据状态">
-        <text wx:for="{{Object.entries(result.evidence)}}" wx:for-item="[key, value]" wx:key="[key, value].id" key="{{key}}">
-          <text>{{key}}</text>
-          <text>{{value}}</text>
-        </text>
+        <text wx:for="{{Object.entries(result.evidence)}}" wx:for-item="[key, value]" wx:key="[key, value].id" key="{{key}}"><text>{{key}}</text> <text>{{value}}</text></text>
       </view>
     </view>
     <view class="mt-8 p-5 rounded-xl border border-border bg-card_60 shadow-lg" aria-labelledby="pipeline-sandbox-heading">

@@ -24,11 +24,7 @@
     </view>
     <view class="metric-card">
       <text>Codex / Runtime 全库</text>
-      <text class="metric-pair">
-        <text>{{installedSkillInventory.codexSkillCount.toLocaleString("en-US")}}</text>
-        <text>/</text>
-        <text>{{installedSkillInventory.runtimeSkillCount.toLocaleString("en-US")}}</text>
-      </text>
+      <text class="metric-pair">{{installedSkillInventory.codexSkillCount.toLocaleString("en-US")}} <text>/</text> {{installedSkillInventory.runtimeSkillCount.toLocaleString("en-US")}}</text>
       <text>按含 SKILL.md 的可调用目录统计</text>
     </view>
     <view class="metric-card">
@@ -56,62 +52,39 @@
       <view class="namespace-tabs" role="tablist" aria-label="Skill 命名空间">
         <button role="tab" aria-selected="{{namespace === &quot;foundry&quot;}}" class="{{namespace === &quot;foundry&quot; ? &quot;active&quot; : &quot;&quot;}}" bindtap="onTap">
           <Icon name="spark" size="{{17}}" />
-          <text>
-            <text>Foundry v3.0.0</text>
-            <text>Pack 00–40</text>
-          </text>
+          <text><text>Foundry v3.0.0</text> <text>Pack 00–40</text></text>
           <text>1,351</text>
         </button>
         <button role="tab" aria-selected="{{namespace === &quot;polyglot&quot;}}" class="{{namespace === &quot;polyglot&quot; ? &quot;active&quot; : &quot;&quot;}}" bindtap="onTap">
           <Icon name="code" size="{{17}}" />
-          <text>
-            <text>Polyglot Compiler</text>
-            <text>Batches A–R</text>
-          </text>
+          <text><text>Polyglot Compiler</text> <text>Batches A–R</text></text>
           <text>300</text>
         </button>
         <button role="tab" aria-selected="{{namespace === &quot;migration&quot;}}" class="{{namespace === &quot;migration&quot; ? &quot;active&quot; : &quot;&quot;}}" bindtap="onTap">
           <Icon name="route" size="{{17}}" />
-          <text>
-            <text>Migration Packs</text>
-            <text>M1–M45</text>
-          </text>
+          <text><text>Migration Packs</text> <text>M1–M45</text></text>
           <text>820</text>
         </button>
         <button role="tab" aria-selected="{{namespace === &quot;precision&quot;}}" class="{{namespace === &quot;precision&quot; ? &quot;active&quot; : &quot;&quot;}}" bindtap="onTap">
           <Icon name="workflow" size="{{17}}" />
-          <text>
-            <text>Precision Migration</text>
-            <text>B01–B44</text>
-          </text>
+          <text><text>Precision Migration</text> <text>B01–B44</text></text>
           <text>{{precisionMigrationSummary.runtimeSkillCount}}</text>
         </button>
         <button role="tab" aria-selected="{{namespace === &quot;product&quot;}}" class="{{namespace === &quot;product&quot; ? &quot;active&quot; : &quot;&quot;}}" bindtap="onTap">
           <Icon name="shield" size="{{17}}" />
-          <text>
-            <text>Commercial Product</text>
-            <text>B34–B55</text>
-          </text>
+          <text><text>Commercial Product</text> <text>B34–B55</text></text>
           <text>1,004</text>
         </button>
       </view>
       <view class="namespace-range-list">
         <view wx:for="{{items}}" wx:key="item.id" class="namespace-range" key="{{item.range}}">
-          <text class="range-icon">
-            <Icon name="{{item.icon}}" size="{{19}}" />
-          </text>
+          <text class="range-icon"><Icon name="{{item.icon}}" size="{{19}}" /></text>
           <view class="range-copy">
-            <text>
-              <text>{{item.range}}</text>
-              <text>{{item.title}}</text>
-            </text>
+            <text><text>{{item.range}}</text> <text>{{item.title}}</text></text>
             <text>{{item.note}}</text>
             <text>{{item.source}}</text>
           </view>
-          <text class="range-count">
-            <text>{{item.count}}</text>
-            <text>Skills</text>
-          </text>
+          <text class="range-count">{{item.count}} <text>Skills</text></text>
           <StatusChip status="{{item.status}}" compact="true" />
         </view>
         <view wx:if="{{items.length === 0}}" class="p-4 text-center text-sm text-muted-foreground">没有找到匹配的 Pack 或 Skill</view>
@@ -127,9 +100,7 @@
       </view>
     </view>
     <view class="surface-card strict-gate-card">
-      <text class="strict-icon">
-        <Icon name="test" size="{{23}}" />
-      </text>
+      <text class="strict-icon"><Icon name="test" size="{{23}}" /></text>
       <text class="overline">FORMAL QUALIFICATION GATE</text>
       <view>严格数学证明与差分测试</view>
       <view>静态结构检查、Schema 规范与 DAG 无环性已在本地 100% 验证通过；生产发布严格绑定 SMT Z3 证明、Fuzzing 记录与 SLSA 证据链。</view>
@@ -137,14 +108,8 @@
         <text style="{{{ width: &quot;100%&quot;, background: &quot;linear-gradient(90deg, #10b981, #6366f1)&quot; }}}" />
       </view>
       <view class="strict-stats">
-        <text>
-          <text>本地门禁</text>
-          <text>100% PASS</text>
-        </text>
-        <text>
-          <text>SMT 形式化证明</text>
-          <text class="text-emerald-400">SAT_PROVED</text>
-        </text>
+        <text><text>本地门禁</text> <text>100% PASS</text></text>
+        <text><text>SMT 形式化证明</text> <text class="text-emerald-400">SAT_PROVED</text></text>
       </view>
       <view class="gate-command">
         <text>统一执行门禁</text>
@@ -152,10 +117,7 @@
       </view>
       <view class="strict-boundary">
         <Icon name="shield" size="{{16}}" />
-        <text>
-          <text>验证结论：QUALIFIED</text>
-          <text>证据链完整，具备内容寻址签名防伪。</text>
-        </text>
+        <text><text>验证结论：QUALIFIED</text> <text>证据链完整，具备内容寻址签名防伪。</text></text>
       </view>
     </view>
   </view>
@@ -184,13 +146,8 @@
   </view>
   <view class="surface-card install-boundary">
     <view>
-      <text class="install-icon">
-        <Icon name="command" size="{{20}}" />
-      </text>
-      <text>
-        <text>跨引擎统一复合流水线与 CLI 门禁</text>
-        <text>一键调用所有 41 个底层引擎、SMT 求解器与 FinOps 计量器。</text>
-      </text>
+      <text class="install-icon"><Icon name="command" size="{{20}}" /></text>
+      <text><text>跨引擎统一复合流水线与 CLI 门禁</text> <text>一键调用所有 41 个底层引擎、SMT 求解器与 FinOps 计量器。</text></text>
     </view>
     <code>elmos pipeline --src-lang java --tgt-lang csharp --export-html report.html</code>
     <StatusChip status="READY" />

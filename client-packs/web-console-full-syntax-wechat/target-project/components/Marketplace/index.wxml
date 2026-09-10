@@ -17,37 +17,25 @@
       </view>
     </view>
     <view class="market-toolbar">
-      <text class="search-field">
-        <Icon name="search" size="{{17}}" />
-        <text class="sr-only">搜索扩展</text>
-        <input value="{{query}}" placeholder="搜索扩展类型或能力" bindchange="onChange" />
-      </text>
+      <text class="search-field"><Icon name="search" size="{{17}}" /> <text class="sr-only">搜索扩展</text> <input value="{{query}}" placeholder="搜索扩展类型或能力" bindchange="onChange" /></text>
       <StatusChip status="NOT_RUN" />
     </view>
     <view class="extension-grid">
       <view wx:for="{{visible}}" wx:for-item="extension" wx:key="extension.id" class="extension-card" key="{{extension.name}}">
         <view class="extension-top">
-          <text class="extension-icon">
-            <Icon name="{{extension.icon}}" size="{{21}}" />
-          </text>
+          <text class="extension-icon"><Icon name="{{extension.icon}}" size="{{21}}" /></text>
           <StatusChip status="{{extension.status}}" compact="true" />
         </view>
         <text class="overline">{{extension.type}}</text>
         <view>{{extension.name}}</view>
         <view>{{extension.description}}</view>
         <view class="extension-meta">
-          <text>
-            <text>{{extension.version}}</text>
-            <text>版本</text>
-          </text>
+          <text><text>{{extension.version}}</text> 版本</text>
           <text>{{extension.compatibility}}</text>
         </view>
         <view class="publisher">
           <text class="mini-avatar">EL</text>
-          <text>
-            <text>{{extension.publisher}}</text>
-            <text>模板条目 · 尚未发布</text>
-          </text>
+          <text>{{extension.publisher}} <text>模板条目 · 尚未发布</text></text>
         </view>
       </view>
       <view wx:if="{{visible.length === 0}}" class="market-empty">
@@ -65,38 +53,23 @@
       <view class="cert-path">
         <view class="done">
           <text>1</text>
-          <text>
-            <text>Manifest 与 ABI</text>
-            <text>类型化契约已定义</text>
-          </text>
+          <text><text>Manifest 与 ABI</text> <text>类型化契约已定义</text></text>
         </view>
         <view class="done">
           <text>2</text>
-          <text>
-            <text>Sandbox 策略</text>
-            <text>默认拒绝权限</text>
-          </text>
+          <text><text>Sandbox 策略</text> <text>默认拒绝权限</text></text>
         </view>
         <view>
           <text>3</text>
-          <text>
-            <text>签名与供应链</text>
-            <text>外部信任根未运行</text>
-          </text>
+          <text><text>签名与供应链</text> <text>外部信任根未运行</text></text>
         </view>
         <view>
           <text>4</text>
-          <text>
-            <text>独立安全审核</text>
-            <text>待授权执行</text>
-          </text>
+          <text><text>独立安全审核</text> <text>待授权执行</text></text>
         </view>
         <view>
           <text>5</text>
-          <text>
-            <text>Marketplace Gate</text>
-            <text>只有 Gate 能裁定</text>
-          </text>
+          <text><text>Marketplace Gate</text> <text>只有 Gate 能裁定</text></text>
         </view>
       </view>
     </view>

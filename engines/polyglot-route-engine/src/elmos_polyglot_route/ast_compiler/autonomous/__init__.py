@@ -4,6 +4,14 @@ from __future__ import annotations
 
 from .compiler_diagnostics import NativeCompilerDiagnostic, CompilerDiagnosticParser
 from .repair_loop import AutonomousRepairLoop, RepairResult, RepairFix
+from .smt_repair import (
+    SmtAutonomousRepairEngine,
+    SmtBoundsAndOverflowSolver,
+    SmtNullabilitySolver,
+    SmtOwnershipSolver,
+    SmtRepairPatch,
+    SmtTypeSolver,
+)
 
 __all__ = [
     "NativeCompilerDiagnostic",
@@ -11,4 +19,10 @@ __all__ = [
     "AutonomousRepairLoop",
     "RepairResult",
     "RepairFix",
+    "SmtAutonomousRepairEngine",
+    "SmtTypeSolver",
+    "SmtBoundsAndOverflowSolver",
+    "SmtNullabilitySolver",
+    "SmtOwnershipSolver",
+    "SmtRepairPatch",
 ]

@@ -10,55 +10,33 @@
   <view class="{{'grid'}}">
     <view class="{{'panel'}}">
       <view>我的组织</view>
-      <text>
-        <text>组织</text>
-        <view value="{{selectedId}}" bindchange="onChange">
-          <view wx:for="{{organizations}}" wx:for-item="organization" wx:key="organization.id" value="{{organization.organizationId}}" key="{{organization.organizationId}}">
-            <text>{{organization.displayName}}</text>
-            <text>·</text>
-            <text>{{organization.role}}</text>
-          </view>
-        </view>
-      </text>
+      <text><text>组织</text> <view value="{{selectedId}}" bindchange="onChange">
+  <view wx:for="{{organizations}}" wx:for-item="organization" wx:key="organization.id" value="{{organization.organizationId}}" key="{{organization.organizationId}}">{{organization.displayName}} · {{organization.role}}</view>
+</view></text>
       <button class="button primary" type="button" disabled="{{!selectedId || busy}}" bindtap="switchOrganization">设为当前组织</button>
       <form bindsubmit="createOrganization">
         <view>创建组织</view>
-        <text>
-          <text>名称</text>
-          <input required="true" minLength="{{2}}" maxLength="{{128}}" value="{{name}}" bindchange="onChange" />
-        </text>
-        <text>
-          <text>数据区域</text>
-          <view value="{{region}}" bindchange="onChange">
-            <view value="cn-north">中国北区</view>
-            <view value="ap-southeast">亚太东南</view>
-            <view value="eu-central">欧洲中部</view>
-          </view>
-        </text>
+        <text><text>名称</text> <input required="true" minLength="{{2}}" maxLength="{{128}}" value="{{name}}" bindchange="onChange" /></text>
+        <text><text>数据区域</text> <view value="{{region}}" bindchange="onChange">
+  <view value="cn-north">中国北区</view>
+  <view value="ap-southeast">亚太东南</view>
+  <view value="eu-central">欧洲中部</view>
+</view></text>
         <button class="button" disabled="{{busy}}">创建</button>
       </form>
     </view>
     <view class="{{'panel'}}">
       <view>接受邀请</view>
       <form bindsubmit="acceptInvitation">
-        <text>
-          <text>一次性邀请令牌</text>
-          <textarea required="true" rows="{{4}}" value="{{acceptToken}}" bindchange="onChange" />
-        </text>
+        <text><text>一次性邀请令牌</text> <textarea required="true" rows="{{4}}" value="{{acceptToken}}" bindchange="onChange" /></text>
         <button class="button" disabled="{{busy}}">验证并加入</button>
       </form>
       <form wx:if="{{canAdmin}}" bindsubmit="invite">
         <view>邀请成员</view>
-        <text>
-          <text>已验证邮箱</text>
-          <input type="email" required="true" value="{{inviteEmail}}" bindchange="onChange" />
-        </text>
-        <text>
-          <text>角色</text>
-          <view value="{{inviteRole}}" bindchange="onChange">
-            <view wx:for="{{['ADMIN', 'MAINTAINER', 'MEMBER', 'BILLING', 'VIEWER']}}" wx:for-item="role" wx:key="role.id" value="{{role}}" key="{{role}}">{{role}}</view>
-          </view>
-        </text>
+        <text><text>已验证邮箱</text> <input type="email" required="true" value="{{inviteEmail}}" bindchange="onChange" /></text>
+        <text><text>角色</text> <view value="{{inviteRole}}" bindchange="onChange">
+  <view wx:for="{{['ADMIN', 'MAINTAINER', 'MEMBER', 'BILLING', 'VIEWER']}}" wx:for-item="role" wx:key="role.id" value="{{role}}" key="{{role}}">{{role}}</view>
+</view></text>
         <button class="button" disabled="{{busy || !selectedId}}">创建邀请</button>
       </form>
       <view wx:if="{{invitationToken}}" class="{{'token'}}">

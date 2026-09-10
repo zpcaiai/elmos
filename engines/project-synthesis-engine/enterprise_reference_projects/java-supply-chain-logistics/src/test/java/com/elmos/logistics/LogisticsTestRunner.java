@@ -59,6 +59,16 @@ public class LogisticsTestRunner {
             t.printStackTrace();
         }
 
+        try {
+            totalSuites++;
+            EnterpriseLogisticsAdvancedServicesTest.runTests();
+            passedSuites++;
+        } catch (Throwable t) {
+            failedSuites++;
+            System.err.println("  ✗ EnterpriseLogisticsAdvancedServicesTest failed: " + t.getMessage());
+            t.printStackTrace();
+        }
+
         System.out.println("\n==========================================================");
         System.out.println("  Test Summary: " + passedSuites + " passed, " + failedSuites + " failed, " + totalSuites + " total");
         System.out.println("==========================================================");

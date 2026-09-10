@@ -25,9 +25,7 @@
   </view>
   <view class="overview-metrics" aria-label="平台结构摘要">
     <view>
-      <text class="metric-icon tone-cyan">
-        <Icon name="workflow" size="{{18}}" />
-      </text>
+      <text class="metric-icon tone-cyan"><Icon name="workflow" size="{{18}}" /></text>
       <view>
         <text>Spring 实验 Pack</text>
         <text>1</text>
@@ -35,9 +33,7 @@
       </view>
     </view>
     <view>
-      <text class="metric-icon tone-violet">
-        <Icon name="route" size="{{18}}" />
-      </text>
+      <text class="metric-icon tone-violet"><Icon name="route" size="{{18}}" /></text>
       <view>
         <text>跨语言路线</text>
         <text>210</text>
@@ -45,9 +41,7 @@
       </view>
     </view>
     <view>
-      <text class="metric-icon tone-amber">
-        <Icon name="spark" size="{{18}}" />
-      </text>
+      <text class="metric-icon tone-amber"><Icon name="spark" size="{{18}}" /></text>
       <view>
         <text>项目生成目标</text>
         <text>8</text>
@@ -55,9 +49,7 @@
       </view>
     </view>
     <view>
-      <text class="metric-icon tone-violet">
-        <Icon name="database" size="{{18}}" />
-      </text>
+      <text class="metric-icon tone-violet"><Icon name="database" size="{{18}}" /></text>
       <view>
         <text>国产数据库目标</text>
         <text>13</text>
@@ -65,9 +57,7 @@
       </view>
     </view>
     <view>
-      <text class="metric-icon tone-green">
-        <Icon name="shield" size="{{18}}" />
-      </text>
+      <text class="metric-icon tone-green"><Icon name="shield" size="{{18}}" /></text>
       <view>
         <text>外部认证</text>
         <text>0</text>
@@ -94,9 +84,7 @@
           <view>{{workspace.description}}</view>
           <text class="workspace-meta">{{workspace.meta}}</text>
         </view>
-        <text class="round-arrow">
-          <Icon name="arrow" size="{{16}}" />
-        </text>
+        <text class="round-arrow"><Icon name="arrow" size="{{16}}" /></text>
       </navigator>
     </view>
   </view>
@@ -111,9 +99,7 @@
       </view>
       <view class="attention-list">
         <view wx:for="{{attention}}" wx:for-item="[title, description, status]" wx:key="[title, description, status].id" class="attention-row" key="{{title}}">
-          <text class="attention-icon">
-            <Icon name="clock" size="{{16}}" />
-          </text>
+          <text class="attention-icon"><Icon name="clock" size="{{16}}" /></text>
           <view>
             <text>{{title}}</text>
             <text>{{description}}</text>
@@ -178,38 +164,20 @@
       <view>工程通过，不等于外部认证</view>
       <view class="qualification-steps">
         <view class="complete">
-          <text>
-            <Icon name="check" size="{{13}}" />
-          </text>
-          <text>
-            <text>功能结构</text>
-            <text>1,824 / 1,824</text>
-          </text>
+          <text><Icon name="check" size="{{13}}" /></text>
+          <text><text>功能结构</text> <text>1,824 / 1,824</text></text>
         </view>
         <view class="complete">
-          <text>
-            <Icon name="check" size="{{13}}" />
-          </text>
-          <text>
-            <text>用例目录</text>
-            <text>408 / 408</text>
-          </text>
+          <text><Icon name="check" size="{{13}}" /></text>
+          <text><text>用例目录</text> <text>408 / 408</text></text>
         </view>
         <view>
           <text>3</text>
-          <text>
-            <text>独立执行</text>
-            <text>0 / 408 · NOT_RUN</text>
-          </text>
+          <text><text>独立执行</text> <text>0 / 408 · NOT_RUN</text></text>
         </view>
         <view>
-          <text>
-            <Icon name="lock" size="{{12}}" />
-          </text>
-          <text>
-            <text>严格认证</text>
-            <text>BLOCKED</text>
-          </text>
+          <text><Icon name="lock" size="{{12}}" /></text>
+          <text><text>严格认证</text> <text>BLOCKED</text></text>
         </view>
       </view>
     </view>

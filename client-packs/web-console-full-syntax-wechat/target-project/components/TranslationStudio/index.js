@@ -133,7 +133,7 @@ Component({
     job: null,
     jobBusy: false,
     discoveryByUnit: null,
-    filteredWorkUnits: null,
+    filteredWorkUnits: [],
     routeByPair: null,
     routeCounts: null,
   },

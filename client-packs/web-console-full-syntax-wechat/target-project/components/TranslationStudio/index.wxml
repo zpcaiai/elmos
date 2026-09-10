@@ -48,11 +48,7 @@
           <text class="overline">DIRECTION MATTERS</text>
           <view id="route-picker-title">选择源语言与目标语言</view>
         </view>
-        <text class="route-direction">
-          <text>{{sourceProfile?.label}}</text>
-          <Icon name="arrow" size="{{15}}" />
-          <text>{{targetProfile?.label}}</text>
-        </text>
+        <text class="route-direction">{{sourceProfile?.label}} <Icon name="arrow" size="{{15}}" /> {{targetProfile?.label}}</text>
       </view>
       <view class="language-pickers">
         <fieldset>
@@ -81,19 +77,17 @@
         </view>
         <view wx:for="{{languages}}" wx:for-item="source" wx:key="source.id" class="route-matrix-row" role="row" key="{{source.id}}">
           <text role="rowheader">{{source.label}}</text>
-          <text wx:for="{{languages}}" wx:for-item="target" wx:key="target.id" class="route-matrix-cell" role="cell" key="{{target.id}}">
-            <text wx:if="{{source.id === target.id}}" class="route-na">—</text>
-            <button wx:else type="button" disabled="{{!route}}" class="{{[
+          <text wx:for="{{languages}}" wx:for-item="target" wx:key="target.id" class="route-matrix-cell" role="cell" key="{{target.id}}"><text wx:if="{{source.id === target.id}}" class="route-na">—</text>
+<button wx:else type="button" disabled="{{!route}}" class="{{[
                               sourceLanguage === source.id &amp;&amp; targetLanguage === target.id ? &quot;selected&quot; : &quot;&quot;,
                               passed ? &quot;&quot; : &quot;route-not-run&quot;,
                             ].filter(Boolean).join(&quot; &quot;)}}" aria-label="{{route
                               ? `${source.label} 到 ${target.label}，本地执行 ${route.localExecution}，`
                                 + `独立验证 ${route.independentVerification}，外部认证 ${route.externalVerification}`
                               : `${source.label} 到 ${target.label}，仓库路线契约中不存在该路线`}}" bindtap="onTap">
-              <Icon name="{{routeCellIcon(route)}}" size="{{12}}" />
-              <text>{{routeCellLabel(route)}}</text>
-            </button>
-          </text>
+  <Icon name="{{routeCellIcon(route)}}" size="{{12}}" />
+  <text>{{routeCellLabel(route)}}</text>
+</button></text>
         </view>
       </view>
     </view>
@@ -166,29 +160,18 @@
       <StatusChip status="{{handoff ? &quot;REVIEW&quot; : &quot;DRAFT&quot;}}" compact="true" />
     </view>
     <view class="route-handoff-grid">
-      <text>
-        <text>仓库引用</text>
-        <input value="{{repositoryRef}}" maxLength="{{180}}" aria-describedby="repository-ref-hint" bindchange="onChange" />
-        <text id="repository-ref-hint">只填写引用，不填写 Token、客户代码或本机绝对路径。</text>
-      </text>
-      <text>
-        <text>评估范围</text>
-        <view value="{{scope}}" bindchange="onChange">
-          <view value="single-module">单个受限纯函数（可本地执行）</view>
-          <view value="repository">整个仓库（只读清单 + 工作单元）</view>
-          <view value="portfolio">多仓组合（发现与拆分计划）</view>
-        </view>
-      </text>
+      <text><text>仓库引用</text> <input value="{{repositoryRef}}" maxLength="{{180}}" aria-describedby="repository-ref-hint" bindchange="onChange" /> <text id="repository-ref-hint">只填写引用，不填写 Token、客户代码或本机绝对路径。</text></text>
+      <text><text>评估范围</text> <view value="{{scope}}" bindchange="onChange">
+  <view value="single-module">单个受限纯函数（可本地执行）</view>
+  <view value="repository">整个仓库（只读清单 + 工作单元）</view>
+  <view value="portfolio">多仓组合（发现与拆分计划）</view>
+</view></text>
       <view wx:if="{{scope === 'repository'}}" class="repository-plan-import">
         <view>
           <text>整库只读清单</text>
           <StatusChip status="{{repositoryPlan ? &quot;READY&quot; : &quot;NOT_RUN&quot;}}" compact="true" />
         </view>
-        <text class="{{`button button-secondary ${!selectedRouteExecutable || importing ? &quot;button-disabled&quot; : &quot;&quot;}`}}">
-          <Icon name="file" size="{{15}}" />
-          <text>{{importing ? "服务端校验中…" : "导入仓库清单 JSON"}}</text>
-          <input type="file" accept="application/json,.json" disabled="{{!selectedRouteExecutable || importing}}" bindchange="onChange" />
-        </text>
+        <text class="{{`button button-secondary ${!selectedRouteExecutable || importing ? &quot;button-disabled&quot; : &quot;&quot;}`}}"><Icon name="file" size="{{15}}" /> <text>{{importing ? "服务端校验中…" : "导入仓库清单 JSON"}}</text> <input type="file" accept="application/json,.json" disabled="{{!selectedRouteExecutable || importing}}" bindchange="onChange" /></text>
         <view wx:if="{{repositoryPlan}}">
           <view>
             <view>Snapshot</view>
@@ -243,43 +226,22 @@
     <view>Runner 从管理员预先材料化的只读源码与独立行为用例目录读取输入，自动完成清单、编译器发现、 断点批处理、无冲突装配、真实构建和内容寻址归档。它只覆盖 typed-pure-function-v1； `PARTIAL` 会完整保留跳过与失败，绝不等同于整库完成。</view>
     <view class="translation-task-limit">单个转换任务硬上限为 10,000 个已报告功能义务行（最多 5 个内容寻址分片，每片 2,000）。非 Python 路线可能仍有 inventory 未知范围，不能把行数当作项目真实功能总数。超过上限会在接受转换、计费、原生编译与代码生成前失败关闭；请先按仓库、模块或授权工作区拆分为多个任务。</view>
     <view class="business-form-grid">
-      <text>
-        <text>租户标识</text>
-        <input aria-label="跨语言租户标识" value="{{tenantId}}" readOnly="{{accountRunner}}" autoComplete="off" bindchange="onChange" />
-      </text>
-      <text>
-        <text>执行者标识</text>
-        <input aria-label="跨语言执行者标识" value="{{actorId}}" readOnly="{{accountRunner}}" autoComplete="off" bindchange="onChange" />
-      </text>
+      <text><text>租户标识</text> <input aria-label="跨语言租户标识" value="{{tenantId}}" readOnly="{{accountRunner}}" autoComplete="off" bindchange="onChange" /></text>
+      <text><text>执行者标识</text> <input aria-label="跨语言执行者标识" value="{{actorId}}" readOnly="{{accountRunner}}" autoComplete="off" bindchange="onChange" /></text>
       <view wx:if="{{accountRunner}}" class="locked-target spring-field-wide">
         <text>账户授权</text>
         <text>企业 OIDC · translation:execute</text>
       </view>
-      <text wx:else class="spring-field-wide">
-        <text>本地 Runner 短期令牌</text>
-        <input aria-label="跨语言 Runner 令牌" type="password" value="{{runnerToken}}" autoComplete="off" bindchange="onChange" />
-      </text>
-      <text wx:if="{{!accountRunner}}">
-        <text>本地开发预物化源码 ID（与仓库工作区二选一）</text>
-        <input aria-label="受控源码工作区 ID" value="{{workspaceId}}" pattern="[a-z0-9][a-z0-9._-]{2,80}" placeholder="customer-repository" bindchange="onChange" />
-      </text>
-      <text>
-        <text>{{accountRunner ? "已授权仓库工作区 UUID（必填）" : "仓库工作区 UUID"}}</text>
-        <input value="{{repositoryWorkspaceId}}" pattern="[0-9a-f-]{36}" placeholder="从代码仓库工作区自动带入" bindchange="onChange" />
-      </text>
-      <text>
-        <text>独立行为用例包 ID</text>
-        <input value="{{casesBundleId}}" pattern="[a-z0-9][a-z0-9._-]{2,80}" placeholder="customer-repository-holdout" bindchange="onChange" />
-      </text>
+      <text wx:else class="spring-field-wide"><text>本地 Runner 短期令牌</text> <input aria-label="跨语言 Runner 令牌" type="password" value="{{runnerToken}}" autoComplete="off" bindchange="onChange" /></text>
+      <text wx:if="{{!accountRunner}}"><text>本地开发预物化源码 ID（与仓库工作区二选一）</text> <input aria-label="受控源码工作区 ID" value="{{workspaceId}}" pattern="[a-z0-9][a-z0-9._-]{2,80}" placeholder="customer-repository" bindchange="onChange" /></text>
+      <text><text>{{accountRunner ? "已授权仓库工作区 UUID（必填）" : "仓库工作区 UUID"}}</text> <input value="{{repositoryWorkspaceId}}" pattern="[0-9a-f-]{36}" placeholder="从代码仓库工作区自动带入" bindchange="onChange" /></text>
+      <text><text>独立行为用例包 ID</text> <input value="{{casesBundleId}}" pattern="[a-z0-9][a-z0-9._-]{2,80}" placeholder="customer-repository-holdout" bindchange="onChange" /></text>
       <view class="locked-target spring-field-wide">
         <text>执行边界</text>
         <text>{{runnerHealth?.status ?? "CHECKING"}} · {{runnerHealth?.isolation ?? "NOT_CONFIGURED"}}</text>
         <text>源存储 {{runnerHealth?.sourceStorage ?? "NOT_RUN"}} · 活跃任务 {{runnerHealth?.activeJobs ?? 0}} 。 {{runnerHealth?.reason ? ` ${runnerHealth.reason}` : " 生产模式只允许不可变镜像的 Rootless Container。"}}</text>
       </view>
-      <text class="spring-field-wide">
-        <text>恢复任务 UUID</text>
-        <input value="{{recoveryJobId}}" pattern="[0-9a-f-]{36}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" bindchange="onChange" />
-      </text>
+      <text class="spring-field-wide"><text>恢复任务 UUID</text> <input value="{{recoveryJobId}}" pattern="[0-9a-f-]{36}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" bindchange="onChange" /></text>
     </view>
     <view class="business-actions">
       <button type="button" class="button button-primary" disabled="{{jobBusy || runnerHealth?.status !== &quot;READY&quot; || !selectedRouteExecutable
@@ -474,11 +436,7 @@
         <text>发现报告</text>
         <StatusChip status="{{discovery ? &quot;READY&quot; : &quot;NOT_RUN&quot;}}" compact="true" />
       </view>
-      <text class="{{`button button-secondary ${importing ? &quot;button-disabled&quot; : &quot;&quot;}`}}">
-        <Icon name="file" size="{{15}}" />
-        <text>{{importing ? "服务端校验中…" : "导入发现报告 JSON"}}</text>
-        <input type="file" accept="application/json,.json" disabled="{{importing}}" bindchange="onChange" />
-      </text>
+      <text class="{{`button button-secondary ${importing ? &quot;button-disabled&quot; : &quot;&quot;}`}}"><Icon name="file" size="{{15}}" /> <text>{{importing ? "服务端校验中…" : "导入发现报告 JSON"}}</text> <input type="file" accept="application/json,.json" disabled="{{importing}}" bindchange="onChange" /></text>
       <view wx:if="{{discovery}}">
         <view wx:for="{{Object.entries(discovery.verdict_counts)}}" wx:for-item="[verdict, count]" wx:key="[verdict, count].id" key="{{verdict}}">
           <view>{{verdict}}</view>
@@ -488,10 +446,7 @@
       <text wx:else>先执行 discover 子命令，用真实编译器分析器把每个单元判定为 READY 或给出精确的不支持原因； 报告由服务端按同一 Snapshot 摘要重新校验，判定为 READY 必须携带函数名、签名与分析器来源。</text>
     </view>
     <view class="work-unit-toolbar">
-      <text>
-        <text>按路径筛选</text>
-        <input value="{{workUnitFilter}}" maxLength="{{200}}" placeholder="src/main/java/..." bindchange="onChange" />
-      </text>
+      <text><text>按路径筛选</text> <input value="{{workUnitFilter}}" maxLength="{{200}}" placeholder="src/main/java/..." bindchange="onChange" /></text>
       <button type="button" class="button button-secondary" bindtap="exportWorkUnits">
         <Icon name="external" size="{{15}}" />
         <text>导出 CSV</text>
@@ -527,9 +482,7 @@
     </view>
   </view>
   <view class="{{`feedback-toast ${feedback ? &quot;visible&quot; : &quot;&quot;}`}}" role="status" aria-live="polite" aria-atomic="true">
-    <text>
-      <Icon name="check" size="{{17}}" />
-    </text>
+    <text><Icon name="check" size="{{17}}" /></text>
     <text>{{feedback}}</text>
   </view>
 </view>

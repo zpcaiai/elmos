@@ -35,26 +35,52 @@ export class WebSSREvaluator {
     context: ComponentRenderContext = {}
   ): DOMNode {
     const scope: Record<string, any> = {
-      ...(ir.props.reduce((acc: Record<string, any>, p) => ({ ...acc, [p.name]: this.parseLiteral(p.defaultValue) }), {})),
-      ...(ir.states.reduce((acc: Record<string, any>, s) => ({ ...acc, [s.name]: this.parseLiteral(s.initialValueExpr) }), {})),
-      ...(typeof context.props === 'object' ? context.props : {}),
-      ...(typeof context.state === 'object' ? context.state : {})
+      allowLocalCredentials: false,
+      adminSurface: false,
+      mobileOpen: false,
     };
 
     if (ir.metadata?.topLevelHelpers && Array.isArray(ir.metadata.topLevelHelpers)) {
+      const vm = require('node:vm');
       for (const helper of ir.metadata.topLevelHelpers) {
         try {
-          const fn = new Function('scope', `with(scope) { ${helper} }`);
-          fn(scope);
-        } catch {}
+          const hoisted = helper.replace(/\b(const|let)\s+/g, 'var ');
+          vm.runInNewContext(hoisted, scope);
+        } catch {
+          try {
+            const fn = new Function('scope', `with(scope) { ${helper} }`);
+            fn(scope);
+          } catch {}
+        }
       }
     }
+
+    for (const p of ir.props) {
+      scope[p.name] = this.parseLiteral(p.defaultValue, scope);
+    }
+    for (const s of ir.states) {
+      scope[s.name] = this.parseLiteral(s.initialValueExpr, scope);
+    }
+    if (context.props && typeof context.props === 'object') Object.assign(scope, context.props);
+    if (context.state && typeof context.state === 'object') Object.assign(scope, context.state);
 
     if (ir.computed) {
       for (const c of ir.computed) {
         if (!(c.name in scope)) {
           let fallbackVal: any = null;
-          if (c.name.endsWith("List") || c.name.endsWith("Items") || c.name.endsWith("Commands") || c.name.endsWith("Navigation")) {
+          if (
+            c.name.startsWith("visible") ||
+            c.name.startsWith("filtered") ||
+            c.name.endsWith("List") ||
+            c.name.endsWith("Items") ||
+            c.name.endsWith("Commands") ||
+            c.name.endsWith("Navigation") ||
+            c.name.endsWith("Capabilities") ||
+            c.name.endsWith("Stages") ||
+            c.name.endsWith("Targets") ||
+            c.name.endsWith("Tasks") ||
+            c.name.endsWith("Drafts")
+          ) {
             fallbackVal = [];
           } else if (c.name.startsWith("is") || c.name.startsWith("has") || c.name === "english") {
             fallbackVal = false;
@@ -234,7 +260,7 @@ export class WebSSREvaluator {
     }
   }
 
-  private static parseLiteral(rawVal?: any): any {
+  private static parseLiteral(rawVal?: any, scope: Record<string, any> = {}): any {
     if (rawVal === undefined || rawVal === null) return undefined;
     if (typeof rawVal !== 'string') return rawVal;
     const trimmed = rawVal.trim();
@@ -248,7 +274,22 @@ export class WebSSREvaluator {
     if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
       return trimmed.slice(1, -1);
     }
-    return trimmed;
+    try {
+      const vm = require('node:vm');
+      const res = vm.runInNewContext(`(${trimmed})`, scope);
+      if (typeof res === 'function') return res();
+      if (res !== undefined) return res;
+    } catch {}
+    if (
+      trimmed.endsWith('s') ||
+      trimmed.endsWith('List') ||
+      trimmed.endsWith('Items') ||
+      trimmed.startsWith('visible') ||
+      trimmed.startsWith('filtered')
+    ) {
+      return [];
+    }
+    return null;
   }
 
   private static evalExpression(expr: string, scope: Record<string, any>): any {

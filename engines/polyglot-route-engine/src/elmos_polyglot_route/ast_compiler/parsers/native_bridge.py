@@ -454,13 +454,17 @@ class NativeBridge:
                 name = subj.get("name")
                 if kind in ("struct", "type"):
                     module.classes.append(UniversalClass(name=name, is_struct=True))
-                elif kind == "function":
+                elif kind in ("function", "method"):
+                    u_meth = UniversalMethod(name=name)
                     fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=10)
                     if fn_res.returncode == 0:
                         fn_data = json.loads(fn_res.stdout)
                         for fn_item in fn_data.get("functions", []):
                             u_meth = cls._convert_syn_function(fn_item)
-                            module.free_functions.append(u_meth)
+                    if kind == "method" and module.classes:
+                        module.classes[-1].methods.append(u_meth)
+                    else:
+                        module.free_functions.append(u_meth)
             return module
         except Exception as ex:
             logger.debug("Exception running Go analyzer bridge: %s", ex)
@@ -504,16 +508,39 @@ class NativeBridge:
                 for subj in inv_data.get("subjects", []):
                     kind = subj.get("declaration_kind")
                     name = subj.get("name")
-                    if kind == "method" and subj.get("analyzable"):
-                        fn_res = subprocess.run(
-                            ["java", "-cp", str(class_dir), "Analyzer", file_path, name],
-                            capture_output=True, text=True, timeout=10
+                    if kind == "method":
+                        sig = subj.get("signature", {})
+                        ret_t = sig.get("source_return_type", "void")
+                        params = []
+                        for p in sig.get("parameters", []):
+                            p_type = p.get("source_type", "Object")
+                            params.append(UniversalParam(name=p.get("name", "arg"), type_info=UniversalType.custom(p_type)))
+                        u_meth = UniversalMethod(
+                            name=name,
+                            params=params,
+                            return_type=UniversalType.custom(ret_t),
+                            visibility=sig.get("visibility", "public"),
+                            is_static=sig.get("static", False)
                         )
-                        if fn_res.returncode == 0:
-                            fn_data = json.loads(fn_res.stdout)
-                            for fn_item in fn_data.get("functions", []):
-                                u_meth = cls._convert_syn_function(fn_item)
-                                target_cls.methods.append(u_meth)
+                        if subj.get("analyzable"):
+                            fn_res = subprocess.run(
+                                ["java", "-cp", str(class_dir), "Analyzer", file_path, name],
+                                capture_output=True, text=True, timeout=10
+                            )
+                            if fn_res.returncode == 0:
+                                fn_data = json.loads(fn_res.stdout)
+                                for fn_item in fn_data.get("functions", []):
+                                    conv_m = cls._convert_syn_function(fn_item)
+                                    u_meth.body = conv_m.body
+                        target_cls.methods.append(u_meth)
+                    elif kind == "field":
+                        sig = subj.get("signature", {})
+                        f_type = sig.get("source_type", "Object")
+                        target_cls.fields.append(UniversalField(
+                            name=name,
+                            type_info=UniversalType.custom(f_type),
+                            visibility=sig.get("visibility", "public")
+                        ))
                 return module
             except Exception as ex:
                 logger.debug("Exception running Java javac bridge: %s", ex)

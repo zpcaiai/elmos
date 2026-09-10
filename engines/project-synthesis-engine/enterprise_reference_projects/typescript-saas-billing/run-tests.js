@@ -1,6 +1,34 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const Module = require('module');
+
+// Stub NestJS decorators for lightweight offline execution
+const nestCommonMock = {
+  Injectable: () => (target) => target,
+  Controller: () => (target) => target,
+  Get: () => (target, prop, desc) => desc,
+  Post: () => (target, prop, desc) => desc,
+  Put: () => (target, prop, desc) => desc,
+  Patch: () => (target, prop, desc) => desc,
+  Delete: () => (target, prop, desc) => desc,
+  Body: () => () => {},
+  Param: () => () => {},
+  Query: () => () => {},
+  Headers: () => () => {},
+  UseGuards: () => () => {},
+  Module: () => (target) => target,
+  UnauthorizedException: class extends Error {},
+  NotFoundException: class extends Error {},
+  BadRequestException: class extends Error {},
+};
+
+const origRequire = Module.prototype.require;
+Module.prototype.require = function(id) {
+  if (id === '@nestjs/common') return nestCommonMock;
+  if (id === '@nestjs/core') return { NestFactory: { create: async () => ({ enableCors() {}, listen: async () => {} }) } };
+  return origRequire.apply(this, arguments);
+};
 
 let totalTests = 0;
 let passedTests = 0;
@@ -62,6 +90,20 @@ function expect(actual) {
           return assert.rejects(actual, expectedMsg ? new RegExp(expectedMsg) : undefined);
         }
       };
+    },
+    not: {
+      toBe(expected) {
+        assert.notStrictEqual(actual, expected);
+      },
+      toEqual(expected) {
+        assert.notDeepStrictEqual(actual, expected);
+      },
+      toBeNull() {
+        assert.notStrictEqual(actual, null);
+      },
+      toBeUndefined() {
+        assert.notStrictEqual(actual, undefined);
+      }
     }
   };
 }

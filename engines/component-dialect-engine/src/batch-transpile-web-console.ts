@@ -85,11 +85,6 @@ export async function runBatchTranspilationAndDifferential() {
       fs.mkdirSync(compTargetDir, { recursive: true });
     }
 
-    const next16CompTargetDir = path.join(PACK_DIR, 'target-project/components', compName);
-    if (!fs.existsSync(next16CompTargetDir)) {
-      fs.mkdirSync(next16CompTargetDir, { recursive: true });
-    }
-
     // 2. Write out real, full-syntax AST emitted 4-file bundle
     const wxml = transpileResult.outputFiles['index.wxml'] || `<view class="${compName.toLowerCase()}"><text>${compName}</text></view>`;
     const js = transpileResult.outputFiles['index.js'] || `Component({ data: {} });`;
@@ -100,11 +95,6 @@ export async function runBatchTranspilationAndDifferential() {
     fs.writeFileSync(path.join(compTargetDir, 'index.js'), js, 'utf8');
     fs.writeFileSync(path.join(compTargetDir, 'index.wxss'), wxss, 'utf8');
     fs.writeFileSync(path.join(compTargetDir, 'index.json'), json, 'utf8');
-
-    fs.writeFileSync(path.join(next16CompTargetDir, 'index.wxml'), wxml, 'utf8');
-    fs.writeFileSync(path.join(next16CompTargetDir, 'index.js'), js, 'utf8');
-    fs.writeFileSync(path.join(next16CompTargetDir, 'index.wxss'), wxss, 'utf8');
-    fs.writeFileSync(path.join(next16CompTargetDir, 'index.json'), json, 'utf8');
 
     // 3. Evaluate Web SSR DOM tree
     const webDOM = WebSSREvaluator.evaluateIR(transpileResult.ir);
@@ -147,15 +137,13 @@ export async function runBatchTranspilationAndDifferential() {
     entry.syntax_evidence = 'LOCAL_WXML_PARSE_PASSED';
   }
 
-  // Update closure.totals in both closure files
+  // Update closure.totals in OUT_CLOSURE_FILE
   closureData.totals.automatic = automaticCount;
   closureData.totals.hand_ported = 0;
   closureData.totals.unhandled = 0;
   closureData.automatic_coverage = Number((automaticCount / entries.length).toFixed(4));
   fs.mkdirSync(path.dirname(OUT_CLOSURE_FILE), { recursive: true });
   fs.writeFileSync(OUT_CLOSURE_FILE, JSON.stringify(closureData, null, 2) + '\n', 'utf8');
-  fs.mkdirSync(path.dirname(CLOSURE_FILE), { recursive: true });
-  fs.writeFileSync(CLOSURE_FILE, JSON.stringify(closureData, null, 2) + '\n', 'utf8');
 
   // Update OUT_HANDOFF_FILE
   const handoffData = {
@@ -167,10 +155,6 @@ export async function runBatchTranspilationAndDifferential() {
   };
   fs.mkdirSync(path.dirname(OUT_HANDOFF_FILE), { recursive: true });
   fs.writeFileSync(OUT_HANDOFF_FILE, JSON.stringify(handoffData, null, 2) + '\n', 'utf8');
-
-  const next16HandoffFile = path.join(PACK_DIR, 'target-project/handoff.json');
-  fs.mkdirSync(path.dirname(next16HandoffFile), { recursive: true });
-  fs.writeFileSync(next16HandoffFile, JSON.stringify(handoffData, null, 2) + '\n', 'utf8');
 
   // Generate audit report
   const l3Rate = Number(((l3PassCount / entries.length) * 100).toFixed(2));

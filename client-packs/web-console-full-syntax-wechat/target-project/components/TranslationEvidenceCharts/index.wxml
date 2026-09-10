@@ -1,18 +1,12 @@
 <view class="translation-evidence-charts" aria-labelledby="translation-evidence-title">
   <view class="evidence-section-heading">
-    <text>
-      <view id="translation-evidence-title">转换语义与行为覆盖</view>
-      <text>编译器语义主题和行为用例使用不同分母</text>
-    </text>
+    <text><view id="translation-evidence-title">转换语义与行为覆盖</view> <text>编译器语义主题和行为用例使用不同分母</text></text>
     <StatusMark status="{{semanticCoverage != null || behaviorCoverage != null ? &quot;REPRESENTED&quot; : &quot;NOT_RUN&quot;}}" compact="true" />
   </view>
   <view class="translation-coverage-grid">
     <view class="translation-coverage-card">
       <view class="evidence-section-heading">
-        <text>
-          <view>Semantic coverage</view>
-          <text>{{semanticCoverage?.profile ?? "compiler-semantic-symbol-coverage-v1"}}</text>
-        </text>
+        <text><view>Semantic coverage</view> <text>{{semanticCoverage?.profile ?? "compiler-semantic-symbol-coverage-v1"}}</text></text>
         <StatusMark status="{{semanticCoverage?.status ?? &quot;NOT_RUN&quot;}}" compact="true" />
       </view>
       <block wx:if="{{semanticCoverage != null}}">
@@ -42,10 +36,7 @@
     </view>
     <view class="translation-coverage-card">
       <view class="evidence-section-heading">
-        <text>
-          <view>Behavior coverage</view>
-          <text>{{behaviorCoverage?.profile ?? "typed-pure-function-v1"}}</text>
-        </text>
+        <text><view>Behavior coverage</view> <text>{{behaviorCoverage?.profile ?? "typed-pure-function-v1"}}</text></text>
         <StatusMark status="{{behaviorCoverage?.status ?? &quot;NOT_RUN&quot;}}" compact="true" />
       </view>
       <block wx:if="{{behaviorCoverage != null}}">

@@ -19,30 +19,21 @@
       <text>{{account.principal?.email ?? "未登录"}}</text>
       <text>仅接受已验证的管理员企业账户会话</text>
     </view>
-    <text>
-      <text>时间范围</text>
-      <view value="{{hours}}" aria-label="时间范围" bindchange="onChange">
-        <view value="1">最近 1 小时</view>
-        <view value="24">最近 24 小时</view>
-        <view value="168">最近 7 天</view>
-        <view value="720">最近 30 天</view>
-      </view>
-    </text>
-    <text>
-      <text>业务线</text>
-      <view value="{{businessLine}}" aria-label="业务线" bindchange="onChange">
-        <view wx:for="{{lines}}" wx:for-item="[value, label]" wx:key="[value, label].id" key="{{value}}" value="{{value}}">{{label}}</view>
-      </view>
-    </text>
-    <text>
-      <text>结果</text>
-      <view value="{{result}}" aria-label="操作结果" bindchange="onChange">
-        <view value="ALL">全部结果</view>
-        <view value="SUCCESS">成功</view>
-        <view value="FAILURE">失败</view>
-        <view value="CANCELLED">已取消</view>
-      </view>
-    </text>
+    <text><text>时间范围</text> <view value="{{hours}}" aria-label="时间范围" bindchange="onChange">
+  <view value="1">最近 1 小时</view>
+  <view value="24">最近 24 小时</view>
+  <view value="168">最近 7 天</view>
+  <view value="720">最近 30 天</view>
+</view></text>
+    <text><text>业务线</text> <view value="{{businessLine}}" aria-label="业务线" bindchange="onChange">
+  <view wx:for="{{lines}}" wx:for-item="[value, label]" wx:key="[value, label].id" key="{{value}}" value="{{value}}">{{label}}</view>
+</view></text>
+    <text><text>结果</text> <view value="{{result}}" aria-label="操作结果" bindchange="onChange">
+  <view value="ALL">全部结果</view>
+  <view value="SUCCESS">成功</view>
+  <view value="FAILURE">失败</view>
+  <view value="CANCELLED">已取消</view>
+</view></text>
     <button class="primary-button" type="submit" disabled="{{state === &quot;LOADING&quot; || account.status === &quot;loading&quot;}}">
       <Icon name="{{state === &quot;LOADING&quot; ? &quot;refresh&quot; : &quot;search&quot;}}" size="{{17}}" />
       <text>{{state === "LOADING" ? "读取中…" : "读取数据"}}</text>
@@ -56,16 +47,13 @@
     </view>
     <view>导出所选窗口内的原始审计与遥测记录（CSV）。按游标逐页读取， 结果与上方筛选的业务线、结果保持一致；时间窗口在此单独选择。</view>
     <view class="{{'inlineActions'}}">
-      <text>
-        <text>窗口</text>
-        <view value="{{exportDays}}" aria-label="导出时间窗口" disabled="{{exportBusy}}" bindchange="onChange">
-          <view value="1">最近 1 天</view>
-          <view value="7">最近 7 天</view>
-          <view value="30">最近 30 天</view>
-          <view value="90">最近 90 天</view>
-          <view value="366">最近 366 天</view>
-        </view>
-      </text>
+      <text><text>窗口</text> <view value="{{exportDays}}" aria-label="导出时间窗口" disabled="{{exportBusy}}" bindchange="onChange">
+  <view value="1">最近 1 天</view>
+  <view value="7">最近 7 天</view>
+  <view value="30">最近 30 天</view>
+  <view value="90">最近 90 天</view>
+  <view value="366">最近 366 天</view>
+</view></text>
       <button class="secondary-button" type="button" disabled="{{exportBusy}}" bindtap="downloadAuditExport">
         <Icon name="{{exportBusy ? &quot;refresh&quot; : &quot;box&quot;}}" size="{{17}}" />
         <text>{{exportBusy ? "导出中…" : "导出 CSV"}}</text>
@@ -81,10 +69,7 @@
     </view>
     <view>按迁移运行 ID 重建一次运行的完整过程：每一次步骤尝试、沿途产出的证据、 以及点名这次运行的审计记录。只读重建，不会改动被回放的记录。</view>
     <view class="{{'inlineActions'}}">
-      <text>
-        <text>运行 ID</text>
-        <input value="{{replayRunId}}" aria-label="迁移运行 ID" placeholder="migration-run-…" disabled="{{replayBusy}}" bindchange="onChange" />
-      </text>
+      <text><text>运行 ID</text> <input value="{{replayRunId}}" aria-label="迁移运行 ID" placeholder="migration-run-…" disabled="{{replayBusy}}" bindchange="onChange" /></text>
       <button class="secondary-button" type="button" disabled="{{replayBusy}}" bindtap="loadReplay">
         <Icon name="{{replayBusy ? &quot;refresh&quot; : &quot;search&quot;}}" size="{{17}}" />
         <text>{{replayBusy ? "读取中…" : "回放"}}</text>
@@ -104,11 +89,7 @@
         <text>{{replay.snapshotId}}</text>
       </view>
       <view>步骤尝试（ {{replay.steps.rows.length}} ）</view>
-      <view wx:if="{{replay.steps.truncated}}" class="{{'bad'}}" role="alert">
-        <text>步骤过多，仅显示前</text>
-        <text>{{replay.steps.rows.length}}</text>
-        <text>条——这份回放不完整，不能作为完整凭据。</text>
-      </view>
+      <view wx:if="{{replay.steps.truncated}}" class="{{'bad'}}" role="alert">步骤过多，仅显示前 {{replay.steps.rows.length}} 条——这份回放不完整，不能作为完整凭据。</view>
       <view class="{{'tableWrap'}}">
         <view>
           <view>
@@ -134,11 +115,7 @@
         </view>
       </view>
       <view>证据（ {{replay.evidence.rows.length}} ）</view>
-      <view wx:if="{{replay.evidence.truncated}}" class="{{'bad'}}" role="alert">
-        <text>证据过多，仅显示前</text>
-        <text>{{replay.evidence.rows.length}}</text>
-        <text>条——这份回放不完整。</text>
-      </view>
+      <view wx:if="{{replay.evidence.truncated}}" class="{{'bad'}}" role="alert">证据过多，仅显示前 {{replay.evidence.rows.length}} 条——这份回放不完整。</view>
       <view wx:if="{{replay.evidence.rows.length === 0}}" class="{{'empty'}}">这次运行没有留下证据记录。</view>
       <view wx:else class="{{'lineList'}}">
         <view wx:for="{{replay.evidence.rows}}" wx:key="item.id" key="{{item.evidenceId}}">
@@ -152,11 +129,7 @@
         </view>
       </view>
       <view>审计（ {{replay.audit.rows.length}} ）</view>
-      <view wx:if="{{replay.audit.truncated}}" class="{{'bad'}}" role="alert">
-        <text>审计记录过多，仅显示前</text>
-        <text>{{replay.audit.rows.length}}</text>
-        <text>条——这份回放不完整。</text>
-      </view>
+      <view wx:if="{{replay.audit.truncated}}" class="{{'bad'}}" role="alert">审计记录过多，仅显示前 {{replay.audit.rows.length}} 条——这份回放不完整。</view>
       <view wx:if="{{replay.audit.rows.length === 0}}" class="{{'empty'}}">没有点名这次运行的审计记录。审计行通过 resource_id 关联，未设置该字段的行不会出现在这里。</view>
       <view wx:else class="{{'lineList'}}">
         <view wx:for="{{replay.audit.rows}}" wx:for-item="entry" wx:key="entry.id" key="{{entry.auditId}}">
@@ -173,9 +146,7 @@
     </view>
   </view>
   <view wx:if="{{state === 'LOCKED'}}" class="{{'locked'}}">
-    <text>
-      <Icon name="lock" size="{{24}}" />
-    </text>
+    <text><Icon name="lock" size="{{24}}" /></text>
     <view>
       <text>管理数据默认锁定</text>
       <view>仅已验证的指定管理员邮箱可建立管理会话；角色由服务端决定，页面不能自行提升。</view>
@@ -242,18 +213,12 @@
           <text>租户隔离 · 最多 100 条 · 取消需 OPERATOR</text>
         </view>
         <view class="{{'inlineActions'}}">
-          <text>
-            <text>作业类型</text>
-            <view aria-label="持久作业类型" value="{{operationsJobBusinessLine}}" disabled="{{operationsJobsBusy || Boolean(operationsJobCancelBusy)}}" bindchange="onChange">
-              <view wx:for="{{jobBusinessLines}}" wx:for-item="[value, label]" wx:key="[value, label].id" key="{{value}}" value="{{value}}">{{label}}</view>
-            </view>
-          </text>
-          <text>
-            <text>状态</text>
-            <view aria-label="持久作业状态" value="{{operationsJobStatus}}" disabled="{{operationsJobsBusy || Boolean(operationsJobCancelBusy)}}" bindchange="onChange">
-              <view wx:for="{{jobStatuses}}" wx:for-item="[value, label]" wx:key="[value, label].id" key="{{value}}" value="{{value}}">{{label}}</view>
-            </view>
-          </text>
+          <text><text>作业类型</text> <view aria-label="持久作业类型" value="{{operationsJobBusinessLine}}" disabled="{{operationsJobsBusy || Boolean(operationsJobCancelBusy)}}" bindchange="onChange">
+  <view wx:for="{{jobBusinessLines}}" wx:for-item="[value, label]" wx:key="[value, label].id" key="{{value}}" value="{{value}}">{{label}}</view>
+</view></text>
+          <text><text>状态</text> <view aria-label="持久作业状态" value="{{operationsJobStatus}}" disabled="{{operationsJobsBusy || Boolean(operationsJobCancelBusy)}}" bindchange="onChange">
+  <view wx:for="{{jobStatuses}}" wx:for-item="[value, label]" wx:key="[value, label].id" key="{{value}}" value="{{value}}">{{label}}</view>
+</view></text>
           <button class="secondary-button" type="button" disabled="{{operationsJobsBusy || Boolean(operationsJobCancelBusy)}}" bindtap="onTap">
             <Icon name="{{operationsJobsBusy ? &quot;refresh&quot; : &quot;search&quot;}}" size="{{17}}" />
             <text>{{operationsJobsBusy ? "读取中…" : "读取作业"}}</text>
@@ -262,67 +227,57 @@
         <view wx:if="{{operationsJobsError}}" class="{{'bad'}}" role="alert">{{operationsJobsError}}</view>
         <view wx:if="{{operationsJobsNotice}}" class="{{'good'}}" role="status">{{operationsJobsNotice}}</view>
         <Empty wx:if="{{!operationsJobsLoaded}}" label="选择类型和状态后读取真实作业；页面不使用审计事件推断队列状态。" />
-        <text wx:else>{{operationsJobs.length === 0 ? (
-                  <Empty label="当前租户没有匹配的持久作业" />
-                ) : (
-                  <div className={styles.tableWrap}>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>作业 / 类型</th><th>状态 / 阶段</th><th>进度</th>
-                          <th>尝试</th><th>时间</th><th>取消</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {operationsJobs.map((job) => {
-                          const terminal = terminalJobStatuses.has(job.status);
-                          const cancelling = operationsJobCancelBusy === job.jobId;
-                          const failed = ["FAILED", "LOST"].includes(job.status);
-                          return (
-                            <tr key={job.jobId}>
-                              <td title={job.jobId}>
-                                <code>{displayTarget(job.jobId)}</code>
-                                <small>{job.businessLine} · {job.jobKind}</small>
-                              </td>
-                              <td>
-                                <span className={failed ? styles.resultBad : styles.resultGood}>
-                                  {job.status}
-                                </span>
-                                <small>{job.stage} · {job.resultStatus}</small>
-                                {job.failureCode && <small>{job.failureCode}</small>}
-                              </td>
-                              <td>{job.progress.toFixed(0)}%</td>
-                              <td>{job.attempt} / {job.maxAttempts}<small>state v{job.stateVersion}</small></td>
-                              <td>
-                                {formatTime(job.createdAt)}
-                                <small className={styles.neutralDetail}>{job.finishedAt
+        <block wx:else>
+          <Empty wx:if="{{operationsJobs.length === 0}}" label="当前租户没有匹配的持久作业" />
+          <view wx:else class="{{'tableWrap'}}">
+            <view>
+              <view>
+                <view>
+                  <view>作业 / 类型</view>
+                  <view>状态 / 阶段</view>
+                  <view>进度</view>
+                  <view>尝试</view>
+                  <view>时间</view>
+                  <view>取消</view>
+                </view>
+              </view>
+              <view>
+                <view wx:for="{{operationsJobs}}" wx:for-item="job" wx:key="job.id" key="{{job.jobId}}">
+                  <view title="{{job.jobId}}">
+                    <code>{{displayTarget(job.jobId)}}</code>
+                    <text>{{job.businessLine}} · {{job.jobKind}}</text>
+                  </view>
+                  <view>
+                    <text class="{{failed ? 'resultBad' : 'resultGood'}}">{{job.status}}</text>
+                    <text>{{job.stage}} · {{job.resultStatus}}</text>
+                    <text wx:if="{{job.failureCode}}">{{job.failureCode}}</text>
+                  </view>
+                  <view>{{job.progress.toFixed(0)}} %</view>
+                  <view>
+                    <text>{{job.attempt}}</text>
+                    <text>/</text>
+                    <text>{{job.maxAttempts}}</text>
+                    <text>state v {{job.stateVersion}}</text>
+                  </view>
+                  <view>
+                    <text>{{formatTime(job.createdAt)}}</text>
+                    <text class="{{'neutralDetail'}}">{{job.finishedAt
                                   ? `结束 ${formatTime(job.finishedAt)}`
-                                  : job.startedAt ? `开始 ${formatTime(job.startedAt)}` : "尚未开始"}</small>
-                              </td>
-                              <td>
-                                <button
-                                  className="secondary-button"
-                                  type="button"
-                                  disabled={
-                                    !can("OPERATOR")
+                                  : job.startedAt ? `开始 ${formatTime(job.startedAt)}` : "尚未开始"}}</text>
+                  </view>
+                  <view>
+                    <button class="secondary-button" type="button" disabled="{{!can(&quot;OPERATOR&quot;)
                                     || terminal
                                     || job.cancelRequested
-                                    || Boolean(operationsJobCancelBusy)
-                                  }
-                                  onClick={() => void cancelOperationsJob(job)}
-                                >
-                                  {cancelling
+                                    || Boolean(operationsJobCancelBusy)}}" bindtap="onTap">{{cancelling
                                     ? "提交中…"
-                                    : job.cancelRequested ? "已请求取消" : terminal ? "已终止" : "请求取消"}
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}}</text>
+                                    : job.cancelRequested ? "已请求取消" : terminal ? "已终止" : "请求取消"}}</button>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </block>
         <view class="{{'boundaryNote'}}">取消只写入持久的 cancel-requested 信号，不跳过 Runner 租约、重试门禁或独立验证； 结果未知时不会自动重试写操作。</view>
       </view>
       <view class="{{'panel'}}" aria-label="Runner Fleet">
@@ -334,12 +289,9 @@
           <text>租户 RLS · secret-free 投影 · 最多 100 个节点</text>
         </view>
         <view class="{{'inlineActions'}}">
-          <text>
-            <text>Fleet 状态</text>
-            <view aria-label="Runner Fleet 状态" value="{{runnerFleetStatus}}" disabled="{{runnerFleetBusy || Boolean(runnerFleetActionBusy)}}" bindchange="onChange">
-              <view wx:for="{{runnerFleetStatuses}}" wx:for-item="[value, label]" wx:key="[value, label].id" key="{{value}}" value="{{value}}">{{label}}</view>
-            </view>
-          </text>
+          <text><text>Fleet 状态</text> <view aria-label="Runner Fleet 状态" value="{{runnerFleetStatus}}" disabled="{{runnerFleetBusy || Boolean(runnerFleetActionBusy)}}" bindchange="onChange">
+  <view wx:for="{{runnerFleetStatuses}}" wx:for-item="[value, label]" wx:key="[value, label].id" key="{{value}}" value="{{value}}">{{label}}</view>
+</view></text>
           <button class="secondary-button" type="button" disabled="{{runnerFleetBusy || Boolean(runnerFleetActionBusy)}}" bindtap="onTap">
             <Icon name="{{runnerFleetBusy ? &quot;refresh&quot; : &quot;search&quot;}}" size="{{17}}" />
             <text>{{runnerFleetBusy ? "读取中…" : "读取 Fleet"}}</text>
@@ -348,100 +300,67 @@
         <view wx:if="{{runnerFleetError}}" class="{{'bad'}}" role="alert">{{runnerFleetError}}</view>
         <view wx:if="{{runnerFleetNotice}}" class="{{'good'}}" role="status">{{runnerFleetNotice}}</view>
         <Empty wx:if="{{!runnerFleetLoaded}}" label="读取真实 Fleet 投影；凭据、token hash、原始 attestation 和验证者身份均不会返回浏览器。" />
-        <text wx:else>{{runnerFleet.length === 0 ? (
-                  <Empty label="当前租户没有匹配的 Runner 节点" />
-                ) : (
-                  <div className={styles.tableWrap}>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>节点 / 池</th><th>状态 / 版本</th><th>能力 / 并发</th>
-                          <th>Attestation</th><th>心跳 / 更新</th><th>操作</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {runnerFleet.map((node) => {
-                          const actionBusy = runnerFleetActionBusy.startsWith(`${node.runnerNodeId}:`);
-                          const badStatus = ["QUARANTINED", "LOST"].includes(node.fleetStatus);
-                          const ready = node.fleetStatus === "READY";
-                          return (
-                            <tr key={node.runnerNodeId}>
-                              <td title={node.runnerNodeId}>
-                                <code>{displayTarget(node.runnerNodeId)}</code>
-                                <small>{node.runnerPoolId}</small>
-                              </td>
-                              <td>
-                                <span className={badStatus
-                                  ? styles.resultBad : ready ? styles.resultGood : styles.kind}>
-                                  {node.fleetStatus}
-                                </span>
-                                <small>agent {node.agentVersion} · {node.imageAllowlistVersion}</small>
-                              </td>
-                              <td>
-                                {node.capabilities.join(" · ") || "无已报能力"}
-                                <small>最大并发 {node.maxConcurrency}</small>
-                              </td>
-                              <td>
-                                <span className={node.attestationVerified
-                                  ? styles.resultGood : styles.resultBad}>
-                                  {node.attestationVerified ? "VERIFIED" : "NOT_VERIFIED"}
-                                </span>
-                                <small>{node.attestationVerifiedAt
-                                  ? formatTime(node.attestationVerifiedAt) : "尚无独立验证"}</small>
-                              </td>
-                              <td>
-                                {node.lastHeartbeatAt ? formatTime(node.lastHeartbeatAt) : "无心跳"}
-                                <small className={styles.neutralDetail}>更新 {formatTime(node.updatedAt)}</small>
-                              </td>
-                              <td>
-                                <div className={styles.inlineActions}>
-                                  {node.fleetStatus === "REGISTERED" && (
-                                    <button
-                                      className="secondary-button"
-                                      type="button"
-                                      disabled={
-                                        account.status !== "authenticated"
-                                        || !can("APPROVER")
-                                        || Boolean(runnerFleetActionBusy)
-                                      }
-                                      onClick={() => void mutateRunnerFleetNode(
-                                        node, "attestation/verify",
-                                      )}
-                                    >
-                                      {runnerFleetActionBusy === `${node.runnerNodeId}:attestation/verify`
-                                        ? "验证中…" : "确认独立证明"}
-                                    </button>
-                                  )}
-                                  {(node.fleetStatus === "READY" || node.fleetStatus === "DRAINING") && (
-                                    <button
-                                      className="secondary-button"
-                                      type="button"
-                                      disabled={
-                                        account.status !== "authenticated"
-                                        || !can("OPERATOR")
-                                        || node.fleetStatus === "DRAINING"
-                                        || Boolean(runnerFleetActionBusy)
-                                      }
-                                      onClick={() => void mutateRunnerFleetNode(node, "drain")}
-                                    >
-                                      {node.fleetStatus === "DRAINING"
+        <block wx:else>
+          <Empty wx:if="{{runnerFleet.length === 0}}" label="当前租户没有匹配的 Runner 节点" />
+          <view wx:else class="{{'tableWrap'}}">
+            <view>
+              <view>
+                <view>
+                  <view>节点 / 池</view>
+                  <view>状态 / 版本</view>
+                  <view>能力 / 并发</view>
+                  <view>Attestation</view>
+                  <view>心跳 / 更新</view>
+                  <view>操作</view>
+                </view>
+              </view>
+              <view>
+                <view wx:for="{{runnerFleet}}" wx:for-item="node" wx:key="node.id" key="{{node.runnerNodeId}}">
+                  <view title="{{node.runnerNodeId}}">
+                    <code>{{displayTarget(node.runnerNodeId)}}</code>
+                    <text>{{node.runnerPoolId}}</text>
+                  </view>
+                  <view>
+                    <text class="{{badStatus
+                                  ? 'resultBad' : ready ? 'resultGood' : 'kind'}}">{{node.fleetStatus}}</text>
+                    <text>agent {{node.agentVersion}} · {{node.imageAllowlistVersion}}</text>
+                  </view>
+                  <view>
+                    <text>{{node.capabilities.join(" · ") || "无已报能力"}}</text>
+                    <text>最大并发 {{node.maxConcurrency}}</text>
+                  </view>
+                  <view>
+                    <text class="{{node.attestationVerified
+                                  ? 'resultGood' : 'resultBad'}}">{{node.attestationVerified ? "VERIFIED" : "NOT_VERIFIED"}}</text>
+                    <text>{{node.attestationVerifiedAt
+                                  ? formatTime(node.attestationVerifiedAt) : "尚无独立验证"}}</text>
+                  </view>
+                  <view>
+                    <text>{{node.lastHeartbeatAt ? formatTime(node.lastHeartbeatAt) : "无心跳"}}</text>
+                    <text class="{{'neutralDetail'}}">更新 {{formatTime(node.updatedAt)}}</text>
+                  </view>
+                  <view>
+                    <view class="{{'inlineActions'}}">
+                      <button wx:if="{{node.fleetStatus === 'REGISTERED'}}" class="secondary-button" type="button" disabled="{{account.status !== &quot;authenticated&quot;
+                                        || !can(&quot;APPROVER&quot;)
+                                        || Boolean(runnerFleetActionBusy)}}" bindtap="onTap">{{runnerFleetActionBusy === `${node.runnerNodeId}:attestation/verify`
+                                        ? "验证中…" : "确认独立证明"}}</button>
+                      <button wx:if="{{(node.fleetStatus === 'READY' || node.fleetStatus === 'DRAINING')}}" class="secondary-button" type="button" disabled="{{account.status !== &quot;authenticated&quot;
+                                        || !can(&quot;OPERATOR&quot;)
+                                        || node.fleetStatus === &quot;DRAINING&quot;
+                                        || Boolean(runnerFleetActionBusy)}}" bindtap="onTap">{{node.fleetStatus === "DRAINING"
                                         ? "正在排空"
                                         : runnerFleetActionBusy === `${node.runnerNodeId}:drain`
-                                          ? "提交中…" : "排空节点"}
-                                    </button>
-                                  )}
-                                  {!actionBusy
-                                    && !["REGISTERED", "READY", "DRAINING"].includes(node.fleetStatus)
-                                    && <small>当前状态无可用在线操作</small>}
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}}</text>
+                                          ? "提交中…" : "排空节点"}}</button>
+                      <text wx:if="{{!actionBusy
+                                    && !['REGISTERED', 'READY', 'DRAINING'].includes(node.fleetStatus)}}">当前状态无可用在线操作</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </block>
         <view class="{{'boundaryNote'}}">列表仅允许已验证的指定管理员账户读取；独立证明确认与排空是生产操作， 只接受企业 OIDC 会话的 APPROVER / OPERATOR，结果未知时不自动重试。</view>
       </view>
       <view class="{{'panel'}}" aria-label="作业审计信号">
@@ -478,14 +397,11 @@
       </view>
       <view>列表来自 commercial-api 的租户隔离对账账本。读取需要 VIEWER，RESOLVED / REJECTED 结案需要 APPROVER、稳定处理依据和客户端 Idempotency-Key。</view>
       <view class="{{'inlineActions'}}">
-        <text>
-          <text>案件状态</text>
-          <view aria-label="财务对账状态" value="{{financialStatus}}" disabled="{{financialLoadBusy || Boolean(financialBusyAction)}}" bindchange="onChange">
-            <view value="OPEN">待处理 OPEN</view>
-            <view value="RESOLVED">已解决 RESOLVED</view>
-            <view value="REJECTED">已驳回 REJECTED</view>
-          </view>
-        </text>
+        <text><text>案件状态</text> <view aria-label="财务对账状态" value="{{financialStatus}}" disabled="{{financialLoadBusy || Boolean(financialBusyAction)}}" bindchange="onChange">
+  <view value="OPEN">待处理 OPEN</view>
+  <view value="RESOLVED">已解决 RESOLVED</view>
+  <view value="REJECTED">已驳回 REJECTED</view>
+</view></text>
         <button class="secondary-button" type="button" disabled="{{financialLoadBusy || Boolean(financialBusyAction)}}" bindtap="onTap">
           <Icon name="{{financialLoadBusy ? &quot;refresh&quot; : &quot;search&quot;}}" size="{{17}}" />
           <text>{{financialLoadBusy ? "读取中…" : "读取对账"}}</text>
@@ -498,90 +414,58 @@
       <Empty wx:if="{{!financialLoaded}}" label="{{account.status === &quot;authenticated&quot;
                   ? &quot;选择状态后读取真实对账案件；页面不会使用样例财务数据。&quot;
                   : &quot;请先通过独立管理员入口登录已验证的管理员企业账户。&quot;}}" />
-      <text wx:else>{{financialCases.length === 0 ? (
-                <Empty label={`当前租户没有 ${financialStatus} 对账案件`} />
-              ) : (
-                <div className={styles.tableWrap}>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>案件 / Provider</th>
-                        <th>原因</th>
-                        <th>预期 / 观测</th>
-                        <th>状态</th>
-                        <th>时间</th>
-                        <th>处理依据与决策</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {financialCases.map((item) => {
-                        const canApprove = Boolean(
-                          account.principal?.permissions.includes("admin:approve"),
-                        );
-                        const busy = Boolean(financialBusyAction);
-                        return (
-                          <tr key={item.reconciliationCaseId}>
-                            <td title={item.providerObjectRef}>
-                              <code>{item.reconciliationCaseId}</code>
-                              <small>{item.provider} · {displayTarget(item.providerObjectRef)}</small>
-                            </td>
-                            <td><code>{item.reasonCode}</code></td>
-                            <td>{item.expectedState}<small>观测：{item.observedState}</small></td>
-                            <td>
-                              <span className={item.status === "RESOLVED" ? styles.resultGood : styles.resultBad}>
-                                {item.status}
-                              </span>
-                            </td>
-                            <td>{formatTime(item.openedAt)}<small>{item.resolvedAt ? `结案 ${formatTime(item.resolvedAt)}` : "尚未结案"}</small></td>
-                            <td>
-                              {item.status === "OPEN" ? (
-                                <div className={styles.financeActions}>
-                                  <input
-                                    aria-label={`处理依据 ${item.reconciliationCaseId}`}
-                                    value={financialResolutionRefs[item.reconciliationCaseId] ?? ""}
-                                    onChange={(event) => setFinancialResolutionRefs((current) => ({
-                                      ...current,
-                                      [item.reconciliationCaseId]: event.target.value,
-                                    }))}
-                                    placeholder="bank-statement:2026-08-09/42"
-                                    pattern="[A-Za-z0-9][A-Za-z0-9._:/-]{7,254}"
-                                    minLength={8}
-                                    maxLength={255}
-                                    disabled={!canApprove || busy}
-                                  />
-                                  <div>
-                                    <button
-                                      className="secondary-button"
-                                      type="button"
-                                      disabled={!canApprove || busy}
-                                      onClick={() => void resolveFinancialReconciliation(item, "RESOLVED")}
-                                    >
-                                      {financialBusyAction === `${item.reconciliationCaseId}:RESOLVED`
-                                        ? "提交中…" : "标记已解决"}
-                                    </button>
-                                    <button
-                                      className="secondary-button"
-                                      type="button"
-                                      disabled={!canApprove || busy}
-                                      onClick={() => void resolveFinancialReconciliation(item, "REJECTED")}
-                                    >
-                                      {financialBusyAction === `${item.reconciliationCaseId}:REJECTED`
-                                        ? "提交中…" : "驳回案件"}
-                                    </button>
-                                  </div>
-                                  {!canApprove && <small>结案需要企业账户的 admin:approve。</small>}
-                                </div>
-                              ) : (
-                                <span>{item.resolutionRef ?? "—"}<small>{item.resolverActorId ?? "—"}</small></span>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}}</text>
+      <block wx:else>
+        <Empty wx:if="{{financialCases.length === 0}}" label="{{`当前租户没有 ${financialStatus} 对账案件`}}" />
+        <view wx:else class="{{'tableWrap'}}">
+          <view>
+            <view>
+              <view>
+                <view>案件 / Provider</view>
+                <view>原因</view>
+                <view>预期 / 观测</view>
+                <view>状态</view>
+                <view>时间</view>
+                <view>处理依据与决策</view>
+              </view>
+            </view>
+            <view>
+              <view wx:for="{{financialCases}}" wx:key="item.id" key="{{item.reconciliationCaseId}}">
+                <view title="{{item.providerObjectRef}}">
+                  <code>{{item.reconciliationCaseId}}</code>
+                  <text>{{item.provider}} · {{displayTarget(item.providerObjectRef)}}</text>
+                </view>
+                <view>
+                  <code>{{item.reasonCode}}</code>
+                </view>
+                <view>
+                  <text>{{item.expectedState}}</text>
+                  <text>观测： {{item.observedState}}</text>
+                </view>
+                <view>
+                  <text class="{{item.status === &quot;RESOLVED&quot; ? 'resultGood' : 'resultBad'}}">{{item.status}}</text>
+                </view>
+                <view>
+                  <text>{{formatTime(item.openedAt)}}</text>
+                  <text>{{item.resolvedAt ? `结案 ${formatTime(item.resolvedAt)}` : "尚未结案"}}</text>
+                </view>
+                <view>
+                  <view wx:if="{{item.status === 'OPEN'}}" class="{{'financeActions'}}">
+                    <input aria-label="{{`处理依据 ${item.reconciliationCaseId}`}}" value="{{financialResolutionRefs[item.reconciliationCaseId] ?? &quot;&quot;}}" placeholder="bank-statement:2026-08-09/42" pattern="[A-Za-z0-9][A-Za-z0-9._:/-]{7,254}" minLength="{{8}}" maxLength="{{255}}" disabled="{{!canApprove || busy}}" bindchange="onChange" />
+                    <view>
+                      <button class="secondary-button" type="button" disabled="{{!canApprove || busy}}" bindtap="onTap">{{financialBusyAction === `${item.reconciliationCaseId}:RESOLVED`
+                                        ? "提交中…" : "标记已解决"}}</button>
+                      <button class="secondary-button" type="button" disabled="{{!canApprove || busy}}" bindtap="onTap">{{financialBusyAction === `${item.reconciliationCaseId}:REJECTED`
+                                        ? "提交中…" : "驳回案件"}}</button>
+                    </view>
+                    <text wx:if="{{!canApprove}}">结案需要企业账户的 admin:approve。</text>
+                  </view>
+                  <text wx:else>{{item.resolutionRef ?? "—"}} <text>{{item.resolverActorId ?? "—"}}</text></text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
       <view class="{{'boundaryNote'}}">此页面只闭环已有商业对账案件与追加式结案事件；不代表真实支付、税务、银行结算或会计认证已通过。</view>
     </view>
     <view wx:if="{{(adminSection === 'ALERTS' || adminSection === 'CONFIG')}}" class="{{'actionStrip'}}">
@@ -650,28 +534,15 @@
         </view>
         <view>下限为「已消耗 + 已预留」，低于它的调整会被拒绝——预留是已经对租户作出的承诺。</view>
         <form wx:if="{{can('APPROVER')}}" class="{{'inlineActions'}}" bindsubmit="submitQuotaAdjustment">
-          <text>
-            <text>Token 上限</text>
-            <input value="{{quotaTokenLimit}}" aria-label="调整后的 Token 上限" inputMode="decimal" disabled="{{quotaBusy}}" required="true" bindchange="onChange" />
-          </text>
-          <text>
-            <text>Credit 上限</text>
-            <input value="{{quotaCreditLimit}}" aria-label="调整后的 Credit 上限" inputMode="decimal" disabled="{{quotaBusy}}" required="true" bindchange="onChange" />
-          </text>
-          <text>
-            <text>调整原因代号</text>
-            <input value="{{quotaReason}}" aria-label="调整原因代号" placeholder="PLAN_UPGRADE" pattern="[A-Za-z][A-Za-z0-9_]{2,47}" title="大写字母、数字与下划线组成的代号，例如 PLAN_UPGRADE。原因会写入只读审计流水与导出。" disabled="{{quotaBusy}}" required="true" bindchange="onChange" />
-          </text>
+          <text><text>Token 上限</text> <input value="{{quotaTokenLimit}}" aria-label="调整后的 Token 上限" inputMode="decimal" disabled="{{quotaBusy}}" required="true" bindchange="onChange" /></text>
+          <text><text>Credit 上限</text> <input value="{{quotaCreditLimit}}" aria-label="调整后的 Credit 上限" inputMode="decimal" disabled="{{quotaBusy}}" required="true" bindchange="onChange" /></text>
+          <text><text>调整原因代号</text> <input value="{{quotaReason}}" aria-label="调整原因代号" placeholder="PLAN_UPGRADE" pattern="[A-Za-z][A-Za-z0-9_]{2,47}" title="大写字母、数字与下划线组成的代号，例如 PLAN_UPGRADE。原因会写入只读审计流水与导出。" disabled="{{quotaBusy}}" required="true" bindchange="onChange" /></text>
           <button class="primary-button" type="submit" disabled="{{quotaBusy}}">
             <Icon name="{{quotaBusy ? &quot;refresh&quot; : &quot;check&quot;}}" size="{{17}}" />
             <text>{{quotaBusy ? "提交中…" : "按版本 " + quota.allocationVersion + " 提交调整"}}</text>
           </button>
         </form>
-        <view wx:else>
-          <text>当前角色为</text>
-          <text>{{view.role}}</text>
-          <text>，只能查看配额；调整需要 APPROVER。</text>
-        </view>
+        <view wx:else>当前角色为 {{view.role}} ，只能查看配额；调整需要 APPROVER。</view>
       </view>
     </view>
     <view wx:if="{{adminSection === 'USAGE'}}" class="{{'metrics'}}" aria-label="运营指标">
@@ -747,26 +618,17 @@
       </view>
       <view class="{{'cardGrid'}}">
         <Empty wx:if="{{view.control.alerts.length === 0}}" label="当前没有告警" />
-        <text wx:else>{{view.control.alerts.map((alert) => (
-                <article className={styles.controlCard} key={alert.alertId}>
-                  <div><span className={styles.severity}>{alert.severity}</span><strong>{lineLabels[alert.businessLine] ?? alert.businessLine}</strong></div>
-                  <code>{alert.signal}</code>
-                  <p>{alert.observedValue} / 预算 {alert.thresholdValue} · {alert.status}</p>
-                  {alert.status !== "RESOLVED" && alert.status !== "ACKNOWLEDGED" && (
-                    <button
-                      className="secondary-button"
-                      type="button"
-                      disabled={!can("OPERATOR") || Boolean(busyAction)}
-                      onClick={() => mutate("ACKNOWLEDGE_ALERT", {
-                        alertId: alert.alertId,
-                        expectedVersion: alert.version,
-                      })}
-                    >
-                      确认告警
-                    </button>
-                  )}
-                </article>
-              ))}}</text>
+        <block wx:else>
+          <view wx:for="{{view.control.alerts}}" wx:for-item="alert" wx:key="alert.id" class="{{'controlCard'}}" key="{{alert.alertId}}">
+            <view>
+              <text class="{{'severity'}}">{{alert.severity}}</text>
+              <text>{{lineLabels[alert.businessLine] ?? alert.businessLine}}</text>
+            </view>
+            <code>{{alert.signal}}</code>
+            <view>{{alert.observedValue}} / 预算 {{alert.thresholdValue}} · {{alert.status}}</view>
+            <button wx:if="{{alert.status !== 'RESOLVED' && alert.status !== 'ACKNOWLEDGED'}}" class="secondary-button" type="button" disabled="{{!can(&quot;OPERATOR&quot;) || Boolean(busyAction)}}" bindtap="onTap">确认告警</button>
+          </view>
+        </block>
       </view>
     </view>
     <view wx:if="{{adminSection === 'ALERTS'}}" class="{{'panel'}}">
@@ -779,24 +641,9 @@
       </view>
       <view class="{{'cardGrid'}}">
         <Empty wx:if="{{view.control.incidents.length === 0}}" label="当前没有生产事件" />
-        <text wx:else>{{view.control.incidents.map((incident) => (
-                <IncidentCard
-                  key={incident.incidentId}
-                  incident={incident}
-                  businessLineLabel={lineLabels[incident.businessLine] ?? incident.businessLine}
-                  disabled={!can("OPERATOR") || Boolean(busyAction)}
-                  onAssign={() => mutate("ASSIGN_INCIDENT", {
-                    incidentId: incident.incidentId,
-                    ownerActorId: view.actorId,
-                    expectedVersion: incident.version,
-                  })}
-                  onResolve={() => mutate("RESOLVE_INCIDENT", {
-                    incidentId: incident.incidentId,
-                    resolutionCode: "OPERATOR_VERIFIED_RESOLUTION",
-                    expectedVersion: incident.version,
-                  })}
-                />
-              ))}}</text>
+        <block wx:else>
+          <IncidentCard wx:for="{{view.control.incidents}}" wx:for-item="incident" wx:key="incident.id" key="{{incident.incidentId}}" incident="{{incident}}" businessLineLabel="{{lineLabels[incident.businessLine] ?? incident.businessLine}}" disabled="{{!can(&quot;OPERATOR&quot;) || Boolean(busyAction)}}" bindassign="onAssign" bindresolve="onResolve" />
+        </block>
       </view>
     </view>
     <view wx:if="{{adminSection === 'ALERTS'}}" class="{{'panel'}}">
@@ -809,25 +656,9 @@
       </view>
       <view class="{{'cardGrid'}}">
         <Empty wx:if="{{view.control.remediations.length === 0}}" label="尚无修复提案；先运行 SLO 评估" />
-        <text wx:else>{{view.control.remediations.map((proposal) => (
-                <RemediationCard
-                  key={proposal.proposalId}
-                  proposal={proposal}
-                  disabled={!can("APPROVER") || Boolean(busyAction)}
-                  onApprove={() => mutate("APPROVE_REMEDIATION", {
-                    proposalId: proposal.proposalId,
-                    expectedVersion: proposal.version,
-                  })}
-                  onReject={() => mutate("REJECT_REMEDIATION", {
-                    proposalId: proposal.proposalId,
-                    expectedVersion: proposal.version,
-                  })}
-                  onPrepareScm={() => mutate("PREPARE_SCM", {
-                    proposalId: proposal.proposalId,
-                    expectedVersion: proposal.version,
-                  })}
-                />
-              ))}}</text>
+        <block wx:else>
+          <RemediationCard wx:for="{{view.control.remediations}}" wx:for-item="proposal" wx:key="proposal.id" key="{{proposal.proposalId}}" proposal="{{proposal}}" disabled="{{!can(&quot;APPROVER&quot;) || Boolean(busyAction)}}" bindapprove="onApprove" bindreject="onReject" bindpreparescm="onPreparescm" />
+        </block>
       </view>
     </view>
     <view wx:if="{{adminSection === 'AUDIT'}}" class="{{'panel'}}">

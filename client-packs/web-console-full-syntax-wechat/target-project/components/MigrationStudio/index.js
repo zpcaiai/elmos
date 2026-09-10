@@ -31,7 +31,7 @@ Component({
     query: "",
     statusFilter: "ALL",
     selected: "M36",
-    capabilities: null,
+    capabilities: [],
     source: "REPOSITORY_CONTRACT",
     note: "正在读取能力契约…",
     dialogOpen: false,
@@ -42,7 +42,7 @@ Component({
     dialogReturnFocus: {"current":null},
     dialogPanel: {"current":null},
     draftNameInput: {"current":null},
-    visibleCapabilities: null,
+    visibleCapabilities: [],
   },
   lifetimes: {
     attached() {

@@ -17,27 +17,19 @@
       <text class="nav-label">{{english ? "Product features · user access" : "产品功能 · 用户端"}}</text>
       <navigator wx:for="{{userNavigation}}" wx:key="item.id" class="{{`nav-item ${active ? &quot;active&quot; : &quot;&quot;}`}}" href="{{item.href}}" key="{{item.href}}" aria-current="{{active ? &quot;page&quot; : undefined}}" bindtap="closeSidebar">
         <Icon name="{{item.icon}}" size="{{19}}" />
-        <text>
-          <text>{{navLabel(item)}}</text>
-          <text>{{item.hint}}</text>
-        </text>
+        <text><text>{{navLabel(item)}}</text> <text>{{item.hint}}</text></text>
       </navigator>
       <block wx:if="{{operationsNavigation.length > 0}}">
         <text class="nav-label nav-label-operations">{{english ? "Platform operations · administrator" : "平台运营 · 管理员端"}}</text>
         <navigator wx:for="{{operationsNavigation}}" wx:key="item.id" class="{{`nav-item admin-nav-item ${active ? &quot;active&quot; : &quot;&quot;}`}}" href="{{item.href}}" key="{{item.href}}" aria-current="{{active ? &quot;page&quot; : undefined}}" bindtap="closeSidebar">
           <Icon name="{{item.icon}}" size="{{19}}" />
-          <text>
-            <text>{{navLabel(item)}}</text>
-            <text>{{item.hint}}</text>
-          </text>
+          <text><text>{{navLabel(item)}}</text> <text>{{item.hint}}</text></text>
         </navigator>
       </block>
     </view>
     <view class="sidebar-spacer" />
     <view class="guardrail-card">
-      <text class="guardrail-icon">
-        <Icon name="lock" size="{{17}}" />
-      </text>
+      <text class="guardrail-icon"><Icon name="lock" size="{{17}}" /></text>
       <view>
         <text>Fail closed</text>
         <text>{{english ? "Not run is not passed" : "未运行不等于通过"}}</text>
@@ -76,12 +68,9 @@
             <text wx:if="{{hasAdminAccess}}" class="admin-session-badge">管理员会话</text>
           </view>
           <navigator href="/account" bindtap="closeSidebar">{{english ? "Account and organizations" : "账户与组织"}}</navigator>
-          <text wx:if="{{account.principal.memberships.length > 1}}">
-            <text>{{english ? "Current tenant" : "当前租户"}}</text>
-            <view value="{{account.principal.organizationId}}" bindchange="onChange">
-              <view wx:for="{{account.principal.memberships}}" wx:for-item="membership" wx:key="membership.id" value="{{membership.organizationId}}" key="{{membership.organizationId}}">{{membership.organizationId}}</view>
-            </view>
-          </text>
+          <text wx:if="{{account.principal.memberships.length > 1}}"><text>{{english ? "Current tenant" : "当前租户"}}</text> <view value="{{account.principal.organizationId}}" bindchange="onChange">
+  <view wx:for="{{account.principal.memberships}}" wx:for-item="membership" wx:key="membership.id" value="{{membership.organizationId}}" key="{{membership.organizationId}}">{{membership.organizationId}}</view>
+</view></text>
           <button type="button" bindtap="onTap">{{english ? "Sign out securely" : "安全退出"}}</button>
         </view>
       </block>
@@ -115,10 +104,7 @@
         <kbd>⌘ K</kbd>
       </button>
       <view class="topbar-actions">
-        <text class="environment-pill">
-          <text />
-          <text>{{english ? "Local contract environment" : "本地契约环境"}}</text>
-        </text>
+        <text class="environment-pill"><text /> {{english ? "Local contract environment" : "本地契约环境"}}</text>
         <text class="topbar-divider" />
         <button class="preference-button" type="button" aria-label="{{english ? &quot;Switch navigation and help to Chinese&quot; : &quot;将导航和帮助切换为英文&quot;}}" bindtap="onTap">{{english ? "中" : "EN"}}</button>
         <button class="preference-button" type="button" aria-label="{{preferences.theme === &quot;light&quot; ? (english ? &quot;Use dark theme&quot; : &quot;使用深色主题&quot;) : (english ? &quot;Use light theme&quot; : &quot;使用浅色主题&quot;)}}" bindtap="onTap">{{preferences.theme === "light" ? "☾" : "☀"}}</button>
@@ -159,13 +145,8 @@
       </view>
       <view class="command-results" id="command-results" role="listbox" aria-label="搜索结果">
         <navigator wx:for="{{visibleCommands}}" wx:for-index="index" wx:key="item.id" href="{{item.href}}" role="option" aria-selected="{{index === commandActive}}" id="{{`command-result-${index}`}}" class="{{`command-result ${index === commandActive ? &quot;active&quot; : &quot;&quot;}`}}" key="{{`${item.group}-${item.label}`}}" bindtap="closeCommand" bindmouseenter="onMouseenter">
-          <text class="command-icon">
-            <Icon name="{{item.icon}}" size="{{18}}" />
-          </text>
-          <text>
-            <text>{{item.label}}</text>
-            <text>{{item.hint}}</text>
-          </text>
+          <text class="command-icon"><Icon name="{{item.icon}}" size="{{18}}" /></text>
+          <text><text>{{item.label}}</text> <text>{{item.hint}}</text></text>
           <text>{{item.group}}</text>
           <Icon name="arrow" size="{{15}}" />
         </navigator>
@@ -176,15 +157,8 @@
         </view>
       </view>
       <view class="command-footer">
-        <text>
-          <kbd>↑</kbd>
-          <kbd>↓</kbd>
-          <text>浏览</text>
-        </text>
-        <text>
-          <kbd>↵</kbd>
-          <text>打开</text>
-        </text>
+        <text><kbd>↑</kbd> <kbd>↓</kbd> 浏览</text>
+        <text><kbd>↵</kbd> 打开</text>
         <text>仅导航，不执行外部操作</text>
       </view>
     </view>

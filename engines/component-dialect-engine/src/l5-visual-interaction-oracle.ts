@@ -167,8 +167,7 @@ export class L5VisualInteractionOracle {
         elements.push(box);
       } else if (node.nodeType === "text") {
         const txt = (node.nodeValue || "").trim().replace(/\s+/g, " ");
-        const parentTag = (node.parent?.tagName || "").toLowerCase();
-        if (txt && parentTag !== "text" && node.parent && node.parent.children.some((c) => c.nodeType === "element")) {
+        if (txt && node.parent && node.parent.children.some((c) => c.nodeType === "element")) {
           const rect = node.computedLayout?.rect || { x: 0, y: 0, width: 0, height: 0 };
           const box: LayoutBox = {
             id: `box-${boxIndex++}`,

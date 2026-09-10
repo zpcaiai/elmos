@@ -10,89 +10,65 @@
   </view>
   <view>跨组织视图，需要平台管理员身份，与上方按租户隔离的作业队列是两条通道。 每一行同时给出执行结果和这次执行实际扣了多少钱——回答「客户说被多扣了」 不需要再开第二个页面。</view>
   <view class="{{'inlineActions'}}">
-    <text>
-      <text>执行状态</text>
-      <view aria-label="全平台任务状态" value="{{status}}" disabled="{{busy}}" bindchange="onChange">
-        <view wx:for="{{jobStatuses}}" wx:for-item="[value, label]" wx:key="[value, label].id" key="{{value}}" value="{{value}}">{{label}}</view>
-      </view>
-    </text>
-    <text>
-      <text>限定组织（可空）</text>
-      <input value="{{organization}}" aria-label="限定组织 ID" placeholder="留空则看全平台" pattern="[A-Za-z0-9][A-Za-z0-9._:-]{0,127}" disabled="{{busy}}" bindchange="onChange" />
-    </text>
+    <text><text>执行状态</text> <view aria-label="全平台任务状态" value="{{status}}" disabled="{{busy}}" bindchange="onChange">
+  <view wx:for="{{jobStatuses}}" wx:for-item="[value, label]" wx:key="[value, label].id" key="{{value}}" value="{{value}}">{{label}}</view>
+</view></text>
+    <text><text>限定组织（可空）</text> <input value="{{organization}}" aria-label="限定组织 ID" placeholder="留空则看全平台" pattern="[A-Za-z0-9][A-Za-z0-9._:-]{0,127}" disabled="{{busy}}" bindchange="onChange" /></text>
     <button class="secondary-button" type="button" disabled="{{busy}}" bindtap="onTap">
       <Icon name="{{busy ? &quot;refresh&quot; : &quot;search&quot;}}" size="{{17}}" />
       <text>{{busy ? "读取中…" : "读取任务"}}</text>
     </button>
   </view>
-  <view wx:if="{{denial}}" class="{{'bad'}}" role="alert">
-    <text>被拒绝或读取失败：</text>
-    <text>{{denial}}</text>
-    <text>。跨组织任务视图需要平台管理员身份， 与本组织的运营角色是两回事。</text>
-  </view>
+  <view wx:if="{{denial}}" class="{{'bad'}}" role="alert">被拒绝或读取失败： {{denial}} 。跨组织任务视图需要平台管理员身份， 与本组织的运营角色是两回事。</view>
   <view wx:if="{{!loaded}}" class="{{'empty'}}">
     <Icon name="database" size="{{22}}" />
     <text>点击读取后才会请求；每次读取都会写一条平台管理员审计。</text>
   </view>
-  <text wx:else>{{rows.length === 0 ? (
-        <div className={styles.empty}>
-          <Icon name="database" size={22} />
-          <span>没有匹配的任务。</span>
-        </div>
-      ) : (
-        <div className={styles.tableWrap}>
-          <table>
-            <thead>
-              <tr>
-                <th>组织</th>
-                <th>任务</th>
-                <th>业务线</th>
-                <th>状态</th>
-                <th>失败码</th>
-                <th>时长</th>
-                <th>扣费</th>
-                <th>持有</th>
-                <th>创建</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={`${row.organizationId}:${row.jobId}`}>
-                  <td><code>{row.organizationId}</code></td>
-                  <td title={row.jobId}>
-                    <code>{row.jobId.length > 20 ? `${row.jobId.slice(0, 17)}…` : row.jobId}</code>
-                    <br />
-                    <small>{row.jobKind}</small>
-                  </td>
-                  <td>{row.businessLine}</td>
-                  <td>
-                    <span
-                      className={
-                        row.status === "FAILED" || row.status === "LOST"
-                          ? styles.resultBad
-                          : styles.resultGood
-                      }
-                    >
-                      {row.status}
-                    </span>
-                    {row.resultStatus && <small>{row.resultStatus}</small>}
-                  </td>
-                  <td>{row.failureCode ?? "—"}</td>
-                  <td>{elapsed(row)}</td>
-                  <td>{yuan(row.settledAmountMinor)}</td>
-                  <td>
-                    {/*
-                      空表示这个任务根本没有被冻结过——要么入队时计费开关是关的，
-                      要么订阅配额覆盖了它。与「冻结后又释放了」是两回事：
-                      后者动过钱，前者从头到尾没进过钱包。
-                    */}
-                    {row.holdStatus ?? "未持有"}
-                  </td>
-                  <td>{moment(row.createdAt)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}}</text>
+  <block wx:else>
+    <view wx:if="{{rows.length === 0}}" class="{{'empty'}}">
+      <Icon name="database" size="{{22}}" />
+      <text>没有匹配的任务。</text>
+    </view>
+    <view wx:else class="{{'tableWrap'}}">
+      <view>
+        <view>
+          <view>
+            <view>组织</view>
+            <view>任务</view>
+            <view>业务线</view>
+            <view>状态</view>
+            <view>失败码</view>
+            <view>时长</view>
+            <view>扣费</view>
+            <view>持有</view>
+            <view>创建</view>
+          </view>
+        </view>
+        <view>
+          <view wx:for="{{rows}}" wx:for-item="row" wx:key="row.id" key="{{`${row.organizationId}:${row.jobId}`}}">
+            <view>
+              <code>{{row.organizationId}}</code>
+            </view>
+            <view title="{{row.jobId}}">
+              <code>{{row.jobId.length > 20 ? `${row.jobId.slice(0, 17)}…` : row.jobId}}</code>
+              <br />
+              <text>{{row.jobKind}}</text>
+            </view>
+            <view>{{row.businessLine}}</view>
+            <view>
+              <text class="{{row.status === &quot;FAILED&quot; || row.status === &quot;LOST&quot;
+                          ? 'resultBad'
+                          : 'resultGood'}}">{{row.status}}</text>
+              <text wx:if="{{row.resultStatus}}">{{row.resultStatus}}</text>
+            </view>
+            <view>{{row.failureCode ?? "—"}}</view>
+            <view>{{elapsed(row)}}</view>
+            <view>{{yuan(row.settledAmountMinor)}}</view>
+            <view>{{row.holdStatus ?? "未持有"}}</view>
+            <view>{{moment(row.createdAt)}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
 </view>

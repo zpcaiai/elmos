@@ -116,12 +116,12 @@ public sealed class RegulatoryReportingEngine
         RegulatoryReportingRegime regime
     )
     {
-        string uti = GenerateUti(trade.TradeId, trade.TradeDate);
+        string uti = GenerateUti(trade.TradeId, trade.ExecutedAt);
 
         return new RegulatoryTradeRecord(
             UniqueTradeIdentifier: uti,
             ReportingCounterpartyLei: _ccpLei, // CCP reports as central party
-            OtherCounterpartyLei: buyer.LeiCode,
+            OtherCounterpartyLei: buyer.LegalEntityIdentifier,
             CcpLei: _ccpLei,
             InstrumentId: trade.SecurityId,
             NotionalAmount: trade.GrossSettlementAmount.ToDecimal(),
@@ -129,7 +129,7 @@ public sealed class RegulatoryReportingEngine
             Price: trade.PricePerUnit.ToDecimal(),
             Quantity: trade.Quantity,
             ActionType: action,
-            ExecutionTimestampUtc: trade.TradeDate,
+            ExecutionTimestampUtc: trade.ExecutedAt,
             ReportingTimestampUtc: DateTime.UtcNow,
             Regime: regime
         );

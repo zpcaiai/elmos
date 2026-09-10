@@ -531,3 +531,548 @@ class ScenarioExecutionReport:
     @property
     def has_zero_tolerance_violations(self) -> bool:
         return any(v > 0 for v in self.zero_tolerance_counters.values())
+
+
+# ─── Incident Command & On-Call Models ───────────────────────────────
+
+class IncidentSeverity(str, Enum):
+    """Incident severity levels per SRE classification."""
+    SEV1 = "sev1"  # Critical: complete service outage
+    SEV2 = "sev2"  # Major: significant degradation
+    SEV3 = "sev3"  # Minor: limited impact
+    SEV4 = "sev4"  # Low: cosmetic or informational
+
+class IncidentStatus(str, Enum):
+    """Lifecycle states of an incident."""
+    DECLARED = "declared"
+    TRIAGING = "triaging"
+    MITIGATING = "mitigating"
+    RESOLVED = "resolved"
+    POST_MORTEM = "post_mortem"
+    CLOSED = "closed"
+
+class EscalationTier(str, Enum):
+    """On-call escalation tiers."""
+    TIER_1 = "tier_1"  # First responder
+    TIER_2 = "tier_2"  # Senior engineer
+    TIER_3 = "tier_3"  # Domain expert / architect
+    MANAGEMENT = "management"  # VP/Director escalation
+
+class OnCallShift(str, Enum):
+    """Follow-the-sun rotation shifts."""
+    APAC = "apac"      # UTC+8 to UTC+12
+    EMEA = "emea"      # UTC+0 to UTC+3  
+    AMERICAS = "americas"  # UTC-8 to UTC-5
+
+@dataclass
+class OnCallEngineer:
+    """An engineer in the on-call rotation."""
+    engineer_id: str
+    name: str
+    email: str
+    tier: EscalationTier
+    shift: OnCallShift
+    is_available: bool = True
+    max_concurrent_incidents: int = 3
+    current_incident_count: int = 0
+
+@dataclass
+class IncidentRecord:
+    """A tracked incident record with full lifecycle."""
+    incident_id: str
+    title: str
+    severity: IncidentSeverity
+    status: IncidentStatus
+    declared_at: str
+    declaring_user: str
+    tenant_id: str
+    affected_regions: List[RegionId] = field(default_factory=list)
+    assigned_commander: Optional[str] = None
+    assigned_responders: List[str] = field(default_factory=list)
+    status_updates: List[Dict[str, str]] = field(default_factory=list)
+    mitigation_actions: List[str] = field(default_factory=list)
+    resolved_at: Optional[str] = None
+    root_cause: Optional[str] = None
+    post_mortem_url: Optional[str] = None
+    customer_communication_sent: bool = False
+    sla_breach: bool = False
+    error_budget_impact_percent: float = 0.0
+    escalation_log: List[Dict[str, str]] = field(default_factory=list)
+
+@dataclass
+class StatusPageUpdate:
+    """A customer-facing status page update."""
+    update_id: str
+    incident_id: str
+    timestamp: str
+    component: str
+    status: str  # operational, degraded_performance, partial_outage, major_outage
+    message: str
+    is_public: bool = True
+
+@dataclass
+class ServiceCatalogEntry:
+    """A service in the platform service catalog with SLI/SLO definitions."""
+    service_id: str
+    name: str
+    owner_team: str
+    tier: str  # critical, standard, best-effort
+    slo_ids: List[str] = field(default_factory=list)
+    dependencies: List[str] = field(default_factory=list)
+    regions: List[RegionId] = field(default_factory=list)
+    health_check_url: str = ""
+    runbook_url: str = ""
+
+@dataclass
+class ChangeFreeze:
+    """A change freeze window."""
+    freeze_id: str
+    reason: str
+    started_at: str
+    ends_at: str
+    scope: str  # global, region, service
+    approved_by: str
+    exceptions: List[str] = field(default_factory=list)  # service_ids exempt
+    is_active: bool = True
+
+@dataclass
+class CapacityPlan:
+    """Autoscaling capacity plan for a service."""
+    plan_id: str
+    service_id: str
+    region: RegionId
+    min_replicas: int
+    max_replicas: int
+    current_replicas: int
+    target_cpu_percent: float = 70.0
+    target_memory_percent: float = 80.0
+    scale_up_cooldown_seconds: int = 300
+    scale_down_cooldown_seconds: int = 600
+    last_scale_event: Optional[str] = None
+
+
+# ─── Supply Chain Security Models ────────────────────────────────────
+
+class ScanType(str, Enum):
+    """Types of security scans."""
+    SAST = "sast"  # Static Application Security Testing
+    DAST = "dast"  # Dynamic Application Security Testing  
+    SCA = "sca"    # Software Composition Analysis
+    CONTAINER = "container"  # Container image scanning
+    IAC = "iac"    # Infrastructure as Code scanning
+    SECRET = "secret"  # Secret detection (already exists partially)
+
+class ScanStatus(str, Enum):
+    """Status of a security scan."""
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+class VexJustification(str, Enum):
+    """VEX justification for not-affected status."""
+    COMPONENT_NOT_PRESENT = "component_not_present"
+    VULNERABLE_CODE_NOT_PRESENT = "vulnerable_code_not_present"
+    VULNERABLE_CODE_NOT_IN_EXECUTE_PATH = "vulnerable_code_not_in_execute_path"
+    VULNERABLE_CODE_CANNOT_BE_CONTROLLED_BY_ADVERSARY = "vulnerable_code_cannot_be_controlled_by_adversary"
+    INLINE_MITIGATIONS_EXIST = "inline_mitigations_exist"
+
+class ArtifactType(str, Enum):
+    """Types of build artifacts."""
+    CONTAINER_IMAGE = "container_image"
+    BINARY = "binary"
+    LIBRARY = "library"
+    HELM_CHART = "helm_chart"
+    TERRAFORM_MODULE = "terraform_module"
+
+@dataclass
+class ScanResult:
+    """Result of a single security scan."""
+    scan_id: str
+    scan_type: ScanType
+    target: str  # file path, image ref, or URL
+    status: ScanStatus
+    started_at: str
+    completed_at: Optional[str] = None
+    findings_count: int = 0
+    critical_count: int = 0
+    high_count: int = 0
+    medium_count: int = 0
+    low_count: int = 0
+    findings: List[Dict[str, Any]] = field(default_factory=list)
+    tool_name: str = ""
+    tool_version: str = ""
+
+@dataclass  
+class SlsaProvenance:
+    """SLSA provenance attestation for a build artifact."""
+    artifact_id: str
+    artifact_type: ArtifactType
+    sha256_digest: str
+    builder_id: str
+    build_type: str
+    source_repo: str
+    source_commit: str
+    source_branch: str
+    build_timestamp: str
+    slsa_level: int  # 1-4
+    reproducible: bool = False
+    hermetic: bool = False
+    entry_point: str = ""
+    parameters: Dict[str, str] = field(default_factory=dict)
+    materials: List[Dict[str, str]] = field(default_factory=list)
+    signature: str = ""
+
+@dataclass
+class ArtifactSignature:
+    """Cryptographic signature for a build artifact."""
+    artifact_id: str
+    sha256_digest: str
+    signature_b64: str
+    signer_identity: str
+    signing_key_id: str
+    signing_timestamp: str
+    certificate_chain: List[str] = field(default_factory=list)
+    verified: bool = False
+
+@dataclass
+class ThreatModelEntry:
+    """An entry in a threat model."""
+    threat_id: str
+    category: str  # STRIDE: Spoofing, Tampering, Repudiation, Info Disclosure, DoS, EoP
+    title: str
+    description: str
+    attack_vector: str
+    severity: SeverityLevel
+    mitigations: List[str] = field(default_factory=list)
+    residual_risk: str = "low"
+    review_status: str = "open"  # open, mitigated, accepted, transferred
+
+@dataclass
+class VexStatement:
+    """Vulnerability Exploitability eXchange statement."""
+    vex_id: str
+    cve_id: str
+    product_id: str
+    status: str  # not_affected, affected, fixed, under_investigation
+    justification: Optional[VexJustification] = None
+    impact_statement: str = ""
+    action_statement: str = ""
+    timestamp: str = ""
+
+@dataclass
+class ComplianceControlMapping:
+    """Mapping of compliance controls to evidence."""
+    control_id: str
+    framework: str  # SOC2, ISO27001, NIST-CSF, etc.
+    control_name: str
+    evidence_refs: List[str] = field(default_factory=list)
+    status: str = "not_assessed"  # not_assessed, compliant, non_compliant, partially_compliant
+    last_assessed: Optional[str] = None
+    assessor: str = ""
+    notes: str = ""
+
+# ─── Knowledge Flywheel Models ─────────────────────────────────────
+
+class KnowledgeConfidence(str, Enum):
+    """Confidence level for knowledge entries."""
+    VERIFIED = "verified"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    UNVERIFIED = "unverified"
+
+@dataclass
+class KnowledgeEntry:
+    """A single entry in the migration knowledge graph."""
+    entry_id: str
+    category: str  # pattern, anti-pattern, recipe, decision, risk
+    source_technology: str
+    target_technology: str
+    title: str
+    description: str
+    confidence: KnowledgeConfidence
+    evidence_refs: List[str] = field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
+    created_at: str = ""
+    updated_at: str = ""
+    usage_count: int = 0
+    success_rate: float = 0.0
+    tenant_id: Optional[str] = None  # None = shared, else tenant-isolated
+
+@dataclass
+class MigrationPattern:
+    """A reusable migration pattern extracted from successful migrations."""
+    pattern_id: str
+    name: str
+    source_stack: str
+    target_stack: str
+    complexity: str  # low, medium, high, critical
+    estimated_effort_hours: float
+    success_count: int = 0
+    failure_count: int = 0
+    recipe_ids: List[str] = field(default_factory=list)
+    prerequisites: List[str] = field(default_factory=list)
+
+@dataclass
+class PredictionResult:
+    """Result of a migration prediction (risk, effort, duration)."""
+    prediction_id: str
+    prediction_type: str  # risk, effort, duration, success_probability
+    predicted_value: float
+    confidence_interval_low: float
+    confidence_interval_high: float
+    model_version: str
+    features_used: List[str] = field(default_factory=list)
+    calibration_score: float = 0.0  # 0-1, how well-calibrated the model is
+
+# ─── Product Lifecycle Models ─────────────────────────────────────
+
+class ApiChangeType(str, Enum):
+    """Types of API changes."""
+    ADDITION = "addition"
+    DEPRECATION = "deprecation"
+    BREAKING = "breaking"
+    REMOVAL = "removal"
+    MODIFICATION = "modification"
+
+class ReleaseChannel(str, Enum):
+    """Release channels for product versions."""
+    NIGHTLY = "nightly"
+    BETA = "beta"
+    RC = "rc"  # Release Candidate
+    STABLE = "stable"
+    LTS = "lts"  # Long Term Support
+
+class SupportStatus(str, Enum):
+    """Support lifecycle status."""
+    ACTIVE = "active"
+    MAINTENANCE = "maintenance"
+    SECURITY_ONLY = "security_only"
+    END_OF_LIFE = "end_of_life"
+
+@dataclass
+class ApiCompatibilityCheck:
+    """Result of an API compatibility check between versions."""
+    check_id: str
+    api_surface: str  # REST, gRPC, SDK, event-schema, PSP, UIR
+    from_version: str
+    to_version: str
+    changes: List[Dict[str, Any]] = field(default_factory=list)  # {type, path, detail}
+    breaking_changes_count: int = 0
+    backward_compatible: bool = True
+    forward_compatible: bool = False
+
+@dataclass
+class DeprecationRecord:
+    """Tracks a deprecation notice."""
+    deprecation_id: str
+    feature: str
+    deprecated_in: str  # version
+    removal_target: str  # version
+    migration_guide: str
+    replacement: Optional[str] = None
+    affected_customers: int = 0
+    customer_ack_count: int = 0
+
+@dataclass
+class ReleaseCandidate:
+    """A release candidate with quality gates."""
+    rc_id: str
+    version: str
+    channel: ReleaseChannel
+    build_sha: str
+    gates_passed: Dict[str, bool] = field(default_factory=dict)
+    # gates: unit_tests, integration_tests, security_scan, performance_baseline, api_compat, ...
+    overall_status: str = "pending"  # pending, approved, rejected, released
+    created_at: str = ""
+    approved_by: Optional[str] = None
+
+@dataclass
+class SupportPolicy:
+    """Support policy for a version."""
+    version: str
+    channel: ReleaseChannel
+    status: SupportStatus
+    release_date: str
+    active_support_end: str
+    security_support_end: str
+    eol_date: str
+    lts_extended: bool = False
+
+
+# ─── Edition Deployment Models ──────────────────────────────────────
+
+class EditionType(str, Enum):
+    """Platform edition deployment types."""
+    MULTITENANT_SAAS = "multitenant_saas"
+    DEDICATED_SAAS = "dedicated_saas"
+    CUSTOMER_VPC = "customer_vpc"
+    SELF_HOSTED = "self_hosted"
+    PRIVATE_SOVEREIGN = "private_sovereign"
+    AIR_GAPPED = "air_gapped"
+    EDGE_RESTRICTED = "edge_restricted"
+    MULTIREGION_ACTIVE = "multiregion_active"
+
+class UpgradePhase(str, Enum):
+    """Phases of an upgrade lifecycle."""
+    PRE_CHECK = "pre_check"
+    BACKUP = "backup"
+    EXPAND = "expand"
+    MIGRATE = "migrate"
+    VERIFY = "verify"
+    CONTRACT = "contract"
+    ROLLBACK = "rollback"
+    COMPLETE = "complete"
+
+class PlaneType(str, Enum):
+    """Control/data plane topology."""
+    CONTROL_PLANE = "control_plane"
+    DATA_PLANE = "data_plane"
+    MANAGEMENT_PLANE = "management_plane"
+    OBSERVABILITY_PLANE = "observability_plane"
+
+@dataclass
+class EditionDeployment:
+    """A deployed edition instance."""
+    deployment_id: str
+    edition_type: EditionType
+    tenant_id: str
+    region: RegionId
+    version: str
+    previous_version: Optional[str] = None
+    planes: List[PlaneType] = field(default_factory=lambda: [PlaneType.CONTROL_PLANE, PlaneType.DATA_PLANE])
+    is_active: bool = True
+    upgrade_strategy: UpgradeStrategy = UpgradeStrategy.ROLLING_UPDATE
+    network_isolated: bool = False  # True for air-gapped
+    data_residency_region: Optional[str] = None  # For sovereign
+    max_tenants: int = 1  # >1 for multitenant
+    resource_limits: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class UpgradeExecution:
+    """Tracks execution of a version upgrade."""
+    upgrade_id: str
+    deployment_id: str
+    from_version: str
+    to_version: str
+    strategy: UpgradeStrategy
+    phase: UpgradePhase = UpgradePhase.PRE_CHECK
+    started_at: str = ""
+    completed_at: Optional[str] = None
+    backup_id: Optional[str] = None
+    rollback_available: bool = True
+    pre_check_passed: bool = False
+    verify_passed: bool = False
+    migration_log: List[str] = field(default_factory=list)
+    error: Optional[str] = None
+
+@dataclass
+class VersionCompatibility:
+    """Version compatibility matrix entry."""
+    source_version: str
+    target_version: str
+    compatible: bool
+    requires_migration: bool = False
+    breaking_changes: List[str] = field(default_factory=list)
+    deprecated_features: List[str] = field(default_factory=list)
+    minimum_runner_version: Optional[str] = None
+
+@dataclass 
+class PlaneTopology:
+    """Plane topology for an edition."""
+    topology_id: str
+    deployment_id: str
+    planes: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    # planes maps plane_type -> {region, replicas, version, health}
+    cross_plane_connectivity: List[Tuple[str, str]] = field(default_factory=list)
+    last_health_check: Optional[str] = None
+
+
+# ─── Maturity Certification Models ──────────────────────────────────
+
+class MaturityDimension(str, Enum):
+    """Dimensions of product maturity assessment."""
+    FUNCTIONAL_DEPTH = "functional_depth"
+    SEMANTIC_BEHAVIOR = "semantic_behavior"
+    ROUTE_BREADTH = "route_breadth"
+    SCALE_PERFORMANCE = "scale_performance"
+    SECURITY_DATA = "security_data"
+    SRE_RELIABILITY = "sre_reliability"
+    DEVELOPER_EXPERIENCE = "developer_experience"
+    ECONOMICS_PROFITABILITY = "economics_profitability"
+    DEPLOYMENT_MATRIX = "deployment_matrix"
+    ECOSYSTEM_MARKETPLACE = "ecosystem_marketplace"
+    TARGET_MAINTAINABILITY = "target_maintainability"
+    CUSTOMER_VALUE = "customer_value"
+
+class MaturityLevel(str, Enum):
+    """Maturity levels."""
+    L0_ABSENT = "l0_absent"
+    L1_INITIAL = "l1_initial"
+    L2_DEVELOPING = "l2_developing"
+    L3_DEFINED = "l3_defined"
+    L4_MEASURED = "l4_measured"
+    L5_OPTIMIZING = "l5_optimizing"
+
+class CertificationDecision(str, Enum):
+    """Certification gate decisions."""
+    NOT_STARTED = "not_started"
+    IN_PROGRESS = "in_progress"
+    BLOCKED = "blocked"
+    CONDITIONALLY_APPROVED = "conditionally_approved"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+@dataclass
+class DimensionAssessment:
+    """Assessment of a single maturity dimension."""
+    dimension: MaturityDimension
+    level: MaturityLevel
+    score: float  # 0.0 - 100.0
+    evidence_count: int = 0
+    passing_tests: int = 0
+    total_tests: int = 0
+    gaps: List[str] = field(default_factory=list)
+    blockers: List[str] = field(default_factory=list)
+    notes: str = ""
+
+@dataclass
+class ResidualRisk:
+    """A residual risk that cannot be fully mitigated."""
+    risk_id: str
+    dimension: MaturityDimension
+    title: str
+    description: str
+    severity: SeverityLevel
+    probability: str  # low, medium, high
+    impact: str  # low, medium, high, critical
+    mitigation: str
+    accepted_by: Optional[str] = None
+    accepted_at: Optional[str] = None
+    expiry_date: Optional[str] = None  # Risk acceptance expires
+
+@dataclass
+class MaturityReport:
+    """Complete maturity assessment report."""
+    report_id: str
+    product_version: str
+    assessment_date: str
+    assessor: str
+    dimensions: List[DimensionAssessment] = field(default_factory=list)
+    overall_score: float = 0.0
+    overall_level: MaturityLevel = MaturityLevel.L0_ABSENT
+    residual_risks: List[ResidualRisk] = field(default_factory=list)
+    certification_decision: CertificationDecision = CertificationDecision.NOT_STARTED
+    blocking_dimensions: List[MaturityDimension] = field(default_factory=list)
+    gate_results: Dict[str, bool] = field(default_factory=dict)
+
+@dataclass
+class ProductionReadinessChecklist:
+    """Production readiness review checklist."""
+    checklist_id: str
+    service_name: str
+    items: Dict[str, bool] = field(default_factory=dict)
+    reviewed_by: Optional[str] = None
+    review_date: Optional[str] = None
+    overall_ready: bool = False

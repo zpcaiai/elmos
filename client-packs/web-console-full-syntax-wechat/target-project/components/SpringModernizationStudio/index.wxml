@@ -49,152 +49,64 @@
         <StatusChip status="{{run ? run.status : &quot;DRAFT&quot;}}" compact="true" />
       </view>
       <view class="business-form-grid">
-        <text>
-          <text>租户标识</text>
-          <input aria-label="Spring 租户标识" value="{{tenantId}}" readOnly="{{accountRunner}}" autoComplete="off" bindchange="onChange" />
-        </text>
-        <text>
-          <text>执行者标识</text>
-          <input aria-label="Spring 执行者标识" value="{{actorId}}" readOnly="{{accountRunner}}" autoComplete="off" bindchange="onChange" />
-        </text>
+        <text><text>租户标识</text> <input aria-label="Spring 租户标识" value="{{tenantId}}" readOnly="{{accountRunner}}" autoComplete="off" bindchange="onChange" /></text>
+        <text><text>执行者标识</text> <input aria-label="Spring 执行者标识" value="{{actorId}}" readOnly="{{accountRunner}}" autoComplete="off" bindchange="onChange" /></text>
         <view wx:if="{{accountRunner}}" class="locked-target spring-field-wide">
           <text>账户授权</text>
           <text>企业 OIDC · spring:execute</text>
           <text>租户和执行者来自已验证声明。</text>
         </view>
-        <text wx:else class="spring-field-wide">
-          <text>Spring 代理短期令牌</text>
-          <input aria-label="Spring 代理短期令牌" type="password" value="{{proxyToken}}" autoComplete="off" bindchange="onChange" />
-          <text>仅限本地开发；令牌最多 24 小时，并与唯一租户和 Actor 绑定。</text>
-        </text>
-        <text>
-          <text>输入方式</text>
-          <view value="{{sourceMode}}" bindchange="onChange">
-            <view value="PUBLIC_GIT">公开 HTTPS Git</view>
-            <view value="GITHUB_APP">GitHub App 私有仓库</view>
-            <view value="REPOSITORY_WORKSPACE">ELMOS 受控仓库工作区</view>
-            <view value="MATERIALIZED_SNAPSHOT">受控 Snapshot Workspace</view>
-          </view>
-        </text>
+        <text wx:else class="spring-field-wide"><text>Spring 代理短期令牌</text> <input aria-label="Spring 代理短期令牌" type="password" value="{{proxyToken}}" autoComplete="off" bindchange="onChange" /> <text>仅限本地开发；令牌最多 24 小时，并与唯一租户和 Actor 绑定。</text></text>
+        <text><text>输入方式</text> <view value="{{sourceMode}}" bindchange="onChange">
+  <view value="PUBLIC_GIT">公开 HTTPS Git</view>
+  <view value="GITHUB_APP">GitHub App 私有仓库</view>
+  <view value="REPOSITORY_WORKSPACE">ELMOS 受控仓库工作区</view>
+  <view value="MATERIALIZED_SNAPSHOT">受控 Snapshot Workspace</view>
+</view></text>
         <block wx:if="{{sourceMode === 'PUBLIC_GIT'}}">
-          <text class="spring-field-wide">
-            <text>Git 仓库 URL</text>
-            <input required="true" type="url" value="{{repositoryUrl}}" placeholder="https://github.com/org/repo.git" bindchange="onChange" />
-          </text>
-          <text>
-            <text>Branch / Tag</text>
-            <input required="true" value="{{requestedRef}}" placeholder="main 或 refs/tags/v1.0.0" bindchange="onChange" />
-          </text>
-          <text>
-            <text>预期 Commit（可选）</text>
-            <input value="{{expectedCommitSha}}" pattern="[0-9a-f]{40}" placeholder="40 位 SHA；填写后必须完全匹配" bindchange="onChange" />
-          </text>
+          <text class="spring-field-wide"><text>Git 仓库 URL</text> <input required="true" type="url" value="{{repositoryUrl}}" placeholder="https://github.com/org/repo.git" bindchange="onChange" /></text>
+          <text><text>Branch / Tag</text> <input required="true" value="{{requestedRef}}" placeholder="main 或 refs/tags/v1.0.0" bindchange="onChange" /></text>
+          <text><text>预期 Commit（可选）</text> <input value="{{expectedCommitSha}}" pattern="[0-9a-f]{40}" placeholder="40 位 SHA；填写后必须完全匹配" bindchange="onChange" /></text>
         </block>
-        <text wx:else>{{sourceMode === "GITHUB_APP" ? (
-              <>
-                <label className="spring-field-wide">
-                  <span>已授权 GitHub 仓库</span>
-                  <select
-                    required
-                    value={githubRepositoryId}
-                    onChange={(event) => {
-                      const repositoryId = event.target.value;
-                      setGithubRepositoryId(repositoryId);
-                      const selected = githubRepositories.find(
-                        (repository) => repository.repositoryId === repositoryId,
-                      );
-                      if (selected) setRequestedRef(selected.defaultBranch);
-                    }}
-                    disabled={githubCatalogStatus !== "READY"}
-                  >
-                    {githubRepositories.length === 0
-                      ? <option value="">没有可用的已授权仓库</option>
-                      : githubRepositories.map((repository) => (
-                          <option
-                            key={repository.repositoryId}
-                            value={repository.repositoryId}
-                          >
-                            {repository.fullName} · {repository.visibility}
-                          </option>
-                        ))}
-                  </select>
-                </label>
-                <label>
-                  <span>Branch / Tag</span>
-                  <input
-                    required
-                    value={requestedRef}
-                    onChange={(event) => setRequestedRef(event.target.value)}
-                    placeholder="main 或 refs/tags/v1.0.0"
-                  />
-                </label>
-                <div className="locked-target">
-                  <span>GitHub App 状态</span>
-                  <strong>{githubCatalogStatus}</strong>
-                  <small>
-                    仅使用仓库级、最长 1 小时的短期 Token；Token 不进入
-                    Transformer、日志或 Snapshot。
-                  </small>
-                </div>
-                <div className="business-actions spring-field-wide">
-                  <button
-                    className="button button-secondary"
-                    type="button"
-                    disabled={busy}
-                    onClick={connectGithubApp}
-                  >
-                    <Icon name="repository" size={16} />
-                    安装 / 更新 GitHub App
-                  </button>
-                  <button
-                    className="button button-ghost"
-                    type="button"
-                    disabled={busy}
-                    onClick={() => refreshGithubCatalog()
-                      .then(() => notify("已刷新授权仓库"))
-                      .catch((error: Error) => notify(error.message, "error"))}
-                  >
-                    刷新授权仓库
-                  </button>
-                </div>
-              </>
-            ) : sourceMode === "REPOSITORY_WORKSPACE" ? (
-              <>
-                <label className="spring-field-wide">
-                  <span>仓库工作区 UUID</span>
-                  <input required value={repositoryWorkspaceId}
-                    onChange={(event) => setRepositoryWorkspaceId(event.target.value.toLowerCase())}
-                    pattern="[0-9a-f-]{36}" placeholder="从代码仓库工作区交接" />
-                </label>
-                <label>
-                  <span>Branch / Tag</span>
-                  <input required value={requestedRef}
-                    onChange={(event) => setRequestedRef(event.target.value)}
-                    placeholder="main" />
-                </label>
-                <label>
-                  <span>精确 HEAD Commit</span>
-                  <input required value={expectedCommitSha}
-                    onChange={(event) => setExpectedCommitSha(event.target.value.toLowerCase())}
-                    pattern="[0-9a-f]{40}" placeholder="必须与工作区当前 HEAD 完全一致" />
-                </label>
-              </>
-            ) : (
-              <>
-                <label><span>Snapshot ID</span><input required value={snapshotId} onChange={(event) => setSnapshotId(event.target.value)} /></label>
-                <label><span>Workspace 相对路径</span><input required value={materializedRelativePath} onChange={(event) => setMaterializedRelativePath(event.target.value)} placeholder="snapshots/..." /></label>
-                <label className="spring-field-wide"><span>绑定 Commit</span><input required value={expectedCommitSha} onChange={(event) => setExpectedCommitSha(event.target.value.toLowerCase())} pattern="[0-9a-f]{40}" placeholder="必须为 40 位 SHA" /></label>
-              </>
-            )}}</text>
+        <block wx:else>
+          <block wx:if="{{sourceMode === 'GITHUB_APP'}}">
+            <text class="spring-field-wide"><text>已授权 GitHub 仓库</text> <view required="true" value="{{githubRepositoryId}}" disabled="{{githubCatalogStatus !== &quot;READY&quot;}}" bindchange="onChange">
+  <view wx:if="{{githubRepositories.length === 0}}" value="">没有可用的已授权仓库</view>
+  <block wx:else>
+    <view wx:for="{{githubRepositories}}" wx:for-item="repository" wx:key="repository.id" key="{{repository.repositoryId}}" value="{{repository.repositoryId}}">{{repository.fullName}} · {{repository.visibility}}</view>
+  </block>
+</view></text>
+            <text><text>Branch / Tag</text> <input required="true" value="{{requestedRef}}" placeholder="main 或 refs/tags/v1.0.0" bindchange="onChange" /></text>
+            <view class="locked-target">
+              <text>GitHub App 状态</text>
+              <text>{{githubCatalogStatus}}</text>
+              <text>仅使用仓库级、最长 1 小时的短期 Token；Token 不进入 Transformer、日志或 Snapshot。</text>
+            </view>
+            <view class="business-actions spring-field-wide">
+              <button class="button button-secondary" type="button" disabled="{{busy}}" bindtap="connectGithubApp">
+                <Icon name="repository" size="{{16}}" />
+                <text>安装 / 更新 GitHub App</text>
+              </button>
+              <button class="button button-ghost" type="button" disabled="{{busy}}" bindtap="onTap">刷新授权仓库</button>
+            </view>
+          </block>
+          <block wx:else>
+            <block wx:if="{{sourceMode === 'REPOSITORY_WORKSPACE'}}">
+              <text class="spring-field-wide"><text>仓库工作区 UUID</text> <input required="true" value="{{repositoryWorkspaceId}}" pattern="[0-9a-f-]{36}" placeholder="从代码仓库工作区交接" bindchange="onChange" /></text>
+              <text><text>Branch / Tag</text> <input required="true" value="{{requestedRef}}" placeholder="main" bindchange="onChange" /></text>
+              <text><text>精确 HEAD Commit</text> <input required="true" value="{{expectedCommitSha}}" pattern="[0-9a-f]{40}" placeholder="必须与工作区当前 HEAD 完全一致" bindchange="onChange" /></text>
+            </block>
+            <block wx:else>
+              <text><text>Snapshot ID</text> <input required="true" value="{{snapshotId}}" bindchange="onChange" /></text>
+              <text><text>Workspace 相对路径</text> <input required="true" value="{{materializedRelativePath}}" placeholder="snapshots/..." bindchange="onChange" /></text>
+              <text class="spring-field-wide"><text>绑定 Commit</text> <input required="true" value="{{expectedCommitSha}}" pattern="[0-9a-f]{40}" placeholder="必须为 40 位 SHA" bindchange="onChange" /></text>
+            </block>
+          </block>
+        </block>
         <view class="locked-target spring-field-wide">
           <text>目标精确版本</text>
           <view aria-label="Spring 目标精确版本" value="{{`${targetSpringBoot}|${targetJava}`}}" disabled="{{!capability || targetOptions.length === 0 || migrationActive}}" bindchange="onChange">
-            <view wx:for="{{displayedTargetOptions}}" wx:for-item="target" wx:key="target.id" key="{{`${target.springBoot}|${target.java}`}}" value="{{`${target.springBoot}|${target.java}`}}" disabled="{{!selectableTargetKeys.has(`${target.springBoot}|${target.java}`)}}">
-              <text>Spring Boot</text>
-              <text>{{target.springBoot}}</text>
-              <text>· Java</text>
-              <text>{{target.java}}</text>
-            </view>
+            <view wx:for="{{displayedTargetOptions}}" wx:for-item="target" wx:key="target.id" key="{{`${target.springBoot}|${target.java}`}}" value="{{`${target.springBoot}|${target.java}`}}" disabled="{{!selectableTargetKeys.has(`${target.springBoot}|${target.java}`)}}">Spring Boot {{target.springBoot}} · Java {{target.java}}</view>
           </view>
           <text>{{lockedRouteLabel}}</text>
           <text>源版本、JDK、构建工具和 Spring Boot / MVC family 会在 FINGERPRINT 后与该目标精确匹配。</text>
@@ -208,20 +120,8 @@
                   : "Engine 能力契约尚未读取；在读取到精确版本元组之前，页面不展示任何具体版本号。"}}</text>
         </view>
       </view>
-      <text class="spring-start-toggle">
-        <input type="checkbox" checked="{{startAfterVerification}}" disabled="{{!runtimeReady}}" bindchange="onChange" />
-        <text>
-          <text>验证通过后自动一键启动</text>
-          <text>{{runtimeReady ? "独立验证 PASS 后，在每次运行专属的 Rootless 容器中执行。" : capability?.runtimeRunnerReason ?? "独立 Runtime Runner 尚未配置。"}}</text>
-        </text>
-      </text>
-      <text class="spring-start-toggle">
-        <input type="checkbox" checked="{{allowExperimentalRoutes}}" disabled="{{capability?.operatorExperimentalRoutesEnabled !== true}}" bindchange="onChange" />
-        <text>
-          <text>允许实验性升级路线</text>
-          <text>{{capability?.operatorExperimentalRoutesEnabled === true ? "需要本次请求再次明确选择；实验路线不属于首发正式承诺。" : "运营方未启用实验路线；首发仅开放目录内唯一 DESIGN_PARTNER 路线。"}}</text>
-        </text>
-      </text>
+      <text class="spring-start-toggle"><input type="checkbox" checked="{{startAfterVerification}}" disabled="{{!runtimeReady}}" bindchange="onChange" /> <text><text>验证通过后自动一键启动</text> <text>{{runtimeReady ? "独立验证 PASS 后，在每次运行专属的 Rootless 容器中执行。" : capability?.runtimeRunnerReason ?? "独立 Runtime Runner 尚未配置。"}}</text></text></text>
+      <text class="spring-start-toggle"><input type="checkbox" checked="{{allowExperimentalRoutes}}" disabled="{{capability?.operatorExperimentalRoutesEnabled !== true}}" bindchange="onChange" /> <text><text>允许实验性升级路线</text> <text>{{capability?.operatorExperimentalRoutesEnabled === true ? "需要本次请求再次明确选择；实验路线不属于首发正式承诺。" : "运营方未启用实验路线；首发仅开放目录内唯一 DESIGN_PARTNER 路线。"}}</text></text></text>
       <view class="business-actions">
         <button class="button button-primary" type="submit" disabled="{{busy || migrationActive || !runnerReady || !credentialsReady || !selectedTargetSupported}}">
           <Icon name="{{busy ? &quot;refresh&quot; : &quot;workflow&quot;}}" size="{{16}}" class="{{busy ? &quot;spinning&quot; : undefined}}" />
@@ -265,10 +165,7 @@
         </view>
       </view>
       <view class="business-form-grid">
-        <text class="spring-field-wide">
-          <text>恢复 Run UUID</text>
-          <input value="{{recoveryRunId}}" pattern="[0-9a-f-]{36}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" bindchange="onChange" />
-        </text>
+        <text class="spring-field-wide"><text>恢复 Run UUID</text> <input value="{{recoveryRunId}}" pattern="[0-9a-f-]{36}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" bindchange="onChange" /></text>
       </view>
       <view class="business-actions">
         <button class="button button-secondary" type="button" disabled="{{busy || !credentialsReady || !/^[0-9a-f-]{36}$/i.test(recoveryRunId)}}" bindtap="onTap">
@@ -285,10 +182,7 @@
         <text>检测结果</text>
         <text>{{fingerprintSourceLabel(run.fingerprint)}} · Java {{run.fingerprint.javaVersion}} · {{run.fingerprint.buildTool}}</text>
         <text>能力： {{run.fingerprint.activeCapabilities.join("、") || "未识别"}}</text>
-        <text wx:if="{{run.fingerprint.unknowns.length > 0}}" class="warning-text">
-          <text>未知项：</text>
-          <text>{{run.fingerprint.unknowns.join("、")}}</text>
-        </text>
+        <text wx:if="{{run.fingerprint.unknowns.length > 0}}" class="warning-text">未知项： {{run.fingerprint.unknowns.join("、")}}</text>
       </view>
       <view class="spring-delivery-actions">
         <button wx:if="{{run?.downloadAvailable}}" class="button button-primary" type="button" disabled="{{busy}}" bindtap="onTap">
@@ -378,9 +272,7 @@
     <text wx:if="{{logs?.truncated}}">仅显示最近的受限日志窗口；敏感模式已经脱敏。</text>
   </view>
   <view class="{{`feedback-toast ${feedbackKind === &quot;error&quot; ? &quot;feedback-error&quot; : &quot;&quot;} ${feedback ? &quot;visible&quot; : &quot;&quot;}`}}" role="{{feedbackKind === &quot;error&quot; ? &quot;alert&quot; : &quot;status&quot;}}" aria-live="{{feedbackKind === &quot;error&quot; ? &quot;assertive&quot; : &quot;polite&quot;}}" aria-atomic="true">
-    <text>
-      <Icon name="{{feedbackKind === &quot;error&quot; ? &quot;lock&quot; : &quot;check&quot;}}" size="{{17}}" />
-    </text>
+    <text><Icon name="{{feedbackKind === &quot;error&quot; ? &quot;lock&quot; : &quot;check&quot;}}" size="{{17}}" /></text>
     <text class="feedback-message">{{feedback}}</text>
     <button wx:if="{{feedbackKind === 'error' && feedback}}" type="button" aria-label="关闭错误提示" bindtap="onTap">
       <Icon name="close" size="{{15}}" />

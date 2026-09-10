@@ -1,10 +1,7 @@
 <view class="{{'page'}}">
   <view class="{{'hero'}}" aria-labelledby="frt-title">
     <view class="{{'heroCopy'}}">
-      <text class="{{'eyebrow'}}">
-        <Icon name="workflow" size="{{15}}" />
-        <text>前端转换 · 30 个生成阶段</text>
-      </text>
+      <text class="{{'eyebrow'}}"><Icon name="workflow" size="{{15}}" /> 前端转换 · 30 个生成阶段</text>
       <view id="frt-title">{{t("前端仓库转换工厂", "Frontend repository transformation factory")}}</view>
       <view>{{t("从仓库发现、类型化语义 IR 和 30 条方向路线，一直编排到产品闭环与生产就绪门禁。所有未知语义和未运行证据保持显式。", "Orchestrate repository discovery, typed UI semantics, 30 directed routes, product closure, and production-readiness gates. Unknown semantics and unexecuted evidence remain explicit.")}}</view>
       <view class="{{'heroActions'}}">
@@ -62,35 +59,20 @@
         <view id="route-title">{{t("选择一条精确的有向转换路线", "Choose an exact directed transformation route")}}</view>
         <view>反向转换属于另一条独立 Route Pack，不沿用当前路线的证据或结论。</view>
       </view>
-      <text class="{{'routeCount'}}">
-        <text />
-        <text>30 / 30 路线已注册</text>
-      </text>
+      <text class="{{'routeCount'}}"><text /> 30 / 30 路线已注册</text>
     </view>
     <view class="{{'routeControls'}}">
-      <text>
-        <text>{{t("源技术栈", "Source stack")}}</text>
-        <view value="{{source}}" bindchange="onChange">
-          <view wx:for="{{frtCatalog.technologyStacks}}" wx:for-item="stack" wx:key="stack.id" key="{{stack}}" value="{{stack}}">{{stack}}</view>
-        </view>
-      </text>
-      <text class="{{'routeArrow'}}" aria-hidden="true">
-        <Icon name="arrow" size="{{20}}" />
-      </text>
-      <text>
-        <text>{{t("目标技术栈", "Target stack")}}</text>
-        <view value="{{target}}" bindchange="onChange">
-          <view wx:for="{{frtCatalog.technologyStacks}}" wx:for-item="stack" wx:key="stack.id" key="{{stack}}" value="{{stack}}">{{stack}}</view>
-        </view>
-      </text>
+      <text><text>{{t("源技术栈", "Source stack")}}</text> <view value="{{source}}" bindchange="onChange">
+  <view wx:for="{{frtCatalog.technologyStacks}}" wx:for-item="stack" wx:key="stack.id" key="{{stack}}" value="{{stack}}">{{stack}}</view>
+</view></text>
+      <text class="{{'routeArrow'}}" aria-hidden="true"><Icon name="arrow" size="{{20}}" /></text>
+      <text><text>{{t("目标技术栈", "Target stack")}}</text> <view value="{{target}}" bindchange="onChange">
+  <view wx:for="{{frtCatalog.technologyStacks}}" wx:for-item="stack" wx:key="stack.id" key="{{stack}}" value="{{stack}}">{{stack}}</view>
+</view></text>
     </view>
     <view wx:if="{{selectedRoute}}" class="{{'routeResult'}}">
       <view class="{{'routeIdentity'}}">
-        <text class="{{'routeGlyph'}}">
-          <text>{{source.slice(0, 1)}}</text>
-          <text>→</text>
-          <text>{{target.slice(0, 1)}}</text>
-        </text>
+        <text class="{{'routeGlyph'}}">{{source.slice(0, 1)}} <text>→</text> {{target.slice(0, 1)}}</text>
         <view>
           <text>{{selectedRoute.batch}} · {{selectedRoute.skillId}}</text>
           <view>{{source}} → {{target}}</view>
@@ -145,28 +127,17 @@
       </view>
       <view class="{{'catalogContent'}}">
         <view class="{{'catalogToolbar'}}">
-          <text class="{{'searchBox'}}">
-            <Icon name="search" size="{{17}}" />
-            <text class="sr-only">搜索功能</text>
-            <input value="{{query}}" placeholder="搜索 ID、名称或能力…" bindchange="onChange" />
-            <button wx:if="{{query}}" type="button" aria-label="清空搜索" bindtap="onTap">
-              <Icon name="close" size="{{14}}" />
-            </button>
-          </text>
+          <text class="{{'searchBox'}}"><Icon name="search" size="{{17}}" /> <text class="sr-only">搜索功能</text> <input value="{{query}}" placeholder="搜索 ID、名称或能力…" bindchange="onChange" /> <button wx:if="{{query}}" type="button" aria-label="清空搜索" bindtap="onTap">
+  <Icon name="close" size="{{14}}" />
+</button></text>
           <text class="{{'resultCount'}}">显示 {{visibleSkills.length}} / {{filteredSkills.length}}</text>
         </view>
         <view wx:if="{{visibleSkills.length}}" class="{{'skillGrid'}}">
           <button wx:for="{{visibleSkills}}" wx:for-item="skill" wx:key="skill.id" type="button" class="{{`${'skillCard'} ${selectedSkill?.id === skill.id ? 'selectedSkill' : &quot;&quot;}`}}" key="{{skill.id}}" aria-pressed="{{selectedSkill?.id === skill.id}}" bindtap="onTap">
-            <text class="{{'skillMeta'}}">
-              <text>{{skill.id}}</text>
-              <text>{{skill.batch}}</text>
-            </text>
+            <text class="{{'skillMeta'}}"><text>{{skill.id}}</text> <text>{{skill.batch}}</text></text>
             <text>{{skill.title}}</text>
             <code>{{skill.name}}</code>
-            <text class="{{'skillFooter'}}">
-              <text>Runtime interface ready</text>
-              <Icon name="chevron" size="{{14}}" />
-            </text>
+            <text class="{{'skillFooter'}}"><text>Runtime interface ready</text> <Icon name="chevron" size="{{14}}" /></text>
           </button>
         </view>
         <view wx:else class="{{'emptyState'}}">
@@ -230,94 +201,54 @@
             <text>；组织、租户与执行者由已认证账户或受限本地身份租约派生。</text>
           </view>
         </view>
-        <text class="{{'persistenceBadge'}}">
-          <text />
-          <text>Durable / tenant-scoped</text>
-        </text>
+        <text class="{{'persistenceBadge'}}"><text /> Durable / tenant-scoped</text>
       </view>
       <view class="{{'executionForm'}}">
         <fieldset>
           <legend>1. 运行作用域</legend>
           <view class="{{'fieldGrid'}}">
-            <text>
-              <text>Workspace</text>
-              <input aria-label="FRT Workspace" value="{{workspaceId}}" bindchange="onChange" />
-            </text>
-            <text>
-              <text>Project</text>
-              <input aria-label="FRT Project" value="{{projectId}}" bindchange="onChange" />
-            </text>
-            <text>
-              <text>Environment</text>
-              <input aria-label="FRT Environment" value="{{environmentId}}" bindchange="onChange" />
-            </text>
-            <text>
-              <text>Release</text>
-              <input aria-label="FRT Release" value="{{releaseId}}" bindchange="onChange" />
-            </text>
-            <text>
-              <text>Policy</text>
-              <input aria-label="FRT Policy" value="{{policyVersion}}" bindchange="onChange" />
-            </text>
-            <text>
-              <text>Risk</text>
-              <view aria-label="FRT Risk" value="{{risk}}" bindchange="onChange">
-                <view wx:for="{{['R0', 'R1', 'R2', 'R3', 'R4', 'R5']}}" wx:for-item="value" wx:key="value.id" key="{{value}}">{{value}}</view>
-              </view>
-            </text>
+            <text><text>Workspace</text> <input aria-label="FRT Workspace" value="{{workspaceId}}" bindchange="onChange" /></text>
+            <text><text>Project</text> <input aria-label="FRT Project" value="{{projectId}}" bindchange="onChange" /></text>
+            <text><text>Environment</text> <input aria-label="FRT Environment" value="{{environmentId}}" bindchange="onChange" /></text>
+            <text><text>Release</text> <input aria-label="FRT Release" value="{{releaseId}}" bindchange="onChange" /></text>
+            <text><text>Policy</text> <input aria-label="FRT Policy" value="{{policyVersion}}" bindchange="onChange" /></text>
+            <text><text>Risk</text> <view aria-label="FRT Risk" value="{{risk}}" bindchange="onChange">
+  <view wx:for="{{['R0', 'R1', 'R2', 'R3', 'R4', 'R5']}}" wx:for-item="value" wx:key="value.id" key="{{value}}">{{value}}</view>
+</view></text>
           </view>
         </fieldset>
         <fieldset>
           <legend>2. 功能类型化输入</legend>
           <view class="{{'contractSummary'}}">
             <text>必需</text>
-            <text wx:if="{{selectedInputContract?.required.length}}">{{selectedInputContract.required.map(key => <code key={`required-${key}`}>{key}</code>)}}</text>
+            <block wx:if="{{selectedInputContract?.required.length}}">
+              <code wx:for="{{selectedInputContract.required}}" wx:for-item="key" wx:key="key.id" key="{{`required-${key}`}}">{{key}}</code>
+            </block>
             <text wx:else>无</text>
             <text>可选</text>
-            <text wx:if="{{selectedInputContract?.optional.length}}">{{selectedInputContract.optional.map(key => <code key={`optional-${key}`}>{key}</code>)}}</text>
+            <block wx:if="{{selectedInputContract?.optional.length}}">
+              <code wx:for="{{selectedInputContract.optional}}" wx:for-item="key" wx:key="key.id" key="{{`optional-${key}`}}">{{key}}</code>
+            </block>
             <text wx:else>无</text>
           </view>
           <block wx:if="{{acceptsFiles}}">
-            <text class="{{'filePicker'}}">
-              <Icon name="repository" size="{{18}}" />
-              <text>
-                <text>选择仓库文本文件</text>
-                <text>最多 512 个、总计 ≤ 16 MB、单字段 ≤ 1 MB；安全相对路径和内容共同计算 Snapshot Digest。</text>
-              </text>
-              <input aria-label="选择前端仓库文件" type="file" multiple="true" bindchange="onChange" />
-            </text>
+            <text class="{{'filePicker'}}"><Icon name="repository" size="{{18}}" /> <text><text>选择仓库文本文件</text> <text>最多 512 个、总计 ≤ 16 MB、单字段 ≤ 1 MB；安全相对路径和内容共同计算 Snapshot Digest。</text></text> <input aria-label="选择前端仓库文件" type="file" multiple="true" bindchange="onChange" /></text>
             <view class="{{'fileSummary'}}" aria-live="polite">
               <text>{{Object.keys(sourceFiles).length}}</text>
               <text>个文件已绑定</text>
               <code wx:for="{{Object.keys(sourceFiles).slice(0, 5)}}" wx:for-item="path" wx:key="path.id" key="{{path}}">{{path}}</code>
-              <text wx:if="{{Object.keys(sourceFiles).length > 5}}">
-                <text>+</text>
-                <text>{{Object.keys(sourceFiles).length - 5}}</text>
-                <text>more</text>
-              </text>
+              <text wx:if="{{Object.keys(sourceFiles).length > 5}}">+ {{Object.keys(sourceFiles).length - 5}} more</text>
             </view>
           </block>
-          <text class="{{'jsonInput'}}">
-            <text>输入 JSON（`files` 由上方选择器安全合并）</text>
-            <textarea aria-label="前端转换功能类型化输入 JSON" spellCheck="{{false}}" value="{{inputJson}}" bindchange="onChange" />
-          </text>
+          <text class="{{'jsonInput'}}"><text>输入 JSON（`files` 由上方选择器安全合并）</text> <textarea aria-label="前端转换功能类型化输入 JSON" spellCheck="{{false}}" value="{{inputJson}}" bindchange="onChange" /></text>
           <button class="{{'resetInput'}}" type="button" bindtap="onTap">恢复契约示例</button>
         </fieldset>
         <view class="{{'localIdentity'}}">
           <view>{{t("本地开发身份租约（生产环境使用账户会话）", "Local development identity lease (production uses account sessions)")}}</view>
           <view class="{{'fieldGrid'}}">
-            <text>
-              <text>租户标识</text>
-              <input aria-label="FRT 本地租户标识" value="{{tenantId}}" bindchange="onChange" />
-            </text>
-            <text>
-              <text>执行者标识</text>
-              <input aria-label="FRT 本地执行者标识" value="{{actorId}}" bindchange="onChange" />
-            </text>
-            <text>
-              <text>本地 Runner 令牌</text>
-              <input aria-label="FRT 本地 Runner 令牌" type="password" autoComplete="off" value="{{runnerToken}}" bindchange="onChange" />
-            </text>
+            <text><text>租户标识</text> <input aria-label="FRT 本地租户标识" value="{{tenantId}}" bindchange="onChange" /></text>
+            <text><text>执行者标识</text> <input aria-label="FRT 本地执行者标识" value="{{actorId}}" bindchange="onChange" /></text>
+            <text><text>本地 Runner 令牌</text> <input aria-label="FRT 本地 Runner 令牌" type="password" autoComplete="off" value="{{runnerToken}}" bindchange="onChange" /></text>
           </view>
         </view>
         <view class="{{'runActions'}}" aria-label="FRT 运行操作">
@@ -386,12 +317,7 @@
               </view>
             </view>
             <view wx:else>没有签名 Evidence；VERIFY 将 fail-closed。</view>
-            <text wx:if="{{run}}">
-              <text>Gate eligible:</text>
-              <text>{{String(run.certificateFragment.eligibleForBatchGate)}}</text>
-              <text>·</text>
-              <text>{{run.certificateFragment.certification}}</text>
-            </text>
+            <text wx:if="{{run}}">Gate eligible: {{String(run.certificateFragment.eligibleForBatchGate)}} · {{run.certificateFragment.certification}}</text>
           </view>
           <view>
             <view>

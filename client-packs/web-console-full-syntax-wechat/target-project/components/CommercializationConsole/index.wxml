@@ -6,10 +6,7 @@
       <view>整合 8 大商业内核 (K1–K8)、工程翻新底座（41 个能力域、1,351 项功能）与 18 批次多语言编译器控制链。</view>
     </view>
     <view class="header-actions">
-      <text class="environment-selector">
-        <text />
-        <text>环境：本地工程契约</text>
-      </text>
+      <text class="environment-selector"><text /> 环境：本地工程契约</text>
       <button class="button button-secondary" disabled="{{refreshing}}" bindtap="refresh">
         <Icon name="refresh" size="{{16}}" class="{{refreshing ? &quot;spinning&quot; : undefined}}" />
         <text>刷新能力</text>
@@ -98,27 +95,18 @@
     <view class="trust-steps" role="tablist" aria-label="商业化可信链阶段">
       <view wx:for="{{payload.stages}}" wx:for-item="stage" wx:for-index="index" wx:key="stage.id" class="trust-step-wrap" key="{{stage.batch}}">
         <button id="{{`trust-tab-${stage.batch}`}}" class="{{`trust-step ${selected === stage.batch ? &quot;selected&quot; : &quot;&quot;}`}}" role="tab" aria-selected="{{selected === stage.batch}}" aria-controls="trust-stage-panel" tabIndex="{{selected === stage.batch ? 0 : -1}}" bindtap="onTap" bindkeydown="onKeydown">
-          <text class="trust-step-icon">
-            <Icon name="{{stage.icon}}" size="{{20}}" />
-          </text>
-          <text>
-            <text>{{stage.batch}}</text>
-            <text>{{stage.shortTitle}}</text>
-          </text>
+          <text class="trust-step-icon"><Icon name="{{stage.icon}}" size="{{20}}" /></text>
+          <text><text>{{stage.batch}}</text> <text>{{stage.shortTitle}}</text></text>
           <StatusChip status="{{stage.status}}" compact="true" />
         </button>
-        <text wx:if="{{index < payload.stages.length - 1}}" class="step-connector">
-          <Icon name="arrow" size="{{15}}" />
-        </text>
+        <text wx:if="{{index < payload.stages.length - 1}}" class="step-connector"><Icon name="arrow" size="{{15}}" /></text>
       </view>
     </view>
   </view>
   <view class="control-grid">
     <view class="surface-card stage-detail" id="trust-stage-panel" role="tabpanel" aria-labelledby="{{`trust-tab-${selectedStage.batch}`}}" tabIndex="{{0}}">
       <view class="stage-detail-heading">
-        <text class="large-stage-icon">
-          <Icon name="{{selectedStage.icon}}" size="{{23}}" />
-        </text>
+        <text class="large-stage-icon"><Icon name="{{selectedStage.icon}}" size="{{23}}" /></text>
         <view>
           <text class="overline">{{selectedStage.batch}} · {{selectedStage.subtitle}}</text>
           <view>{{selectedStage.title}}</view>
@@ -127,9 +115,7 @@
       </view>
       <view class="check-list">
         <view wx:for="{{selectedStage.checks}}" wx:for-item="check" wx:key="check.id" class="check-row" key="{{check.label}}">
-          <text class="{{`check-dot dot-${check.status.toLowerCase().replaceAll(&quot;_&quot;, &quot;-&quot;)}`}}">
-            <Icon name="{{check.status === &quot;READY&quot; || check.status === &quot;ENFORCED&quot; ? &quot;check&quot; : check.status === &quot;BLOCKED&quot; ? &quot;lock&quot; : &quot;clock&quot;}}" size="{{14}}" />
-          </text>
+          <text class="{{`check-dot dot-${check.status.toLowerCase().replaceAll(&quot;_&quot;, &quot;-&quot;)}`}}"><Icon name="{{check.status === &quot;READY&quot; || check.status === &quot;ENFORCED&quot; ? &quot;check&quot; : check.status === &quot;BLOCKED&quot; ? &quot;lock&quot; : &quot;clock&quot;}}" size="{{14}}" /></text>
           <view>
             <text>{{check.label}}</text>
             <text>{{check.detail}}</text>
@@ -147,9 +133,7 @@
     </view>
     <view class="surface-card decision-card">
       <view class="decision-card-top">
-        <text class="decision-symbol">
-          <Icon name="lock" size="{{20}}" />
-        </text>
+        <text class="decision-symbol"><Icon name="lock" size="{{20}}" /></text>
         <StatusChip status="BLOCKED" compact="true" />
       </view>
       <text class="overline">CURRENT DECISION</text>
@@ -192,30 +176,18 @@
         <text role="columnheader">状态</text>
       </view>
       <view wx:for="{{reviewQueue}}" wx:key="item.id" class="queue-row" role="row" key="{{item.id}}">
-        <text role="cell" data-label="事项">
-          <text>{{item.id}}</text>
-          <text>{{item.title}}</text>
-        </text>
+        <text role="cell" data-label="事项"><text>{{item.id}}</text> <text>{{item.title}}</text></text>
         <text role="cell" data-label="对象">{{item.subject}}</text>
-        <text role="cell" data-label="阶段">
-          <text class="batch-pill">{{item.stage}}</text>
-        </text>
+        <text role="cell" data-label="阶段"><text class="batch-pill">{{item.stage}}</text></text>
         <text role="cell" data-label="负责人">{{item.owner}}</text>
-        <text role="cell" data-label="状态">
-          <StatusChip status="{{item.status}}" compact="true" />
-        </text>
+        <text role="cell" data-label="状态"><StatusChip status="{{item.status}}" compact="true" /></text>
       </view>
     </view>
   </view>
   <view class="boundary-strip">
     <view>
-      <text class="boundary-strip-icon">
-        <Icon name="shield" size="{{21}}" />
-      </text>
-      <text>
-        <text>职责分离保持生效</text>
-        <text>Scheduler ≠ Runner · Producer ≠ Verifier · PDP ≠ PEP · 控制台 ≠ 认证机构</text>
-      </text>
+      <text class="boundary-strip-icon"><Icon name="shield" size="{{21}}" /></text>
+      <text><text>职责分离保持生效</text> <text>Scheduler ≠ Runner · Producer ≠ Verifier · PDP ≠ PEP · 控制台 ≠ 认证机构</text></text>
     </view>
     <navigator href="/api/capabilities/product" target="_blank" rel="noreferrer" class="text-link">
       <text>查看能力响应</text>

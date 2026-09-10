@@ -1,4 +1,1 @@
-<text class="{{`status-chip status-${normalized.toLowerCase().replaceAll(&quot;_&quot;, &quot;-&quot;)} ${compact ? &quot;status-compact&quot; : &quot;&quot;}`}}">
-  <text />
-  <text>{{statusLabels[normalized] ?? status}}</text>
-</text>
+<text class="{{`status-chip status-${normalized.toLowerCase().replaceAll(&quot;_&quot;, &quot;-&quot;)} ${compact ? &quot;status-compact&quot; : &quot;&quot;}`}}"><text /> {{statusLabels[normalized] ?? status}}</text>

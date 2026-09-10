@@ -26,6 +26,9 @@ declare module '@nestjs/common' {
   export function Controller(prefix?: string): ClassDecorator;
   export function Get(path?: string): MethodDecorator;
   export function Post(path?: string): MethodDecorator;
+  export function Put(path?: string): MethodDecorator;
+  export function Patch(path?: string): MethodDecorator;
+  export function Delete(path?: string): MethodDecorator;
   export function Body(): ParameterDecorator;
   export function Param(param?: string): ParameterDecorator;
   export function Query(param?: string): ParameterDecorator;
@@ -81,7 +84,18 @@ declare function expect(actual: any): {
   toEqual(expected: any): void;
   toHaveLength(expected: number): void;
   toBeGreaterThan(expected: number): void;
+  toBeGreaterThanOrEqual(expected: number): void;
   toBeLessThan(expected: number): void;
   toBeUndefined(): void;
   toBeDefined(): void;
+  toBeNull(): void;
+  toBeTruthy(): void;
+  toBeFalsy(): void;
+  not: {
+    toBe(expected: any): void;
+    toEqual(expected: any): void;
+    toBeNull(): void;
+    toBeUndefined(): void;
+  };
 };
+

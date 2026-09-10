@@ -20,45 +20,20 @@
         <StatusChip status="{{job?.resultStatus ?? &quot;NOT_RUN&quot;}}" compact="true" />
       </view>
       <view class="business-form-grid">
-        <text>
-          <text>闭环目标功能</text>
-          <view value="{{targetSkillId}}" required="true" bindchange="onChange">
-            <text wx:if="{{contracts.length}}">{{contracts.map((contract) => <option key={contract.id} value={contract.id}>{contract.id} · {contract.name}</option>)}}</text>
-            <view wx:else value="B108-S16">B108-S16 · customer-ready-modernization-certificate</view>
-          </view>
-        </text>
-        <text>
-          <text>项目 ID</text>
-          <input value="{{projectId}}" required="true" pattern="[A-Za-z0-9][A-Za-z0-9._:@/-]{0,159}" autoComplete="off" bindchange="onChange" />
-        </text>
-        <text>
-          <text>仓库 ID</text>
-          <input value="{{repositoryId}}" required="true" pattern="[A-Za-z0-9][A-Za-z0-9._:@/-]{0,159}" autoComplete="off" bindchange="onChange" />
-        </text>
-        <text>
-          <text>策略摘要</text>
-          <input value="{{policyDigest}}" required="true" pattern="(?:sha256:)?[a-f0-9]{64}" placeholder="sha256:…" spellCheck="{{false}}" bindchange="onChange" />
-        </text>
-        <text>
-          <text>Baseline Commit（可选）</text>
-          <input value="{{baselineCommit}}" pattern="[a-f0-9]{40,64}" spellCheck="{{false}}" bindchange="onChange" />
-        </text>
-        <text>
-          <text>Candidate Commit（可选）</text>
-          <input value="{{candidateCommit}}" pattern="[a-f0-9]{40,64}" spellCheck="{{false}}" bindchange="onChange" />
-        </text>
-        <text class="proof-wide">
-          <text>OCI 镜像摘要（可选）</text>
-          <input value="{{imageDigest}}" pattern="(?:sha256:)?[a-f0-9]{64}" placeholder="sha256:…" spellCheck="{{false}}" bindchange="onChange" />
-        </text>
-        <text class="proof-wide">
-          <text>类型化 Inputs JSON</text>
-          <textarea value="{{inputs}}" rows="{{8}}" spellCheck="{{false}}" bindchange="onChange" />
-        </text>
-        <text class="proof-wide">
-          <text>独立 Evidence Assertions JSON</text>
-          <textarea value="{{evidence}}" rows="{{10}}" spellCheck="{{false}}" bindchange="onChange" />
-        </text>
+        <text><text>闭环目标功能</text> <view value="{{targetSkillId}}" required="true" bindchange="onChange">
+  <block wx:if="{{contracts.length}}">
+    <view wx:for="{{contracts}}" wx:for-item="contract" wx:key="contract.id" key="{{contract.id}}" value="{{contract.id}}">{{contract.id}} · {{contract.name}}</view>
+  </block>
+  <view wx:else value="B108-S16">B108-S16 · customer-ready-modernization-certificate</view>
+</view></text>
+        <text><text>项目 ID</text> <input value="{{projectId}}" required="true" pattern="[A-Za-z0-9][A-Za-z0-9._:@/-]{0,159}" autoComplete="off" bindchange="onChange" /></text>
+        <text><text>仓库 ID</text> <input value="{{repositoryId}}" required="true" pattern="[A-Za-z0-9][A-Za-z0-9._:@/-]{0,159}" autoComplete="off" bindchange="onChange" /></text>
+        <text><text>策略摘要</text> <input value="{{policyDigest}}" required="true" pattern="(?:sha256:)?[a-f0-9]{64}" placeholder="sha256:…" spellCheck="{{false}}" bindchange="onChange" /></text>
+        <text><text>Baseline Commit（可选）</text> <input value="{{baselineCommit}}" pattern="[a-f0-9]{40,64}" spellCheck="{{false}}" bindchange="onChange" /></text>
+        <text><text>Candidate Commit（可选）</text> <input value="{{candidateCommit}}" pattern="[a-f0-9]{40,64}" spellCheck="{{false}}" bindchange="onChange" /></text>
+        <text class="proof-wide"><text>OCI 镜像摘要（可选）</text> <input value="{{imageDigest}}" pattern="(?:sha256:)?[a-f0-9]{64}" placeholder="sha256:…" spellCheck="{{false}}" bindchange="onChange" /></text>
+        <text class="proof-wide"><text>类型化 Inputs JSON</text> <textarea value="{{inputs}}" rows="{{8}}" spellCheck="{{false}}" bindchange="onChange" /></text>
+        <text class="proof-wide"><text>独立 Evidence Assertions JSON</text> <textarea value="{{evidence}}" rows="{{10}}" spellCheck="{{false}}" bindchange="onChange" /></text>
       </view>
       <view class="form-note">提交不会重试非幂等写操作；服务端按租户、Actor 与规范请求摘要生成幂等键。证据必须含独立 Producer/Verifier、签名校验、重算字节和内容地址。</view>
       <view class="business-actions">

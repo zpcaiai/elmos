@@ -62,7 +62,6 @@ public static class SimmAndRegulatoryTests
         if (RegulatoryReportingEngine.ValidateLeiChecksum("7H6GLXDRUGQFU57RNE99"))
             throw new Exception("Corrupted LEI checksum unexpectedly accepted");
 
-        var ccpLei = "5493000625PBN2S99A12"; // Standard CCP LEI
         var reportingEngine = new RegulatoryReportingEngine("7H6GLXDRUGQFU57RNE97");
         var uti = reportingEngine.GenerateUti("TRD-9001", new DateTime(2026, 6, 15));
 
@@ -76,7 +75,11 @@ public static class SimmAndRegulatoryTests
         var currency = Currency.USD;
         var apple = SecurityId.Parse("US0378331005");
 
-        var failedObl = new ClearingObligation("OBL-FAIL", "MEMBER-A", apple, Quantity.Of(-5000), CashAmount.Zero(currency));
+        var failedObl = new ClearingObligation(
+            "OBL-FAIL", "BATCH-01", "MEMBER-A", apple,
+            Quantity.Of(-5000), CashAmount.Zero(currency),
+            Quantity.Of(5000), CashAmount.Zero(currency)
+        );
         var refPrice = CashAmount.FromDecimal(150.00m, currency);
 
         var penalty = penaltyEngine.CalculateDailyPenalty(

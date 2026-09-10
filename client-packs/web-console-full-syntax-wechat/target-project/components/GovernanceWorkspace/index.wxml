@@ -53,25 +53,21 @@
       </view>
       <view class="{{'mutantList'}}">
         <view wx:if="{{!mutationResults}}" class="{{'emptyState'}}">尚未生成示例；真实变异测试、编译与测试回放均为 NOT_RUN。</view>
-        <text wx:else>{{mutationResults.map((m) => (
-                <div key={m.id} className={styles.mutantCard}>
-                  <div className={styles.mutantHeader}>
-                    <span className={styles.mutantId}>{m.id}</span>
-                    <span className={styles.mutantOp}>{m.operator}</span>
-                    <span
-                      className={`${styles.statusBadge} ${
-                        m.status === "KILLED" ? styles.statusKilled : styles.statusSurvived
-                      }`}
-                    >
-                      {m.status === "KILLED" ? "✓ KILLED" : "⚠ SURVIVED"}
-                    </span>
-                  </div>
-                  <div className={styles.diffSnippet}>
-                    <div className={styles.diffOrig}>- Line {m.line}: {m.original}</div>
-                    <div className={styles.diffMut}>+ Line {m.line}: {m.mutated}</div>
-                  </div>
-                </div>
-              ))}}</text>
+        <block wx:else>
+          <view wx:for="{{mutationResults}}" wx:for-item="m" wx:key="m.id" key="{{m.id}}" class="{{'mutantCard'}}">
+            <view class="{{'mutantHeader'}}">
+              <text class="{{'mutantId'}}">{{m.id}}</text>
+              <text class="{{'mutantOp'}}">{{m.operator}}</text>
+              <text class="{{`${'statusBadge'} ${
+                        m.status === &quot;KILLED&quot; ? 'statusKilled' : 'statusSurvived'
+                      }`}}">{{m.status === "KILLED" ? "✓ KILLED" : "⚠ SURVIVED"}}</text>
+            </view>
+            <view class="{{'diffSnippet'}}">
+              <view class="{{'diffOrig'}}">- Line {{m.line}} : {{m.original}}</view>
+              <view class="{{'diffMut'}}">+ Line {{m.line}} : {{m.mutated}}</view>
+            </view>
+          </view>
+        </block>
       </view>
     </view>
   </view>

@@ -26,6 +26,8 @@ public static class Program
         DvpAndStressTests.Run();
         HistoricalVaRTests.Run();
         SimmAndRegulatoryTests.Run();
+        BilateralCreditAndAuditTests.RunAll();
+        MacroStressAndConcentrationTests.RunAll();
 
         Console.WriteLine("\n[Running Live Multi-Member Clearing Demo]");
         await RunLiveClearingDemoAsync();

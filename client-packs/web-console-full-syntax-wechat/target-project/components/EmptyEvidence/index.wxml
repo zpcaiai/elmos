@@ -1,7 +1,4 @@
 <view class="evidence-empty" role="status">
   <StatusMark status="NOT_RUN" compact="true" />
-  <text>
-    <text>{{title}}</text>
-    <text>{{detail}}</text>
-  </text>
+  <text><text>{{title}}</text> <text>{{detail}}</text></text>
 </view>

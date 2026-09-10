@@ -1,0 +1,19 @@
+id: java-spring-e3
+version: 1
+runtime:
+  network: restricted
+steps:
+  - id: compile
+    executor: PROCESS
+    argv: [/opt/elmos/maven/bin/mvn, -B, package, -DskipTests]
+    required: true
+    timeoutSeconds: 600
+  - id: hidden-unit
+    executor: JUNIT_PLATFORM
+    required: true
+  - id: integration
+    executor: INTEGRATION_HARNESS
+    required: true
+  - id: smoke
+    executor: HTTP_HARNESS
+    required: true

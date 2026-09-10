@@ -13,10 +13,7 @@
     <form wx:if="{{parameters.verify === '1' && descopeReady}}" class="auth-form otp-verify-form" method="post" action="/api/auth/descope/otp/verify">
       <view>输入一次性验证码</view>
       <view>验证码已发送到刚才验证的邮箱或手机。验证码和登录标识由加密的 HttpOnly 会话绑定。</view>
-      <text>
-        <text>验证码</text>
-        <input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{4,10}" minLength="{{4}}" maxLength="{{10}}" required="true" autoFocus="true" />
-      </text>
+      <text><text>验证码</text> <input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{4,10}" minLength="{{4}}" maxLength="{{10}}" required="true" autoFocus="true" /></text>
       <button class="button button-primary" type="submit">验证并进入用户中心</button>
       <navigator class="text-link" href="{{`/login?${new URLSearchParams({ returnTo })}`}}">重新选择登录方式</navigator>
     </form>
@@ -29,10 +26,7 @@
         <input type="hidden" name="intent" value="LOGIN" />
         <input type="hidden" name="loginMode" value="USER" />
         <input type="hidden" name="returnTo" value="{{returnTo}}" />
-        <text>
-          <text>邮箱</text>
-          <input name="loginId" type="email" autoComplete="email" maxLength="{{254}}" required="true" />
-        </text>
+        <text><text>邮箱</text> <input name="loginId" type="email" autoComplete="email" maxLength="{{254}}" required="true" /></text>
         <button class="button button-primary" type="submit">发送邮箱验证码</button>
       </form>
       <form class="auth-method-card" method="post" action="/api/auth/descope/otp/start">
@@ -43,10 +37,7 @@
         <input type="hidden" name="intent" value="LOGIN" />
         <input type="hidden" name="loginMode" value="USER" />
         <input type="hidden" name="returnTo" value="{{returnTo}}" />
-        <text>
-          <text>手机号</text>
-          <input name="loginId" type="tel" inputMode="tel" autoComplete="tel" placeholder="+8613812345678" maxLength="{{18}}" required="true" />
-        </text>
+        <text><text>手机号</text> <input name="loginId" type="tel" inputMode="tel" autoComplete="tel" placeholder="+8613812345678" maxLength="{{18}}" required="true" /></text>
         <button class="button button-secondary" type="submit">发送短信验证码</button>
       </form>
       <form class="{{`auth-method-card wechat-auth-card${wechatReady ? &quot;&quot; : &quot; auth-method-disabled&quot;}`}}" method="post" action="/api/auth/descope/wechat/start">
@@ -63,14 +54,8 @@
       <view>测试账号登录</view>
       <view>支持测试账号（用户名：test，密码：test）直接登录体验 C 端功能。</view>
       <input type="hidden" name="returnTo" value="{{returnTo}}" />
-      <text>
-        <text>账号 / 邮箱</text>
-        <input name="email" type="text" defaultValue="test" autoComplete="username" maxLength="{{254}}" required="true" />
-      </text>
-      <text>
-        <text>密码</text>
-        <input name="password" type="password" autoComplete="current-password" required="true" />
-      </text>
+      <text><text>账号 / 邮箱</text> <input name="email" type="text" defaultValue="test" autoComplete="username" maxLength="{{254}}" required="true" /></text>
+      <text><text>密码</text> <input name="password" type="password" autoComplete="current-password" required="true" /></text>
       <button class="button button-primary" type="submit">使用测试账号登录</button>
     </form>
     <view wx:if="{{(descopeReady || registrationConfigured)}}" class="auth-links">

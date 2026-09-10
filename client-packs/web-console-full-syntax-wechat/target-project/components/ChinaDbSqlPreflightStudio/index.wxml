@@ -38,16 +38,10 @@
       <fieldset class="{{'fieldset'}}">
         <legend>源查询身份</legend>
         <view class="{{'gridTwo'}}">
-          <text htmlFor="sql-query-id">
-            <text>Query ID</text>
-            <input id="sql-query-id" value="{{fields.queryId}}" maxLength="{{160}}" required="true" autoComplete="off" bindchange="onChange" />
-          </text>
-          <text htmlFor="sql-source-profile">
-            <text>精确源 Profile</text>
-            <view id="sql-source-profile" aria-describedby="sql-source-profile-hint" value="{{fields.sourceProfile}}" bindchange="onChange">
-              <view wx:for="{{chinaDbSqlSourceProfiles}}" wx:for-item="profile" wx:key="profile.id" value="{{profile}}" key="{{profile}}">{{profile}}</view>
-            </view>
-          </text>
+          <text htmlFor="sql-query-id"><text>Query ID</text> <input id="sql-query-id" value="{{fields.queryId}}" maxLength="{{160}}" required="true" autoComplete="off" bindchange="onChange" /></text>
+          <text htmlFor="sql-source-profile"><text>精确源 Profile</text> <view id="sql-source-profile" aria-describedby="sql-source-profile-hint" value="{{fields.sourceProfile}}" bindchange="onChange">
+  <view wx:for="{{chinaDbSqlSourceProfiles}}" wx:for-item="profile" wx:key="profile.id" value="{{profile}}" key="{{profile}}">{{profile}}</view>
+</view></text>
         </view>
         <view id="sql-source-profile-hint" class="{{'sourceProfileHint'}}">{{sourceRoutePlanned
                 ? "该源家族存在 13 条商业目标规划路线；仅在显式兼容模式下有限发射 SQL，不代表厂商原生适配。"
@@ -56,47 +50,18 @@
       <fieldset class="{{'fieldset'}}" aria-describedby="{{selectedTarget ? &quot;sql-target-requirement&quot; : undefined}}">
         <legend>目标精确元组</legend>
         <view class="{{'gridTwo'}}">
-          <text htmlFor="sql-target-id">
-            <text>ChinaDB 目标</text>
-            <view id="sql-target-id" value="{{fields.targetId}}" disabled="{{!capabilities}}" bindchange="onChange">{{capabilities?.targets.map((target) => <option value={target.id} key={target.id}>{target.label} · {target.id}</option>) ?? <option value="dm8">等待能力快照</option>}}</view>
-          </text>
-          <text htmlFor="sql-target-version">
-            <text>精确版本</text>
-            <input id="sql-target-version" value="{{fields.targetVersion}}" maxLength="{{128}}" placeholder="例如 8.1.3.140" required="true" autoComplete="off" bindchange="onChange" />
-          </text>
-          <text htmlFor="sql-target-edition">
-            <text>Edition</text>
-            <input id="sql-target-edition" value="{{fields.targetEdition}}" maxLength="{{128}}" placeholder="例如 enterprise" required="true" autoComplete="off" bindchange="onChange" />
-          </text>
-          <text htmlFor="sql-compatibility-mode">
-            <text>Compatibility mode</text>
-            <input id="sql-compatibility-mode" value="{{fields.compatibilityMode}}" maxLength="{{128}}" placeholder="例如 oracle-compatible-explicit" required="true" autoComplete="off" bindchange="onChange" />
-          </text>
-          <text htmlFor="sql-target-driver">
-            <text>Driver</text>
-            <input id="sql-target-driver" value="{{fields.targetDriver}}" maxLength="{{128}}" placeholder="精确驱动与版本" required="true" autoComplete="off" bindchange="onChange" />
-          </text>
-          <text htmlFor="sql-target-charset">
-            <text>Charset</text>
-            <input id="sql-target-charset" value="{{fields.targetCharset}}" maxLength="{{128}}" placeholder="例如 UTF-8" required="true" autoComplete="off" bindchange="onChange" />
-          </text>
-          <text htmlFor="sql-target-collation">
-            <text>Collation</text>
-            <input id="sql-target-collation" value="{{fields.targetCollation}}" maxLength="{{128}}" placeholder="例如 BINARY" required="true" autoComplete="off" bindchange="onChange" />
-          </text>
-          <text htmlFor="sql-target-timezone">
-            <text>Time zone</text>
-            <input id="sql-target-timezone" value="{{fields.targetTimeZone}}" maxLength="{{128}}" placeholder="例如 Asia/Shanghai" required="true" autoComplete="off" bindchange="onChange" />
-          </text>
+          <text htmlFor="sql-target-id"><text>ChinaDB 目标</text> <view id="sql-target-id" value="{{fields.targetId}}" disabled="{{!capabilities}}" bindchange="onChange">{{capabilities?.targets.map((target) => <option value={target.id} key={target.id}>{target.label} · {target.id}</option>) ?? <option value="dm8">等待能力快照</option>}}</view></text>
+          <text htmlFor="sql-target-version"><text>精确版本</text> <input id="sql-target-version" value="{{fields.targetVersion}}" maxLength="{{128}}" placeholder="例如 8.1.3.140" required="true" autoComplete="off" bindchange="onChange" /></text>
+          <text htmlFor="sql-target-edition"><text>Edition</text> <input id="sql-target-edition" value="{{fields.targetEdition}}" maxLength="{{128}}" placeholder="例如 enterprise" required="true" autoComplete="off" bindchange="onChange" /></text>
+          <text htmlFor="sql-compatibility-mode"><text>Compatibility mode</text> <input id="sql-compatibility-mode" value="{{fields.compatibilityMode}}" maxLength="{{128}}" placeholder="例如 oracle-compatible-explicit" required="true" autoComplete="off" bindchange="onChange" /></text>
+          <text htmlFor="sql-target-driver"><text>Driver</text> <input id="sql-target-driver" value="{{fields.targetDriver}}" maxLength="{{128}}" placeholder="精确驱动与版本" required="true" autoComplete="off" bindchange="onChange" /></text>
+          <text htmlFor="sql-target-charset"><text>Charset</text> <input id="sql-target-charset" value="{{fields.targetCharset}}" maxLength="{{128}}" placeholder="例如 UTF-8" required="true" autoComplete="off" bindchange="onChange" /></text>
+          <text htmlFor="sql-target-collation"><text>Collation</text> <input id="sql-target-collation" value="{{fields.targetCollation}}" maxLength="{{128}}" placeholder="例如 BINARY" required="true" autoComplete="off" bindchange="onChange" /></text>
+          <text htmlFor="sql-target-timezone"><text>Time zone</text> <input id="sql-target-timezone" value="{{fields.targetTimeZone}}" maxLength="{{128}}" placeholder="例如 Asia/Shanghai" required="true" autoComplete="off" bindchange="onChange" /></text>
         </view>
         <view wx:if="{{selectedTarget}}" id="sql-target-requirement" class="{{'requirement'}}">
           <Icon name="database" size="{{16}}" />
-          <text>
-            <text>{{selectedTarget.label}}</text>
-            <text>{{selectedTarget.versionRequirement}}</text>
-            <text>；</text>
-            <text>{{selectedTarget.compatibilityModeRequirement}}</text>
-          </text>
+          <text><text>{{selectedTarget.label}}</text> {{selectedTarget.versionRequirement}} ； {{selectedTarget.compatibilityModeRequirement}}</text>
         </view>
       </fieldset>
       <fieldset class="{{'fieldset'}}">
@@ -111,29 +76,16 @@
         <view wx:if="{{parameters.length === 0}}" class="{{'emptyParameters'}}">当前请求使用空参数契约。</view>
         <view wx:else class="{{'parameterList'}}">
           <view wx:for="{{parameters}}" wx:for-item="parameter" wx:for-index="index" wx:key="parameter.id" class="{{'parameterRow'}}" key="{{`parameter-${index}`}}">
-            <text htmlFor="{{`sql-parameter-name-${index}`}}">
-              <text>名称</text>
-              <input id="{{`sql-parameter-name-${index}`}}" value="{{parameter.name}}" maxLength="{{128}}" required="true" autoComplete="off" bindchange="onChange" />
-            </text>
-            <text htmlFor="{{`sql-parameter-type-${index}`}}">
-              <text>逻辑类型</text>
-              <input id="{{`sql-parameter-type-${index}`}}" value="{{parameter.logicalType}}" maxLength="{{128}}" required="true" autoComplete="off" bindchange="onChange" />
-            </text>
-            <text class="{{'checkbox'}}" htmlFor="{{`sql-parameter-nullable-${index}`}}">
-              <input id="{{`sql-parameter-nullable-${index}`}}" type="checkbox" checked="{{parameter.nullable}}" bindchange="onChange" />
-              <text>Nullable</text>
-            </text>
+            <text htmlFor="{{`sql-parameter-name-${index}`}}"><text>名称</text> <input id="{{`sql-parameter-name-${index}`}}" value="{{parameter.name}}" maxLength="{{128}}" required="true" autoComplete="off" bindchange="onChange" /></text>
+            <text htmlFor="{{`sql-parameter-type-${index}`}}"><text>逻辑类型</text> <input id="{{`sql-parameter-type-${index}`}}" value="{{parameter.logicalType}}" maxLength="{{128}}" required="true" autoComplete="off" bindchange="onChange" /></text>
+            <text class="{{'checkbox'}}" htmlFor="{{`sql-parameter-nullable-${index}`}}"><input id="{{`sql-parameter-nullable-${index}`}}" type="checkbox" checked="{{parameter.nullable}}" bindchange="onChange" /> <text>Nullable</text></text>
             <button type="button" class="icon-button bordered" aria-label="{{`删除参数 ${index + 1}`}}" bindtap="onTap">
               <Icon name="close" size="{{14}}" />
             </button>
           </view>
         </view>
       </fieldset>
-      <text class="{{'sqlField'}}" htmlFor="sql-source">
-        <text>源 SQL</text>
-        <textarea id="sql-source" aria-describedby="sql-source-hint" value="{{fields.sql}}" placeholder="粘贴已脱敏的查询；不要包含凭据、个人信息或未授权生产数据。" required="true" spellCheck="{{false}}" bindchange="onChange" />
-        <text id="sql-source-hint">UTF-8 最大 {{chinaDbSqlInputLimitBytes / 1024}} KiB。SQL 只发送到同源 BFF 和受信 control-plane，不保存为草稿。</text>
-      </text>
+      <text class="{{'sqlField'}}" htmlFor="sql-source"><text>源 SQL</text> <textarea id="sql-source" aria-describedby="sql-source-hint" value="{{fields.sql}}" placeholder="粘贴已脱敏的查询；不要包含凭据、个人信息或未授权生产数据。" required="true" spellCheck="{{false}}" bindchange="onChange" /> <text id="sql-source-hint">UTF-8 最大 {{chinaDbSqlInputLimitBytes / 1024}} KiB。SQL 只发送到同源 BFF 和受信 control-plane，不保存为草稿。</text></text>
       <view class="{{'digestBlock'}}">
         <text>能力快照摘要</text>
         <code>{{capabilities?.capabilitySnapshotDigest ?? "尚未绑定"}}</code>
@@ -236,11 +188,21 @@
     <view class="{{'statementSection'}}">
       <view>Typed AST 与语义义务</view>
       <view wx:if="{{result.statements.length === 0}}" class="{{'noStatements'}}">源解析失败，没有生成 typed AST。</view>
-      <text wx:else>{{result.statements.map((statement) => <article className={styles.statement} key={statement.index}>
-              <div className={styles.statementHeading}><span>Statement {statement.index}</span><strong>{statement.kind}</strong></div>
-              <div className={styles.obligations}>{statement.obligations.map((obligation) => <code key={obligation}>{obligation}</code>)}</div>
-              <details><summary>查看 typed source AST</summary><pre>{JSON.stringify(statement.sourceAst, null, 2)}</pre></details>
-            </article>)}}</text>
+      <block wx:else>
+        <view wx:for="{{result.statements}}" wx:for-item="statement" wx:key="statement.id" class="{{'statement'}}" key="{{statement.index}}">
+          <view class="{{'statementHeading'}}">
+            <text>Statement {{statement.index}}</text>
+            <text>{{statement.kind}}</text>
+          </view>
+          <view class="{{'obligations'}}">
+            <code wx:for="{{statement.obligations}}" wx:for-item="obligation" wx:key="obligation.id" key="{{obligation}}">{{obligation}}</code>
+          </view>
+          <view>
+            <view>查看 typed source AST</view>
+            <pre>{{JSON.stringify(statement.sourceAst, null, 2)}}</pre>
+          </view>
+        </view>
+      </block>
     </view>
   </view>
 </view>

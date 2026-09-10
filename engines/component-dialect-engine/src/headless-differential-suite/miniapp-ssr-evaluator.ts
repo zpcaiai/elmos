@@ -401,9 +401,9 @@ export class MiniAppSSREvaluator {
       const safeExpr = trimmed
         .replace(/\?\./g, ".")
         .replace(/(?<=[a-zA-Z0-9_\)\]])\.(?=[a-zA-Z_$])/g, "?.");
-      const fn = new Function("scope", `with(scope) { try { return (${safeExpr}); } catch(e) { return undefined; } }`);
+      const fn = new Function("scope", `with(scope) { try { return { val: (${safeExpr}), ok: true }; } catch(e) { return { ok: false }; } }`);
       const res = fn(proxy);
-      if (res !== undefined) return res;
+      if (res && res.ok) return res.val;
     } catch {
       // Fall back on parser below
     }
@@ -416,11 +416,6 @@ export class MiniAppSSREvaluator {
     if (/^-?\d+(\.\d+)?$/.test(trimmed)) return Number(trimmed);
     if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
       return trimmed.slice(1, -1);
-    }
-
-    // Negation !expr
-    if (trimmed.startsWith('!') && !trimmed.startsWith('!=')) {
-      return !this.evaluateExpression(trimmed.slice(1), scope);
     }
 
     // Simple ternary: condition ? exprA : exprB
@@ -451,6 +446,11 @@ export class MiniAppSSREvaluator {
         if (!result) return result;
       }
       return result;
+    }
+
+    // Negation !expr
+    if (trimmed.startsWith('!') && !trimmed.startsWith('!=')) {
+      return !this.evaluateExpression(trimmed.slice(1), scope);
     }
 
     // Equality: a == b or a === b

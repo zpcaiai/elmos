@@ -89,7 +89,7 @@ Component({
     audit: [],
     operationError: "",
     busy: false,
-    filteredSkills: null,
+    filteredSkills: [],
   },
   lifetimes: {
     attached() {

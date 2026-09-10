@@ -24,7 +24,7 @@ public static class HistoricalVaRTests
         var apple = SecurityId.Parse("US0378331005");
         var obligations = new List<ClearingObligation>
         {
-            new ClearingObligation("OBL-1", "JPM", apple, Quantity.Of(10000), CashAmount.Zero(currency))
+            new("OBL-1", "BATCH-01", "JPM", apple, Quantity.Of(10000), CashAmount.Zero(currency), Quantity.Of(10000), CashAmount.Zero(currency))
         };
 
         var currentPrices = new Dictionary<SecurityId, CashAmount>
@@ -50,13 +50,13 @@ public static class HistoricalVaRTests
         if (result.ScenariosEvaluated != 200)
             throw new Exception($"Expected 200 scenarios, got {result.ScenariosEvaluated}");
 
-        if (result.UnweightedVaR99.AmountMinor <= 0)
+        if (result.UnweightedVaR99.MinorUnits <= 0)
             throw new Exception("VaR 99 must be strictly positive");
 
-        if (result.ExpectedShortfall975.AmountMinor < result.UnweightedVaR99.AmountMinor)
+        if (result.ExpectedShortfall975.MinorUnits < result.UnweightedVaR99.MinorUnits)
             throw new Exception("Expected Shortfall (tail mean) must be >= VaR 99");
 
-        if (result.WorstScenarioPnl.AmountMinor <= 0)
+        if (result.WorstScenarioPnl.MinorUnits <= 0)
             throw new Exception("Worst scenario loss must be strictly positive");
     }
 
@@ -71,8 +71,8 @@ public static class HistoricalVaRTests
         // Long Apple 5,000 shares, Short MSFT 3,000 shares
         var obligations = new List<ClearingObligation>
         {
-            new ClearingObligation("OBL-A", "MS", apple, Quantity.Of(5000), CashAmount.Zero(currency)),
-            new ClearingObligation("OBL-M", "MS", msft, Quantity.Of(-3000), CashAmount.Zero(currency))
+            new("OBL-A", "BATCH-01", "MS", apple, Quantity.Of(5000), CashAmount.Zero(currency), Quantity.Of(5000), CashAmount.Zero(currency)),
+            new("OBL-M", "BATCH-01", "MS", msft, Quantity.Of(-3000), CashAmount.Zero(currency), Quantity.Of(3000), CashAmount.Zero(currency))
         };
 
         var currentPrices = new Dictionary<SecurityId, CashAmount>
@@ -96,7 +96,7 @@ public static class HistoricalVaRTests
         };
 
         var result = engine.CalculatePortfolioVaR(obligations, currentPrices, returnMap, currency);
-        if (result.ExpectedShortfall975.AmountMinor <= 0)
+        if (result.ExpectedShortfall975.MinorUnits <= 0)
             throw new Exception("Portfolio Expected Shortfall should be positive");
     }
 }

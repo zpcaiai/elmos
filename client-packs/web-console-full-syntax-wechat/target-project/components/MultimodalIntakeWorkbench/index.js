@@ -1727,7 +1727,7 @@ Component({
     activeProgressJobKey: null,
     summary: null,
     estimatePlan: null,
-    filteredPackagePage: null,
+    filteredPackagePage: [],
     estimatePlanDocument: null,
   },
   lifetimes: {

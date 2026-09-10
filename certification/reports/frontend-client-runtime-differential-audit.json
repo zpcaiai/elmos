@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
-  "timestamp": "2026-09-10T09:45:48.961Z",
+  "timestamp": "2026-09-10T15:10:03.313Z",
   "packKey": "web-console-next16-react19-wechat-v1",
   "totals": {
     "totalComponents": 71,
-    "l3FirstScreenZeroErrorsCount": 71,
-    "l3MountPassRatePercent": 100,
-    "l4DifferentialEquivalentCount": 68,
-    "l4DifferentialPassRatePercent": 95.77,
+    "l3FirstScreenZeroErrorsCount": 68,
+    "l3MountPassRatePercent": 95.77,
+    "l4DifferentialEquivalentCount": 57,
+    "l4DifferentialPassRatePercent": 80.28,
     "dispositionBreakdown": {
       "automatic": {
         "total": 71,
-        "l3Passed": 71,
-        "l4Passed": 68,
-        "l4PassRatePercent": 95.77
+        "l3Passed": 68,
+        "l4Passed": 57,
+        "l4PassRatePercent": 80.28
       },
       "handPorted": {
         "total": 0,
@@ -24,10 +24,10 @@
     },
     "dualTrackDelivery": {
       "totalDelivered": 71,
-      "automaticL4Passed": 68,
+      "automaticL4Passed": 57,
       "handPortedGoldenPassed": 0,
-      "compositeCertifiedCount": 68,
-      "compositeCertifiedRatePercent": 95.77
+      "compositeCertifiedCount": 57,
+      "compositeCertifiedRatePercent": 80.28
     }
   },
   "components": [
@@ -52,8 +52,8 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9906,
-      "textSimilarity": 1,
+      "consistencyScore": 0.9776,
+      "textSimilarity": 0.9694,
       "structuralSimilarity": 1,
       "diagnostics": []
     },
@@ -114,13 +114,19 @@
       "sourcePath": "app/admin/OperationsAdmin.tsx",
       "targetPath": "target-project/components/OperationsAdmin",
       "disposition": "AUTOMATIC",
-      "l3Mounted": true,
-      "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 1,
+      "l3Mounted": false,
+      "l3Errors": [
+        "Structural similarity 0.7436 is below L3 threshold (0.85)."
+      ],
+      "l4Equivalent": false,
+      "consistencyScore": 0.8974,
       "textSimilarity": 1,
-      "structuralSimilarity": 1,
-      "diagnostics": []
+      "structuralSimilarity": 0.7436,
+      "diagnostics": [
+        "Structural similarity 0.7436 is below L3 threshold (0.85).",
+        "Composite semantic score 0.8974 is below L4 threshold (0.95).",
+        "High-severity mismatches (20) exceeded allowable threshold."
+      ]
     },
     {
       "componentName": "RemediationCard",
@@ -153,13 +159,19 @@
       "sourcePath": "app/admin/PlatformJobsPanel.tsx",
       "targetPath": "target-project/components/PlatformJobsPanel",
       "disposition": "AUTOMATIC",
-      "l3Mounted": true,
-      "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 1,
+      "l3Mounted": false,
+      "l3Errors": [
+        "Structural similarity 0.7568 is below L3 threshold (0.85)."
+      ],
+      "l4Equivalent": false,
+      "consistencyScore": 0.9027,
       "textSimilarity": 1,
-      "structuralSimilarity": 1,
-      "diagnostics": []
+      "structuralSimilarity": 0.7568,
+      "diagnostics": [
+        "Structural similarity 0.7568 is below L3 threshold (0.85).",
+        "Composite semantic score 0.9027 is below L4 threshold (0.95).",
+        "High-severity mismatches (9) exceeded allowable threshold."
+      ]
     },
     {
       "componentName": "PlatformWalletPanel",
@@ -181,11 +193,14 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 1,
-      "textSimilarity": 1,
-      "structuralSimilarity": 1,
-      "diagnostics": []
+      "l4Equivalent": false,
+      "consistencyScore": 0.7636,
+      "textSimilarity": 0.5422,
+      "structuralSimilarity": 0.8876,
+      "diagnostics": [
+        "Composite semantic score 0.7636 is below L4 threshold (0.95).",
+        "High-severity mismatches (19) exceeded allowable threshold."
+      ]
     },
     {
       "componentName": "CommercializationPage",
@@ -220,11 +235,13 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 1,
+      "l4Equivalent": false,
+      "consistencyScore": 0.9753,
       "textSimilarity": 1,
-      "structuralSimilarity": 1,
-      "diagnostics": []
+      "structuralSimilarity": 0.9383,
+      "diagnostics": [
+        "High-severity mismatches (5) exceeded allowable threshold."
+      ]
     },
     {
       "componentName": "Icon",
@@ -285,11 +302,13 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 0.97,
-      "textSimilarity": 1,
+      "l4Equivalent": false,
+      "consistencyScore": 0.9425,
+      "textSimilarity": 0.9333,
       "structuralSimilarity": 1,
-      "diagnostics": []
+      "diagnostics": [
+        "Composite semantic score 0.9425 is below L4 threshold (0.95)."
+      ]
     },
     {
       "componentName": "EvidenceGraph",
@@ -363,10 +382,10 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 1,
-      "textSimilarity": 1,
-      "structuralSimilarity": 1,
+      "l4Equivalent": false,
+      "consistencyScore": 0.9636,
+      "textSimilarity": 0.9685,
+      "structuralSimilarity": 0.9683,
       "diagnostics": []
     },
     {
@@ -415,11 +434,14 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 0.9977,
-      "textSimilarity": 1,
-      "structuralSimilarity": 0.9962,
-      "diagnostics": []
+      "l4Equivalent": false,
+      "consistencyScore": 0.9181,
+      "textSimilarity": 0.8201,
+      "structuralSimilarity": 0.9737,
+      "diagnostics": [
+        "Composite semantic score 0.9181 is below L4 threshold (0.95).",
+        "High-severity mismatches (6) exceeded allowable threshold."
+      ]
     },
     {
       "componentName": "FrontendTransformationPage",
@@ -454,11 +476,13 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 0.9983,
-      "textSimilarity": 1,
-      "structuralSimilarity": 1,
-      "diagnostics": []
+      "l4Equivalent": false,
+      "consistencyScore": 0.9695,
+      "textSimilarity": 0.9498,
+      "structuralSimilarity": 0.9803,
+      "diagnostics": [
+        "High-severity mismatches (6) exceeded allowable threshold."
+      ]
     },
     {
       "componentName": "GovernanceWorkspace",
@@ -491,13 +515,19 @@
       "sourcePath": "app/help/HelpCenter.tsx",
       "targetPath": "target-project/components/HelpCenter",
       "disposition": "AUTOMATIC",
-      "l3Mounted": true,
-      "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 1,
-      "textSimilarity": 1,
-      "structuralSimilarity": 1,
-      "diagnostics": []
+      "l3Mounted": false,
+      "l3Errors": [
+        "Structural similarity 0.8 is below L3 threshold (0.85)."
+      ],
+      "l4Equivalent": false,
+      "consistencyScore": 0.7131,
+      "textSimilarity": 0.4711,
+      "structuralSimilarity": 0.8,
+      "diagnostics": [
+        "Structural similarity 0.8 is below L3 threshold (0.85).",
+        "Composite semantic score 0.7131 is below L4 threshold (0.95).",
+        "High-severity mismatches (15) exceeded allowable threshold."
+      ]
     },
     {
       "componentName": "HelpPage",
@@ -584,10 +614,10 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.9776,
-      "textSimilarity": 0.9908,
-      "structuralSimilarity": 0.963,
+      "l4Equivalent": true,
+      "consistencyScore": 0.9958,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -637,11 +667,12 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": false,
-      "consistencyScore": 0.921,
-      "textSimilarity": 0.8929,
-      "structuralSimilarity": 0.9216,
+      "consistencyScore": 0.8979,
+      "textSimilarity": 0.866,
+      "structuralSimilarity": 0.9194,
       "diagnostics": [
-        "Composite semantic score 0.921 is below L4 threshold (0.95)."
+        "Composite semantic score 0.8979 is below L4 threshold (0.95).",
+        "High-severity mismatches (5) exceeded allowable threshold."
       ]
     },
     {
@@ -690,11 +721,14 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 1,
-      "textSimilarity": 1,
-      "structuralSimilarity": 1,
-      "diagnostics": []
+      "l4Equivalent": false,
+      "consistencyScore": 0.8638,
+      "textSimilarity": 0.7158,
+      "structuralSimilarity": 0.9401,
+      "diagnostics": [
+        "Composite semantic score 0.8638 is below L4 threshold (0.95).",
+        "High-severity mismatches (10) exceeded allowable threshold."
+      ]
     },
     {
       "componentName": "PlaygroundPage",
@@ -717,7 +751,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9903,
+      "consistencyScore": 0.9933,
       "textSimilarity": 1,
       "structuralSimilarity": 0.9833,
       "diagnostics": []
@@ -768,13 +802,11 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.9298,
-      "textSimilarity": 0.8043,
+      "l4Equivalent": true,
+      "consistencyScore": 0.985,
+      "textSimilarity": 1,
       "structuralSimilarity": 1,
-      "diagnostics": [
-        "Composite semantic score 0.9298 is below L4 threshold (0.95)."
-      ]
+      "diagnostics": []
     },
     {
       "componentName": "UsageMeter",
@@ -783,11 +815,13 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 1,
-      "textSimilarity": 1,
-      "structuralSimilarity": 1,
-      "diagnostics": []
+      "l4Equivalent": false,
+      "consistencyScore": 0.9146,
+      "textSimilarity": 0.8889,
+      "structuralSimilarity": 0.9167,
+      "diagnostics": [
+        "Composite semantic score 0.9146 is below L4 threshold (0.95)."
+      ]
     },
     {
       "componentName": "ModernizationProofStudio",
@@ -874,11 +908,14 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 1,
-      "textSimilarity": 1,
-      "structuralSimilarity": 1,
-      "diagnostics": []
+      "l4Equivalent": false,
+      "consistencyScore": 0.9366,
+      "textSimilarity": 0.8785,
+      "structuralSimilarity": 0.9697,
+      "diagnostics": [
+        "Composite semantic score 0.9366 is below L4 threshold (0.95).",
+        "High-severity mismatches (5) exceeded allowable threshold."
+      ]
     },
     {
       "componentName": "SmokePage",
@@ -926,10 +963,10 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 1,
-      "textSimilarity": 1,
-      "structuralSimilarity": 1,
+      "l4Equivalent": false,
+      "consistencyScore": 0.9882,
+      "textSimilarity": 0.9847,
+      "structuralSimilarity": 0.9907,
       "diagnostics": []
     },
     {

@@ -1,4 +1,1 @@
-<text class="{{`evidence-status evidence-status-${presentation.tone}${compact ? &quot; compact&quot; : &quot;&quot;}`}}">
-  <text aria-hidden="true" class="evidence-status-dot" />
-  <text>{{compact ? presentation.short : presentation.label}}</text>
-</text>
+<text class="{{`evidence-status evidence-status-${presentation.tone}${compact ? &quot; compact&quot; : &quot;&quot;}`}}"><text aria-hidden="true" class="evidence-status-dot" /> {{compact ? presentation.short : presentation.label}}</text>

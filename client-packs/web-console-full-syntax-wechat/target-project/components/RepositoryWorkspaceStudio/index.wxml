@@ -14,48 +14,24 @@
     </view>
   </view>
   <form class="{{'connect'}}" bindsubmit="createWorkspace">
-    <text wx:if="{{account.status !== 'authenticated'}}" class="{{'tokenField'}}">
-      <text>开发访问令牌</text>
-      <input type="password" autoComplete="off" value="{{accessToken}}" placeholder="仅保存在当前页面内存中" required="true" minLength="{{24}}" bindchange="onChange" />
-    </text>
+    <text wx:if="{{account.status !== 'authenticated'}}" class="{{'tokenField'}}">开发访问令牌 <input type="password" autoComplete="off" value="{{accessToken}}" placeholder="仅保存在当前页面内存中" required="true" minLength="{{24}}" bindchange="onChange" /></text>
     <view wx:if="{{account.status === 'authenticated'}}" class="{{'accountIdentity'}}">
       <text>当前企业身份</text>
       <text>{{account.principal?.displayName}}</text>
       <text>{{account.principal?.organizationId}}</text>
     </view>
-    <text>
-      <text>托管平台</text>
-      <view value="{{provider}}" bindchange="onChange">
-        <view value="GITHUB">GitHub</view>
-        <view value="GITEE">Gitee</view>
-        <view value="GENERIC_GIT">其他 Git</view>
-      </view>
-    </text>
-    <text class="{{'urlField'}}">
-      <text>HTTPS Clone URL</text>
-      <input value="{{cloneUrl}}" placeholder="https://host/owner/repository.git" required="true" bindchange="onChange" />
-    </text>
-    <text>
-      <text>分支 / 标签 / 提交</text>
-      <input value="{{requestedRef}}" required="true" bindchange="onChange" />
-    </text>
-    <text>
-      <text>仓库原生标识</text>
-      <input value="{{nativeRepositoryId}}" placeholder="owner/repository" required="true" bindchange="onChange" />
-    </text>
-    <text>
-      <text>Provider 实例</text>
-      <input value="{{providerInstanceId}}" required="true" bindchange="onChange" />
-    </text>
-    <text>
-      <text>私库凭据引用（可选）</text>
-      <input value="{{credentialRef}}" placeholder="server-side credential ref" bindchange="onChange" />
-    </text>
+    <text>托管平台 <view value="{{provider}}" bindchange="onChange">
+  <view value="GITHUB">GitHub</view>
+  <view value="GITEE">Gitee</view>
+  <view value="GENERIC_GIT">其他 Git</view>
+</view></text>
+    <text class="{{'urlField'}}">HTTPS Clone URL <input value="{{cloneUrl}}" placeholder="https://host/owner/repository.git" required="true" bindchange="onChange" /></text>
+    <text>分支 / 标签 / 提交 <input value="{{requestedRef}}" required="true" bindchange="onChange" /></text>
+    <text>仓库原生标识 <input value="{{nativeRepositoryId}}" placeholder="owner/repository" required="true" bindchange="onChange" /></text>
+    <text>Provider 实例 <input value="{{providerInstanceId}}" required="true" bindchange="onChange" /></text>
+    <text>私库凭据引用（可选） <input value="{{credentialRef}}" placeholder="server-side credential ref" bindchange="onChange" /></text>
     <button class="{{'primary'}}" type="submit" disabled="{{busy}}">拉取并建立工作区</button>
-    <text class="{{'recoveryField'}}">
-      <text>恢复工作区 ID</text>
-      <input value="{{recoveryId}}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" bindchange="onChange" />
-    </text>
+    <text class="{{'recoveryField'}}">恢复工作区 ID <input value="{{recoveryId}}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" bindchange="onChange" /></text>
     <button class="{{'secondary'}}" type="button" disabled="{{busy || !recoveryId}}" bindtap="recoverWorkspace">按身份恢复</button>
   </form>
   <view wx:if="{{feedback}}" class="{{'feedback'}}" role="status">{{feedback}}</view>
@@ -87,10 +63,7 @@
         <text>{{workspace.nativeRepositoryId}}</text>
         <text>{{workspace.workspaceId}} · {{workspace.branch}}</text>
       </view>
-      <text>
-        <text>新文件路径</text>
-        <input value="{{newPath}}" placeholder="docs/new-file.md" bindchange="onChange" />
-      </text>
+      <text>新文件路径 <input value="{{newPath}}" placeholder="docs/new-file.md" bindchange="onChange" /></text>
       <button class="{{'secondary'}}" type="button" disabled="{{busy || workspace.completeness !== &quot;COMPLETE&quot;}}" bindtap="beginNewFile">新建文件</button>
       <button class="{{'primary'}}" type="button" disabled="{{busy || workspace.completeness !== &quot;COMPLETE&quot;
               || workspace.pendingPaths.length &gt; 0}}" bindtap="continueToProjectGeneration">项目生成</button>
@@ -98,13 +71,10 @@
               || workspace.pendingPaths.length &gt; 0}}" bindtap="continueToTranslation">跨语言转换</button>
       <button class="{{'secondary'}}" type="button" disabled="{{busy || workspace.completeness !== &quot;COMPLETE&quot;
               || workspace.pendingPaths.length &gt; 0}}" bindtap="continueToSpring">Spring 现代化</button>
-      <text>
-        <text>文件分类</text>
-        <view value="{{filter}}" bindchange="onChange">
-          <view value="ALL">全部</view>
-          <view wx:for="{{Object.entries(categoryLabels)}}" wx:for-item="[value, label]" wx:key="[value, label].id" value="{{value}}" key="{{value}}">{{label}}</view>
-        </view>
-      </text>
+      <text>文件分类 <view value="{{filter}}" bindchange="onChange">
+  <view value="ALL">全部</view>
+  <view wx:for="{{Object.entries(categoryLabels)}}" wx:for-item="[value, label]" wx:key="[value, label].id" value="{{value}}" key="{{value}}">{{label}}</view>
+</view></text>
       <button class="{{'danger'}}" type="button" disabled="{{busy}}" bindtap="deleteWorkspace">删除本地工作区</button>
     </view>
     <view class="{{'workspaceGrid'}}">
@@ -115,10 +85,7 @@
         </view>
         <view class="{{'fileList'}}">
           <button wx:for="{{files}}" wx:for-item="file" wx:key="file.id" type="button" key="{{file.path}}" class="{{selected?.path === file.path ? 'activeFile' : &quot;&quot;}}" disabled="{{busy || !file.readable}}" bindtap="onTap">
-            <text>
-              <text>{{file.path}}</text>
-              <text>{{categoryLabels[file.category]}} · {{file.bytes}} B</text>
-            </text>
+            <text><text>{{file.path}}</text> <text>{{categoryLabels[file.category]}} · {{file.bytes}} B</text></text>
             <text>{{!file.readable ? "受保护" : file.writable ? "可修改" : "只读"}}</text>
           </button>
         </view>
@@ -135,14 +102,8 @@
           <textarea aria-label="文件内容" spellCheck="{{false}}" value="{{editor}}" disabled="{{workspace.completeness !== &quot;COMPLETE&quot;
                   || workspace.files.find((file) =&gt; file.path === selected.path)?.readable === false
                   || workspace.files.find((file) =&gt; file.path === selected.path)?.writable === false}}" bindchange="onChange" />
-          <text class="{{'intent'}}">
-            <text>变更意图</text>
-            <textarea value="{{intent}}" maxLength="{{2000}}" bindchange="onChange" />
-          </text>
-          <text wx:if="{{workspace.codeOwnersPresent}}" class="{{'approval'}}">
-            <input type="checkbox" checked="{{ownerApproved}}" bindchange="onChange" />
-            <text>已获得此路径所需的 CODEOWNERS 明确批准</text>
-          </text>
+          <text class="{{'intent'}}">变更意图 <textarea value="{{intent}}" maxLength="{{2000}}" bindchange="onChange" /></text>
+          <text wx:if="{{workspace.codeOwnersPresent}}" class="{{'approval'}}"><input type="checkbox" checked="{{ownerApproved}}" bindchange="onChange" /> 已获得此路径所需的 CODEOWNERS 明确批准</text>
           <view class="{{'editorActions'}}">
             <text>保存只写入隔离工作区，不触发外部操作。</text>
             <view>
@@ -171,10 +132,7 @@
       <view class="{{'deliveryGrid'}}">
         <view>
           <text>1. 本地 Commit</text>
-          <text>
-            <text>提交说明</text>
-            <input value="{{commitMessage}}" maxLength="{{4000}}" bindchange="onChange" />
-          </text>
+          <text>提交说明 <input value="{{commitMessage}}" maxLength="{{4000}}" bindchange="onChange" /></text>
           <text>{{workspace.pendingPaths.length > 0
                 ? `${workspace.pendingPaths.length} 个待提交路径：${workspace.pendingPaths.join("、")}`
                 : "没有待提交文件。"}}</text>
@@ -182,10 +140,7 @@
         </view>
         <view>
           <text>2. 推送受控分支</text>
-          <text>
-            <text>短期凭据引用</text>
-            <input value="{{deliveryCredentialRef}}" placeholder="最长 1 小时的服务端 Lease" bindchange="onChange" />
-          </text>
+          <text>短期凭据引用 <input value="{{deliveryCredentialRef}}" placeholder="最长 1 小时的服务端 Lease" bindchange="onChange" /></text>
           <text>仅推送 {{workspace.branch}} ；禁止 force push，并回读远端 SHA。</text>
           <button class="{{'primary'}}" type="button" data-operation-id="repository.push" disabled="{{busy || workspace.pendingPaths.length &gt; 0
                   || workspace.currentHeadCommit === workspace.sourceCommit
@@ -193,25 +148,13 @@
         </view>
         <view>
           <text>3. 创建 Pull Request</text>
-          <text>
-            <text>目标分支</text>
-            <input value="{{baseBranch}}" bindchange="onChange" />
-          </text>
-          <text>
-            <text>标题</text>
-            <input value="{{pullRequestTitle}}" maxLength="{{240}}" bindchange="onChange" />
-          </text>
-          <text>
-            <text>说明</text>
-            <textarea value="{{pullRequestBody}}" maxLength="{{8000}}" bindchange="onChange" />
-          </text>
+          <text>目标分支 <input value="{{baseBranch}}" bindchange="onChange" /></text>
+          <text>标题 <input value="{{pullRequestTitle}}" maxLength="{{240}}" bindchange="onChange" /></text>
+          <text>说明 <textarea value="{{pullRequestBody}}" maxLength="{{8000}}" bindchange="onChange" /></text>
           <button class="{{'primary'}}" type="button" data-operation-id="repository.pull_request" disabled="{{busy || provider === &quot;GENERIC_GIT&quot;
                   || workspace.pushedCommit !== workspace.currentHeadCommit
                   || Boolean(workspace.pullRequestId)}}" bindtap="createPullRequest">创建 PR</button>
-          <navigator wx:if="{{workspace.pullRequestUrl}}" href="{{workspace.pullRequestUrl}}" target="_blank" rel="noreferrer">
-            <text>打开 PR</text>
-            <text>{{workspace.pullRequestId}}</text>
-          </navigator>
+          <navigator wx:if="{{workspace.pullRequestUrl}}" href="{{workspace.pullRequestUrl}}" target="_blank" rel="noreferrer">打开 PR {{workspace.pullRequestId}}</navigator>
         </view>
       </view>
       <input type="hidden" value="{{pullRequestKey}}" bindchange="onChange" />

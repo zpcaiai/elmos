@@ -11,6 +11,7 @@ from .lifecycle import LifecycleLowering
 from .systems_memory import SystemsMemoryLowering
 from .apple_concurrency import AppleConcurrencyLowering
 from .ui_components import UIComponentLowering
+from .enterprise_shims import EnterpriseShimsLowering
 
 
 class SemanticLoweringEngine:
@@ -44,6 +45,8 @@ class SemanticLoweringEngine:
         module = AppleConcurrencyLowering.lower_module(module, source_lang, target_lang)
         # 7. UI components & State Machine (React / Flutter / VB6)
         module = UIComponentLowering.lower_module(module, source_lang, target_lang)
+        # 8. Enterprise Standard Library, Concurrency & Stream Shims
+        module = EnterpriseShimsLowering.lower_module(module, target_lang)
         return module
 
 __all__ = [
@@ -55,5 +58,6 @@ __all__ = [
     "SystemsMemoryLowering",
     "AppleConcurrencyLowering",
     "UIComponentLowering",
+    "EnterpriseShimsLowering",
 ]
 

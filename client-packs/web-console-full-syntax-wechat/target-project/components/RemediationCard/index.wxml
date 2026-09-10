@@ -11,9 +11,5 @@
     <button class="secondary-button" type="button" disabled="{{disabled}}" bindtap="onTap">拒绝</button>
   </view>
   <button wx:if="{{proposal.status === 'APPROVED'}}" class="primary-button" type="button" disabled="{{disabled}}" bindtap="onTap">生成摘要绑定 SCM 计划</button>
-  <text wx:if="{{proposal.artifactDigest}}" aria-label="{{`产物摘要：${proposal.artifactDigest}`}}">
-    <text>产物摘要：</text>
-    <text>{{proposal.artifactDigest.slice(0, 24)}}</text>
-    <text>…</text>
-  </text>
+  <text wx:if="{{proposal.artifactDigest}}" aria-label="{{`产物摘要：${proposal.artifactDigest}`}}">产物摘要： {{proposal.artifactDigest.slice(0, 24)}} …</text>
 </view>

@@ -11,14 +11,8 @@
     <text class="{{measure.hardStop ? 'progressDanger' : &quot;&quot;}}" style="{{{ width: `${visualPercent}%` }}}" />
   </view>
   <view class="{{'meterFoot'}}">
-    <text>
-      <text>剩余</text>
-      <text>{{formatQuota(measure.remaining)}}</text>
-    </text>
-    <text wx:if="{{measure.reserved > 0}}">
-      <text>处理中</text>
-      <text>{{formatQuota(measure.reserved)}}</text>
-    </text>
+    <text>剩余 <text>{{formatQuota(measure.remaining)}}</text></text>
+    <text wx:if="{{measure.reserved > 0}}">处理中 {{formatQuota(measure.reserved)}}</text>
     <text>总额度 {{formatQuota(measure.limit)}}</text>
   </view>
 </view>

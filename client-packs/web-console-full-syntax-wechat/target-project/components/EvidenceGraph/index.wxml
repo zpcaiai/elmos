@@ -1,9 +1,6 @@
 <figure class="evidence-graph-card">
   <figcaption>
-    <text>
-      <text>{{title}}</text>
-      <text>{{description}}</text>
-    </text>
+    <text><text>{{title}}</text> <text>{{description}}</text></text>
     <StatusMark status="{{status}}" compact="true" />
   </figcaption>
   <EmptyEvidence wx:if="{{nodes.length === 0}}" title="{{`${title}尚无数据`}}" detail="服务端未返回经过校验的结构化图；不会从文件名或日志推断关系。" />

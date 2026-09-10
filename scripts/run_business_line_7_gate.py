@@ -346,16 +346,18 @@ def main() -> int:
         "All local semantic workflows execute with zero empty skeletons or idling stubs",
     ]
 
-    # Final Gate Verdict
-    status = "PASSED" if not blockers else "FAILED"
-    decision = "CERTIFIED_INDUSTRIAL_GRADE" if not blockers else "BLOCKED"
+    # Final Gate Verdict: Local engineering execution only; non-self-certifying
+    status = "LOCAL_GATE_PASSED" if not blockers else "FAILED"
+    decision = "IMPLEMENTATION_READY_FOR_EXTERNAL_CERTIFICATION" if not blockers else "BLOCKED"
 
     report_payload = {
         "business_line_id": 7,
         "business_line_name": "自主 QA、情报与核心技能 (Autonomous QA, Project Intelligence & Core Skills)",
         "decision": decision,
         "status": status,
-        "certification": "CERTIFIED" if not blockers else "NOT_CERTIFIED",
+        "local_execution_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+        "external_evidence_status": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
         "verified_at": now,
         "metrics": {
             "total_bl7_loc": loc_metrics["TOTAL_BL7_LOC"],
@@ -370,21 +372,29 @@ def main() -> int:
         "suites": suite_reports,
         "anti_cheating": anti_cheating,
         "invariants_verified": invariants,
+        "evidence_boundaries": {
+            "external_provider": "NOT_RUN",
+            "production_deployment": "NOT_RUN",
+            "independent_third_party": "NOT_RUN",
+            "certification_authority": "NOT_CERTIFIED",
+        },
         "blockers": blockers,
     }
 
     raw_bytes = json.dumps(report_payload, sort_keys=True, indent=2).encode("utf-8")
     digest = "sha256:" + hashlib.sha256(raw_bytes).hexdigest()
-    report_payload["certification_digest"] = digest
+    report_payload["local_report_digest"] = digest
 
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     with open(REPORT_PATH, "w", encoding="utf-8") as fp:
         json.dump(report_payload, fp, indent=2)
 
-    print("\n[4/4] Generating Certification Report...")
+    print("\n[4/4] Generating Local Qualification & Gate Report...")
     print(f"  - Report saved to: {REPORT_PATH}")
-    print(f"  - Certification Digest: {digest}")
-    print(f"  - Final Decision: {decision}")
+    print(f"  - Local Report Digest: {digest}")
+    print(f"  - Gate Decision: {decision}")
+    print(f"  - External Evidence Status: NOT_RUN")
+    print(f"  - Production Certification: NOT_CERTIFIED")
     print("================================================================================")
 
     if blockers:
@@ -393,7 +403,8 @@ def main() -> int:
             print(f"  [X] {b}")
         return 1
 
-    print("\nSUCCESS: Business Line 7 verified 100% complete and certified industrial grade.")
+    print("\nSUCCESS: Business Line 7 local engineering implementation and suites verified.")
+    print("STATUS: IMPLEMENTATION READY FOR EXTERNAL CERTIFICATION (external evidence remains NOT_RUN / NOT_CERTIFIED).")
     return 0
 
 

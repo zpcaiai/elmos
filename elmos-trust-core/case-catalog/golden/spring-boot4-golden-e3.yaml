@@ -1,0 +1,9 @@
+id: spring-boot4-golden-e3
+version: 1
+runnerProfile: java-spring-e3
+requiredSteps: [compile, hidden-unit, integration, smoke]
+policy:
+  minimumTests: 20
+  zeroFailures: true
+  requireStructuredReport: true
+  failClosed: true

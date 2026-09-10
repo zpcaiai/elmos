@@ -16,13 +16,17 @@ from .base import (
     ExprStmt,
     FieldAccessExpr,
     IdentifierExpr,
+    IfElseStmt,
+    LockStmt,
     MethodCallExpr,
     ReturnStmt,
+    TryCatchFinallyStmt,
     UniversalExpr,
     UniversalMethod,
     UniversalParam,
     UniversalStmt,
     VarDeclStmt,
+    WhileStmt,
 )
 from .cfg import BasicBlock, ControlFlowGraph
 
@@ -217,9 +221,28 @@ class DataFlowGraph:
                     impure_reasons.append(f"Mutates field {stmt.target.field_name}")
             elif isinstance(stmt, ExprStmt):
                 if isinstance(stmt.expr, MethodCallExpr):
-                    m_name = stmt.expr.method_name.lower()
-                    if any(io_kw in m_name for io_kw in ("print", "write", "send", "log", "save", "delete", "post", "put")):
+                    m_name = (stmt.expr.method_name or "").lower()
+                    if any(io_kw in m_name for io_kw in ("print", "write", "send", "log", "save", "delete", "post", "put", "increment", "decrement")):
                         impure_reasons.append(f"Performs I/O or mutating call: {stmt.expr.method_name}")
+            elif isinstance(stmt, IfElseStmt):
+                for s in stmt.then_body:
+                    check_stmt(s)
+                for s in stmt.else_body:
+                    check_stmt(s)
+            elif isinstance(stmt, WhileStmt):
+                for s in stmt.body:
+                    check_stmt(s)
+            elif isinstance(stmt, LockStmt):
+                for s in stmt.body:
+                    check_stmt(s)
+            elif isinstance(stmt, TryCatchFinallyStmt):
+                for s in stmt.try_body:
+                    check_stmt(s)
+                for cc in stmt.catch_clauses:
+                    for s in cc.body:
+                        check_stmt(s)
+                for s in stmt.finally_body:
+                    check_stmt(s)
 
         for s in method.body:
             check_stmt(s)

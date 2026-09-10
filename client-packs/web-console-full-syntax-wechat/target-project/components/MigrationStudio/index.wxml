@@ -46,46 +46,27 @@
       <Icon name="box" size="{{17}}" />
       <text>扩展 Marketplace</text>
     </button>
-    <text wx:if="{{drafts.length > 0}}" class="draft-count">
-      <text>{{drafts.length}}</text>
-      <text>个本地草稿</text>
-    </text>
+    <text wx:if="{{drafts.length > 0}}" class="draft-count">{{drafts.length}} 个本地草稿</text>
   </view>
   <view wx:if="{{view === 'routes'}}" id="migration-routes-panel" class="studio-layout" role="tabpanel" aria-labelledby="migration-routes-tab">
     <view class="catalog-panel">
       <view class="catalog-toolbar">
-        <text class="search-field">
-          <Icon name="search" size="{{17}}" />
-          <text class="sr-only">搜索能力</text>
-          <input value="{{query}}" placeholder="搜索能力、Batch 或领域" bindchange="onChange" />
-        </text>
-        <text class="select-field">
-          <Icon name="filter" size="{{16}}" />
-          <text class="sr-only">状态筛选</text>
-          <view value="{{statusFilter}}" bindchange="onChange">
-            <view value="ALL">全部状态</view>
-            <view value="READY">契约就绪</view>
-            <view value="REVIEW">待审阅</view>
-            <view value="BLOCKED">已阻断</view>
-            <view value="EXPERIMENTAL">实验性</view>
-          </view>
-        </text>
+        <text class="search-field"><Icon name="search" size="{{17}}" /> <text class="sr-only">搜索能力</text> <input value="{{query}}" placeholder="搜索能力、Batch 或领域" bindchange="onChange" /></text>
+        <text class="select-field"><Icon name="filter" size="{{16}}" /> <text class="sr-only">状态筛选</text> <view value="{{statusFilter}}" bindchange="onChange">
+  <view value="ALL">全部状态</view>
+  <view value="READY">契约就绪</view>
+  <view value="REVIEW">待审阅</view>
+  <view value="BLOCKED">已阻断</view>
+  <view value="EXPERIMENTAL">实验性</view>
+</view></text>
       </view>
       <view class="catalog-summary-bar" aria-live="polite">
-        <text>
-          <text>显示</text>
-          <text>{{visibleCapabilities.length}}</text>
-          <text>/</text>
-          <text>{{capabilities.length}}</text>
-          <text>个能力</text>
-        </text>
+        <text>显示 <text>{{visibleCapabilities.length}}</text> / {{capabilities.length}} 个能力</text>
         <button wx:if="{{filtersActive}}" type="button" bindtap="clearFilters">清除筛选</button>
       </view>
       <view wx:if="{{drafts.length > 0}}" class="draft-list">
         <view wx:for="{{drafts}}" wx:for-item="draft" wx:key="draft.id" class="draft-row" key="{{draft.id}}">
-          <text class="capability-icon accent-cyan">
-            <Icon name="spark" size="{{18}}" />
-          </text>
+          <text class="capability-icon accent-cyan"><Icon name="spark" size="{{18}}" /></text>
           <view>
             <text>{{draft.name}}</text>
             <text>{{draft.source}} → {{draft.target}} · {{draft.scope}} {{draft.capabilityId ? ` · ${draft.capabilityId}` : ""}}</text>
@@ -98,16 +79,8 @@
       </view>
       <view class="capability-list">
         <button wx:for="{{visibleCapabilities}}" wx:for-item="capability" wx:key="capability.id" class="{{`capability-row ${selected === capability.id ? &quot;selected&quot; : &quot;&quot;}`}}" key="{{capability.id}}" aria-pressed="{{selected === capability.id}}" bindtap="onTap">
-          <text class="{{`capability-icon accent-${capability.accent}`}}">
-            <Icon name="{{capability.icon}}" size="{{20}}" />
-          </text>
-          <text class="capability-copy">
-            <text>
-              <text>{{capability.id}}</text>
-              <text>{{capability.title}}</text>
-            </text>
-            <text>{{capability.domain}} · {{capability.skillCount}} 项功能</text>
-          </text>
+          <text class="{{`capability-icon accent-${capability.accent}`}}"><Icon name="{{capability.icon}}" size="{{20}}" /></text>
+          <text class="capability-copy"><text><text>{{capability.id}}</text> {{capability.title}}</text> <text>{{capability.domain}} · {{capability.skillCount}} 项功能</text></text>
           <StatusChip status="{{capability.status}}" compact="true" />
           <Icon name="chevron" size="{{16}}" />
         </button>
@@ -121,9 +94,7 @@
     </view>
     <view wx:if="{{selectedCapability}}" class="detail-panel">
       <view class="{{`detail-hero accent-${selectedCapability.accent}`}}">
-        <text class="capability-icon">
-          <Icon name="{{selectedCapability.icon}}" size="{{22}}" />
-        </text>
+        <text class="capability-icon"><Icon name="{{selectedCapability.icon}}" size="{{22}}" /></text>
         <StatusChip status="{{selectedCapability.status}}" compact="true" />
       </view>
       <text class="overline">{{selectedCapability.id}} · {{selectedCapability.domain}}</text>
@@ -202,9 +173,7 @@
   </view>
   <Marketplace wx:else extensions="{{extensions}}" query="{{query}}" setQuery="{{setQuery}}" />
   <view class="{{`feedback-toast ${feedback ? &quot;visible&quot; : &quot;&quot;}`}}" role="status" aria-live="polite" aria-atomic="true">
-    <text>
-      <Icon name="check" size="{{17}}" />
-    </text>
+    <text><Icon name="check" size="{{17}}" /></text>
     <text>{{feedback}}</text>
   </view>
   <view wx:if="{{dialogOpen}}" class="dialog-backdrop" role="presentation" bindmousedown="onMousedown">
@@ -220,38 +189,26 @@
       </view>
       <view class="modal-intro" id="new-assessment-description">草稿只保存在当前浏览器，不会上传仓库、运行客户代码或触发认证。按 ESC 可随时关闭。</view>
       <form class="form-stack" bindsubmit="createDraft">
-        <text>
-          <text>评估名称</text>
-          <input ref="{{draftNameInput}}" name="name" required="true" autoComplete="off" placeholder="例如：订单服务现代化" />
-        </text>
+        <text><text>评估名称</text> <input ref="{{draftNameInput}}" name="name" required="true" autoComplete="off" placeholder="例如：订单服务现代化" /></text>
         <view class="form-grid">
-          <text>
-            <text>源技术栈</text>
-            <view name="source" defaultValue="Java 8 / Spring 4">
-              <view>Java 8 / Spring 4</view>
-              <view>C# / .NET Framework 4.8</view>
-              <view>Python 3.8 / Django 2.2</view>
-              <view>AngularJS 1.8</view>
-            </view>
-          </text>
-          <text>
-            <text>目标技术栈</text>
-            <view name="target" defaultValue="Java 21 / Spring Boot 3">
-              <view>Java 21 / Spring Boot 3</view>
-              <view>.NET 10</view>
-              <view>Python 3.14 / Django 5</view>
-              <view>React 19 / Next.js 16</view>
-            </view>
-          </text>
+          <text><text>源技术栈</text> <view name="source" defaultValue="Java 8 / Spring 4">
+  <view>Java 8 / Spring 4</view>
+  <view>C# / .NET Framework 4.8</view>
+  <view>Python 3.8 / Django 2.2</view>
+  <view>AngularJS 1.8</view>
+</view></text>
+          <text><text>目标技术栈</text> <view name="target" defaultValue="Java 21 / Spring Boot 3">
+  <view>Java 21 / Spring Boot 3</view>
+  <view>.NET 10</view>
+  <view>Python 3.14 / Django 5</view>
+  <view>React 19 / Next.js 16</view>
+</view></text>
         </view>
-        <text>
-          <text>工作范围</text>
-          <view name="scope" defaultValue="单仓评估">
-            <view>单仓评估</view>
-            <view>多仓依赖评估</view>
-            <view>组合级发现</view>
-          </view>
-        </text>
+        <text><text>工作范围</text> <view name="scope" defaultValue="单仓评估">
+  <view>单仓评估</view>
+  <view>多仓依赖评估</view>
+  <view>组合级发现</view>
+</view></text>
         <view class="form-note">
           <Icon name="lock" size="{{16}}" />
           <text>凭证、生产数据与客户代码不会写入此草稿。</text>
