@@ -118,7 +118,7 @@ def evaluate_procedural_ast_lowering() -> dict[str, Any]:
         # PL/pgSQL with Trigger Pseudo-record and Exception
         (
             "plpgsql_audit_trigger",
-            Dialect.POSTGRESQL,
+            Dialect.POSTGRES,
             """
             CREATE OR REPLACE FUNCTION audit_account_changes()
             RETURNS TRIGGER AS $$
@@ -142,7 +142,7 @@ def evaluate_procedural_ast_lowering() -> dict[str, Any]:
 
     results = []
     target_dialects = [
-        Dialect.POSTGRESQL,
+        Dialect.POSTGRES,
         Dialect.ORACLE,
         Dialect.TSQL,
         Dialect.MYSQL,
@@ -205,24 +205,24 @@ def evaluate_chinadb_infrastructure(
         proto, default_port = ChinaDbProtocolLab.TARGET_PROTOCOL_MAP[target_id]
 
         # 2. DDL Execution & Reverse Catalog Introspection
-        ddl_script = """
-        CREATE TABLE accounts (
-            acc_no VARCHAR(32) PRIMARY KEY,
-            owner_name VARCHAR(64) NOT NULL,
-            balance DECIMAL(18,4) NOT NULL DEFAULT 0.0000,
-            status VARCHAR(16) NOT NULL DEFAULT 'ACTIVE'
-        );
-        CREATE TABLE tx_history (
-            tx_id VARCHAR(32) PRIMARY KEY,
-            from_acc VARCHAR(32) NOT NULL,
-            to_acc VARCHAR(32) NOT NULL,
-            amount DECIMAL(18,4) NOT NULL,
-            created_at TIMESTAMP
-        );
-        CREATE INDEX idx_tx_history_from ON tx_history(from_acc);
-        """
+        ddl_script = [
+            """CREATE TABLE accounts (
+                acc_no VARCHAR(32) PRIMARY KEY,
+                owner_name VARCHAR(64) NOT NULL,
+                balance DECIMAL(18,4) NOT NULL DEFAULT 0.0000,
+                status VARCHAR(16) NOT NULL DEFAULT 'ACTIVE'
+            );""",
+            """CREATE TABLE tx_history (
+                tx_id VARCHAR(32) PRIMARY KEY,
+                from_acc VARCHAR(32) NOT NULL,
+                to_acc VARCHAR(32) NOT NULL,
+                amount DECIMAL(18,4) NOT NULL,
+                created_at TIMESTAMP
+            );""",
+            "CREATE INDEX idx_tx_history_from ON tx_history(from_acc);",
+        ]
         ddl_receipt = ddl_executor.execute_ddl(target_id, ddl_script)
-        catalog = ddl_executor.inspect_catalog(target_id)
+        inspect_acc = ddl_executor.inspect_table(target_id, "accounts")
 
         # 3. CDC Sync & Cascade Row-Hash Reconciliation
         initial_events = [
@@ -329,9 +329,11 @@ def evaluate_chinadb_infrastructure(
                 "isReady": status.is_ready,
                 "latencyMs": status.latency_ms,
                 "ddl": {
-                    "statementsExecuted": ddl_receipt.statements_executed,
+                    "statementsExecuted": ddl_receipt.executed_statements,
+                    "statementsSucceeded": ddl_receipt.successful_statements,
                     "schemaDigest": ddl_receipt.schema_digest,
-                    "tablesFound": list(catalog.keys()),
+                    "tablesFound": ddl_receipt.verified_tables,
+                    "accountPrimaryKeyVerified": inspect_acc.columns["acc_no"].is_primary_key if inspect_acc else False,
                 },
                 "cdc": {
                     "tablesReconciled": reconciliation_receipt.tables_reconciled,

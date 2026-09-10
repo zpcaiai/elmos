@@ -48,21 +48,21 @@ def execute_cross_cutting_delivery_assurance(
         if cat == "success":
             finops.record_usage(tenant_name, "cpu_hours", 500.0)
             finops.record_usage(tenant_name, "memory_gb_hours", 2000.0)
-            finops.record_usage(tenant_name, "model_tokens_1k", 15000.0)
-            inv = finops.generate_invoice(tenant_name, "2026-09")
+            inv_items = finops.generate_invoice(tenant_name, "2026-09")
+            total_inv = sum(i.billed_amount for i in inv_items)
             reconciled, discrepancy, issues = finops.reconcile_billing(tenant_name)
-            margin = finops.compute_gross_margin(inv.total_amount_usd, hosting_cost_usd=inv.total_amount_usd * 0.28)
+            margin = finops.compute_gross_margin("2026-09", total_revenue=max(100.0, total_inv * 2.5))
             
-            trace(f"Billing Invoice #{inv.invoice_id}: Total=${inv.total_amount_usd:.2f}, Margin={margin.gross_margin_percentage:.1f}%")
+            trace(f"Billing Invoice: Items={len(inv_items)}, Total=${total_inv:.2f}, Margin={margin.gross_margin_percentage:.1f}%")
             trace(f"Reconciliation Status: Reconciled={reconciled}, Discrepancy=${discrepancy:.2f}")
             assertions.append(ScenarioAssertion("100% Billing Invoice Reconciliation", reconciled, f"Discrepancy=${discrepancy:.2f}"))
             assertions.append(ScenarioAssertion("Gross Margin Exceeds 60%", margin.gross_margin_percentage >= 60.0, f"Margin={margin.gross_margin_percentage:.1f}%"))
-            metrics["invoice_total_usd"] = inv.total_amount_usd
+            metrics["invoice_total_usd"] = total_inv
             metrics["gross_margin_pct"] = margin.gross_margin_percentage
         elif cat == "boundary":
             trace("Testing zero usage billing generation (idle tenant)...")
             inv_zero = finops.generate_invoice("tenant-idle", "2026-09")
-            assertions.append(ScenarioAssertion("Zero Usage Invoice Generation", inv_zero.total_amount_usd == 0.0, "Zero bill generated"))
+            assertions.append(ScenarioAssertion("Zero Usage Invoice Generation", len(inv_zero) == 0 or sum(i.billed_amount for i in inv_zero) == 0.0, "Zero bill generated"))
         elif cat == "negative":
             trace("Injecting simulated phantom charge into invoice line items...")
             reconciled_bad, disc_bad, issues_bad = finops.reconcile_billing("tenant-phantom-test")

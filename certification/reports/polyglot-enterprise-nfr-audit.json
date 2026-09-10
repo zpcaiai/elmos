@@ -90,42 +90,42 @@
       "source_language": "java",
       "target_transpilations": {
         "csharp": {
-          "code_length": 2317,
+          "code_length": 2060,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "go": {
-          "code_length": 1220,
+          "code_length": 1117,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "java": {
-          "code_length": 2869,
+          "code_length": 2315,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "kotlin": {
-          "code_length": 1086,
+          "code_length": 1015,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "php": {
-          "code_length": 1220,
+          "code_length": 996,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "python": {
-          "code_length": 1253,
+          "code_length": 1197,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "rust": {
-          "code_length": 1095,
+          "code_length": 1024,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "typescript": {
-          "code_length": 1444,
+          "code_length": 1364,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         }

@@ -103,6 +103,11 @@ class SafeCodeFixer:
     # ------------------ Safety Validation ------------------
 
     @classmethod
+    def validate_patch_safety(cls, content: str) -> None:
+        """Validate patch content against forbidden anti-patterns and tautologies."""
+        cls._validate_patch_safety(content)
+
+    @classmethod
     def _validate_patch_safety(cls, content: str) -> None:
         lowered = content.lower()
         for forbidden in FORBIDDEN_PATCH_PATTERNS:
