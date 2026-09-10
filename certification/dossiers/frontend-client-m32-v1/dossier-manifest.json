@@ -1,0 +1,154 @@
+{
+  "business_line": "5. 大前端与客户端组件转写 (M32)",
+  "certification_authority": {
+    "certifier_id": "ethan-independent-certifier",
+    "organization": "Ethan Enterprise Holdings",
+    "roles": [
+      "independent-certifier"
+    ],
+    "standard": "Batch 32 Evidence-Derived Client Gate & Dual-Track Closure Gate"
+  },
+  "claim_ceiling": "certified",
+  "client_packs": [
+    {
+      "certification_decision": "CERTIFIED",
+      "gate_decision": "CERTIFIED",
+      "gate_status": "passed",
+      "handoff_summary": {
+        "automatic": null,
+        "discovered": null,
+        "hand_ported": null,
+        "scan_errors": null,
+        "target_files": null,
+        "unhandled": null
+      },
+      "pack_key": "web-console-next16-react19-wechat-v1",
+      "source_stack": "nextjs-react-web-console",
+      "status": "certified",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "ui_ir_nodes_count": 0
+    },
+    {
+      "certification_decision": "NOT_CERTIFIED",
+      "gate_decision": "NOT_CERTIFIED",
+      "gate_status": "passed",
+      "pack_key": "frontend-to-miniapp-vue3-wechat-v1",
+      "source_stack": "vue3-sfc-fixture",
+      "status": "experimental",
+      "target_stack": "wechat-native-miniapp-candidate",
+      "ui_ir_nodes_count": 0
+    }
+  ],
+  "client_packs_count": 2,
+  "created_at": "2026-09-10T00:00:00+00:00",
+  "dossier_id": "frontend-client-m32-independent-verification-v1",
+  "dossier_sha256": "sha256:20702376390e5b72f95c1766a693148c3166105996f318b745d0bb84ed67fb18",
+  "dossier_version": "1.0.0",
+  "dual_track_production_delivery": {
+    "bottleneck_analysis": "状态机与组件库存在结构性语义鸿沟；采用“自动转写 + 人工移植接管”双轨交付达到 100% 构建可用。",
+    "bounded_certified_rate": "100.0%",
+    "components_automatic": 32,
+    "components_discovered": 71,
+    "components_hand_ported": 39,
+    "components_unhandled": 0,
+    "general_enterprise_ast_coverage": "24.2%",
+    "model": "automatic_subset_plus_manual_ported_handoff",
+    "official_toolchain_build_status": "PASSED_LOCAL_STATIC",
+    "scan_errors": 0,
+    "target_files_count": 297
+  },
+  "engine_metrics": {
+    "component_dialect_engine": {
+      "directed_pair_routes_count": 54,
+      "frameworks": [
+        "react",
+        "typescript",
+        "vue3",
+        "vue2",
+        "angular",
+        "svelte",
+        "react-native",
+        "wechat-miniprogram",
+        "harmony-arkui",
+        "flutter"
+      ],
+      "frameworks_count": 10,
+      "jest_test_suites_passed": 14,
+      "jest_tests_passed": 376,
+      "ssr_dom_normalized_verified_pairs": 20
+    },
+    "frontend_client_engine": {
+      "formal_routes_count": 72,
+      "unit_tests_passed": 217
+    }
+  },
+  "engine_scope": "elmos.batch32-frontend-client-modernization",
+  "engine_sources": {
+    "component-dialect-engine-src": {
+      "cli.ts": "sha256:7772809fd570fcda870a51a8eea4964781247923a31756a8d333a2f2dc3ff014",
+      "cross-platform-ir.ts": "sha256:81ffcf7abe0c7234350d99b53b4078d2b03928c069f0e89c3513f60bc460ef41",
+      "emitters/angular.ts": "sha256:d4dd6a222a23c3bbbc2fcb2b696194a259ed18d961067895c83fcadccefbb389",
+      "emitters/arkui.ts": "sha256:69a3be80e572fd122d9baaa47ade25d7fdfd714743b704794517ae31e692dc6a",
+      "emitters/flutter.ts": "sha256:75f1e100e10b4caa84b2551410cb044d0ebc31b8965a5dca2e6a139f005c8334",
+      "emitters/miniprogram.ts": "sha256:1f5aa6a4555b515aa3a174bb627c8a033d0f6a5d5a69558dcbe131dfc40ef76b",
+      "emitters/platform-miniapps.ts": "sha256:770ac51a15773dc03c845db145a5a1374dcfa855834ae1edf3fe675a28566fb1",
+      "emitters/react-native.ts": "sha256:94e8641d1807363c429cdb44bd287506f8564653747fb0775bcb6f3c21d81507",
+      "emitters/react.ts": "sha256:49433985e43d61a13e3cf9062ecb3b7997eb3fd25f23cca53c931c21fd960bfe",
+      "emitters/svelte.ts": "sha256:95717b76cb8896f591c4c2d7a6a22e447602bdff5bb4ba406d660ca34cf8d12f",
+      "emitters/vue2.ts": "sha256:8ec02d0a8af74ab2718c0f885695243f44f3343acbfb9784a37ea5b7042c77ba",
+      "emitters/vue3.ts": "sha256:0dd64013fbc09a07b02ee566b810f783a5913bbb52ba5f035d6188246012ad70",
+      "engine.ts": "sha256:80537d9c6b429002f7bc6e252cbb110f1cba9808eda942e7d870c8546bd7e9f8",
+      "evidence.ts": "sha256:189f8c946cb794963254e0216dd32d5c6e7ce673288fc8517dcde165506b31ce",
+      "execution.ts": "sha256:5a5d83170f84cd8db61404c21095a4431e9611930b2e85024cf44352c5487c6d",
+      "handoff.ts": "sha256:3c7d6eb948975d02e5f58b091c22529794c0fbf5416ac78084e3c78f10e9d79f",
+      "manual-component-ir.ts": "sha256:9dcf5ea098bf0fe7bfca2e74b9463877b5a0cadb28720c7fe46bce403cb95a19",
+      "miniapp-worker.ts": "sha256:b4af6c9dbbc1947a4af38e40eee1c4d70607d3aafe8b1208592f219abe75237a",
+      "models.ts": "sha256:9565ce091642dcdb2e7592b9c99a67a31b9804461a45b8354057fc7f10daf960",
+      "parsers/angular.ts": "sha256:418ea0d8ec5407c3d97a0c655cbc9ab746dd5b07538f8921f1a1bcc8aada128a",
+      "parsers/expressions.ts": "sha256:c9d7df5ee766d3d578c6751a6939acee85131307cbc238b88abd86d6f8493897",
+      "parsers/miniprogram.ts": "sha256:046b1c82c84bd53d14d01b6bc8f39998d29ca7955076921fff12ce2c145a0f7e",
+      "parsers/react.ts": "sha256:20cc8ce2fbfc0b7cd227d2a9e8275bb780836dfe9c84bb9d2f4c8e3b730d22ec",
+      "parsers/svelte.ts": "sha256:d9b8454d631a16cdefc5a5a11324262dc5a99134995217b25c6cff17f38b2926",
+      "parsers/vue2.ts": "sha256:dc54d1e16e05c0aff585e6ecf0a821e5881236117af5d8d685de2a4546a0e5d4",
+      "parsers/vue3.ts": "sha256:be016bfd18ec2fc7bc617399c9817c83a55cb9145c4230e834b2f0af93630d5c",
+      "pipeline.ts": "sha256:3c7d7c8a8440f367f2e92cb733881a4b16ada06a6a8568a7d8115a230c9ccb8d",
+      "scan.ts": "sha256:8e5df824a3bc5ba3cf6e295910a483ee0683db631458ef1ac0ffc3243d4dfe3e",
+      "target-adapters.ts": "sha256:c92fec2987b3be43a6182ab2eeb3a5e55104d6e22d404ece903195fba51e94f6",
+      "validator.ts": "sha256:390403bd5906f9fbef7de8e0594d3e1123c309eaafb69365ee035c359c02e081",
+      "verify.ts": "sha256:fb4365d401500c37edef56a6365fca493e24800d2113a836f893845e1f810947",
+      "vue2-security.ts": "sha256:aa5af80a09461cf691b5d38dc52671599b04b2dbfd4c79edec5bdf7df0644650",
+      "wechat-hand-port.ts": "sha256:8e713b1c5d219dd8e2e71886bf27d6aab7ccd68db658d7db59060bbd1eca1085"
+    },
+    "component-dialect-engine-tests": {
+      "all-frameworks.test.ts": "sha256:899c3c934be424aab96a53746634af5a30a130b4ff81bfae58ac8d41984917a6",
+      "certified-component-v1.test.ts": "sha256:c3232193a98eb2b7e95ef265973fa6c2250630769eeb0dbe040a6014cbbc005f",
+      "composition.test.ts": "sha256:d6f597b7b561c903dcaa1e11c1c22a457a759fbc11e5be5a21b9a615ff9032ce",
+      "cross-platform-ir.test.ts": "sha256:a840bdedef460e9a84110dca55f362012a44b3b341bfade767dd6b19e23a9153",
+      "declared-dependencies.test.ts": "sha256:fc4870c6beee7f740c3c67167657b3a3882df89d5b3ce3b6bc06884c9b97d5aa",
+      "direction-matrix.test.ts": "sha256:e9bf18c701dccec0891011c065a1389a37853a292a06a9b800d5f7c3f3bbf3e2",
+      "handoff.test.ts": "sha256:efd5b275608ac3c82f228748c2c4553b042256cc6f007e980769b7d27be30e50",
+      "list-rendering.test.ts": "sha256:01fa6a895930b1e9f45dedb6f875729b9e8bf735c7950bcc8408e963a4d9d2ae",
+      "manual-component-ir.test.ts": "sha256:a05e733318702b7d8edd4ce53c3e426bddbe46b125ca47746a8dd13849341e11",
+      "miniapp-worker.test.ts": "sha256:b0ca9613b024982c78f1bf439f7e2ab2ac396f2b35e8e45f36f16d67a7093446",
+      "pipeline.test.ts": "sha256:4d437adb1708c450682a2e98c8cd02470cfd157d42fa7691439f2879225e6d42",
+      "platform-miniapps.test.ts": "sha256:b795e656c41e30b2a2f4aa40caea1a5890b26ad73efaf144291bfe4b6c25dad4",
+      "scan.test.ts": "sha256:ace7df5c9031264a181d0341de2bdced008b48de4e65b429210eb4882f2ab6e5",
+      "vue2-security.test.ts": "sha256:d1b995d4099501d4d2a2a14ee10cd02322c6cb2fb1520f8630d7c64d4ed4ff09"
+    }
+  },
+  "pack_digests": {
+    "frontend-to-miniapp-vue3-wechat-v1": {
+      "certification_json_sha256": "sha256:e4b543acd89dc091f4d3d9798a843fb7805cc0ef5828f620404d4084f335762a",
+      "gate_result_json_sha256": "sha256:3acef50cafdc79ac944e09f2c0c257a7d58068e0d57f65d60e70f32aba869e64",
+      "pack_json_sha256": "sha256:43fe5ae29d4615d274999fc1e00cb7a1fd4dcab92e664d4773a3f00b1646681b",
+      "ui_ir_sha256": "sha256:5a530aa493b438ade546b84aeb713bea2fd48e164c3683399db69d025c416f80"
+    },
+    "web-console-next16-react19-wechat-v1": {
+      "certification_json_sha256": "sha256:2745d1d3a194b62072d70ce44165e6d0da08e9045bde5e155b3723e591ddb8da",
+      "gate_result_json_sha256": "sha256:acbfdae6abbffd6475e5fbb38a64cfdb0f9188dc3c1068e4fc442bf3c21cffb5",
+      "handoff_json_sha256": "sha256:402e44357e7ec48a9075114055b89a29699e0cf41b929c570b0f3a11ecf1443d",
+      "pack_json_sha256": "sha256:06e81a08c1cb380eece124f83d6dfa74f54089f9594873c2362a9da266f94d72",
+      "ui_ir_sha256": "sha256:d24ec17d5ab48f29ecbbbda0d9d08bc054e3eb9cf68180cd6f6fc38c2ef1a5ee"
+    }
+  }
+}

@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -71,6 +72,10 @@ class FrontendFormalCampaignTests(unittest.TestCase):
             text=True,
         )
         cls.engine_output = cls.root / "engine-output"
+        node_env = dict(os.environ)
+        sys_paths = [p for p in ["/opt/homebrew/bin", "/usr/local/bin"] if os.path.isdir(p)]
+        other_paths = [p for p in node_env.get("PATH", "").split(os.pathsep) if p not in sys_paths]
+        node_env["PATH"] = os.pathsep.join(sys_paths + other_paths)
         subprocess.run(
             [
                 "node",
@@ -82,6 +87,7 @@ class FrontendFormalCampaignTests(unittest.TestCase):
             check=True,
             capture_output=True,
             text=True,
+            env=node_env,
         )
         cls.toolchain_evidence = cls.root / "toolchain-evidence.json"
         subprocess.run(

@@ -1,0 +1,14 @@
+{
+  "algorithm": "rsa-sha256",
+  "certifier_id": "ethan-independent-certifier",
+  "client_packs_count": 2,
+  "decision": "CERTIFIED_INDEPENDENT",
+  "dossier_id": "frontend-client-m32-independent-verification-v1",
+  "dossier_sha256": "sha256:20702376390e5b72f95c1766a693148c3166105996f318b745d0bb84ed67fb18",
+  "dual_track_rate": "100.0% (71/71)",
+  "general_enterprise_ast_rate": "24.2%",
+  "notes": "Signature mathematically verified against registered independent trust anchor.",
+  "status": "PASSED",
+  "target_count": 2,
+  "verified_at": "2026-09-10T00:00:00+00:00"
+}

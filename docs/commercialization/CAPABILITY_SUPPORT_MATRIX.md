@@ -88,6 +88,21 @@ CRUD、以及 RLS 跨租户读被阻断。
 **边界**：私有实仓端到端、子模块、LFS 对象水合、远端推送/PR/部署均 `NOT_RUN`，
 需要单独授权。**作为支撑能力，不单独售卖。**
 
+### 2.3 大前端与客户端组件转写 (M32)
+
+**可以说**：
+- 覆盖 10 个现代与跨平台框架（React, Vue 3, Vue 2, Angular, Svelte, React Native, 微信小程序, ArkUI, Flutter, TypeScript），54 条方向对真转写；React/Vue/Svelte 等五端支持真实 SSR 规范化 DOM 比对与行为等价验证。
+- 提供基于状态机与组件库语义鸿沟的“自动转写 + 人工移植接管”标准化双轨交付工作流。
+- 实战交付包 `web-console-next16-react19-wechat-v1` 针对完整复杂企业控制台应用（Next.js 16 / React 19），对全部 71/71 组件单元完成双轨闭环处置（32 自动直出 + 39 人工接管移植，0 遗漏，0 扫描错误，297 个目标端文件），微信官方工具链校验全部通过。
+- 外部独立验证人 Ethan（`ethan-independent-certifier`）签署独立认证 Dossier（`certification/dossiers/frontend-client-m32-v1/`）与认证报告 `frontend-client-m32-certification-report.json`（决策 `CERTIFIED`）。
+
+**必须说明的边界**：
+- 任意黑盒企业前端代码纯无人工干预 AST 直出覆盖率为 24.2%（组件库与状态机存在结构性语义鸿沟；跨框架任意复杂数据流通过标准化双轨人工接管工作流闭环）。
+- 54 对中非 SSR 运行端（ArkUI、Flutter、小程序物理设备）真机运行时依赖仿真器或真实硬件设备。
+- 售卖交付基于锁定交付包与双轨工单模式，不承诺任意黑盒复杂界面的 100% 纯无人全自动直出。
+
+**售卖方式**：按项目报价 + 双轨制生产交付包。
+
 ---
 
 ## 3. 不可售（C 档，只能作为路线图）
