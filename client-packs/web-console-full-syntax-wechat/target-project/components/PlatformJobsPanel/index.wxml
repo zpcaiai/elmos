@@ -1,0 +1,97 @@
+<view class="{{styles.panel}}" aria-label="全平台任务执行">
+  <text></text>
+  <view>
+    <text></text>
+    <view>
+      <text></text>
+      <text class="overline">
+        <text>PLATFORM EXECUTION</text>
+      </text>
+      <text></text>
+      <view>
+        <text>全平台任务执行</text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <text>
+      <text></text>
+      <view wx:if="{{loaded}}" />
+      <view wx:else />
+      <text></text>
+    </text>
+    <text></text>
+  </view>
+  <text></text>
+  <view>
+    <text>跨组织视图，需要平台管理员身份，与上方按租户隔离的作业队列是两条通道。
+        每一行同时给出执行结果和这次执行实际扣了多少钱——回答「客户说被多扣了」
+        不需要再开第二个页面。</text>
+  </view>
+  <text></text>
+  <view class="{{styles.inlineActions}}">
+    <text></text>
+    <text>
+      <text></text>
+      <text>
+        <text>执行状态</text>
+      </text>
+      <text></text>
+      <select aria-label="全平台任务状态" value="{{status}}" disabled="{{busy}}" bindchange="(event) => {
+              setStatus(event.target.value);
+              setRows([]);
+              setLoaded(false);
+            }">
+        <text></text>
+        <option wx:for="{{jobStatuses}}" wx:for-item="[value, label]" wx:key="[value, label].id" key="{{value}}" value="{{value}}">
+          <text>{{label}}</text>
+        </option>
+        <text></text>
+      </select>
+      <text></text>
+    </text>
+    <text></text>
+    <text>
+      <text></text>
+      <text>
+        <text>限定组织（可空）</text>
+      </text>
+      <text></text>
+      <input value="{{organization}}" aria-label="限定组织 ID" placeholder="留空则看全平台" pattern="[A-Za-z0-9][A-Za-z0-9._:-]{0,127}" disabled="{{busy}}" bindchange="(event) => {
+              setOrganization(event.target.value.trim());
+              setRows([]);
+              setLoaded(false);
+            }" />
+      <text></text>
+    </text>
+    <text></text>
+    <button class="secondary-button" type="button" disabled="{{busy}}" bindtap="() => void load()">
+      <text></text>
+      <Icon name="{{busy ? "refresh" : "search"}}" size="{{17}}" />
+      <text></text>
+      <view wx:if="{{busy}}" />
+      <view wx:else />
+      <text></text>
+    </button>
+    <text></text>
+  </view>
+  <text></text>
+  <view wx:if="{{denial}}" class="{{styles.bad}}" role="alert">
+    <text>被拒绝或读取失败：</text>
+    <text>{{denial}}</text>
+    <text>。跨组织任务视图需要平台管理员身份，
+          与本组织的运营角色是两回事。</text>
+  </view>
+  <text></text>
+  <view wx:if="{{!loaded}}" class="{{styles.empty}}">
+    <text></text>
+    <Icon name="database" size="{{22}}" />
+    <text></text>
+    <text>
+      <text>点击读取后才会请求；每次读取都会写一条平台管理员审计。</text>
+    </text>
+    <text></text>
+  </view>
+  <view wx:else />
+  <text></text>
+</view>

@@ -590,4 +590,10 @@ async function bootstrap() {
 bootstrap();
 """
 
+    from .typescript_domain_workflow_emitter import generate_typescript_domain_workflow_files
+
+    for path, content in generate_typescript_domain_workflow_files(request).items():
+        files[path] = content
+
     return files
+

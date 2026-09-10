@@ -339,7 +339,6 @@ func (s *{entity_name}SagaCoordinator) Execute(ctx map[string]interface{{}}) (bo
 
 \treturn true, "saga completed successfully", ctx
 }}
-
 func (s *{entity_name}SagaCoordinator) rollback(completed []SagaStep, ctx map[string]interface{{}}) {{
 \t// LIFO reverse compensation
 \tfor i := len(completed) - 1; i >= 0; i-- {{
@@ -349,6 +348,8 @@ func (s *{entity_name}SagaCoordinator) rollback(completed []SagaStep, ctx map[st
 \t\t}}
 \t}}
 }}
+
+type SagaOrchestrator = {entity_name}SagaCoordinator
 """
 
     # 6. Transactional Outbox Pattern

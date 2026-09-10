@@ -1,0 +1,5 @@
+<PreferencesContext.Provider value="{{value}}">
+  <text></text>
+  <slot />
+  <text></text>
+</PreferencesContext.Provider>

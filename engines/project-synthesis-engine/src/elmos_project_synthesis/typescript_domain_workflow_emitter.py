@@ -119,16 +119,16 @@ export class {entity_name}Item {{
   readonly unitPrice: number;
   readonly quantity: number;
 
-  constructor(itemId: string, name: string, unitPrice: number, quantity: number) {
-    if (unitPrice <= 0 || quantity <= 0) {
+  constructor(itemId: string, name: string, unitPrice: number, quantity: number) {{
+    if (unitPrice <= 0 || quantity <= 0) {{
       throw new Error('Item unitPrice and quantity must be positive');
-    }
+    }}
     this.itemId = itemId;
     this.name = name;
     this.unitPrice = unitPrice;
     this.quantity = quantity;
     Object.freeze(this);
-  }
+  }}
 
   get subtotal(): number {{
     return this.unitPrice * this.quantity;

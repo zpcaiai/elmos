@@ -1,0 +1,311 @@
+<view class="proof-loop-page">
+  <text></text>
+  <view class="page-hero compact-hero">
+    <text></text>
+    <view>
+      <text class="eyebrow">
+        <text>BATCH 105–108 · EVIDENCE-BOUND</text>
+      </text>
+      <view>
+        <text>现代化生产证据闭环</text>
+      </view>
+    </view>
+    <text></text>
+    <view>
+      <text>从 Golden Route、隔离预览、实时 API/浏览器验证，到证据 PR 与客户证书。缺失或过期的独立证据保持</text>
+      <code>
+        <text>BLOCKED</text>
+      </code>
+      <text>，本地执行不会授予生产批准。</text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="studio-layout proof-loop-layout">
+    <text></text>
+    <view class="surface-card" aria-labelledby="proof-loop-form-title">
+      <text></text>
+      <view class="card-heading">
+        <view>
+          <text class="overline">
+            <text>DURABLE TENANT JOB</text>
+          </text>
+          <view id="proof-loop-form-title">
+            <text>提交验证计划</text>
+          </view>
+        </view>
+        <StatusChip status="{{job?.resultStatus ?? "NOT_RUN"}}" compact="true" />
+      </view>
+      <text></text>
+      <view class="business-form-grid">
+        <text></text>
+        <text>
+          <text>
+            <text>闭环目标功能</text>
+          </text>
+          <select value="{{targetSkillId}}" required="true" bindchange="(event) => setTargetSkillId(event.target.value)">
+            <text></text>
+            <view wx:if="{{contracts.length}}" />
+            <option wx:else value="B108-S16">
+              <text>B108-S16 · customer-ready-modernization-certificate</text>
+            </option>
+            <text></text>
+          </select>
+        </text>
+        <text></text>
+        <text>
+          <text>
+            <text>项目 ID</text>
+          </text>
+          <input value="{{projectId}}" required="true" pattern="[A-Za-z0-9][A-Za-z0-9._:@/-]{0,159}" autoComplete="off" bindchange="(event) => setProjectId(event.target.value)" />
+        </text>
+        <text></text>
+        <text>
+          <text>
+            <text>仓库 ID</text>
+          </text>
+          <input value="{{repositoryId}}" required="true" pattern="[A-Za-z0-9][A-Za-z0-9._:@/-]{0,159}" autoComplete="off" bindchange="(event) => setRepositoryId(event.target.value)" />
+        </text>
+        <text></text>
+        <text>
+          <text>
+            <text>策略摘要</text>
+          </text>
+          <input value="{{policyDigest}}" required="true" pattern="(?:sha256:)?[a-f0-9]{64}" placeholder="sha256:…" spellCheck="{{false}}" bindchange="(event) => setPolicyDigest(event.target.value)" />
+        </text>
+        <text></text>
+        <text>
+          <text>
+            <text>Baseline Commit（可选）</text>
+          </text>
+          <input value="{{baselineCommit}}" pattern="[a-f0-9]{40,64}" spellCheck="{{false}}" bindchange="(event) => setBaselineCommit(event.target.value)" />
+        </text>
+        <text></text>
+        <text>
+          <text>
+            <text>Candidate Commit（可选）</text>
+          </text>
+          <input value="{{candidateCommit}}" pattern="[a-f0-9]{40,64}" spellCheck="{{false}}" bindchange="(event) => setCandidateCommit(event.target.value)" />
+        </text>
+        <text></text>
+        <text class="proof-wide">
+          <text>
+            <text>OCI 镜像摘要（可选）</text>
+          </text>
+          <input value="{{imageDigest}}" pattern="(?:sha256:)?[a-f0-9]{64}" placeholder="sha256:…" spellCheck="{{false}}" bindchange="(event) => setImageDigest(event.target.value)" />
+        </text>
+        <text></text>
+        <text class="proof-wide">
+          <text>
+            <text>类型化 Inputs JSON</text>
+          </text>
+          <textarea value="{{inputs}}" rows="{{8}}" spellCheck="{{false}}" bindchange="(event) => setInputs(event.target.value)" />
+        </text>
+        <text></text>
+        <text class="proof-wide">
+          <text>
+            <text>独立 Evidence Assertions JSON</text>
+          </text>
+          <textarea value="{{evidence}}" rows="{{10}}" spellCheck="{{false}}" bindchange="(event) => setEvidence(event.target.value)" />
+        </text>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="form-note">
+        <text>提交不会重试非幂等写操作；服务端按租户、Actor 与规范请求摘要生成幂等键。证据必须含独立 Producer/Verifier、签名校验、重算字节和内容地址。</text>
+      </view>
+      <text></text>
+      <view class="business-actions">
+        <text></text>
+        <button class="button button-primary" type="button" disabled="{{busy || !projectId.trim() || !repositoryId.trim() || !policyDigest.trim()}}" bindtap="() => void submit()">
+          <view wx:if="{{busy}}" />
+          <view wx:else />
+        </button>
+        <text></text>
+        <button wx:if="{{job && !terminal.has(job.status)}}" class="button button-secondary" type="button" disabled="{{busy}}" bindtap="() => void cancel()">
+          <text>取消作业</text>
+        </button>
+        <view wx:else />
+        <text></text>
+      </view>
+      <text></text>
+      <view wx:if="{{error}}" class="field-error" role="alert">
+        <text>{{error}}</text>
+      </view>
+      <view wx:else />
+      <text></text>
+    </view>
+    <text></text>
+    <view class="surface-card detail-panel proof-loop-summary" aria-labelledby="proof-loop-summary-title">
+      <text></text>
+      <view class="card-heading">
+        <view>
+          <text class="overline">
+            <text>FAIL-CLOSED STATUS</text>
+          </text>
+          <view id="proof-loop-summary-title">
+            <text>计划与证据</text>
+          </view>
+        </view>
+      </view>
+      <text></text>
+      <dl wx:if="{{selected}}">
+        <text></text>
+        <view>
+          <dt>
+            <text>目标</text>
+          </dt>
+          <dd>
+            <code>
+              <text>{{selected.id}}</text>
+            </code>
+          </dd>
+        </view>
+        <text></text>
+        <view>
+          <dt>
+            <text>执行边界</text>
+          </dt>
+          <dd>
+            <text>{{selected.executionClass}}</text>
+          </dd>
+        </view>
+        <text></text>
+        <view>
+          <dt>
+            <text>合同摘要</text>
+          </dt>
+          <dd>
+            <code>
+              <text>{{selected.canonicalSha256.slice(0, 22)}}</text>
+              <text>…</text>
+            </code>
+          </dd>
+        </view>
+        <text></text>
+        <view>
+          <dt>
+            <text>直接依赖</text>
+          </dt>
+          <dd>
+            <text>{{selected.dependencies.join(", ") || "无"}}</text>
+          </dd>
+        </view>
+        <text></text>
+      </dl>
+      <view wx:else>
+        <text>正在读取 64 个不可变合同…</text>
+      </view>
+      <text></text>
+      <view wx:if="{{subjectDigest}}" class="proof-subject">
+        <text>
+          <text>Subject Digest</text>
+        </text>
+        <code>
+          <text>{{subjectDigest}}</text>
+        </code>
+      </view>
+      <view wx:else />
+      <text></text>
+      <details wx:if="{{selected}}">
+        <summary>
+          <text>声明的证据槽位</text>
+        </summary>
+        <view>
+          <view wx:for="{{selected.evidenceSlots}}" wx:for-item="slot" wx:key="slot.id" key="{{slot}}">
+            <code>
+              <text>{{slot}}</text>
+            </code>
+          </view>
+        </view>
+      </details>
+      <view wx:else />
+      <text></text>
+      <view wx:if="{{job}}" class="proof-job" aria-live="polite">
+        <text></text>
+        <view class="generation-progress" aria-label="{{`作业进度 ${job.progress}%`}}">
+          <text style="{{{ width: `${job.progress}%` }}}" />
+        </view>
+        <text></text>
+        <dl>
+          <text></text>
+          <view>
+            <dt>
+              <text>Job</text>
+            </dt>
+            <dd>
+              <code>
+                <text>{{job.jobId}}</text>
+              </code>
+            </dd>
+          </view>
+          <text></text>
+          <view>
+            <dt>
+              <text>队列状态</text>
+            </dt>
+            <dd>
+              <text>{{job.status}}</text>
+            </dd>
+          </view>
+          <text></text>
+          <view>
+            <dt>
+              <text>证据结果</text>
+            </dt>
+            <dd>
+              <text>{{job.resultStatus}}</text>
+            </dd>
+          </view>
+          <text></text>
+          <view>
+            <dt>
+              <text>阶段</text>
+            </dt>
+            <dd>
+              <text>{{job.stage}}</text>
+            </dd>
+          </view>
+          <text></text>
+          <view wx:if="{{job.failureCode}}">
+            <dt>
+              <text>失败代码</text>
+            </dt>
+            <dd>
+              <text>{{job.failureCode}}</text>
+            </dd>
+          </view>
+          <view wx:else />
+          <text></text>
+        </dl>
+        <text></text>
+        <view wx:if="{{job.artifacts?.length}}" class="proof-artifacts">
+          <view wx:for="{{job.artifacts}}" wx:for-item="artifact" wx:key="artifact.id" key="{{`${artifact.role}:${artifact.contentSha256}`}}">
+            <text>
+              <text>{{artifact.role}}</text>
+            </text>
+            <text>
+              <text>{{artifact.filename}}</text>
+            </text>
+            <code>
+              <text>{{artifact.contentSha256.slice(0, 22)}}</text>
+              <text>… ·</text>
+              <text>{{artifact.byteSize}}</text>
+              <text>B</text>
+            </code>
+          </view>
+        </view>
+        <view wx:else class="form-note">
+          <text>结果工件尚未由对象存储发布。</text>
+        </view>
+        <text></text>
+      </view>
+      <view wx:else class="form-note">
+        <text>尚未提交。即使代码构建通过，外部 Provider、浏览器、SCM 与客户验收证据也不会自动变成 PASS。</text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+</view>

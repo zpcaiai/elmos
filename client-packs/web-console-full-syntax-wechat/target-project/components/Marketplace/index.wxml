@@ -1,0 +1,200 @@
+<view id="migration-marketplace-panel" class="marketplace-layout" role="tabpanel" aria-labelledby="migration-marketplace-tab">
+  <text></text>
+  <view class="market-main">
+    <text></text>
+    <view class="market-hero">
+      <text></text>
+      <view>
+        <text class="overline">
+          <text>BATCH 37 · SAFE EXTENSIBILITY</text>
+        </text>
+        <view>
+          <text>扩展核心之外的能力，</text>
+          <br />
+          <text>不放宽核心边界。</text>
+        </view>
+        <view>
+          <text>每个扩展都绑定精确 ABI、Publisher、签名、SBOM、Sandbox 与撤销策略。</text>
+        </view>
+      </view>
+      <text></text>
+      <view class="market-symbol">
+        <Icon name="box" size="{{34}}" />
+        <text>
+          <text>36</text>
+        </text>
+        <text>
+          <text>市场扩展功能</text>
+        </text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="market-toolbar">
+      <text class="search-field">
+        <Icon name="search" size="{{17}}" />
+        <text class="sr-only">
+          <text>搜索扩展</text>
+        </text>
+        <input value="{{query}}" placeholder="搜索扩展类型或能力" bindchange="(event) => setQuery(event.target.value)" />
+      </text>
+      <StatusChip status="NOT_RUN" />
+    </view>
+    <text></text>
+    <view class="extension-grid">
+      <text></text>
+      <view wx:for="{{visible}}" wx:for-item="extension" wx:key="extension.id" class="extension-card" key="{{extension.name}}">
+        <text></text>
+        <view class="extension-top">
+          <text class="extension-icon">
+            <Icon name="{{extension.icon}}" size="{{21}}" />
+          </text>
+          <StatusChip status="{{extension.status}}" compact="true" />
+        </view>
+        <text></text>
+        <text class="overline">
+          <text>{{extension.type}}</text>
+        </text>
+        <view>
+          <text>{{extension.name}}</text>
+        </view>
+        <view>
+          <text>{{extension.description}}</text>
+        </view>
+        <text></text>
+        <view class="extension-meta">
+          <text>
+            <text>
+              <text>{{extension.version}}</text>
+            </text>
+            <text>版本</text>
+          </text>
+          <text>
+            <text>{{extension.compatibility}}</text>
+          </text>
+        </view>
+        <text></text>
+        <view class="publisher">
+          <text class="mini-avatar">
+            <text>EL</text>
+          </text>
+          <text>
+            <text>{{extension.publisher}}</text>
+            <text>
+              <text>模板条目 · 尚未发布</text>
+            </text>
+          </text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+      <view wx:if="{{visible.length === 0}}" class="market-empty">
+        <Icon name="search" size="{{22}}" />
+        <text>
+          <text>没有匹配的扩展</text>
+        </text>
+        <text>
+          <text>请尝试名称、类型或能力关键词。</text>
+        </text>
+        <button class="button button-secondary" type="button" bindtap="() => setQuery("")">
+          <text>清除搜索</text>
+        </button>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="market-side">
+    <text></text>
+    <view class="surface-card compact-card">
+      <text class="overline">
+        <text>CERTIFICATION PATH</text>
+      </text>
+      <view>
+        <text>发布前的 5 个门槛</text>
+      </view>
+      <view class="cert-path">
+        <view class="done">
+          <text>
+            <text>1</text>
+          </text>
+          <text>
+            <text>
+              <text>Manifest 与 ABI</text>
+            </text>
+            <text>
+              <text>类型化契约已定义</text>
+            </text>
+          </text>
+        </view>
+        <view class="done">
+          <text>
+            <text>2</text>
+          </text>
+          <text>
+            <text>
+              <text>Sandbox 策略</text>
+            </text>
+            <text>
+              <text>默认拒绝权限</text>
+            </text>
+          </text>
+        </view>
+        <view>
+          <text>
+            <text>3</text>
+          </text>
+          <text>
+            <text>
+              <text>签名与供应链</text>
+            </text>
+            <text>
+              <text>外部信任根未运行</text>
+            </text>
+          </text>
+        </view>
+        <view>
+          <text>
+            <text>4</text>
+          </text>
+          <text>
+            <text>
+              <text>独立安全审核</text>
+            </text>
+            <text>
+              <text>待授权执行</text>
+            </text>
+          </text>
+        </view>
+        <view>
+          <text>
+            <text>5</text>
+          </text>
+          <text>
+            <text>
+              <text>Marketplace Gate</text>
+            </text>
+            <text>
+              <text>只有 Gate 能裁定</text>
+            </text>
+          </text>
+        </view>
+      </view>
+    </view>
+    <text></text>
+    <view class="surface-card safety-card">
+      <Icon name="shield" size="{{20}}" />
+      <view>
+        <text>
+          <text>商业状态不能绕过安全认证</text>
+        </text>
+        <view>
+          <text>付费、私有目录或紧急发布都不能跳过签名、兼容性、撤销和隔离检查。</text>
+        </view>
+      </view>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+</view>

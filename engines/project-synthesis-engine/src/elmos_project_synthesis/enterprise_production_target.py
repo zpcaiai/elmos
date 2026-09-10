@@ -719,7 +719,13 @@ def test_rich_pagination_and_filtering():
 '''
     files["tests/test_enterprise_api.py"] = test_enterprise_py
 
+    from .python_domain_workflow_emitter import generate_python_domain_workflow_files
+
+    for path, content in generate_python_domain_workflow_files(request).items():
+        files[path] = content
+
     return files
+
 
 
 def generate_enterprise_target_files(request: SynthesisRequest, language: str | None = None) -> dict[str, str]:

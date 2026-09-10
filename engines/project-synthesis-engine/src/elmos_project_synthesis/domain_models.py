@@ -94,6 +94,11 @@ class Money(ValueObject):
                 "MONEY_CURRENCY_MISMATCH",
                 f"Cannot subtract different currencies: {self.currency} and {other.currency}",
             )
+        if self.amount < other.amount:
+            raise DomainInvariantViolationError(
+                "MONEY_INSUFFICIENT_FUNDS",
+                f"Insufficient funds: {self.amount} < {other.amount}",
+            )
         return Money(amount=self.amount - other.amount, currency=self.currency)
 
     def multiply(self, factor: Decimal | int | float) -> Money:

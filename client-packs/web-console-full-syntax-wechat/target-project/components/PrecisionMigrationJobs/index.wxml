@@ -1,0 +1,1 @@
+<text>{{name ? <button className="precision-artifact-link" type="button" key={artifact.digest ?? name} onClick={() => void download(artifact)}>{name}<small>{artifact.digest?.slice(0, 20)}… · {artifact.size_bytes} bytes</small></button> : null}}</text>

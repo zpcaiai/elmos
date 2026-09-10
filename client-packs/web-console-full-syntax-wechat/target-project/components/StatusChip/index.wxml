@@ -1,0 +1,4 @@
+<text class="{{`status-chip status-${normalized.toLowerCase().replaceAll("_", "-")} ${compact ? "status-compact" : ""}`}}">
+  <text />
+  <text>{{statusLabels[normalized] ?? status}}</text>
+</text>

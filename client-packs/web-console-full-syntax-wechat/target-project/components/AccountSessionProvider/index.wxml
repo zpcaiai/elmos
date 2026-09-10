@@ -1,0 +1,5 @@
+<AccountSessionContext.Provider value="{{value}}">
+  <text></text>
+  <slot />
+  <text></text>
+</AccountSessionContext.Provider>

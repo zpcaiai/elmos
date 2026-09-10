@@ -1,0 +1,34 @@
+<text class="{{`target-card target-${profile.accent} ${checked ? "selected" : ""}`}}" key="{{profile.id}}">
+  <text></text>
+  <input type="checkbox" checked="{{checked}}" disabled="{{persistence === "postgresql" && profile.productionProfiles.length === 0}}" bindchange="() => toggleTarget(profile.id)" />
+  <text></text>
+  <text class="target-check">
+    <Icon name="check" size="{{13}}" />
+  </text>
+  <text></text>
+  <text class="target-icon">
+    <Icon name="{{profile.icon}}" size="{{21}}" />
+  </text>
+  <text></text>
+  <text class="target-copy">
+    <text>
+      <text>{{profile.language}}</text>
+      <text></text>
+      <text>{{profile.runtime}}</text>
+    </text>
+    <text>
+      <text>{{profile.framework}}</text>
+      <text>·</text>
+      <text>{{profile.maturity}}</text>
+    </text>
+    <text>
+      <text>{{profile.sourceSkill}}</text>
+      <text>· :</text>
+      <text>{{profile.port}}</text>
+      <text>· 生产</text>
+      <view wx:if="{{profile.productionEntityScope === "multi-entity"}}" />
+      <view wx:else />
+    </text>
+  </text>
+  <text></text>
+</text>

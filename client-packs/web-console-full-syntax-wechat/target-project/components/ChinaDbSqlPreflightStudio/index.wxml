@@ -1,0 +1,505 @@
+<view class="page-stack">
+  <text></text>
+  <view class="page-header">
+    <text></text>
+    <view>
+      <text></text>
+      <text class="overline">
+        <text>BATCH 31 · READ-ONLY SOURCE PREFLIGHT</text>
+      </text>
+      <text></text>
+      <view>
+        <text>ChinaDB SQL 预检</text>
+      </view>
+      <text></text>
+      <view>
+        <text>在显式兼容模式下发射本地目标 SQL；实库执行、结果等价与认证仍失败关闭。</text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <Link class="button button-secondary" href="/migration">
+      <text></text>
+      <Icon name="arrow" size="{{16}}" />
+      <text>返回迁移工坊</text>
+    </Link>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="source-notice" role="status" aria-live="polite">
+    <text></text>
+    <Icon name="{{capabilities ? "check" : "clock"}}" size="{{16}}" />
+    <text></text>
+    <text>
+      <text></text>
+      <view wx:if="{{loadingCapabilities}}" />
+      <view wx:else />
+      <text></text>
+    </text>
+    <text></text>
+    <StatusChip status="{{capabilities ? "LOCAL_ADAPTER" : "BLOCKED"}}" compact="true" />
+    <text></text>
+  </view>
+  <text></text>
+  <view wx:if="{{error}}" ref="{{errorSummary}}" class="{{styles.errorSummary}}" role="alert" tabIndex="{{-1}}">
+    <text></text>
+    <Icon name="lock" size="{{18}}" />
+    <text></text>
+    <view>
+      <text>
+        <text>预检未执行</text>
+      </text>
+      <view>
+        <text>{{error}}</text>
+      </view>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="{{styles.workspace}}">
+    <text></text>
+    <form class="{{`surface-card ${styles.form}`}}" data-telemetry-ignore="true" aria-busy="{{busy}}" bindsubmit="submit">
+      <text></text>
+      <view class="{{styles.sectionHeading}}">
+        <text></text>
+        <view>
+          <text class="overline">
+            <text>EXACT REQUEST</text>
+          </text>
+          <view>
+            <text>源 SQL 与目标精确元组</text>
+          </view>
+        </view>
+        <text></text>
+        <StatusChip status="{{capabilities ? "LOCAL_ADAPTER" : "BLOCKED"}}" compact="true" />
+        <text></text>
+      </view>
+      <text></text>
+      <fieldset class="{{styles.fieldset}}">
+        <text></text>
+        <legend>
+          <text>源查询身份</text>
+        </legend>
+        <text></text>
+        <view class="{{styles.gridTwo}}">
+          <text></text>
+          <text htmlFor="sql-query-id">
+            <text>
+              <text>Query ID</text>
+            </text>
+            <input id="sql-query-id" value="{{fields.queryId}}" maxLength="{{160}}" required="true" autoComplete="off" bindchange="(event) => updateField("queryId", event.target.value)" />
+          </text>
+          <text></text>
+          <text htmlFor="sql-source-profile">
+            <text>
+              <text>精确源 Profile</text>
+            </text>
+            <select id="sql-source-profile" aria-describedby="sql-source-profile-hint" value="{{fields.sourceProfile}}" bindchange="(event) => updateField("sourceProfile", event.target.value as FormFields["sourceProfile"])">
+              <option wx:for="{{chinaDbSqlSourceProfiles}}" wx:for-item="profile" wx:key="profile.id" value="{{profile}}" key="{{profile}}">
+                <text>{{profile}}</text>
+              </option>
+            </select>
+          </text>
+          <text></text>
+        </view>
+        <text></text>
+        <view id="sql-source-profile-hint" class="{{styles.sourceProfileHint}}">
+          <text></text>
+          <view wx:if="{{sourceRoutePlanned}}" />
+          <view wx:else />
+          <text></text>
+        </view>
+        <text></text>
+      </fieldset>
+      <text></text>
+      <fieldset class="{{styles.fieldset}}" aria-describedby="{{selectedTarget ? "sql-target-requirement" : undefined}}">
+        <text></text>
+        <legend>
+          <text>目标精确元组</text>
+        </legend>
+        <text></text>
+        <view class="{{styles.gridTwo}}">
+          <text></text>
+          <text htmlFor="sql-target-id">
+            <text>
+              <text>ChinaDB 目标</text>
+            </text>
+            <select id="sql-target-id" value="{{fields.targetId}}" disabled="{{!capabilities}}" bindchange="(event) => updateField("targetId", event.target.value as FormFields["targetId"])">
+              <text>{{capabilities?.targets.map((target) => <option value={target.id} key={target.id}>{target.label} · {target.id}</option>) ?? <option value="dm8">等待能力快照</option>}}</text>
+            </select>
+          </text>
+          <text></text>
+          <text htmlFor="sql-target-version">
+            <text>
+              <text>精确版本</text>
+            </text>
+            <input id="sql-target-version" value="{{fields.targetVersion}}" maxLength="{{128}}" placeholder="例如 8.1.3.140" required="true" autoComplete="off" bindchange="(event) => updateField("targetVersion", event.target.value)" />
+          </text>
+          <text></text>
+          <text htmlFor="sql-target-edition">
+            <text>
+              <text>Edition</text>
+            </text>
+            <input id="sql-target-edition" value="{{fields.targetEdition}}" maxLength="{{128}}" placeholder="例如 enterprise" required="true" autoComplete="off" bindchange="(event) => updateField("targetEdition", event.target.value)" />
+          </text>
+          <text></text>
+          <text htmlFor="sql-compatibility-mode">
+            <text>
+              <text>Compatibility mode</text>
+            </text>
+            <input id="sql-compatibility-mode" value="{{fields.compatibilityMode}}" maxLength="{{128}}" placeholder="例如 oracle-compatible-explicit" required="true" autoComplete="off" bindchange="(event) => updateField("compatibilityMode", event.target.value)" />
+          </text>
+          <text></text>
+          <text htmlFor="sql-target-driver">
+            <text>
+              <text>Driver</text>
+            </text>
+            <input id="sql-target-driver" value="{{fields.targetDriver}}" maxLength="{{128}}" placeholder="精确驱动与版本" required="true" autoComplete="off" bindchange="(event) => updateField("targetDriver", event.target.value)" />
+          </text>
+          <text></text>
+          <text htmlFor="sql-target-charset">
+            <text>
+              <text>Charset</text>
+            </text>
+            <input id="sql-target-charset" value="{{fields.targetCharset}}" maxLength="{{128}}" placeholder="例如 UTF-8" required="true" autoComplete="off" bindchange="(event) => updateField("targetCharset", event.target.value)" />
+          </text>
+          <text></text>
+          <text htmlFor="sql-target-collation">
+            <text>
+              <text>Collation</text>
+            </text>
+            <input id="sql-target-collation" value="{{fields.targetCollation}}" maxLength="{{128}}" placeholder="例如 BINARY" required="true" autoComplete="off" bindchange="(event) => updateField("targetCollation", event.target.value)" />
+          </text>
+          <text></text>
+          <text htmlFor="sql-target-timezone">
+            <text>
+              <text>Time zone</text>
+            </text>
+            <input id="sql-target-timezone" value="{{fields.targetTimeZone}}" maxLength="{{128}}" placeholder="例如 Asia/Shanghai" required="true" autoComplete="off" bindchange="(event) => updateField("targetTimeZone", event.target.value)" />
+          </text>
+          <text></text>
+        </view>
+        <text></text>
+        <view wx:if="{{selectedTarget}}" id="sql-target-requirement" class="{{styles.requirement}}">
+          <Icon name="database" size="{{16}}" />
+          <text>
+            <text>
+              <text>{{selectedTarget.label}}</text>
+            </text>
+            <text>{{selectedTarget.versionRequirement}}</text>
+            <text>；</text>
+            <text>{{selectedTarget.compatibilityModeRequirement}}</text>
+          </text>
+        </view>
+        <text></text>
+      </fieldset>
+      <text></text>
+      <fieldset class="{{styles.fieldset}}">
+        <text></text>
+        <legend>
+          <text>参数契约</text>
+        </legend>
+        <text></text>
+        <view class="{{styles.parameterToolbar}}">
+          <view>
+            <text>仅声明名称、逻辑类型与 nullability；最多</text>
+            <text>{{chinaDbSqlParameterLimit}}</text>
+            <text>项。</text>
+          </view>
+          <button type="button" class="button button-secondary" disabled="{{parameters.length >= chinaDbSqlParameterLimit}}" bindtap="addParameter">
+            <Icon name="plus" size="{{15}}" />
+            <text>添加参数</text>
+          </button>
+        </view>
+        <text></text>
+        <view wx:if="{{parameters.length === 0}}" class="{{styles.emptyParameters}}">
+          <text>当前请求使用空参数契约。</text>
+        </view>
+        <view wx:else class="{{styles.parameterList}}">
+          <view wx:for="{{parameters}}" wx:for-item="parameter" wx:for-index="index" wx:key="parameter.id" class="{{styles.parameterRow}}" key="{{`parameter-${index}`}}">
+            <text></text>
+            <text htmlFor="{{`sql-parameter-name-${index}`}}">
+              <text>
+                <text>名称</text>
+              </text>
+              <input id="{{`sql-parameter-name-${index}`}}" value="{{parameter.name}}" maxLength="{{128}}" required="true" autoComplete="off" bindchange="(event) => updateParameter(index, { name: event.target.value })" />
+            </text>
+            <text></text>
+            <text htmlFor="{{`sql-parameter-type-${index}`}}">
+              <text>
+                <text>逻辑类型</text>
+              </text>
+              <input id="{{`sql-parameter-type-${index}`}}" value="{{parameter.logicalType}}" maxLength="{{128}}" required="true" autoComplete="off" bindchange="(event) => updateParameter(index, { logicalType: event.target.value })" />
+            </text>
+            <text></text>
+            <text class="{{styles.checkbox}}" htmlFor="{{`sql-parameter-nullable-${index}`}}">
+              <input id="{{`sql-parameter-nullable-${index}`}}" type="checkbox" checked="{{parameter.nullable}}" bindchange="(event) => updateParameter(index, { nullable: event.target.checked })" />
+              <text>
+                <text>Nullable</text>
+              </text>
+            </text>
+            <text></text>
+            <button type="button" class="icon-button bordered" aria-label="{{`删除参数 ${index + 1}`}}" bindtap="() => removeParameter(index)">
+              <Icon name="close" size="{{14}}" />
+            </button>
+            <text></text>
+          </view>
+        </view>
+        <text></text>
+      </fieldset>
+      <text></text>
+      <text class="{{styles.sqlField}}" htmlFor="sql-source">
+        <text>
+          <text>源 SQL</text>
+        </text>
+        <textarea id="sql-source" aria-describedby="sql-source-hint" value="{{fields.sql}}" placeholder="粘贴已脱敏的查询；不要包含凭据、个人信息或未授权生产数据。" required="true" spellCheck="{{false}}" bindchange="(event) => updateField("sql", event.target.value)" />
+        <text id="sql-source-hint">
+          <text>UTF-8 最大</text>
+          <text>{{chinaDbSqlInputLimitBytes / 1024}}</text>
+          <text>KiB。SQL 只发送到同源 BFF 和受信 control-plane，不保存为草稿。</text>
+        </text>
+      </text>
+      <text></text>
+      <view class="{{styles.digestBlock}}">
+        <text>
+          <text>能力快照摘要</text>
+        </text>
+        <code>
+          <text>{{capabilities?.capabilitySnapshotDigest ?? "尚未绑定"}}</text>
+        </code>
+      </view>
+      <text></text>
+      <view class="{{styles.boundary}}">
+        <Icon name="shield" size="{{17}}" />
+        <view>
+          <text>本操作可在显式兼容模式下生成本地目标 SQL。不会连接数据库、验证行值等价或签发认证。</text>
+        </view>
+      </view>
+      <text></text>
+      <view class="{{styles.actions}}">
+        <text></text>
+        <button wx:if="{{busy}}" class="button button-secondary" type="button" bindtap="cancelAssessment">
+          <text>取消本次预检</text>
+        </button>
+        <text></text>
+        <button class="button button-primary" type="submit" disabled="{{!capabilities || busy}}">
+          <view wx:if="{{busy}}" />
+          <view wx:else />
+        </button>
+        <text></text>
+      </view>
+      <text></text>
+    </form>
+    <text></text>
+    <view class="{{`surface-card ${styles.boundaryCard}`}}">
+      <text></text>
+      <text class="overline">
+        <text>FAIL-CLOSED BOUNDARY</text>
+      </text>
+      <text></text>
+      <view>
+        <text>当前能力上限</text>
+      </view>
+      <text></text>
+      <dl>
+        <text></text>
+        <view>
+          <dt>
+            <text>目标 Renderer</text>
+          </dt>
+          <dd>
+            <text>{{capabilities?.boundaries.verifiedTargetRenderers ?? 0}}</text>
+          </dd>
+        </view>
+        <text></text>
+        <view>
+          <dt>
+            <text>生产数据库访问</text>
+          </dt>
+          <dd>
+            <text>FALSE</text>
+          </dd>
+        </view>
+        <text></text>
+        <view>
+          <dt>
+            <text>目标 SQL</text>
+          </dt>
+          <dd>
+            <view wx:if="{{capabilities?.boundaries.targetSqlMayBeEmitted}}" />
+            <view wx:else />
+          </dd>
+        </view>
+        <text></text>
+        <view>
+          <dt>
+            <text>外部执行</text>
+          </dt>
+          <dd>
+            <text>NOT_RUN</text>
+          </dd>
+        </view>
+        <text></text>
+        <view>
+          <dt>
+            <text>认证</text>
+          </dt>
+          <dd>
+            <text>NOT_CERTIFIED</text>
+          </dd>
+        </view>
+        <text></text>
+      </dl>
+      <text></text>
+      <view>
+        <text>{{capabilities?.boundaries.claim ?? "等待受保护能力快照。"}}</text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view wx:if="{{result}}" ref="{{resultPanel}}" class="{{`surface-card ${styles.result}`}}" tabIndex="{{-1}}" aria-labelledby="sql-preflight-result-title">
+    <text></text>
+    <view class="{{styles.resultHeading}}">
+      <text></text>
+      <view>
+        <text class="overline">
+          <text>TYPED SOURCE ASSESSMENT</text>
+        </text>
+        <view id="sql-preflight-result-title">
+          <text>预检结果：</text>
+          <view wx:if="{{result.state === "LOCAL_EMITTED"}}" />
+          <view wx:else />
+        </view>
+        <view>
+          <text>{{result.routeId}}</text>
+          <text>·</text>
+          <text>{{result.queryId}}</text>
+        </view>
+      </view>
+      <text></text>
+      <StatusChip status="{{result.state}}" />
+      <text></text>
+    </view>
+    <text></text>
+    <view class="{{styles.resultFacts}}">
+      <text></text>
+      <view>
+        <text>
+          <text>源解析</text>
+        </text>
+        <StatusChip status="{{result.verification.sourceParse}}" compact="true" />
+      </view>
+      <text></text>
+      <view>
+        <text>
+          <text>目标 SQL</text>
+        </text>
+        <text>
+          <view wx:if="{{result.targetSql}}" />
+          <view wx:else />
+        </text>
+      </view>
+      <text></text>
+      <view>
+        <text>
+          <text>目标状态</text>
+        </text>
+        <StatusChip status="{{result.target.implementationStatus}}" compact="true" />
+      </view>
+      <text></text>
+      <view>
+        <text>
+          <text>认证</text>
+        </text>
+        <StatusChip status="{{result.certification}}" compact="true" />
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view wx:if="{{result.targetSql}}" class="{{styles.statementSection}}">
+      <text></text>
+      <view>
+        <text>本地目标 SQL</text>
+      </view>
+      <text></text>
+      <pre aria-label="本地发射的目标 SQL">
+        <text>{{result.targetSql}}</text>
+      </pre>
+      <text></text>
+      <view class="{{styles.noStatements}}">
+        <text>此 SQL 未经目标库执行或等价验证，不得当作认证产物。</text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="{{styles.resultGrid}}">
+      <text></text>
+      <view>
+        <text></text>
+        <view>
+          <text>Blockers</text>
+        </view>
+        <text></text>
+        <view class="{{styles.blockerList}}">
+          <view wx:for="{{result.blockers}}" wx:for-item="blocker" wx:for-index="index" wx:key="blocker.id" class="{{styles.blocker}}" key="{{`${blocker.code}-${index}`}}">
+            <text></text>
+            <view>
+              <StatusChip status="{{blocker.severity === "ERROR" ? "BLOCKED" : "REVIEW"}}" compact="true" />
+              <code>
+                <text>{{blocker.code}}</text>
+              </code>
+            </view>
+            <text></text>
+            <view>
+              <text>{{blocker.message}}</text>
+            </view>
+            <text></text>
+            <text>
+              <view wx:if="{{blocker.statementIndex === null}}" />
+              <view wx:else />
+            </text>
+            <text></text>
+          </view>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+      <view>
+        <text></text>
+        <view>
+          <text>Verification</text>
+        </view>
+        <text></text>
+        <dl class="{{styles.verification}}">
+          <view wx:for="{{(Object.entries(result.verification) as Array<[keyof typeof result.verification, string]>)}}" wx:for-item="[key, value]" wx:key="[key, value].id" key="{{key}}">
+            <dt>
+              <text>{{verificationLabels[key]}}</text>
+            </dt>
+            <dd>
+              <StatusChip status="{{value}}" compact="true" />
+            </dd>
+          </view>
+        </dl>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="{{styles.statementSection}}">
+      <text></text>
+      <view>
+        <text>Typed AST 与语义义务</text>
+      </view>
+      <text></text>
+      <view wx:if="{{result.statements.length === 0}}" class="{{styles.noStatements}}">
+        <text>源解析失败，没有生成 typed AST。</text>
+      </view>
+      <view wx:else />
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+</view>

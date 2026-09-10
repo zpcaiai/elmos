@@ -1,0 +1,315 @@
+<view class="surface-card runtime-deployment-guide" aria-labelledby="{{`${id}-title`}}">
+  <text></text>
+  <view class="runtime-guide-heading">
+    <text></text>
+    <view>
+      <text></text>
+      <text class="overline">
+        <text>LOCAL RUN · CLOUD HANDOFF</text>
+      </text>
+      <text></text>
+      <view id="{{`${id}-title`}}">
+        <text>本地运行与云部署</text>
+      </view>
+      <text></text>
+      <view>
+        <text>下载结果内同步生成本地步骤、平台选择和 Cloud Run 配置；外部执行不会被页面假定为成功。</text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="runtime-guide-status">
+      <text></text>
+      <StatusChip status="{{guidance.status}}" compact="true" />
+      <text></text>
+      <StatusChip status="{{guidance.externalEvidence}}" compact="true" />
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="runtime-guide-summary">
+    <text></text>
+    <view>
+      <text></text>
+      <text class="runtime-guide-icon">
+        <Icon name="server" size="{{18}}" />
+      </text>
+      <text></text>
+      <view>
+        <text>
+          <text>逐个构建 / 运行推荐</text>
+        </text>
+        <text>
+          <text>{{hardware(sequential.cpu, sequential.memoryGb, sequential.diskGb)}}</text>
+        </text>
+        <text>
+          <text>磁盘包含全部已选工程与依赖缓存</text>
+        </text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view>
+      <text></text>
+      <text class="runtime-guide-icon">
+        <Icon name="layers" size="{{18}}" />
+      </text>
+      <text></text>
+      <view>
+        <text>
+          <text>全部目标并发推荐</text>
+        </text>
+        <text>
+          <text>{{hardware(concurrent.cpu, concurrent.memoryGb, concurrent.diskGb)}}</text>
+        </text>
+        <text>
+          <text>按同时构建并运行的保守合计</text>
+        </text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="runtime-guide-recommended">
+      <text></text>
+      <text class="runtime-guide-icon">
+        <Icon name="cloud" size="{{18}}" />
+      </text>
+      <text></text>
+      <view>
+        <text>
+          <text>推荐云平台</text>
+        </text>
+        <text>
+          <text>{{guidance.recommendation.platform}}</text>
+        </text>
+        <text>
+          <text>私有默认 · 镜像摘要 · 最小权限</text>
+        </text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="runtime-profile-grid">
+    <text></text>
+    <details wx:for="{{profiles}}" wx:for-item="profile" wx:key="profile.id" key="{{profile.id}}" class="runtime-profile">
+      <text></text>
+      <summary>
+        <text></text>
+        <text>
+          <text>
+            <text>{{profile.label}}</text>
+          </text>
+          <text>
+            <text>{{profile.framework}}</text>
+          </text>
+        </text>
+        <text></text>
+        <text class="runtime-profile-port">
+          <text>:</text>
+          <text>{{profile.port}}</text>
+        </text>
+        <text></text>
+        <Icon name="chevron" size="{{15}}" />
+        <text></text>
+      </summary>
+      <text></text>
+      <view class="runtime-profile-body">
+        <text></text>
+        <dl>
+          <text></text>
+          <view>
+            <dt>
+              <text>精确工具链</text>
+            </dt>
+            <dd>
+              <text>{{profile.toolchain}}</text>
+            </dd>
+          </view>
+          <text></text>
+          <view>
+            <dt>
+              <text>最低硬件</text>
+            </dt>
+            <dd>
+              <text>{{hardware(profile.minimum.cpu, profile.minimum.memoryGb, profile.minimum.diskGb)}}</text>
+            </dd>
+          </view>
+          <text></text>
+          <view>
+            <dt>
+              <text>推荐硬件</text>
+            </dt>
+            <dd>
+              <text>{{hardware(profile.recommended.cpu, profile.recommended.memoryGb, profile.recommended.diskGb)}}</text>
+            </dd>
+          </view>
+          <text></text>
+          <view>
+            <dt>
+              <text>范围</text>
+            </dt>
+            <dd>
+              <text>{{profile.scope}}</text>
+            </dd>
+          </view>
+          <text></text>
+        </dl>
+        <text></text>
+        <view class="runtime-command-grid">
+          <text></text>
+          <view>
+            <text>
+              <text>验证</text>
+            </text>
+            <pre>
+              <text>{{profile.verifyCommands.join("\n")}}</text>
+            </pre>
+          </view>
+          <text></text>
+          <view>
+            <text>
+              <text>运行与健康</text>
+            </text>
+            <pre>
+              <text>{{profile.runCommands.join("\n")}}</text>
+            </pre>
+          </view>
+          <text></text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+    </details>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="cloud-option-grid" aria-label="可选云部署平台">
+    <text></text>
+    <view wx:for="{{guidance.cloudOptions}}" wx:for-item="option" wx:key="option.id" key="{{option.id}}" class="{{option.status === "RECOMMENDED" ? "cloud-option-recommended" : ""}}">
+      <text></text>
+      <view>
+        <text>
+          <text>{{option.name}}</text>
+        </text>
+        <StatusChip status="{{option.status}}" compact="true" />
+      </view>
+      <text></text>
+      <view>
+        <text>{{option.fit}}</text>
+      </view>
+      <text></text>
+      <text>
+        <text>{{option.tradeoff}}</text>
+      </text>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <details class="cloud-run-details">
+    <text></text>
+    <summary>
+      <text></text>
+      <text>
+        <Icon name="cloud" size="{{17}}" />
+        <text>
+          <text>展开 Google Cloud Run 详细配置与步骤</text>
+        </text>
+      </text>
+      <text></text>
+      <Icon name="chevron" size="{{16}}" />
+      <text></text>
+    </summary>
+    <text></text>
+    <view class="cloud-run-detail-body">
+      <text></text>
+      <view>
+        <text>{{guidance.recommendation.reason}}</text>
+      </view>
+      <text></text>
+      <view class="cloud-run-detail-grid">
+        <text></text>
+        <view>
+          <text></text>
+          <view>
+            <text>部署前必须补齐</text>
+          </view>
+          <text></text>
+          <view>
+            <view wx:for="{{guidance.recommendation.requiredInputs}}" wx:for-item="input" wx:key="input.id" key="{{input}}">
+              <text>{{input}}</text>
+            </view>
+          </view>
+          <text></text>
+        </view>
+        <text></text>
+        <view>
+          <text></text>
+          <view>
+            <text>回滚与清理</text>
+          </view>
+          <text></text>
+          <view>
+            <view wx:for="{{[...guidance.recommendation.rollback, ...guidance.recommendation.cleanup]}}" wx:key="item.id" key="{{item}}">
+              <text>{{item}}</text>
+            </view>
+          </view>
+          <text></text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="cloud-run-steps">
+        <text></text>
+        <view wx:for="{{guidance.recommendation.steps}}" wx:for-item="step" wx:key="step.id" key="{{step.title}}">
+          <text></text>
+          <text>
+            <text>{{step.title}}</text>
+          </text>
+          <text></text>
+          <view>
+            <text>{{step.detail}}</text>
+          </view>
+          <text></text>
+          <pre wx:if="{{step.commands}}">
+            <text>{{step.commands.join("\n")}}</text>
+          </pre>
+          <text></text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="runtime-guide-links">
+        <text></text>
+        <navigator wx:for="{{guidance.recommendation.officialDocs}}" wx:for-item="doc" wx:key="doc.id" key="{{doc.url}}" href="{{doc.url}}" target="_blank" rel="noreferrer">
+          <text></text>
+          <text>{{doc.label}}</text>
+          <Icon name="external" size="{{13}}" />
+          <text></text>
+        </navigator>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="runtime-guide-boundary">
+        <text></text>
+        <Icon name="lock" size="{{17}}" />
+        <text></text>
+        <text>
+          <text>
+            <text>外部执行仍为 NOT_RUN</text>
+          </text>
+          <text>
+            <text>只有真实账号、精确配置、镜像摘要、运行证据和独立验收齐备后，才能更新部署状态。</text>
+          </text>
+        </text>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </details>
+  <text></text>
+</view>

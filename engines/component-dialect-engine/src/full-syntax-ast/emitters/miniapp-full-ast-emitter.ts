@@ -1,3 +1,4 @@
+import * as ts from "typescript";
 import { FullSyntaxComponentIR, FullSyntaxNode } from "../types";
 
 export class MiniAppFullAstEmitter {
@@ -59,7 +60,7 @@ export class MiniAppFullAstEmitter {
     jsLines.push('    detached() {');
     for (const eff of ir.effects) {
       if (eff.hookKind === "unmount") {
-        jsLines.push(`      ${eff.bodyCode.replace(/^[^{]*{/, "").replace(/}[^}]*$/, "").trim()}`);
+        jsLines.push(`      ${this.cleanBodyCode(eff.bodyCode)}`);
       }
     }
     jsLines.push('    },');
@@ -70,7 +71,7 @@ export class MiniAppFullAstEmitter {
     for (const m of ir.methods) {
       const params = m.parameters.map((p) => p.name).join(", ");
       jsLines.push(`    ${m.name}(${params}) {`);
-      jsLines.push(`      ${m.bodyCode.replace(/^[^{]*{/, "").replace(/}[^}]*$/, "").trim()}`);
+      jsLines.push(`      ${this.cleanBodyCode(m.bodyCode)}`);
       jsLines.push(`    },`);
     }
 
@@ -176,7 +177,7 @@ export class MiniAppFullAstEmitter {
       return childStrs.join("\n");
     }
 
-    const tag = node.tag || "view";
+    const tag = this.toWxTag(node.tag);
     const attrsList: string[] = [];
 
     for (const a of node.attrs || []) {
@@ -204,7 +205,7 @@ export class MiniAppFullAstEmitter {
 
   private emitWxmlNodeWithDirective(node: FullSyntaxNode, directive: string, indentLevel: number): string {
     const indent = " ".repeat(indentLevel);
-    const tag = node.tag || "view";
+    const tag = this.toWxTag(node.tag);
     const attrsList: string[] = [directive];
 
     for (const a of node.attrs || []) {
@@ -228,6 +229,42 @@ export class MiniAppFullAstEmitter {
 
     const childContent = node.children.map((c) => this.emitWxmlNode(c, indentLevel + 2)).join("\n");
     return `${indent}<${tag}${attrStr}>\n${childContent}\n${indent}</${tag}>`;
+  }
+
+  private toWxTag(tag?: string): string {
+    if (!tag) return "view";
+    const lower = tag.toLowerCase();
+    if (["div", "section", "article", "header", "footer", "main", "nav", "aside", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "p", "table", "thead", "tbody", "tr", "td", "th"].includes(lower)) {
+      return "view";
+    }
+    if (["span", "b", "i", "strong", "em", "small", "label", "text"].includes(lower)) {
+      return "text";
+    }
+    if (["img", "svg"].includes(lower)) {
+      return "image";
+    }
+    if (["a"].includes(lower)) {
+      return "navigator";
+    }
+    if (["button", "input", "textarea", "form", "scroll-view", "swiper", "view", "text", "image", "navigator"].includes(lower)) {
+      return lower;
+    }
+    return tag;
+  }
+
+  private cleanBodyCode(code: string): string {
+    const unwrapped = code.replace(/^[^{]*{/, "").replace(/}[^}]*$/, "").trim();
+    try {
+      const transpiled = ts.transpileModule(`function __tmp() { ${unwrapped} }`, {
+        compilerOptions: {
+          target: ts.ScriptTarget.ES2022,
+          removeComments: false,
+        }
+      }).outputText;
+      return transpiled.replace(/function __tmp\(\) \{/, "").replace(/\}[^}]*$/, "").trim();
+    } catch {
+      return unwrapped;
+    }
   }
 }
 

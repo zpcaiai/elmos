@@ -1,0 +1,227 @@
+<text></text>
+<view class="{{styles.grid}}">
+  <text></text>
+  <view class="{{styles.panel}}">
+    <text></text>
+    <view>
+      <text>账户余额</text>
+    </view>
+    <text></text>
+    <view wx:if="{{failure}}" role="alert">
+      <text>读取或操作失败：</text>
+      <text>{{failure}}</text>
+    </view>
+    <text></text>
+    <view wx:if="{{!wallet}}">
+      <text>
+        <view wx:if="{{busy}}" />
+        <view wx:else />
+      </text>
+    </view>
+    <view wx:else>
+      <text></text>
+      <view style="{{{ fontSize: 28, margin: "0 0 4px" }}}">
+        <text>{{yuan(wallet.spendableMinor)}}</text>
+      </view>
+      <text></text>
+      <text>
+        <text>可用余额（已扣除执行中任务的冻结）</text>
+      </text>
+      <text></text>
+      <view>
+        <text>明细</text>
+      </view>
+      <text></text>
+      <text>
+        <text>
+          <text>账面余额</text>
+        </text>
+        <text>
+          <text>{{yuan(wallet.balanceMinor)}}</text>
+        </text>
+      </text>
+      <text></text>
+      <text>
+        <text></text>
+        <text>
+          <text>执行中冻结</text>
+        </text>
+        <text></text>
+        <text>
+          <text>{{yuan(wallet.reservedMinor)}}</text>
+        </text>
+        <text></text>
+      </text>
+      <text></text>
+      <text>
+        <text>冻结是任务开始时按预估扣下的，任务结束后按实际用量结算，
+                多冻的会退回可用余额。它还在你的账面余额里，只是暂时不能用于新任务。</text>
+      </text>
+      <text></text>
+      <view wx:if="{{frozen}}" role="alert">
+        <text>钱包当前状态为</text>
+        <text>{{wallet.status}}</text>
+        <text>，无法充值或消费。请联系运营。</text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <button class="button" type="button" disabled="{{busy}}" bindtap="() => void load()">
+      <text></text>
+      <view wx:if="{{busy}}" />
+      <view wx:else />
+      <text></text>
+    </button>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="{{styles.panel}}">
+    <text></text>
+    <view>
+      <text>充值</text>
+    </view>
+    <text></text>
+    <view>
+      <text></text>
+      <text>
+        <text>余额与套餐并存：任务优先消耗套餐配额，配额不足时才动余额。
+              充值不会改变你的套餐。</text>
+      </text>
+      <text></text>
+    </view>
+    <text></text>
+    <form bindsubmit="submitTopup">
+      <text></text>
+      <text>
+        <text></text>
+        <text>
+          <text>金额（元）</text>
+          <view wx:if="{{minTopup !== null && maxTopup !== null}}" />
+          <text></text>
+        </text>
+        <text></text>
+        <input value="{{amountYuan}}" aria-label="充值金额（元）" inputMode="decimal" placeholder="100" disabled="{{busy || frozen}}" required="true" bindchange="(event) => setAmountYuan(event.target.value)" />
+        <text></text>
+      </text>
+      <text></text>
+      <button class="button primary" type="submit" disabled="{{busy || frozen}}">
+        <text></text>
+        <view wx:if="{{busy}}" />
+        <view wx:else />
+        <text></text>
+      </button>
+      <text></text>
+    </form>
+    <text></text>
+    <view wx:if="{{feedback}}" class="{{styles.feedback}}" role="status">
+      <text>{{feedback}}</text>
+    </view>
+    <text></text>
+    <view wx:if="{{handoff}}" class="{{styles.token}}">
+      <text></text>
+      <text>
+        <text>订单</text>
+        <text>{{handoff.topupOrderId}}</text>
+        <text>·</text>
+        <text>{{yuan(handoff.amountMinor)}}</text>
+        <text>·</text>
+        <text>{{handoff.status}}</text>
+      </text>
+      <text></text>
+      <navigator wx:if="{{handoff.checkoutUrl}}" class="button" href="{{handoff.checkoutUrl}}" target="_blank" rel="noopener noreferrer">
+        <text>前往付款</text>
+      </navigator>
+      <text></text>
+      <view wx:if="{{handoff.qrCodeUrl}}">
+        <text></text>
+        <text>
+          <text>微信扫码付款（二维码内容）：</text>
+        </text>
+        <text></text>
+        <code>
+          <text>{{handoff.qrCodeUrl}}</text>
+        </code>
+        <text></text>
+      </view>
+      <text></text>
+      <text>
+        <text></text>
+        <view wx:if="{{handoff.status === "PAID"}}" />
+        <view wx:else />
+        <text></text>
+      </text>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+</view>
+<text></text>
+<view class="{{styles.members}}">
+  <text></text>
+  <view>
+    <text></text>
+    <view>
+      <text>账户流水</text>
+    </view>
+    <text></text>
+    <text>
+      <text>最近</text>
+      <text>{{ledger.length}}</text>
+      <text>条 · 只读</text>
+    </text>
+    <text></text>
+  </view>
+  <text></text>
+  <view wx:if="{{ledger.length === 0}}">
+    <text>
+      <text>还没有流水。充值入账、任务消费、退款和人工调整都会记在这里。</text>
+    </text>
+  </view>
+  <view wx:else class="{{styles.memberList}}">
+    <text></text>
+    <view wx:for="{{ledger}}" wx:for-item="entry" wx:key="entry.id" class="{{styles.member}}" key="{{entry.entryId}}">
+      <text></text>
+      <view>
+        <text></text>
+        <text>
+          <text>{{entryLabels[entry.entryType] ?? entry.entryType}}</text>
+        </text>
+        <text></text>
+        <text title="{{entry.sourceRef}}">
+          <text></text>
+          <text>{{moment(entry.occurredAt)}}</text>
+          <text></text>
+          <view wx:if="{{entry.reason}}" />
+          <view wx:else />
+          <text></text>
+        </text>
+        <text></text>
+      </view>
+      <text></text>
+      <text style="{{{ textAlign: "right" }}}">
+        <text></text>
+        <view wx:if="{{entry.direction === "CREDIT"}}" />
+        <view wx:else />
+        <text>{{yuan(entry.amountMinor)}}</text>
+        <text></text>
+      </text>
+      <text></text>
+      <text>
+        <text>余额</text>
+        <text>{{yuan(entry.balanceAfterMinor)}}</text>
+      </text>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <text>
+    <text></text>
+    <text></text>
+    <text>流水只记录真实的资金移动。任务执行期间的冻结与释放不在这里，
+          它们反映在上方的「执行中冻结」里。</text>
+  </text>
+  <text></text>
+</view>
+<text></text>

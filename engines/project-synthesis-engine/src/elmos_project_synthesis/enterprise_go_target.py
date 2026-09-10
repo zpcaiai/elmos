@@ -539,4 +539,9 @@ func main() {{
 \t_ = srv.Shutdown(ctx)
 }}
 """
+    from .go_domain_workflow_emitter import generate_go_domain_workflow_files
+
+    for path, content in generate_go_domain_workflow_files(request).items():
+        files[path] = content
+
     return files

@@ -82,6 +82,7 @@ export class FullSyntaxFrontendTranspiler {
         outputFiles = this.reactEmitter.emit(targetIr);
         break;
       case "miniapp":
+      case "miniprogram":
         outputFiles = this.miniappEmitter.emit(targetIr);
         break;
       default:

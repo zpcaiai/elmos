@@ -1,0 +1,183 @@
+Component({
+  options: {
+    multipleSlots: false,
+    styleIsolation: "apply-shared",
+  },
+  properties: {
+    allowLocalCredentials: {
+      type: null,
+      value: "false",
+    },
+    emailAlertsEnabled: {
+      type: null,
+      value: "false",
+    },
+  },
+  data: {
+    form: "emptyCredentials",
+    session: "allowLocalCredentials ? null : { kind: \"account\" }",
+    readState: "allowLocalCredentials ? { kind: \"idle\" } : { kind: \"loading\" }",
+    insights: "{ kind: \"idle\" }",
+    savingAlerts: false,
+  },
+  lifetimes: {
+    attached() {
+      // Lifecycle effect effect_0
+      try {
+        if (!session) return;
+    let disposed = false;
+    let stopped = false;
+    let timer: number | undefined;
+    let controller: AbortController | undefined;
+    let lastSnapshot: CurrentUsageSnapshot | null = null;
+
+    const schedule = (seconds: number) => {
+      if (disposed) return;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => void refresh(), seconds * 1_000);
+    };
+
+    const refresh = async () => {
+      if (disposed || stopped) return;
+      if (document.visibilityState === "hidden") {
+        schedule(5);
+        return;
+      }
+      controller?.abort();
+      controller = new AbortController();
+      if (!lastSnapshot) setReadState({ kind: "loading" });
+      try {
+        const response = await fetch("/api/usage/current", {
+          method: "GET",
+          cache: "no-store",
+          headers: requestHeaders(session),
+          signal: controller.signal,
+        });
+        const body: unknown = await response.json();
+        if (!response.ok) {
+          const error = parseUsageApiError(body, response.status);
+          if (response.status === 401 || response.status === 403 || !error.retryable) {
+            stopped = true;
+            setReadState(lastSnapshot
+              ? { kind: "stale", snapshot: lastSnapshot, error }
+              : { kind: "error", error });
+            return;
+          }
+          setReadState(lastSnapshot
+            ? { kind: "stale", snapshot: lastSnapshot, error }
+            : { kind: "error", error });
+          schedule(5);
+          return;
+        }
+        let snapshot: CurrentUsageSnapshot;
+        try {
+          snapshot = parseCurrentUsageSnapshot(body);
+        } catch {
+          stopped = true;
+          const contractError: UsageApiError = {
+            code: "USAGE_RESPONSE_CONTRACT_INVALID",
+            message: "实时计量响应不符合当前客户端契约，已停止自动刷新。",
+            retryable: false,
+            status: "ERROR",
+          };
+          setReadState(lastSnapshot
+            ? { kind: "stale", snapshot: lastSnapshot, error: contractError }
+            : { kind: "error", error: contractError });
+          return;
+        }
+        lastSnapshot = snapshot;
+        setReadState({ kind: "current", snapshot });
+        schedule(Math.max(2, snapshot.refreshAfterSeconds));
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        const transportError: UsageApiError = {
+          code: "USAGE_TRANSPORT_ERROR",
+          message: "暂时无法连接实时计量服务；已保留最近一次可信读数。",
+          retryable: true,
+          status: "ERROR",
+        };
+        setReadState(lastSnapshot
+          ? { kind: "stale", snapshot: lastSnapshot, error: transportError }
+          : { kind: "error", error: transportError });
+        schedule(5);
+      }
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        window.clearTimeout(timer);
+        void refresh();
+      } else {
+        controller?.abort();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    void refresh();
+    return () => {
+      disposed = true;
+      window.clearTimeout(timer);
+      controller?.abort();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+      } catch (err) {
+        console.error("Effect execution error:", err);
+      }
+      // Lifecycle effect effect_2
+      try {
+        if (!session || session.kind !== "account") return;
+    let disposed = false;
+    const load = async () => {
+      setInsights({ kind: "loading" });
+      const to = new Date();
+      const from = new Date(to.getTime() - 30 * 24 * 60 * 60 * 1_000);
+      const query = new URLSearchParams({
+        from: from.toISOString(),
+        to: to.toISOString(),
+        bucket: "DAY",
+      });
+      const eventsQuery = new URLSearchParams({
+        from: from.toISOString(),
+        to: to.toISOString(),
+        scope: "SELF",
+        limit: "100",
+        offset: "0",
+      });
+      try {
+        const [historyResponse, eventsResponse, alertResponse] = await Promise.all([
+          fetch(`/api/usage/history?${query}`, { cache: "no-store" }),
+          fetch(`/api/usage/events?${eventsQuery}`, { cache: "no-store" }),
+          fetch("/api/usage/alerts", { cache: "no-store" }),
+        ]);
+        const [historyBody, eventsBody, alertBody]: [unknown, unknown, unknown] = await Promise.all([
+          historyResponse.json(),
+          eventsResponse.json(),
+          alertResponse.json(),
+        ]);
+        if (!historyResponse.ok || !eventsResponse.ok || !alertResponse.ok) {
+          throw new Error("USAGE_INSIGHTS_UNAVAILABLE");
+        }
+        if (!disposed) {
+          setInsights({
+            kind: "ready",
+            history: parseHistory(historyBody),
+            events: parseEvents(eventsBody),
+            preference: parsePreference(alertBody),
+          });
+        }
+      } catch {
+        if (!disposed) setInsights({ kind: "error", message: "历史明细与提醒设置暂不可用。" });
+      }
+    };
+    void load();
+    return () => { disposed = true; };
+      } catch (err) {
+        console.error("Effect execution error:", err);
+      }
+    },
+    detached() {
+    },
+  },
+  methods: {
+  },
+});

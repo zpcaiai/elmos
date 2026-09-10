@@ -1,0 +1,986 @@
+<view class="{{styles.page}}">
+  <text></text>
+  <view class="{{styles.hero}}" aria-labelledby="frt-title">
+    <text></text>
+    <view class="{{styles.heroCopy}}">
+      <text></text>
+      <text class="{{styles.eyebrow}}">
+        <Icon name="workflow" size="{{15}}" />
+        <text>前端转换 · 30 个生成阶段</text>
+      </text>
+      <text></text>
+      <view id="frt-title">
+        <text>{{t("前端仓库转换工厂", "Frontend repository transformation factory")}}</text>
+      </view>
+      <text></text>
+      <view>
+        <text>{{t("从仓库发现、类型化语义 IR 和 30 条方向路线，一直编排到产品闭环与生产就绪门禁。所有未知语义和未运行证据保持显式。", "Orchestrate repository discovery, typed UI semantics, 30 directed routes, product closure, and production-readiness gates. Unknown semantics and unexecuted evidence remain explicit.")}}</text>
+      </view>
+      <text></text>
+      <view class="{{styles.heroActions}}">
+        <text></text>
+        <navigator class="{{styles.primaryAction}}" href="#route-planner">
+          <text>{{t("选择转换路线", "Choose a directed route")}}</text>
+          <text></text>
+          <Icon name="arrow" size="{{15}}" />
+        </navigator>
+        <text></text>
+        <navigator class="{{styles.secondaryAction}}" href="#frt-capability-catalog">
+          <text>{{t("浏览全部功能", "Browse every capability")}}</text>
+        </navigator>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="{{styles.heroMetrics}}" aria-label="前端转换能力规模" tabIndex="{{0}}">
+      <text></text>
+      <view>
+        <text>
+          <text>30</text>
+        </text>
+        <text>
+          <text>生成阶段</text>
+        </text>
+        <text>
+          <text>线性依赖与失效传播</text>
+        </text>
+      </view>
+      <text></text>
+      <view>
+        <text>
+          <text>472</text>
+        </text>
+        <text>
+          <text>运行时功能</text>
+        </text>
+        <text>
+          <text>全部可发现、可计划、可验证</text>
+        </text>
+      </view>
+      <text></text>
+      <view>
+        <text>
+          <text>30</text>
+        </text>
+        <text>
+          <text>有向转换路线</text>
+        </text>
+        <text>
+          <text>六类技术栈两两有向转换</text>
+        </text>
+      </view>
+      <text></text>
+      <view class="{{styles.boundaryMetric}}">
+        <text>
+          <text>NOT_RUN</text>
+        </text>
+        <text>
+          <text>生产证据</text>
+        </text>
+        <text>
+          <text>真实设备、性能与生产门禁未冒充通过</text>
+        </text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="{{styles.stageSection}}" aria-labelledby="stage-title">
+    <text></text>
+    <view class="{{styles.sectionHeading}}">
+      <text></text>
+      <view>
+        <text class="{{styles.kicker}}">
+          <text>Delivery chain</text>
+        </text>
+        <view id="stage-title">
+          <text>{{t("六段式实施路径", "Six-stage delivery path")}}</text>
+        </view>
+      </view>
+      <text></text>
+      <view>
+        <text>上游契约、Policy 或 Evidence Digest 变化会使下游结果进入 STALE / RETEST_REQUIRED。</text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="{{styles.stageGrid}}">
+      <text></text>
+      <view wx:for="{{deliveryStages}}" wx:for-item="stage" wx:for-index="index" wx:key="stage.id" key="{{stage.range}}">
+        <text></text>
+        <text class="{{styles.stageNumber}}">
+          <text>{{String(index + 1).padStart(2, "0")}}</text>
+        </text>
+        <text></text>
+        <text>
+          <text>{{stage.range}}</text>
+        </text>
+        <text></text>
+        <text>
+          <text>{{stage.title}}</text>
+        </text>
+        <text></text>
+        <view>
+          <text>{{stage.detail}}</text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="{{styles.routePlanner}}" id="route-planner" aria-labelledby="route-title">
+    <text></text>
+    <view class="{{styles.routeHeader}}">
+      <text></text>
+      <view>
+        <text></text>
+        <text class="{{styles.kicker}}">
+          <text>Route Planner</text>
+        </text>
+        <text></text>
+        <view id="route-title">
+          <text>{{t("选择一条精确的有向转换路线", "Choose an exact directed transformation route")}}</text>
+        </view>
+        <text></text>
+        <view>
+          <text>反向转换属于另一条独立 Route Pack，不沿用当前路线的证据或结论。</text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+      <text class="{{styles.routeCount}}">
+        <text />
+        <text>30 / 30 路线已注册</text>
+      </text>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="{{styles.routeControls}}">
+      <text></text>
+      <text>
+        <text></text>
+        <text>
+          <text>{{t("源技术栈", "Source stack")}}</text>
+        </text>
+        <text></text>
+        <select value="{{source}}" bindchange="(event) => chooseSource(event.target.value as Stack)">
+          <text></text>
+          <option wx:for="{{frtCatalog.technologyStacks}}" wx:for-item="stack" wx:key="stack.id" key="{{stack}}" value="{{stack}}">
+            <text>{{stack}}</text>
+          </option>
+          <text></text>
+        </select>
+        <text></text>
+      </text>
+      <text></text>
+      <text class="{{styles.routeArrow}}" aria-hidden="true">
+        <Icon name="arrow" size="{{20}}" />
+      </text>
+      <text></text>
+      <text>
+        <text></text>
+        <text>
+          <text>{{t("目标技术栈", "Target stack")}}</text>
+        </text>
+        <text></text>
+        <select value="{{target}}" bindchange="(event) => chooseTarget(event.target.value as Stack)">
+          <text></text>
+          <option wx:for="{{frtCatalog.technologyStacks}}" wx:for-item="stack" wx:key="stack.id" key="{{stack}}" value="{{stack}}">
+            <text>{{stack}}</text>
+          </option>
+          <text></text>
+        </select>
+        <text></text>
+      </text>
+      <text></text>
+    </view>
+    <text></text>
+    <view wx:if="{{selectedRoute}}" class="{{styles.routeResult}}">
+      <text></text>
+      <view class="{{styles.routeIdentity}}">
+        <text></text>
+        <text class="{{styles.routeGlyph}}">
+          <text>{{source.slice(0, 1)}}</text>
+          <text>
+            <text>→</text>
+          </text>
+          <text>{{target.slice(0, 1)}}</text>
+        </text>
+        <text></text>
+        <view>
+          <text>
+            <text>{{selectedRoute.batch}}</text>
+            <text>·</text>
+            <text>{{selectedRoute.skillId}}</text>
+          </text>
+          <view>
+            <text>{{source}}</text>
+            <text>→</text>
+            <text>{{target}}</text>
+          </view>
+          <code>
+            <text>{{selectedRoute.skillName}}</text>
+          </code>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+      <dl class="{{styles.routeStates}}">
+        <text></text>
+        <view>
+          <dt>
+            <text>静态 Runtime</text>
+          </dt>
+          <dd data-state="ready">
+            <text>READY</text>
+          </dd>
+        </view>
+        <text></text>
+        <view>
+          <dt>
+            <text>源 / 目标构建</text>
+          </dt>
+          <dd data-state="not-run">
+            <text>NOT_RUN</text>
+          </dd>
+        </view>
+        <text></text>
+        <view>
+          <dt>
+            <text>浏览器 / 设备</text>
+          </dt>
+          <dd data-state="not-run">
+            <text>NOT_RUN</text>
+          </dd>
+        </view>
+        <text></text>
+        <view>
+          <dt>
+            <text>认证</text>
+          </dt>
+          <dd data-state="blocked">
+            <text>NOT_CERTIFIED</text>
+          </dd>
+        </view>
+        <text></text>
+      </dl>
+      <text></text>
+      <button type="button" bindtap="openRouteSkill">
+        <text>查看该路线的功能</text>
+        <Icon name="arrow" size="{{15}}" />
+      </button>
+      <text></text>
+    </view>
+    <view wx:else class="{{styles.routeUnavailable}}">
+      <text>源技术栈和目标技术栈必须不同。</text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="{{styles.catalogSection}}" id="frt-capability-catalog" aria-labelledby="catalog-title">
+    <text></text>
+    <view class="{{styles.sectionHeading}}">
+      <text></text>
+      <view>
+        <text class="{{styles.kicker}}">
+          <text>运行时功能目录</text>
+        </text>
+        <view id="catalog-title">
+          <text>{{t("472 个实现级功能", "472 implementation-level capabilities")}}</text>
+        </view>
+      </view>
+      <text></text>
+      <view>
+        <text>每个功能共用同一受治理 Runtime、Scope、幂等与 Evidence 协议，避免建立 472 套平行子系统。</text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="{{styles.catalogLayout}}">
+      <text></text>
+      <view class="{{styles.batchRail}}" aria-label="按阶段筛选功能">
+        <text></text>
+        <button class="{{batch === "ALL" ? styles.activeBatch : ""}}" type="button" bindtap="() => setBatch("ALL")">
+          <text></text>
+          <text>
+            <text>ALL</text>
+          </text>
+          <text>
+            <text>全部能力</text>
+          </text>
+          <text>
+            <text>{{frtCatalog.skillCount}}</text>
+          </text>
+          <text></text>
+        </button>
+        <text></text>
+        <button wx:for="{{frtCatalog.batches}}" wx:key="item.id" class="{{batch === item.id ? styles.activeBatch : ""}}" type="button" key="{{item.id}}" bindtap="() => { setBatch(item.id); setQuery(""); }">
+          <text></text>
+          <text>
+            <text>{{item.id}}</text>
+          </text>
+          <text>
+            <text>{{item.title}}</text>
+          </text>
+          <text>
+            <text>{{item.skillCount}}</text>
+          </text>
+          <text></text>
+        </button>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="{{styles.catalogContent}}">
+        <text></text>
+        <view class="{{styles.catalogToolbar}}">
+          <text></text>
+          <text class="{{styles.searchBox}}">
+            <text></text>
+            <Icon name="search" size="{{17}}" />
+            <text></text>
+            <text class="sr-only">
+              <text>搜索功能</text>
+            </text>
+            <text></text>
+            <input value="{{query}}" placeholder="搜索 ID、名称或能力…" bindchange="(event) => setQuery(event.target.value)" />
+            <text></text>
+            <button wx:if="{{query}}" type="button" aria-label="清空搜索" bindtap="() => setQuery("")">
+              <Icon name="close" size="{{14}}" />
+            </button>
+            <text></text>
+          </text>
+          <text></text>
+          <text class="{{styles.resultCount}}">
+            <text>显示</text>
+            <text>{{visibleSkills.length}}</text>
+            <text>/</text>
+            <text>{{filteredSkills.length}}</text>
+          </text>
+          <text></text>
+        </view>
+        <text></text>
+        <view wx:if="{{visibleSkills.length}}" class="{{styles.skillGrid}}">
+          <text></text>
+          <button wx:for="{{visibleSkills}}" wx:for-item="skill" wx:key="skill.id" type="button" class="{{`${styles.skillCard} ${selectedSkill?.id === skill.id ? styles.selectedSkill : ""}`}}" key="{{skill.id}}" aria-pressed="{{selectedSkill?.id === skill.id}}" bindtap="() => setSelectedSkillId(skill.id)">
+            <text></text>
+            <text class="{{styles.skillMeta}}">
+              <text>
+                <text>{{skill.id}}</text>
+              </text>
+              <text>
+                <text>{{skill.batch}}</text>
+              </text>
+            </text>
+            <text></text>
+            <text>
+              <text>{{skill.title}}</text>
+            </text>
+            <text></text>
+            <code>
+              <text>{{skill.name}}</text>
+            </code>
+            <text></text>
+            <text class="{{styles.skillFooter}}">
+              <text>
+                <text>Runtime interface ready</text>
+              </text>
+              <Icon name="chevron" size="{{14}}" />
+            </text>
+            <text></text>
+          </button>
+          <text></text>
+        </view>
+        <view wx:else class="{{styles.emptyState}}">
+          <Icon name="search" size="{{24}}" />
+          <text>
+            <text>没有匹配的功能</text>
+          </text>
+          <view>
+            <text>尝试更换阶段或缩短搜索词。</text>
+          </view>
+        </view>
+        <text></text>
+        <view wx:if="{{filteredSkills.length > visibleSkills.length}}" class="{{styles.limitNote}}">
+          <text>为保持页面响应速度，当前最多展示 72 项；请继续按阶段或关键词缩小范围。</text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="{{styles.skillInspector}}" aria-live="polite">
+        <text></text>
+        <view wx:if="{{selectedSkill}}">
+          <text></text>
+          <text class="{{styles.inspectorBatch}}">
+            <text>{{selectedSkill.batch}}</text>
+            <text>/</text>
+            <text>{{selectedSkill.certificateFamily}}</text>
+            <text>family</text>
+          </text>
+          <text></text>
+          <view>
+            <text>{{selectedSkill.title}}</text>
+          </view>
+          <text></text>
+          <code>
+            <text>{{selectedSkill.id}}</text>
+          </code>
+          <text></text>
+          <view>
+            <text>{{selectedSkill.description}}</text>
+          </view>
+          <text></text>
+          <dl>
+            <text></text>
+            <view>
+              <dt>
+                <text>风险</text>
+              </dt>
+              <dd>
+                <text>{{selectedSkill.risk}}</text>
+              </dd>
+            </view>
+            <text></text>
+            <view>
+              <dt>
+                <text>能力标识</text>
+              </dt>
+              <dd>
+                <text>{{selectedSkill.executionContract.capabilityKey}}</text>
+              </dd>
+            </view>
+            <text></text>
+            <view>
+              <dt>
+                <text>执行级别</text>
+              </dt>
+              <dd>
+                <text>{{selectedSkill.executionContract.executionClass}}</text>
+              </dd>
+            </view>
+            <text></text>
+            <view>
+              <dt>
+                <text>前置证书</text>
+              </dt>
+              <dd>
+                <text>{{selectedSkill.requiresCertificate ?? "System charter inputs"}}</text>
+              </dd>
+            </view>
+            <text></text>
+            <view>
+              <dt>
+                <text>版本</text>
+              </dt>
+              <dd>
+                <text>{{selectedSkill.version}}</text>
+              </dd>
+            </view>
+            <text></text>
+            <view>
+              <dt>
+                <text>生产认证</text>
+              </dt>
+              <dd class="{{styles.notCertified}}">
+                <text>NOT_CERTIFIED</text>
+              </dd>
+            </view>
+            <text></text>
+          </dl>
+          <text></text>
+          <view class="{{styles.operationList}}">
+            <text></text>
+            <text>
+              <text>PLAN</text>
+            </text>
+            <text>
+              <text>ANALYZE</text>
+            </text>
+            <text>
+              <text>EXECUTE*</text>
+            </text>
+            <text>
+              <text>VERIFY</text>
+            </text>
+            <text></text>
+          </view>
+          <text></text>
+          <text class="{{styles.inspectorNote}}">
+            <text>* EXECUTE 只准备受限提案；客户代码、真实 Provider、设备与生产操作需要外部 Runner 和授权。</text>
+          </text>
+          <text></text>
+        </view>
+        <view wx:else>
+          <text>选择一个功能查看契约。</text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="{{styles.operationConsole}}" aria-labelledby="operation-title" id="frt-operation-console">
+      <text></text>
+      <view class="{{styles.operationHeading}}">
+        <text></text>
+        <view>
+          <text></text>
+          <text class="{{styles.kicker}}">
+            <text>Repository execution</text>
+          </text>
+          <text></text>
+          <view id="operation-title">
+            <text>{{t("仓库 → 计划 → 执行 → 证据闭环", "Repository → plan → execute → evidence loop")}}</text>
+          </view>
+          <text></text>
+          <view>
+            <text>当前操作绑定</text>
+            <text>
+              <text>{{selectedSkill?.id}}</text>
+            </text>
+            <text>；组织、租户与执行者由已认证账户或受限本地身份租约派生。</text>
+          </view>
+          <text></text>
+        </view>
+        <text></text>
+        <text class="{{styles.persistenceBadge}}">
+          <text />
+          <text>Durable / tenant-scoped</text>
+        </text>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="{{styles.executionForm}}">
+        <text></text>
+        <fieldset>
+          <text></text>
+          <legend>
+            <text>1. 运行作用域</text>
+          </legend>
+          <text></text>
+          <view class="{{styles.fieldGrid}}">
+            <text></text>
+            <text>
+              <text>
+                <text>Workspace</text>
+              </text>
+              <input aria-label="FRT Workspace" value="{{workspaceId}}" bindchange="event => setWorkspaceId(event.target.value)" />
+            </text>
+            <text></text>
+            <text>
+              <text>
+                <text>Project</text>
+              </text>
+              <input aria-label="FRT Project" value="{{projectId}}" bindchange="event => setProjectId(event.target.value)" />
+            </text>
+            <text></text>
+            <text>
+              <text>
+                <text>Environment</text>
+              </text>
+              <input aria-label="FRT Environment" value="{{environmentId}}" bindchange="event => setEnvironmentId(event.target.value)" />
+            </text>
+            <text></text>
+            <text>
+              <text>
+                <text>Release</text>
+              </text>
+              <input aria-label="FRT Release" value="{{releaseId}}" bindchange="event => setReleaseId(event.target.value)" />
+            </text>
+            <text></text>
+            <text>
+              <text>
+                <text>Policy</text>
+              </text>
+              <input aria-label="FRT Policy" value="{{policyVersion}}" bindchange="event => setPolicyVersion(event.target.value)" />
+            </text>
+            <text></text>
+            <text>
+              <text>
+                <text>Risk</text>
+              </text>
+              <select aria-label="FRT Risk" value="{{risk}}" bindchange="event => setRisk(event.target.value as typeof risk)">
+                <option wx:for="{{["R0", "R1", "R2", "R3", "R4", "R5"]}}" wx:for-item="value" wx:key="value.id" key="{{value}}">
+                  <text>{{value}}</text>
+                </option>
+              </select>
+            </text>
+            <text></text>
+          </view>
+          <text></text>
+        </fieldset>
+        <text></text>
+        <fieldset>
+          <text></text>
+          <legend>
+            <text>2. 功能类型化输入</text>
+          </legend>
+          <text></text>
+          <view class="{{styles.contractSummary}}">
+            <text></text>
+            <text>
+              <text>必需</text>
+            </text>
+            <text></text>
+            <view wx:if="{{selectedInputContract?.required.length}}" />
+            <text wx:else>
+              <text>无</text>
+            </text>
+            <text></text>
+            <text>
+              <text>可选</text>
+            </text>
+            <text></text>
+            <view wx:if="{{selectedInputContract?.optional.length}}" />
+            <text wx:else>
+              <text>无</text>
+            </text>
+            <text></text>
+          </view>
+          <text></text>
+          <view wx:if="{{acceptsFiles}}">
+            <text></text>
+            <text class="{{styles.filePicker}}">
+              <text></text>
+              <Icon name="repository" size="{{18}}" />
+              <text></text>
+              <text>
+                <text>
+                  <text>选择仓库文本文件</text>
+                </text>
+                <text>
+                  <text>最多 512 个、总计 ≤ 16 MB、单字段 ≤ 1 MB；安全相对路径和内容共同计算 Snapshot Digest。</text>
+                </text>
+              </text>
+              <text></text>
+              <input aria-label="选择前端仓库文件" type="file" multiple="true" bindchange="event => void chooseRepositoryFiles(event.target.files)" />
+              <text></text>
+            </text>
+            <text></text>
+            <view class="{{styles.fileSummary}}" aria-live="polite">
+              <text></text>
+              <text>
+                <text>{{Object.keys(sourceFiles).length}}</text>
+              </text>
+              <text>个文件已绑定</text>
+              <code wx:for="{{Object.keys(sourceFiles).slice(0, 5)}}" wx:for-item="path" wx:key="path.id" key="{{path}}">
+                <text>{{path}}</text>
+              </code>
+              <text></text>
+              <text wx:if="{{Object.keys(sourceFiles).length > 5}}">
+                <text>+</text>
+                <text>{{Object.keys(sourceFiles).length - 5}}</text>
+                <text>more</text>
+              </text>
+              <text></text>
+            </view>
+            <text></text>
+          </view>
+          <text></text>
+          <text class="{{styles.jsonInput}}">
+            <text></text>
+            <text>
+              <text>输入 JSON（`files` 由上方选择器安全合并）</text>
+            </text>
+            <text></text>
+            <textarea aria-label="前端转换功能类型化输入 JSON" spellCheck="{{false}}" value="{{inputJson}}" bindchange="event => setInputJson(event.target.value)" />
+            <text></text>
+          </text>
+          <text></text>
+          <button class="{{styles.resetInput}}" type="button" bindtap="() => setInputJson(initialContractInput(selectedSkill))">
+            <text>恢复契约示例</text>
+          </button>
+          <text></text>
+        </fieldset>
+        <text></text>
+        <details class="{{styles.localIdentity}}">
+          <text></text>
+          <summary>
+            <text>{{t("本地开发身份租约（生产环境使用账户会话）", "Local development identity lease (production uses account sessions)")}}</text>
+          </summary>
+          <text></text>
+          <view class="{{styles.fieldGrid}}">
+            <text></text>
+            <text>
+              <text>
+                <text>租户标识</text>
+              </text>
+              <input aria-label="FRT 本地租户标识" value="{{tenantId}}" bindchange="event => setTenantId(event.target.value)" />
+            </text>
+            <text></text>
+            <text>
+              <text>
+                <text>执行者标识</text>
+              </text>
+              <input aria-label="FRT 本地执行者标识" value="{{actorId}}" bindchange="event => setActorId(event.target.value)" />
+            </text>
+            <text></text>
+            <text>
+              <text>
+                <text>本地 Runner 令牌</text>
+              </text>
+              <input aria-label="FRT 本地 Runner 令牌" type="password" autoComplete="off" value="{{runnerToken}}" bindchange="event => setRunnerToken(event.target.value)" />
+            </text>
+            <text></text>
+          </view>
+          <text></text>
+        </details>
+        <text></text>
+        <view class="{{styles.runActions}}" aria-label="FRT 运行操作">
+          <text></text>
+          <button wx:for="{{(["PLAN", "ANALYZE", "EXECUTE", "VERIFY"] as const)}}" wx:for-item="action" wx:key="action.id" type="button" key="{{action}}" disabled="{{busy}}" bindtap="() => void startRun(action)">
+            <text>{{action}}</text>
+          </button>
+          <text></text>
+        </view>
+        <text></text>
+        <view wx:if="{{operationError}}" class="{{styles.operationError}}" role="alert">
+          <text>{{operationError}}</text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="{{styles.runWorkspace}}" aria-live="polite">
+        <text></text>
+        <view class="{{styles.runSummary}}">
+          <text></text>
+          <view>
+            <text>
+              <text>Run</text>
+            </text>
+            <text>
+              <text>{{run?.runId ?? "尚未创建"}}</text>
+            </text>
+          </view>
+          <text></text>
+          <view>
+            <text>
+              <text>状态</text>
+            </text>
+            <text data-run-state="{{run?.state ?? "EMPTY"}}">
+              <text>{{run?.state ?? "EMPTY"}}</text>
+            </text>
+          </view>
+          <text></text>
+          <view>
+            <text>
+              <text>结果</text>
+            </text>
+            <text>
+              <text>{{run?.outcome ?? "等待操作"}}</text>
+            </text>
+          </view>
+          <text></text>
+          <view>
+            <text>
+              <text>版本</text>
+            </text>
+            <text>
+              <text>{{run?.version ?? 0}}</text>
+            </text>
+          </view>
+          <text></text>
+          <view wx:if="{{run}}" class="{{styles.lifecycleActions}}">
+            <text></text>
+            <button type="button" disabled="{{busy || run.state !== "QUEUED"}}" bindtap="() => void transition("claim")">
+              <text>Runner 领取</text>
+            </button>
+            <text></text>
+            <button type="button" disabled="{{busy || run.state !== "RUNNING"}}" bindtap="() => void transition("heartbeat")">
+              <text>续租</text>
+            </button>
+            <text></text>
+            <button type="button" disabled="{{busy || !["QUEUED", "RUNNING"].includes(run.state)}}" bindtap="() => void transition("cancel")">
+              <text>取消</text>
+            </button>
+            <text></text>
+            <button type="button" disabled="{{busy || !["BLOCKED", "FAILED", "CANCELLED"].includes(run.state) || run.action !== "EXECUTE"}}" bindtap="() => void transition("retry")">
+              <text>重试</text>
+            </button>
+            <text></text>
+            <button type="button" disabled="{{busy}}" bindtap="() => void refreshRun()">
+              <text>刷新</text>
+            </button>
+            <text></text>
+          </view>
+          <text></text>
+        </view>
+        <text></text>
+        <view class="{{styles.resultPanels}}">
+          <text></text>
+          <view>
+            <text></text>
+            <view>
+              <text>Findings</text>
+              <text>
+                <text>{{run?.findings.length ?? 0}}</text>
+              </text>
+            </view>
+            <text></text>
+            <view wx:if="{{run?.findings.length}}" tabIndex="{{0}}" aria-label="FRT Findings 列表">
+              <view wx:for="{{run.findings}}" wx:for-index="index" wx:key="item.id" key="{{`${item.code}-${index}`}}" data-severity="{{item.severity}}">
+                <text>
+                  <text>{{item.code}}</text>
+                </text>
+                <view>
+                  <text>{{item.message}}</text>
+                </view>
+                <text>
+                  <view wx:if="{{item.blocking}}" />
+                  <view wx:else />
+                </text>
+              </view>
+            </view>
+            <view wx:else>
+              <text>暂无 Finding。</text>
+            </view>
+            <text></text>
+          </view>
+          <text></text>
+          <view>
+            <text></text>
+            <view>
+              <text>Artifacts</text>
+              <button type="button" disabled="{{!run}}" bindtap="downloadArtifacts">
+                <text>下载 JSON</text>
+              </button>
+            </view>
+            <text></text>
+            <pre tabIndex="{{0}}" aria-label="FRT 运行产物 JSON">
+              <view wx:if="{{run}}" />
+              <view wx:else />
+            </pre>
+            <text></text>
+          </view>
+          <text></text>
+          <view>
+            <text></text>
+            <view>
+              <text>Evidence</text>
+              <text>
+                <text>{{run?.evidence.length ?? 0}}</text>
+              </text>
+            </view>
+            <text></text>
+            <view wx:if="{{run?.evidence.length}}" tabIndex="{{0}}" aria-label="FRT Evidence 列表">
+              <view wx:for="{{run.evidence}}" wx:key="item.id" key="{{`${item.role}-${item.uri}`}}">
+                <text>
+                  <text>{{item.role}}</text>
+                </text>
+                <code>
+                  <text>{{item.state}}</text>
+                </code>
+                <text>
+                  <text>{{item.digest}}</text>
+                </text>
+              </view>
+            </view>
+            <view wx:else>
+              <text>没有签名 Evidence；VERIFY 将 fail-closed。</text>
+            </view>
+            <text></text>
+            <text wx:if="{{run}}">
+              <text>Gate eligible:</text>
+              <text>{{String(run.certificateFragment.eligibleForBatchGate)}}</text>
+              <text>·</text>
+              <text>{{run.certificateFragment.certification}}</text>
+            </text>
+            <text></text>
+          </view>
+          <text></text>
+          <view>
+            <text></text>
+            <view>
+              <text>Audit trail</text>
+              <text>
+                <text>{{audit.length}}</text>
+              </text>
+            </view>
+            <text></text>
+            <view wx:if="{{audit.length}}" tabIndex="{{0}}" aria-label="FRT Audit trail">
+              <view wx:for="{{audit}}" wx:key="item.id" key="{{item.sequence}}">
+                <text>
+                  <text>{{item.event}}</text>
+                </text>
+                <text>
+                  <text>{{item.state}}</text>
+                  <text>· v</text>
+                  <text>{{item.version}}</text>
+                </text>
+                <text>
+                  <text>{{item.actor}}</text>
+                  <text>·</text>
+                  <text>{{new Date(item.at).toLocaleString()}}</text>
+                </text>
+              </view>
+            </view>
+            <view wx:else>
+              <text>运行创建后显示持久化审计事件。</text>
+            </view>
+            <text></text>
+          </view>
+          <text></text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="{{styles.boundarySection}}" aria-labelledby="boundary-title">
+    <text></text>
+    <view>
+      <text class="{{styles.kicker}}">
+        <text>Evidence boundary</text>
+      </text>
+      <view id="boundary-title">
+        <text>{{t("已经实现，不代表已经生产认证", "Implemented does not mean production-certified")}}</text>
+      </view>
+    </view>
+    <text></text>
+    <view class="{{styles.boundaryGrid}}">
+      <text></text>
+      <view>
+        <Icon name="check" size="{{18}}" />
+        <view>
+          <text>
+            <text>本地已就绪</text>
+          </text>
+          <view>
+            <text>包完整性、472 接口、类型化 Runtime、目录/API/CLI、Scope、幂等、证据角色和失败关闭。</text>
+          </view>
+        </view>
+      </view>
+      <text></text>
+      <view>
+        <Icon name="clock" size="{{18}}" />
+        <view>
+          <text>
+            <text>等待真实执行</text>
+          </text>
+          <view>
+            <text>源/目标构建、浏览器与设备矩阵、独立 Holdout、Proof Kernel、性能、Chaos、安全测试。</text>
+          </view>
+        </view>
+      </view>
+      <text></text>
+      <view>
+        <Icon name="lock" size="{{18}}" />
+        <view>
+          <text>
+            <text>外部权威保留</text>
+          </text>
+          <view>
+            <text>Batch Certificate、Production Closure、发布、回滚、客户验收和持续认证不能由页面或模型签发。</text>
+          </view>
+        </view>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+</view>

@@ -27,14 +27,18 @@ export class MiniAppSSREvaluator {
     const jsContent = typeof source === 'object' ? source.js : undefined;
 
     // 1. Extract default component data and properties from JS if available
-    const componentData: Record<string, any> = {
-      ...(typeof context.props === 'object' ? context.props : {}),
-      ...(typeof context.state === 'object' ? context.state : {})
-    };
+    const componentData: Record<string, any> = {};
 
     if (jsContent) {
       const extractedDefaults = this.extractComponentDefaults(jsContent);
-      Object.assign(componentData, extractedDefaults.data, componentData);
+      Object.assign(componentData, extractedDefaults.data);
+    }
+
+    if (context.props && typeof context.props === 'object') {
+      Object.assign(componentData, context.props);
+    }
+    if (context.state && typeof context.state === 'object') {
+      Object.assign(componentData, context.state);
     }
 
     // 2. Parse WXML into raw DOM nodes
@@ -72,13 +76,13 @@ export class MiniAppSSREvaluator {
       // Extract data: { ... }
       const dataMatch = jsCode.match(/data\s*:\s*\{([^}]+)\}/);
       if (dataMatch && dataMatch[1]) {
-        const lines = dataMatch[1].split(',');
-        for (const line of lines) {
-          const parts = line.split(':');
-          if (parts.length === 2 && parts[0] && parts[1]) {
-            const key = parts[0].trim();
-            const rawVal = parts[1].trim();
-            data[key] = this.parseLiteral(rawVal);
+        const entryRegex = /([a-zA-Z0-9_$]+)\s*:\s*('(?:\\'|[^'])*'|"(?:\\"|[^"])*"|[^,}]+)/g;
+        let m: RegExpExecArray | null;
+        while ((m = entryRegex.exec(dataMatch[1])) !== null) {
+          const key = m[1];
+          const rawVal = m[2];
+          if (key && rawVal) {
+            data[key.trim()] = this.parseLiteral(rawVal.trim());
           }
         }
       }
@@ -86,12 +90,12 @@ export class MiniAppSSREvaluator {
       // Extract properties: { ... }
       const propMatch = jsCode.match(/properties\s*:\s*\{([^}]+)\}/);
       if (propMatch && propMatch[1]) {
-        const lines = propMatch[1].split(',');
-        for (const line of lines) {
-          const parts = line.split(':');
-          if (parts.length >= 2 && parts[0]) {
-            const key = parts[0].trim();
-            properties[key] = null;
+        const propEntryRegex = /([a-zA-Z0-9_$]+)\s*:\s*(?:\{|[^,}]+)/g;
+        let m: RegExpExecArray | null;
+        while ((m = propEntryRegex.exec(propMatch[1])) !== null) {
+          const key = m[1];
+          if (key) {
+            properties[key.trim()] = null;
           }
         }
       }
@@ -127,7 +131,7 @@ export class MiniAppSSREvaluator {
 
     // Handle wx:if, wx:elif, wx:else
     if (node.hasAttribute('wx:if')) {
-      const conditionExpr = node.getAttribute('wx:if') || '';
+      const conditionExpr = (node.getAttribute('wx:if') || '').replace(/^\{\{|\}\}$/g, '').trim();
       const passes = this.evaluateExpression(conditionExpr, scope);
       if (!passes) {
         return null;
@@ -136,7 +140,7 @@ export class MiniAppSSREvaluator {
 
     // Handle wx:for
     if (node.hasAttribute('wx:for')) {
-      const listExpr = node.getAttribute('wx:for') || '';
+      const listExpr = (node.getAttribute('wx:for') || '').replace(/^\{\{|\}\}$/g, '').trim();
       const itemVar = node.getAttribute('wx:for-item') || 'item';
       const indexVar = node.getAttribute('wx:for-index') || 'index';
       const listData = this.evaluateExpression(listExpr, scope);
@@ -229,7 +233,7 @@ export class MiniAppSSREvaluator {
   }
 
   public static evaluateExpression(expression: string, scope: Record<string, any>): any {
-    const trimmed = expression.trim();
+    const trimmed = expression.replace(/^\{\{|\}\}$/g, "").trim();
     if (!trimmed) return '';
 
     // Simple literals

@@ -141,6 +141,9 @@ class OutboxStore:
         with self._lock:
             self._records[record.event_id] = record
 
+    def insert(self, record: OutboxRecord) -> None:
+        self.append(record)
+
     def fetch_and_lock_batch(self, batch_size: int = 50) -> List[OutboxRecord]:
         """Fetch pending records with SKIP LOCKED semantics."""
         with self._lock:

@@ -1,0 +1,475 @@
+<view class="page-stack control-page">
+  <text></text>
+  <view class="page-header control-header">
+    <text></text>
+    <view>
+      <text></text>
+      <text class="overline">
+        <text>ENTERPRISE COMMERCIAL CONTROL PLANE · v3.0.0</text>
+      </text>
+      <text></text>
+      <view>
+        <text>商业化控制面与能力内核</text>
+      </view>
+      <text></text>
+      <view>
+        <text>整合 8 大商业内核 (K1–K8)、工程翻新底座（41 个能力域、1,351 项功能）与 18 批次多语言编译器控制链。</text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="header-actions">
+      <text></text>
+      <text class="environment-selector">
+        <text />
+        <text>环境：本地工程契约</text>
+      </text>
+      <text></text>
+      <button class="button button-secondary" disabled="{{refreshing}}" bindtap="refresh">
+        <text></text>
+        <Icon name="refresh" size="{{16}}" class="{{refreshing ? "spinning" : undefined}}" />
+        <text>刷新能力</text>
+      </button>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="metric-grid metric-grid-four" aria-label="控制面摘要">
+    <text></text>
+    <view class="metric-card">
+      <text>
+        <text>商业能力内核</text>
+      </text>
+      <text>
+        <text>8 (K1–K8)</text>
+      </text>
+      <text>
+        <text>85 项商业扩展功能</text>
+      </text>
+    </view>
+    <text></text>
+    <view class="metric-card">
+      <text>
+        <text>工程翻新底座</text>
+      </text>
+      <text>
+        <text>1,351 项功能</text>
+      </text>
+      <text>
+        <text>41 个能力域 (v3.0.0)</text>
+      </text>
+    </view>
+    <text></text>
+    <view class="metric-card">
+      <text>
+        <text>多语言语义编译</text>
+      </text>
+      <text>
+        <text>784 Routes</text>
+      </text>
+      <text>
+        <text>18 个 Batches (A–R)</text>
+      </text>
+    </view>
+    <text></text>
+    <view class="metric-card">
+      <text>
+        <text>决策上限</text>
+      </text>
+      <text class="metric-word">
+        <text>Gate / Human</text>
+      </text>
+      <text>
+        <text>不批准、不执行</text>
+      </text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="source-notice" role="status">
+    <text></text>
+    <Icon name="{{payload.source === "LIVE_API" ? "check" : "clock"}}" size="{{16}}" />
+    <text></text>
+    <text>
+      <text>{{payload.note}}</text>
+    </text>
+    <text></text>
+    <text class="source-freshness">
+      <text>最近刷新</text>
+      <text>{{fetchedAt}}</text>
+    </text>
+    <text></text>
+    <StatusChip status="{{payload.source}}" compact="true" />
+    <text></text>
+  </view>
+  <text></text>
+  <text></text>
+  <text></text>
+  <view class="surface-card" aria-labelledby="kernels-title">
+    <text></text>
+    <view class="section-heading compact-heading">
+      <text></text>
+      <view>
+        <text class="overline">
+          <text>COMMERCIAL CAPABILITY KERNELS (K1–K8)</text>
+        </text>
+        <view id="kernels-title">
+          <text>八大商业能力内核</text>
+        </view>
+      </view>
+      <text></text>
+      <StatusChip status="READY" compact="true" />
+      <text></text>
+    </view>
+    <text></text>
+    <view class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-3">
+      <text></text>
+      <view wx:for="{{commercialKernels}}" wx:for-item="k" wx:key="k.id" key="{{k.id}}" class="p-3 rounded-lg border border-border bg-card/60 flex flex-col justify-between">
+        <text></text>
+        <view>
+          <text></text>
+          <view class="flex items-center justify-between mb-1">
+            <text></text>
+            <text class="text-sm font-semibold text-primary">
+              <text>{{k.id}}</text>
+              <text>·</text>
+              <text>{{k.name}}</text>
+            </text>
+            <text></text>
+            <text class="text-xs px-2 py-0.5 rounded bg-primary/10 text-primary font-mono">
+              <text>{{k.skills}}</text>
+              <text>skills</text>
+            </text>
+            <text></text>
+          </view>
+          <text></text>
+          <view class="text-xs text-muted-foreground">
+            <text>{{k.desc}}</text>
+          </view>
+          <text></text>
+        </view>
+        <text></text>
+        <view class="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+          <text></text>
+          <text>
+            <text>状态:</text>
+            <text>{{k.status}}</text>
+          </text>
+          <text></text>
+          <Icon name="check" size="{{13}}" class="text-emerald-500" />
+          <text></text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <text></text>
+  <text></text>
+  <view class="surface-card" aria-labelledby="foundry-title">
+    <text></text>
+    <view class="section-heading compact-heading">
+      <text></text>
+      <view>
+        <text class="overline">
+          <text>工程翻新底座 v3.0.0</text>
+        </text>
+        <view id="foundry-title">
+          <text>知识 · 能力 · 模型底座（41 个能力域）</text>
+        </view>
+      </view>
+      <text></text>
+      <text class="text-xs px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 font-mono">
+        <text>合计 1,351 项功能</text>
+      </text>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
+      <text></text>
+      <view wx:for="{{foundryHighlights}}" wx:for-item="f" wx:key="f.id" key="{{f.pack}}" class="p-3 rounded-lg border border-border bg-card/40">
+        <text></text>
+        <view class="flex items-center justify-between mb-1">
+          <text></text>
+          <text class="text-xs font-mono text-muted-foreground">
+            <text>Pack</text>
+            <text>{{f.pack}}</text>
+          </text>
+          <text></text>
+          <text class="text-xs text-emerald-400">
+            <text>{{f.skills}}</text>
+            <text>项功能</text>
+          </text>
+          <text></text>
+        </view>
+        <text></text>
+        <text class="text-sm font-medium block">
+          <text>{{f.name}}</text>
+        </text>
+        <text></text>
+        <view class="text-xs text-muted-foreground mt-1">
+          <text>{{f.desc}}</text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="trust-chain" aria-labelledby="trust-chain-title">
+    <text></text>
+    <view class="section-heading compact-heading">
+      <view>
+        <text class="overline">
+          <text>TRUST CHAIN</text>
+        </text>
+        <view id="trust-chain-title">
+          <text>从身份到执行回执</text>
+        </view>
+      </view>
+      <text class="quiet-label">
+        <text>点击任一阶段查看检查项</text>
+      </text>
+    </view>
+    <text></text>
+    <view class="trust-steps" role="tablist" aria-label="商业化可信链阶段">
+      <text></text>
+      <view wx:for="{{payload.stages}}" wx:for-item="stage" wx:for-index="index" wx:key="stage.id" class="trust-step-wrap" key="{{stage.batch}}">
+        <text></text>
+        <button id="{{`trust-tab-${stage.batch}`}}" class="{{`trust-step ${selected === stage.batch ? "selected" : ""}`}}" role="tab" aria-selected="{{selected === stage.batch}}" aria-controls="trust-stage-panel" tabIndex="{{selected === stage.batch ? 0 : -1}}" bindtap="() => setSelected(stage.batch)" bindkeydown="(event) => moveStage(event, index)">
+          <text></text>
+          <text class="trust-step-icon">
+            <Icon name="{{stage.icon}}" size="{{20}}" />
+          </text>
+          <text></text>
+          <text>
+            <text>
+              <text>{{stage.batch}}</text>
+            </text>
+            <text>
+              <text>{{stage.shortTitle}}</text>
+            </text>
+          </text>
+          <text></text>
+          <StatusChip status="{{stage.status}}" compact="true" />
+          <text></text>
+        </button>
+        <text></text>
+        <text wx:if="{{index < payload.stages.length - 1}}" class="step-connector">
+          <Icon name="arrow" size="{{15}}" />
+        </text>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="control-grid">
+    <text></text>
+    <view class="surface-card stage-detail" id="trust-stage-panel" role="tabpanel" aria-labelledby="{{`trust-tab-${selectedStage.batch}`}}" tabIndex="{{0}}">
+      <text></text>
+      <view class="stage-detail-heading">
+        <text></text>
+        <text class="large-stage-icon">
+          <Icon name="{{selectedStage.icon}}" size="{{23}}" />
+        </text>
+        <text></text>
+        <view>
+          <text class="overline">
+            <text>{{selectedStage.batch}}</text>
+            <text>·</text>
+            <text>{{selectedStage.subtitle}}</text>
+          </text>
+          <view>
+            <text>{{selectedStage.title}}</text>
+          </view>
+        </view>
+        <text></text>
+        <StatusChip status="{{selectedStage.status}}" />
+        <text></text>
+      </view>
+      <text></text>
+      <view class="check-list">
+        <text></text>
+        <view wx:for="{{selectedStage.checks}}" wx:for-item="check" wx:key="check.id" class="check-row" key="{{check.label}}">
+          <text></text>
+          <text class="{{`check-dot dot-${check.status.toLowerCase().replaceAll("_", "-")}`}}">
+            <Icon name="{{check.status === "READY" || check.status === "ENFORCED" ? "check" : check.status === "BLOCKED" ? "lock" : "clock"}}" size="{{14}}" />
+          </text>
+          <text></text>
+          <view>
+            <text>
+              <text>{{check.label}}</text>
+            </text>
+            <text>
+              <text>{{check.detail}}</text>
+            </text>
+          </view>
+          <text></text>
+          <StatusChip status="{{check.status}}" compact="true" />
+          <text></text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="restriction-block">
+        <text class="overline">
+          <text>NON-NEGOTIABLE</text>
+        </text>
+        <view wx:for="{{selectedStage.restrictions}}" wx:for-item="restriction" wx:key="restriction.id" key="{{restriction}}">
+          <Icon name="shield" size="{{15}}" />
+          <text>{{restriction}}</text>
+        </view>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="surface-card decision-card">
+      <text></text>
+      <view class="decision-card-top">
+        <text class="decision-symbol">
+          <Icon name="lock" size="{{20}}" />
+        </text>
+        <StatusChip status="BLOCKED" compact="true" />
+      </view>
+      <text></text>
+      <text class="overline">
+        <text>CURRENT DECISION</text>
+      </text>
+      <view>
+        <text>拒绝执行副作用</text>
+      </view>
+      <text></text>
+      <view>
+        <text>当前只有结构与本地契约证据。没有外部 Runner、独立 Judge 或 PEP 回执，因此不能展示为可发布。</text>
+      </view>
+      <text></text>
+      <dl class="decision-facts">
+        <view>
+          <dt>
+            <text>控制面输出</text>
+          </dt>
+          <dd>
+            <text>READY / BLOCKED</text>
+          </dd>
+        </view>
+        <view>
+          <dt>
+            <text>外部执行</text>
+          </dt>
+          <dd class="warning-text">
+            <text>NOT_RUN</text>
+          </dd>
+        </view>
+        <view>
+          <dt>
+            <text>认证 / 批准</text>
+          </dt>
+          <dd>
+            <text>FALSE</text>
+          </dd>
+        </view>
+      </dl>
+      <text></text>
+      <view class="decision-footer">
+        <Icon name="shield" size="{{16}}" />
+        <text>
+          <text>缺少上下文、错误或不支持的义务都会安全降级为 DENY。</text>
+        </text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="surface-card queue-card">
+    <text></text>
+    <view class="card-heading">
+      <view>
+        <text class="overline">
+          <text>ASSURANCE QUEUE</text>
+        </text>
+        <view>
+          <text>证据审阅队列</text>
+        </view>
+      </view>
+      <text class="quiet-label">
+        <text>合成演示数据 · 不含客户内容</text>
+      </text>
+    </view>
+    <text></text>
+    <view class="queue-table" role="table" aria-label="证据审阅队列">
+      <text></text>
+      <view class="queue-head" role="row">
+        <text role="columnheader">
+          <text>事项</text>
+        </text>
+        <text role="columnheader">
+          <text>对象</text>
+        </text>
+        <text role="columnheader">
+          <text>阶段</text>
+        </text>
+        <text role="columnheader">
+          <text>负责人</text>
+        </text>
+        <text role="columnheader">
+          <text>状态</text>
+        </text>
+      </view>
+      <text></text>
+      <view wx:for="{{reviewQueue}}" wx:key="item.id" class="queue-row" role="row" key="{{item.id}}">
+        <text role="cell" data-label="事项">
+          <text>
+            <text>{{item.id}}</text>
+          </text>
+          <text>
+            <text>{{item.title}}</text>
+          </text>
+        </text>
+        <text role="cell" data-label="对象">
+          <text>{{item.subject}}</text>
+        </text>
+        <text role="cell" data-label="阶段">
+          <text class="batch-pill">
+            <text>{{item.stage}}</text>
+          </text>
+        </text>
+        <text role="cell" data-label="负责人">
+          <text>{{item.owner}}</text>
+        </text>
+        <text role="cell" data-label="状态">
+          <StatusChip status="{{item.status}}" compact="true" />
+        </text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="boundary-strip">
+    <view>
+      <text class="boundary-strip-icon">
+        <Icon name="shield" size="{{21}}" />
+      </text>
+      <text>
+        <text>
+          <text>职责分离保持生效</text>
+        </text>
+        <text>
+          <text>Scheduler ≠ Runner · Producer ≠ Verifier · PDP ≠ PEP · 控制台 ≠ 认证机构</text>
+        </text>
+      </text>
+    </view>
+    <navigator href="/api/capabilities/product" target="_blank" rel="noreferrer" class="text-link">
+      <text>查看能力响应</text>
+      <Icon name="external" size="{{14}}" />
+    </navigator>
+  </view>
+  <text></text>
+</view>

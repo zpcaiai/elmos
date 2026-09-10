@@ -1,0 +1,7 @@
+<Link href="{{item.href}}" class="{{active ? "active" : ""}}" aria-current="{{active ? "page" : undefined}}" key="{{item.href}}">
+  <Icon name="{{item.icon}}" size="{{19}}" />
+  <text>
+    <view wx:if="{{english}}" />
+    <view wx:else />
+  </text>
+</Link>

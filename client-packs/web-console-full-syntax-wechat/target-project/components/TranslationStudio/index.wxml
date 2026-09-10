@@ -1,0 +1,30 @@
+<view class="work-unit-row" role="row" key="{{unit.id}}">
+  <text></text>
+  <text role="cell" title="{{unit.source_path}}">
+    <text>{{unit.source_path}}</text>
+  </text>
+  <text></text>
+  <text role="cell">
+    <text>{{unit.source_sha256.slice(0, 10)}}</text>
+    <text>…</text>
+  </text>
+  <text></text>
+  <text role="cell">
+    <text>{{unit.source_bytes}}</text>
+  </text>
+  <text></text>
+  <text role="cell">
+    <text></text>
+    <view wx:if="{{result}}" />
+    <view wx:else />
+    <text></text>
+  </text>
+  <text></text>
+  <text role="cell" title="{{result?.rejected_candidates.map((entry) => `${entry.candidate}: ${entry.reason}`).join("\n")}}">
+    <text></text>
+    <view wx:if="{{result?.verdict === "READY"}}" />
+    <view wx:else />
+    <text></text>
+  </text>
+  <text></text>
+</view>

@@ -1,0 +1,855 @@
+<view class="{{styles.page}}" data-testid="multimodal-intake-workbench">
+  <text></text>
+  <view class="{{styles.header}}">
+    <text></text>
+    <view>
+      <text></text>
+      <text class="{{styles.overline}}">
+        <text>MULTIMODAL INTAKE · V1</text>
+      </text>
+      <text></text>
+      <view>
+        <text>把原始资料变成可追溯的项目上下文</text>
+      </view>
+      <text></text>
+      <view>
+        <text>文本、音频、图片、PDF、Word、文件夹与归档统一进入校验、隔离、解析、来源锚点和持久任务链。</text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="{{styles.headerStatus}}">
+      <text></text>
+      <StatusChip status="CODE_IMPLEMENTED_LOCAL" />
+      <text></text>
+      <StatusChip status="NOT_RUN" />
+      <text></text>
+      <text>
+        <text>外部 OCR / ASR / AV / 强隔离证据</text>
+      </text>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="{{styles.boundary}}" aria-label="安全边界">
+    <text></text>
+    <text>
+      <text>输入内容始终是不可信数据</text>
+    </text>
+    <text></text>
+    <text>
+      <text>不会执行宏、脚本、安装钩子、Dockerfile 或项目代码；能力不可用时明确阻断，不以空文本冒充成功。</text>
+    </text>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="{{styles.layout}}">
+    <text></text>
+    <view class="{{styles.panel}}">
+      <text></text>
+      <view class="{{styles.sectionHeading}}">
+        <text></text>
+        <view>
+          <text>
+            <text>01 · SESSION</text>
+          </text>
+          <view>
+            <text>创建输入会话</text>
+          </view>
+        </view>
+        <text></text>
+        <StatusChip status="{{busy ? "PROCESSING" : "READY"}}" />
+        <text></text>
+      </view>
+      <text></text>
+      <text class="{{styles.field}}">
+        <text></text>
+        <text>
+          <text>项目 ID</text>
+        </text>
+        <text></text>
+        <input value="{{projectId}}" maxLength="{{128}}" disabled="{{busy || reviewBusy || projectLocked}}" bindchange="(event) => {
+                activeProjectId.current = event.target.value;
+                intakeProjectGeneration.current += 1;
+                setProjectId(event.target.value);
+              }" />
+        <text></text>
+        <text>
+          <text>这是项目别名；服务端按可信租户与身份派生隔离 ID。创建接入句柄后将锁定，避免资产跨项目混用。</text>
+        </text>
+        <text></text>
+      </text>
+      <text></text>
+      <view class="{{styles.boundary}}" aria-label="可恢复上传记录" aria-live="polite">
+        <text></text>
+        <text>
+          <text></text>
+          <view wx:if="{{recoveryStoreError}}" />
+          <view wx:else />
+          <text></text>
+        </text>
+        <text></text>
+        <text>
+          <text>本地仅保存 SHA-256 指纹、浏览器项目别名、BFF 派生的 opaque 项目作用域、已确认分片进度、幂等 attempt 和服务端 opaque handle；
+              不保存 tenant、actor、File、Blob、原文或明文相对路径。重新选择文件后，BFF bootstrap 作用域匹配前不会展示或使用恢复详情与句柄。</text>
+        </text>
+        <text></text>
+        <text wx:if="{{recoveryRecordCount > 0}}">
+          <text>恢复详情已隐藏；重新选择匹配文件后由 BFF 重新验证可信作用域。</text>
+        </text>
+        <text></text>
+        <text wx:if="{{legacyRecoveryCount > 0}}">
+          <text>已清理</text>
+          <text>{{legacyRecoveryCount}}</text>
+          <text>条旧版或无效遗留记录。</text>
+        </text>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="{{styles.directInput}}">
+        <text></text>
+        <text class="{{styles.field}}">
+          <text></text>
+          <text>
+            <text>直接文本 / Markdown</text>
+          </text>
+          <text></text>
+          <textarea value="{{directText}}" placeholder="粘贴需求、会议纪要或日志片段；其中的指令只会作为数据处理。" maxLength="{{200_000}}" bindchange="(event) => setDirectText(event.target.value)" />
+          <text></text>
+        </text>
+        <text></text>
+        <button class="button button-secondary" type="button" disabled="{{!directText.trim() || busy || !recoveryStoreReady}}" bindtap="addDirectText">
+          <text>加入会话</text>
+        </button>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="{{styles.dropzone}}" binddragover="(event) => event.preventDefault()" binddrop="(event) => { event.preventDefault(); void addFiles(event.dataTransfer.files); }">
+        <text></text>
+        <text>
+          <text>拖入文件，或选择文件 / 文件夹</text>
+        </text>
+        <text></text>
+        <text>
+          <text>保留相对路径，不上传本机绝对路径。当前端到端处理硬上限为单文件 64 MiB；超限文件会在读取和上传前永久阻断。</text>
+        </text>
+        <text></text>
+        <view>
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || !recoveryStoreReady}}" bindtap="() => fileInput.current?.click()">
+            <text>选择文件</text>
+          </button>
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || !recoveryStoreReady}}" bindtap="() => folderInput.current?.click()">
+            <text>选择文件夹</text>
+          </button>
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || !recoveryStoreReady || microphone.permission === "DENIED" || microphone.permission === "UNAVAILABLE"}}" bindtap="() => { if (microphone.recording) microphone.stop(); else void microphone.start(); }">
+            <text></text>
+            <view wx:if="{{microphone.recording}}" />
+            <view wx:else />
+            <text></text>
+          </button>
+          <text></text>
+        </view>
+        <text></text>
+        <text>
+          <text>麦克风只在点击后请求浏览器权限；录音在本机编码为 WAV，达到 10 分钟或 64 MiB 上限会停止，轨道也会在离开页面时关闭。权限：</text>
+          <text>{{microphone.permission}}</text>
+        </text>
+        <text></text>
+        <text></text>
+        <text></text>
+        <input ref="{{fileInput}}" hidden="true" type="file" multiple="true" disabled="{{busy || !recoveryStoreReady}}" bindchange="(event) => {
+                void addFiles(event.target.files ?? []);
+                event.currentTarget.value = "";
+              }" />
+        <text></text>
+        <input ref="{{folderInput}}" hidden="true" type="file" multiple="true" disabled="{{busy || !recoveryStoreReady}}" bindchange="(event) => {
+                void addFiles(event.target.files ?? []);
+                event.currentTarget.value = "";
+              }" />
+        <text></text>
+      </view>
+      <text></text>
+      <view class="{{styles.assetToolbar}}">
+        <text></text>
+        <view>
+          <text></text>
+          <text>
+            <text>{{summary.total}}</text>
+            <text>个条目</text>
+          </text>
+          <text></text>
+          <text>
+            <text>{{(summary.bytes / 1024 / 1024).toFixed(2)}}</text>
+            <text>MiB ·</text>
+            <text>{{summary.ready}}</text>
+            <text>READY ·</text>
+            <text>{{summary.review}}</text>
+            <text>待审阅 ·</text>
+            <text>{{summary.blocked}}</text>
+            <text>阻断</text>
+          </text>
+          <text></text>
+        </view>
+        <text></text>
+        <button class="button button-primary" type="button" disabled="{{busy || assets.length === 0 || !recoveryStoreReady}}" bindtap="() => void processAll()">
+          <text></text>
+          <view wx:if="{{busy}}" />
+          <view wx:else />
+          <text></text>
+        </button>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="{{styles.estimateBox}}" aria-label="处理成本与预计耗时" aria-live="polite">
+        <text></text>
+        <view>
+          <text></text>
+          <text>
+            <text>处理成本 / ETA</text>
+          </text>
+          <text></text>
+          <text>
+            <text>仅显示机器墙钟时间与受信任价格目录中的估算；provider 实际账单独立对账。</text>
+          </text>
+          <text></text>
+        </view>
+        <text></text>
+        <StatusChip status="{{estimateBusy ? "PROCESSING" : estimate?.status ?? "NOT_RUN"}}" compact="true" />
+        <text></text>
+        <dl wx:if="{{estimate?.remainingSecondsP50 !== undefined && estimate.remainingSecondsP95 !== undefined}}">
+          <text></text>
+          <view>
+            <dt>
+              <text>P50 剩余</text>
+            </dt>
+            <dd>
+              <text>{{formatEstimateDuration(estimate.remainingSecondsP50)}}</text>
+            </dd>
+          </view>
+          <text></text>
+          <view>
+            <dt>
+              <text>P95 剩余</text>
+            </dt>
+            <dd>
+              <text>{{formatEstimateDuration(estimate.remainingSecondsP95)}}</text>
+            </dd>
+          </view>
+          <text></text>
+          <view>
+            <dt>
+              <text>估算成本</text>
+            </dt>
+            <dd>
+              <text>{{estimate.currency}}</text>
+              <text></text>
+              <text>{{estimate.estimatedCost}}</text>
+            </dd>
+          </view>
+          <text></text>
+          <view>
+            <dt>
+              <text>实际值</text>
+            </dt>
+            <dd>
+              <text>{{estimate.actualsState}}</text>
+            </dd>
+          </view>
+          <text></text>
+        </dl>
+        <text wx:else>
+          <text>{{estimate?.code ?? "尚未请求估算。若受信任校准或价格目录不可用，服务端会失败关闭。"}}</text>
+        </text>
+        <text></text>
+        <text wx:if="{{estimate?.code && estimate.remainingSecondsP50 !== undefined}}">
+          <text>{{estimate.code}}</text>
+        </text>
+        <text></text>
+        <button class="button button-secondary" type="button" disabled="{{busy || estimateBusy || estimatePlan.stages.length === 0 || !recoveryStoreReady}}" bindtap="() => void refreshProcessingEstimate()">
+          <text></text>
+          <view wx:if="{{estimateBusy}}" />
+          <view wx:else />
+          <text></text>
+        </button>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="{{styles.assetList}}" aria-live="polite">
+        <text></text>
+        <view wx:if="{{assets.length === 0}}" class="{{styles.empty}}">
+          <text>尚未加入资料。仅受支持格式会进入处理；planned 格式会明确拒绝。</text>
+        </view>
+        <text></text>
+        <view wx:for="{{assets}}" wx:for-item="asset" wx:key="asset.id" class="{{styles.assetRow}}" key="{{asset.key}}">
+          <text></text>
+          <view class="{{styles.assetIdentity}}">
+            <text></text>
+            <text>
+              <text>{{asset.relativePath}}</text>
+            </text>
+            <text></text>
+            <text>
+              <text>{{asset.file.type || "application/octet-stream"}}</text>
+              <text>·</text>
+              <text>{{asset.file.size.toLocaleString()}}</text>
+              <text>bytes</text>
+            </text>
+            <text></text>
+            <code wx:if="{{asset.sha256}}">
+              <text>sha256:</text>
+              <text>{{asset.sha256}}</text>
+            </code>
+            <text></text>
+            <text wx:if="{{asset.recoveryCandidate && !asset.recoveryAttached}}">
+              <text>发现匹配的恢复候选；BFF 作用域复核前不会使用已存句柄。</text>
+            </text>
+            <text></text>
+            <text wx:if="{{asset.recoveryAttached}}">
+              <text>BFF 作用域已验证；重新校验内容后从确认分片继续。</text>
+            </text>
+            <text></text>
+          </view>
+          <text></text>
+          <view class="{{styles.assetState}}">
+            <text></text>
+            <StatusChip status="{{asset.phase}}" compact="true" />
+            <text></text>
+            <text class="{{styles.inlineControl}}">
+              <text></text>
+              <text>
+                <text>资料角色</text>
+              </text>
+              <text></text>
+              <select value="{{asset.role}}" disabled="{{busy || Boolean(asset.sessionId)}}" bindchange="(event) => {
+                        const role = event.target.value as AssetDraft["role"];
+                        update(asset.key, { role, modelReadAllowed: role === "IGNORE" ? false : asset.modelReadAllowed });
+                      }">
+                <text></text>
+                <option value="PRIMARY">
+                  <text>主资料</text>
+                </option>
+                <text></text>
+                <option value="REFERENCE">
+                  <text>参考资料</text>
+                </option>
+                <text></text>
+                <option value="IGNORE">
+                  <text>忽略</text>
+                </option>
+                <text></text>
+              </select>
+              <text></text>
+            </text>
+            <text></text>
+            <text class="{{styles.inlineControl}}">
+              <text></text>
+              <input type="checkbox" checked="{{asset.modelReadAllowed}}" disabled="{{busy || asset.role === "IGNORE" || Boolean(asset.sessionId)}}" bindchange="(event) => update(asset.key, { modelReadAllowed: event.target.checked })" />
+              <text></text>
+              <text>
+                <text>允许模型读取</text>
+              </text>
+              <text></text>
+            </text>
+            <text></text>
+            <text wx:if="{{!asset.modelReadAllowed}}">
+              <text>未授权条目仅留在本机预览，不会上传或进入模型处理。</text>
+            </text>
+            <text></text>
+            <view class="{{styles.progress}}" role="progressbar" aria-label="{{`${asset.relativePath} 处理进度`}}" aria-valuemin="{{0}}" aria-valuemax="{{100}}" aria-valuenow="{{Math.min(100, Math.max(0, asset.progress))}}" aria-valuetext="{{`${asset.phase} · ${Math.min(100, Math.max(0, asset.progress))}%`}}">
+              <text></text>
+              <text aria-hidden="true" style="{{{ width: `${Math.min(100, Math.max(0, asset.progress))}%` }}}" />
+              <text></text>
+            </view>
+            <text></text>
+            <text wx:if="{{asset.code}}">
+              <text>{{asset.code}}</text>
+            </text>
+            <text></text>
+            <code wx:if="{{asset.traceId}}">
+              <text>{{asset.traceId}}</text>
+            </code>
+            <text></text>
+          </view>
+          <text></text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+      <view wx:if="{{feedback}}" class="{{styles.feedback}}" role="status">
+        <text>{{feedback}}</text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="{{styles.sidePanel}}">
+      <text></text>
+      <view class="{{styles.sectionHeading}}">
+        <text></text>
+        <view>
+          <text>
+            <text>02 · PACKAGE REVIEW</text>
+          </text>
+          <view>
+            <text>项目包审查</text>
+          </view>
+        </view>
+        <text></text>
+        <StatusChip status="{{packagePreview ? "REVIEW" : "NOT_RUN"}}" />
+        <text></text>
+      </view>
+      <text></text>
+      <text class="{{styles.field}}">
+        <text></text>
+        <text>
+          <text>过滤目录树</text>
+        </text>
+        <text></text>
+        <input value="{{treeQuery}}" placeholder="路径、文件名" bindchange="(event) => setTreeQuery(event.target.value)" />
+        <text></text>
+      </text>
+      <text></text>
+      <view class="{{styles.tree}}">
+        <text></text>
+        <view wx:if="{{!packagePage}}">
+          <text>生成安全预览后，目录将按服务端游标分页显示。</text>
+        </view>
+        <text></text>
+        <view wx:for="{{filteredPackagePage}}" wx:for-item="entry" wx:key="entry.id" key="{{entry.path}}">
+          <text></text>
+          <code>
+            <text>{{entry.path}}</text>
+          </code>
+          <text></text>
+          <text>
+            <text>{{entry.security_state}}</text>
+            <text>·</text>
+            <text>{{entry.role}}</text>
+            <view wx:if="{{entry.model_read_allowed}}" />
+            <view wx:else />
+          </text>
+          <text></text>
+        </view>
+        <text></text>
+        <view wx:if="{{packagePage}}">
+          <text>服务端第</text>
+          <text>{{packagePageIndex + 1}}</text>
+          <text>页，本页</text>
+          <text>{{packagePage.items.length}}</text>
+          <text>项，
+                全部</text>
+          <text>{{packagePage.total.toLocaleString()}}</text>
+          <text>项；过滤仅作用于当前页。</text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="{{styles.reviewActions}}">
+        <text></text>
+        <button class="button button-secondary" type="button" disabled="{{busy || !packagePage || packagePageIndex === 0}}" bindtap="() => void loadPackagePage(packagePageCursors[packagePageIndex - 1] ?? null, packagePageIndex - 1)">
+          <text>上一页</text>
+        </button>
+        <text></text>
+        <button class="button button-secondary" type="button" disabled="{{busy || !packagePage?.next_cursor}}" bindtap="() => {
+                if (!packagePage?.next_cursor) return;
+                const nextIndex = packagePageIndex + 1;
+                const cursors = [...packagePageCursors.slice(0, nextIndex), packagePage.next_cursor];
+                setPackagePageCursors(cursors);
+                void loadPackagePage(packagePage.next_cursor, nextIndex);
+              }">
+          <text>下一页</text>
+        </button>
+        <text></text>
+      </view>
+      <text></text>
+      <button class="button button-secondary" type="button" disabled="{{busy || assets.length === 0}}" bindtap="() => void buildPackagePreview()">
+        <text>生成安全预览</text>
+      </button>
+      <text></text>
+      <pre wx:if="{{packagePreview}}" class="{{styles.jsonPreview}}" tabIndex="{{0}}">
+        <text>{{JSON.stringify(packagePreview, null, 2)}}</text>
+      </pre>
+      <text></text>
+      <view class="{{styles.reviewBox}}">
+        <text></text>
+        <view class="{{styles.sectionHeading}}">
+          <text></text>
+          <view>
+            <text>
+              <text>03 · HUMAN REVIEW</text>
+            </text>
+            <view>
+              <text>审阅队列、纠错与传播</text>
+            </view>
+          </view>
+          <text></text>
+        </view>
+        <text></text>
+        <text class="{{styles.field}}">
+          <text></text>
+          <text>
+            <text>目标资产</text>
+          </text>
+          <text></text>
+          <select disabled="{{busy || reviewBusy}}" value="{{correctionTarget}}" bindchange="(event) => {
+                  const nextAssetId = event.target.value;
+                  if (nextAssetId !== correctionTarget) {
+                    reviewScopeGeneration.current += 1;
+                    reviewRequestOwner.current += 1;
+                    setReviewBusy(false);
+                    setCorrection("");
+                    setCorrectionTouched(false);
+                    setReviewSources([]);
+                    setSelectedReviewSourceKey("");
+                    setReviewTargetKind("TEXT");
+                    setReviewTargetLocator("");
+                    setReviewOriginalValue("");
+                    setReviewConfidence("0.5");
+                  }
+                  setCorrectionTarget(nextAssetId);
+                }">
+            <text></text>
+            <option value="">
+              <text>选择已接入资产</text>
+            </option>
+            <text></text>
+            <option wx:for="{{assets.filter((asset) => asset.assetId)}}" wx:for-item="asset" wx:key="asset.id" value="{{asset.assetId}}" key="{{asset.key}}">
+              <text>{{asset.relativePath}}</text>
+            </option>
+            <text></text>
+          </select>
+          <text></text>
+        </text>
+        <text></text>
+        <view class="{{styles.reviewActions}}">
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || reviewBusy || !correctionTarget}}" bindtap="() => void refreshReviewSources()">
+            <text>刷新权威待审来源</text>
+          </button>
+          <text></text>
+        </view>
+        <text></text>
+        <text class="{{styles.field}}">
+          <text></text>
+          <text>
+            <text>权威待审来源（低置信度优先）</text>
+          </text>
+          <text></text>
+          <select disabled="{{busy || reviewBusy || reviewSources.length === 0}}" value="{{selectedReviewSourceKey}}" bindchange="(event) => void selectReviewSource(event.target.value)">
+            <text></text>
+            <option value="">
+              <text>选择 snapshot/head 绑定来源</text>
+            </option>
+            <text></text>
+            <option wx:for="{{reviewSources}}" wx:for-item="source" wx:key="source.id" value="{{reviewSourceKey(source)}}" key="{{reviewSourceKey(source)}}">
+              <text></text>
+              <text>{{source.confidence.toFixed(3)}}</text>
+              <text>·</text>
+              <text>{{source.target_kind}}</text>
+              <text>·</text>
+              <text>{{source.head_direction}}</text>
+              <text></text>
+              <text>{{" · "}}</text>
+              <text>{{String(source.target.path ?? source.target_digest)}}</text>
+              <text></text>
+            </option>
+            <text></text>
+          </select>
+          <text></text>
+        </text>
+        <text></text>
+        <pre wx:if="{{activeReviewSource?.detail_loaded}}" class="{{styles.jsonPreview}}" tabIndex="{{0}}">
+          <text>{{JSON.stringify({
+                target: activeReviewSource.target,
+                original_value: activeReviewSource.original_value,
+                confidence: activeReviewSource.confidence,
+                source_ref: activeReviewSource.source_ref,
+              }, null, 2)}}</text>
+        </pre>
+        <text></text>
+        <text class="{{styles.field}}">
+          <text></text>
+          <text>
+            <view wx:if="{{activeReviewTask && activeReviewTask.target_kind !== "TEXT"}}" />
+            <view wx:else />
+          </text>
+          <text></text>
+          <textarea disabled="{{busy || reviewBusy}}" value="{{correction}}" placeholder="{{activeReviewTask && activeReviewTask.target_kind !== "TEXT"
+                  ? "输入严格 JSON；说话人、时间段、bbox、表格、需求和冲突均保留类型。"
+                  : "修正会创建新版本，不覆盖原始资产。"}}" bindchange="(event) => {
+                  setCorrection(event.target.value);
+                  setCorrectionTouched(true);
+                }" />
+          <text></text>
+        </text>
+        <text></text>
+        <text class="{{styles.field}}">
+          <text></text>
+          <text>
+            <text>目标类型</text>
+          </text>
+          <text></text>
+          <select disabled="true" value="{{reviewTargetKind}}" bindchange="(event) => setReviewTargetKind(event.target.value as ReviewTargetKind)">
+            <text></text>
+            <option value="TEXT">
+              <text>文本</text>
+            </option>
+            <text></text>
+            <option value="SPEAKER">
+              <text>说话人</text>
+            </option>
+            <text></text>
+            <option value="TIME_RANGE">
+              <text>时间段</text>
+            </option>
+            <text></text>
+            <option value="BBOX">
+              <text>图像区域 bbox</text>
+            </option>
+            <text></text>
+            <option value="TABLE">
+              <text>表格</text>
+            </option>
+            <text></text>
+            <option value="REQUIREMENT">
+              <text>需求</text>
+            </option>
+            <text></text>
+            <option value="CONFLICT">
+              <text>冲突</text>
+            </option>
+            <text></text>
+          </select>
+          <text></text>
+        </text>
+        <text></text>
+        <text class="{{styles.field}}">
+          <text></text>
+          <text>
+            <text>目标定位 JSON</text>
+          </text>
+          <text></text>
+          <textarea disabled="{{busy || reviewBusy}}" readOnly="true" value="{{reviewTargetLocator}}" placeholder="{{reviewTargetKind === "TEXT"
+                  ? '从权威来源选择器载入，格式如 {"path":"content_blocks/.../text"}'
+                  : reviewTargetKind === "SPEAKER"
+                    ? '{"segment_id":"segment-1"}'
+                    : reviewTargetKind === "TIME_RANGE"
+                      ? '{"start_ms":0,"end_ms":1500}'
+                      : reviewTargetKind === "BBOX"
+                        ? '{"page":1,"x":0,"y":0,"width":100,"height":80}'
+                        : reviewTargetKind === "TABLE"
+                          ? '{"table_id":"table-1","row":0,"column":0}'
+                          : reviewTargetKind === "REQUIREMENT"
+                            ? '{"requirement_id":"requirement-1"}'
+                            : '{"conflict_id":"conflict-1"}'}}" />
+          <text></text>
+        </text>
+        <text></text>
+        <text class="{{styles.field}}">
+          <text></text>
+          <text>
+            <view wx:if="{{reviewTargetKind === "TEXT"}}" />
+            <view wx:else />
+          </text>
+          <text></text>
+          <textarea disabled="{{busy || reviewBusy}}" readOnly="true" value="{{reviewOriginalValue}}" placeholder="{{reviewTargetKind === "TEXT"
+                  ? "输入来源中当前可见的原始文本；它会与资产来源摘要一起进入不可变审计历史。"
+                  : "输入严格 JSON 的当前原值；纠正与回退不会覆盖原始资产。"}}" />
+          <text></text>
+        </text>
+        <text></text>
+        <text class="{{styles.field}}">
+          <text></text>
+          <text>
+            <text>置信度（0–1，队列按低置信优先）</text>
+          </text>
+          <text></text>
+          <input disabled="{{busy || reviewBusy}}" readOnly="true" inputMode="decimal" value="{{reviewConfidence}}" />
+          <text></text>
+        </text>
+        <text></text>
+        <text class="{{styles.field}}">
+          <text></text>
+          <text>
+            <text>审阅原因</text>
+          </text>
+          <text></text>
+          <input disabled="{{busy || reviewBusy}}" maxLength="{{2000}}" value="{{reviewReason}}" bindchange="(event) => setReviewReason(event.target.value)" />
+          <text></text>
+        </text>
+        <text></text>
+        <view class="{{styles.reviewActions}}">
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || reviewBusy || !reviewIdentityScope || !correctionTarget || !activeReviewSource?.detail_loaded}}" bindtap="() => void enqueueReviewTask()">
+            <text>加入审阅队列</text>
+          </button>
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || reviewBusy}}" bindtap="() => void refreshReviewQueue()">
+            <text>刷新低置信队列</text>
+          </button>
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || reviewBusy || !reviewIdentityScope || reviewEnqueueRecoveryCount === 0 || Boolean(reviewEnqueueRecoveryError)}}" bindtap="() => void recoverReviewEnqueueAttempts()">
+            <text>精确恢复未知入队（</text>
+            <text>{{reviewEnqueueRecoveryCount}}</text>
+            <text>）</text>
+          </button>
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || reviewBusy || !correctionTarget || !correctionTouched}}" bindtap="() => void submitCorrection()">
+            <text>兼容快速纠错</text>
+          </button>
+          <text></text>
+        </view>
+        <text></text>
+        <view wx:if="{{reviewEnqueueRecoveryCount > 0 && !reviewEnqueueRecoveryError}}" role="alert">
+          <text>当前项目有</text>
+          <text>{{reviewEnqueueRecoveryCount}}</text>
+          <text>个入队结果未知；恢复只发送不透明句柄与原执行幂等键，精确输入由服务端准备记录绑定，不写入浏览器存储。</text>
+        </view>
+        <text></text>
+        <view wx:if="{{reviewEnqueueRecoveryError}}" role="alert">
+          <text></text>
+          <text>{{reviewEnqueueRecoveryError}}</text>
+          <text>：恢复记录可能代表未知副作用，已保留且不会自动清除或降级为新请求。</text>
+        </view>
+        <text></text>
+        <view wx:if="{{legacyReviewClaimDiscarded}}" role="alert">
+          <text>检测到无法证明身份归属的旧版领取恢复记录，已安全停用；请刷新队列并由服务端重新核对任务状态。</text>
+        </view>
+        <text></text>
+        <text class="{{styles.field}}">
+          <text></text>
+          <text>
+            <text>审阅任务</text>
+          </text>
+          <text></text>
+          <select disabled="{{busy || reviewBusy}}" value="{{selectedReviewTaskId}}" bindchange="(event) => void selectReviewTask(event.target.value)">
+            <text></text>
+            <option value="">
+              <text>选择任务</text>
+            </option>
+            <text></text>
+            <option wx:for="{{reviewTasks}}" wx:for-item="task" wx:key="task.id" value="{{task.task_id}}" key="{{task.task_id}}">
+              <text></text>
+              <text>{{task.confidence.toFixed(3)}}</text>
+              <text>·</text>
+              <text>{{task.target_kind}}</text>
+              <text>·</text>
+              <text>{{task.state}}</text>
+              <text>·</text>
+              <text>{{task.task_id}}</text>
+              <text></text>
+            </option>
+            <text></text>
+          </select>
+          <text></text>
+        </text>
+        <text></text>
+        <view wx:if="{{activeReviewTask}}" class="{{styles.reviewTaskSummary}}" aria-live="polite">
+          <text></text>
+          <code>
+            <text>{{activeReviewTask.task_id}}</text>
+          </code>
+          <text></text>
+          <text>
+            <text>{{activeReviewTask.state}}</text>
+          </text>
+          <text></text>
+          <text>
+            <text>task v</text>
+            <text>{{activeReviewTask.version}}</text>
+            <text>· correction v</text>
+            <text>{{activeReviewTask.current_correction_version}}</text>
+          </text>
+          <text></text>
+          <text wx:if="{{activeReviewTask.claim_expires_at}}">
+            <text>claim expires</text>
+            <text>{{activeReviewTask.claim_expires_at}}</text>
+          </text>
+          <text></text>
+          <text wx:if="{{activeReviewClaimAttempt && !activeReviewClaim}}">
+            <text>领取结果待恢复；再次领取会复用原幂等键和令牌。</text>
+          </text>
+          <text></text>
+          <view wx:if="{{activeReviewTask.detail_loaded}}">
+            <text></text>
+            <text>
+              <text>定位与权威来源</text>
+            </text>
+            <text></text>
+            <pre class="{{styles.jsonPreview}}" tabIndex="{{0}}">
+              <text>{{JSON.stringify({
+                      target: activeReviewTask.target,
+                      original_value: activeReviewTask.original_value,
+                      source_digest: activeReviewTask.source_digest,
+                      source_ref: activeReviewTask.source_ref,
+                      reason: activeReviewTask.reason,
+                    }, null, 2)}}</text>
+            </pre>
+            <text></text>
+          </view>
+          <text></text>
+          <view wx:if="{{activeReviewCorrection}}">
+            <text></text>
+            <text>
+              <text>当前不可变纠正版本（批准前必须可见并复核）</text>
+            </text>
+            <text></text>
+            <pre class="{{styles.jsonPreview}}" tabIndex="{{0}}">
+              <text>{{JSON.stringify(activeReviewCorrection, null, 2)}}</text>
+            </pre>
+            <text></text>
+          </view>
+          <text></text>
+        </view>
+        <text></text>
+        <view class="{{styles.reviewActions}}">
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || reviewBusy || !activeReviewTask || !activeReviewTask.detail_loaded || !reviewIdentityScope || (!activeReviewTaskClaimable && !activePendingReviewClaim) || Boolean(activeReviewClaim)}}" bindtap="() => void claimReviewTask()">
+            <view wx:if="{{activePendingReviewClaim}}" />
+            <view wx:else />
+          </button>
+          <text></text>
+          <button wx:if="{{activeReviewClaimAttempt && !activeReviewClaim && activeReviewTask}}" class="button button-secondary" type="button" disabled="{{busy || reviewBusy}}" bindtap="() => abandonReviewClaimRecovery(activeReviewTask.task_id)">
+            <text>清除本地领取恢复</text>
+          </button>
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || reviewBusy || !activeReviewTask || !activeReviewTask.detail_loaded || !activeReviewClaim || !correctionTouched}}" bindtap="() => void editReviewTask()">
+            <text>保存纠正版本</text>
+          </button>
+          <text></text>
+          <button class="button button-primary" type="button" disabled="{{busy || reviewBusy || !activeReviewTask || !activeReviewTask.detail_loaded || !activeReviewClaim || activeReviewTask.state !== "EDITED" || activeReviewTask.current_correction_version < 1 || !activeReviewCorrection}}" bindtap="() => void decideReviewTask("approve")">
+            <text>批准并传播</text>
+          </button>
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || reviewBusy || !activeReviewTask || !activeReviewTask.detail_loaded || !activeReviewClaim || activeReviewTask.current_correction_version > 0 && !activeReviewCorrection}}" bindtap="() => void decideReviewTask("reject")">
+            <text>拒绝</text>
+          </button>
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || reviewBusy || !activeReviewTask || !["REJECTED", "REVERTED"].includes(activeReviewTask.state) || activeReviewTask.current_correction_version > 0 && !activeReviewCorrection}}" bindtap="() => void transitionClosedReviewTask("reopen")">
+            <text>重新打开</text>
+          </button>
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || reviewBusy || !activeReviewTask || activeReviewTask.state !== "APPROVED" || activeReviewTask.effective_version !== activeReviewTask.current_correction_version || !activeReviewCorrection}}" bindtap="() => void transitionClosedReviewTask("revert")">
+            <text>回退批准版本</text>
+          </button>
+          <text></text>
+          <button class="button button-secondary" type="button" disabled="{{busy || reviewBusy || !activeReviewTask}}" bindtap="() => void refreshReviewPropagation()">
+            <text>传播状态</text>
+          </button>
+          <text></text>
+        </view>
+        <text></text>
+        <pre wx:if="{{reviewPropagation}}" class="{{styles.jsonPreview}}" tabIndex="{{0}}">
+          <text>{{JSON.stringify(reviewPropagation, null, 2)}}</text>
+        </pre>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+</view>

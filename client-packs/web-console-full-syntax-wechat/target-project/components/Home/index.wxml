@@ -1,0 +1,417 @@
+<view class="page-stack">
+  <text></text>
+  <view class="welcome-card">
+    <text></text>
+    <view class="welcome-copy">
+      <text></text>
+      <text class="overline">
+        <text>ELMOS CONTROL CENTER</text>
+      </text>
+      <text></text>
+      <view>
+        <text>四类核心工作空间，一套可验证的交付闭环。</text>
+      </view>
+      <text></text>
+      <view>
+        <text>Spring 老项目翻新、全库跨语言转换、多语言项目生成与国产数据库 SQL 转换分别拥有清晰入口、精确状态、阻断原因和恢复动作。任何执行、认证、合并或发布仍由对应门禁和人工权限决定。</text>
+      </view>
+      <text></text>
+      <view class="welcome-actions">
+        <text></text>
+        <Link class="button button-primary" href="/spring">
+          <text>评估 Spring 老项目</text>
+          <Icon name="arrow" size="{{16}}" />
+          <text></text>
+        </Link>
+        <text></text>
+        <Link class="button button-secondary" href="/translation">
+          <text>选择跨语言路线</text>
+        </Link>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="trust-visual" aria-label="证据链状态：控制面就绪，外部执行未运行">
+      <text></text>
+      <view class="trust-orbit trust-orbit-one" />
+      <text></text>
+      <view class="trust-orbit trust-orbit-two" />
+      <text></text>
+      <view class="trust-core">
+        <Icon name="check" size="{{24}}" />
+      </view>
+      <text></text>
+      <text class="trust-node node-a">
+        <text>IR</text>
+      </text>
+      <text></text>
+      <text class="trust-node node-b">
+        <text>Gate</text>
+      </text>
+      <text></text>
+      <text class="trust-node node-c">
+        <text>Evidence</text>
+      </text>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="overview-metrics" aria-label="平台结构摘要">
+    <text></text>
+    <view>
+      <text class="metric-icon tone-cyan">
+        <Icon name="workflow" size="{{18}}" />
+      </text>
+      <view>
+        <text>
+          <text>Spring 实验 Pack</text>
+        </text>
+        <text>
+          <text>1</text>
+        </text>
+        <text>
+          <text>外部证据 NOT_RUN</text>
+        </text>
+      </view>
+    </view>
+    <text></text>
+    <view>
+      <text class="metric-icon tone-violet">
+        <Icon name="route" size="{{18}}" />
+      </text>
+      <view>
+        <text>
+          <text>跨语言路线</text>
+        </text>
+        <text>
+          <text>210</text>
+        </text>
+        <text>
+          <text>本地通过 0 · 全部 NOT_RUN</text>
+        </text>
+      </view>
+    </view>
+    <text></text>
+    <view>
+      <text class="metric-icon tone-amber">
+        <Icon name="spark" size="{{18}}" />
+      </text>
+      <view>
+        <text>
+          <text>项目生成目标</text>
+        </text>
+        <text>
+          <text>8</text>
+        </text>
+        <text>
+          <text>逐目标验证</text>
+        </text>
+      </view>
+    </view>
+    <text></text>
+    <view>
+      <text class="metric-icon tone-violet">
+        <Icon name="database" size="{{18}}" />
+      </text>
+      <view>
+        <text>
+          <text>国产数据库目标</text>
+        </text>
+        <text>
+          <text>13</text>
+        </text>
+        <text>
+          <text>本地适配器 · 执行 NOT_RUN</text>
+        </text>
+      </view>
+    </view>
+    <text></text>
+    <view>
+      <text class="metric-icon tone-green">
+        <Icon name="shield" size="{{18}}" />
+      </text>
+      <view>
+        <text>
+          <text>外部认证</text>
+        </text>
+        <text>
+          <text>0</text>
+        </text>
+        <text>
+          <text>Fail closed</text>
+        </text>
+      </view>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view aria-labelledby="workspace-title">
+    <text></text>
+    <view class="section-heading">
+      <text></text>
+      <view>
+        <text></text>
+        <text class="overline">
+          <text>WORKSPACES</text>
+        </text>
+        <text></text>
+        <view id="workspace-title">
+          <text>选择工作空间</text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+      <text class="quiet-label">
+        <text>能力状态来自仓库契约</text>
+      </text>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="workspace-grid">
+      <text></text>
+      <Link wx:for="{{workspaces}}" wx:for-item="workspace" wx:key="workspace.id" class="{{`workspace-card accent-${workspace.accent}`}}" href="{{workspace.href}}" key="{{workspace.title}}">
+        <text></text>
+        <view class="workspace-icon">
+          <Icon name="{{workspace.icon}}" size="{{22}}" />
+        </view>
+        <text></text>
+        <view class="workspace-card-copy">
+          <text></text>
+          <text class="overline">
+            <text>{{workspace.eyebrow}}</text>
+          </text>
+          <text></text>
+          <view>
+            <text>{{workspace.title}}</text>
+          </view>
+          <text></text>
+          <view>
+            <text>{{workspace.description}}</text>
+          </view>
+          <text></text>
+          <text class="workspace-meta">
+            <text>{{workspace.meta}}</text>
+          </text>
+          <text></text>
+        </view>
+        <text></text>
+        <text class="round-arrow">
+          <Icon name="arrow" size="{{16}}" />
+        </text>
+        <text></text>
+      </Link>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="overview-grid">
+    <text></text>
+    <view class="surface-card attention-card">
+      <text></text>
+      <view class="card-heading">
+        <text></text>
+        <view>
+          <text class="overline">
+            <text>ATTENTION</text>
+          </text>
+          <view>
+            <text>需要补齐的外部证据</text>
+          </view>
+        </view>
+        <text></text>
+        <text class="count-badge">
+          <text>{{attention.length}}</text>
+        </text>
+        <text></text>
+      </view>
+      <text></text>
+      <view class="attention-list">
+        <text></text>
+        <view wx:for="{{attention}}" wx:for-item="[title, description, status]" wx:key="[title, description, status].id" class="attention-row" key="{{title}}">
+          <text></text>
+          <text class="attention-icon">
+            <Icon name="clock" size="{{16}}" />
+          </text>
+          <text></text>
+          <view>
+            <text>
+              <text>{{title}}</text>
+            </text>
+            <text>
+              <text>{{description}}</text>
+            </text>
+          </view>
+          <text></text>
+          <StatusChip status="{{status}}" compact="true" />
+          <text></text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="surface-card boundary-card">
+      <text></text>
+      <text class="overline">
+        <text>AUTHORITY BOUNDARY</text>
+      </text>
+      <text></text>
+      <view>
+        <text>控制面只准备决策</text>
+      </view>
+      <text></text>
+      <view>
+        <text>当前页面不会执行客户代码、写入生产系统、签发认证或代替人工批准。</text>
+      </view>
+      <text></text>
+      <view class="boundary-rule">
+        <Icon name="lock" size="{{17}}" />
+        <text>
+          <text>未知、过期、冲突与未运行状态一律不通过</text>
+        </text>
+      </view>
+      <text></text>
+      <Link wx:if="{{administrator}}" class="text-link" href="/commercialization">
+        <text>查看职责分离</text>
+        <Icon name="arrow" size="{{14}}" />
+      </Link>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="overview-grid qualification-overview">
+    <text></text>
+    <view class="surface-card namespace-card">
+      <text></text>
+      <view class="card-heading">
+        <view>
+          <text class="overline">
+            <text>功能覆盖范围</text>
+          </text>
+          <view>
+            <text>迁移与交付两类功能，边界不混用</text>
+          </view>
+        </view>
+        <Link wx:if="{{administrator}}" class="text-link" href="/capabilities">
+          <text>查看全部功能</text>
+          <Icon name="arrow" size="{{14}}" />
+        </Link>
+      </view>
+      <text></text>
+      <view class="namespace-summary">
+        <text></text>
+        <view class="namespace-item">
+          <view>
+            <text class="namespace-dot migration-dot" />
+            <text>
+              <text>迁移能力</text>
+            </text>
+            <text>
+              <text>语言 / 框架 / 数据库 / 云 · 820 项功能</text>
+            </text>
+          </view>
+          <text>
+            <text>45%</text>
+          </text>
+        </view>
+        <text></text>
+        <view class="namespace-track">
+          <text class="namespace-fill migration-fill" style="{{{width:"45%"}}}" />
+        </view>
+        <text></text>
+        <view class="namespace-item">
+          <view>
+            <text class="namespace-dot product-dot" />
+            <text>
+              <text>商业与交付控制</text>
+            </text>
+            <text>
+              <text>租户 / 结算 / 证据 / 行业包 · 1,004 项功能</text>
+            </text>
+          </view>
+          <text>
+            <text>55%</text>
+          </text>
+        </view>
+        <text></text>
+        <view class="namespace-track">
+          <text class="namespace-fill product-fill" style="{{{width:"55%"}}}" />
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="surface-card qualification-card">
+      <text></text>
+      <text class="overline">
+        <text>验证阶梯</text>
+      </text>
+      <view>
+        <text>工程通过，不等于外部认证</text>
+      </view>
+      <text></text>
+      <view class="qualification-steps">
+        <view class="complete">
+          <text>
+            <Icon name="check" size="{{13}}" />
+          </text>
+          <text>
+            <text>
+              <text>功能结构</text>
+            </text>
+            <text>
+              <text>1,824 / 1,824</text>
+            </text>
+          </text>
+        </view>
+        <view class="complete">
+          <text>
+            <Icon name="check" size="{{13}}" />
+          </text>
+          <text>
+            <text>
+              <text>用例目录</text>
+            </text>
+            <text>
+              <text>408 / 408</text>
+            </text>
+          </text>
+        </view>
+        <view>
+          <text>
+            <text>3</text>
+          </text>
+          <text>
+            <text>
+              <text>独立执行</text>
+            </text>
+            <text>
+              <text>0 / 408 · NOT_RUN</text>
+            </text>
+          </text>
+        </view>
+        <view>
+          <text>
+            <Icon name="lock" size="{{12}}" />
+          </text>
+          <text>
+            <text>
+              <text>严格认证</text>
+            </text>
+            <text>
+              <text>BLOCKED</text>
+            </text>
+          </text>
+        </view>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+</view>

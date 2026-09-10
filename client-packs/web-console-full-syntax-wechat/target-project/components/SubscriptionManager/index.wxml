@@ -1,0 +1,46 @@
+<view class="{{styles.subscriptionPanel}}" aria-label="当前订阅">
+  <text></text>
+  <view class="{{styles.subscriptionCopy}}">
+    <text></text>
+    <text>
+      <text>当前订阅</text>
+    </text>
+    <text></text>
+    <text>
+      <text>{{copy}}</text>
+    </text>
+    <text></text>
+    <text wx:if="{{message}}" role="status">
+      <text>{{message}}</text>
+    </text>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="{{styles.subscriptionActions}}">
+    <text></text>
+    <button wx:if="{{state === "UNAVAILABLE"}}" class="button button-secondary" type="button" bindtap="() => void load()">
+      <text>重试</text>
+    </button>
+    <text></text>
+    <button wx:if="{{state === "READY" && subscription?.canCancel && !confirming}}" class="button button-secondary" type="button" bindtap="() => setConfirming(true)">
+      <text>到期取消</text>
+    </button>
+    <text></text>
+    <view wx:if="{{state === "READY" && subscription?.canCancel && confirming}}">
+      <text></text>
+      <button class="button button-secondary" type="button" disabled="{{pending}}" bindtap="() => setConfirming(false)">
+        <text>保留订阅</text>
+      </button>
+      <text></text>
+      <button class="button button-primary" type="button" disabled="{{pending}}" bindtap="cancel">
+        <text></text>
+        <view wx:if="{{pending}}" />
+        <view wx:else />
+        <text></text>
+      </button>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+</view>

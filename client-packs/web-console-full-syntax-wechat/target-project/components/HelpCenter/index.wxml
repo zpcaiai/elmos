@@ -1,0 +1,231 @@
+<view class="page-stack help-center">
+  <text></text>
+  <view class="page-header">
+    <text></text>
+    <view>
+      <text></text>
+      <text class="overline">
+        <view wx:if="{{english}}" />
+        <view wx:else />
+      </text>
+      <text></text>
+      <view>
+        <view wx:if="{{english}}" />
+        <view wx:else />
+      </view>
+      <text></text>
+      <view>
+        <text></text>
+        <view wx:if="{{english}}" />
+        <view wx:else />
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="help-section" aria-labelledby="help-lines-title">
+    <text></text>
+    <view class="section-heading">
+      <text></text>
+      <view>
+        <text></text>
+        <text class="overline">
+          <text>01</text>
+        </text>
+        <text></text>
+        <view id="help-lines-title">
+          <view wx:if="{{english}}" />
+          <view wx:else />
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="help-line-grid">
+      <text></text>
+      <view wx:for="{{businessLines}}" wx:for-item="line" wx:key="line.id" key="{{line.href}}">
+        <text></text>
+        <view>
+          <view wx:if="{{english}}" />
+          <view wx:else />
+        </view>
+        <text></text>
+        <view>
+          <view wx:if="{{english}}" />
+          <view wx:else />
+        </view>
+        <text></text>
+        <Link class="text-link" href="{{line.href}}">
+          <text></text>
+          <view wx:if="{{english}}" />
+          <view wx:else />
+          <text>→</text>
+        </Link>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="help-section" aria-labelledby="help-delivery-title">
+    <text></text>
+    <view class="section-heading">
+      <text></text>
+      <view>
+        <text></text>
+        <text class="overline">
+          <text>02</text>
+        </text>
+        <text></text>
+        <view id="help-delivery-title">
+          <view wx:if="{{english}}" />
+          <view wx:else />
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+      <Link wx:if="{{hasAdminAccess}}" class="text-link" href="/repositories">
+        <text></text>
+        <view wx:if="{{english}}" />
+        <view wx:else />
+        <text></text>
+      </Link>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="help-steps">
+      <text></text>
+      <view wx:for="{{deliverySteps}}" wx:for-item="[number, zh, en]" wx:key="[number, zh, en].id" key="{{number}}">
+        <text>
+          <text>{{number}}</text>
+        </text>
+        <text>
+          <view wx:if="{{english}}" />
+          <view wx:else />
+        </text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="help-boundary">
+      <text></text>
+      <view wx:if="{{english}}" />
+      <view wx:else />
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="help-section" aria-labelledby="help-readiness-title">
+    <text></text>
+    <view class="section-heading">
+      <text></text>
+      <view>
+        <text></text>
+        <text class="overline">
+          <text>03</text>
+        </text>
+        <text></text>
+        <view id="help-readiness-title">
+          <view wx:if="{{english}}" />
+          <view wx:else />
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <view class="help-table-wrap" tabIndex="{{0}}" role="region" aria-label="{{english ? "Readiness evidence table" : "就绪证据表"}}">
+      <text></text>
+      <view class="help-readiness-table">
+        <text></text>
+        <view>
+          <text></text>
+          <view>
+            <text></text>
+            <view scope="col">
+              <view wx:if="{{english}}" />
+              <view wx:else />
+            </view>
+            <text></text>
+            <view scope="col">
+              <view wx:if="{{english}}" />
+              <view wx:else />
+            </view>
+            <text></text>
+            <view scope="col">
+              <view wx:if="{{english}}" />
+              <view wx:else />
+            </view>
+            <text></text>
+          </view>
+          <text></text>
+        </view>
+        <text></text>
+        <view>
+          <text></text>
+          <view wx:for="{{readiness}}" wx:for-item="row" wx:key="row.id" key="{{row[0]}}">
+            <text></text>
+            <view scope="row">
+              <view wx:if="{{english}}" />
+              <view wx:else />
+            </view>
+            <text></text>
+            <view>
+              <view wx:if="{{english}}" />
+              <view wx:else />
+            </view>
+            <text></text>
+            <view>
+              <code>
+                <view wx:if="{{english}}" />
+                <view wx:else />
+              </code>
+            </view>
+            <text></text>
+          </view>
+          <text></text>
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="help-section help-admin" aria-labelledby="help-admin-title">
+    <text></text>
+    <view>
+      <text></text>
+      <text class="overline">
+        <text>04</text>
+      </text>
+      <text></text>
+      <view id="help-admin-title">
+        <view wx:if="{{english}}" />
+        <view wx:else />
+      </view>
+      <text></text>
+      <view>
+        <text></text>
+        <view wx:if="{{english}}" />
+        <view wx:else />
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+    <Link class="{{`button ${hasAdminAccess ? "button-primary" : "admin-entry-button"}`}}" href="{{hasAdminAccess ? "/admin" : "/admin/login"}}">
+      <text></text>
+      <view wx:if="{{hasAdminAccess}}" />
+      <view wx:else />
+      <text></text>
+    </Link>
+    <text></text>
+  </view>
+  <text></text>
+</view>

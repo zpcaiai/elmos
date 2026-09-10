@@ -70,7 +70,7 @@ class RootlessSandboxDetector:
 
         # 1. Check Podman
         podman_path = shutil.which("podman")
-        if podman_path:
+        if podman_path and is_linux:
             backends.append("podman_rootless")
 
         # 2. Check Bubblewrap (bwrap)
@@ -133,7 +133,6 @@ class LinuxRootlessSandboxRunner:
     ) -> SandboxExecutionResult:
         podman_cmd = [
             "podman", "run", "--rm",
-            "--rootless",
             "--security-opt", "no-new-privileges",
             "--cap-drop=ALL",
             f"--cpus={self.config.cpus}",

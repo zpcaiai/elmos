@@ -1,0 +1,23 @@
+<button type="button" key="{{span.id}}" class="{{`${styles.spanRow} ${isSelected ? styles.spanRowSelected : ""}`}}" aria-pressed="{{isSelected}}" bindtap="() => setSelectedSpan(span)">
+  <text></text>
+  <view class="{{styles.spanNameCol}}">
+    <text></text>
+    <text class="{{styles.statusDot}}" />
+    <text></text>
+    <text class="{{styles.spanName}}">
+      <text>{{span.name}}</text>
+    </text>
+    <text></text>
+  </view>
+  <text></text>
+  <view class="{{styles.spanBarContainer}}">
+    <text></text>
+    <view class="{{styles.spanBar}}" style="{{{ width: `${widthPct}%` }}}">
+      <text></text>
+      <text>{{span.durationMs}}</text>
+      <text>ms</text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+</button>

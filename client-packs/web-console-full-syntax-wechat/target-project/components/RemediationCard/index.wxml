@@ -1,0 +1,70 @@
+<view class="{{styles.tableWrap}}">
+  <text></text>
+  <view>
+    <text></text>
+    <view>
+      <view>
+        <view>
+          <text>时间</text>
+        </view>
+        <view>
+          <text>业务线</text>
+        </view>
+        <view>
+          <text>动作</text>
+        </view>
+        <view>
+          <text>目标</text>
+        </view>
+        <view>
+          <text>结果</text>
+        </view>
+        <view>
+          <text>耗时</text>
+        </view>
+      </view>
+    </view>
+    <text></text>
+    <view>
+      <text></text>
+      <view wx:for="{{events}}" wx:key="item.id" key="{{item.eventId}}">
+        <text></text>
+        <view>
+          <text>{{formatTime(item.occurredAt)}}</text>
+        </view>
+        <text></text>
+        <view>
+          <text>{{lineLabels[item.businessLine] ?? item.businessLine}}</text>
+        </view>
+        <text></text>
+        <view>
+          <code>
+            <text>{{item.action}}</text>
+          </code>
+        </view>
+        <text></text>
+        <view title="{{item.target}}">
+          <text>{{displayTarget(item.target)}}</text>
+        </view>
+        <text></text>
+        <view>
+          <text class="{{item.result === "FAILURE" ? styles.resultBad : styles.resultGood}}">
+            <text>{{item.result}}</text>
+          </text>
+          <text wx:if="{{item.errorCode}}">
+            <text>{{item.errorCode}}</text>
+          </text>
+        </view>
+        <text></text>
+        <view>
+          <view wx:if="{{item.durationMs === null}}" />
+          <view wx:else />
+        </view>
+        <text></text>
+      </view>
+      <text></text>
+    </view>
+    <text></text>
+  </view>
+  <text></text>
+</view>

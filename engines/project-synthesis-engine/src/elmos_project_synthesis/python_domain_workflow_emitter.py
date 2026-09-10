@@ -312,6 +312,16 @@ class {entity_name}SagaCoordinator:
                 step.compensation(context)
             except Exception as exc:
                 logger.critical("Compensation of '%s' failed: %s", step.name, exc)
+
+
+class SagaStepDef(SagaStep):
+    """Step definition for orchestrated saga."""
+    pass
+
+
+class SagaOrchestrator({entity_name}SagaCoordinator):
+    """Saga orchestrator coordinating forward actions and reverse compensations."""
+    pass
 '''
 
     # 6. Transactional Outbox Pattern & Worker
