@@ -1122,14 +1122,19 @@ class CostCategory(str, Enum):
 class CostLineItem:
     item_id: str
     category: CostCategory
-    description: str
-    quantity: float
-    unit_price: float
-    total_cost: float
+    description: str = ""
+    quantity: float = 0.0
+    unit_price: float = 0.0
+    total_cost: float = 0.0
     currency: str = "USD"
     tenant_id: Optional[str] = None
     project_id: Optional[str] = None
     timestamp: str = ""
+    name: str = ""
+    monthly_cost: float = 0.0
+    unit_cost: float = 0.0
+    growth_rate_pct: float = 0.0
+    tags: Dict[str, str] = field(default_factory=dict)
 
 @dataclass
 class CostScenarioForecast:
@@ -5008,3 +5013,208 @@ class PatchSlaPolicy:
     medium_sla_hours: int = 168  # 7 days
     low_sla_hours: int = 720  # 30 days
     informational_sla_hours: int = 2160  # 90 days
+
+# ─── Agent Tool Permissions Models ───────────────────────────────────
+
+class ToolPermissionLevel(str, Enum):
+    DENY = "deny"
+    READ_ONLY = "read_only"
+    EXECUTE = "execute"
+    ADMIN = "admin"
+
+class PermissionScope(str, Enum):
+    GLOBAL = "global"
+    PROJECT = "project"
+    REPOSITORY = "repository"
+    ENVIRONMENT = "environment"
+
+@dataclass
+class ToolDefinition:
+    tool_id: str
+    name: str
+    description: str = ""
+    risk_level: str = "low"  # low, medium, high, critical
+    requires_approval: bool = False
+    side_effects: bool = False
+    categories: List[str] = field(default_factory=list)
+
+@dataclass
+class ToolPermissionGrant:
+    grant_id: str
+    agent_id: str
+    tool_id: str
+    level: ToolPermissionLevel = ToolPermissionLevel.DENY
+    scope: PermissionScope = PermissionScope.GLOBAL
+    scope_value: str = ""  # project/repo/env name
+    granted_by: str = ""
+    granted_at: str = ""
+    expires_at: str = ""
+    conditions: List[str] = field(default_factory=list)
+    revoked: bool = False
+
+# ─── SRE Reliability DR Certification Models ─────────────────────────
+
+class ReliabilityDomain(str, Enum):
+    AVAILABILITY = "availability"
+    LATENCY = "latency"
+    ERROR_RATE = "error_rate"
+    THROUGHPUT = "throughput"
+    DISASTER_RECOVERY = "disaster_recovery"
+    BACKUP = "backup"
+    FAILOVER = "failover"
+
+class CertificationLevel(str, Enum):
+    BRONZE = "bronze"
+    SILVER = "silver"
+    GOLD = "gold"
+    PLATINUM = "platinum"
+
+@dataclass
+class ReliabilityMetric:
+    metric_id: str
+    domain: ReliabilityDomain
+    name: str
+    target_value: float = 0.0
+    actual_value: float = 0.0
+    unit: str = ""
+    met: bool = False
+    measured_at: str = ""
+    measurement_window_hours: int = 720  # 30 days default
+
+@dataclass
+class ReliabilityCertification:
+    cert_id: str
+    service_name: str
+    level: CertificationLevel = CertificationLevel.BRONZE
+    metrics: List[str] = field(default_factory=list)  # metric_ids
+    certified: bool = False
+    certified_at: str = ""
+    expires_at: str = ""
+    certifier: str = ""
+    gaps: List[str] = field(default_factory=list)
+
+# ─── Customer Upgrade Readiness Models ───────────────────────────────
+
+class ReadinessLevel(str, Enum):
+    READY = "ready"
+    READY_WITH_ACTIONS = "ready_with_actions"
+    NOT_READY = "not_ready"
+    BLOCKED = "blocked"
+
+class UpgradeCheckCategory(str, Enum):
+    COMPATIBILITY = "compatibility"
+    DEPENDENCY = "dependency"
+    CONFIGURATION = "configuration"
+    DATA_MIGRATION = "data_migration"
+    CUSTOM_CODE = "custom_code"
+    INFRASTRUCTURE = "infrastructure"
+
+@dataclass
+class UpgradeCheck:
+    check_id: str
+    category: UpgradeCheckCategory
+    name: str
+    description: str = ""
+    passed: bool = False
+    blocking: bool = True
+    remediation: str = ""
+    effort_hours: float = 0.0
+
+@dataclass
+class UpgradeReadinessAssessment:
+    assessment_id: str
+    customer_id: str
+    current_version: str
+    target_version: str
+    readiness: ReadinessLevel = ReadinessLevel.NOT_READY
+    checks: List[str] = field(default_factory=list)  # check_ids
+    overall_score: float = 0.0  # 0-100
+    total_effort_hours: float = 0.0
+    assessed_at: str = ""
+    recommended_upgrade_date: str = ""
+
+# ─── Mature Product Final Gate Models ────────────────────────────────
+
+class FinalGateMaturityDimension(str, Enum):
+    FUNCTIONAL = "functional"
+    SECURITY = "security"
+    PERFORMANCE = "performance"
+    RELIABILITY = "reliability"
+    OPERABILITY = "operability"
+    SCALABILITY = "scalability"
+    COMPLIANCE = "compliance"
+    ECONOMICS = "economics"
+    DOCUMENTATION = "documentation"
+    SUPPORT = "support"
+
+class DimensionVerdict(str, Enum):
+    PASS = "pass"
+    CONDITIONAL_PASS = "conditional_pass"
+    FAIL = "fail"
+    NOT_EVALUATED = "not_evaluated"
+
+@dataclass
+class FinalGateDimensionAssessment:
+    dimension: FinalGateMaturityDimension
+    verdict: DimensionVerdict = DimensionVerdict.NOT_EVALUATED
+    score: float = 0.0  # 0-100
+    evidence_refs: List[str] = field(default_factory=list)
+    conditions: List[str] = field(default_factory=list)  # for conditional_pass
+    blockers: List[str] = field(default_factory=list)  # for fail
+    assessed_at: str = ""
+    assessor: str = ""
+
+@dataclass
+class FinalGateDecision:
+    gate_id: str
+    product_name: str
+    version: str
+    overall_verdict: DimensionVerdict = DimensionVerdict.NOT_EVALUATED
+    assessments: Dict[str, FinalGateDimensionAssessment] = field(default_factory=dict)
+    mandatory_dimensions: List[str] = field(default_factory=list)
+    decision_made_at: str = ""
+    decision_maker: str = ""
+    release_authorized: bool = False
+    conditions_for_release: List[str] = field(default_factory=list)
+    next_review_date: str = ""
+
+
+# ─── Cost Scenario Forecast Models ───────────────────────────────────
+
+class ForecastCostCategory(str, Enum):
+    COMPUTE = "compute"
+    STORAGE = "storage"
+    NETWORK = "network"
+    LICENSE = "license"
+    SUPPORT = "support"
+    PERSONNEL = "personnel"
+
+class ScenarioType(str, Enum):
+    BASELINE = "baseline"
+    GROWTH = "growth"
+    OPTIMIZATION = "optimization"
+    WORST_CASE = "worst_case"
+    BEST_CASE = "best_case"
+
+@dataclass
+class ForecastCostLineItem:
+    item_id: str
+    category: ForecastCostCategory
+    name: str
+    monthly_cost: float = 0.0
+    unit_cost: float = 0.0
+    quantity: float = 0.0
+    growth_rate_pct: float = 0.0  # monthly growth %
+    tags: Dict[str, str] = field(default_factory=dict)
+
+@dataclass
+class CostScenario:
+    scenario_id: str
+    name: str
+    scenario_type: ScenarioType = ScenarioType.BASELINE
+    line_items: List[str] = field(default_factory=list)  # item_ids
+    forecast_months: int = 12
+    created_at: str = ""
+    assumptions: List[str] = field(default_factory=list)
+    total_monthly: float = 0.0
+    total_annual: float = 0.0

@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/13-production-migration-certification/SKILL.md"
   source_sha256: "sha256:57714b82eb19a8c4ea857761316b9109176eeca547c07216aac8cd8cc144aa10"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # E1-E5 Production Migration Certification
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `13-production-migration-certification`
 - **Version:** `1.0.0`
 - **Category:** core/certification
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 
 ## Objective
 

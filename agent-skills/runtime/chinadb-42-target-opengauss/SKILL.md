@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/42-target-opengauss/SKILL.md"
   source_sha256: "sha256:31ecd712556789b69c50f0a4e0f28b7e3fc9cf940d7d2480ab9e2a285d97bc60"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # openGauss Target Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `42-target-opengauss`
 - **Version:** `1.0.0`
 - **Category:** target-adapter
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 - **Depends on:** `02-semantic-db-ir`, `03-rule-mutation-dsl`, `05-ddl-auto-conversion`, `06-sql-auto-conversion`, `07-plsql-tsql-conversion`
 
 ## Objective

@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/01-estate-inventory-assessment/SKILL.md"
   source_sha256: "sha256:aa6508b5bc5552f4956e6b8c9e81a0d7806eb9e552ed1e86d66ab26f97e411f9"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # Estate Inventory & Migration Assessment
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `01-estate-inventory-assessment`
 - **Version:** `1.0.0`
 - **Category:** core/assessment
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 
 ## Objective
 

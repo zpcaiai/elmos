@@ -76,6 +76,16 @@ class FrontendFormalCampaignTests(unittest.TestCase):
         sys_paths = [p for p in ["/opt/homebrew/bin", "/usr/local/bin"] if os.path.isdir(p)]
         other_paths = [p for p in node_env.get("PATH", "").split(os.pathsep) if p not in sys_paths]
         node_env["PATH"] = os.pathsep.join(sys_paths + other_paths)
+        locked_z3 = (
+            ROOT
+            / "client-packs"
+            / "frontend-72-route-equivalence-v2"
+            / "formal-campaign"
+            / "environment"
+            / "z3"
+        )
+        if locked_z3.is_file():
+            node_env["ELMOS_FRONTEND_Z3"] = str(locked_z3.resolve())
         subprocess.run(
             [
                 "node",
