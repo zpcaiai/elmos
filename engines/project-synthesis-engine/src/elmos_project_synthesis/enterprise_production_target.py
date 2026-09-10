@@ -720,3 +720,36 @@ def test_rich_pagination_and_filtering():
     files["tests/test_enterprise_api.py"] = test_enterprise_py
 
     return files
+
+
+def generate_enterprise_target_files(request: SynthesisRequest, language: str | None = None) -> dict[str, str]:
+    """Generate enterprise production-grade microservice files based on target language."""
+    from .enterprise_java_target import generate_enterprise_java_files
+    from .enterprise_go_target import generate_enterprise_go_files
+    from .enterprise_dotnet_target import generate_enterprise_dotnet_files
+    from .enterprise_typescript_target import generate_enterprise_typescript_files
+    from .enterprise_polyglot_targets import (
+        generate_enterprise_rust_files,
+        generate_enterprise_kotlin_files,
+        generate_enterprise_php_files,
+    )
+
+    target_lang = (language or request.language or "python").strip().lower()
+    if target_lang == "python":
+        return generate_enterprise_python_files(request)
+    elif target_lang == "java":
+        return generate_enterprise_java_files(request)
+    elif target_lang == "go":
+        return generate_enterprise_go_files(request)
+    elif target_lang in ("dotnet", "csharp", "c#"):
+        return generate_enterprise_dotnet_files(request)
+    elif target_lang in ("typescript", "ts", "javascript", "js"):
+        return generate_enterprise_typescript_files(request)
+    elif target_lang == "rust":
+        return generate_enterprise_rust_files(request)
+    elif target_lang == "kotlin":
+        return generate_enterprise_kotlin_files(request)
+    elif target_lang == "php":
+        return generate_enterprise_php_files(request)
+    else:
+        return generate_enterprise_python_files(request)

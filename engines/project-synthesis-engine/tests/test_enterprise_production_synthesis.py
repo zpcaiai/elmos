@@ -175,3 +175,168 @@ def test_enterprise_generated_target_execution(tmp_path):
     assert "/metrics" in files["src/main.py"]
     assert "tracing_middleware" in files["src/main.py"]
     assert "X-Trace-Id" in files["src/main.py"]
+
+
+def test_enterprise_multi_language_synthesis():
+    from elmos_project_synthesis.enterprise_production_target import generate_enterprise_target_files
+    from elmos_project_synthesis.intake import approve_request, create_draft
+    from elmos_project_synthesis.models import SynthesisRequest
+
+    draft = create_draft(
+        name="enterprise-order-service",
+        description="Enterprise multi-language order service with outbox, cache and audit.",
+        entities=[
+            {
+                "singular": "order",
+                "plural": "orders",
+                "fields": [
+                    {"name": "reference", "type": "string", "required": True},
+                    {"name": "total", "type": "number", "required": True},
+                ],
+            },
+            {
+                "singular": "order_item",
+                "plural": "order_items",
+                "fields": [
+                    {"name": "sku", "type": "string", "required": True},
+                    {"name": "price", "type": "number", "required": True},
+                    {"name": "order_id", "type": "string", "required": True},
+                ],
+            },
+        ],
+        relations=[
+            {
+                "source": "order",
+                "target": "order_item",
+                "kind": "one-to-many",
+                "required": False,
+                "source_field": "id",
+                "target_field": "order_id",
+            }
+        ],
+        languages=["python", "java", "go", "csharp", "typescript", "rust", "kotlin", "php"],
+        persistence="in-memory",
+        auth_mode="none",
+    )
+    approved = approve_request(draft, actor="actor-test", approved_at="2026-09-10T00:00:00+00:00")
+    request = SynthesisRequest.from_mapping(approved)
+
+    # 1. Java Spring Boot 3
+    java_files = generate_enterprise_target_files(request, language="java")
+    assert "pom.xml" in java_files
+    assert "spring-boot-starter-data-redis" in java_files["pom.xml"]
+    assert "spring-kafka" in java_files["pom.xml"]
+    assert any("Entity.java" in k for k in java_files)
+    assert any("DistributedCacheService.java" in k for k in java_files)
+    assert any("OutboxPublisher.java" in k for k in java_files)
+    assert any("Controller.java" in k for k in java_files)
+
+    # 2. Go (GORM + Gin + go-redis + kafka-go)
+    go_files = generate_enterprise_target_files(request, language="go")
+    assert "go.mod" in go_files
+    assert "github.com/gin-gonic/gin" in go_files["go.mod"]
+    assert "models/models.go" in go_files
+    assert "cache/cache.go" in go_files
+    assert "outbox/outbox.go" in go_files
+    assert "api/handlers.go" in go_files
+
+    # 3. .NET 8 (C# EF Core + StackExchange.Redis + Confluent.Kafka)
+    dotnet_files = generate_enterprise_target_files(request, language="dotnet")
+    assert any(k.endswith(".csproj") for k in dotnet_files)
+    assert "Models/Entities.cs" in dotnet_files
+    assert "Cache/DistributedCacheService.cs" in dotnet_files
+    assert "Outbox/OutboxPublisher.cs" in dotnet_files
+    assert "Data/AppDbContext.cs" in dotnet_files
+
+    # 4. TypeScript (NestJS 10 + TypeORM + ioredis + kafkajs)
+    ts_files = generate_enterprise_target_files(request, language="typescript")
+    assert "package.json" in ts_files
+    assert "@nestjs/typeorm" in ts_files["package.json"]
+    assert any(k.endswith(".entity.ts") for k in ts_files)
+    assert "src/cache/cache.service.ts" in ts_files
+    assert "src/outbox/outbox.service.ts" in ts_files
+
+    # 5. Rust (Axum + SQLx + Redis + Kafka)
+    rust_files = generate_enterprise_target_files(request, language="rust")
+    assert "Cargo.toml" in rust_files
+    assert "src/main.rs" in rust_files
+    assert "src/cache.rs" in rust_files
+
+    # 6. Kotlin (Spring Boot 3 + JPA)
+    kotlin_files = generate_enterprise_target_files(request, language="kotlin")
+    assert "build.gradle.kts" in kotlin_files
+
+    # 7. PHP (Laravel 11)
+    php_files = generate_enterprise_target_files(request, language="php")
+    assert "composer.json" in php_files
+    assert "routes/api.php" in php_files
+
+
+def test_enterprise_relation_specs_and_cascading_ddl():
+    from elmos_project_synthesis.enterprise_production_contract import enterprise_entity_sql
+    from elmos_project_synthesis.models import EntitySpec, FieldSpec, RelationSpec
+
+    parent = EntitySpec(
+        singular="order",
+        plural="orders",
+        fields=[FieldSpec(name="reference", type="string", required=True)],
+    )
+    child = EntitySpec(
+        singular="order_item",
+        plural="order_items",
+        fields=[FieldSpec(name="sku", type="string", required=True)],
+    )
+    relations = [
+        RelationSpec(
+            source="order",
+            target="order_item",
+            kind="one-to-many",
+            required=False,
+            target_field="order_id",
+        )
+    ]
+
+    sql_child = enterprise_entity_sql(child, relations=relations, is_sqlite=False)
+    assert 'CONSTRAINT "fk_order_item_order"' in sql_child.foreign_key_ddls[0]
+    assert 'REFERENCES "app"."orders"("id") ON DELETE CASCADE' in sql_child.foreign_key_ddls[0]
+    assert "idx_order_item_order_id" in sql_child.foreign_key_indexes[0]
+
+
+def test_enterprise_saga_contract():
+    from elmos_project_synthesis.enterprise_production_contract import (
+        SagaDefinition,
+        SagaExecutionRecord,
+        SagaStep,
+    )
+
+    definition = SagaDefinition(
+        saga_id="saga-def-01",
+        name="OrderCreationSaga",
+        steps=(
+            SagaStep(
+                step_id="step-01",
+                name="reserve_credit",
+                action_endpoint="/api/v1/credits/reserve",
+                compensation_endpoint="/api/v1/credits/release",
+            ),
+            SagaStep(
+                step_id="step-02",
+                name="deduct_inventory",
+                action_endpoint="/api/v1/inventory/deduct",
+                compensation_endpoint="/api/v1/inventory/restore",
+            ),
+        ),
+    )
+
+    record = SagaExecutionRecord(
+        execution_id="exec-01",
+        saga_id=definition.saga_id,
+        tenant_id="tenant-acme",
+        current_step=0,
+        status="RUNNING",
+        payload={"order_id": "ord-123"},
+    )
+
+    assert record.status == "RUNNING"
+    assert len(definition.steps) == 2
+    assert definition.steps[0].compensation_endpoint == "/api/v1/credits/release"
