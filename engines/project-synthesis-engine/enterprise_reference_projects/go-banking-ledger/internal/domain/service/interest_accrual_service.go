@@ -170,7 +170,7 @@ func (s *InterestAccrualService) CalculateAccrual(
 	}
 
 	dayFraction := s.calculator.YearFraction(start, end, config.DayCount)
-	balanceCents := account.AvailableBalance()
+	balanceCents := account.PostedBalance
 
 	// 1. Negative Balance -> Overdraft interest charge
 	if balanceCents < 0 {
@@ -249,7 +249,7 @@ func (s *InterestAccrualService) CapitalizeInterest(
 
 	var sourceAcct, targetAcct string
 	var desc string
-	txType := model.TxTypeInterest
+	txType := model.TxTypeInterestAccrual
 
 	if result.IsOverdraftCharge {
 		// Overdraft: Transfer from Customer Deposit to Bank Fee/Income

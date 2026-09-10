@@ -218,7 +218,7 @@ func (e *ISO20022Engine) BuildPacs008(
 					UETR:       uetr,
 				},
 				IntrBkSttlmAmt: AmountWithCurrency{
-					Ccy:   string(amount.Currency()),
+					Ccy:   currency,
 					Value: amountDecimal,
 				},
 				IntrBkSttlmDt: settlementDate.Format("2006-01-02"),

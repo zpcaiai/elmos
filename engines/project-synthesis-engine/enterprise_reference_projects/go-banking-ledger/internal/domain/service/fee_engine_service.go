@@ -154,7 +154,7 @@ func (s *FeeEngineService) ChargeFee(
 		RequestID:      uuid.New().String(),
 		TenantID:       tenantID,
 		IdempotencyKey: fmt.Sprintf("FEE-%s-%d", customerAccountID, time.Now().UnixNano()),
-		Type:           model.TxTypeFee,
+		Type:           model.TxTypeFeeDeduction,
 		ReferenceID:    fmt.Sprintf("REF-FEE-%s", customerAccountID),
 		SourceAccount:  customerAccountID,
 		TargetAccount:  s.config.FeeIncomeAccountID,

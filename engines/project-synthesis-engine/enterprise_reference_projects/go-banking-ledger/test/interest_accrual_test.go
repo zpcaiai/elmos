@@ -72,9 +72,12 @@ func TestOverdraftInterestCharge(t *testing.T) {
 	postingEng := service.NewPostingEngine(accRepo, jourRepo, idemRepo, lockMgr, currReg)
 	accrualSvc := service.NewInterestAccrualService(accRepo, jourRepo, postingEng)
 
-	// Account is overdrawn by $5,000.00
-	custAcct, _ := model.NewAccount("CUST-OVERDRAWN", "tenant-1", "1002", "Struggling LLC", model.AccountTypeLiability, "USD", 0)
-	_ = custAcct.ApplyDebit(500000, "USD", true) // -$5,000.00 debit balance
+	// Account is overdrawn by $5,000.00 (with $10,000 overdraft limit)
+	custAcct, _ := model.NewAccount("CUST-OVERDRAWN", "tenant-1", "1002", "Struggling LLC", model.AccountTypeLiability, "USD", 1000000)
+	err := custAcct.ApplyDebit(500000, "USD", false) // -$5,000.00 posted debit balance
+	if err != nil {
+		t.Fatalf("Failed to apply debit: %v", err)
+	}
 	_ = accRepo.Save(context.Background(), custAcct)
 
 	cfg := &service.InterestProductConfig{

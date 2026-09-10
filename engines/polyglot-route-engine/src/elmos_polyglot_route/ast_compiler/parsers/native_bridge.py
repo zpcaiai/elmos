@@ -452,7 +452,7 @@ class NativeBridge:
             for subj in inv_data.get("subjects", []):
                 kind = subj.get("declaration_kind")
                 name = subj.get("name")
-                if kind == "struct":
+                if kind in ("struct", "type"):
                     module.classes.append(UniversalClass(name=name, is_struct=True))
                 elif kind == "function":
                     fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=10)
