@@ -382,8 +382,25 @@ function evalExpr(expr: string, scope: Record<string, unknown>): unknown {
   const trimmed = unescapeXml(expr.trim());
   if (trimmed in scope) return scope[trimmed];
   try {
-    const fn = new Function(...Object.keys(scope), `return (${trimmed});`);
-    return fn(...Object.values(scope));
+    const defaultScope: Record<string, unknown> = {
+      english: false,
+      adminSurface: false,
+      mobileOpen: false,
+      active: false,
+      busy: false,
+      item: {},
+      index: 0,
+      userNavigation: [],
+      operationsNavigation: [],
+      navLabel: (it: any) => it?.label || it?.enLabel || '',
+      ...scope,
+    };
+    const proxy = new Proxy(defaultScope, {
+      has: () => true,
+      get: (target, prop) => (prop in target ? target[prop as string] : undefined)
+    });
+    const fn = new Function('scope', `with(scope) { return (${trimmed}); }`);
+    return fn(proxy);
   } catch {
     return "";
   }
