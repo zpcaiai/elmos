@@ -513,4 +513,26 @@ class ModernizationRecipesTest {
         assertFalse(res.contains("@ImportResource"));
         assertTrue(res.contains("@Configuration"));
     }
+
+    @Test
+    void testClassPathXmlApplicationContextModernization() {
+        String sourceText = """
+                package com.example;
+                import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+                public class ContextBootstrap {
+                    public ClassPathXmlApplicationContext initContext() {
+                        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("beans.xml");
+                        return ctx;
+                    }
+                }
+                """;
+        SourceFile source = JavaParser.fromJavaVersion().build().parse(sourceText).findFirst().orElseThrow();
+        SourceFile transformed = (SourceFile) new SpringXmlBeansToJavaConfigRecipe().getVisitor()
+                .visit(source, new InMemoryExecutionContext());
+        String res = transformed.printAll();
+
+        assertFalse(res.contains("ClassPathXmlApplicationContext"));
+        assertTrue(res.contains("AnnotationConfigApplicationContext"));
+    }
 }

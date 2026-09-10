@@ -219,8 +219,11 @@ public final class SpringXmlToJavaConfigConverter {
             String baseName = xmlFile.getFileName().toString().replace(".xml", "");
             String configClassName = toCamelCase(baseName) + "Config";
 
+            SpringXmlDependencyGraph depGraph = new SpringXmlDependencyGraph(beans);
+            SpringXmlDependencyGraph.GraphResolutionResult graphResult = depGraph.resolve();
+
             String generatedCode = generateJavaConfig(
-                    targetPackage, configClassName, beans, componentScans,
+                    targetPackage, configClassName, beans, graphResult, componentScans,
                     propertySources, hasTx, hasMvc, hasAop, imports
             );
 
@@ -252,8 +255,33 @@ public final class SpringXmlToJavaConfigConverter {
         List<PropertyDefinition> properties = new ArrayList<>();
         List<ConstructorArgDefinition> constructorArgs = new ArrayList<>();
 
-        NodeList children = elem.getChildNodes();
+        // Handle p-namespace and c-namespace attributes
+        var attrs = elem.getAttributes();
         int ctorIdx = 0;
+        if (attrs != null) {
+            for (int a = 0; a < attrs.getLength(); a++) {
+                Node attr = attrs.item(a);
+                String attrName = attr.getNodeName();
+                String attrVal = attr.getNodeValue();
+                if (attrName.startsWith("p:")) {
+                    String prop = attrName.substring(2);
+                    if (prop.endsWith("-ref")) {
+                        properties.add(new PropertyDefinition(prop.substring(0, prop.length() - 4), "", attrVal));
+                    } else {
+                        properties.add(new PropertyDefinition(prop, attrVal, ""));
+                    }
+                } else if (attrName.startsWith("c:")) {
+                    String arg = attrName.substring(2);
+                    if (arg.endsWith("-ref")) {
+                        constructorArgs.add(new ConstructorArgDefinition(ctorIdx++, "", arg.substring(0, arg.length() - 4), "", attrVal));
+                    } else {
+                        constructorArgs.add(new ConstructorArgDefinition(ctorIdx++, "", arg, attrVal, ""));
+                    }
+                }
+            }
+        }
+
+        NodeList children = elem.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node node = children.item(i);
             if (node.getNodeType() != Node.ELEMENT_NODE) continue;
@@ -264,6 +292,24 @@ public final class SpringXmlToJavaConfigConverter {
                 String propName = child.getAttribute("name");
                 String propValue = child.getAttribute("value");
                 String propRef = child.getAttribute("ref");
+                if (propRef.isEmpty() || propValue.isEmpty()) {
+                    NodeList subChildren = child.getChildNodes();
+                    for (int j = 0; j < subChildren.getLength(); j++) {
+                        Node subNode = subChildren.item(j);
+                        if (subNode.getNodeType() == Node.ELEMENT_NODE) {
+                            Element subEl = (Element) subNode;
+                            String subTag = subEl.getLocalName() != null ? subEl.getLocalName() : subEl.getTagName();
+                            if ("ref".equals(subTag)) {
+                                String beanRef = subEl.getAttribute("bean");
+                                if (beanRef.isEmpty()) beanRef = subEl.getAttribute("local");
+                                if (beanRef.isEmpty()) beanRef = subEl.getAttribute("parent");
+                                if (!beanRef.isEmpty()) propRef = beanRef;
+                            } else if ("value".equals(subTag) && propValue.isEmpty()) {
+                                propValue = subEl.getTextContent().trim();
+                            }
+                        }
+                    }
+                }
                 properties.add(new PropertyDefinition(propName, propValue, propRef));
             } else if ("constructor-arg".equals(tag)) {
                 String idxStr = child.getAttribute("index");
@@ -272,6 +318,24 @@ public final class SpringXmlToJavaConfigConverter {
                 String argName = child.getAttribute("name");
                 String argValue = child.getAttribute("value");
                 String argRef = child.getAttribute("ref");
+                if (argRef.isEmpty() || argValue.isEmpty()) {
+                    NodeList subChildren = child.getChildNodes();
+                    for (int j = 0; j < subChildren.getLength(); j++) {
+                        Node subNode = subChildren.item(j);
+                        if (subNode.getNodeType() == Node.ELEMENT_NODE) {
+                            Element subEl = (Element) subNode;
+                            String subTag = subEl.getLocalName() != null ? subEl.getLocalName() : subEl.getTagName();
+                            if ("ref".equals(subTag)) {
+                                String beanRef = subEl.getAttribute("bean");
+                                if (beanRef.isEmpty()) beanRef = subEl.getAttribute("local");
+                                if (beanRef.isEmpty()) beanRef = subEl.getAttribute("parent");
+                                if (!beanRef.isEmpty()) argRef = beanRef;
+                            } else if ("value".equals(subTag) && argValue.isEmpty()) {
+                                argValue = subEl.getTextContent().trim();
+                            }
+                        }
+                    }
+                }
                 constructorArgs.add(new ConstructorArgDefinition(index, argType, argName, argValue, argRef));
             }
         }
@@ -286,6 +350,7 @@ public final class SpringXmlToJavaConfigConverter {
             String targetPackage,
             String configClassName,
             List<BeanDefinition> beans,
+            SpringXmlDependencyGraph.GraphResolutionResult graphResult,
             List<String> componentScans,
             List<String> propertySources,
             boolean hasTx,
@@ -298,6 +363,19 @@ public final class SpringXmlToJavaConfigConverter {
 
         sb.append("import org.springframework.context.annotation.Bean;\n");
         sb.append("import org.springframework.context.annotation.Configuration;\n");
+        boolean hasLazy = beans.stream().anyMatch(BeanDefinition::isLazy) || !graphResult.lazyCandidateBeanIds().isEmpty();
+        boolean hasPrimary = beans.stream().anyMatch(BeanDefinition::isPrimary);
+        boolean hasScope = beans.stream().anyMatch(b -> b.scope() != null && !b.scope().isEmpty());
+
+        if (hasLazy) {
+            sb.append("import org.springframework.context.annotation.Lazy;\n");
+        }
+        if (hasPrimary) {
+            sb.append("import org.springframework.context.annotation.Primary;\n");
+        }
+        if (hasScope) {
+            sb.append("import org.springframework.context.annotation.Scope;\n");
+        }
         if (!componentScans.isEmpty()) {
             sb.append("import org.springframework.context.annotation.ComponentScan;\n");
         }
@@ -341,8 +419,16 @@ public final class SpringXmlToJavaConfigConverter {
 
         sb.append("public class ").append(configClassName).append(" {\n\n");
 
-        // Beans
-        for (BeanDefinition bean : beans) {
+        Map<String, BeanDefinition> beanMap = new LinkedHashMap<>();
+        for (BeanDefinition b : beans) {
+            beanMap.put(b.id(), b);
+        }
+
+        // Beans in topological initialization order
+        for (String beanId : graphResult.topologicalOrder()) {
+            BeanDefinition bean = beanMap.get(beanId);
+            if (bean == null) continue;
+
             sb.append("    @Bean");
             List<String> beanAttrs = new ArrayList<>();
             if (bean.initMethod() != null && !bean.initMethod().isEmpty()) {
@@ -355,6 +441,16 @@ public final class SpringXmlToJavaConfigConverter {
                 sb.append("(").append(String.join(", ", beanAttrs)).append(")");
             }
             sb.append("\n");
+
+            if (bean.isPrimary()) {
+                sb.append("    @Primary\n");
+            }
+            if (bean.isLazy() || graphResult.lazyCandidateBeanIds().contains(bean.id())) {
+                sb.append("    @Lazy\n");
+            }
+            if (bean.scope() != null && !bean.scope().isEmpty()) {
+                sb.append("    @Scope(\"").append(bean.scope()).append("\")\n");
+            }
 
             String simpleType = getSimpleClassName(bean.className());
             sb.append("    public ").append(bean.className()).append(" ").append(bean.id()).append("(");

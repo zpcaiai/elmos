@@ -72,4 +72,56 @@ class SpringXmlToJavaConfigConverterTest {
         assertEquals(2, projRes.totalBeansConverted());
         assertTrue(Files.exists(projectRoot.resolve("src/main/java/com/example/config/BeansConfig.java")));
     }
+
+    @Test
+    void convertsNestedRefAndPNamespaceBeans() throws Exception {
+        Path xmlFile = tempDir.resolve("complexBeans.xml");
+        String xml = """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <beans xmlns="http://www.springframework.org/schema/beans"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xmlns:p="http://www.springframework.org/schema/p"
+                       xmlns:c="http://www.springframework.org/schema/c">
+
+                    <bean id="dataSource" class="com.example.db.DataSource" p:url="jdbc:postgresql://localhost/db" />
+
+                    <bean id="accountDao" class="com.example.dao.AccountDao" p:dataSource-ref="dataSource">
+                        <property name="driver">
+                            <value>org.postgresql.Driver</value>
+                        </property>
+                        <property name="secondarySource">
+                            <ref bean="dataSource" />
+                        </property>
+                    </bean>
+
+                    <bean id="accountService" class="com.example.service.AccountService"
+                          primary="true" lazy-init="true">
+                        <constructor-arg>
+                            <ref bean="accountDao" />
+                        </constructor-arg>
+                    </bean>
+                </beans>
+                """;
+        Files.writeString(xmlFile, xml);
+
+        var config = SpringXmlToJavaConfigConverter.convertXmlFile(xmlFile, "com.example.config");
+        assertNotNull(config);
+        assertEquals("ComplexBeansConfig", config.configClassName());
+        assertEquals(3, config.beansCount());
+
+        String java = config.generatedJavaSource();
+        assertTrue(java.contains("@Configuration"));
+        assertTrue(java.contains("@Primary"));
+        assertTrue(java.contains("@Lazy"));
+        assertTrue(java.contains("public com.example.db.DataSource dataSource"));
+        assertTrue(java.contains("public com.example.dao.AccountDao accountDao"));
+        assertTrue(java.contains("public com.example.service.AccountService accountService"));
+
+        // Topological ordering check: dataSource must appear before accountDao, and accountDao before accountService
+        int idxDs = java.indexOf("dataSource(");
+        int idxDao = java.indexOf("accountDao(");
+        int idxService = java.indexOf("accountService(");
+        assertTrue(idxDs < idxDao, "dataSource must be emitted before accountDao in topological order");
+        assertTrue(idxDao < idxService, "accountDao must be emitted before accountService in topological order");
+    }
 }

@@ -130,8 +130,33 @@ public final class SpringXmlSemanticCompiler {
         List<PropertyDefinition> props = new ArrayList<>();
         List<ConstructorArgDefinition> cArgs = new ArrayList<>();
 
-        NodeList children = el.getChildNodes();
+        // Handle p-namespace and c-namespace attributes
+        var attrs = el.getAttributes();
         int cIndex = 0;
+        if (attrs != null) {
+            for (int a = 0; a < attrs.getLength(); a++) {
+                Node attr = attrs.item(a);
+                String attrName = attr.getNodeName();
+                String attrVal = attr.getNodeValue();
+                if (attrName.startsWith("p:")) {
+                    String prop = attrName.substring(2);
+                    if (prop.endsWith("-ref")) {
+                        props.add(new PropertyDefinition(prop.substring(0, prop.length() - 4), "", attrVal));
+                    } else {
+                        props.add(new PropertyDefinition(prop, attrVal, ""));
+                    }
+                } else if (attrName.startsWith("c:")) {
+                    String arg = attrName.substring(2);
+                    if (arg.endsWith("-ref")) {
+                        cArgs.add(new ConstructorArgDefinition(cIndex++, "", arg.substring(0, arg.length() - 4), "", attrVal));
+                    } else {
+                        cArgs.add(new ConstructorArgDefinition(cIndex++, "", arg, attrVal, ""));
+                    }
+                }
+            }
+        }
+
+        NodeList children = el.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node n = children.item(i);
             if (n.getNodeType() != Node.ELEMENT_NODE) continue;
@@ -142,6 +167,24 @@ public final class SpringXmlSemanticCompiler {
                 String pName = childEl.getAttribute("name");
                 String pVal = childEl.getAttribute("value");
                 String pRef = childEl.getAttribute("ref");
+                if (pRef.isEmpty() || pVal.isEmpty()) {
+                    NodeList subChildren = childEl.getChildNodes();
+                    for (int j = 0; j < subChildren.getLength(); j++) {
+                        Node subNode = subChildren.item(j);
+                        if (subNode.getNodeType() == Node.ELEMENT_NODE) {
+                            Element subEl = (Element) subNode;
+                            String subTag = subEl.getLocalName() != null ? subEl.getLocalName() : subEl.getTagName();
+                            if ("ref".equals(subTag)) {
+                                String beanRef = subEl.getAttribute("bean");
+                                if (beanRef.isEmpty()) beanRef = subEl.getAttribute("local");
+                                if (beanRef.isEmpty()) beanRef = subEl.getAttribute("parent");
+                                if (!beanRef.isEmpty()) pRef = beanRef;
+                            } else if ("value".equals(subTag) && pVal.isEmpty()) {
+                                pVal = subEl.getTextContent().trim();
+                            }
+                        }
+                    }
+                }
                 props.add(new PropertyDefinition(pName, pVal, pRef));
             } else if ("constructor-arg".equals(cTag) || cTag.endsWith(":constructor-arg")) {
                 String idxStr = childEl.getAttribute("index");
@@ -150,6 +193,24 @@ public final class SpringXmlSemanticCompiler {
                 String aName = childEl.getAttribute("name");
                 String aVal = childEl.getAttribute("value");
                 String aRef = childEl.getAttribute("ref");
+                if (aRef.isEmpty() || aVal.isEmpty()) {
+                    NodeList subChildren = childEl.getChildNodes();
+                    for (int j = 0; j < subChildren.getLength(); j++) {
+                        Node subNode = subChildren.item(j);
+                        if (subNode.getNodeType() == Node.ELEMENT_NODE) {
+                            Element subEl = (Element) subNode;
+                            String subTag = subEl.getLocalName() != null ? subEl.getLocalName() : subEl.getTagName();
+                            if ("ref".equals(subTag)) {
+                                String beanRef = subEl.getAttribute("bean");
+                                if (beanRef.isEmpty()) beanRef = subEl.getAttribute("local");
+                                if (beanRef.isEmpty()) beanRef = subEl.getAttribute("parent");
+                                if (!beanRef.isEmpty()) aRef = beanRef;
+                            } else if ("value".equals(subTag) && aVal.isEmpty()) {
+                                aVal = subEl.getTextContent().trim();
+                            }
+                        }
+                    }
+                }
                 cArgs.add(new ConstructorArgDefinition(idx, aType, aName, aVal, aRef));
             }
         }

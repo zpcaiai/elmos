@@ -41,9 +41,41 @@ public final class SpringXmlBeansToJavaConfigRecipe extends Recipe {
                     maybeAddImport("org.springframework.context.annotation.Configuration");
                     maybeAddImport("org.springframework.context.annotation.Import");
                     // Transform to @Configuration if not already present
-                    a = a.withAnnotationType(TypeTree.build("Configuration"));
+                    a = a.withAnnotationType(TypeTree.build("Configuration").withPrefix(a.getAnnotationType().getPrefix()));
                 }
                 return a;
+            }
+
+            @Override
+            public J.VariableDeclarations visitVariableDeclarations(J.VariableDeclarations multiVariable, ExecutionContext ctx) {
+                J.VariableDeclarations mv = super.visitVariableDeclarations(multiVariable, ctx);
+                if (mv.getTypeExpression() != null) {
+                    String typeName = mv.getTypeExpression().printTrimmed();
+                    if ("ClassPathXmlApplicationContext".equals(typeName) || "FileSystemXmlApplicationContext".equals(typeName)) {
+                        maybeRemoveImport("org.springframework.context.support.ClassPathXmlApplicationContext");
+                        maybeRemoveImport("org.springframework.context.support.FileSystemXmlApplicationContext");
+                        maybeAddImport("org.springframework.context.annotation.AnnotationConfigApplicationContext");
+                        mv = mv.withTypeExpression(TypeTree.build("AnnotationConfigApplicationContext")
+                                .withPrefix(mv.getTypeExpression().getPrefix()));
+                    }
+                }
+                return mv;
+            }
+
+            @Override
+            public J.MethodDeclaration visitMethodDeclaration(J.MethodDeclaration method, ExecutionContext ctx) {
+                J.MethodDeclaration m = super.visitMethodDeclaration(method, ctx);
+                if (m.getReturnTypeExpression() != null) {
+                    String retName = m.getReturnTypeExpression().printTrimmed();
+                    if ("ClassPathXmlApplicationContext".equals(retName) || "FileSystemXmlApplicationContext".equals(retName)) {
+                        maybeRemoveImport("org.springframework.context.support.ClassPathXmlApplicationContext");
+                        maybeRemoveImport("org.springframework.context.support.FileSystemXmlApplicationContext");
+                        maybeAddImport("org.springframework.context.annotation.AnnotationConfigApplicationContext");
+                        m = m.withReturnTypeExpression(TypeTree.build("AnnotationConfigApplicationContext")
+                                .withPrefix(m.getReturnTypeExpression().getPrefix()));
+                    }
+                }
+                return m;
             }
 
             @Override
@@ -55,7 +87,7 @@ public final class SpringXmlBeansToJavaConfigRecipe extends Recipe {
                         maybeRemoveImport("org.springframework.context.support.ClassPathXmlApplicationContext");
                         maybeRemoveImport("org.springframework.context.support.FileSystemXmlApplicationContext");
                         maybeAddImport("org.springframework.context.annotation.AnnotationConfigApplicationContext");
-                        nc = nc.withClazz(TypeTree.build("AnnotationConfigApplicationContext"));
+                        nc = nc.withClazz(TypeTree.build("AnnotationConfigApplicationContext").withPrefix(nc.getClazz().getPrefix()));
                     }
                 }
                 return nc;
