@@ -22,6 +22,8 @@ TestResults/
 **/TestResults/
 *.dll
 **/*.dll
+*.rmeta
+**/*.rmeta
 .vs/
 **/.vs/
 .venv/
