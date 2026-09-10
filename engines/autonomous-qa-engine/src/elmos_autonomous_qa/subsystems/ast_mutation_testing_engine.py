@@ -61,7 +61,7 @@ class ASTMutationTestingEngine:
                 if op_type in replacements:
                     counter += 1
                     mutated_tree = copy.deepcopy(tree)
-                    target = cls._find_node_at(mutated_tree, node.lineno, node.col_offset)
+                    target = cls._find_node_at(mutated_tree, ast.BinOp, node.lineno, node.col_offset)
                     if isinstance(target, ast.BinOp):
                         target.op = replacements[op_type]
                         mutants.append(
@@ -92,7 +92,7 @@ class ASTMutationTestingEngine:
                     if op_type in ror_map:
                         counter += 1
                         mutated_tree = copy.deepcopy(tree)
-                        target = cls._find_node_at(mutated_tree, node.lineno, node.col_offset)
+                        target = cls._find_node_at(mutated_tree, ast.Compare, node.lineno, node.col_offset)
                         if isinstance(target, ast.Compare) and idx < len(target.ops):
                             target.ops[idx] = ror_map[op_type]
                             mutants.append(
@@ -118,7 +118,7 @@ class ASTMutationTestingEngine:
                 if op_type in cor_map:
                     counter += 1
                     mutated_tree = copy.deepcopy(tree)
-                    target = cls._find_node_at(mutated_tree, node.lineno, node.col_offset)
+                    target = cls._find_node_at(mutated_tree, ast.BoolOp, node.lineno, node.col_offset)
                     if isinstance(target, ast.BoolOp):
                         target.op = cor_map[op_type]
                         mutants.append(
@@ -146,7 +146,6 @@ class ASTMutationTestingEngine:
         killed = 0
         for m in mutants:
             mutated_code = ast.unparse(m.mutated_ast)
-            # If test_runner returns False (fails), the mutant is killed!
             test_passed = test_runner(mutated_code)
             if not test_passed:
                 m.is_killed = True
@@ -166,8 +165,8 @@ class ASTMutationTestingEngine:
         )
 
     @staticmethod
-    def _find_node_at(tree: ast.AST, lineno: int, col_offset: int) -> Optional[ast.AST]:
+    def _find_node_at(tree: ast.AST, target_type: type, lineno: int, col_offset: int) -> Optional[ast.AST]:
         for n in ast.walk(tree):
-            if getattr(n, 'lineno', None) == lineno and getattr(n, 'col_offset', None) == col_offset:
+            if isinstance(n, target_type) and getattr(n, 'lineno', None) == lineno and getattr(n, 'col_offset', None) == col_offset:
                 return n
         return None

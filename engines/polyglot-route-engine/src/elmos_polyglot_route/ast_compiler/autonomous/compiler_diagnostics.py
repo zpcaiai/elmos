@@ -198,13 +198,13 @@ class CompilerDiagnosticParser:
             try:
                 proc = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
                 raw_out = proc.stdout + proc.stderr
-                diags = cls._parse_raw_output(raw_out, lang)
+                diags = cls._parse_raw_output(raw_out, lang, ret_code=proc.returncode)
                 return proc.returncode, diags, raw_out
             except Exception as e:
                 return 0, [], f"Diagnostic runner warning: {e}"
 
     @classmethod
-    def _parse_raw_output(cls, raw: str, lang: str) -> list[NativeCompilerDiagnostic]:
+    def _parse_raw_output(cls, raw: str, lang: str, ret_code: int = 0) -> list[NativeCompilerDiagnostic]:
         diags: list[NativeCompilerDiagnostic] = []
         for line in raw.splitlines():
             line_str = line.strip()
@@ -297,16 +297,16 @@ class CompilerDiagnosticParser:
                 diags.append(NativeCompilerDiagnostic(lang, "error", line_no, 1, msg, cat))
                 continue
 
-        # Fallback for unparsed error output
-        if not diags and raw.strip():
+        # Fallback for unparsed error output when compiler returned non-zero
+        if ret_code != 0 and not diags and raw.strip():
             for line in raw.splitlines():
                 l_s = line.strip()
-                if not l_s or l_s.startswith("#") or l_s.startswith("-->") or l_s.startswith("|"):
+                if not l_s or l_s.startswith("#") or l_s.startswith("-->") or l_s.startswith("|") or "no syntax error" in l_s.lower():
                     continue
                 cat = cls._categorize_message(l_s)
                 diags.append(NativeCompilerDiagnostic(lang, "error", 1, 1, l_s, cat))
                 break
-            if not diags:
+            if not diags and "no syntax error" not in raw.lower():
                 cat = cls._categorize_message(raw)
                 diags.append(NativeCompilerDiagnostic(lang, "error", 1, 1, raw.strip()[:300], cat))
 
