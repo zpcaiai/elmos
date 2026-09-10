@@ -63,6 +63,10 @@ public final class HibernateCriteriaAstRewriter {
             "([a-zA-Z0-9_]+)\\.uniqueResult\\s*\\(\\s*\\)"
     );
 
+    private static final Pattern ALIAS_ADD_PATTERN = Pattern.compile(
+            "([a-zA-Z0-9_]+)\\.createAlias\\s*\\(\\s*\"([^\"]+)\"\\s*,\\s*\"([^\"]+)\"(?:\\s*,\\s*[^)]+)?\\s*\\)\\s*;"
+    );
+
     private HibernateCriteriaAstRewriter() {}
 
     /**
@@ -137,6 +141,22 @@ public final class HibernateCriteriaAstRewriter {
             content = sb.toString();
         }
 
+        // 3b. Rewrite createAlias
+        Matcher aliasMatcher = ALIAS_ADD_PATTERN.matcher(content);
+        if (aliasMatcher.find()) {
+            StringBuffer sb = new StringBuffer();
+            do {
+                String prop = aliasMatcher.group(2);
+                String alias = aliasMatcher.group(3);
+                String replacement = "Join<?, ?> " + alias + " = root.join(\"" + prop + "\");";
+                aliasMatcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+                rules.add("JPA-CRITERIA-007: Translated createAlias(\"" + prop + "\", \"" + alias + "\") to root.join");
+                count++;
+            } while (aliasMatcher.find());
+            aliasMatcher.appendTail(sb);
+            content = sb.toString();
+        }
+
         // 4. Rewrite Projections
         Matcher projMatcher = PROJECTION_SET_PATTERN.matcher(content);
         if (projMatcher.find()) {
@@ -181,6 +201,20 @@ public final class HibernateCriteriaAstRewriter {
         return new RewriteResult(count > 0, count, content, rules);
     }
 
+    private static String translateExpression(String expr) {
+        String trimmed = expr.trim();
+        if (trimmed.startsWith("Restrictions.")) {
+            int dotIdx = trimmed.indexOf('.');
+            int parenIdx = trimmed.indexOf('(');
+            if (parenIdx > dotIdx && trimmed.endsWith(")")) {
+                String subType = trimmed.substring(dotIdx + 1, parenIdx).trim();
+                String subArgs = trimmed.substring(parenIdx + 1, trimmed.length() - 1).trim();
+                return translateRestriction(subType, subArgs);
+            }
+        }
+        return trimmed;
+    }
+
     private static String translateRestriction(String restrictionType, String args) {
         String[] parts = splitArgs(args);
         return switch (restrictionType) {
@@ -196,6 +230,21 @@ public final class HibernateCriteriaAstRewriter {
             case "in" -> "root.get(" + parts[0] + ").in(" + parts[1] + ")";
             case "isNull" -> "cb.isNull(root.get(" + parts[0] + "))";
             case "isNotNull" -> "cb.isNotNull(root.get(" + parts[0] + "))";
+            case "or" -> {
+                String p1 = translateExpression(parts[0]);
+                String p2 = parts.length > 1 ? translateExpression(parts[1]) : "cb.conjunction()";
+                yield "cb.or(" + p1 + ", " + p2 + ")";
+            }
+            case "and" -> {
+                String p1 = translateExpression(parts[0]);
+                String p2 = parts.length > 1 ? translateExpression(parts[1]) : "cb.conjunction()";
+                yield "cb.and(" + p1 + ", " + p2 + ")";
+            }
+            case "not" -> "cb.not(" + translateExpression(parts[0]) + ")";
+            case "conjunction" -> "cb.conjunction()";
+            case "disjunction" -> "cb.disjunction()";
+            case "isEmpty" -> "cb.isEmpty(root.get(" + parts[0] + "))";
+            case "isNotEmpty" -> "cb.isNotEmpty(root.get(" + parts[0] + "))";
             default -> "/* TODO: manual verification for Restrictions." + restrictionType + " */ cb.conjunction()";
         };
     }
@@ -266,6 +315,9 @@ public final class HibernateCriteriaAstRewriter {
         res = ensureImport(res, "jakarta.persistence.criteria.CriteriaQuery");
         res = ensureImport(res, "jakarta.persistence.criteria.Root");
         res = ensureImport(res, "jakarta.persistence.criteria.Predicate");
+        if (res.contains("root.join(")) {
+            res = ensureImport(res, "jakarta.persistence.criteria.Join");
+        }
         res = ensureImport(res, "java.util.ArrayList");
         res = ensureImport(res, "java.util.List");
 

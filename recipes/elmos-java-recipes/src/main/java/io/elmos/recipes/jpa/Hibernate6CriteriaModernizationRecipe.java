@@ -54,15 +54,23 @@ public final class Hibernate6CriteriaModernizationRecipe extends Recipe {
                         maybeRemoveImport("org.hibernate.Criteria");
                         maybeAddImport("jakarta.persistence.criteria.CriteriaQuery");
                         maybeAddImport("jakarta.persistence.criteria.CriteriaBuilder");
-                        vd = vd.withTypeExpression(TypeTree.build("CriteriaQuery<?>"));
-                    } else if ("Criterion".equals(typeName) || "org.hibernate.criterion.Criterion".equals(typeName)) {
+                        vd = vd.withTypeExpression(TypeTree.build("CriteriaQuery<?>").withPrefix(typeExpr.getPrefix()));
+                    } else if ("Criterion".equals(typeName) || "org.hibernate.criterion.Criterion".equals(typeName)
+                            || "Conjunction".equals(typeName) || "org.hibernate.criterion.Conjunction".equals(typeName)
+                            || "Disjunction".equals(typeName) || "org.hibernate.criterion.Disjunction".equals(typeName)) {
                         maybeRemoveImport("org.hibernate.criterion.Criterion");
+                        maybeRemoveImport("org.hibernate.criterion.Conjunction");
+                        maybeRemoveImport("org.hibernate.criterion.Disjunction");
                         maybeAddImport("jakarta.persistence.criteria.Predicate");
-                        vd = vd.withTypeExpression(TypeTree.build("Predicate"));
+                        vd = vd.withTypeExpression(TypeTree.build("Predicate").withPrefix(typeExpr.getPrefix()));
                     } else if ("Projection".equals(typeName) || "org.hibernate.criterion.Projection".equals(typeName)) {
                         maybeRemoveImport("org.hibernate.criterion.Projection");
                         maybeAddImport("jakarta.persistence.criteria.Selection");
-                        vd = vd.withTypeExpression(TypeTree.build("Selection<?>"));
+                        vd = vd.withTypeExpression(TypeTree.build("Selection<?>").withPrefix(typeExpr.getPrefix()));
+                    } else if ("Order".equals(typeName) || "org.hibernate.criterion.Order".equals(typeName)) {
+                        maybeRemoveImport("org.hibernate.criterion.Order");
+                        maybeAddImport("jakarta.persistence.criteria.Order");
+                        vd = vd.withTypeExpression(TypeTree.build("Order").withPrefix(typeExpr.getPrefix()));
                     }
                 }
                 return vd;
@@ -101,6 +109,11 @@ public final class Hibernate6CriteriaModernizationRecipe extends Recipe {
                 // Check for criteria.setProjection(...)
                 if ("setProjection".equals(m.getSimpleName())) {
                     m = m.withName(m.getName().withSimpleName("select"));
+                }
+
+                // Check for criteria.createAlias(...)
+                if ("createAlias".equals(m.getSimpleName())) {
+                    maybeAddImport("jakarta.persistence.criteria.Join");
                 }
 
                 return m;

@@ -65,4 +65,31 @@ class SpringJpaHibernateQueryModernizerTest {
         String repoContent = Files.readString(repoFile);
         assertTrue(repoContent.contains("WHERE o.id = ?1 AND o.metadata = ?2"));
     }
+
+    @Test
+    void modernizesMultipleQueriesWithPositionalParameters() throws Exception {
+        Path repoFile = tempDir.resolve("MultiQueryRepository.java");
+        Files.writeString(repoFile, """
+                package com.example.domain;
+
+                import org.springframework.data.jpa.repository.JpaRepository;
+                import org.springframework.data.jpa.repository.Query;
+                import java.util.List;
+
+                public interface MultiQueryRepository extends JpaRepository<OrderEntity, Long> {
+                    @Query("SELECT o FROM OrderEntity o WHERE o.status = ?")
+                    List<OrderEntity> findByStatus(String status);
+
+                    @Query("SELECT o FROM OrderEntity o WHERE o.status = ? AND o.price > ?")
+                    List<OrderEntity> findByStatusAndMinPrice(String status, Double minPrice);
+                }
+                """);
+
+        var result = SpringJpaHibernateQueryModernizer.modernize(tempDir);
+        assertTrue(result.modified());
+
+        String repoContent = Files.readString(repoFile);
+        assertTrue(repoContent.contains("WHERE o.status = ?1"));
+        assertTrue(repoContent.contains("WHERE o.status = ?1 AND o.price > ?2"));
+    }
 }

@@ -115,25 +115,32 @@ public final class SpringJpaHibernateQueryModernizer {
             Pattern queryPattern = Pattern.compile("(@Query\\s*\\(\\s*(?:value\\s*=\\s*)?\"([^\"]+)\")");
             Matcher queryMatcher = queryPattern.matcher(content);
             if (queryMatcher.find()) {
-                String fullMatch = queryMatcher.group(1);
-                String sql = queryMatcher.group(2);
-                if (sql.contains("?") && !sql.contains("?1")) {
-                    StringBuilder newSql = new StringBuilder();
-                    int paramIndex = 1;
-                    int lastPos = 0;
-                    for (int i = 0; i < sql.length(); i++) {
-                        if (sql.charAt(i) == '?') {
-                            newSql.append(sql, lastPos, i);
-                            newSql.append("?").append(paramIndex++);
-                            lastPos = i + 1;
+                StringBuffer sb = new StringBuffer();
+                do {
+                    String fullMatch = queryMatcher.group(1);
+                    String sql = queryMatcher.group(2);
+                    if (sql.contains("?") && !sql.contains("?1")) {
+                        StringBuilder newSql = new StringBuilder();
+                        int paramIndex = 1;
+                        int lastPos = 0;
+                        for (int i = 0; i < sql.length(); i++) {
+                            if (sql.charAt(i) == '?') {
+                                newSql.append(sql, lastPos, i);
+                                newSql.append("?").append(paramIndex++);
+                                lastPos = i + 1;
+                            }
                         }
+                        newSql.append(sql.substring(lastPos));
+                        String replacement = fullMatch.replace("\"" + sql + "\"", "\"" + newSql + "\"");
+                        queryMatcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+                        rules.add("MODERNIZE_SQM_POSITIONAL_PARAMETERS");
+                        changes++;
+                    } else {
+                        queryMatcher.appendReplacement(sb, Matcher.quoteReplacement(fullMatch));
                     }
-                    newSql.append(sql.substring(lastPos));
-                    String replacement = fullMatch.replace("\"" + sql + "\"", "\"" + newSql + "\"");
-                    content = content.replace(fullMatch, replacement);
-                    rules.add("MODERNIZE_SQM_POSITIONAL_PARAMETERS");
-                    changes++;
-                }
+                } while (queryMatcher.find());
+                queryMatcher.appendTail(sb);
+                content = sb.toString();
             }
 
             // 4. Named parameter check: ensure @Param import if :paramName is present in @Query

@@ -113,4 +113,34 @@ class HibernateCriteriaAstRewriterTest {
         assertTrue(rewritten.contains("cq.select(cb.count(root));"));
         assertTrue(rewritten.contains("predicates.add(cb.equal(root.get(\"deleted\"), false));"));
     }
+
+    @Test
+    @DisplayName("Rewrites Hibernate Criteria with composite Restrictions.or and createAlias")
+    void testCriteriaWithCompositeOrAndAlias() {
+        String legacyCode = """
+                package com.example.dao;
+
+                import org.hibernate.Criteria;
+                import org.hibernate.criterion.Restrictions;
+
+                public class EmployeeDao {
+                    public List<Employee> findEmployees() {
+                        Criteria criteria = session.createCriteria(Employee.class);
+                        criteria.createAlias("department", "dept");
+                        criteria.add(Restrictions.or(Restrictions.eq("status", "ACTIVE"), Restrictions.eq("status", "PENDING")));
+                        criteria.add(Restrictions.isNotEmpty("projects"));
+                        return criteria.list();
+                    }
+                }
+                """;
+
+        var result = HibernateCriteriaAstRewriter.rewrite(legacyCode);
+        assertTrue(result.modified());
+
+        String rewritten = result.rewrittenSource();
+        assertTrue(rewritten.contains("Join<?, ?> dept = root.join(\"department\");"));
+        assertTrue(rewritten.contains("cb.or(cb.equal(root.get(\"status\"), \"ACTIVE\"), cb.equal(root.get(\"status\"), \"PENDING\"))"));
+        assertTrue(rewritten.contains("cb.isNotEmpty(root.get(\"projects\"))"));
+        assertTrue(rewritten.contains("import jakarta.persistence.criteria.Join;"));
+    }
 }
