@@ -3863,3 +3863,250 @@ class GuardrailDecision:
     remaining_quota: float = 0.0
     remaining_budget: float = 0.0
     timestamp: str = ""
+
+# ─── Knowledge Freshness Versioning Models ──────────────────────────
+
+class KnowledgeSourceType(str, Enum):
+    DOCUMENTATION = "documentation"
+    API_SPEC = "api_spec"
+    CODEBASE = "codebase"
+    TRAINING_DATA = "training_data"
+    EXTERNAL_FEED = "external_feed"
+    MANUAL_ENTRY = "manual_entry"
+
+class FreshnessStatus(str, Enum):
+    CURRENT = "current"
+    STALE = "stale"
+    EXPIRED = "expired"
+    UNKNOWN = "unknown"
+    REFRESHING = "refreshing"
+
+@dataclass
+class KnowledgeArticle:
+    article_id: str
+    title: str
+    source_type: KnowledgeSourceType
+    content_hash: str = ""
+    version: int = 1
+    freshness_status: FreshnessStatus = FreshnessStatus.CURRENT
+    created_at: str = ""
+    updated_at: str = ""
+    expires_at: str = ""  # ISO datetime
+    ttl_seconds: int = 86400  # default 24h
+    source_url: str = ""
+    tags: List[str] = field(default_factory=list)
+    dependencies: List[str] = field(default_factory=list)  # article_ids this depends on
+    superseded_by: str = ""  # article_id of newer version
+
+@dataclass
+class KnowledgeVersion:
+    version_id: str
+    article_id: str
+    version_number: int
+    content_hash: str
+    created_at: str = ""
+    change_summary: str = ""
+    author: str = ""
+
+# ─── Offline Signed Bundle Models ───────────────────────────────────
+
+class OfflineBundleStatus(str, Enum):
+    DRAFT = "draft"
+    BUILDING = "building"
+    SIGNING = "signing"
+    SIGNED = "signed"
+    DISTRIBUTING = "distributing"
+    INSTALLED = "installed"
+    REVOKED = "revoked"
+    FAILED = "failed"
+
+class BundleArtifactType(str, Enum):
+    CONTAINER_IMAGE = "container_image"
+    HELM_CHART = "helm_chart"
+    BINARY = "binary"
+    CONFIG = "config"
+    DATABASE_MIGRATION = "database_migration"
+    CERTIFICATE = "certificate"
+
+@dataclass
+class BundleArtifact:
+    artifact_id: str
+    artifact_type: BundleArtifactType
+    name: str
+    version: str
+    size_bytes: int = 0
+    sha256_digest: str = ""
+    signed: bool = False
+    signature: str = ""
+
+@dataclass
+class OfflineBundle:
+    bundle_id: str
+    name: str
+    target_version: str
+    status: OfflineBundleStatus = OfflineBundleStatus.DRAFT
+    artifacts: List[str] = field(default_factory=list)  # artifact_ids
+    total_size_bytes: int = 0
+    created_at: str = ""
+    signed_at: str = ""
+    signer_identity: str = ""
+    bundle_signature: str = ""
+    expiry_date: str = ""
+    target_environments: List[str] = field(default_factory=list)
+    install_order: List[str] = field(default_factory=list)  # ordered artifact_ids
+    rollback_supported: bool = True
+    min_platform_version: str = ""
+
+# ─── Threat Modeling Models ─────────────────────────────────────────
+
+class ThreatCategory(str, Enum):
+    SPOOFING = "spoofing"
+    TAMPERING = "tampering"
+    REPUDIATION = "repudiation"
+    INFORMATION_DISCLOSURE = "information_disclosure"
+    DENIAL_OF_SERVICE = "denial_of_service"
+    ELEVATION_OF_PRIVILEGE = "elevation_of_privilege"
+
+class ThreatSeverity(str, Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    INFO = "info"
+
+class ThreatStatus(str, Enum):
+    IDENTIFIED = "identified"
+    ANALYZED = "analyzed"
+    MITIGATED = "mitigated"
+    ACCEPTED = "accepted"
+    TRANSFERRED = "transferred"
+
+@dataclass
+class ThreatModelAsset:
+    asset_id: str
+    name: str
+    asset_type: str  # service, database, api, network, storage
+    trust_level: str = "internal"  # public, dmz, internal, restricted
+    data_classification: str = "internal"  # public, internal, confidential, restricted
+    protocols: List[str] = field(default_factory=list)
+
+@dataclass
+class DataFlow:
+    flow_id: str
+    source_asset: str
+    target_asset: str
+    protocol: str = "https"
+    data_classification: str = "internal"
+    authenticated: bool = True
+    encrypted: bool = True
+
+@dataclass
+class ThreatRecord:
+    threat_id: str
+    title: str
+    category: ThreatCategory
+    severity: ThreatSeverity
+    status: ThreatStatus = ThreatStatus.IDENTIFIED
+    affected_assets: List[str] = field(default_factory=list)
+    affected_flows: List[str] = field(default_factory=list)
+    attack_vector: str = ""
+    mitigation: str = ""
+    risk_score: float = 0.0  # 0-10
+    stride_elements: List[str] = field(default_factory=list)
+
+
+# ─── Agent Team Topology Models ─────────────────────────────────────
+
+class AgentTeamRole(str, Enum):
+    SUPERVISOR = "supervisor"
+    PLANNER = "planner"
+    EXECUTOR = "executor"
+    REVIEWER = "reviewer"
+    SPECIALIST = "specialist"
+    OBSERVER = "observer"
+
+class DelegationPolicy(str, Enum):
+    ROUND_ROBIN = "round_robin"
+    CAPABILITY_MATCH = "capability_match"
+    LEAST_LOADED = "least_loaded"
+    PRIORITY_BASED = "priority_based"
+    STICKY = "sticky"  # same agent for same task type
+
+class TeamAgentStatus(str, Enum):
+    IDLE = "idle"
+    BUSY = "busy"
+    OVERLOADED = "overloaded"
+    OFFLINE = "offline"
+    DRAINING = "draining"
+
+@dataclass
+class TeamAgent:
+    agent_id: str
+    name: str
+    role: AgentTeamRole
+    capabilities: List[str] = field(default_factory=list)
+    status: TeamAgentStatus = TeamAgentStatus.IDLE
+    max_concurrent_tasks: int = 5
+    current_task_count: int = 0
+    success_rate: float = 1.0
+    avg_task_duration_seconds: float = 0.0
+    total_tasks_completed: int = 0
+    parent_agent_id: str = ""  # supervisor
+
+@dataclass
+class TaskDelegation:
+    delegation_id: str
+    task_id: str
+    delegated_to: str  # agent_id
+    delegated_by: str  # agent_id
+    required_capabilities: List[str] = field(default_factory=list)
+    delegated_at: str = ""
+    completed_at: str = ""
+    success: bool = False
+    retry_count: int = 0
+    max_retries: int = 3
+
+# ─── Job Fairness and Tenant Isolation Models ───────────────────────
+
+class FairnessPolicy(str, Enum):
+    EQUAL_SHARE = "equal_share"
+    WEIGHTED = "weighted"
+    PRIORITY_BASED = "priority_based"
+    BURST_ALLOWED = "burst_allowed"
+
+class JobQueueStatus(str, Enum):
+    QUEUED = "queued"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    THROTTLED = "throttled"
+    PREEMPTED = "preempted"
+    FAILED = "failed"
+
+@dataclass
+class TenantQuota:
+    tenant_id: str
+    max_concurrent_jobs: int = 10
+    max_cpu_cores: int = 100
+    max_memory_gb: int = 256
+    max_gpu_count: int = 0
+    priority_weight: float = 1.0
+    burst_multiplier: float = 1.5
+    current_running_jobs: int = 0
+    current_cpu_used: int = 0
+    current_memory_used: int = 0
+    current_gpu_used: int = 0
+
+@dataclass
+class FairnessJob:
+    job_id: str
+    tenant_id: str
+    cpu_requested: int = 1
+    memory_gb_requested: int = 1
+    gpu_requested: int = 0
+    priority: int = 5  # 1-10, 10=highest
+    status: JobQueueStatus = JobQueueStatus.QUEUED
+    queued_at: str = ""
+    started_at: str = ""
+    completed_at: str = ""
+    preempted_by: str = ""  # job_id that caused preemption
+    wait_time_seconds: float = 0.0
