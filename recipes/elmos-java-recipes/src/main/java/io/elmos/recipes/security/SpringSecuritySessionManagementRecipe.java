@@ -24,11 +24,36 @@ public final class SpringSecuritySessionManagementRecipe extends Recipe {
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         return new JavaIsoVisitor<ExecutionContext>() {
+            private boolean isNoArg(J.MethodInvocation inv) {
+                return inv.getArguments().isEmpty() ||
+                       (inv.getArguments().size() == 1 && inv.getArguments().get(0) instanceof J.Empty);
+            }
+
             @Override
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                 J.MethodInvocation m = super.visitMethodInvocation(method, ctx);
-                if ("sessionManagement".equals(m.getSimpleName())) {
+                if (m.getSelect() instanceof J.MethodInvocation sel && "sessionManagement".equals(sel.getSimpleName()) && isNoArg(sel)) {
                     maybeAddImport("org.springframework.security.config.http.SessionCreationPolicy");
+                    String innerMethod = m.getSimpleName();
+                    String argStr = "";
+                    if (!m.getArguments().isEmpty() && !(m.getArguments().size() == 1 && m.getArguments().get(0) instanceof J.Empty)) {
+                        argStr = m.getArguments().get(0).printTrimmed();
+                    }
+                    org.openrewrite.java.JavaParser jp = org.openrewrite.java.JavaParser.fromJavaVersion().build();
+                    var parsed = jp.parse("""
+                            class _T {
+                                void f(org.springframework.security.config.annotation.web.builders.HttpSecurity http) throws Exception {
+                                    http.sessionManagement(session -> session.""" + innerMethod + "(" + argStr + "));\n"
+                            + """
+                                }
+                            }
+                            """).findFirst().orElse(null);
+                    if (parsed instanceof J.CompilationUnit cu && !cu.getClasses().isEmpty()) {
+                        J.ClassDeclaration cd = (J.ClassDeclaration) cu.getClasses().get(0);
+                        J.MethodDeclaration md = (J.MethodDeclaration) cd.getBody().getStatements().get(0);
+                        J.MethodInvocation replacement = (J.MethodInvocation) md.getBody().getStatements().get(0);
+                        return replacement.withSelect(sel.getSelect()).withPrefix(sel.getPrefix());
+                    }
                 }
                 return m;
             }

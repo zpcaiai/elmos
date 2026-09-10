@@ -38,8 +38,33 @@ class ModernizationRecipesTest {
         assertFalse(res.contains("extends WebSecurityConfigurerAdapter"));
         assertFalse(res.contains("@Override"));
         assertTrue(res.contains("@Bean"));
+        assertTrue(res.contains("public SecurityFilterChain filterChain"));
         assertTrue(res.contains("authorizeHttpRequests"));
         assertTrue(res.contains("requestMatchers"));
+        assertTrue(res.contains("return http.build();"));
+    }
+
+    @Test
+    void testSpringSecurityWebSecurityCustomizerRecipe() {
+        String sourceText = """
+                package com.example;
+                import org.springframework.security.config.annotation.web.builders.WebSecurity;
+
+                public class WebConfig {
+                    @Override
+                    public void configure(WebSecurity web) {
+                        web.ignoring().antMatchers("/static/**");
+                    }
+                }
+                """;
+        SourceFile source = JavaParser.fromJavaVersion().build().parse(sourceText).findFirst().orElseThrow();
+        SourceFile transformed = (SourceFile) new SpringSecurityFilterChainRecipe().getVisitor()
+                .visit(source, new InMemoryExecutionContext());
+        String res = transformed.printAll();
+
+        assertFalse(res.contains("@Override"));
+        assertTrue(res.contains("@Bean"));
+        assertTrue(res.contains("WebSecurityCustomizer webSecurityCustomizer()"));
     }
 
     @Test
@@ -68,7 +93,8 @@ class ModernizationRecipesTest {
                 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 
                 public class AuthConfig {
-                    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+                    @Override
+                    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
                     }
                 }
                 """;
@@ -77,7 +103,10 @@ class ModernizationRecipesTest {
                 .visit(source, new InMemoryExecutionContext());
         String res = transformed.printAll();
 
-        assertTrue(res.contains("AuthenticationManager authenticationManager"));
+        assertFalse(res.contains("@Override"));
+        assertTrue(res.contains("@Bean"));
+        assertTrue(res.contains("public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)"));
+        assertTrue(res.contains("return authenticationConfiguration.getAuthenticationManager();"));
     }
 
     @Test
@@ -97,6 +126,22 @@ class ModernizationRecipesTest {
 
         assertFalse(res.contains("@EnableResourceServer"));
         assertTrue(res.contains("@Configuration"));
+
+        String sourceText2 = """
+                package com.example;
+                import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
+                public class OAuth2MethodConfig {
+                    public void configure(HttpSecurity http) throws Exception {
+                        http.oauth2ResourceServer().jwt();
+                    }
+                }
+                """;
+        SourceFile source2 = JavaParser.fromJavaVersion().build().parse(sourceText2).findFirst().orElseThrow();
+        SourceFile transformed2 = (SourceFile) new SpringSecurityOAuth2ResourceServerRecipe().getVisitor()
+                .visit(source2, new InMemoryExecutionContext());
+        String res2 = transformed2.printAll();
+        assertTrue(res2.contains("oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))"));
     }
 
     @Test
@@ -154,7 +199,7 @@ class ModernizationRecipesTest {
                 .visit(source, new InMemoryExecutionContext());
         String res = transformed.printAll();
 
-        assertTrue(res.contains("sessionManagement"));
+        assertTrue(res.contains("sessionManagement(session -> session.maximumSessions(1))"));
     }
 
     @Test

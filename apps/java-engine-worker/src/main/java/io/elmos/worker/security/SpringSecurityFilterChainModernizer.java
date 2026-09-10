@@ -117,10 +117,11 @@ public final class SpringSecurityFilterChainModernizer {
                 content = ensureImport(content, "org.springframework.security.config.annotation.web.builders.HttpSecurity");
 
                 // Rewrite protected void configure(HttpSecurity http) throws Exception
-                Pattern configurePattern = Pattern.compile("(@Override\\s+)?protected\\s+void\\s+configure\\s*\\(\\s*HttpSecurity\\s+([a-zA-Z0-9_]+)\\s*\\)\\s*throws\\s+Exception\\s*\\{");
+                // Rewrite protected/public void configure(HttpSecurity http) throws Exception
+                Pattern configurePattern = Pattern.compile("(@Override\\s+)?(protected|public)\\s+void\\s+configure\\s*\\(\\s*HttpSecurity\\s+([a-zA-Z0-9_]+)\\s*\\)(\\s*throws\\s+[a-zA-Z0-9_,\\s]+)?\\s*\\{");
                 Matcher configureMatcher = configurePattern.matcher(content);
                 if (configureMatcher.find()) {
-                    String httpVar = configureMatcher.group(2);
+                    String httpVar = configureMatcher.group(3);
                     String beanHeader = "@Bean\n    public SecurityFilterChain securityFilterChain(HttpSecurity " + httpVar + ") throws Exception {";
                     content = configureMatcher.replaceFirst(beanHeader);
 
@@ -143,10 +144,10 @@ public final class SpringSecurityFilterChainModernizer {
                 // Rewrite configure(WebSecurity web) -> @Bean public WebSecurityCustomizer webSecurityCustomizer()
                 if (content.contains("configure(WebSecurity")) {
                     content = ensureImport(content, "org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer");
-                    Pattern webPattern = Pattern.compile("(@Override\\s+)?public\\s+void\\s+configure\\s*\\(\\s*WebSecurity\\s+([a-zA-Z0-9_]+)\\s*\\)\\s*\\{");
+                    Pattern webPattern = Pattern.compile("(@Override\\s+)?(public|protected)\\s+void\\s+configure\\s*\\(\\s*WebSecurity\\s+([a-zA-Z0-9_]+)\\s*\\)\\s*\\{");
                     Matcher webMatcher = webPattern.matcher(content);
                     if (webMatcher.find()) {
-                        String webVar = webMatcher.group(2);
+                        String webVar = webMatcher.group(3);
                         String replacement = "@Bean\n    public WebSecurityCustomizer webSecurityCustomizer() {\n        return (" + webVar + ") -> {";
                         content = webMatcher.replaceFirst(replacement);
 
@@ -167,7 +168,7 @@ public final class SpringSecurityFilterChainModernizer {
                 if (content.contains("configure(AuthenticationManagerBuilder")) {
                     content = ensureImport(content, "org.springframework.security.authentication.AuthenticationManager");
                     content = ensureImport(content, "org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration");
-                    Pattern authPattern = Pattern.compile("(@Override\\s+)?protected\\s+void\\s+configure\\s*\\(\\s*AuthenticationManagerBuilder\\s+([a-zA-Z0-9_]+)\\s*\\)\\s*throws\\s+Exception\\s*\\{[^}]*\\}");
+                    Pattern authPattern = Pattern.compile("(@Override\\s+)?(protected|public)\\s+void\\s+configure\\s*\\(\\s*AuthenticationManagerBuilder\\s+([a-zA-Z0-9_]+)\\s*\\)(\\s*throws\\s+[a-zA-Z0-9_,\\s]+)?\\s*\\{[^}]*\\}");
                     Matcher authMatcher = authPattern.matcher(content);
                     if (authMatcher.find()) {
                         String replacement = "@Bean\n    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {\n"
@@ -255,6 +256,16 @@ public final class SpringSecurityFilterChainModernizer {
                 content = content.replace(".formLogin().disable()", ".formLogin(form -> form.disable())");
                 rules.add("LAMBDA_DSL_FORM_LOGIN_DISABLE");
                 changes++;
+            } else if (content.contains(".formLogin().and()")) {
+                content = ensureImport(content, "org.springframework.security.config.Customizer");
+                content = content.replace(".formLogin().and()", ".formLogin(Customizer.withDefaults())");
+                rules.add("LAMBDA_DSL_FORM_LOGIN");
+                changes++;
+            } else if (content.contains(".formLogin()")) {
+                content = ensureImport(content, "org.springframework.security.config.Customizer");
+                content = content.replace(".formLogin()", ".formLogin(Customizer.withDefaults())");
+                rules.add("LAMBDA_DSL_FORM_LOGIN");
+                changes++;
             }
 
             // HTTP Basic
@@ -285,6 +296,23 @@ public final class SpringSecurityFilterChainModernizer {
                 content = ensureImport(content, "org.springframework.security.config.Customizer");
                 content = content.replace(".logout()", ".logout(Customizer.withDefaults())");
                 rules.add("LAMBDA_DSL_LOGOUT");
+                changes++;
+            }
+
+            // OAuth2 Resource Server
+            if (content.contains(".oauth2ResourceServer().jwt()")) {
+                content = ensureImport(content, "org.springframework.security.config.Customizer");
+                content = content.replace(".oauth2ResourceServer().jwt()", ".oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))");
+                rules.add("LAMBDA_DSL_OAUTH2_RESOURCE_SERVER");
+                changes++;
+            }
+
+            // Exception Handling
+            Pattern exPattern = Pattern.compile("\\.exceptionHandling\\(\\)\\.([a-zA-Z0-9_]+)\\(([^;)]+)\\)");
+            Matcher exMatcher = exPattern.matcher(content);
+            if (exMatcher.find()) {
+                content = exMatcher.replaceAll(".exceptionHandling(ex -> ex.$1($2))");
+                rules.add("LAMBDA_DSL_EXCEPTION_HANDLING");
                 changes++;
             }
 

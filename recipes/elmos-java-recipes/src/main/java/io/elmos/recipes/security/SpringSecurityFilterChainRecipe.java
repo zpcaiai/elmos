@@ -74,8 +74,43 @@ public final class SpringSecurityFilterChainRecipe extends Recipe {
                     if (paramType.contains("HttpSecurity")) {
                         maybeAddImport("org.springframework.context.annotation.Bean");
                         maybeAddImport("org.springframework.security.web.SecurityFilterChain");
-                        m = m.withReturnTypeExpression(TypeTree.build("SecurityFilterChain"));
+                        m = m.withReturnTypeExpression(TypeTree.build("SecurityFilterChain").withPrefix(
+                                m.getReturnTypeExpression() != null ? m.getReturnTypeExpression().getPrefix() : org.openrewrite.java.tree.Space.format(" ")
+                        ));
                         m = m.withName(m.getName().withSimpleName("filterChain"));
+
+                        // Ensure 'public' modifier
+                        java.util.List<J.Modifier> modifiers = new java.util.ArrayList<>();
+                        boolean hasPublic = false;
+                        for (J.Modifier mod : m.getModifiers()) {
+                            if (mod.getType() == J.Modifier.Type.Protected) {
+                                modifiers.add(new J.Modifier(
+                                        mod.getId(),
+                                        mod.getPrefix(),
+                                        mod.getMarkers(),
+                                        "public",
+                                        J.Modifier.Type.Public,
+                                        mod.getAnnotations()
+                                ));
+                                hasPublic = true;
+                            } else if (mod.getType() == J.Modifier.Type.Public) {
+                                modifiers.add(mod);
+                                hasPublic = true;
+                            } else {
+                                modifiers.add(mod);
+                            }
+                        }
+                        if (!hasPublic) {
+                            modifiers.add(0, new J.Modifier(
+                                    org.openrewrite.Tree.randomId(),
+                                    org.openrewrite.java.tree.Space.EMPTY,
+                                    org.openrewrite.marker.Markers.EMPTY,
+                                    "public",
+                                    J.Modifier.Type.Public,
+                                    java.util.Collections.emptyList()
+                            ));
+                        }
+                        m = m.withModifiers(modifiers);
 
                         // Strip @Override and inject @Bean annotation if not present
                         java.util.List<J.Annotation> annotations = new java.util.ArrayList<>();
@@ -100,6 +135,70 @@ public final class SpringSecurityFilterChainRecipe extends Recipe {
                             annotations.add(beanAnn);
                         }
                         m = m.withLeadingAnnotations(annotations);
+
+                        // Ensure return <httpVar>.build();
+                        if (m.getBody() != null) {
+                            String httpVar = "http";
+                            if (!m.getParameters().isEmpty()) {
+                                String pStr = m.getParameters().get(0).printTrimmed();
+                                String[] parts = pStr.split("\\s+");
+                                if (parts.length > 1) {
+                                    httpVar = parts[parts.length - 1];
+                                }
+                            }
+                            boolean hasReturn = false;
+                            for (org.openrewrite.java.tree.Statement stmt : m.getBody().getStatements()) {
+                                if (stmt instanceof J.Return) {
+                                    hasReturn = true;
+                                    break;
+                                }
+                            }
+                            if (!hasReturn) {
+                                org.openrewrite.java.JavaParser jp = org.openrewrite.java.JavaParser.fromJavaVersion().build();
+                                var parsed = jp.parse("class _T { SecurityFilterChain f() { return " + httpVar + ".build(); } }").findFirst().orElse(null);
+                                if (parsed instanceof J.CompilationUnit cu && !cu.getClasses().isEmpty()) {
+                                    J.ClassDeclaration cd = (J.ClassDeclaration) cu.getClasses().get(0);
+                                    if (!cd.getBody().getStatements().isEmpty()) {
+                                        J.MethodDeclaration md = (J.MethodDeclaration) cd.getBody().getStatements().get(0);
+                                        if (!md.getBody().getStatements().isEmpty()) {
+                                            org.openrewrite.java.tree.Statement retStmt = md.getBody().getStatements().get(0);
+                                            java.util.List<org.openrewrite.java.tree.Statement> stmts = new java.util.ArrayList<>(m.getBody().getStatements());
+                                            stmts.add(retStmt.withPrefix(org.openrewrite.java.tree.Space.format("\n        ")));
+                                            m = m.withBody(m.getBody().withStatements(stmts));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else if (paramType.contains("WebSecurity") && !paramType.contains("HttpSecurity")) {
+                        maybeAddImport("org.springframework.context.annotation.Bean");
+                        maybeAddImport("org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer");
+                        m = m.withReturnTypeExpression(TypeTree.build("WebSecurityCustomizer").withPrefix(
+                                m.getReturnTypeExpression() != null ? m.getReturnTypeExpression().getPrefix() : org.openrewrite.java.tree.Space.format(" ")
+                        ));
+                        m = m.withName(m.getName().withSimpleName("webSecurityCustomizer"));
+                        m = m.withParameters(java.util.Collections.emptyList());
+
+                        java.util.List<J.Annotation> annotations = new java.util.ArrayList<>();
+                        boolean hasBean = false;
+                        for (J.Annotation an : m.getLeadingAnnotations()) {
+                            if (!"Override".equals(an.getSimpleName())) {
+                                if ("Bean".equals(an.getSimpleName())) {
+                                    hasBean = true;
+                                }
+                                annotations.add(an);
+                            }
+                        }
+                        if (!hasBean) {
+                            annotations.add(new J.Annotation(
+                                    org.openrewrite.Tree.randomId(),
+                                    org.openrewrite.java.tree.Space.EMPTY,
+                                    org.openrewrite.marker.Markers.EMPTY,
+                                    TypeTree.build("Bean"),
+                                    org.openrewrite.java.tree.JContainer.empty()
+                            ));
+                        }
+                        m = m.withLeadingAnnotations(annotations);
                     }
                 }
                 return m;
@@ -112,6 +211,8 @@ public final class SpringSecurityFilterChainRecipe extends Recipe {
                     m = m.withName(m.getName().withSimpleName("authorizeHttpRequests"));
                 } else if (MATCHERS_METHODS.contains(m.getSimpleName())) {
                     m = m.withName(m.getName().withSimpleName("requestMatchers"));
+                } else if ("and".equals(m.getSimpleName()) && (m.getArguments().isEmpty() || (m.getArguments().size() == 1 && m.getArguments().get(0) instanceof J.Empty)) && m.getSelect() instanceof J.MethodInvocation sel) {
+                    m = sel;
                 }
                 return m;
             }

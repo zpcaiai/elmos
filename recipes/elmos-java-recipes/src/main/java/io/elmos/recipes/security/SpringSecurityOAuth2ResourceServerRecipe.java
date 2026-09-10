@@ -48,11 +48,31 @@ public final class SpringSecurityOAuth2ResourceServerRecipe extends Recipe {
                 return imp;
             }
 
+            private boolean isNoArg(J.MethodInvocation inv) {
+                return inv.getArguments().isEmpty() ||
+                       (inv.getArguments().size() == 1 && inv.getArguments().get(0) instanceof J.Empty);
+            }
+
             @Override
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                 J.MethodInvocation m = super.visitMethodInvocation(method, ctx);
-                if ("oauth2ResourceServer".equals(m.getSimpleName()) && m.getArguments().isEmpty()) {
+                if ("jwt".equals(m.getSimpleName()) && m.getSelect() instanceof J.MethodInvocation sel && "oauth2ResourceServer".equals(sel.getSimpleName()) && isNoArg(sel)) {
                     maybeAddImport("org.springframework.security.config.Customizer");
+                    org.openrewrite.java.JavaParser jp = org.openrewrite.java.JavaParser.fromJavaVersion().build();
+                    var parsed = jp.parse("""
+                            import org.springframework.security.config.Customizer;
+                            class _T {
+                                void f(org.springframework.security.config.annotation.web.builders.HttpSecurity http) throws Exception {
+                                    http.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+                                }
+                            }
+                            """).findFirst().orElse(null);
+                    if (parsed instanceof J.CompilationUnit cu && !cu.getClasses().isEmpty()) {
+                        J.ClassDeclaration cd = (J.ClassDeclaration) cu.getClasses().get(0);
+                        J.MethodDeclaration md = (J.MethodDeclaration) cd.getBody().getStatements().get(0);
+                        J.MethodInvocation replacement = (J.MethodInvocation) md.getBody().getStatements().get(0);
+                        return replacement.withSelect(sel.getSelect()).withPrefix(sel.getPrefix());
+                    }
                 }
                 return m;
             }

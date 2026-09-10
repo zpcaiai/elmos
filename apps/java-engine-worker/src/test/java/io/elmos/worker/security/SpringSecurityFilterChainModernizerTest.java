@@ -106,4 +106,35 @@ class SpringSecurityFilterChainModernizerTest {
         assertTrue(updated.contains(".logout(logout -> logout.disable())"));
         assertTrue(updated.contains("return http.build();"));
     }
+
+    @Test
+    void modernizesOAuth2AndExceptionHandling() throws Exception {
+        Path javaFile = tempDir.resolve("OAuth2SecurityConfig.java");
+        Files.writeString(javaFile, """
+                package com.example.security;
+
+                import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+                import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
+                public class OAuth2SecurityConfig extends WebSecurityConfigurerAdapter {
+
+                    @Override
+                    public void configure(HttpSecurity http) throws Exception {
+                        http.oauth2ResourceServer().jwt()
+                            .and()
+                            .exceptionHandling().authenticationEntryPoint(null);
+                    }
+                }
+                """);
+
+        var result = SpringSecurityFilterChainModernizer.modernize(tempDir);
+        assertTrue(result.modified());
+
+        String updated = Files.readString(javaFile);
+        assertFalse(updated.contains("extends WebSecurityConfigurerAdapter"));
+        assertTrue(updated.contains("@Bean\n    public SecurityFilterChain securityFilterChain"));
+        assertTrue(updated.contains(".oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))"));
+        assertTrue(updated.contains(".exceptionHandling(ex -> ex.authenticationEntryPoint(null))"));
+        assertTrue(updated.contains("return http.build();"));
+    }
 }
