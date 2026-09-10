@@ -1,0 +1,36 @@
+skill: elmos-assurance-ethen-audit
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-ethen-audit-A01
+  given: 只把另一个LLM命名Ethen
+  when: 在真实集成模块执行对应测试或负例
+  then: 不得声称组织独立外审
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-ethen-audit-A02
+  given: Ethen签了旧revision
+  when: 在真实集成模块执行对应测试或负例
+  then: approval拒绝
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-ethen-audit-A03
+  given: builder和auditor不同key但同control domain
+  when: 在真实集成模块执行对应测试或负例
+  then: strict external profile阻断
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

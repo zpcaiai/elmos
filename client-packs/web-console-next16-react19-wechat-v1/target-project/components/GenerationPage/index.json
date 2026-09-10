@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "project-generation-studio": "/components/ProjectGenerationStudio/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "multimodal-intake-workbench": "/components/MultimodalIntakeWorkbench/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

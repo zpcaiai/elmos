@@ -1,0 +1,21 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-fixtures-environments
+title: 测试数据与原生环境工厂
+priority: P0
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-test-generation
+inputs:
+- TestManifest
+- 数据授权
+- native compatibility matrix
+outputs:
+- EnvironmentLock
+- FixtureSnapshots
+- CleanupEvidence
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

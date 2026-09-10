@@ -1,5 +1,8 @@
 ---
 name: b30-framework-version-lifecycle
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Create and enforce framework version support, EOL, upgrade, compatibility, deprecation, and maintenance policies for Batch 30 framework packs. Use when adding version tuples, changing support claims, or planning customer upgrades.
 ---
 

@@ -1,16 +1,9 @@
-<view class="card" data-component="{{componentName}}">
-  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
-  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
-  <view class="source-labels">
-    <text class="source-label">/api/billing/checkout</text>
-    <text class="source-label">/api/billing/trial</text>
-    <text class="source-label">Content-Type</text>
-    <text class="source-label">Idempotency-Key</text>
-    <text class="source-label">POST</text>
-    <text class="source-label">WECHAT_PAY_NATIVE</text>
-  </view>
-  <view class="actions">
-    <button wx:for="{{actions}}" wx:key="id" size="mini" data-action="{{item.id}}" bindtap="runAction">{{item.label}}</button>
-  </view>
-  <view wx:for="{{rows}}" wx:key="key" class="data-row"><text>{{item.key}}</text><text>{{item.value}}</text></view>
+<view class="{{'actionStack'}}">
+  <button class="{{`button ${plan.featured ? &quot;button-primary&quot; : &quot;button-secondary&quot;}`}}" type="button" disabled="{{pending || paidUnavailable}}" bindtap="activate">
+    <text>{{pending ? "正在处理…" : trial ? "开始免费体验" : paidUnavailable ? "等待开放" : "安全结账"}}</text>
+    <Icon wx:if="{{!pending}}" name="{{paidUnavailable ? &quot;clock&quot; : &quot;arrow&quot;}}" size="{{15}}" />
+  </button>
+  <image wx:if="{{qrCode && qrCode.planId === plan.planId}}" class="{{'paymentQrCode'}}" src="{{`data:image/svg+xml;utf8,${encodeURIComponent(qrCode.svg)}`}}" alt="微信支付二维码" width="{{220}}" height="{{220}}" />
+  <view wx:if="{{message}}" class="{{failed ? 'actionError' : 'actionSuccess'}}" role="{{failed ? &quot;alert&quot; : &quot;status&quot;}}">{{message}}</view>
+  <view wx:else class="{{'actionHint'}}">{{trial ? "需登录并具有已验证邮箱或手机号" : paidUnavailable ? "完成支付、税务与成本门禁后开放" : "跳转至支付页或扫码完成支付"}}</view>
 </view>

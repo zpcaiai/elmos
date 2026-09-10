@@ -1,0 +1,36 @@
+skill: elmos-assurance-coverage-planner
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-coverage-planner-A01
+  given: 0条可测试义务
+  when: 在真实集成模块执行对应测试或负例
+  then: 返回缺口/INCONCLUSIVE，不给100%
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-coverage-planner-A02
+  given: 只有测试存在但未执行
+  when: 在真实集成模块执行对应测试或负例
+  then: 仅planned上升，passed保持0
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-coverage-planner-A03
+  given: 关键角色/租户组合缺失
+  when: 在真实集成模块执行对应测试或负例
+  then: 即使总覆盖很高也阻断
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

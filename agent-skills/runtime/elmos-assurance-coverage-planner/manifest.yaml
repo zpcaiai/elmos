@@ -1,0 +1,21 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-coverage-planner
+title: 覆盖义务与风险计划编译
+priority: P0
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-state-effects
+inputs:
+- ApprovedScopeRecord
+- ContractSnapshot
+- StateMachineSet
+outputs:
+- ObligationSet
+- CoverageMatrix
+- TestPlan
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

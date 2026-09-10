@@ -1,0 +1,21 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-durable-execution
+title: 恢复、取消、fencing与结果提交
+priority: P0
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-bootstrap
+inputs:
+- 现有Workflow/Harness
+- TestExecutionPlan
+- 权限租约
+outputs:
+- RunnerBrokerIntegration
+- DurableEvents
+- SideEffectReconciliation
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

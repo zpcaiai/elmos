@@ -1,16 +1,223 @@
-<view class="card" data-component="{{componentName}}">
-  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
-  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
-  <view class="source-labels">
-    <text class="source-label">.NET 10</text>
-    <text class="source-label">/api/capabilities/database-sql</text>
-    <text class="source-label">/api/capabilities/migration</text>
-    <text class="source-label">/migration/sql</text>
-    <text class="source-label">/spring</text>
-    <text class="source-label">/translation</text>
+<view class="page-stack studio-page">
+  <view class="page-header">
+    <view>
+      <text class="overline">MIGRATION PLATFORM · M29–M37</text>
+      <view>迁移工坊</view>
+      <view>把路线选择、开发者预览、证据门禁与扩展生态放在同一个清晰工作流里。</view>
+    </view>
+    <button class="button button-primary" bindtap="onTap">
+      <Icon name="plus" size="{{17}}" />
+      <text>新建评估</text>
+    </button>
   </view>
-  <view class="actions">
-    <button wx:for="{{actions}}" wx:key="id" size="mini" data-action="{{item.id}}" bindtap="runAction">{{item.label}}</button>
+  <view class="metric-grid metric-grid-four" aria-label="迁移能力摘要">
+    <view class="metric-card">
+      <text>能力包</text>
+      <text>{{capabilities.length}}</text>
+      <text>M29–M37 精确分域</text>
+    </view>
+    <view class="metric-card">
+      <text>可调用功能</text>
+      <text>{{capabilities.reduce((sum, item) => sum + item.skillCount, 0)}}</text>
+      <text>仓库内结构化能力</text>
+    </view>
+    <view class="metric-card">
+      <text>认证上限</text>
+      <text class="metric-word">Gate ready</text>
+      <text>控制台不签发认证</text>
+    </view>
+    <view class="metric-card">
+      <text>外部执行</text>
+      <text class="metric-word warning-text">NOT_RUN</text>
+      <text>未连接客户环境</text>
+    </view>
   </view>
-  <view wx:for="{{rows}}" wx:key="key" class="data-row"><text>{{item.key}}</text><text>{{item.value}}</text></view>
+  <view class="source-notice" role="status">
+    <Icon name="{{source === &quot;LIVE_API&quot; ? &quot;check&quot; : &quot;clock&quot;}}" size="{{16}}" />
+    <text>{{note}}</text>
+    <StatusChip status="{{source}}" compact="true" />
+  </view>
+  <view class="segmented-tabs" role="tablist" aria-label="迁移工坊视图">
+    <button id="migration-routes-tab" type="button" role="tab" aria-controls="migration-routes-panel" aria-selected="{{view === &quot;routes&quot;}}" tabIndex="{{view === &quot;routes&quot; ? 0 : -1}}" class="{{view === &quot;routes&quot; ? &quot;active&quot; : &quot;&quot;}}" bindtap="onTap">
+      <Icon name="route" size="{{17}}" />
+      <text>迁移路线</text>
+    </button>
+    <button id="migration-marketplace-tab" type="button" role="tab" aria-controls="migration-marketplace-panel" aria-selected="{{view === &quot;marketplace&quot;}}" tabIndex="{{view === &quot;marketplace&quot; ? 0 : -1}}" class="{{view === &quot;marketplace&quot; ? &quot;active&quot; : &quot;&quot;}}" bindtap="onTap">
+      <Icon name="box" size="{{17}}" />
+      <text>扩展 Marketplace</text>
+    </button>
+    <text wx:if="{{drafts.length > 0}}" class="draft-count">{{drafts.length}} 个本地草稿</text>
+  </view>
+  <view wx:if="{{view === 'routes'}}" id="migration-routes-panel" class="studio-layout" role="tabpanel" aria-labelledby="migration-routes-tab">
+    <view class="catalog-panel">
+      <view class="catalog-toolbar">
+        <text class="search-field"><Icon name="search" size="{{17}}" /> <text class="sr-only">搜索能力</text> <input value="{{query}}" placeholder="搜索能力、Batch 或领域" bindchange="onChange" /></text>
+        <text class="select-field"><Icon name="filter" size="{{16}}" /> <text class="sr-only">状态筛选</text> <view value="{{statusFilter}}" bindchange="onChange">
+  <view value="ALL">全部状态</view>
+  <view value="READY">契约就绪</view>
+  <view value="REVIEW">待审阅</view>
+  <view value="BLOCKED">已阻断</view>
+  <view value="EXPERIMENTAL">实验性</view>
+</view></text>
+      </view>
+      <view class="catalog-summary-bar" aria-live="polite">
+        <text>显示 <text>{{visibleCapabilities.length}}</text> / {{capabilities.length}} 个能力</text>
+        <button wx:if="{{filtersActive}}" type="button" bindtap="clearFilters">清除筛选</button>
+      </view>
+      <view wx:if="{{drafts.length > 0}}" class="draft-list">
+        <view wx:for="{{drafts}}" wx:for-item="draft" wx:key="draft.id" class="draft-row" key="{{draft.id}}">
+          <text class="capability-icon accent-cyan"><Icon name="spark" size="{{18}}" /></text>
+          <view>
+            <text>{{draft.name}}</text>
+            <text>{{draft.source}} → {{draft.target}} · {{draft.scope}} {{draft.capabilityId ? ` · ${draft.capabilityId}` : ""}}</text>
+          </view>
+          <StatusChip status="DRAFT" compact="true" />
+          <button type="button" class="icon-button" aria-label="{{`删除草稿 ${draft.name}`}}" bindtap="onTap">
+            <Icon name="close" size="{{13}}" />
+          </button>
+        </view>
+      </view>
+      <view class="capability-list">
+        <button wx:for="{{visibleCapabilities}}" wx:for-item="capability" wx:key="capability.id" class="{{`capability-row ${selected === capability.id ? &quot;selected&quot; : &quot;&quot;}`}}" key="{{capability.id}}" aria-pressed="{{selected === capability.id}}" bindtap="onTap">
+          <text class="{{`capability-icon accent-${capability.accent}`}}"><Icon name="{{capability.icon}}" size="{{20}}" /></text>
+          <text class="capability-copy"><text><text>{{capability.id}}</text> {{capability.title}}</text> <text>{{capability.domain}} · {{capability.skillCount}} 项功能</text></text>
+          <StatusChip status="{{capability.status}}" compact="true" />
+          <Icon name="chevron" size="{{16}}" />
+        </button>
+        <view wx:if="{{visibleCapabilities.length === 0}}" class="empty-state">
+          <Icon name="search" />
+          <text>没有匹配的能力</text>
+          <text>调整关键词或恢复全部状态。</text>
+          <button type="button" class="button button-secondary" bindtap="clearFilters">清除筛选</button>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{selectedCapability}}" class="detail-panel">
+      <view class="{{`detail-hero accent-${selectedCapability.accent}`}}">
+        <text class="capability-icon"><Icon name="{{selectedCapability.icon}}" size="{{22}}" /></text>
+        <StatusChip status="{{selectedCapability.status}}" compact="true" />
+      </view>
+      <text class="overline">{{selectedCapability.id}} · {{selectedCapability.domain}}</text>
+      <view>{{selectedCapability.title}}</view>
+      <view>{{selectedCapability.description}}</view>
+      <view class="detail-facts">
+        <view>
+          <view>功能数量</view>
+          <view>{{selectedCapability.skillCount}}</view>
+        </view>
+        <view>
+          <view>Schemas</view>
+          <view>{{selectedCapability.schemaCount}}</view>
+        </view>
+        <view>
+          <view>外部证据</view>
+          <view class="warning-text">NOT_RUN</view>
+        </view>
+      </view>
+      <view class="gate-block">
+        <text>唯一认证门禁</text>
+        <code>{{selectedCapability.gateCommand}}</code>
+      </view>
+      <view wx:if="{{selectedCapability.id === 'M29'}}" class="feature-callout">
+        <Icon name="code" size="{{17}}" />
+        <view>
+          <text>15 语言活动矩阵已接入</text>
+          <text>210 条方向路线均保持 NOT_RUN；整库拆分、独立验证与外部认证仍需单独证据。</text>
+          <navigator class="text-link" href="/translation">
+            <text>打开跨语言转换</text>
+            <Icon name="arrow" size="{{13}}" />
+          </navigator>
+        </view>
+      </view>
+      <view wx:if="{{selectedCapability.id === 'M30'}}" class="feature-callout">
+        <Icon name="workflow" size="{{17}}" />
+        <view>
+          <text>Spring 老项目专属流程已接入</text>
+          <text>支持经典 Spring XML、注解与旧 Boot 画像；外部运行与升级认证仍为 NOT_RUN。</text>
+          <navigator class="text-link" href="/spring">
+            <text>打开 Spring 翻新</text>
+            <Icon name="arrow" size="{{13}}" />
+          </navigator>
+        </view>
+      </view>
+      <view wx:if="{{selectedCapability.id === 'M31'}}" class="feature-callout">
+        <Icon name="database" size="{{17}}" />
+        <view>
+          <text>ChinaDB 商业迁移扩展已接入</text>
+          <text>13 个国产目标已登记，并提供受限的兼容模式查询发射；它不是厂商原生语义适配器。实库执行、结果等价与认证保持 NOT_RUN / NOT_CERTIFIED。</text>
+          <code>elmos-sql-transpiler commercial-capabilities</code>
+          <navigator class="text-link" href="/migration/sql">
+            <text>运行 SQL 预检</text>
+            <Icon name="arrow" size="{{13}}" />
+          </navigator>
+          <navigator class="text-link" href="/api/capabilities/database-sql" target="_blank" rel="noreferrer">
+            <text>查看目标与路线契约</text>
+            <Icon name="external" size="{{13}}" />
+          </navigator>
+        </view>
+      </view>
+      <view wx:if="{{selectedCapability.id === 'M36'}}" class="feature-callout">
+        <Icon name="spark" size="{{17}}" />
+        <view>
+          <text>开发者预览已接入</text>
+          <text>支持来源—目标导航、受保护区域和无写入预览；真实 IDE Host 证据仍未运行。</text>
+        </view>
+      </view>
+      <view class="detail-actions">
+        <button class="button button-secondary" bindtap="onTap">以此创建草稿</button>
+        <navigator class="icon-button bordered" href="{{`/api/capabilities/migration`}}" target="_blank" rel="noreferrer" aria-label="打开能力 API">
+          <Icon name="external" size="{{17}}" />
+        </navigator>
+      </view>
+    </view>
+  </view>
+  <Marketplace wx:else extensions="{{extensions}}" query="{{query}}" setQuery="{{setQuery}}" />
+  <view class="{{`feedback-toast ${feedback ? &quot;visible&quot; : &quot;&quot;}`}}" role="status" aria-live="polite" aria-atomic="true">
+    <text><Icon name="check" size="{{17}}" /></text>
+    <text>{{feedback}}</text>
+  </view>
+  <view wx:if="{{dialogOpen}}" class="dialog-backdrop" role="presentation" bindmousedown="onMousedown">
+    <view ref="{{dialogPanel}}" class="modal-card" role="dialog" aria-modal="true" aria-labelledby="new-assessment-title" aria-describedby="new-assessment-description">
+      <view class="modal-heading">
+        <view>
+          <text class="overline">LOCAL DRAFT</text>
+          <view id="new-assessment-title">新建迁移评估</view>
+        </view>
+        <button class="icon-button" aria-label="关闭" bindtap="closeDialog">
+          <Icon name="close" />
+        </button>
+      </view>
+      <view class="modal-intro" id="new-assessment-description">草稿只保存在当前浏览器，不会上传仓库、运行客户代码或触发认证。按 ESC 可随时关闭。</view>
+      <form class="form-stack" bindsubmit="createDraft">
+        <text><text>评估名称</text> <input ref="{{draftNameInput}}" name="name" required="true" autoComplete="off" placeholder="例如：订单服务现代化" /></text>
+        <view class="form-grid">
+          <text><text>源技术栈</text> <view name="source" defaultValue="Java 8 / Spring 4">
+  <view>Java 8 / Spring 4</view>
+  <view>C# / .NET Framework 4.8</view>
+  <view>Python 3.8 / Django 2.2</view>
+  <view>AngularJS 1.8</view>
+</view></text>
+          <text><text>目标技术栈</text> <view name="target" defaultValue="Java 21 / Spring Boot 3">
+  <view>Java 21 / Spring Boot 3</view>
+  <view>.NET 10</view>
+  <view>Python 3.14 / Django 5</view>
+  <view>React 19 / Next.js 16</view>
+</view></text>
+        </view>
+        <text><text>工作范围</text> <view name="scope" defaultValue="单仓评估">
+  <view>单仓评估</view>
+  <view>多仓依赖评估</view>
+  <view>组合级发现</view>
+</view></text>
+        <view class="form-note">
+          <Icon name="lock" size="{{16}}" />
+          <text>凭证、生产数据与客户代码不会写入此草稿。 {{draftCapability ? ` 当前关联能力：${draftCapability}。` : ""}}</text>
+        </view>
+        <view class="modal-actions">
+          <button type="button" class="button button-secondary" bindtap="closeDialog">取消</button>
+          <button class="button button-primary" type="submit">保存本地草稿</button>
+        </view>
+      </form>
+    </view>
+  </view>
 </view>

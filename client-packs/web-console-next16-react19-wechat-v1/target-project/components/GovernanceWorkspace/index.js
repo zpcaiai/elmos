@@ -1,81 +1,84 @@
-const { createHandPortComponent } = require("../../runtime/hand-port-runtime");
+// Top-level helpers and constants
+try { var sampleMutants = [
+    {
+        id: "MUT-001",
+        operator: "CONDITION_NEGATION",
+        original: "if (price > 100)",
+        mutated: "if (price <= 100)",
+        line: 14,
+        status: "KILLED",
+    },
+    {
+        id: "MUT-002",
+        operator: "ARITHMETIC_SWAP",
+        original: "return price - 20;",
+        mutated: "return price + 20;",
+        line: 15,
+        status: "KILLED",
+    },
+    {
+        id: "MUT-003",
+        operator: "RETURN_VALUE_TAMPER",
+        original: "return price;",
+        mutated: "return 0;",
+        line: 16,
+        status: "KILLED",
+    },
+    {
+        id: "MUT-004",
+        operator: "BOUNDARY_OFF_BY_ONE",
+        original: "int maxRetry = 3;",
+        mutated: "int maxRetry = 2;",
+        line: 28,
+        status: "SURVIVED",
+    },
+]; } catch(e) {}
+try { var sampleDiffs = [
+    {
+        endpoint: "POST /api/v1/orders",
+        category: "FIELD_REMOVED",
+        severity: "WARNING",
+        description: "Request field 'currency' optional in source was removed in target DTO",
+    },
+    {
+        endpoint: "POST /api/v1/orders",
+        category: "FIELD_ADDED",
+        severity: "NON_BREAKING",
+        description: "Response field 'transaction_hash' added with backward-compatible defaults",
+    },
+    {
+        endpoint: "GET /api/v1/payments/{id}",
+        category: "TYPE_NARROWING",
+        severity: "BREAKING",
+        description: "Response field 'amount' narrowed from float64 to int32, risking truncation",
+    },
+]; } catch(e) {}
 
-Component(createHandPortComponent({
-  "schemaVersion": "1.0",
-  "componentName": "GovernanceWorkspace",
-  "title": "+ Line",
-  "role": "workbench",
-  "source": {
-    "file": "app/governance/GovernanceWorkspace.tsx",
-    "componentName": "GovernanceWorkspace",
-    "sha256": "sha256:6e4df100ea8494750f34ea97b13567df1002a14e00e44c3f5bf578a961b86e69",
-    "range": {
-      "start": 1797,
-      "end": 9484
-    }
+Component({
+  options: {
+    multipleSlots: false,
+    styleIsolation: "apply-shared",
   },
-  "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-    "reason": "state activeTab has unsupported type \"\\\"mutation\\\"\"",
-    "category": "data-contracts"
+  properties: {
   },
-  "props": [],
-  "states": [
-    {
-      "name": "activeTab",
-      "type": "\"mutation\" | \"api-diff\" | \"cas-cache\""
+  data: {
+    activeTab: "mutation",
+    codeSnippet: "public int calculateDiscount(int price) {\n  if (price > 100) {\n    return price - 20;\n  }\n  return price;\n}",
+    isAnalyzing: false,
+    mutationResults: null,
+    cacheStats: {"l1Items":14,"totalEntries":240,"totalSizeBytes":3145728,"hitRatio":0.8842,"bloomFilterBits":2048},
+  },
+  lifetimes: {
+    attached() {
+      const setActiveTab = (val) => { this.setData({ activeTab: typeof val === "function" ? val(this.data.activeTab) : val }); };
+      const setCodeSnippet = (val) => { this.setData({ codeSnippet: typeof val === "function" ? val(this.data.codeSnippet) : val }); };
+      const setIsAnalyzing = (val) => { this.setData({ isAnalyzing: typeof val === "function" ? val(this.data.isAnalyzing) : val }); };
+      const setMutationResults = (val) => { this.setData({ mutationResults: typeof val === "function" ? val(this.data.mutationResults) : val }); };
+      const setCacheStats = (val) => { this.setData({ cacheStats: typeof val === "function" ? val(this.data.cacheStats) : val }); };
     },
-    {
-      "name": "codeSnippet",
-      "type": "inferred"
+    detached() {
     },
-    {
-      "name": "isAnalyzing",
-      "type": "inferred"
-    },
-    {
-      "name": "cacheStats",
-      "type": "inferred"
-    }
-  ],
-  "hooks": [
-    "useState"
-  ],
-  "resources": [],
-  "apiPaths": [],
-  "labels": [
-    "+ Line",
-    "- Line",
-    "1 处破坏性变更 (Breaking Change)",
-    "3 / 4",
-    "4 Operators Active",
-    "75.0%",
-    "API 契约向后兼容漂移差分 (API Diff)",
-    "API 契约漂移与向后兼容性报告 (elmos polyglot api-diff)",
-    "BREAKING",
-    "Bloom Filter Active",
-    "CAS 命中加速比",
-    "Cache Hit Ratio",
-    "ELMOS Governance & Assurance OS",
-    "KILLED",
-    "L1 Memory Items",
-    "Total Cached DAG Units",
-    "WARNING",
-    "api-diff",
-    "bits",
-    "cas-cache",
-    "database",
-    "mutation",
-    "play",
-    "public int calculateDiscount(int price) {\n  if (price > 100) {\n    return price - 20;\n  }\n  return price;\n}"
-  ],
-  "adapters": [
-    "wechat-css-module-token-map-v1",
-    "wechat-plain-collection-projection-v1",
-    "wechat-typed-state-decoder-v1"
-  ],
-  "obligations": [
-    "GovernanceWorkspace:source-blocker"
-  ],
-  "irDigest": "sha256:a3e803c2faca35da6e5a5a7baa001a11e50bfe149bbd6eabfce0d4c2feeb7418"
-}));
+  },
+  methods: {
+  },
+});

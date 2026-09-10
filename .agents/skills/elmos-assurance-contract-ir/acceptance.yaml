@@ -1,0 +1,36 @@
+skill: elmos-assurance-contract-ir
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-contract-ir-A01
+  given: 只提供OpenAPI无订单状态规则
+  when: 在真实集成模块执行对应测试或负例
+  then: 标注缺失业务契约，不认为全规范已完成
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-contract-ir-A02
+  given: 有状态接口丢失effect投影
+  when: 在真实集成模块执行对应测试或负例
+  then: loss report阻断相应保证
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-contract-ir-A03
+  given: 旧contract批准被用于新schema
+  when: 在真实集成模块执行对应测试或负例
+  then: 拒绝摘要不匹配
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

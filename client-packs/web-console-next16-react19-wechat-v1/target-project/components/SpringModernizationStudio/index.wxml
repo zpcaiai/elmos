@@ -1,16 +1,281 @@
-<view class="card" data-component="{{componentName}}">
-  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
-  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
-  <view class="source-labels">
-    <text class="source-label">/api/github-installation</text>
-    <text class="source-label">/api/github-repositories</text>
-    <text class="source-label">/api/spring-upgrades</text>
-    <text class="source-label">/api/spring-upgrades/capabilities</text>
-    <text class="source-label">40 位 SHA；填写后必须完全匹配</text>
-    <text class="source-label">ARTIFACT_INTEGRITY_MISMATCH: 下载字节与独立验证证据不一致</text>
+<view class="page-stack business-page">
+  <view class="page-header business-hero">
+    <view>
+      <text class="overline">SPRING MODERNIZATION · REAL JOURNEY</text>
+      <view>Java / Spring 老项目一键迁移</view>
+      <view>从不可变 Git Commit 到 FCM、真实 OpenRewrite、双工具链构建、独立验证、下载与隔离启动。每一步都显示真实状态，未运行绝不显示通过。</view>
+    </view>
+    <view class="header-actions">
+      <StatusChip status="{{runnerReady ? &quot;READY&quot; : &quot;NOT_CONFIGURED&quot;}}" />
+      <StatusChip status="{{run?.status ?? &quot;NOT_RUN&quot;}}" />
+    </view>
   </view>
-  <view class="actions">
-    <button wx:for="{{actions}}" wx:key="id" size="mini" data-action="{{item.id}}" bindtap="runAction">{{item.label}}</button>
+  <view class="{{`source-notice ${runnerReady ? &quot;&quot; : &quot;runner-warning&quot;}`}}" role="status">
+    <Icon name="{{runnerReady ? &quot;shield&quot; : &quot;lock&quot;}}" size="{{16}}" />
+    <text>{{currentMessage}}</text>
+    <StatusChip status="{{runnerReady ? &quot;ENFORCED&quot; : &quot;BLOCKED&quot;}}" compact="true" />
   </view>
-  <view wx:for="{{rows}}" wx:key="key" class="data-row"><text>{{item.key}}</text><text>{{item.value}}</text></view>
+  <view class="metric-grid metric-grid-four" aria-label="精确迁移路线">
+    <view class="metric-card">
+      <text>精确源路线</text>
+      <text class="{{`metric-word ${capability ? &quot;&quot; : &quot;warning-text&quot;}`}}">{{capability ? `${capability.routes?.length ?? 1} 条` : "UNKNOWN"}}</text>
+      <text>{{capability ? `${verifiedRouteCount} 个 PASSED_LOCAL 精确点；NOT_RUN / NOT_IMPLEMENTED 均不计为通过` : "能力契约未读取"}}</text>
+    </view>
+    <view class="metric-card">
+      <text>目标版本</text>
+      <text class="{{`metric-word ${evidenceTarget ? &quot;&quot; : &quot;warning-text&quot;}`}}">{{evidenceTarget ? `Boot ${evidenceTarget.springBoot}` : "UNKNOWN"}}</text>
+      <text>{{evidenceTarget
+              ? `Java ${evidenceTarget.java} · ${run ? "当前 Run 不可变目标" : "下一次请求目标"}`
+              : "能力契约未读取"}}</text>
+    </view>
+    <view class="metric-card">
+      <text>OpenRewrite</text>
+      <text class="{{`metric-word ${capability ? &quot;&quot; : &quot;warning-text&quot;}`}}">{{capability?.openRewrite.rewriteSpring ?? "UNKNOWN"}}</text>
+      <text>{{capability ? `Plugin ${capability.openRewrite.mavenPlugin} · 固定 Recipes` : "能力契约未读取"}}</text>
+    </view>
+    <view class="metric-card">
+      <text>独立裁判</text>
+      <text class="{{`metric-word ${run?.independentValidation?.status === &quot;PASS&quot; ? &quot;&quot; : &quot;warning-text&quot;}`}}">{{run?.independentValidation?.status ?? "NOT_RUN"}}</text>
+      <text>从下载 ZIP 重新验证</text>
+    </view>
+  </view>
+  <view class="business-layout">
+    <form class="surface-card business-form" bindsubmit="submit">
+      <view class="business-section-heading">
+        <view>
+          <text class="overline">IMMUTABLE INPUT</text>
+          <view>导入并锁定源仓库</view>
+        </view>
+        <StatusChip status="{{run ? run.status : &quot;DRAFT&quot;}}" compact="true" />
+      </view>
+      <view class="business-form-grid">
+        <text><text>租户标识</text> <input aria-label="Spring 租户标识" value="{{tenantId}}" readOnly="{{accountRunner}}" autoComplete="off" bindchange="onChange" /></text>
+        <text><text>执行者标识</text> <input aria-label="Spring 执行者标识" value="{{actorId}}" readOnly="{{accountRunner}}" autoComplete="off" bindchange="onChange" /></text>
+        <view wx:if="{{accountRunner}}" class="locked-target spring-field-wide">
+          <text>账户授权</text>
+          <text>企业 OIDC · spring:execute</text>
+          <text>租户和执行者来自已验证声明。</text>
+        </view>
+        <text wx:else class="spring-field-wide"><text>Spring 代理短期令牌</text> <input aria-label="Spring 代理短期令牌" type="password" value="{{proxyToken}}" autoComplete="off" bindchange="onChange" /> <text>仅限本地开发；令牌最多 24 小时，并与唯一租户和 Actor 绑定。</text></text>
+        <text><text>输入方式</text> <view value="{{sourceMode}}" bindchange="onChange">
+  <view value="PUBLIC_GIT">公开 HTTPS Git</view>
+  <view value="GITHUB_APP">GitHub App 私有仓库</view>
+  <view value="REPOSITORY_WORKSPACE">ELMOS 受控仓库工作区</view>
+  <view value="MATERIALIZED_SNAPSHOT">受控 Snapshot Workspace</view>
+</view></text>
+        <block wx:if="{{sourceMode === 'PUBLIC_GIT'}}">
+          <text class="spring-field-wide"><text>Git 仓库 URL</text> <input required="true" type="url" value="{{repositoryUrl}}" placeholder="https://github.com/org/repo.git" bindchange="onChange" /></text>
+          <text><text>Branch / Tag</text> <input required="true" value="{{requestedRef}}" placeholder="main 或 refs/tags/v1.0.0" bindchange="onChange" /></text>
+          <text><text>预期 Commit（可选）</text> <input value="{{expectedCommitSha}}" pattern="[0-9a-f]{40}" placeholder="40 位 SHA；填写后必须完全匹配" bindchange="onChange" /></text>
+        </block>
+        <block wx:else>
+          <block wx:if="{{sourceMode === 'GITHUB_APP'}}">
+            <text class="spring-field-wide"><text>已授权 GitHub 仓库</text> <view required="true" value="{{githubRepositoryId}}" disabled="{{githubCatalogStatus !== &quot;READY&quot;}}" bindchange="onChange">
+  <view wx:if="{{githubRepositories.length === 0}}" value="">没有可用的已授权仓库</view>
+  <block wx:else>
+    <view wx:for="{{githubRepositories}}" wx:for-item="repository" wx:key="repository.id" key="{{repository.repositoryId}}" value="{{repository.repositoryId}}">{{repository.fullName}} · {{repository.visibility}}</view>
+  </block>
+</view></text>
+            <text><text>Branch / Tag</text> <input required="true" value="{{requestedRef}}" placeholder="main 或 refs/tags/v1.0.0" bindchange="onChange" /></text>
+            <view class="locked-target">
+              <text>GitHub App 状态</text>
+              <text>{{githubCatalogStatus}}</text>
+              <text>仅使用仓库级、最长 1 小时的短期 Token；Token 不进入 Transformer、日志或 Snapshot。</text>
+            </view>
+            <view class="business-actions spring-field-wide">
+              <button class="button button-secondary" type="button" disabled="{{busy}}" bindtap="connectGithubApp">
+                <Icon name="repository" size="{{16}}" />
+                <text>安装 / 更新 GitHub App</text>
+              </button>
+              <button class="button button-ghost" type="button" disabled="{{busy}}" bindtap="onTap">刷新授权仓库</button>
+            </view>
+          </block>
+          <block wx:else>
+            <block wx:if="{{sourceMode === 'REPOSITORY_WORKSPACE'}}">
+              <text class="spring-field-wide"><text>仓库工作区 UUID</text> <input required="true" value="{{repositoryWorkspaceId}}" pattern="[0-9a-f-]{36}" placeholder="从代码仓库工作区交接" bindchange="onChange" /></text>
+              <text><text>Branch / Tag</text> <input required="true" value="{{requestedRef}}" placeholder="main" bindchange="onChange" /></text>
+              <text><text>精确 HEAD Commit</text> <input required="true" value="{{expectedCommitSha}}" pattern="[0-9a-f]{40}" placeholder="必须与工作区当前 HEAD 完全一致" bindchange="onChange" /></text>
+            </block>
+            <block wx:else>
+              <text><text>Snapshot ID</text> <input required="true" value="{{snapshotId}}" bindchange="onChange" /></text>
+              <text><text>Workspace 相对路径</text> <input required="true" value="{{materializedRelativePath}}" placeholder="snapshots/..." bindchange="onChange" /></text>
+              <text class="spring-field-wide"><text>绑定 Commit</text> <input required="true" value="{{expectedCommitSha}}" pattern="[0-9a-f]{40}" placeholder="必须为 40 位 SHA" bindchange="onChange" /></text>
+            </block>
+          </block>
+        </block>
+        <view class="locked-target spring-field-wide">
+          <text>目标精确版本</text>
+          <view aria-label="Spring 目标精确版本" value="{{`${targetSpringBoot}|${targetJava}`}}" disabled="{{!capability || targetOptions.length === 0 || migrationActive}}" bindchange="onChange">
+            <view wx:for="{{displayedTargetOptions}}" wx:for-item="target" wx:key="target.id" key="{{`${target.springBoot}|${target.java}`}}" value="{{`${target.springBoot}|${target.java}`}}" disabled="{{!selectableTargetKeys.has(`${target.springBoot}|${target.java}`)}}">Spring Boot {{target.springBoot}} · Java {{target.java}}</view>
+          </view>
+          <text>{{lockedRouteLabel}}</text>
+          <text>源版本、JDK、构建工具和 Spring Boot / MVC family 会在 FINGERPRINT 后与该目标精确匹配。</text>
+        </view>
+        <view class="locked-target spring-field-wide">
+          <text>锁定转换路线</text>
+          <text>{{lockedRouteLabel}}</text>
+          <text>{{capability
+                  ? `路线来自 Engine 能力契约 ${capability.packKey}；构建工具限定 ${capability.sourceTuple.build}，`
+                    + "版本不精确匹配会在 FINGERPRINT 阶段 fail closed，不做模糊升级。"
+                  : "Engine 能力契约尚未读取；在读取到精确版本元组之前，页面不展示任何具体版本号。"}}</text>
+        </view>
+      </view>
+      <text class="spring-start-toggle"><input type="checkbox" checked="{{startAfterVerification}}" disabled="{{!runtimeReady}}" bindchange="onChange" /> <text><text>验证通过后自动一键启动</text> <text>{{runtimeReady ? "独立验证 PASS 后，在每次运行专属的 Rootless 容器中执行。" : capability?.runtimeRunnerReason ?? "独立 Runtime Runner 尚未配置。"}}</text></text></text>
+      <text class="spring-start-toggle"><input type="checkbox" checked="{{allowExperimentalRoutes}}" disabled="{{capability?.operatorExperimentalRoutesEnabled !== true}}" bindchange="onChange" /> <text><text>允许实验性升级路线</text> <text>{{capability?.operatorExperimentalRoutesEnabled === true ? "需要本次请求再次明确选择；实验路线不属于首发正式承诺。" : "运营方未启用实验路线；首发仅开放目录内唯一 DESIGN_PARTNER 路线。"}}</text></text></text>
+      <view class="business-actions">
+        <button class="button button-primary" type="submit" disabled="{{busy || migrationActive || !runnerReady || !credentialsReady || !selectedTargetSupported}}">
+          <Icon name="{{busy ? &quot;refresh&quot; : &quot;workflow&quot;}}" size="{{16}}" class="{{busy ? &quot;spinning&quot; : undefined}}" />
+          <text>{{migrationActive ? "迁移运行中" : !runnerReady ? "隔离 Runner 未配置" : credentialsReady ? "开始真实迁移" : "登录企业账户或填写本地短期身份"}}</text>
+        </button>
+        <button wx:if="{{run && ['QUEUED', 'RUNNING'].includes(run.status)}}" class="button button-secondary" type="button" disabled="{{busy}}" bindtap="onTap">取消迁移</button>
+      </view>
+    </form>
+    <view class="surface-card business-summary spring-run-summary">
+      <view class="business-section-heading">
+        <view>
+          <text class="overline">RUN EVIDENCE</text>
+          <view>运行与交付</view>
+        </view>
+        <StatusChip status="{{run?.runtimeStatus ?? &quot;NOT_RUN&quot;}}" compact="true" />
+      </view>
+      <view class="spring-run-facts">
+        <view>
+          <view>Run / Attempt</view>
+          <view>{{run ? `${run.runId.slice(0, 8)} · #${run.attempt}` : "尚未创建"}}</view>
+        </view>
+        <view>
+          <view>Commit</view>
+          <view title="{{run?.resolvedCommitSha ?? undefined}}">{{shortDigest(run?.resolvedCommitSha)}}</view>
+        </view>
+        <view>
+          <view>Snapshot</view>
+          <view title="{{run?.snapshotDigest ?? undefined}}">{{shortDigest(run?.snapshotDigest)}}</view>
+        </view>
+        <view>
+          <view>FCM</view>
+          <view>{{run?.fcmArtifact ?? "NOT_RUN"}}</view>
+        </view>
+        <view>
+          <view>Artifact</view>
+          <view>{{formatBytes(run?.artifactSize)}} · {{shortDigest(run?.artifactSha256)}}</view>
+        </view>
+        <view>
+          <view>Health</view>
+          <view>{{run?.runtimeStatus === "HEALTHY" ? `127.0.0.1:${run.runtimePort}${run.healthPath}` : run?.runtimeStatus ?? "NOT_RUN"}}</view>
+        </view>
+      </view>
+      <view class="business-form-grid">
+        <text class="spring-field-wide"><text>恢复 Run UUID</text> <input value="{{recoveryRunId}}" pattern="[0-9a-f-]{36}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" bindchange="onChange" /></text>
+      </view>
+      <view class="business-actions">
+        <button class="button button-secondary" type="button" disabled="{{busy || !credentialsReady || !/^[0-9a-f-]{36}$/i.test(recoveryRunId)}}" bindtap="onTap">
+          <Icon name="refresh" size="{{15}}" />
+          <text>恢复运行</text>
+        </button>
+      </view>
+      <view class="locked-target">
+        <text>隔离 Runtime Runner</text>
+        <text>{{runtimeReady ? "READY · 可一键启动" : "BLOCKED · 不降级执行"}}</text>
+        <text>{{capability?.runtimeRunnerReason ?? "正在读取 Runtime Runner 能力。"}}</text>
+      </view>
+      <view wx:if="{{run?.fingerprint}}" class="spring-fingerprint">
+        <text>检测结果</text>
+        <text>{{fingerprintSourceLabel(run.fingerprint)}} · Java {{run.fingerprint.javaVersion}} · {{run.fingerprint.buildTool}}</text>
+        <text>能力： {{run.fingerprint.activeCapabilities.join("、") || "未识别"}}</text>
+        <text wx:if="{{run.fingerprint.unknowns.length > 0}}" class="warning-text">未知项： {{run.fingerprint.unknowns.join("、")}}</text>
+      </view>
+      <view class="spring-delivery-actions">
+        <button wx:if="{{run?.downloadAvailable}}" class="button button-primary" type="button" disabled="{{busy}}" bindtap="onTap">
+          <Icon name="file" size="{{15}}" />
+          <text>下载新项目 ZIP</text>
+        </button>
+        <button wx:else class="button button-primary" disabled="true">
+          <Icon name="lock" size="{{15}}" />
+          <text>独立验证后下载</text>
+        </button>
+        <button class="button button-secondary" type="button" disabled="{{!runtimeReady || !run || !run.downloadAvailable || busy || run.runtimeStatus === &quot;STARTING&quot; || run.runtimeStatus === &quot;HEALTHY&quot;}}" bindtap="onTap">
+          <Icon name="server" size="{{15}}" />
+          <text>一键启动</text>
+        </button>
+        <button class="button button-secondary" type="button" disabled="{{!run || busy || ![&quot;STARTING&quot;, &quot;HEALTHY&quot;, &quot;UNHEALTHY&quot;].includes(run.runtimeStatus)}}" bindtap="onTap">停止</button>
+        <button class="button button-secondary" type="button" disabled="{{!run || busy || ![&quot;FAILED&quot;, &quot;BLOCKED&quot;, &quot;CANCELLED&quot;].includes(run.status)}}" bindtap="onTap">
+          <Icon name="refresh" size="{{15}}" />
+          <text>重试</text>
+        </button>
+        <button class="button button-secondary" type="button" disabled="{{!run}}" bindtap="toggleLogs">
+          <Icon name="file" size="{{15}}" />
+          <text>{{showLogs ? "收起日志" : "查看日志"}}</text>
+        </button>
+      </view>
+    </view>
+  </view>
+  <view class="surface-card spring-route-catalog" aria-labelledby="spring-route-catalog-title">
+    <view class="business-section-heading">
+      <view>
+        <text class="overline">LEGACY SOURCE LINES</text>
+        <view id="spring-route-catalog-title">支持的遗留版本路线</view>
+      </view>
+      <StatusChip status="{{capability?.routes?.length ? &quot;READY&quot; : &quot;NOT_RUN&quot;}}" compact="true" />
+    </view>
+    <view class="spring-route-intro">指纹阶段按下表选择路线，而不是断言单一版本。只有带 PASSED_LOCAL 的元组有已记录的端到端本地执行证据； NOT_RUN 路线需要 Runner 显式开启实验执行；NOT_IMPLEMENTED 仅记录 inventory gap，不会进入目标选择器或执行。</view>
+    <view wx:if="{{capability?.routes?.length}}" class="spring-route-table" role="table" aria-label="Spring 遗留版本路线目录" tabIndex="{{0}}">
+      <view class="spring-route-row spring-route-head" role="row">
+        <text role="columnheader">源版本约束</text>
+        <text role="columnheader">源 JDK</text>
+        <text role="columnheader">构建工具</text>
+        <text role="columnheader">目标</text>
+        <text role="columnheader">证据</text>
+      </view>
+      <view wx:for="{{capability.routes}}" wx:for-item="route" wx:key="route.id" class="{{`spring-route-row ${route.evidenceStatus === &quot;PASSED_LOCAL&quot; ? &quot;spring-route-verified&quot; : &quot;&quot;}`}}" role="row" key="{{route.routeId}}">
+        <text role="cell" title="{{`${route.routeId}${route.notes ? ` · ${route.notes}` : &quot;&quot;}`}}">{{routeSourceFamilyLabel(route)}} {{routeSourceConstraintLabel(route)}}</text>
+        <text role="cell">{{route.sourceJavaVersions.join(" / ")}}</text>
+        <text role="cell">{{route.buildTool}}</text>
+        <text role="cell">Boot {{route.targetSpringBoot}} · Java {{route.targetJava}}</text>
+        <text role="cell">{{routeEvidenceLabel(route)}}</text>
+      </view>
+    </view>
+    <view wx:else class="route-empty-detail">Engine 能力契约尚未返回路线目录；页面不会推断支持范围。</view>
+  </view>
+  <RuntimeDeploymentGuide id="spring-runtime-deployment" guidance="{{springDeploymentGuidance}}" />
+  <view class="surface-card journey-card" aria-labelledby="real-spring-journey">
+    <view class="business-section-heading">
+      <view>
+        <text class="overline">EVIDENCE-BOUND PIPELINE</text>
+        <view id="real-spring-journey">完整真实旅程</view>
+      </view>
+      <text>阶段来自 Java Engine Worker 实际事件，不由前端模拟</text>
+    </view>
+    <view class="journey-grid spring-real-journey">
+      <view wx:for="{{stageCards}}" wx:for-item="card" wx:for-index="index" wx:key="card.id" key="{{card.title}}">
+        <text>{{index + 1}}</text>
+        <view>
+          <text>{{card.title}}</text>
+          <text>{{card.detail}}</text>
+          <text>{{run?.events.filter((event) => card.stages.includes(event.stage)).at(-1)?.message ?? "等待前置 Gate"}}</text>
+        </view>
+        <StatusChip status="{{stageStatus(card.stages)}}" compact="true" />
+      </view>
+    </view>
+  </view>
+  <view wx:if="{{showLogs}}" class="surface-card spring-log-card" aria-live="polite">
+    <view class="business-section-heading">
+      <view>
+        <text class="overline">REDACTED RUN LOG</text>
+        <view>转换与运行日志</view>
+      </view>
+      <button class="button button-secondary" type="button" bindtap="onTap">
+        <Icon name="refresh" size="{{14}}" />
+        <text>刷新</text>
+      </button>
+    </view>
+    <pre>{{logs?.lines.join("\n") || "日志尚未产生。"}}</pre>
+    <text wx:if="{{logs?.truncated}}">仅显示最近的受限日志窗口；敏感模式已经脱敏。</text>
+  </view>
+  <view class="{{`feedback-toast ${feedbackKind === &quot;error&quot; ? &quot;feedback-error&quot; : &quot;&quot;} ${feedback ? &quot;visible&quot; : &quot;&quot;}`}}" role="{{feedbackKind === &quot;error&quot; ? &quot;alert&quot; : &quot;status&quot;}}" aria-live="{{feedbackKind === &quot;error&quot; ? &quot;assertive&quot; : &quot;polite&quot;}}" aria-atomic="true">
+    <text><Icon name="{{feedbackKind === &quot;error&quot; ? &quot;lock&quot; : &quot;check&quot;}}" size="{{17}}" /></text>
+    <text class="feedback-message">{{feedback}}</text>
+    <button wx:if="{{feedbackKind === 'error' && feedback}}" type="button" aria-label="关闭错误提示" bindtap="onTap">
+      <Icon name="close" size="{{15}}" />
+    </button>
+  </view>
 </view>

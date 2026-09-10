@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "migration-studio": "/components/MigrationStudio/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

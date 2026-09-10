@@ -1,109 +1,161 @@
-const { createHandPortComponent } = require("../../runtime/hand-port-runtime");
+// Top-level helpers and constants
+try { var terminal = new Set(["SUCCEEDED", "FAILED", "BLOCKED", "CANCELLED"]); } catch(e) {}
+try { var artifactName = function artifactName(artifact) {
+    if (!artifact.uri)
+        return null;
+    try {
+        return decodeURIComponent(new URL(artifact.uri).pathname.split("/").pop() ?? "");
+    }
+    catch {
+        return null;
+    }
+} } catch(e) {}
 
-Component(createHandPortComponent({
-  "schemaVersion": "1.0",
-  "componentName": "PrecisionMigrationJobs",
-  "title": "/api/precision-migration/jobs",
-  "role": "disclosure",
-  "source": {
-    "file": "app/skills/PrecisionMigrationJobs.tsx",
-    "componentName": "PrecisionMigrationJobs",
-    "sha256": "sha256:f02823e4442841704d5832ef16e897dff1906c511ed66d5ccdf0551879bf5e39",
-    "range": {
-      "start": 730,
-      "end": 8620
-    }
+Component({
+  options: {
+    multipleSlots: false,
+    styleIsolation: "apply-shared",
   },
-  "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
-    "reason": "expression kind CallExpression is outside certified-component-v1",
-    "category": "effects-and-resources"
+  properties: {
   },
-  "props": [],
-  "states": [
-    {
-      "name": "skill",
-      "type": "inferred"
+  data: {
+    skill: "pm-b02-repository-modernization-assessment",
+    mode: "assess",
+    workspacePath: "",
+    runnerToken: "",
+    tenantId: "local-tenant",
+    actorId: "local-operator",
+    job: null,
+    busy: false,
+    error: "",
+  },
+  lifetimes: {
+    attached() {
+      const setSkill = (val) => { this.setData({ skill: typeof val === "function" ? val(this.data.skill) : val }); };
+      const setMode = (val) => { this.setData({ mode: typeof val === "function" ? val(this.data.mode) : val }); };
+      const setWorkspacePath = (val) => { this.setData({ workspacePath: typeof val === "function" ? val(this.data.workspacePath) : val }); };
+      const setRunnerToken = (val) => { this.setData({ runnerToken: typeof val === "function" ? val(this.data.runnerToken) : val }); };
+      const setTenantId = (val) => { this.setData({ tenantId: typeof val === "function" ? val(this.data.tenantId) : val }); };
+      const setActorId = (val) => { this.setData({ actorId: typeof val === "function" ? val(this.data.actorId) : val }); };
+      const setJob = (val) => { this.setData({ job: typeof val === "function" ? val(this.data.job) : val }); };
+      const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
+      const setError = (val) => { this.setData({ error: typeof val === "function" ? val(this.data.error) : val }); };
+      // Lifecycle effect effect_0
+      (async () => {
+        try {
+          if (!job || terminal.has(job.status))
+        return;
+    const timer = window.setInterval(() => void load(job.job_id).catch((reason) => {
+        setError(reason instanceof Error ? reason.message : "JOB_STATUS_FAILED");
+    }), 1_500);
+    return () => window.clearInterval(timer);
+        } catch (err) {
+          // Handled mount effect
+        }
+      })().catch(() => {});
     },
-    {
-      "name": "mode",
-      "type": "inferred"
+    detached() {
     },
-    {
-      "name": "workspacePath",
-      "type": "inferred"
-    },
-    {
-      "name": "runnerToken",
-      "type": "inferred"
-    },
-    {
-      "name": "tenantId",
-      "type": "inferred"
-    },
-    {
-      "name": "actorId",
-      "type": "inferred"
-    },
-    {
-      "name": "job",
-      "type": "PrecisionJob | null"
-    },
-    {
-      "name": "busy",
-      "type": "inferred"
-    },
-    {
-      "name": "error",
-      "type": "inferred"
+  },
+  methods: {
+    async submit() {
+      try {
+        setBusy(true);
+    setError("");
+    try {
+        const response = await fetch("/api/precision-migration/jobs", {
+            method: "POST",
+            headers: { "content-type": "application/json", ...localAuthHeaders() },
+            body: JSON.stringify({
+                request_id: crypto.randomUUID(),
+                skill: skill.trim(),
+                mode,
+                inputs: {
+                    assets: [],
+                    parameters: workspacePath.trim() ? { workspace_path: workspacePath.trim() } : {},
+                },
+                policy: {
+                    unresolved_differences: "block",
+                    allow_test_weakening: false,
+                    require_provenance: true,
+                    risk_level: "medium",
+                },
+                evidence: [],
+                semantic_losses: [],
+                approvals: [],
+            }),
+        });
+        const payload = await response.json();
+        if (!response.ok)
+            throw new Error(payload.reason ?? "JOB_SUBMIT_FAILED");
+        setJob(payload);
     }
-  ],
-  "hooks": [
-    "useState",
-    "useCallback",
-    "useEffect"
-  ],
-  "resources": [
-    "TIMER"
-  ],
-  "apiPaths": [
-    "/api/precision-migration/jobs"
-  ],
-  "labels": [
-    "/api/precision-migration/jobs",
-    "ARTIFACT_DOWNLOAD_FAILED",
-    "DELETE",
-    "JOB_STATUS_FAILED",
-    "JOB_SUBMIT_FAILED",
-    "Job ID",
-    "NOT_RUN",
-    "POST",
-    "Runtime Skill",
-    "TENANT-ISOLATED RUNNER",
-    "UI 只能触发清单中的受控 handler；缺少精确原生或外部能力时会失败关闭，不会执行请求携带的命令。",
-    "alert",
-    "application/json",
-    "assess",
-    "block",
-    "business-actions",
-    "button",
-    "button button-primary",
-    "button button-secondary",
-    "bytes",
-    "cancel",
-    "card-heading",
-    "certify",
-    "content-type"
-  ],
-  "adapters": [
-    "wechat-cancellable-request-v1",
-    "wechat-controlled-disclosure-v1",
-    "wechat-effect-resource-lifecycle-v1",
-    "wechat-plain-collection-projection-v1",
-    "wechat-typed-state-decoder-v1"
-  ],
-  "obligations": [
-    "PrecisionMigrationJobs:source-blocker"
-  ],
-  "irDigest": "sha256:23a4e5936dc429cad61170eb401c9431bb2461d966a8cb73d50f088ca2f7874f"
-}));
+    catch (reason) {
+        setError(reason instanceof Error ? reason.message : "JOB_SUBMIT_FAILED");
+    }
+    finally {
+        setBusy(false);
+    }
+      } catch (err) {
+        console.warn("submit execution warning:", err);
+      }
+    },
+    async action(kind) {
+      try {
+        if (!job)
+        return;
+    setBusy(true);
+    setError("");
+    try {
+        const response = await fetch(`/api/precision-migration/jobs/${encodeURIComponent(job.job_id)}`, {
+            method: kind === "cancel" ? "DELETE" : "POST",
+            headers: { ...(kind === "retry" ? { "content-type": "application/json" } : {}), ...localAuthHeaders() },
+            body: kind === "retry" ? JSON.stringify({ action: "retry" }) : undefined,
+        });
+        const payload = await response.json();
+        if (!response.ok)
+            throw new Error(payload.reason ?? `JOB_${kind.toUpperCase()}_FAILED`);
+        setJob(payload);
+    }
+    catch (reason) {
+        setError(reason instanceof Error ? reason.message : `JOB_${kind.toUpperCase()}_FAILED`);
+    }
+    finally {
+        setBusy(false);
+    }
+      } catch (err) {
+        console.warn("action execution warning:", err);
+      }
+    },
+    async download(artifact) {
+      try {
+        if (!job)
+        return;
+    const name = artifactName(artifact);
+    if (!name)
+        return;
+    setError("");
+    try {
+        const response = await fetch(`/api/precision-migration/jobs/${encodeURIComponent(job.job_id)}/artifacts/${encodeURIComponent(name)}`, {
+            headers: localAuthHeaders(),
+        });
+        if (!response.ok) {
+            const payload = await response.json().catch(() => ({}));
+            throw new Error(payload.reason ?? "ARTIFACT_DOWNLOAD_FAILED");
+        }
+        const url = URL.createObjectURL(await response.blob());
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = name;
+        anchor.click();
+        URL.revokeObjectURL(url);
+    }
+    catch (reason) {
+        setError(reason instanceof Error ? reason.message : "ARTIFACT_DOWNLOAD_FAILED");
+    }
+      } catch (err) {
+        console.warn("download execution warning:", err);
+      }
+    },
+  },
+});

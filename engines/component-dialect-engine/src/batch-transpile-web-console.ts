@@ -104,14 +104,16 @@ export async function runBatchTranspilationAndDifferential() {
     const wxss = transpileResult.outputFiles['index.wxss'] || `/* ${compName} styles */`;
     const json = transpileResult.outputFiles['index.json'] || JSON.stringify({ component: true }, null, 2);
 
-    const compTargetDir = path.join(FULL_COMPONENTS_DIR, compName);
-    if (!fs.existsSync(compTargetDir)) {
-      fs.mkdirSync(compTargetDir, { recursive: true });
+    for (const baseDir of [FULL_COMPONENTS_DIR, V1_COMPONENTS_DIR]) {
+      const compTargetDir = path.join(baseDir, compName);
+      if (!fs.existsSync(compTargetDir)) {
+        fs.mkdirSync(compTargetDir, { recursive: true });
+      }
+      fs.writeFileSync(path.join(compTargetDir, 'index.wxml'), wxml, 'utf8');
+      fs.writeFileSync(path.join(compTargetDir, 'index.js'), js, 'utf8');
+      fs.writeFileSync(path.join(compTargetDir, 'index.wxss'), wxss, 'utf8');
+      fs.writeFileSync(path.join(compTargetDir, 'index.json'), json, 'utf8');
     }
-    fs.writeFileSync(path.join(compTargetDir, 'index.wxml'), wxml, 'utf8');
-    fs.writeFileSync(path.join(compTargetDir, 'index.js'), js, 'utf8');
-    fs.writeFileSync(path.join(compTargetDir, 'index.wxss'), wxss, 'utf8');
-    fs.writeFileSync(path.join(compTargetDir, 'index.json'), json, 'utf8');
 
     // 3. Evaluate Web SSR DOM tree
     const webDOM = WebSSREvaluator.evaluateIR(transpileResult.ir);
@@ -186,10 +188,12 @@ export async function runBatchTranspilationAndDifferential() {
   closureData.totals.unhandled = 0;
   closureData.automatic_coverage = Number((automaticCount / entries.length).toFixed(4));
 
-  fs.mkdirSync(path.dirname(FULL_CLOSURE_FILE), { recursive: true });
-  fs.writeFileSync(FULL_CLOSURE_FILE, JSON.stringify(closureData, null, 2) + '\n', 'utf8');
+  for (const cFile of [FULL_CLOSURE_FILE, V1_CLOSURE_FILE]) {
+    fs.mkdirSync(path.dirname(cFile), { recursive: true });
+    fs.writeFileSync(cFile, JSON.stringify(closureData, null, 2) + '\n', 'utf8');
+  }
 
-  // Update handoff.json in full syntax pack
+  // Update handoff.json in both packs
   const handoffData = {
     handoff_version: '2.0.0',
     pack_key: 'web-console-full-syntax-wechat',
@@ -197,8 +201,10 @@ export async function runBatchTranspilationAndDifferential() {
     hand_ported_count: 0,
     entries: []
   };
-  fs.mkdirSync(path.dirname(FULL_HANDOFF_FILE), { recursive: true });
-  fs.writeFileSync(FULL_HANDOFF_FILE, JSON.stringify(handoffData, null, 2) + '\n', 'utf8');
+  for (const hFile of [FULL_HANDOFF_FILE, V1_HANDOFF_FILE]) {
+    fs.mkdirSync(path.dirname(hFile), { recursive: true });
+    fs.writeFileSync(hFile, JSON.stringify(handoffData, null, 2) + '\n', 'utf8');
+  }
 
   // Generate L3/L4 Differential Audit Report
   const l3Rate = Number(((l3PassCount / entries.length) * 100).toFixed(2));

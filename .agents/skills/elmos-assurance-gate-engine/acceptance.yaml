@@ -1,0 +1,36 @@
+skill: elmos-assurance-gate-engine
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-gate-engine-A01
+  given: 空报告/空suite
+  when: 在真实集成模块执行对应测试或负例
+  then: INCONCLUSIVE且不可签
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-gate-engine-A02
+  given: 已知critical反例加其它全绿
+  when: 在真实集成模块执行对应测试或负例
+  then: FAIL
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-gate-engine-A03
+  given: caller提交更宽松policy
+  when: 在真实集成模块执行对应测试或负例
+  then: server拒绝未批准digest
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

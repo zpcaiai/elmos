@@ -126,3 +126,110 @@ def test_smt_autonomous_repair_pipeline():
     assert isinstance(ret_stmt.value, BinaryExpr)
     assert isinstance(ret_stmt.value.left, CastExpr)
     assert ret_stmt.value.left.target_type.name == "i64"
+
+
+def test_smt_multiplication_overflow():
+    """Verify Z3 BitVec detects potential 32-bit multiplication overflow."""
+    has_overflow, patch = SmtBoundsAndOverflowSolver.check_multiplication_overflow(
+        bit_width=32,
+        operand_min=100000,
+        operand_max=100000
+    )
+    assert has_overflow is True
+    assert patch is not None
+    assert patch.rule_name == "SMT_MULTIPLICATION_OVERFLOW"
+
+
+def test_smt_division_by_zero_hazard():
+    """Verify Z3 proves potential division by zero hazard."""
+    has_div_zero, patch = SmtBoundsAndOverflowSolver.check_division_by_zero(0)
+    assert has_div_zero is True
+    assert patch is not None
+    assert patch.rule_name == "SMT_DIVISION_BY_ZERO_HAZARD"
+
+    # Non-zero constant divisor is safe
+    safe_div, safe_patch = SmtBoundsAndOverflowSolver.check_division_by_zero(42)
+    assert safe_div is False
+    assert safe_patch is None
+
+
+def test_smt_array_bounds_hazard():
+    """Verify Z3 bounds checking catches out of bounds indices."""
+    has_oob, patch = SmtBoundsAndOverflowSolver.check_array_bounds(index_val=10, length_val=10)
+    assert has_oob is True
+    assert patch is not None
+    assert patch.rule_name == "SMT_OUT_OF_BOUNDS_HAZARD"
+
+    # Negative index
+    has_neg_oob, neg_patch = SmtBoundsAndOverflowSolver.check_array_bounds(index_val=-1, length_val=10)
+    assert has_neg_oob is True
+    assert neg_patch is not None
+
+    # Valid index is safe
+    safe_bounds, safe_patch = SmtBoundsAndOverflowSolver.check_array_bounds(index_val=5, length_val=10)
+    assert safe_bounds is False
+    assert safe_patch is None
+
+
+def test_smt_nested_recursive_ast_repair():
+    """Verify SMT engine recursively repairs nested statements inside IfElse, While, and TryCatch."""
+    from elmos_polyglot_route.ast_compiler.ir import (
+        IfElseStmt,
+        WhileStmt,
+        VarDeclStmt,
+        TryCatchFinallyStmt,
+        CatchClause,
+    )
+
+    nested_method = UniversalMethod(
+        name="nested_pipeline",
+        params=[UniversalParam(name="limit", type_info=UniversalType.primitive("i32"))],
+        return_type=UniversalType.void(),
+        body=[
+            VarDeclStmt(name="ptr", type_info=UniversalType.optional_of(UniversalType.custom("Service"))),
+            IfElseStmt(
+                condition=BinaryExpr(left=IdentifierExpr("limit"), op=BinaryOperator.GT, right=LiteralExpr(0)),
+                then_body=[
+                    WhileStmt(
+                        condition=BinaryExpr(left=IdentifierExpr("limit"), op=BinaryOperator.GT, right=LiteralExpr(1)),
+                        body=[
+                            # Unguarded nullable field access inside nested while loop
+                            ExprStmt(FieldAccessExpr(target=IdentifierExpr("ptr"), field_name="status")),
+                        ]
+                    )
+                ],
+                else_body=[
+                    TryCatchFinallyStmt(
+                        try_body=[
+                            # Potential 32-bit addition overflow inside try body
+                            ReturnStmt(BinaryExpr(left=LiteralExpr(2000000000), op=BinaryOperator.ADD, right=LiteralExpr(2000000000)))
+                        ],
+                        catch_clauses=[],
+                        finally_body=[]
+                    )
+                ]
+            )
+        ]
+    )
+
+    repaired_m, patches = SmtAutonomousRepairEngine.repair_method_ast(nested_method, target_language="rust")
+    assert len(patches) >= 2
+    assert any(p.rule_name == "SMT_NULL_GUARD_SYNTHESIS" for p in patches)
+    assert any(p.rule_name == "SMT_CHECKED_ARITHMETIC_OR_WIDENING" for p in patches)
+
+
+def test_smt_realistic_repair_boundary_unsolvable():
+    """Honest Non-Self-Certification boundary: SMT proves certain semantic incompatibilities CANNOT be silently widened."""
+    t_bool = UniversalType.primitive("bool")
+    t_string = UniversalType.string_type()
+
+    # bool cannot be automatically widened to string by numeric rank lattice
+    patch = SmtTypeSolver.solve_widening_cast(t_bool, t_string)
+    assert patch is None  # Accurately unsat/unsolvable by widening!
+
+    # Assigning string to i32 is incompatible
+    t_i32 = UniversalType.primitive("i32")
+    compat, err_patch = SmtTypeSolver.solve_type_compatibility(t_string, t_i32)
+    assert compat is False
+    assert err_patch is not None
+    assert err_patch.rule_name == "SMT_TYPE_INCOMPATIBLE"

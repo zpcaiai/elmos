@@ -1,6 +1,9 @@
 ---
 name: b30-quarkus-migration
-description: "Implement or certify a Quarkus source or target framework pack, including build-time augmentation, Arc CDI, REST, configuration, Panache/Hibernate ORM, transactions, security, messaging, dev services, native-image constraints, and operational behavior."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement or certify a Quarkus source or target framework pack, including build-time augmentation, Arc CDI, REST, configuration, Panache/Hibernate ORM, transactions, security, messaging, dev services, native-image constraints, and operational behavior.
 ---
 
 ## Operating mode

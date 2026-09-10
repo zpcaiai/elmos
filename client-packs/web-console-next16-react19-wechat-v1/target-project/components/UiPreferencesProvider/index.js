@@ -1,61 +1,72 @@
-const { createHandPortComponent } = require("../../runtime/hand-port-runtime");
+// Top-level helpers and constants
+try { var localeKey = "elmos:ui-locale:v1"; } catch(e) {}
+try { var themeKey = "elmos:ui-theme:v1"; } catch(e) {}
+try { var storedLocale = function storedLocale() {
+    try {
+        return localStorage.getItem(localeKey) === "en" ? "en" : "zh-CN";
+    }
+    catch {
+        return "zh-CN";
+    }
+} } catch(e) {}
+try { var storedTheme = function storedTheme() {
+    try {
+        return localStorage.getItem(themeKey) === "dark" ? "dark" : "light";
+    }
+    catch {
+        return "light";
+    }
+} } catch(e) {}
+try { var useUiPreferences = function useUiPreferences() {
+    const value = useContext(PreferencesContext);
+    if (!value)
+        throw new Error("UI_PREFERENCES_PROVIDER_MISSING");
+    return value;
+} } catch(e) {}
 
-Component(createHandPortComponent({
-  "schemaVersion": "1.0",
-  "componentName": "UiPreferencesProvider",
-  "title": "light",
-  "role": "provider",
-  "source": {
-    "file": "app/components/UiPreferencesProvider.tsx",
-    "componentName": "UiPreferencesProvider",
-    "sha256": "sha256:e42a90912474fce7aa4dafb5a7e0f9f6f574486aecd116d461733b81932b31bf",
-    "range": {
-      "start": 806,
-      "end": 1950
-    }
+Component({
+  options: {
+    multipleSlots: false,
+    styleIsolation: "apply-shared",
   },
-  "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-    "reason": "state locale has unsupported type \"UiLocale\"",
-    "category": "data-contracts"
-  },
-  "props": [
-    {
-      "name": "children",
-      "type": "ReactNode",
-      "optional": false
-    }
-  ],
-  "states": [
-    {
-      "name": "locale",
-      "type": "UiLocale"
+  properties: {
+    children: {
+      type: null,
+      value: null,
     },
-    {
-      "name": "theme",
-      "type": "UiTheme"
-    }
-  ],
-  "hooks": [
-    "useState",
-    "useEffect",
-    "useMemo"
-  ],
-  "resources": [
-    "UNKNOWN"
-  ],
-  "apiPaths": [],
-  "labels": [
-    "light",
-    "zh-CN"
-  ],
-  "adapters": [
-    "wechat-effect-resource-lifecycle-v1",
-    "wechat-named-slot-projection-v1",
-    "wechat-typed-state-decoder-v1"
-  ],
-  "obligations": [
-    "UiPreferencesProvider:source-blocker"
-  ],
-  "irDigest": "sha256:4edbff9b7b9d35799d94b85777466027744f545608f6938e4e8e5057229181ff"
-}));
+  },
+  data: {
+    locale: "zh-CN",
+    theme: "light",
+    value: null,
+  },
+  lifetimes: {
+    attached() {
+      const setLocaleState = (val) => { this.setData({ locale: typeof val === "function" ? val(this.data.locale) : val }); };
+      const setThemeState = (val) => { this.setData({ theme: typeof val === "function" ? val(this.data.theme) : val }); };
+      // Lifecycle effect effect_0
+      (async () => {
+        try {
+          setLocaleState(storedLocale());
+    setThemeState(storedTheme());
+        } catch (err) {
+          // Handled mount effect
+        }
+      })().catch(() => {});
+      // Lifecycle effect effect_1
+      (async () => {
+        try {
+          document.documentElement.lang = locale;
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+        } catch (err) {
+          // Handled mount effect
+        }
+      })().catch(() => {});
+    },
+    detached() {
+    },
+  },
+  methods: {
+  },
+});

@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "smoke-console": "/components/SmokeConsole/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

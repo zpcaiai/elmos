@@ -1,6 +1,9 @@
 ---
 name: b29-adapter-emitter-conformance
-description: "Implement or validate source adapter and target emitter conformance to the versioned PSP/UIR contracts, determinism rules, source maps, and engine protocol. Use for engine boundary work across Batch 29 routes."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement or validate source adapter and target emitter conformance to the versioned PSP/UIR contracts, determinism rules, source maps, and engine protocol. Use for engine boundary work across Batch 29 routes.
 ---
 
 ## Operating mode

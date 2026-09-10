@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "observability-workspace": "/components/ObservabilityWorkspace/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

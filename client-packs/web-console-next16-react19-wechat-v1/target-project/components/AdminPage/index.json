@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "operations-admin": "/components/OperationsAdmin/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

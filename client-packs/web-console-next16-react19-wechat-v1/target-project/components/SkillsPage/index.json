@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "skills-workspace": "/components/SkillsWorkspace/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

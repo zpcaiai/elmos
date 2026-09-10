@@ -1,6 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "account-organization-studio": "/components/AccountOrganizationStudio/index"
-  }
+  "usingComponents": {},
+  "styleIsolation": "apply-shared"
 }

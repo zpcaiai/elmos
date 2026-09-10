@@ -190,3 +190,20 @@ def test_full_210_route_matrix_completeness():
                 passed_routes += 1
     assert total_routes == 210
     assert passed_routes == 210
+
+
+def test_autonomous_repair_honest_blocked_policy():
+    """Verify Non-Self-Certification rule: unrepairable errors truthfully return status='blocked' without fake PASS."""
+    # 1. Fatal syntax error in C++
+    cpp_fatal = 'int main() { return @@@; }'
+    res_cpp = AutonomousRepairLoop.run(cpp_fatal, 'cpp')
+    assert res_cpp.status == 'blocked'
+    assert res_cpp.clean is False
+    assert len(res_cpp.diagnostics) > 0
+
+    # 2. Incompatible type assignment in Java
+    java_fatal = 'public class Bad { public int test() { return "incompatible_string"; } }'
+    res_java = AutonomousRepairLoop.run(java_fatal, 'java')
+    assert res_java.status == 'blocked'
+    assert res_java.clean is False
+    assert len(res_java.diagnostics) > 0

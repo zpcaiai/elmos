@@ -1,5 +1,8 @@
 ---
 name: b29-compatibility-runtime-governor
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Design, implement, budget, and certify compatibility-runtime components used by language routes. Use when target-native code cannot preserve source semantics directly.
 ---
 

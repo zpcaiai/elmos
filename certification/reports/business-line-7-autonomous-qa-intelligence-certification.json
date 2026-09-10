@@ -6,103 +6,103 @@
   "local_execution_status": "LOCAL_EXECUTED_SELF_ATTESTED",
   "external_evidence_status": "NOT_RUN",
   "certification": "NOT_CERTIFIED",
-  "verified_at": "2026-09-10T14:56:13.865112+00:00",
+  "verified_at": "2026-09-10T16:15:52.816219+00:00",
   "metrics": {
-    "total_bl7_loc": 111869,
-    "total_new_subsystems_loc": 11798,
+    "total_bl7_loc": 116964,
+    "total_new_subsystems_loc": 16565,
     "new_subsystems_breakdown": {
       "go_daemon": 1139,
       "qa_subsystems": 2426,
       "pi_subsystems": 3750,
       "foundry_subsystems": 1740,
-      "inference_gateway": 825,
+      "inference_gateway": 3725,
       "foundry_gateway": 234,
-      "foundry_scheduler": 759,
-      "foundry_automated_handlers": 457,
-      "pi_task_execution": 468,
-      "TOTAL_NEW_SUBSYSTEMS_LOC": 11798
+      "foundry_scheduler": 1542,
+      "foundry_automated_handlers": 1282,
+      "pi_task_execution": 727,
+      "TOTAL_NEW_SUBSYSTEMS_LOC": 16565
     },
     "suites_executed": 11,
     "suites_passed": 11,
-    "tests_passed": 100,
+    "tests_passed": 130,
     "zero_tolerance_violations": 0
   },
   "loc_by_component": {
     "engines/autonomous-qa-engine": 49201,
-    "engines/project-intelligence-engine": 23365,
-    "engines/knowledge-skill-model-foundry-engine": 32464,
-    "apps/inference-gateway": 825,
+    "engines/project-intelligence-engine": 23659,
+    "engines/knowledge-skill-model-foundry-engine": 34365,
+    "apps/inference-gateway": 3725,
     "tests/autonomous-qa-self-healing": 2234,
     "tests/project-intelligence-skills": 2322,
     "tests/knowledge-skill-model-foundry-skills": 1458,
-    "TOTAL_BL7_LOC": 111869
+    "TOTAL_BL7_LOC": 116964
   },
   "suites": [
     {
       "name": "Pillar 1: PR Self-Healing Closed Loop (GitHub/GitLab/AST/Sandbox)",
       "passed": true,
       "test_count": 19,
-      "duration_seconds": 1.82
+      "duration_seconds": 0.59
     },
     {
       "name": "Pillar 1: Autonomous QA Industrial Subsystems (17 Subsystem Engines)",
       "passed": true,
       "test_count": 20,
-      "duration_seconds": 0.74
+      "duration_seconds": 0.53
     },
     {
       "name": "Pillar 1: Go Daemon Webhook & Sandboxed Runner Verification (go vet)",
       "passed": true,
       "test_count": 1,
-      "duration_seconds": 2.95
+      "duration_seconds": 1.64
     },
     {
       "name": "Pillar 2: Project Intelligence Deep Analysis (Callgraph/Taint/Architecture/Threats)",
       "passed": true,
       "test_count": 4,
-      "duration_seconds": 0.54
+      "duration_seconds": 0.18
     },
     {
       "name": "Pillar 2: Project Intelligence Subsystems (14 Subsystem Engines)",
       "passed": true,
       "test_count": 15,
-      "duration_seconds": 1.56
+      "duration_seconds": 0.17
     },
     {
       "name": "Pillar 3: Foundry High-Frequency Core Skills & Handlers",
       "passed": true,
       "test_count": 12,
-      "duration_seconds": 7.25
+      "duration_seconds": 8.4
     },
     {
       "name": "Pillar 3: Knowledge-Skill-Model Foundry Subsystems (9 Subsystem Engines)",
       "passed": true,
       "test_count": 9,
-      "duration_seconds": 0.26
+      "duration_seconds": 0.36
     },
     {
       "name": "Pillar 3: LLM API Gateway & Multi-Provider Router (Go Unit & E2E Tests)",
       "passed": true,
-      "test_count": 1,
-      "duration_seconds": 4.67
+      "test_count": 22,
+      "duration_seconds": 1.1
     },
     {
       "name": "Pillar 3: Distributed Task Scheduler & Fencing Worker Pool",
       "passed": true,
-      "test_count": 6,
-      "duration_seconds": 0.55
+      "test_count": 12,
+      "duration_seconds": 0.54
     },
     {
       "name": "Pillar 3: 1,244 Brokered Skills Automated Execution Broker & Handlers",
       "passed": true,
-      "test_count": 4,
-      "duration_seconds": 1.15
+      "test_count": 6,
+      "duration_seconds": 1.28
     },
     {
-      "name": "Pillar 2: 500 Intelligence Tasks & 248 Acceptance Scenarios Runner",
+      "name": "Pillar 2: 500 Intelligence Tasks, 248 Acceptance Scenarios & Subsystems Runner",
       "passed": true,
-      "test_count": 9,
-      "duration_seconds": 0.34
+      "test_count": 10,
+      "duration_seconds": 0.17
     }
   ],
   "anti_cheating": {
@@ -145,5 +145,5 @@
     "certification_authority": "NOT_CERTIFIED"
   },
   "blockers": [],
-  "local_report_digest": "sha256:f8ceb7fe78f2f377941102539ee99f4673874af7c0b3c4085b071e10035562be"
+  "local_report_digest": "sha256:60dd9dc9b104743e6f2fcbd561c43398bfd90086121923fec3ea16865d370be8"
 }

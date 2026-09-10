@@ -1,66 +1,133 @@
-const { createHandPortComponent } = require("../../runtime/hand-port-runtime");
-
-Component(createHandPortComponent({
-  "schemaVersion": "1.0",
-  "componentName": "ProjectEvidenceCharts",
-  "title": "NOT_CERTIFIED",
-  "role": "chart",
-  "source": {
-    "file": "app/components/ProjectEvidenceCharts.tsx",
-    "componentName": "ProjectEvidenceCharts",
-    "sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
-    "range": {
-      "start": 15842,
-      "end": 19611
-    }
-  },
-  "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
-    "reason": "expression kind CallExpression is outside certified-component-v1",
-    "category": "effects-and-resources"
-  },
-  "props": [
-    {
-      "name": "insights",
-      "type": "GenerationInsights",
-      "optional": true
-    }
-  ],
-  "states": [],
-  "hooks": [],
-  "resources": [],
-  "apiPaths": [],
-  "labels": [
-    "NOT_CERTIFIED",
-    "NOT_RUN",
+// Top-level helpers and constants
+try { var statusPresentation = {
+    PASSED: { label: "已通过", short: "通过", tone: "passed" },
+    FAILED: { label: "失败", short: "失败", tone: "failed" },
+    BLOCKED: { label: "阻断", short: "阻断", tone: "blocked" },
+    NOT_RUN: { label: "未运行", short: "未运行", tone: "not-run" },
+    UNKNOWN: { label: "未知", short: "未知", tone: "unknown" },
+    NOT_APPLICABLE: { label: "不适用", short: "N/A", tone: "not-applicable" },
+    LIMITED: { label: "受限", short: "受限", tone: "limited" },
+    REPRESENTED: { label: "已表示", short: "已表示", tone: "represented" },
+    DECLARED: { label: "已声明", short: "已声明", tone: "declared" },
+}; } catch(e) {}
+try { var generationLanguageLabels = {
+    java: "Java",
+    python: "Python",
+    csharp: "C#",
+    typescript: "TypeScript",
+    go: "Go",
+    kotlin: "Kotlin",
+    php: "PHP",
+    rust: "Rust",
+}; } catch(e) {}
+try { var segmentOrder = [
     "PASSED",
+    "FAILED",
+    "BLOCKED",
+    "NOT_RUN",
     "UNKNOWN",
-    "evidence-boundary",
-    "evidence-coverage-grid",
-    "evidence-dimension",
-    "evidence-graph-card",
-    "evidence-graph-grid",
-    "evidence-heading-statuses",
-    "evidence-section-heading",
-    "generation-coverage-title",
-    "note",
-    "project-evidence-charts",
-    "project-evidence-title",
-    "· 结论上限",
-    "· 认证",
-    "不会从 package 文件名或构建日志推断依赖完整性。",
-    "仅接受服务端校验后的声明依赖",
-    "声明依赖图",
-    "声明依赖尚未返回",
-    "外部验证",
-    "多维完成度",
-    "完整项目结构"
-  ],
-  "adapters": [
-    "wechat-plain-collection-projection-v1"
-  ],
-  "obligations": [
-    "ProjectEvidenceCharts:source-blocker"
-  ],
-  "irDigest": "sha256:1e4b05ec3ec13926e34ca1f8f4cabf91d7b3b1c14c4783034c16939817db5ff8"
-}));
+    "NOT_APPLICABLE",
+]; } catch(e) {}
+try { var finiteCount = function finiteCount(value) {
+    return Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
+} } catch(e) {}
+try { var graphLayers = function graphLayers(nodes, edges) {
+    const nodeIds = new Set(nodes.map((node) => node.id));
+    const depth = new Map(nodes.map((node) => [node.id, 0]));
+    for (let pass = 0; pass < nodes.length; pass += 1) {
+        let changed = false;
+        for (const edge of edges) {
+            if (!nodeIds.has(edge.from) || !nodeIds.has(edge.to))
+                continue;
+            const candidate = Math.min(nodes.length - 1, (depth.get(edge.from) ?? 0) + 1);
+            if (candidate > (depth.get(edge.to) ?? 0)) {
+                depth.set(edge.to, candidate);
+                changed = true;
+            }
+        }
+        if (!changed)
+            break;
+    }
+    const layers = new Map();
+    for (const node of nodes) {
+        const layer = depth.get(node.id) ?? 0;
+        layers.set(layer, [...(layers.get(layer) ?? []), node]);
+    }
+    return [...layers.entries()]
+        .sort(([left], [right]) => left - right)
+        .map(([, layerNodes]) => layerNodes.sort((left, right) => left.label.localeCompare(right.label)));
+} } catch(e) {}
+try { var projectStructureGraph = function projectStructureGraph(structure) {
+    return {
+        nodes: structure.nodes.map((node) => ({
+            id: node.id,
+            label: node.label,
+            kind: node.kind,
+            detail: `${node.path} · ${node.file_count} 个文件${node.runtime ? ` · ${node.runtime}` : ""}`,
+            status: node.status,
+        })),
+        edges: structure.edges.map((edge) => ({ ...edge, label: edge.type })),
+    };
+} } catch(e) {}
+try { var fallbackStructureGraph = function fallbackStructureGraph(structure) {
+    return {
+        nodes: structure.nodes.map((node) => ({
+            id: node.id,
+            label: node.label,
+            kind: node.kind,
+            detail: `${node.path}${node.language ? ` · ${generationLanguageLabels[node.language]}` : ""}`,
+            status: node.status,
+        })),
+        edges: structure.edges.map((edge) => ({ ...edge, label: edge.relation })),
+    };
+} } catch(e) {}
+try { var dependencyGraph = function dependencyGraph(graph) {
+    return {
+        nodes: graph.nodes.map((node) => ({
+            id: node.id,
+            label: node.coordinate,
+            kind: node.kind,
+            detail: `版本来源 · ${node.version_source}`,
+            status: "DECLARED",
+        })),
+        edges: graph.edges.map((edge) => ({
+            from: edge.from,
+            to: edge.to,
+            label: `${edge.type} · ${edge.scope} · ${edge.evidence_status}`,
+        })),
+    };
+} } catch(e) {}
+try { var matrixLanguages = function matrixLanguages(behavior) {
+    const languages = [];
+    for (const language of [
+        ...behavior.targets.map((target) => target.language),
+        ...behavior.cross_target_matrix.flatMap((entry) => [entry.source, entry.target]),
+    ]) {
+        if (!languages.includes(language))
+            languages.push(language);
+    }
+    return languages;
+} } catch(e) {}
+
+Component({
+  options: {
+    multipleSlots: false,
+    styleIsolation: "apply-shared",
+  },
+  properties: {
+    insights: {
+      type: null,
+      value: null,
+    },
+  },
+  data: {
+  },
+  lifetimes: {
+    attached() {
+    },
+    detached() {
+    },
+  },
+  methods: {
+  },
+});

@@ -1,94 +1,91 @@
-const { createHandPortComponent } = require("../../runtime/hand-port-runtime");
+// Top-level helpers and constants
+try { var idempotencyKey = function idempotencyKey(prefix, current) {
+    if (current.current === null)
+        current.current = `${prefix}-${crypto.randomUUID()}`;
+    return current.current;
+} } catch(e) {}
+try { var json = async function json(response) {
+    try {
+        return await response.json();
+    }
+    catch {
+        return {};
+    }
+} } catch(e) {}
+try { var errorMessage = function errorMessage(payload, fallback) {
+    if (payload.code === "TRIAL_ALREADY_USED")
+        return "该组织或已验证身份已使用过免费体验。";
+    if (payload.code === "ACCOUNT_SESSION_REQUIRED")
+        return "请先登录后再管理套餐。";
+    return payload.message || fallback;
+} } catch(e) {}
+try { var isTrustedCheckoutHost = function isTrustedCheckoutHost(provider, hostname) {
+    if (provider === "STRIPE_CHECKOUT") {
+        return hostname === "stripe.com" || hostname.endsWith(".stripe.com");
+    }
+    if (provider === "ALIPAY_CHECKOUT") {
+        // openapi.alipay.com 是生产网关，openapi.alipaydev.com 是沙箱。
+        // 沙箱域名保留是为了让联调走同一条代码路径——联调绕过校验，
+        // 等于上线前从没验过这段校验。
+        return hostname === "openapi.alipay.com" || hostname === "openapi.alipaydev.com";
+    }
+    // 微信 Native 不走跳转，走到这里说明上游给错了形态
+    return false;
+} } catch(e) {}
+try { var planName = function planName(planId) {
+    if (planId === "elmos-free-trial")
+        return "免费体验";
+    if (planId === "elmos-pro-monthly")
+        return "专业月付";
+    if (planId === "elmos-pro-annual")
+        return "专业年付";
+    return planId;
+} } catch(e) {}
+try { var formatDate = function formatDate(value) {
+    const parsed = new Date(value);
+    return Number.isFinite(parsed.getTime())
+        ? new Intl.DateTimeFormat("zh-CN", { dateStyle: "long" }).format(parsed)
+        : "未知日期";
+} } catch(e) {}
 
-Component(createHandPortComponent({
-  "schemaVersion": "1.0",
-  "componentName": "SubscriptionManager",
-  "title": "/api/billing/cancel",
-  "role": "workbench",
-  "source": {
-    "file": "app/pricing/BillingActions.tsx",
-    "componentName": "SubscriptionManager",
-    "sha256": "sha256:f8886c700e43d4769668a30e60a5a02c8e801ccf7b8d3897e5ff16ef68f60e29",
-    "range": {
-      "start": 6453,
-      "end": 10292
-    }
+Component({
+  options: {
+    multipleSlots: false,
+    styleIsolation: "apply-shared",
   },
-  "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
-    "reason": "expression kind CallExpression is outside certified-component-v1",
-    "category": "effects-and-resources"
+  properties: {
   },
-  "props": [],
-  "states": [
-    {
-      "name": "subscription",
-      "type": "Subscription | null"
+  data: {
+    cancelKey: {"current":null},
+    subscription: null,
+    state: "LOADING",
+    confirming: false,
+    pending: false,
+    message: "",
+  },
+  lifetimes: {
+    attached() {
+      const setSubscription = (val) => { this.setData({ subscription: typeof val === "function" ? val(this.data.subscription) : val }); };
+      const setState = (val) => { this.setData({ state: typeof val === "function" ? val(this.data.state) : val }); };
+      const setConfirming = (val) => { this.setData({ confirming: typeof val === "function" ? val(this.data.confirming) : val }); };
+      const setPending = (val) => { this.setData({ pending: typeof val === "function" ? val(this.data.pending) : val }); };
+      const setMessage = (val) => { this.setData({ message: typeof val === "function" ? val(this.data.message) : val }); };
+      const cancelKey = { current: { focus: () => {}, scrollIntoView: () => {} } };
+      // Lifecycle effect effect_0
+      (async () => {
+        try {
+          void load();
+    const refresh = () => void load();
+    window.addEventListener("elmos:billing-changed", refresh);
+    return () => window.removeEventListener("elmos:billing-changed", refresh);
+        } catch (err) {
+          // Handled mount effect
+        }
+      })().catch(() => {});
     },
-    {
-      "name": "state",
-      "type": "\"LOADING\" | \"READY\" | \"EMPTY\" | \"AUTH\" | \"UNAVAILABLE\""
+    detached() {
     },
-    {
-      "name": "confirming",
-      "type": "inferred"
-    },
-    {
-      "name": "pending",
-      "type": "inferred"
-    },
-    {
-      "name": "message",
-      "type": "inferred"
-    }
-  ],
-  "hooks": [
-    "useRef",
-    "useState",
-    "useCallback",
-    "useEffect"
-  ],
-  "resources": [
-    "SUBSCRIPTION"
-  ],
-  "apiPaths": [
-    "/api/billing/cancel",
-    "/api/billing/subscription"
-  ],
-  "labels": [
-    "/api/billing/cancel",
-    "/api/billing/subscription",
-    "ACTIVE_SUBSCRIPTION_NOT_FOUND",
-    "AUTH",
-    "EMPTY",
-    "Idempotency-Key",
-    "LOADING",
-    "POST",
-    "READY",
-    "UNAVAILABLE",
-    "button",
-    "button button-primary",
-    "button button-secondary",
-    "cancel",
-    "elmos:billing-changed",
-    "no-store",
-    "same-origin",
-    "status",
-    "· 已安排到期取消",
-    "保留订阅",
-    "到期取消",
-    "当前没有有效套餐，可先开通一次免费体验。",
-    "当前订阅",
-    "正在提交…"
-  ],
-  "adapters": [
-    "wechat-cancellable-request-v1",
-    "wechat-css-module-token-map-v1",
-    "wechat-effect-resource-lifecycle-v1",
-    "wechat-typed-state-decoder-v1"
-  ],
-  "obligations": [
-    "SubscriptionManager:source-blocker"
-  ],
-  "irDigest": "sha256:b0af121a8fb782be13f0f14e7b62b3ede280f59bc68aaa16437cb4f0bff12598"
-}));
+  },
+  methods: {
+  },
+});

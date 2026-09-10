@@ -1,6 +1,9 @@
 ---
 name: b30-framework-coexistence-strangler
-description: "Design and implement framework coexistence, facade, adapter, routing, shared identity, data ownership, event bridge, dual-run, observability, cutover, and retirement patterns for gradual migration when atomic framework replacement is unsafe."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Design and implement framework coexistence, facade, adapter, routing, shared identity, data ownership, event bridge, dual-run, observability, cutover, and retirement patterns for gradual migration when atomic framework replacement is unsafe.
 ---
 
 ## Operating mode

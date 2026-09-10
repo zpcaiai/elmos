@@ -1,38 +1,18 @@
-<view class="{{ "meterCard" }}">
-  <view class="{{ "meterHeading" }}">
+<view class="{{'meterCard'}}">
+  <view class="{{'meterHeading'}}">
     <view>
-      <text>
-        {{ label }}
-      </text>
-      <text class="cc-strong">
-        {{ measure.consumed.toLocaleString("zh-CN") }}
-      </text>
-      <text class="cc-small">
-        已结算
-        {{ unit }}
-      </text>
+      <text>{{label}}</text>
+      <text>{{formatQuota(measure.consumed)}}</text>
+      <text>已结算 {{unit}}</text>
     </view>
-    <text class="{{ measure.hardStop ? "danger" : "" }}">
-      {{ ("" + (measure.usageBps / 100).toFixed(2)) + "%" }}
-    </text>
+    <text class="{{measure.hardStop ? 'danger' : &quot;&quot;}}">{{percent(measure.usageBps)}}</text>
   </view>
-  <view class="{{ "progress" }}" role="progressbar" aria-label="{{ (&quot;&quot; + label) + &quot;消耗进度&quot; }}" aria-valuemin="{{ 0 }}" aria-valuemax="{{ measure.limit }}" aria-valuenow="{{ Math.min(measure.consumed + measure.reserved, measure.limit) }}" aria-valuetext="{{ ((((((&quot;&quot; + label) + &quot;：已使用 &quot;) + measure.consumed.toLocaleString(&quot;zh-CN&quot;)) + &quot;，额度 &quot;) + measure.limit.toLocaleString(&quot;zh-CN&quot;)) + &quot;，消耗进度 &quot;) + ((&quot;&quot; + (measure.usageBps / 100).toFixed(2)) + &quot;%&quot;) }}">
-    <text class="{{ measure.hardStop ? "progressDanger" : "" }}" style="width: {{ Math.min(100, measure.usageBps / 100) }}%;" />
+  <view class="{{'progress'}}" role="progressbar" aria-label="{{`${label}消耗进度`}}" aria-valuemin="{{0}}" aria-valuemax="{{measure.limit}}" aria-valuenow="{{Math.min(measure.consumed + measure.reserved, measure.limit)}}" aria-valuetext="{{meterLabel(label, measure.consumed, measure.limit, measure.usageBps)}}">
+    <text class="{{measure.hardStop ? 'progressDanger' : &quot;&quot;}}" style="{{{ width: `${visualPercent}%` }}}" />
   </view>
-  <view class="{{ "meterFoot" }}">
-    <text>
-      剩余
-      <text class="cc-strong">
-        {{ measure.remaining.toLocaleString("zh-CN") }}
-      </text>
-    </text>
-    <text wx:if="{{ measure.reserved > 0 }}">
-      处理中
-      {{ measure.reserved.toLocaleString("zh-CN") }}
-    </text>
-    <text>
-      总额度
-      {{ measure.limit.toLocaleString("zh-CN") }}
-    </text>
+  <view class="{{'meterFoot'}}">
+    <text>剩余 <text>{{formatQuota(measure.remaining)}}</text></text>
+    <text wx:if="{{measure.reserved > 0}}">处理中 {{formatQuota(measure.reserved)}}</text>
+    <text>总额度 {{formatQuota(measure.limit)}}</text>
   </view>
 </view>

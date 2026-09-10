@@ -135,6 +135,8 @@ def run_test_suite(name: str, cmd: list[str], cwd: Path | None = None, env_vars:
             if len(parts) >= 2 and parts[1].isdigit():
                 test_count = int(parts[1])
                 break
+        elif "--- PASS:" in line:
+            test_count += 1
     if test_count == 0 and passed and cmd[0] == "go":
         test_count = 1
 
@@ -284,7 +286,7 @@ def main() -> int:
         ),
         (
             "Pillar 3: Distributed Task Scheduler & Fencing Worker Pool",
-            ["python3", "-m", "unittest", "engines/knowledge-skill-model-foundry-engine/tests/test_scheduler.py"],
+            ["python3", "-m", "unittest", "engines/knowledge-skill-model-foundry-engine/tests/test_scheduler.py", "engines/knowledge-skill-model-foundry-engine/tests/test_scheduler_extended.py"],
             None,
             {"PYTHONPATH": "engines/knowledge-skill-model-foundry-engine/src"},
         ),
@@ -295,8 +297,8 @@ def main() -> int:
             {"PYTHONPATH": "engines/knowledge-skill-model-foundry-engine/src"},
         ),
         (
-            "Pillar 2: 500 Intelligence Tasks & 248 Acceptance Scenarios Runner",
-            ["python3", "-m", "unittest", "engines/project-intelligence-engine/tests/test_500_tasks_execution.py", "engines/project-intelligence-engine/tests/test_248_acceptance_scenarios.py"],
+            "Pillar 2: 500 Intelligence Tasks, 248 Acceptance Scenarios & Subsystems Runner",
+            ["python3", "-m", "unittest", "engines/project-intelligence-engine/tests/test_500_tasks_execution.py", "engines/project-intelligence-engine/tests/test_248_acceptance_scenarios.py", "engines/project-intelligence-engine/tests/test_subsystem_pipelines.py"],
             None,
             {"PYTHONPATH": "engines/project-intelligence-engine/src"},
         ),

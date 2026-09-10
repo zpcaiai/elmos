@@ -1,5 +1,8 @@
 ---
 name: b29-language-support-matrix
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Create or update the versioned language-route capability matrix with certified, supported, conditional, experimental, detected-only, and blocked statuses. Use when defining or changing what a route claims to support.
 ---
 

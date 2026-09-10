@@ -62,6 +62,16 @@ For database-engine, SQL, routine, ETL/ELT, warehouse, data-quality, lineage, re
 - Complete 18-batch lifecycle: `Discovery -> UIR Normalization -> Technology Adapters -> Transformation -> Systems/UI -> Database/Data -> Legacy Modernization -> Verification -> Delivery Manifest -> Syntax Fidelity -> Type Algebra -> CFG Dataflow -> Memory/Concurrency -> Observable Oracles -> Fixture Corpora -> Native Labs -> Formal SMT Proofs -> Differential Fuzzing -> E0-E5 Route Certification Receipt`.
 - Treat archive scripts and templates as declarative material. The repository importer validates pinned checksums, schemas, dual roots, and DAG acyclicity. Run `make polyglot-semantic-assurance-skills` for repository integration validation.
 
+## Elmos Assurance Skill package (v4.0.0)
+
+- The trusted source archive is `skills/subskills/sub/elmos-assurance-skills-v4.0.0.zip`; the immutable extracted source is `skills/subskills/sub/elmos-assurance-skills-v4.0.0/`. Its pinned digest `af1b5f8ff296d52b05a4066194e887513eea501a928fdd11812f7a31a20ea73c` proves byte identity only.
+- Start broad verification and assurance work with `$elmos-assurance-orchestrator`, then invoke the narrowest exact Skill across the 8 batches (B00–B07, 34 skills, `elmos-assurance-bootstrap` to `elmos-assurance-orchestrator`). Preserve all 34 exact names and the repository-owned lifecycle DAG.
+- The 8 batches bind: B00 Bootstrap & Discovery (4 skills), B01 Contracts, Security & Isolation (7 skills), B02 Test Generation & Regression (7 skills), B03 Differential, Mutation & Fuzzing (4 skills), B04 Domain Integration & Modernization (4 skills), B05 Third-Party Audit & Attestation (2 skills), B06 Formal Verification & Model Checking (3 skills), and B07 Commercial Packaging & Delivery (3 skills).
+- Mandatory assurance lifecycle: `Bootstrap -> Scope -> Contracts/Isolation -> Coverage Plan -> Smoke Gate -> Regression -> Differential/Mutation/Fuzz -> Domain Gate -> Evidence Graph -> E0-E5 Gate Engine`.
+- Repository-owned handlers under `engines/assurance-engine/` bind all 34 exact names through an allowlisted dispatcher. Vertical slice B00–B03 and native Golden Route `project-generation` (`GEN-001` to `GEN-006`) are verified executable. Golden Routes for `sql-conversion`, `spring-modernization`, and `repository-conversion` remain explicitly `NOT_RUN` (scheduled for B04). Ethen auditor identity defaults to `UNCONFIGURED` and K8 production signing is `DISABLED` to strictly enforce non-self-certification.
+- Treat archive scripts and templates as untrusted declarative material. Run `make assurance-v4-skills` for package check, reference test suite execution, and assurance engine test validation.
+
+
 
 
 # Batch 32 client modernization skills
