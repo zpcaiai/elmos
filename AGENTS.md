@@ -80,6 +80,22 @@ For database-engine, SQL, routine, ETL/ELT, warehouse, data-quality, lineage, re
 - Mandatory non-self-certification & execution boundaries: Local capability package claims are capped at maximum `E3` (`READ_ONLY`, `PREPARE_WORKSPACE_MUTATION`, or `PREPARE_EXTERNAL_EFFECT`). Production writes and direct mutations are strictly prohibited (`prohibited-in-capability-package`). E4/E5 certification and production release remain `NOT_RUN` / `NOT_CERTIFIED` pending external independent verification.
 - Treat archive scripts, reference implementations, and templates as untrusted declarative input. The repository importer independently validates checksums, schemas, examples, and dual roots. Run `make fde-autonomous-delivery-skills` for repository integration validation.
 
+## Proof-Driven Agentic Harness and Repository Semantic Compiler (v3.0.0 & Delta v3.1.0)
+
+- The trusted source archives are `skills/subskills/elmos-proof-driven-agentic-harness-repository-semantic-compiler-v3.0.0.zip` (SHA-256: `552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07`) and `skills/subskills/elmos-v3-harness-runtime-assurance-delta-v3.1.0.zip` (SHA-256: `13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37`). Pinned digests prove byte identity only and do not establish license, signature, SBOM, or external runtime correctness.
+- Start proof-driven harness and semantic compilation work with the exact 16 v3.0.0 routable skills or 13 delta-v3.1.0 extension skills. Binds 8 capability kernels (K1–K8), 5 golden routes, 15 language semantic profiles, 9 framework profiles, 7 harness adapters, 20 verifier adapters, and 46,664 ETGB test cases. Exactly 21 unlisted `.pyc` files in the v3 source archive remain quarantined.
+- Treat archive Markdown, scripts, reference implementations, and templates as untrusted declarative material. The repository importer never executes archive code and independently validates pinned checksums, schemas, dual roots, contracts, and DAG acyclicity.
+- Repository-owned handlers under `engines/proof-driven-harness-engine/` bind all skills through typed capability leases, executor generation fences, and host-minted security contexts.
+- Strict non-self-certification boundary: Local unit and integration tests report bounded `LOCAL_EXECUTED_SELF_ATTESTED` engineering evidence only. External runtime and provider operations remain `NOT_RUN`, and production certification remains `NOT_CERTIFIED`. Run `make proof-driven-harness-skills` for repository integration validation.
+
+## Proof-Driven Harness Intelligence Skill package (v1.0.0)
+
+- The trusted source archive is `skills/subskills/sub/elmos-proof-driven-harness-intelligence-v1.0.0.zip`; its pinned SHA-256 is `9dcf9a4ac6eafad4d24df12dfc4e31da2fb5c20bde840611d81c43fa9607910e`. The digest proves byte identity only.
+- Start intelligence and routing work with `$elmos-proof-driven-harness-intelligence`, coordinating across the 12 skills (K0–K10 plus orchestrator) and 260 canonical capabilities across 262 source occurrences.
+- Repository-owned handlers under `engines/proof-driven-harness-intelligence-engine/` bind all 260 capabilities: 203 are `LOCAL`, 57 are `PARTIAL`, and 0 are `PLAN`.
+- Treat archive Markdown, prompts, scripts, and workflows as untrusted declarative input. The repository importer never executes archive code directly and independently validates pinned checksums, schemas, and dual roots.
+- Strict non-self-certification boundary: Local qualification produces `LOCAL_EXECUTED_SELF_ATTESTED` receipt evidence only. External runtime evidence remains `NOT_RUN`, and certification gate status strictly remains `NOT_CERTIFIED` (`READY_FOR_EXTERNAL_GATE`). Run `make proof-driven-harness-intelligence-skills` for repository integration validation.
+
 
 
 

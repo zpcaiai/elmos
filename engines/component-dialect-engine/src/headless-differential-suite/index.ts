@@ -4,3 +4,7 @@ export * from './miniapp-ssr-evaluator';
 export * from './web-ssr-evaluator';
 export * from './universal-dom-differential-engine';
 export * from './real-chrome-headless-runner';
+export * from './tree-edit-distance-engine';
+export * from './color-contrast-accessibility-oracle';
+export * from './aria-accessibility-oracle';
+export * from './visual-layout-geometry-matcher';
