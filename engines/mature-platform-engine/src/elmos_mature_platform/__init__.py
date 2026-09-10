@@ -1,9 +1,10 @@
 """Elmos Mature Platform Foundation Package (Batches 38-45).
 
-46 industrial-grade engines covering deployment, SRE, supply chain,
+56 industrial-grade engines covering deployment, SRE, supply chain,
 knowledge, agents, product lifecycle, economics, security, and certification.
 """
 
+from elmos_mature_platform.agent_budget_limits_engine import AgentBudgetLimitsEngine
 from elmos_mature_platform.agent_redteam_engine import AgentRedTeamEngine
 from elmos_mature_platform.agent_shadow_canary_engine import AgentShadowCanaryEngine
 from elmos_mature_platform.airgap_bundle_engine import AirgapBundleEngine
@@ -13,13 +14,17 @@ from elmos_mature_platform.backup_restore_engine import BackupRestoreEngine
 from elmos_mature_platform.change_management_engine import ChangeManagementEngine
 from elmos_mature_platform.chaos_fault_engine import EnterpriseChaosEngine
 from elmos_mature_platform.compliance_audit_engine import ComplianceAuditEngine
+from elmos_mature_platform.container_scanning_engine import ContainerScanningEngine
 from elmos_mature_platform.cost_economics_engine import CostEconomicsEngine
 from elmos_mature_platform.credential_triage_engine import CredentialTriageEngine
 from elmos_mature_platform.cross_region_simulation import CrossRegionSimulationEnvironment
 from elmos_mature_platform.customer_roi_tco_engine import CustomerRoiTcoEngine
 from elmos_mature_platform.dast_iast_security_engine import DastIastSecurityEngine
 from elmos_mature_platform.database_expand_contract_engine import DatabaseExpandContractEngine
+from elmos_mature_platform.deployment_matrix_certification_engine import DeploymentMatrixCertificationEngine
+from elmos_mature_platform.deprecation_removal_engine import DeprecationRemovalEngine
 from elmos_mature_platform.design_partner_validation_engine import DesignPartnerValidationEngine
+from elmos_mature_platform.deterministic_execution_engine import DeterministicExecutionEngine
 from elmos_mature_platform.disaster_recovery_runner import DisasterRecoveryRunner
 from elmos_mature_platform.edition_deployment_engine import EditionDeploymentEngine
 from elmos_mature_platform.error_budget_governance_engine import ErrorBudgetGovernanceEngine
@@ -32,16 +37,20 @@ from elmos_mature_platform.kms_service import EnterpriseKmsService
 from elmos_mature_platform.knowledge_flywheel_engine import KnowledgeFlywheelEngine
 from elmos_mature_platform.knowledge_marketplace_engine import KnowledgeMarketplaceEngine
 from elmos_mature_platform.maturity_certification_engine import MaturityCertificationEngine
+from elmos_mature_platform.migration_risk_prediction_engine import MigrationRiskPredictionEngine
 from elmos_mature_platform.model_agent_economics_engine import ModelAgentEconomicsEngine
 from elmos_mature_platform.multiagent_consensus_engine import MultiagentConsensusEngine
 from elmos_mature_platform.multiregion_failover_engine import MultiregionFailoverEngine
 from elmos_mature_platform.oidc_service import EnterpriseOidcProvider
 from elmos_mature_platform.oncall_rotation_engine import OncallRotationEngine
+from elmos_mature_platform.pattern_antipattern_engine import PatternAntipatternEngine
 from elmos_mature_platform.portable_control_plane_engine import PortableControlPlaneEngine
+from elmos_mature_platform.problem_root_cause_engine import ProblemRootCauseEngine
 from elmos_mature_platform.product_lifecycle_engine import ProductLifecycleEngine
 from elmos_mature_platform.release_channel_governance_engine import ReleaseChannelGovernanceEngine
 from elmos_mature_platform.residual_risk_register_engine import ResidualRiskRegisterEngine
 from elmos_mature_platform.rolling_upgrade_orchestrator import RollingUpgradeOrchestrator
+from elmos_mature_platform.sbom_vulnerability_engine import SbomVulnerabilityEngine
 from elmos_mature_platform.scenario_runner import PlatformScenarioRunner
 from elmos_mature_platform.service_catalog_slo_engine import ServiceCatalogSloEngine
 from elmos_mature_platform.slo_telemetry_pipeline import EnterpriseSloCollector
@@ -50,6 +59,7 @@ from elmos_mature_platform.tenant_edition_migration_engine import TenantEditionM
 from elmos_mature_platform.tenant_isolation_engine import TenantIsolationEngine
 from elmos_mature_platform.version_compatibility_engine import VersionCompatibilityEngine
 from elmos_mature_platform.workflow_version_recovery_engine import WorkflowVersionRecoveryEngine
+from elmos_mature_platform.zero_downtime_upgrade_engine import ZeroDowntimeUpgradeEngine
 from elmos_mature_platform.types import (
     AgentAutonomyLevel,
     AgentDeploymentMode,
@@ -57,8 +67,10 @@ from elmos_mature_platform.types import (
     ApiCompatChangeType,
     AssetQualityTier,
     AutoscalingCapacityPlan,
+    BudgetAction,
     BuildIsolationLevel,
     BundleStatus,
+    CertificationStatus,
     ChangeRiskLevel,
     ChangeStatus,
     ChannelStability,
@@ -66,13 +78,18 @@ from elmos_mature_platform.types import (
     CheckpointType,
     CompatibilityVerdict,
     ConsensusStrategy,
+    ContainerFindingType,
+    ContainerScanStatus,
     CostCategory,
     CostDriver,
     DbMigrationPhase,
+    DeploymentEnvironment,
     DeploymentTopology,
+    DeprecationPhase,
     DrPlan,
     EditionType,
     ErrorBudgetSlo,
+    ExecutionMode,
     FailoverMode,
     FaultDescriptor,
     FaultType,
@@ -83,11 +100,14 @@ from elmos_mature_platform.types import (
     IncidentSeverity,
     KnowledgeAssetType,
     MaturityDimension,
+    MigrationRiskCategory,
+    MigrationRiskLevel,
     ModelProvider,
     NodeRole,
     NodeStatus,
     OncallShiftType,
     PartnerEngagementStatus,
+    PatternType,
     PromotionVerdict,
     RegionId,
     RiskSeverity,
@@ -99,6 +119,7 @@ from elmos_mature_platform.types import (
     SharingScope,
     SliType,
     SlsaLevel,
+    StepOutcome,
     TenantIsolationLevel,
     TenantMigrationStatus,
     ValueDriver,
@@ -108,7 +129,8 @@ from elmos_mature_platform.types import (
 )
 
 __all__ = [
-    # Engines (46)
+    # Engines (56)
+    "AgentBudgetLimitsEngine",
     "AgentRedTeamEngine",
     "AgentShadowCanaryEngine",
     "AirgapBundleEngine",
@@ -118,13 +140,17 @@ __all__ = [
     "ChangeManagementEngine",
     "EnterpriseChaosEngine",
     "ComplianceAuditEngine",
+    "ContainerScanningEngine",
     "CostEconomicsEngine",
     "CredentialTriageEngine",
     "CrossRegionSimulationEnvironment",
     "CustomerRoiTcoEngine",
     "DastIastSecurityEngine",
     "DatabaseExpandContractEngine",
+    "DeploymentMatrixCertificationEngine",
+    "DeprecationRemovalEngine",
     "DesignPartnerValidationEngine",
+    "DeterministicExecutionEngine",
     "DisasterRecoveryRunner",
     "EditionDeploymentEngine",
     "ErrorBudgetGovernanceEngine",
@@ -137,16 +163,20 @@ __all__ = [
     "KnowledgeFlywheelEngine",
     "KnowledgeMarketplaceEngine",
     "MaturityCertificationEngine",
+    "MigrationRiskPredictionEngine",
     "ModelAgentEconomicsEngine",
     "MultiagentConsensusEngine",
     "MultiregionFailoverEngine",
     "EnterpriseOidcProvider",
     "OncallRotationEngine",
+    "PatternAntipatternEngine",
     "PortableControlPlaneEngine",
+    "ProblemRootCauseEngine",
     "ProductLifecycleEngine",
     "ReleaseChannelGovernanceEngine",
     "ResidualRiskRegisterEngine",
     "RollingUpgradeOrchestrator",
+    "SbomVulnerabilityEngine",
     "PlatformScenarioRunner",
     "ServiceCatalogSloEngine",
     "EnterpriseSloCollector",
@@ -155,15 +185,18 @@ __all__ = [
     "TenantIsolationEngine",
     "VersionCompatibilityEngine",
     "WorkflowVersionRecoveryEngine",
-    # Key Types (53)
+    "ZeroDowntimeUpgradeEngine",
+    # Key Types (68)
     "AgentAutonomyLevel",
     "AgentDeploymentMode",
     "AgentTestCategory",
     "ApiCompatChangeType",
     "AssetQualityTier",
     "AutoscalingCapacityPlan",
+    "BudgetAction",
     "BuildIsolationLevel",
     "BundleStatus",
+    "CertificationStatus",
     "ChangeRiskLevel",
     "ChangeStatus",
     "ChannelStability",
@@ -171,13 +204,18 @@ __all__ = [
     "CheckpointType",
     "CompatibilityVerdict",
     "ConsensusStrategy",
+    "ContainerFindingType",
+    "ContainerScanStatus",
     "CostCategory",
     "CostDriver",
     "DbMigrationPhase",
+    "DeploymentEnvironment",
     "DeploymentTopology",
+    "DeprecationPhase",
     "DrPlan",
     "EditionType",
     "ErrorBudgetSlo",
+    "ExecutionMode",
     "FailoverMode",
     "FaultDescriptor",
     "FaultType",
@@ -188,11 +226,14 @@ __all__ = [
     "IncidentSeverity",
     "KnowledgeAssetType",
     "MaturityDimension",
+    "MigrationRiskCategory",
+    "MigrationRiskLevel",
     "ModelProvider",
     "NodeRole",
     "NodeStatus",
     "OncallShiftType",
     "PartnerEngagementStatus",
+    "PatternType",
     "PromotionVerdict",
     "RegionId",
     "RiskSeverity",
@@ -204,6 +245,7 @@ __all__ = [
     "SharingScope",
     "SliType",
     "SlsaLevel",
+    "StepOutcome",
     "TenantIsolationLevel",
     "TenantMigrationStatus",
     "ValueDriver",

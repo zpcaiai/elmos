@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/20-source-oracle-adapter/SKILL.md"
   source_sha256: "sha256:88a388dbc4ce24b1a88df5bbedd2f93398c39f96788da6c16e46c901d1052138"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # Oracle Source Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `20-source-oracle-adapter`
 - **Version:** `1.0.0`
 - **Category:** source-adapter
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 - **Depends on:** `01-estate-inventory-assessment`, `02-semantic-db-ir`
 
 ## Objective

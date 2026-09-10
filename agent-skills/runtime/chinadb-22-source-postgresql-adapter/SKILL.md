@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/22-source-postgresql-adapter/SKILL.md"
   source_sha256: "sha256:b3f9837deefc4a0e3a43526be72ef82a638b8943df264dcd469e6e66b1e037b7"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # PostgreSQL Source Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `22-source-postgresql-adapter`
 - **Version:** `1.0.0`
 - **Category:** source-adapter
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 - **Depends on:** `01-estate-inventory-assessment`, `02-semantic-db-ir`
 
 ## Objective

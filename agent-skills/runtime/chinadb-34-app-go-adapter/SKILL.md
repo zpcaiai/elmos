@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/34-app-go-adapter/SKILL.md"
   source_sha256: "sha256:66ac8614224551b44ccbcc5cbc0464501e43325aee5cda2a1d0f6b8f92104eba"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # Go Database Refactor Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `34-app-go-adapter`
 - **Version:** `1.0.0`
 - **Category:** application-adapter
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 - **Depends on:** `08-application-code-auto-refactor`
 
 ## Objective

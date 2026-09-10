@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/25-source-sybase-adapter/SKILL.md"
   source_sha256: "sha256:491370cb6896d5f467e0468507e2f3a402267775e99a803bf0fae755008a2bb2"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # Sybase ASE Source Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `25-source-sybase-adapter`
 - **Version:** `1.0.0`
 - **Category:** source-adapter
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 - **Depends on:** `01-estate-inventory-assessment`, `02-semantic-db-ir`
 
 ## Objective

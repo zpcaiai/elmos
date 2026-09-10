@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/32-app-python-adapter/SKILL.md"
   source_sha256: "sha256:6be6743619b8b02b8affffca9769e5c527f370dfb36c4abcae18a9b08ceb93e1"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # Python Database Refactor Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `32-app-python-adapter`
 - **Version:** `1.0.0`
 - **Category:** application-adapter
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 - **Depends on:** `08-application-code-auto-refactor`
 
 ## Objective

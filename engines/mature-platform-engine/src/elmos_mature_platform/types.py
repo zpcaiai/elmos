@@ -3094,3 +3094,264 @@ class UpgradeHealthCheck:
     response_time_ms: float = 0.0
     error_rate_pct: float = 0.0
     checked_at: str = ""
+
+# ─── Migration Risk Prediction Models ────────────────────────────────
+
+class MigrationRiskLevel(str, Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    MINIMAL = "minimal"
+
+class MigrationRiskCategory(str, Enum):
+    DATA_LOSS = "data_loss"
+    DOWNTIME = "downtime"
+    PERFORMANCE = "performance"
+    COMPATIBILITY = "compatibility"
+    SECURITY = "security"
+    COST_OVERRUN = "cost_overrun"
+    SCHEDULE = "schedule"
+    SKILL_GAP = "skill_gap"
+
+@dataclass
+class MigrationRiskFactor:
+    factor_id: str
+    category: MigrationRiskCategory
+    description: str
+    likelihood: float = 0.5  # 0-1
+    impact: float = 0.5  # 0-1
+    risk_score: float = 0.0  # likelihood * impact
+    mitigation: str = ""
+    mitigated: bool = False
+    data_points: int = 0  # historical observations supporting this
+
+@dataclass 
+class MigrationProject:
+    project_id: str
+    name: str
+    source_system: str
+    target_system: str
+    data_size_gb: float = 0.0
+    complexity_score: float = 0.0  # 0-10
+    team_experience_score: float = 0.0  # 0-10
+    overall_risk_level: MigrationRiskLevel = MigrationRiskLevel.MEDIUM
+    overall_risk_score: float = 0.0
+    estimated_duration_days: int = 0
+    actual_duration_days: int = 0
+    succeeded: Optional[bool] = None
+
+@dataclass
+class RiskPrediction:
+    project_id: str
+    predicted_risk_level: MigrationRiskLevel
+    confidence: float = 0.0  # 0-1
+    predicted_success_probability: float = 0.0
+    top_risk_factors: List[str] = field(default_factory=list)
+    recommended_mitigations: List[str] = field(default_factory=list)
+
+
+# ─── Deprecation & Removal Lifecycle Models ──────────────────────────
+
+class DeprecationPhase(str, Enum):
+    ANNOUNCED = "announced"
+    DEPRECATED = "deprecated"
+    SUNSET = "sunset"
+    REMOVED = "removed"
+
+@dataclass
+class DeprecatedItem:
+    item_id: str
+    name: str
+    item_type: str  # api, feature, config, dependency
+    phase: DeprecationPhase = DeprecationPhase.ANNOUNCED
+    replacement: str = ""
+    announced_at: str = ""
+    deprecated_at: str = ""
+    sunset_at: str = ""  # planned removal date
+    removed_at: str = ""
+    migration_guide_url: str = ""
+    affected_consumers: List[str] = field(default_factory=list)
+    usage_count: int = 0
+
+@dataclass
+class DeprecationPolicy:
+    policy_id: str
+    min_notice_days: int = 90
+    max_sunset_days: int = 365
+    require_replacement: bool = True
+    require_migration_guide: bool = True
+    block_removal_with_active_consumers: bool = True
+
+
+
+# ─── Deployment Matrix Certification Models ──────────────────────────
+
+class DeploymentEnvironment(str, Enum):
+    DEV = "dev"
+    STAGING = "staging"
+    PRODUCTION = "production"
+    DR = "dr"
+    EDGE = "edge"
+
+class CertificationStatus(str, Enum):
+    NOT_TESTED = "not_tested"
+    IN_PROGRESS = "in_progress"
+    PASSED = "passed"
+    FAILED = "failed"
+    WAIVED = "waived"
+
+@dataclass
+class DeploymentCell:
+    cell_id: str
+    environment: DeploymentEnvironment
+    platform: str  # kubernetes, ecs, vm, bare_metal
+    region: str
+    version: str
+    status: CertificationStatus = CertificationStatus.NOT_TESTED
+    test_count: int = 0
+    pass_count: int = 0
+    fail_count: int = 0
+    last_tested: str = ""
+    certified_by: str = ""
+    waiver_reason: str = ""
+
+@dataclass
+class DeploymentMatrix:
+    matrix_id: str
+    product_name: str
+    version: str
+    cells: List[str] = field(default_factory=list)  # cell_ids
+    required_environments: List[str] = field(default_factory=list)
+    required_platforms: List[str] = field(default_factory=list)
+    overall_status: CertificationStatus = CertificationStatus.NOT_TESTED
+    coverage_pct: float = 0.0
+    created_at: str = ""
+
+@dataclass
+class MatrixTestResult:
+    result_id: str
+    cell_id: str
+    test_name: str
+    passed: bool
+    duration_seconds: float = 0.0
+    error_message: str = ""
+    timestamp: str = ""
+
+# ─── Container Scanning Models ───────────────────────────────────────
+
+class ContainerScanStatus(str, Enum):
+    PENDING = "pending"
+    SCANNING = "scanning"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+class ContainerFindingType(str, Enum):
+    OS_VULNERABILITY = "os_vulnerability"
+    APP_VULNERABILITY = "app_vulnerability"
+    MISCONFIG = "misconfig"
+    SECRET = "secret"
+    LICENSE = "license"
+    MALWARE = "malware"
+
+@dataclass
+class ContainerImage:
+    image_id: str
+    registry: str
+    repository: str
+    tag: str
+    digest_sha256: str
+    size_mb: float = 0.0
+    os_family: str = ""
+    created_at: str = ""
+    layers_count: int = 0
+
+@dataclass
+class ContainerScanResult:
+    scan_id: str
+    image_id: str
+    status: ContainerScanStatus = ContainerScanStatus.PENDING
+    started_at: str = ""
+    completed_at: str = ""
+    critical_count: int = 0
+    high_count: int = 0
+    medium_count: int = 0
+    low_count: int = 0
+    misconfig_count: int = 0
+    secret_count: int = 0
+    passed_policy: bool = False
+
+@dataclass
+class ContainerFinding:
+    finding_id: str
+    scan_id: str
+    finding_type: ContainerFindingType
+    severity: str = ""  # critical, high, medium, low
+    package_name: str = ""
+    installed_version: str = ""
+    fixed_version: str = ""
+    cve_id: str = ""
+    title: str = ""
+    description: str = ""
+    layer_index: int = 0
+
+@dataclass
+class ContainerPolicy:
+    policy_id: str
+    name: str
+    max_critical: int = 0
+    max_high: int = 5
+    block_secrets: bool = True
+    block_malware: bool = True
+    allowed_registries: List[str] = field(default_factory=list)
+    required_labels: List[str] = field(default_factory=list)
+
+# ─── Deterministic Execution Models ──────────────────────────────────
+
+class ExecutionMode(str, Enum):
+    DETERMINISTIC = "deterministic"
+    BEST_EFFORT = "best_effort"
+    REPLAY = "replay"
+
+class StepOutcome(str, Enum):
+    SUCCESS = "success"
+    FAILURE = "failure"
+    TIMEOUT = "timeout"
+    SKIPPED = "skipped"
+    RETRIED = "retried"
+
+@dataclass
+class ExecutionStep:
+    step_id: str
+    execution_id: str
+    step_index: int
+    action: str
+    input_hash: str = ""
+    output_hash: str = ""
+    outcome: StepOutcome = StepOutcome.SUCCESS
+    duration_ms: float = 0.0
+    deterministic: bool = True
+    timestamp: str = ""
+    retry_count: int = 0
+
+@dataclass
+class DeterministicExecution:
+    execution_id: str
+    agent_id: str
+    mode: ExecutionMode = ExecutionMode.DETERMINISTIC
+    seed: int = 42
+    total_steps: int = 0
+    completed_steps: int = 0
+    determinism_score: float = 1.0  # 0-1, fraction of steps that are deterministic
+    started_at: str = ""
+    completed_at: str = ""
+    replay_source_id: str = ""  # for REPLAY mode
+
+@dataclass
+class ReplayVerification:
+    execution_id: str
+    replay_id: str
+    steps_matched: int = 0
+    steps_diverged: int = 0
+    divergence_points: List[int] = field(default_factory=list)  # step indices
+    fully_deterministic: bool = False

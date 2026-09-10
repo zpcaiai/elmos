@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/31-app-dotnet-adapter/SKILL.md"
   source_sha256: "sha256:f84503f8ea49d461ea1a7430e106d0d374ee6fddedad78e9b9cd12b7ff17d2dc"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # .NET Database Refactor Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `31-app-dotnet-adapter`
 - **Version:** `1.0.0`
 - **Category:** application-adapter
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 - **Depends on:** `08-application-code-auto-refactor`
 
 ## Objective

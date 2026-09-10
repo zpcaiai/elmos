@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/43-target-tidb/SKILL.md"
   source_sha256: "sha256:dd3071bb2058d94c3d9f83b184ce7412d3554c27c350982d2a8b9999aec69ba5"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
+  implementation_state: "SPEC_ONLY"
+  external_evidence_status: "NOT_RUN"
   production_certification: "NOT_CERTIFIED"
 ---
 # TiDB Target Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `43-target-tidb`
 - **Version:** `1.0.0`
 - **Category:** target-adapter
-- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
+- **Implementation status:** specification only until repository evidence proves otherwise
 - **Depends on:** `02-semantic-db-ir`, `03-rule-mutation-dsl`, `05-ddl-auto-conversion`, `06-sql-auto-conversion`, `07-plsql-tsql-conversion`
 
 ## Objective
