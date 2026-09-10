@@ -381,9 +381,9 @@ class BusinessLine3L5GateRunner:
                 f"Unexpected autonomy level: {dossier.autonomy_level} (expected L5_AUTONOMOUS_ZERO_HUMAN)"
             )
 
-        if len(dossier.human_intervention_tickets) != 0:
+        if dossier.cdc_divergence_count != 0:
             errors.append(
-                f"Intervention tickets detected: {len(dossier.human_intervention_tickets)}"
+                f"CDC divergence detected: {dossier.cdc_divergence_count}"
             )
 
         passed = len(errors) == 0
