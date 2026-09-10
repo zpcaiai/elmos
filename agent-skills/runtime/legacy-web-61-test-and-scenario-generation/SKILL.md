@@ -1,13 +1,7 @@
 ---
 name: legacy-web-61-test-and-scenario-generation
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for 测试与场景生成; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
-  production_certification: "NOT_CERTIFIED"
   source_package: elmos.java-legacy-web.repository-modernization
   source_version: 1.0.0
   source_id: 61-test-and-scenario-generation

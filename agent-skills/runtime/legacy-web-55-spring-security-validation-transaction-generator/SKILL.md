@@ -1,13 +1,7 @@
 ---
 name: legacy-web-55-spring-security-validation-transaction-generator
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for Security、Validation 与 Transaction 生成器; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
-  production_certification: "NOT_CERTIFIED"
   source_package: elmos.java-legacy-web.repository-modernization
   source_version: 1.0.0
   source_id: 55-spring-security-validation-transaction-generator
