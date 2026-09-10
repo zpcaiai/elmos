@@ -24,7 +24,7 @@ import java.util.Set;
 public final class SpringSecurityFilterChainRecipe extends Recipe {
 
     private static final String WEB_SECURITY_ADAPTER = "WebSecurityConfigurerAdapter";
-    private static final Set<String> MATCHERS_METHODS = Set.of("antMatchers", "regexMatchers");
+    private static final Set<String> MATCHERS_METHODS = Set.of("antMatchers", "mvcMatchers", "regexMatchers");
 
     @Override
     public String getDisplayName() {
@@ -41,12 +41,24 @@ public final class SpringSecurityFilterChainRecipe extends Recipe {
         return new JavaIsoVisitor<ExecutionContext>() {
 
             @Override
+            public J.Annotation visitAnnotation(J.Annotation annotation, ExecutionContext ctx) {
+                J.Annotation a = super.visitAnnotation(annotation, ctx);
+                if ("EnableGlobalMethodSecurity".equals(a.getSimpleName())) {
+                    maybeRemoveImport("org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity");
+                    maybeAddImport("org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity");
+                    a = a.withAnnotationType(TypeTree.build("EnableMethodSecurity"));
+                }
+                return a;
+            }
+
+            @Override
             public J.ClassDeclaration visitClassDeclaration(J.ClassDeclaration classDecl, ExecutionContext ctx) {
                 J.ClassDeclaration c = super.visitClassDeclaration(classDecl, ctx);
                 TypeTree extendsClause = c.getExtends();
                 if (extendsClause != null && extendsClause.printTrimmed().contains(WEB_SECURITY_ADAPTER)) {
                     maybeRemoveImport("org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter");
                     maybeAddImport("org.springframework.context.annotation.Bean");
+                    maybeAddImport("org.springframework.context.annotation.Configuration");
                     maybeAddImport("org.springframework.security.web.SecurityFilterChain");
                     maybeAddImport("org.springframework.security.config.annotation.web.builders.HttpSecurity");
                     c = c.withExtends(null);
@@ -62,9 +74,24 @@ public final class SpringSecurityFilterChainRecipe extends Recipe {
                     if (paramType.contains("HttpSecurity")) {
                         maybeAddImport("org.springframework.context.annotation.Bean");
                         maybeAddImport("org.springframework.security.web.SecurityFilterChain");
-                        // Convert return type to SecurityFilterChain
                         m = m.withReturnTypeExpression(TypeTree.build("SecurityFilterChain"));
                         m = m.withName(m.getName().withSimpleName("filterChain"));
+
+                        // Inject @Bean annotation if not present
+                        boolean hasBean = m.getLeadingAnnotations().stream()
+                                .anyMatch(an -> "Bean".equals(an.getSimpleName()));
+                        if (!hasBean) {
+                            J.Annotation beanAnn = new J.Annotation(
+                                    org.openrewrite.Tree.randomId(),
+                                    org.openrewrite.java.tree.Space.EMPTY,
+                                    org.openrewrite.marker.Markers.EMPTY,
+                                    TypeTree.build("Bean"),
+                                    org.openrewrite.java.tree.JContainer.empty()
+                            );
+                            java.util.List<J.Annotation> annotations = new java.util.ArrayList<>(m.getLeadingAnnotations());
+                            annotations.add(beanAnn);
+                            m = m.withLeadingAnnotations(annotations);
+                        }
                     }
                 }
                 return m;

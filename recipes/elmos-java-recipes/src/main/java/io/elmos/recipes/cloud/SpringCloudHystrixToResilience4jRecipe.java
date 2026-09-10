@@ -30,11 +30,17 @@ public final class SpringCloudHystrixToResilience4jRecipe extends Recipe {
                 J.Annotation a = super.visitAnnotation(annotation, ctx);
                 if ("HystrixCommand".equals(a.getSimpleName())) {
                     maybeRemoveImport("com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand");
+                    maybeRemoveImport("com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty");
                     maybeAddImport("io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker");
                     a = a.withAnnotationType(TypeTree.build("CircuitBreaker"));
-                } else if ("EnableCircuitBreaker".equals(a.getSimpleName()) || "EnableHystrix".equals(a.getSimpleName())) {
+                } else if ("EnableCircuitBreaker".equals(a.getSimpleName()) 
+                        || "EnableHystrix".equals(a.getSimpleName())
+                        || "EnableHystrixDashboard".equals(a.getSimpleName())) {
                     maybeRemoveImport("org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker");
                     maybeRemoveImport("org.springframework.cloud.netflix.hystrix.EnableHystrix");
+                    maybeRemoveImport("org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard");
+                    maybeAddImport("org.springframework.context.annotation.Configuration");
+                    a = a.withAnnotationType(TypeTree.build("Configuration"));
                 }
                 return a;
             }

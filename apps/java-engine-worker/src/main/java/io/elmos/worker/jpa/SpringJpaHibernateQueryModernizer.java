@@ -144,16 +144,23 @@ public final class SpringJpaHibernateQueryModernizer {
             }
 
             // 5. Legacy Hibernate Criteria -> JPA CriteriaQuery / Specification
-            if (content.contains("org.hibernate.Criteria")) {
-                content = content.replace("import org.hibernate.Criteria;", "import jakarta.persistence.criteria.CriteriaQuery;\nimport jakarta.persistence.criteria.CriteriaBuilder;");
-                content = content.replaceAll("\\bCriteria\\b", "CriteriaQuery");
-                rules.add("MODERNIZE_HIBERNATE_CRITERIA_TO_JPA");
-                changes++;
-            }
-            if (content.contains("org.hibernate.criterion.Restrictions")) {
-                content = content.replace("import org.hibernate.criterion.Restrictions;", "import jakarta.persistence.criteria.Predicate;");
-                rules.add("MODERNIZE_HIBERNATE_RESTRICTIONS");
-                changes++;
+            var rewriteRes = HibernateCriteriaAstRewriter.rewrite(content);
+            if (rewriteRes.modified()) {
+                content = rewriteRes.rewrittenSource();
+                rules.addAll(rewriteRes.rulesApplied());
+                changes += rewriteRes.rewriteCount();
+            } else {
+                if (content.contains("org.hibernate.Criteria")) {
+                    content = content.replace("import org.hibernate.Criteria;", "import jakarta.persistence.criteria.CriteriaQuery;\nimport jakarta.persistence.criteria.CriteriaBuilder;");
+                    content = content.replaceAll("\\bCriteria\\b", "CriteriaQuery");
+                    rules.add("MODERNIZE_HIBERNATE_CRITERIA_TO_JPA");
+                    changes++;
+                }
+                if (content.contains("org.hibernate.criterion.Restrictions")) {
+                    content = content.replace("import org.hibernate.criterion.Restrictions;", "import jakarta.persistence.criteria.Predicate;");
+                    rules.add("MODERNIZE_HIBERNATE_RESTRICTIONS");
+                    changes++;
+                }
             }
 
             // 6. Custom Dialect / Function Registration

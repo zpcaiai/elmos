@@ -89,4 +89,56 @@ class SpringCloudMicroservicesModernizerTest {
         String updatedConfig = Files.readString(appConfigFile);
         assertTrue(updatedConfig.contains("spring.config.import=optional:configserver:"));
     }
+
+    @Test
+    void testZuulFilterAndRibbonRuleModernization() throws Exception {
+        Path filterFile = tempDir.resolve("CustomZuulFilter.java");
+        Files.writeString(filterFile, """
+                package com.example.filter;
+
+                import com.netflix.zuul.ZuulFilter;
+                import com.netflix.zuul.context.RequestContext;
+                import com.netflix.zuul.exception.ZuulException;
+                import com.netflix.loadbalancer.IRule;
+                import com.netflix.loadbalancer.RoundRobinRule;
+
+                public class CustomZuulFilter extends ZuulFilter {
+
+                    @Override
+                    public String filterType() {
+                        return "pre";
+                    }
+
+                    @Override
+                    public int filterOrder() {
+                        return 1;
+                    }
+
+                    @Override
+                    public boolean shouldFilter() {
+                        return true;
+                    }
+
+                    @Override
+                    public Object run() throws ZuulException {
+                        return null;
+                    }
+
+                    public IRule customRule() {
+                        return new RoundRobinRule();
+                    }
+                }
+                """);
+
+        var result = SpringCloudMicroservicesModernizer.modernize(tempDir);
+        assertTrue(result.modified());
+
+        String updated = Files.readString(filterFile);
+        assertFalse(updated.contains("extends ZuulFilter"));
+        assertTrue(updated.contains("implements GlobalFilter, Ordered"));
+        assertTrue(updated.contains("public int getOrder()"));
+        assertTrue(updated.contains("Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain)"));
+        assertTrue(updated.contains("return chain.filter(exchange);"));
+        assertTrue(updated.contains("ReactorLoadBalancer<ServiceInstance> customRule()"));
+    }
 }

@@ -188,28 +188,91 @@ public final class SpringCloudMicroservicesModernizer {
             }
 
             // 2. Zuul -> Gateway
-            if (content.contains("@EnableZuulProxy")) {
+            if (content.contains("@EnableZuulProxy") || content.contains("@EnableZuulServer")) {
                 content = content.replaceAll("import\\s+org\\.springframework\\.cloud\\.netflix\\.zuul\\.EnableZuulProxy;\\s*", "");
+                content = content.replaceAll("import\\s+org\\.springframework\\.cloud\\.netflix\\.zuul\\.EnableZuulServer;\\s*", "");
                 content = content.replaceAll("@EnableZuulProxy\\s*", "");
+                content = content.replaceAll("@EnableZuulServer\\s*", "");
+                content = ensureImport(content, "org.springframework.context.annotation.Configuration");
+                if (!content.contains("@Configuration")) {
+                    content = content.replace("public class", "@Configuration\npublic class");
+                }
                 rules.add("JAVA_REMOVE_ENABLE_ZUUL_PROXY");
                 changes++;
             }
             if (content.contains("ZuulFilter")) {
-                content = content.replace(
-                        "import com.netflix.zuul.ZuulFilter;",
-                        "import org.springframework.cloud.gateway.filter.GlobalFilter;\nimport org.springframework.cloud.gateway.filter.GatewayFilterChain;\nimport org.springframework.web.server.ServerWebExchange;\nimport reactor.core.publisher.Mono;"
-                );
-                content = content.replace("extends ZuulFilter", "implements GlobalFilter");
+                content = content.replaceAll("import\\s+com\\.netflix\\.zuul\\.ZuulFilter;\\s*", "");
+                content = content.replaceAll("import\\s+com\\.netflix\\.zuul\\.context\\.RequestContext;\\s*", "");
+                content = content.replaceAll("import\\s+com\\.netflix\\.zuul\\.exception\\.ZuulException;\\s*", "");
+                content = ensureImport(content, "org.springframework.cloud.gateway.filter.GlobalFilter");
+                content = ensureImport(content, "org.springframework.cloud.gateway.filter.GatewayFilterChain");
+                content = ensureImport(content, "org.springframework.core.Ordered");
+                content = ensureImport(content, "org.springframework.web.server.ServerWebExchange");
+                content = ensureImport(content, "reactor.core.publisher.Mono");
+
+                content = content.replace("extends ZuulFilter", "implements GlobalFilter, Ordered");
+
+                // filterOrder() -> getOrder()
+                if (content.contains("filterOrder()")) {
+                    content = content.replace("public int filterOrder()", "@Override\n    public int getOrder()");
+                    content = content.replace("int filterOrder()", "@Override\n    public int getOrder()");
+                }
+
+                // filterType() -> deprecated/noop helper
+                if (content.contains("filterType()")) {
+                    content = content.replace("public String filterType()", "// Replaced by Gateway filter chain position\n    public String filterType()");
+                }
+
+                // run() -> filter(ServerWebExchange exchange, GatewayFilterChain chain)
+                Pattern runPattern = Pattern.compile("(@Override\\s+)?public\\s+Object\\s+run\\s*\\(\\s*\\)\\s*(?:throws\\s+[a-zA-Z0-9_]+)?\\s*\\{");
+                Matcher runMatcher = runPattern.matcher(content);
+                if (runMatcher.find()) {
+                    String replacement = "@Override\n    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {";
+                    content = runMatcher.replaceFirst(replacement);
+
+                    // If body returns null, replace with return chain.filter(exchange);
+                    int filterStart = content.indexOf(replacement);
+                    if (filterStart >= 0) {
+                        int bodyStart = filterStart + replacement.length();
+                        int bodyEnd = findMatchingBrace(content, bodyStart - 1);
+                        if (bodyEnd > bodyStart) {
+                            String body = content.substring(bodyStart, bodyEnd);
+                            if (body.contains("return null;")) {
+                                body = body.replace("return null;", "return chain.filter(exchange);");
+                            } else if (!body.contains("return chain.filter(exchange);")) {
+                                body = body + "\n        return chain.filter(exchange);\n    ";
+                            }
+                            content = content.substring(0, bodyStart) + body + content.substring(bodyEnd);
+                        }
+                    }
+                }
+
                 rules.add("JAVA_ZUUL_FILTER_TO_GLOBAL_FILTER");
                 changes++;
             }
 
-            // 3. Hystrix -> Resilience4j
-            if (content.contains("@EnableCircuitBreaker") || content.contains("@EnableHystrix")) {
+            // 3. Ribbon IRule Modernization
+            if (content.contains("IRule") || content.contains("RoundRobinRule") || content.contains("RandomRule")) {
+                content = content.replaceAll("import\\s+com\\.netflix\\.loadbalancer\\.[a-zA-Z0-9_.*]+;\\s*", "");
+                content = ensureImport(content, "org.springframework.cloud.client.ServiceInstance");
+                content = ensureImport(content, "org.springframework.cloud.loadbalancer.core.ReactorLoadBalancer");
+                content = ensureImport(content, "org.springframework.cloud.loadbalancer.core.RoundRobinLoadBalancer");
+                content = ensureImport(content, "org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory");
+                content = ensureImport(content, "org.springframework.core.env.Environment");
+                content = content.replaceAll("\\bIRule\\b", "ReactorLoadBalancer<ServiceInstance>");
+                content = content.replaceAll("\\bRoundRobinRule\\b", "RoundRobinLoadBalancer");
+                rules.add("JAVA_RIBBON_IRULE_TO_LOADBALANCER");
+                changes++;
+            }
+
+            // 4. Hystrix -> Resilience4j
+            if (content.contains("@EnableCircuitBreaker") || content.contains("@EnableHystrix") || content.contains("@EnableHystrixDashboard")) {
                 content = content.replaceAll("import\\s+org\\.springframework\\.cloud\\.client\\.circuitbreaker\\.EnableCircuitBreaker;\\s*", "");
                 content = content.replaceAll("import\\s+org\\.springframework\\.cloud\\.netflix\\.hystrix\\.EnableHystrix;\\s*", "");
+                content = content.replaceAll("import\\s+org\\.springframework\\.cloud\\.netflix\\.hystrix\\.dashboard\\.EnableHystrixDashboard;\\s*", "");
                 content = content.replaceAll("@EnableCircuitBreaker\\s*", "");
                 content = content.replaceAll("@EnableHystrix\\s*", "");
+                content = content.replaceAll("@EnableHystrixDashboard\\s*", "");
                 rules.add("JAVA_REMOVE_ENABLE_HYSTRIX");
                 changes++;
             }
@@ -218,7 +281,13 @@ public final class SpringCloudMicroservicesModernizer {
                         "import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;",
                         "import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;"
                 );
-                // Replace @HystrixCommand(fallbackMethod = "xxx") with @CircuitBreaker(name = "default", fallbackMethod = "xxx")
+                content = content.replaceAll("import\\s+com\\.netflix\\.hystrix\\.contrib\\.javanica\\.annotation\\.HystrixProperty;\\s*", "");
+
+                // Strip commandProperties = { ... } from @HystrixCommand
+                content = content.replaceAll(",\\s*commandProperties\\s*=\\s*\\{[^}]*\\}", "");
+                content = content.replaceAll("commandProperties\\s*=\\s*\\{[^}]*\\}\\s*,?", "");
+
+                // Replace @HystrixCommand(fallbackMethod = "xxx") with @CircuitBreaker(name = "defaultService", fallbackMethod = "xxx")
                 Pattern hystrixPattern = Pattern.compile("@HystrixCommand\\s*\\(\\s*fallbackMethod\\s*=\\s*\"([^\"]+)\"\\s*\\)");
                 Matcher hystrixMatcher = hystrixPattern.matcher(content);
                 if (hystrixMatcher.find()) {
@@ -231,7 +300,7 @@ public final class SpringCloudMicroservicesModernizer {
                 changes++;
             }
 
-            // 4. OpenFeign Package normalization
+            // 5. OpenFeign Package normalization
             if (content.contains("org.springframework.cloud.netflix.feign")) {
                 content = content.replace("org.springframework.cloud.netflix.feign", "org.springframework.cloud.openfeign");
                 rules.add("JAVA_FEIGN_PACKAGE_MODERNIZATION");
@@ -298,5 +367,35 @@ public final class SpringCloudMicroservicesModernizer {
             }
         } catch (IOException ignored) {}
         return CloudModernizationResult.empty();
+    }
+
+    private static String ensureImport(String content, String fqcn) {
+        if (content.contains("import " + fqcn + ";")) {
+            return content;
+        }
+        int pkgIndex = content.indexOf("package ");
+        if (pkgIndex >= 0) {
+            int pkgEnd = content.indexOf(";", pkgIndex);
+            if (pkgEnd >= 0) {
+                return content.substring(0, pkgEnd + 1) + "\n\nimport " + fqcn + ";" + content.substring(pkgEnd + 1);
+            }
+        }
+        return "import " + fqcn + ";\n" + content;
+    }
+
+    private static int findMatchingBrace(String text, int openBraceIdx) {
+        int depth = 0;
+        for (int i = openBraceIdx; i < text.length(); i++) {
+            char ch = text.charAt(i);
+            if (ch == '{') {
+                depth++;
+            } else if (ch == '}') {
+                depth--;
+                if (depth == 0) {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 }

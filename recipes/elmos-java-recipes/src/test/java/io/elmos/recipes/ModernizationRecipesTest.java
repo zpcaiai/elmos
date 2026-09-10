@@ -200,9 +200,14 @@ class ModernizationRecipesTest {
         String sourceText = """
                 package com.example;
                 import org.hibernate.Criteria;
+                import org.hibernate.criterion.Criterion;
+                import org.hibernate.criterion.Restrictions;
+                import org.hibernate.criterion.Order;
 
                 public class Dao {
                     void query(Criteria criteria) {
+                        Criterion activeCriterion = Restrictions.eq("active", true);
+                        Order order = Order.asc("username");
                     }
                 }
                 """;
@@ -212,7 +217,9 @@ class ModernizationRecipesTest {
         String res = transformed.printAll();
 
         assertFalse(res.contains("import org.hibernate.Criteria;"));
+        assertFalse(res.contains("import org.hibernate.criterion.Criterion;"));
         assertTrue(res.contains("CriteriaQuery"));
+        assertTrue(res.contains("Predicate activeCriterion"));
     }
 
     @Test

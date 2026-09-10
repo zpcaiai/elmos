@@ -69,4 +69,41 @@ class SpringSecurityFilterChainModernizerTest {
         assertTrue(updated.contains("public WebSecurityCustomizer webSecurityCustomizer()"));
         assertTrue(updated.contains("public AuthenticationManager authenticationManager"));
     }
+
+    @Test
+    void modernizesAdvancedSecurityPatterns() throws Exception {
+        Path javaFile = tempDir.resolve("AdvancedSecurityConfig.java");
+        Files.writeString(javaFile, """
+                package com.example.security;
+
+                import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+                import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
+                public class AdvancedSecurityConfig extends WebSecurityConfigurerAdapter {
+
+                    @Override
+                    protected void configure(HttpSecurity http) throws Exception {
+                        http.authorizeRequests()
+                            .mvcMatchers("/api/v1/**").authenticated()
+                            .and()
+                            .httpBasic()
+                            .and()
+                            .anonymous().disable()
+                            .and()
+                            .logout().disable();
+                    }
+                }
+                """);
+
+        var result = SpringSecurityFilterChainModernizer.modernize(tempDir);
+        assertTrue(result.modified());
+
+        String updated = Files.readString(javaFile);
+        assertFalse(updated.contains("extends WebSecurityConfigurerAdapter"));
+        assertTrue(updated.contains("requestMatchers(\"/api/v1/**\")"));
+        assertTrue(updated.contains(".httpBasic(Customizer.withDefaults())"));
+        assertTrue(updated.contains(".anonymous(anon -> anon.disable())"));
+        assertTrue(updated.contains(".logout(logout -> logout.disable())"));
+        assertTrue(updated.contains("return http.build();"));
+    }
 }
