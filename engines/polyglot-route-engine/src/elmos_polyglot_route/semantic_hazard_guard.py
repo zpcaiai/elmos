@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Final
+from typing import Any, Final
 
 from .models import Language, RouteError
 
@@ -69,50 +69,181 @@ class SemanticHazard:
 
 _COMMON_PATTERNS: dict[str, list[tuple[str, re.Pattern[str], str]]] = {
     HAZARD_OBJECT_GRAPH_LIFECYCLE: [
-        ("c_malloc_free", re.compile(r"\b(malloc|calloc|realloc|free)\s*\("), "C-style manual heap allocation/deallocation"),
-        ("cpp_new_delete", re.compile(r"\b(new|delete|delete\[\])\s+[A-Za-z_]"), "C++ raw heap operator new/delete"),
-        ("cpp_smart_ptrs", re.compile(r"\bstd::(shared_ptr|unique_ptr|weak_ptr)\b"), "C++ heap smart pointer lifecycle"),
+        (
+            "c_malloc_free",
+            re.compile(r"\b(malloc|calloc|realloc|free)\s*\("),
+            "C-style manual heap allocation/deallocation",
+        ),
+        (
+            "cpp_new_delete",
+            re.compile(r"\b(new|delete|delete\[\])\s+[A-Za-z_]"),
+            "C++ raw heap operator new/delete",
+        ),
+        (
+            "cpp_smart_ptrs",
+            re.compile(r"\bstd::(shared_ptr|unique_ptr|weak_ptr)\b"),
+            "C++ heap smart pointer lifecycle",
+        ),
         ("destructor_syntax", re.compile(r"~[A-Za-z_][A-Za-z0-9_]*\s*\("), "Explicit destructor hook"),
-        ("java_finalize", re.compile(r"\b(finalize\s*\(\)|Cleaner|PhantomReference|WeakReference)\b"), "Java object lifecycle / finalizer reference"),
-        ("dotnet_disposable", re.compile(r"\b(IDisposable|GC\.Collect|GC\.SuppressFinalize)\b"), ".NET explicit memory lifecycle disposal"),
-        ("python_del_gc", re.compile(r"(\bdef\s+__del__\b|\bweakref\b|\bgc\.collect\b)"), "Python __del__ destructor or garbage collection"),
-        ("rust_unsafe_raw", re.compile(r"\b(Box::into_raw|Box::from_raw|std::rc::Rc|std::sync::Arc)\b"), "Rust raw heap pointer / reference count lifecycle"),
-        ("objc_retain_release", re.compile(r"\[[A-Za-z0-9_]+\s+(retain|release|autorelease|dealloc)\]"), "Objective-C manual reference counting lifecycle"),
-        ("swift_unmanaged", re.compile(r"\b(Unmanaged|UnsafeMutablePointer|UnsafePointer|deinit\b)"), "Swift manual memory pointer or deinit lifecycle"),
+        (
+            "java_finalize",
+            re.compile(r"\b(finalize\s*\(\)|Cleaner|PhantomReference|WeakReference)\b"),
+            "Java object lifecycle / finalizer reference",
+        ),
+        (
+            "dotnet_disposable",
+            re.compile(r"\b(IDisposable|GC\.Collect|GC\.SuppressFinalize)\b"),
+            ".NET explicit memory lifecycle disposal",
+        ),
+        (
+            "python_del_gc",
+            re.compile(r"(\bdef\s+__del__\b|\bweakref\b|\bgc\.collect\b)"),
+            "Python __del__ destructor or garbage collection",
+        ),
+        (
+            "rust_unsafe_raw",
+            re.compile(r"\b(Box::into_raw|Box::from_raw|std::rc::Rc|std::sync::Arc)\b"),
+            "Rust raw heap pointer / reference count lifecycle",
+        ),
+        (
+            "objc_retain_release",
+            re.compile(r"\[[A-Za-z0-9_]+\s+(retain|release|autorelease|dealloc)\]"),
+            "Objective-C manual reference counting lifecycle",
+        ),
+        (
+            "swift_unmanaged",
+            re.compile(r"\b(Unmanaged|UnsafeMutablePointer|UnsafePointer|deinit\b)"),
+            "Swift manual memory pointer or deinit lifecycle",
+        ),
         ("go_finalizer", re.compile(r"\b(runtime\.SetFinalizer)\b"), "Go runtime finalizer hook"),
         ("php_destruct", re.compile(r"\bfunction\s+__destruct\b"), "PHP __destruct lifecycle hook"),
         ("kotlin_lifecycle", re.compile(r"\b(AutoCloseable|finalize\s*\(\))\b"), "Kotlin lifecycle management"),
     ],
     HAZARD_ASYNC_CONCURRENCY: [
-        ("async_await", re.compile(r"\b(async\s+(def\s+|function\s+|fn\s+)?|await\s+)"), "Asynchronous coroutine or task await syntax"),
-        ("thread_primitives", re.compile(r"\b(Thread|Runnable|Executor|CompletableFuture|Future|Task\.Run|std::thread|pthread_create)\b"), "Concurrent thread execution primitive"),
-        ("sync_primitives", re.compile(r"\b(synchronized\s*\(|lock\s*\(|std::mutex|Mutex::new|sync\.Mutex|sync\.RWMutex|Semaphore|Monitor\.Enter)\b"), "Thread synchronization / mutual exclusion primitive"),
-        ("go_concurrency", re.compile(r"(\bgo\s+[A-Za-z_]|\bchan\s+[A-Za-z_]|\bmake\s*\(\s*chan\b)"), "Go goroutine or channel concurrency primitive"),
-        ("kotlin_coroutines", re.compile(r"\b(suspend\s+fun\b|coroutineScope|withContext|launch\s*\{|async\s*\{)"), "Kotlin coroutine execution primitive"),
-        ("swift_concurrency", re.compile(r"\b(Task\s*\{|actor\s+[A-Za-z_]|DispatchQueue)"), "Swift concurrency task, actor, or dispatch queue"),
-        ("php_fibers", re.compile(r"\b(Fiber|Coroutine|React\\Promise|Amp\\Promise)\b"), "PHP asynchronous fiber or coroutine"),
+        (
+            "async_await",
+            re.compile(r"\b(async\s+(def\s+|function\s+|fn\s+)?|await\s+)"),
+            "Asynchronous coroutine or task await syntax",
+        ),
+        (
+            "thread_primitives",
+            re.compile(
+                r"\b(Thread|Runnable|Executor|CompletableFuture|Future|Task\.Run|std::thread|pthread_create)\b"
+            ),
+            "Concurrent thread execution primitive",
+        ),
+        (
+            "sync_primitives",
+            re.compile(
+                r"\b(synchronized\s*\(|lock\s*\(|std::mutex|Mutex::new|sync\.Mutex|sync\.RWMutex|Semaphore|Monitor\.Enter)\b"
+            ),
+            "Thread synchronization / mutual exclusion primitive",
+        ),
+        (
+            "go_concurrency",
+            re.compile(r"(\bgo\s+[A-Za-z_]|\bchan\s+[A-Za-z_]|\bmake\s*\(\s*chan\b)"),
+            "Go goroutine or channel concurrency primitive",
+        ),
+        (
+            "kotlin_coroutines",
+            re.compile(r"\b(suspend\s+fun\b|coroutineScope|withContext|launch\s*\{|async\s*\{)"),
+            "Kotlin coroutine execution primitive",
+        ),
+        (
+            "swift_concurrency",
+            re.compile(r"\b(Task\s*\{|actor\s+[A-Za-z_]|DispatchQueue)"),
+            "Swift concurrency task, actor, or dispatch queue",
+        ),
+        (
+            "php_fibers",
+            re.compile(r"\b(Fiber|Coroutine|React\\Promise|Amp\\Promise)\b"),
+            "PHP asynchronous fiber or coroutine",
+        ),
     ],
     HAZARD_EXCEPTION_UNWINDING: [
-        ("try_catch", re.compile(r"\b(try\s*\{|catch\s*\(|finally\s*\{)"), "Structured exception try/catch/finally block"),
-        ("throw_stmt", re.compile(r"\b(throw\s+new\s+|throw\s+[A-Za-z_]|throws\s+[A-Za-z_])"), "Explicit exception throw statement or throws signature"),
-        ("python_try_except", re.compile(r"(\btry\s*:|\bexcept(\s+[A-Za-z_]|\s*:)|raise\s+[A-Za-z_])"), "Python try/except/raise unwinding construct"),
+        (
+            "try_catch",
+            re.compile(r"\b(try\s*\{|catch\s*\(|finally\s*\{)"),
+            "Structured exception try/catch/finally block",
+        ),
+        (
+            "throw_stmt",
+            re.compile(r"\b(throw\s+new\s+|throw\s+[A-Za-z_]|throws\s+[A-Za-z_])"),
+            "Explicit exception throw statement or throws signature",
+        ),
+        (
+            "python_try_except",
+            re.compile(r"(\btry\s*:|\bexcept(\s+[A-Za-z_]|\s*:)|raise\s+[A-Za-z_])"),
+            "Python try/except/raise unwinding construct",
+        ),
         ("go_panic_recover", re.compile(r"\b(panic|recover)\s*\("), "Go panic/recover non-local unwinding"),
         ("rust_panic", re.compile(r"(\bpanic\s*!|\bcatch_unwind\b)"), "Rust panic unwinding construct"),
-        ("objc_try_catch", re.compile(r"(@try\b|@catch\b|@finally\b|@throw\b)"), "Objective-C @try/@catch exception unwinding"),
-        ("vb6_on_error", re.compile(r"\b(On\s+Error\s+GoTo|On\s+Error\s+Resume\s+Next|Err\.Raise)\b", re.IGNORECASE), "Visual Basic 6 error handler unwinding"),
+        (
+            "objc_try_catch",
+            re.compile(r"(@try\b|@catch\b|@finally\b|@throw\b)"),
+            "Objective-C @try/@catch exception unwinding",
+        ),
+        (
+            "vb6_on_error",
+            re.compile(r"\b(On\s+Error\s+GoTo|On\s+Error\s+Resume\s+Next|Err\.Raise)\b", re.IGNORECASE),
+            "Visual Basic 6 error handler unwinding",
+        ),
     ],
     HAZARD_COMPLEX_FRAMEWORK_AND_UI: [
-        ("spring_annotations", re.compile(r"@(RestController|Controller|Autowired|Component|Service|Repository|RequestMapping|GetMapping|PostMapping)\b"), "Spring framework IoC/DI or web endpoint annotation"),
-        ("aspnet_attributes", re.compile(r"\[(ApiController|Route|HttpGet|HttpPost|HttpPut|HttpDelete)"), "ASP.NET Core web controller attribute"),
-        ("react_ui_hooks", re.compile(r"\b(useState|useEffect|useContext|useReducer|useMemo|useCallback)\s*\("), "React lifecycle hook"),
+        (
+            "spring_annotations",
+            re.compile(
+                r"@(RestController|Controller|Autowired|Component|Service|Repository|"
+                r"RequestMapping|GetMapping|PostMapping)\b"
+            ),
+            "Spring framework IoC/DI or web endpoint annotation",
+        ),
+        (
+            "aspnet_attributes",
+            re.compile(r"\[(ApiController|Route|HttpGet|HttpPost|HttpPut|HttpDelete)"),
+            "ASP.NET Core web controller attribute",
+        ),
+        (
+            "react_ui_hooks",
+            re.compile(r"\b(useState|useEffect|useContext|useReducer|useMemo|useCallback)\s*\("),
+            "React lifecycle hook",
+        ),
         ("react_jsx_elements", re.compile(r"<[A-Z][A-Za-z0-9_]*(\s+[^>]*)?(/?>|>)"), "React JSX UI component element"),
-        ("flutter_widgets", re.compile(r"\b(Widget|StatefulWidget|StatelessWidget|BuildContext|setState)\b"), "Flutter UI widget tree / stateful component"),
-        ("vb6_forms", re.compile(r"\bBegin\s+VB\.(Form|CommandButton|TextBox|Label|ListBox|ComboBox)\b", re.IGNORECASE), "VB6 form window or UI control definition"),
-        ("mfc_ui", re.compile(r"\b(CWnd|CDialog|CView|CWinApp|BEGIN_MESSAGE_MAP)\b"), "MFC GUI window class or message map"),
-        ("fastapi_flask", re.compile(r"@(app|router)\.(get|post|put|delete)\b"), "Python FastAPI / Flask routing decorator"),
-        ("go_gin_echo", re.compile(r"\b(gin\.Default|gin\.New|echo\.New|fiber\.New|http\.HandleFunc)\b"), "Go HTTP framework routing / engine"),
-        ("rust_actix_axum", re.compile(r"\b(actix_web|axum::Router|rocket::get|#\[get\(|#\[post\()\b"), "Rust web framework routing / controller"),
-        ("php_laravel_symfony", re.compile(r"\b(Route::(get|post)|extends\s+Controller|new\s+JsonResponse)\b"), "PHP web framework routing / controller"),
+        (
+            "flutter_widgets",
+            re.compile(r"\b(Widget|StatefulWidget|StatelessWidget|BuildContext|setState)\b"),
+            "Flutter UI widget tree / stateful component",
+        ),
+        (
+            "vb6_forms",
+            re.compile(r"\bBegin\s+VB\.(Form|CommandButton|TextBox|Label|ListBox|ComboBox)\b", re.IGNORECASE),
+            "VB6 form window or UI control definition",
+        ),
+        (
+            "mfc_ui",
+            re.compile(r"\b(CWnd|CDialog|CView|CWinApp|BEGIN_MESSAGE_MAP)\b"),
+            "MFC GUI window class or message map",
+        ),
+        (
+            "fastapi_flask",
+            re.compile(r"@(app|router)\.(get|post|put|delete)\b"),
+            "Python FastAPI / Flask routing decorator",
+        ),
+        (
+            "go_gin_echo",
+            re.compile(r"\b(gin\.Default|gin\.New|echo\.New|fiber\.New|http\.HandleFunc)\b"),
+            "Go HTTP framework routing / engine",
+        ),
+        (
+            "rust_actix_axum",
+            re.compile(r"\b(actix_web|axum::Router|rocket::get|#\[get\(|#\[post\()\b"),
+            "Rust web framework routing / controller",
+        ),
+        (
+            "php_laravel_symfony",
+            re.compile(r"\b(Route::(get|post)|extends\s+Controller|new\s+JsonResponse)\b"),
+            "PHP web framework routing / controller",
+        ),
     ],
 }
 

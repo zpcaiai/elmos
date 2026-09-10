@@ -83,13 +83,7 @@ class EnterpriseSemanticParser:
     @classmethod
     def parse(cls, source_code: str, language: str) -> EnterpriseModule:
         module = EnterpriseModule(name="EnterpriseModule", source_language=language)
-        
-        # 1. Parse Classes / Structs
-        class_pattern = re.compile(
-            r"(?:public\s+|class\s+|struct\s+|type\s+)?([A-Za-z0-9_]+)\s*(?:extends|implements|:\s*|struct\s*\{|\{)",
-            re.MULTILINE,
-        )
-        
+
         # Detect Web Controller annotations / attributes
         is_controller = bool(
             re.search(r"@(RestController|Controller)|\[ApiController\]|@Controller|APIRouter", source_code)
@@ -375,7 +369,10 @@ class EnterpriseEmitter:
             "      }\n"
             "      return new Asset(serial, 'ACTIVE', 100.0);\n"
             "    } catch (error: any) {\n"
-            "      throw new HttpException(`Failed to retrieve asset: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);\n"
+            "      throw new HttpException(\n"
+            "        `Failed to retrieve asset: ${error.message}`,\n"
+            "        HttpStatus.INTERNAL_SERVER_ERROR,\n"
+            "      );\n"
             "    }\n"
             "  }\n\n"
             "  @Post()\n"
@@ -383,7 +380,10 @@ class EnterpriseEmitter:
             "    try {\n"
             "      return new Asset(asset.serial, asset.status, asset.value);\n"
             "    } catch (error: any) {\n"
-            "      throw new HttpException(`Failed to create asset: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);\n"
+            "      throw new HttpException(\n"
+            "        `Failed to create asset: ${error.message}`,\n"
+            "        HttpStatus.INTERNAL_SERVER_ERROR,\n"
+            "      );\n"
             "    }\n"
             "  }\n"
             "}\n"

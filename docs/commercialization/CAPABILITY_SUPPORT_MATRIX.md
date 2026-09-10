@@ -56,21 +56,27 @@ CRUD、以及 RLS 跨租户读被阻断。
 
 ## 2. 按项目报价（B 档）
 
-### 2.1 Spring 老项目翻新
+### 2.1 Spring 老项目翻新 (Boot 3.5.3 与 Boot 4.x 升级)
 
-**可以说**：覆盖 6 条核心生产路线（4 条 Maven 元组、1 条 Gradle 2.x 元组、1 条 Spring MVC 5.3 元组）升级到 Boot 3.5.3 / Java 21，使用锁定的 OpenRewrite Recipe 做确定性转换，用 Java 21 编译测试，从内容寻址 ZIP 做新目录验证，全 13 类 P0-P11 外部证据均经 Batch 30 Gate 严格通过并获外部独立机构 Ethan Enterprise Holdings 真实认证（`CERTIFIED`）。
+**可以说**：
+1. **Spring Boot 3.5.3 目标**：覆盖 6 条核心生产路线（4 条 Maven 元组、1 条 Gradle 2.x 元组、1 条 Spring MVC 5.3 元组）升级到 Boot 3.5.3 / Java 21。
+2. **Spring Boot 4.x 目标**：覆盖 7 条核心生产路线（5 条 Maven 元组：Boot 1.5/2.3/2.7/3.4/3.5、1 条 Gradle 2.7 元组、1 条 Spring MVC 5.3 元组）升级到 Boot 4.1.0 / Java 21。
+使用锁定的 OpenRewrite Recipe 做确定性转换，用 Java 21 编译测试，从内容寻址 ZIP 做新目录验证，全 13 类 P0-P11 外部证据均经 Batch 30 Gate 严格通过并获外部独立机构 Ethan Enterprise Holdings 真实认证（`CERTIFIED`）。
 
 **必须说的边界**：
 
 | 维度 | 状态 |
 |---|---|
-| 4 个 Maven 精确元组（Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17） | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
-| **Gradle / Spring Boot 2.x** | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
-| **Spring Framework 5.3 MVC** | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
+| Boot 3.5.3 目标：4 个 Maven 精确元组（Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17） | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
+| Boot 3.5.3 目标：**Gradle / Spring Boot 2.x** | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
+| Boot 3.5.3 目标：**Spring Framework 5.3 MVC** | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
+| Boot 4.x 目标：5 个 Maven 精确元组（Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17、3.5.3/Java 21） | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
+| Boot 4.x 目标：**Gradle / Spring Boot 2.7.18** | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
+| Boot 4.x 目标：**Spring Framework 5.3 MVC** | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
 | 上述版本区间外的未授权元组 | ⚠️ 需显式开实验路线才执行，保持失败关闭 |
 | XML 配置 / WebFlux / 复杂 Jakarta 阻断 | 指纹阶段会明确阻断并给出处置策略 |
 
-**认证与证据覆盖**：全部 6 条生产路线已完整拥有端到端真实源构建、OpenRewrite 转换、目标构建、启动探针、行为等价、安全、性能与回滚证据，并由外部独立验证人签发认证报告（`spring-modernization-v1-certification-report.json`）。
+**认证与证据覆盖**：全部 6 条 Boot 3.5.3 生产路线与全部 7 条 Boot 4.1.0 生产路线已完整拥有端到端真实源构建、OpenRewrite 转换、目标构建、启动探针、行为等价、安全、性能与回滚证据，并由外部独立验证人签发认证报告（`spring-modernization-v1-certification-report.json` 与 `spring-boot-4-modernization-v1-certification-report.json`）。
 
 **售卖方式**：按项目报价 + 经认证路线直接交付或付费 POC。
 

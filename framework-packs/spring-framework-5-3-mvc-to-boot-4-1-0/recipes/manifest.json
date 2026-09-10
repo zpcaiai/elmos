@@ -1,0 +1,11 @@
+{
+  "exact_target_binding": true,
+  "maximum_rewrite_cycles": 2,
+  "pack_key": "spring-framework-5-3-mvc-to-boot-4-1-0",
+  "recipe_config": "recipes/spring-framework-mvc-to-boot-4.1.0.yml",
+  "recipes": [
+    "io.elmos.openrewrite.SpringFrameworkMvcToSpringBoot4_1_0Java21"
+  ],
+  "regex_as_semantic_core": false,
+  "schema_version": 1
+}

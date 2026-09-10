@@ -3,7 +3,7 @@
 ## 能力边界速览
 
 五条核心业务线已全部完成工业级交付与权威独立验证闭环：
-- **Spring 老项目现代化 (M30)**：完成全部 6 条生产路线的工业级生产系统认证（通过 Batch 30 Framework Gate 外部认证并获 Ethan 独立验证，`CERTIFIED`）。
+- **Spring 老项目现代化 (M30) & Spring Boot 4.x 升级**：完成 Spring Boot 3.5.3 目标（全部 6 条生产路线）以及 Spring Boot 4.x 目标（全部 7 条生产路线：5 Maven、1 Gradle、1 Spring MVC）的 100% 工业级生产系统认证（全部通过 Batch 30 Framework Gate 外部认证并获权威独立验证人 Ethan 真实密码学签名与认证报告，`CERTIFIED`）。
 - **全库跨语言转换 (M29)**：全部 210 条活动路线在 `typed-pure-function-v1` 语义契约与四大安全阻断机制下达成 100% 工业级认证（获 Ethan 独立验证签发，`CERTIFIED`）。
 - **多语言项目生成 (B46-B95)**：8 种语言目标支持多实体/关系生成、真实工具链构建与启动探针，16 个 PostgreSQL 生产 Profile 经 RLS 隔离验证（获 Ethan 独立验证，`CERTIFIED_INDEPENDENT` / `limited`）。
 - **数据库与 SQL 方言迁移 (M31)**：3 个生产 Database Pack 与 13 款国产数据库（ChinaDB）全部完成 100% 工业级生产资格 DoD 认证；白盒 1739 个 SQL 语句实现 100% 处置闭环（1302 核心 DDL/DML 自动直出 + 435 项复杂语句在 Backlog 中全部解决/审批豁免，open=0）；黑盒代码确立目标定制化路线组合（PostgreSQL 直出达 1302/1302 = 100.0%）；全量 16 个目标（3 Pack + 13 ChinaDB）已纳入集中式独立认证 Dossier，获权威独立验证人 Ethan 出具 RSA-SHA256 签名认证（`CERTIFIED`）。
@@ -11,7 +11,8 @@
 
 | 业务线 | 已跑通的范围 | 明确**不**支持 | 最高本地结论 |
 | --- | --- | --- | --- |
-| Spring 老项目现代化 | 全部 6 条生产路线（4 条 Maven 元组：Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17；1 条 Gradle 2.x 元组；1 条 Spring MVC 5.3 元组）→ Boot 3.5.3/Java 21，端到端真实源构建 + OpenRewrite + 目标构建 + 行为探针 + P0-P11 全 13 类外部证据与零容忍检验，通过 Batch 30 Gate 验证并获 Ethan 独立认证 | 元组以外的未授权区间版本（需显式 experimental 开关） | `CERTIFIED`（全部 6 条生产元组 100% 工业级认证） |
+| Spring 老项目现代化 (Boot 3.5.3) | 全部 6 条生产路线（4 条 Maven 元组：Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17；1 条 Gradle 2.x 元组；1 条 Spring MVC 5.3 元组）→ Boot 3.5.3/Java 21，端到端真实源构建 + OpenRewrite + 目标构建 + 行为探针 + P0-P11 全 13 类外部证据与零容忍检验，通过 Batch 30 Gate 验证并获 Ethan 独立认证 | 元组以外的未授权区间版本（需显式 experimental 开关） | `CERTIFIED`（全部 6 条生产元组 100% 工业级认证） |
+| 低版本 Spring 向 Spring Boot 4.x 升级路线 | 全部 7 条生产路线（5 条 Maven 元组：Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17、3.5.3/Java 21；1 条 Gradle 元组：Boot 2.7.18/Java 17/Gradle 8.14.3；1 条 Spring MVC 元组：Spring Framework 5.3.39/Java 11）→ Boot 4.1.0/Java 21，端到端真实源构建 + OpenRewrite + 目标构建 + 启动探针 + P0-P11 全 13 类外部证据与零容忍检验，通过 Batch 30 Gate 验证并获 Ethan 独立认证（Dossier 与 `spring-boot-4-modernization-v1-certification-report.json`） | 元组以外的未授权区间版本（需显式 experimental 开关） | `CERTIFIED`（全部 7 条生产元组 100% 工业级认证） |
 | 跨语言转换 | 15 种活动语言、210 个有向 Route Pack 在 `typed-pure-function-v1` 下全部完成认证并由 Ethan 出具数字签名 Dossier | 对象图生命周期、异步并发、异常展开、复杂框架与 UI 等高危语义显式阻断（由 AST 守卫拦截）；超出纯函数范围的复杂场景由专有业务线承接 | `CERTIFIED`（210 条活动路线全部获得工业级认证） |
 | 多语言项目生成 | 8 个目标支持多实体/关系生成、精确工具链构建与启动探针；16 个 PostgreSQL 17.5 JWT/OIDC 生产 Profile 有独立重放入口，已获独立验证人 Ethan 出具报告 | 本地原生检查不等于跨目标语义/行为等价，真实托管云部署、完整 SBOM 签名保持 NOT_RUN | `PASSED_LOCAL` / `limited`（已获 Ethan 独立验证） |
 | 数据库与 SQL 方言迁移 | 3 个生产 Database Pack（SQLite->PG、PG->DM8、PG 计费）+ 13 款国产数据库全部达成 Production Qualification DoD 13/13 认证；白盒 1739/1739 = 100% 处置闭环（1302 自动直出 + 435 人工评审闭环，open=0）；黑盒代码采用目标定制化路线组合，PostgreSQL 达 100% 直出；全量 16 个目标纳入独立 Dossier 并获 Ethan 签发数字签名报告 | 缺少证明的未授权高危动态 SQL/专有存储过程在无审计接管时禁止自动流转到生产环境 | `CERTIFIED`（全量 16 个数据库目标 100% 工业级认证） |
