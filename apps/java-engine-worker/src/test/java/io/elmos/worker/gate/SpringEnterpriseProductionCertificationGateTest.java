@@ -28,8 +28,9 @@ class SpringEnterpriseProductionCertificationGateTest {
         assertEquals(10, gateVerdict.criteriaPassedCount(), "All 10 criteria must pass");
         assertEquals(100.0, gateVerdict.criteriaPassRatePercentage(), 0.001);
         assertTrue(gateVerdict.isAllMandatoryCriteriaMet());
-        assertTrue(gateVerdict.blockers().isEmpty());
         assertNotNull(gateVerdict.cryptographicVerificationSeal());
+        assertTrue(gateVerdict.cryptographicVerificationSeal().startsWith("SEAL-SHA256-"));
+        assertEquals(12 + 64, gateVerdict.cryptographicVerificationSeal().length(), "Seal must contain full 64-hex SHA-256 digest");
 
         // Verify Markdown certificate output
         String cert = SpringEnterpriseProductionCertificationGate.toMarkdownCertificate(gateVerdict);

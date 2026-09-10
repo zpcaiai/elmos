@@ -362,7 +362,7 @@ export class UniversalDOMDifferentialEngine {
 
       const isPureTextElement = (node: DOMNode) => {
         const tag = (node.tagName || '').toLowerCase();
-        if (!['text', 'span', 'strong', 'small', 'b', 'i', 'em'].includes(tag)) return false;
+        if (!['text', 'span', 'strong', 'small', 'b', 'i', 'em', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'label', 'time', 'code'].includes(tag)) return false;
         const hasCritical = criticalAttrs.some(attr => node.hasAttribute(attr));
         if (hasCritical) return false;
         return !node.children.some(c => c.nodeType === 'element');
@@ -370,12 +370,26 @@ export class UniversalDOMDifferentialEngine {
 
       const sChildren = sNode.children.filter(c => c.nodeType === 'element' && !isPureTextElement(c));
       const tChildren = tNode.children.filter(c => c.nodeType === 'element' && !isPureTextElement(c));
-      const minLen = Math.min(sChildren.length, tChildren.length);
-      for (let i = 0; i < minLen; i++) {
-        const sc = sChildren[i];
-        const tc = tChildren[i];
-        if (sc && tc) {
-          compareAttrs(sc, tc, `${path}/${sc.tagName || 'el'}`);
+      const usedT = new Set<number>();
+      for (const sc of sChildren) {
+        let bestIndex = -1;
+        const scNorm = this.normalizeSemanticTag(sc.tagName, sc.nodeType);
+        for (let j = 0; j < tChildren.length; j++) {
+          if (usedT.has(j)) continue;
+          const tc = tChildren[j];
+          if (!tc) continue;
+          const tcNorm = this.normalizeSemanticTag(tc.tagName, tc.nodeType);
+          if (scNorm === tcNorm || this.isSemanticTagMatch(scNorm, tcNorm, sc, tc)) {
+            bestIndex = j;
+            break;
+          }
+        }
+        if (bestIndex !== -1) {
+          usedT.add(bestIndex);
+          const tc = tChildren[bestIndex];
+          if (tc) {
+            compareAttrs(sc, tc, `${path}/${sc.tagName || 'el'}`);
+          }
         }
       }
     };

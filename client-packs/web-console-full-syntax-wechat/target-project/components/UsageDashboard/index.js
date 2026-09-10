@@ -6,11 +6,11 @@ Component({
   properties: {
     allowLocalCredentials: {
       type: null,
-      value: "false",
+      value: false,
     },
     emailAlertsEnabled: {
       type: null,
-      value: "false",
+      value: false,
     },
   },
   data: {
@@ -19,9 +19,16 @@ Component({
     readState: "allowLocalCredentials ? { kind: \"idle\" } : { kind: \"loading\" }",
     insights: "{ kind: \"idle\" }",
     savingAlerts: false,
+    forecast: null,
+    exportQuery: null,
   },
   lifetimes: {
     attached() {
+      const setForm = (val) => { this.setData({ form: typeof val === "function" ? val(this.data.form) : val }); };
+      const setSession = (val) => { this.setData({ session: typeof val === "function" ? val(this.data.session) : val }); };
+      const setReadState = (val) => { this.setData({ readState: typeof val === "function" ? val(this.data.readState) : val }); };
+      const setInsights = (val) => { this.setData({ insights: typeof val === "function" ? val(this.data.insights) : val }); };
+      const setSavingAlerts = (val) => { this.setData({ savingAlerts: typeof val === "function" ? val(this.data.savingAlerts) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -128,7 +135,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_1
       (async () => {
         try {
@@ -184,7 +191,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

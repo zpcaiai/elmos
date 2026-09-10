@@ -29,9 +29,36 @@ Component({
     runnerHealth: null,
     job: null,
     jobBusy: false,
+    routeByPair: null,
+    routeCounts: null,
+    filteredWorkUnits: null,
+    discoveryByUnit: null,
   },
   lifetimes: {
     attached() {
+      const setSourceLanguage = (val) => { this.setData({ sourceLanguage: typeof val === "function" ? val(this.data.sourceLanguage) : val }); };
+      const setTargetLanguage = (val) => { this.setData({ targetLanguage: typeof val === "function" ? val(this.data.targetLanguage) : val }); };
+      const setRepositoryRef = (val) => { this.setData({ repositoryRef: typeof val === "function" ? val(this.data.repositoryRef) : val }); };
+      const setScope = (val) => { this.setData({ scope: typeof val === "function" ? val(this.data.scope) : val }); };
+      const setHandoff = (val) => { this.setData({ handoff: typeof val === "function" ? val(this.data.handoff) : val }); };
+      const setRepositoryPlan = (val) => { this.setData({ repositoryPlan: typeof val === "function" ? val(this.data.repositoryPlan) : val }); };
+      const setDiscovery = (val) => { this.setData({ discovery: typeof val === "function" ? val(this.data.discovery) : val }); };
+      const setWorkUnitFilter = (val) => { this.setData({ workUnitFilter: typeof val === "function" ? val(this.data.workUnitFilter) : val }); };
+      const setWorkUnitPage = (val) => { this.setData({ workUnitPage: typeof val === "function" ? val(this.data.workUnitPage) : val }); };
+      const setCapability = (val) => { this.setData({ capability: typeof val === "function" ? val(this.data.capability) : val }); };
+      const setCapabilityError = (val) => { this.setData({ capabilityError: typeof val === "function" ? val(this.data.capabilityError) : val }); };
+      const setImporting = (val) => { this.setData({ importing: typeof val === "function" ? val(this.data.importing) : val }); };
+      const setFeedback = (val) => { this.setData({ feedback: typeof val === "function" ? val(this.data.feedback) : val }); };
+      const setTenantId = (val) => { this.setData({ tenantId: typeof val === "function" ? val(this.data.tenantId) : val }); };
+      const setActorId = (val) => { this.setData({ actorId: typeof val === "function" ? val(this.data.actorId) : val }); };
+      const setRunnerToken = (val) => { this.setData({ runnerToken: typeof val === "function" ? val(this.data.runnerToken) : val }); };
+      const setWorkspaceId = (val) => { this.setData({ workspaceId: typeof val === "function" ? val(this.data.workspaceId) : val }); };
+      const setRepositoryWorkspaceId = (val) => { this.setData({ repositoryWorkspaceId: typeof val === "function" ? val(this.data.repositoryWorkspaceId) : val }); };
+      const setCasesBundleId = (val) => { this.setData({ casesBundleId: typeof val === "function" ? val(this.data.casesBundleId) : val }); };
+      const setRecoveryJobId = (val) => { this.setData({ recoveryJobId: typeof val === "function" ? val(this.data.recoveryJobId) : val }); };
+      const setRunnerHealth = (val) => { this.setData({ runnerHealth: typeof val === "function" ? val(this.data.runnerHealth) : val }); };
+      const setJob = (val) => { this.setData({ job: typeof val === "function" ? val(this.data.job) : val }); };
+      const setJobBusy = (val) => { this.setData({ jobBusy: typeof val === "function" ? val(this.data.jobBusy) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -42,7 +69,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_1
       (async () => {
         try {
@@ -53,7 +80,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_2
       (async () => {
         try {
@@ -92,7 +119,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_3
       (async () => {
         try {
@@ -114,7 +141,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_4
       (async () => {
         try {
@@ -129,7 +156,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_5
       (async () => {
         try {
@@ -140,7 +167,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

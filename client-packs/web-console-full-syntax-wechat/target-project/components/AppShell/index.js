@@ -20,9 +20,17 @@ Component({
     commandPanel: null,
     commandInput: null,
     returnFocus: null,
+    visibleCommands: [],
   },
   lifetimes: {
     attached() {
+      const setMobileOpen = (val) => { this.setData({ mobileOpen: typeof val === "function" ? val(this.data.mobileOpen) : val }); };
+      const setCommandOpen = (val) => { this.setData({ commandOpen: typeof val === "function" ? val(this.data.commandOpen) : val }); };
+      const setCommandQuery = (val) => { this.setData({ commandQuery: typeof val === "function" ? val(this.data.commandQuery) : val }); };
+      const setCommandActive = (val) => { this.setData({ commandActive: typeof val === "function" ? val(this.data.commandActive) : val }); };
+      const setShowBackToTop = (val) => { this.setData({ showBackToTop: typeof val === "function" ? val(this.data.showBackToTop) : val }); };
+      const setTelemetryEnabled = (val) => { this.setData({ telemetryEnabled: typeof val === "function" ? val(this.data.telemetryEnabled) : val }); };
+      const setProfileOpen = (val) => { this.setData({ profileOpen: typeof val === "function" ? val(this.data.profileOpen) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -33,7 +41,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_1
       (async () => {
         try {
@@ -53,7 +61,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_2
       (async () => {
         try {
@@ -66,7 +74,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_3
       (async () => {
         try {
@@ -79,7 +87,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_4
       (async () => {
         try {
@@ -92,7 +100,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

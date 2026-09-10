@@ -26,9 +26,30 @@ Component({
     audit: [],
     operationError: "",
     busy: false,
+    filteredSkills: null,
   },
   lifetimes: {
     attached() {
+      const setBatch = (val) => { this.setData({ batch: typeof val === "function" ? val(this.data.batch) : val }); };
+      const setQuery = (val) => { this.setData({ query: typeof val === "function" ? val(this.data.query) : val }); };
+      const setSource = (val) => { this.setData({ source: typeof val === "function" ? val(this.data.source) : val }); };
+      const setTarget = (val) => { this.setData({ target: typeof val === "function" ? val(this.data.target) : val }); };
+      const setSelectedSkillId = (val) => { this.setData({ selectedSkillId: typeof val === "function" ? val(this.data.selectedSkillId) : val }); };
+      const setWorkspaceId = (val) => { this.setData({ workspaceId: typeof val === "function" ? val(this.data.workspaceId) : val }); };
+      const setProjectId = (val) => { this.setData({ projectId: typeof val === "function" ? val(this.data.projectId) : val }); };
+      const setEnvironmentId = (val) => { this.setData({ environmentId: typeof val === "function" ? val(this.data.environmentId) : val }); };
+      const setReleaseId = (val) => { this.setData({ releaseId: typeof val === "function" ? val(this.data.releaseId) : val }); };
+      const setPolicyVersion = (val) => { this.setData({ policyVersion: typeof val === "function" ? val(this.data.policyVersion) : val }); };
+      const setRisk = (val) => { this.setData({ risk: typeof val === "function" ? val(this.data.risk) : val }); };
+      const setTenantId = (val) => { this.setData({ tenantId: typeof val === "function" ? val(this.data.tenantId) : val }); };
+      const setActorId = (val) => { this.setData({ actorId: typeof val === "function" ? val(this.data.actorId) : val }); };
+      const setRunnerToken = (val) => { this.setData({ runnerToken: typeof val === "function" ? val(this.data.runnerToken) : val }); };
+      const setSourceFiles = (val) => { this.setData({ sourceFiles: typeof val === "function" ? val(this.data.sourceFiles) : val }); };
+      const setInputJson = (val) => { this.setData({ inputJson: typeof val === "function" ? val(this.data.inputJson) : val }); };
+      const setRun = (val) => { this.setData({ run: typeof val === "function" ? val(this.data.run) : val }); };
+      const setAudit = (val) => { this.setData({ audit: typeof val === "function" ? val(this.data.audit) : val }); };
+      const setOperationError = (val) => { this.setData({ operationError: typeof val === "function" ? val(this.data.operationError) : val }); };
+      const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -37,7 +58,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_1
       (async () => {
         try {
@@ -48,7 +69,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

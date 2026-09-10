@@ -183,17 +183,58 @@ public final class SpringThirtyOpenSourceProjectsCorpus {
     }
 
     private static boolean verifyTargetBuild(Path root, ProjectSpec spec) {
-        // Check for unresolved legacy constructs
+        // 1. Verify build tool descriptor integrity
+        Path pom = root.resolve("pom.xml");
+        Path gradle = root.resolve("build.gradle");
+        if (Files.exists(pom)) {
+            try {
+                String pomText = Files.readString(pom, StandardCharsets.UTF_8);
+                if (!pomText.contains("<artifactId>spring-boot-starter-parent</artifactId>")
+                        || !pomText.contains("<version>4.1.0</version>")
+                        || !pomText.contains("<java.version>21</java.version>")) {
+                    return false;
+                }
+            } catch (IOException e) {
+                return false;
+            }
+        } else if (Files.exists(gradle)) {
+            try {
+                String gradleText = Files.readString(gradle, StandardCharsets.UTF_8);
+                if (!gradleText.contains("org.springframework.boot") || !gradleText.contains("sourceCompatibility")) {
+                    return false;
+                }
+            } catch (IOException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+        // 2. Check for unresolved legacy constructs & syntactic balance across all Java sources
         try (var stream = Files.walk(root)) {
             List<Path> javaFiles = stream.filter(p -> p.toString().endsWith(".java")).toList();
+            if (javaFiles.isEmpty()) {
+                return false;
+            }
             for (Path jf : javaFiles) {
                 String text = Files.readString(jf, StandardCharsets.UTF_8);
+                if (!text.contains("package ")) {
+                    return false;
+                }
+                long openBraces = text.chars().filter(ch -> ch == '{').count();
+                long closeBraces = text.chars().filter(ch -> ch == '}').count();
+                if (openBraces != closeBraces) {
+                    return false;
+                }
                 if (text.contains("extends WebSecurityConfigurerAdapter")
                         || text.contains("@EnableGlobalMethodSecurity")
                         || text.contains("@TypeDef")
                         || text.contains("org.hibernate.Criteria")
                         || text.contains("@RibbonClient")
-                        || text.contains("@EnableZuulProxy")) {
+                        || text.contains("@EnableZuulProxy")
+                        || text.contains("javax.persistence.")
+                        || text.contains("org.springframework.cloud.netflix.feign")
+                        || text.contains("spring-cloud-starter-sleuth")) {
                     return false;
                 }
             }
@@ -209,13 +250,20 @@ public final class SpringThirtyOpenSourceProjectsCorpus {
             return false;
         }
         try (var stream = Files.walk(testDir)) {
-            List<Path> tests = stream.filter(p -> p.toString().endsWith("Test.java")).toList();
+            List<Path> tests = stream.filter(p -> p.toString().endsWith("Test.java") || p.toString().endsWith("Tests.java")).toList();
             if (tests.isEmpty()) {
                 return false;
             }
             for (Path t : tests) {
                 String content = Files.readString(t, StandardCharsets.UTF_8);
                 if (!content.contains("@Test")) {
+                    return false;
+                }
+                boolean hasAssertion = content.contains("assert")
+                        || content.contains("verify")
+                        || content.contains("status().is")
+                        || content.contains("jsonPath");
+                if (!hasAssertion) {
                     return false;
                 }
             }
@@ -226,7 +274,48 @@ public final class SpringThirtyOpenSourceProjectsCorpus {
     }
 
     private static boolean verifyStartupProbe(Path root, ProjectSpec spec) {
-        return true;
+        // 1. Verify main application entrypoint exists and declares @SpringBootApplication
+        Path mainApp = root.resolve("src/main/java/io/elmos/benchmark/Application.java");
+        if (!Files.exists(mainApp)) {
+            return false;
+        }
+        try {
+            String appContent = Files.readString(mainApp, StandardCharsets.UTF_8);
+            if (!appContent.contains("@SpringBootApplication") || !appContent.contains("SpringApplication.run")) {
+                return false;
+            }
+
+            // 2. Application properties/yml exists and defines server.port and health endpoint exposure
+            Path appProps = root.resolve("src/main/resources/application.properties");
+            Path appYml = root.resolve("src/main/resources/application.yml");
+            if (!Files.exists(appProps) && !Files.exists(appYml)) {
+                return false;
+            }
+            if (Files.exists(appProps)) {
+                String props = Files.readString(appProps, StandardCharsets.UTF_8);
+                if (!props.contains("server.port=") || !props.contains("management.endpoints.web.exposure.include")) {
+                    return false;
+                }
+            }
+
+            // 3. Build tool file defines actuator dependency
+            Path pom = root.resolve("pom.xml");
+            Path gradle = root.resolve("build.gradle");
+            if (Files.exists(pom)) {
+                String pomText = Files.readString(pom, StandardCharsets.UTF_8);
+                if (!pomText.contains("spring-boot-starter-actuator") && !pomText.contains("spring-boot-starter-web")) {
+                    return false;
+                }
+            } else if (Files.exists(gradle)) {
+                String gradleText = Files.readString(gradle, StandardCharsets.UTF_8);
+                if (!gradleText.contains("spring-boot-starter")) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     private static int calculateLoc(Path root) {

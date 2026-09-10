@@ -22,6 +22,10 @@ Component({
   },
   lifetimes: {
     attached() {
+      const setPending = (val) => { this.setData({ pending: typeof val === "function" ? val(this.data.pending) : val }); };
+      const setMessage = (val) => { this.setData({ message: typeof val === "function" ? val(this.data.message) : val }); };
+      const setFailed = (val) => { this.setData({ failed: typeof val === "function" ? val(this.data.failed) : val }); };
+      const setQrCode = (val) => { this.setData({ qrCode: typeof val === "function" ? val(this.data.qrCode) : val }); };
     },
     detached() {
     },

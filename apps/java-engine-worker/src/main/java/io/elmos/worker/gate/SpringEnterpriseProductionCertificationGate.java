@@ -9,6 +9,9 @@ import io.elmos.worker.rulebook.SpringModernizationArchitectureRulebookEnforcer.
 import io.elmos.worker.workflow.SpringModernizationEndToEndWorkflowEngine;
 import io.elmos.worker.workflow.SpringModernizationEndToEndWorkflowEngine.WorkflowResult;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -145,59 +148,74 @@ public final class SpringEnterpriseProductionCertificationGate {
         if (!c5) blockers.add("Artifact provenance generation failed or target LOC is zero");
 
         // Criterion 6: Zero Unindexed Positional Parameters in JPA/Hibernate Queries
-        boolean c6 = true; // Guaranteed by SpringJpaHibernateQueryModernizer
+        boolean c6 = benchmarkReport.projectMetrics().stream().allMatch(m ->
+                m.auditVerdict() == null || m.auditVerdict().jpaCompliant()
+        );
         criteria.add(new GateCriterion(
                 "CRIT-06",
                 "Hibernate 6 Positional Parameter Indexing ('?' -> '?1')",
                 "All legacy JPA and Hibernate queries must use numbered parameters '?1' or named parameters ':param'.",
                 true,
                 c6,
-                "All JPA queries across corpus verified for numbered parameter syntax"
+                c6 ? "All JPA queries across corpus verified for numbered parameter syntax" : "Unindexed positional parameters found in queries"
         ));
+        if (!c6) blockers.add("One or more projects failed JPA positional parameter indexing audit");
 
         // Criterion 7: Security 6 FilterChain & BREACH Defense
-        boolean c7 = true; // Guaranteed by SpringSecurityFilterChainModernizer & Advanced Modernizer
+        boolean c7 = benchmarkReport.projectMetrics().stream().allMatch(m ->
+                m.auditVerdict() == null || m.auditVerdict().securityCompliant()
+        );
         criteria.add(new GateCriterion(
                 "CRIT-07",
                 "Spring Security 6 Lambda DSL & BREACH CSRF Protection",
                 "WebSecurityConfigurerAdapter completely removed, authorizeHttpRequests lambda DSL and XorCsrfTokenRequestAttributeHandler active.",
                 true,
                 c7,
-                "Spring Security 6 filter chains and BREACH defense validated across all security-bearing projects"
+                c7 ? "Spring Security 6 filter chains and BREACH defense validated across all security-bearing projects" : "Security filter chain non-compliance detected"
         ));
+        if (!c7) blockers.add("One or more projects failed Spring Security 6 filter chain audit");
 
         // Criterion 8: Zero Netflix OSS Legacy Dependencies
-        boolean c8 = true; // Guaranteed by SpringCloudMicroservicesModernizer
+        boolean c8 = benchmarkReport.projectMetrics().stream().allMatch(m ->
+                m.auditVerdict() == null || m.auditVerdict().cloudCompliant()
+        );
         criteria.add(new GateCriterion(
                 "CRIT-08",
                 "Spring Cloud Modernization (Ribbon -> LoadBalancer, Zuul -> Gateway, Hystrix -> Resilience4j)",
                 "Netflix OSS legacy components fully replaced with modern Spring Cloud equivalents.",
                 true,
                 c8,
-                "All microservice and gateway components modernized to Spring Cloud 2024.0.0 standards"
+                c8 ? "All microservice and gateway components modernized to Spring Cloud 2024.0.0 standards" : "Legacy Netflix OSS dependencies or annotations detected"
         ));
+        if (!c8) blockers.add("One or more projects failed Spring Cloud modernization audit");
 
         // Criterion 9: 100% XML Hybrid Configuration Migrated to JavaConfig
-        boolean c9 = true; // Guaranteed by SpringXmlToJavaConfigConverter
+        boolean c9 = benchmarkReport.projectMetrics().stream().allMatch(m ->
+                m.auditVerdict() == null || m.auditVerdict().xmlCompliant()
+        );
         criteria.add(new GateCriterion(
                 "CRIT-09",
                 "XML Hybrid Configuration Modernization to Type-Safe JavaConfig",
                 "All bean definitions, component scans, transaction management, and MVC configurations converted to JavaConfig.",
                 true,
                 c9,
-                "XML legacy descriptors converted to type-safe @Configuration classes"
+                c9 ? "XML legacy descriptors converted to type-safe @Configuration classes" : "Incomplete XML to JavaConfig conversions detected"
         ));
+        if (!c9) blockers.add("One or more projects failed XML to JavaConfig migration audit");
 
         // Criterion 10: Actuator & Micrometer Tracing Modernization
-        boolean c10 = true; // Guaranteed by SpringEnterpriseObservabilityAndMicrometerTracer
+        boolean c10 = benchmarkReport.projectMetrics().stream().allMatch(m ->
+                m.auditVerdict() == null || (m.auditVerdict().cloudCompliant() && m.auditVerdict().cloudScore() >= 95.0)
+        );
         criteria.add(new GateCriterion(
                 "CRIT-10",
                 "Observability & Micrometer Tracing Modernization (Sleuth -> Micrometer Tracing)",
                 "Legacy Sleuth imports and properties replaced with Micrometer Tracing, OpenTelemetry, and Prometheus.",
                 true,
                 c10,
-                "Full observability and metrics modernizers validated across corpus"
+                c10 ? "Full observability and metrics modernizers validated across corpus" : "Observability or tracing compliance below threshold"
         ));
+        if (!c10) blockers.add("Observability or tracing compliance failed across benchmark corpus");
 
         int passedCount = (int) criteria.stream().filter(GateCriterion::isSatisfied).count();
         double passRate = ((double) passedCount / criteria.size()) * 100.0;
@@ -208,7 +226,7 @@ public final class SpringEnterpriseProductionCertificationGate {
 
         // Cryptographic verification seal
         String sealPayload = String.join(":", execId, status.name(), tier, String.valueOf(passRate), String.valueOf(benchmarkReport.totalTargetLoc()));
-        String seal = "SEAL-SHA256-" + Integer.toHexString(sealPayload.hashCode()).toUpperCase();
+        String seal = "SEAL-SHA256-" + computeSha256(sealPayload);
 
         return new CertificationGateVerdict(
                 execId,
@@ -267,7 +285,8 @@ public final class SpringEnterpriseProductionCertificationGate {
 
         GateStatus status = allPassed ? GateStatus.PASSED : GateStatus.FAILED_BLOCKED;
         String tier = allPassed ? "E5_CERTIFIED_PRODUCTION_READY" : "E0_NON_CERTIFIED";
-        String seal = "SEAL-SHA256-" + Integer.toHexString((execId + status + tier).hashCode()).toUpperCase();
+        String sealPayload = String.join(":", execId, status.name(), tier, String.valueOf(passRate), String.valueOf(workflowResult.targetLoc()));
+        String seal = "SEAL-SHA256-" + computeSha256(sealPayload);
 
         return new CertificationGateVerdict(
                 execId,
@@ -283,6 +302,20 @@ public final class SpringEnterpriseProductionCertificationGate {
                 Collections.unmodifiableList(warnings),
                 seal
         );
+    }
+
+    private static String computeSha256(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) {
+                sb.append(String.format("%02X", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 algorithm unavailable", e);
+        }
     }
 
     /**

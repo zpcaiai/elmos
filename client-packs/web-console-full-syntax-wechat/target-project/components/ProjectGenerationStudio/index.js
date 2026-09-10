@@ -47,9 +47,50 @@ Component({
     feedbackTimer: null,
     sourceFileInput: null,
     jobRequestEpoch: 0,
+    selectedProfiles: null,
+    artifactGroups: null,
+    runtimeRemainingSeconds: null,
   },
   lifetimes: {
     attached() {
+      const setName = (val) => { this.setData({ name: typeof val === "function" ? val(this.data.name) : val }); };
+      const setNamespace = (val) => { this.setData({ namespace: typeof val === "function" ? val(this.data.namespace) : val }); };
+      const setDescription = (val) => { this.setData({ description: typeof val === "function" ? val(this.data.description) : val }); };
+      const setEntity = (val) => { this.setData({ entity: typeof val === "function" ? val(this.data.entity) : val }); };
+      const setReviewer = (val) => { this.setData({ reviewer: typeof val === "function" ? val(this.data.reviewer) : val }); };
+      const setTargets = (val) => { this.setData({ targets: typeof val === "function" ? val(this.data.targets) : val }); };
+      const setPersistence = (val) => { this.setData({ persistence: typeof val === "function" ? val(this.data.persistence) : val }); };
+      const setAuthMode = (val) => { this.setData({ authMode: typeof val === "function" ? val(this.data.authMode) : val }); };
+      const setSourceUrl = (val) => { this.setData({ sourceUrl: typeof val === "function" ? val(this.data.sourceUrl) : val }); };
+      const setSourceSkills = (val) => { this.setData({ sourceSkills: typeof val === "function" ? val(this.data.sourceSkills) : val }); };
+      const setRepositoryWorkspaceId = (val) => { this.setData({ repositoryWorkspaceId: typeof val === "function" ? val(this.data.repositoryWorkspaceId) : val }); };
+      const setRepositoryPaths = (val) => { this.setData({ repositoryPaths: typeof val === "function" ? val(this.data.repositoryPaths) : val }); };
+      const setSourceFiles = (val) => { this.setData({ sourceFiles: typeof val === "function" ? val(this.data.sourceFiles) : val }); };
+      const setSourceBundle = (val) => { this.setData({ sourceBundle: typeof val === "function" ? val(this.data.sourceBundle) : val }); };
+      const setSourceBusy = (val) => { this.setData({ sourceBusy: typeof val === "function" ? val(this.data.sourceBusy) : val }); };
+      const setDraft = (val) => { this.setData({ draft: typeof val === "function" ? val(this.data.draft) : val }); };
+      const setSavedDrafts = (val) => { this.setData({ savedDrafts: typeof val === "function" ? val(this.data.savedDrafts) : val }); };
+      const setDraftsReady = (val) => { this.setData({ draftsReady: typeof val === "function" ? val(this.data.draftsReady) : val }); };
+      const setCapability = (val) => { this.setData({ capability: typeof val === "function" ? val(this.data.capability) : val }); };
+      const setCapabilityError = (val) => { this.setData({ capabilityError: typeof val === "function" ? val(this.data.capabilityError) : val }); };
+      const setRunnerReadiness = (val) => { this.setData({ runnerReadiness: typeof val === "function" ? val(this.data.runnerReadiness) : val }); };
+      const setTenantId = (val) => { this.setData({ tenantId: typeof val === "function" ? val(this.data.tenantId) : val }); };
+      const setRunnerToken = (val) => { this.setData({ runnerToken: typeof val === "function" ? val(this.data.runnerToken) : val }); };
+      const setAnalysis = (val) => { this.setData({ analysis: typeof val === "function" ? val(this.data.analysis) : val }); };
+      const setApproved = (val) => { this.setData({ approved: typeof val === "function" ? val(this.data.approved) : val }); };
+      const setJob = (val) => { this.setData({ job: typeof val === "function" ? val(this.data.job) : val }); };
+      const setRecoveryJobId = (val) => { this.setData({ recoveryJobId: typeof val === "function" ? val(this.data.recoveryJobId) : val }); };
+      const setRunnerBusy = (val) => { this.setData({ runnerBusy: typeof val === "function" ? val(this.data.runnerBusy) : val }); };
+      const setRuntimeLanguage = (val) => { this.setData({ runtimeLanguage: typeof val === "function" ? val(this.data.runtimeLanguage) : val }); };
+      const setRuntimePreviewPayload = (val) => { this.setData({ runtimePreviewPayload: typeof val === "function" ? val(this.data.runtimePreviewPayload) : val }); };
+      const setGithubOwner = (val) => { this.setData({ githubOwner: typeof val === "function" ? val(this.data.githubOwner) : val }); };
+      const setGithubRepositoryName = (val) => { this.setData({ githubRepositoryName: typeof val === "function" ? val(this.data.githubRepositoryName) : val }); };
+      const setGithubToken = (val) => { this.setData({ githubToken: typeof val === "function" ? val(this.data.githubToken) : val }); };
+      const setGithubConfirmed = (val) => { this.setData({ githubConfirmed: typeof val === "function" ? val(this.data.githubConfirmed) : val }); };
+      const setGithubBusy = (val) => { this.setData({ githubBusy: typeof val === "function" ? val(this.data.githubBusy) : val }); };
+      const setGithubIdempotencyKey = (val) => { this.setData({ githubIdempotencyKey: typeof val === "function" ? val(this.data.githubIdempotencyKey) : val }); };
+      const setFeedback = (val) => { this.setData({ feedback: typeof val === "function" ? val(this.data.feedback) : val }); };
+      const setTargetError = (val) => { this.setData({ targetError: typeof val === "function" ? val(this.data.targetError) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -60,7 +101,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_1
       (async () => {
         try {
@@ -81,7 +122,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_2
       (async () => {
         try {
@@ -95,7 +136,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_3
       (async () => {
         try {
@@ -122,7 +163,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_4
       (async () => {
         try {
@@ -152,7 +193,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_5
       (async () => {
         try {
@@ -167,7 +208,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_6
       (async () => {
         try {
@@ -176,7 +217,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_7
       (async () => {
         try {
@@ -189,7 +230,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_8
       (async () => {
         try {
@@ -227,7 +268,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_9
       (async () => {
         try {
@@ -236,7 +277,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

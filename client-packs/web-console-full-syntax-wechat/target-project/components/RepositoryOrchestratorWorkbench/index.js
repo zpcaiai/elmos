@@ -18,9 +18,22 @@ Component({
     result: null,
     preflightError: null,
     submitting: false,
+    selectedDescriptor: null,
   },
   lifetimes: {
     attached() {
+      const setCatalog = (val) => { this.setData({ catalog: typeof val === "function" ? val(this.data.catalog) : val }); };
+      const setCatalogError = (val) => { this.setData({ catalogError: typeof val === "function" ? val(this.data.catalogError) : val }); };
+      const setLoading = (val) => { this.setData({ loading: typeof val === "function" ? val(this.data.loading) : val }); };
+      const setMode = (val) => { this.setData({ mode: typeof val === "function" ? val(this.data.mode) : val }); };
+      const setSelectedModel = (val) => { this.setData({ selectedModel: typeof val === "function" ? val(this.data.selectedModel) : val }); };
+      const setFallbackEnabled = (val) => { this.setData({ fallbackEnabled: typeof val === "function" ? val(this.data.fallbackEnabled) : val }); };
+      const setOptimizationProfile = (val) => { this.setData({ optimizationProfile: typeof val === "function" ? val(this.data.optimizationProfile) : val }); };
+      const setVerificationPolicy = (val) => { this.setData({ verificationPolicy: typeof val === "function" ? val(this.data.verificationPolicy) : val }); };
+      const setRisk = (val) => { this.setData({ risk: typeof val === "function" ? val(this.data.risk) : val }); };
+      const setResult = (val) => { this.setData({ result: typeof val === "function" ? val(this.data.result) : val }); };
+      const setPreflightError = (val) => { this.setData({ preflightError: typeof val === "function" ? val(this.data.preflightError) : val }); };
+      const setSubmitting = (val) => { this.setData({ submitting: typeof val === "function" ? val(this.data.submitting) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -59,7 +72,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

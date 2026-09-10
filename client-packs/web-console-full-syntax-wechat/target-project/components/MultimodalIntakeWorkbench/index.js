@@ -59,9 +59,51 @@ Component({
     estimateRequestOwner: 0,
     intakeProjectGeneration: 0,
     activeProjectId: "projectId",
+    activeProgressJobKey: null,
+    summary: null,
+    estimatePlan: null,
+    estimatePlanDocument: null,
+    filteredPackagePage: null,
   },
   lifetimes: {
     attached() {
+      const setProjectId = (val) => { this.setData({ projectId: typeof val === "function" ? val(this.data.projectId) : val }); };
+      const setDirectText = (val) => { this.setData({ directText: typeof val === "function" ? val(this.data.directText) : val }); };
+      const setAssets = (val) => { this.setData({ assets: typeof val === "function" ? val(this.data.assets) : val }); };
+      const setRecoveryRecordCount = (val) => { this.setData({ recoveryRecordCount: typeof val === "function" ? val(this.data.recoveryRecordCount) : val }); };
+      const setLegacyRecoveryCount = (val) => { this.setData({ legacyRecoveryCount: typeof val === "function" ? val(this.data.legacyRecoveryCount) : val }); };
+      const setRecoveryStoreReady = (val) => { this.setData({ recoveryStoreReady: typeof val === "function" ? val(this.data.recoveryStoreReady) : val }); };
+      const setRecoveryStoreError = (val) => { this.setData({ recoveryStoreError: typeof val === "function" ? val(this.data.recoveryStoreError) : val }); };
+      const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
+      const setReviewBusy = (val) => { this.setData({ reviewBusy: typeof val === "function" ? val(this.data.reviewBusy) : val }); };
+      const setFeedback = (val) => { this.setData({ feedback: typeof val === "function" ? val(this.data.feedback) : val }); };
+      const setTreeQuery = (val) => { this.setData({ treeQuery: typeof val === "function" ? val(this.data.treeQuery) : val }); };
+      const setPackagePreview = (val) => { this.setData({ packagePreview: typeof val === "function" ? val(this.data.packagePreview) : val }); };
+      const setPackagePage = (val) => { this.setData({ packagePage: typeof val === "function" ? val(this.data.packagePage) : val }); };
+      const setPackagePageCursors = (val) => { this.setData({ packagePageCursors: typeof val === "function" ? val(this.data.packagePageCursors) : val }); };
+      const setPackagePageIndex = (val) => { this.setData({ packagePageIndex: typeof val === "function" ? val(this.data.packagePageIndex) : val }); };
+      const setEstimate = (val) => { this.setData({ estimate: typeof val === "function" ? val(this.data.estimate) : val }); };
+      const setEstimateBusy = (val) => { this.setData({ estimateBusy: typeof val === "function" ? val(this.data.estimateBusy) : val }); };
+      const setCorrection = (val) => { this.setData({ correction: typeof val === "function" ? val(this.data.correction) : val }); };
+      const setCorrectionTouched = (val) => { this.setData({ correctionTouched: typeof val === "function" ? val(this.data.correctionTouched) : val }); };
+      const setCorrectionTarget = (val) => { this.setData({ correctionTarget: typeof val === "function" ? val(this.data.correctionTarget) : val }); };
+      const setReviewTasks = (val) => { this.setData({ reviewTasks: typeof val === "function" ? val(this.data.reviewTasks) : val }); };
+      const setReviewSources = (val) => { this.setData({ reviewSources: typeof val === "function" ? val(this.data.reviewSources) : val }); };
+      const setSelectedReviewSourceKey = (val) => { this.setData({ selectedReviewSourceKey: typeof val === "function" ? val(this.data.selectedReviewSourceKey) : val }); };
+      const setSelectedReviewTaskId = (val) => { this.setData({ selectedReviewTaskId: typeof val === "function" ? val(this.data.selectedReviewTaskId) : val }); };
+      const setReviewTargetKind = (val) => { this.setData({ reviewTargetKind: typeof val === "function" ? val(this.data.reviewTargetKind) : val }); };
+      const setReviewTargetLocator = (val) => { this.setData({ reviewTargetLocator: typeof val === "function" ? val(this.data.reviewTargetLocator) : val }); };
+      const setReviewOriginalValue = (val) => { this.setData({ reviewOriginalValue: typeof val === "function" ? val(this.data.reviewOriginalValue) : val }); };
+      const setReviewConfidence = (val) => { this.setData({ reviewConfidence: typeof val === "function" ? val(this.data.reviewConfidence) : val }); };
+      const setReviewReason = (val) => { this.setData({ reviewReason: typeof val === "function" ? val(this.data.reviewReason) : val }); };
+      const setReviewPropagation = (val) => { this.setData({ reviewPropagation: typeof val === "function" ? val(this.data.reviewPropagation) : val }); };
+      const setReviewCurrentCorrection = (val) => { this.setData({ reviewCurrentCorrection: typeof val === "function" ? val(this.data.reviewCurrentCorrection) : val }); };
+      const setReviewClaims = (val) => { this.setData({ reviewClaims: typeof val === "function" ? val(this.data.reviewClaims) : val }); };
+      const setReviewIdentityScope = (val) => { this.setData({ reviewIdentityScope: typeof val === "function" ? val(this.data.reviewIdentityScope) : val }); };
+      const setLegacyReviewClaimDiscarded = (val) => { this.setData({ legacyReviewClaimDiscarded: typeof val === "function" ? val(this.data.legacyReviewClaimDiscarded) : val }); };
+      const setReviewEnqueueRecoveryCount = (val) => { this.setData({ reviewEnqueueRecoveryCount: typeof val === "function" ? val(this.data.reviewEnqueueRecoveryCount) : val }); };
+      const setReviewEnqueueRecoveryError = (val) => { this.setData({ reviewEnqueueRecoveryError: typeof val === "function" ? val(this.data.reviewEnqueueRecoveryError) : val }); };
+      const setReviewClock = (val) => { this.setData({ reviewClock: typeof val === "function" ? val(this.data.reviewClock) : val }); };
       // Lifecycle effect effect_4
       (async () => {
         try {
@@ -110,7 +152,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_5
       (async () => {
         try {
@@ -139,7 +181,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_6
       (async () => {
         try {
@@ -167,7 +209,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_7
       (async () => {
         try {
@@ -176,7 +218,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_8
       (async () => {
         try {
@@ -258,7 +300,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_9
       (async () => {
         try {
@@ -338,7 +380,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_10
       (async () => {
         try {
@@ -348,7 +390,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "timestamp": "2026-09-10T08:41:16.590Z",
+  "timestamp": "2026-09-10T08:56:31.688Z",
   "packKey": "web-console-next16-react19-wechat-v1",
   "totals": {
     "totalComponents": 71,
@@ -468,7 +468,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 1,
+      "consistencyScore": 0.95,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -558,11 +558,13 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 1,
+      "l4Equivalent": false,
+      "consistencyScore": 0.9,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
-      "diagnostics": []
+      "diagnostics": [
+        "Composite semantic score 0.9 is below L4 threshold (0.95)."
+      ]
     },
     {
       "componentName": "Marketplace",
@@ -636,11 +638,13 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": true,
-      "consistencyScore": 0.9967,
+      "l4Equivalent": false,
+      "consistencyScore": 0.8467,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
-      "diagnostics": []
+      "diagnostics": [
+        "Composite semantic score 0.8467 is below L4 threshold (0.95)."
+      ]
     },
     {
       "componentName": "ObservabilityPage",
@@ -871,7 +875,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 1,
+      "consistencyScore": 0.975,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []

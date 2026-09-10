@@ -29,9 +29,33 @@ Component({
     pullRequestTitle: "ELMOS: implement approved changes",
     pullRequestBody: "This pull request was prepared from a tenant-bound ELMOS workspace. Merge and deployment remain separate reviewed actions.",
     pullRequestKey: "() => crypto.randomUUID()",
+    files: null,
   },
   lifetimes: {
     attached() {
+      const setAccessToken = (val) => { this.setData({ accessToken: typeof val === "function" ? val(this.data.accessToken) : val }); };
+      const setProvider = (val) => { this.setData({ provider: typeof val === "function" ? val(this.data.provider) : val }); };
+      const setCloneUrl = (val) => { this.setData({ cloneUrl: typeof val === "function" ? val(this.data.cloneUrl) : val }); };
+      const setRequestedRef = (val) => { this.setData({ requestedRef: typeof val === "function" ? val(this.data.requestedRef) : val }); };
+      const setNativeRepositoryId = (val) => { this.setData({ nativeRepositoryId: typeof val === "function" ? val(this.data.nativeRepositoryId) : val }); };
+      const setProviderInstanceId = (val) => { this.setData({ providerInstanceId: typeof val === "function" ? val(this.data.providerInstanceId) : val }); };
+      const setCredentialRef = (val) => { this.setData({ credentialRef: typeof val === "function" ? val(this.data.credentialRef) : val }); };
+      const setRecoveryId = (val) => { this.setData({ recoveryId: typeof val === "function" ? val(this.data.recoveryId) : val }); };
+      const setWorkspace = (val) => { this.setData({ workspace: typeof val === "function" ? val(this.data.workspace) : val }); };
+      const setSelected = (val) => { this.setData({ selected: typeof val === "function" ? val(this.data.selected) : val }); };
+      const setEditor = (val) => { this.setData({ editor: typeof val === "function" ? val(this.data.editor) : val }); };
+      const setIntent = (val) => { this.setData({ intent: typeof val === "function" ? val(this.data.intent) : val }); };
+      const setOwnerApproved = (val) => { this.setData({ ownerApproved: typeof val === "function" ? val(this.data.ownerApproved) : val }); };
+      const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
+      const setFeedback = (val) => { this.setData({ feedback: typeof val === "function" ? val(this.data.feedback) : val }); };
+      const setFilter = (val) => { this.setData({ filter: typeof val === "function" ? val(this.data.filter) : val }); };
+      const setNewPath = (val) => { this.setData({ newPath: typeof val === "function" ? val(this.data.newPath) : val }); };
+      const setCommitMessage = (val) => { this.setData({ commitMessage: typeof val === "function" ? val(this.data.commitMessage) : val }); };
+      const setDeliveryCredentialRef = (val) => { this.setData({ deliveryCredentialRef: typeof val === "function" ? val(this.data.deliveryCredentialRef) : val }); };
+      const setBaseBranch = (val) => { this.setData({ baseBranch: typeof val === "function" ? val(this.data.baseBranch) : val }); };
+      const setPullRequestTitle = (val) => { this.setData({ pullRequestTitle: typeof val === "function" ? val(this.data.pullRequestTitle) : val }); };
+      const setPullRequestBody = (val) => { this.setData({ pullRequestBody: typeof val === "function" ? val(this.data.pullRequestBody) : val }); };
+      const setPullRequestKey = (val) => { this.setData({ pullRequestKey: typeof val === "function" ? val(this.data.pullRequestKey) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -46,7 +70,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

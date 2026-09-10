@@ -12,9 +12,12 @@ Component({
   data: {
     locale: "zh-CN",
     theme: "light",
+    value: null,
   },
   lifetimes: {
     attached() {
+      const setLocaleState = (val) => { this.setData({ locale: typeof val === "function" ? val(this.data.locale) : val }); };
+      const setThemeState = (val) => { this.setData({ theme: typeof val === "function" ? val(this.data.theme) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -23,7 +26,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_1
       (async () => {
         try {
@@ -33,7 +36,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

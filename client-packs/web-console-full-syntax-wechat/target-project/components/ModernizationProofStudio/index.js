@@ -20,9 +20,24 @@ Component({
     job: null,
     busy: false,
     error: "",
+    selected: null,
   },
   lifetimes: {
     attached() {
+      const setContracts = (val) => { this.setData({ contracts: typeof val === "function" ? val(this.data.contracts) : val }); };
+      const setTargetSkillId = (val) => { this.setData({ targetSkillId: typeof val === "function" ? val(this.data.targetSkillId) : val }); };
+      const setProjectId = (val) => { this.setData({ projectId: typeof val === "function" ? val(this.data.projectId) : val }); };
+      const setRepositoryId = (val) => { this.setData({ repositoryId: typeof val === "function" ? val(this.data.repositoryId) : val }); };
+      const setBaselineCommit = (val) => { this.setData({ baselineCommit: typeof val === "function" ? val(this.data.baselineCommit) : val }); };
+      const setCandidateCommit = (val) => { this.setData({ candidateCommit: typeof val === "function" ? val(this.data.candidateCommit) : val }); };
+      const setImageDigest = (val) => { this.setData({ imageDigest: typeof val === "function" ? val(this.data.imageDigest) : val }); };
+      const setPolicyDigest = (val) => { this.setData({ policyDigest: typeof val === "function" ? val(this.data.policyDigest) : val }); };
+      const setInputs = (val) => { this.setData({ inputs: typeof val === "function" ? val(this.data.inputs) : val }); };
+      const setEvidence = (val) => { this.setData({ evidence: typeof val === "function" ? val(this.data.evidence) : val }); };
+      const setSubjectDigest = (val) => { this.setData({ subjectDigest: typeof val === "function" ? val(this.data.subjectDigest) : val }); };
+      const setJob = (val) => { this.setData({ job: typeof val === "function" ? val(this.data.job) : val }); };
+      const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
+      const setError = (val) => { this.setData({ error: typeof val === "function" ? val(this.data.error) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -39,7 +54,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_1
       (async () => {
         try {
@@ -60,7 +75,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

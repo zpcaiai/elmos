@@ -13,9 +13,13 @@ Component({
     status: "loading",
     principal: null,
     expiresAt: null,
+    value: null,
   },
   lifetimes: {
     attached() {
+      const setStatus = (val) => { this.setData({ status: typeof val === "function" ? val(this.data.status) : val }); };
+      const setPrincipal = (val) => { this.setData({ principal: typeof val === "function" ? val(this.data.principal) : val }); };
+      const setExpiresAt = (val) => { this.setData({ expiresAt: typeof val === "function" ? val(this.data.expiresAt) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -34,7 +38,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_1
       (async () => {
         try {
@@ -61,7 +65,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

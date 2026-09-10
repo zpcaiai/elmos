@@ -16,9 +16,17 @@ Component({
     errorSummary: null,
     resultPanel: null,
     activeAssessment: null,
+    selectedTarget: null,
   },
   lifetimes: {
     attached() {
+      const setCapabilities = (val) => { this.setData({ capabilities: typeof val === "function" ? val(this.data.capabilities) : val }); };
+      const setFields = (val) => { this.setData({ fields: typeof val === "function" ? val(this.data.fields) : val }); };
+      const setParameters = (val) => { this.setData({ parameters: typeof val === "function" ? val(this.data.parameters) : val }); };
+      const setResult = (val) => { this.setData({ result: typeof val === "function" ? val(this.data.result) : val }); };
+      const setLoadingCapabilities = (val) => { this.setData({ loadingCapabilities: typeof val === "function" ? val(this.data.loadingCapabilities) : val }); };
+      const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
+      const setError = (val) => { this.setData({ error: typeof val === "function" ? val(this.data.error) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -57,7 +65,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

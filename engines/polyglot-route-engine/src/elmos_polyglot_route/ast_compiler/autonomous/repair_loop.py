@@ -23,11 +23,31 @@ class RepairResult:
     fixes: list[RepairFix] = field(default_factory=list)
     remaining_diagnostics: list[NativeCompilerDiagnostic] = field(default_factory=list)
 
+    @property
+    def clean(self) -> bool:
+        return self.status in ("clean", "auto_repaired") and len(self.remaining_diagnostics) == 0
+
+    @property
+    def fixed(self) -> bool:
+        return self.status in ("clean", "auto_repaired")
+
+    @property
+    def iterations_taken(self) -> int:
+        return self.iterations
+
+    @property
+    def diagnostics(self) -> list[NativeCompilerDiagnostic]:
+        return self.remaining_diagnostics
+
 
 class AutonomousRepairLoop:
     """Iterative compiler-driven diagnostic and self-repair loop."""
 
     MAX_ITERATIONS = 3
+
+    @classmethod
+    def repair_code(cls, initial_code: str, target_lang: str, max_iterations: int = 3) -> RepairResult:
+        return cls.run(initial_code, target_lang)
 
     @classmethod
     def run(cls, initial_code: str, target_lang: str) -> RepairResult:
@@ -69,6 +89,26 @@ class AutonomousRepairLoop:
                             rule="missing_header_injection",
                             description="Automatically injected missing <cmath> header",
                             diff_summary="+ #include <cmath>"
+                        ))
+                        repaired = True
+                        break
+                    elif target_lang in ("cpp", "c++") and "#include <iostream>" not in new_code and ("cout" in d.message.lower() or "ostream" in d.message.lower()):
+                        new_code = "#include <iostream>\n" + new_code
+                        fixes.append(RepairFix(
+                            iteration=i,
+                            rule="missing_header_injection",
+                            description="Automatically injected missing <iostream> header",
+                            diff_summary="+ #include <iostream>"
+                        ))
+                        repaired = True
+                        break
+                    elif target_lang in ("cpp", "c++") and "#include <string>" not in new_code and ("string" in d.message.lower() or "undeclared identifier 'std'" in d.message):
+                        new_code = "#include <string>\n" + new_code
+                        fixes.append(RepairFix(
+                            iteration=i,
+                            rule="missing_header_injection",
+                            description="Automatically injected missing <string> header",
+                            diff_summary="+ #include <string>"
                         ))
                         repaired = True
                         break

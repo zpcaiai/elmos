@@ -156,12 +156,25 @@ public final class SpringCorpusEnterpriseServicesPart3 {
                 package io.elmos.benchmark.vault.service;
 
                 import org.springframework.stereotype.Service;
+                import java.nio.charset.StandardCharsets;
+                import java.security.MessageDigest;
+                import java.security.NoSuchAlgorithmException;
 
                 @Service
                 public class AuditTamperProofService {
 
                     public String generateTamperProofHash(String record) {
-                        return "SHA256-" + record.hashCode();
+                        try {
+                            MessageDigest md = MessageDigest.getInstance("SHA-256");
+                            byte[] hash = md.digest(record.getBytes(StandardCharsets.UTF_8));
+                            StringBuilder hex = new StringBuilder();
+                            for (byte b : hash) {
+                                hex.append(String.format("%02x", b));
+                            }
+                            return "SHA256-" + hex.toString();
+                        } catch (NoSuchAlgorithmException e) {
+                            throw new IllegalStateException("SHA-256 algorithm unavailable", e);
+                        }
                     }
                 }
                 """);

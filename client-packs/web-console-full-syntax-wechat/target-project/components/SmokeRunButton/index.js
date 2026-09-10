@@ -23,9 +23,22 @@ Component({
     extendReason: "",
     extendActor: "",
     expiresAtRef: null,
+    selectedEntry: null,
   },
   lifetimes: {
     attached() {
+      const setCapability = (val) => { this.setData({ capability: typeof val === "function" ? val(this.data.capability) : val }); };
+      const setPack = (val) => { this.setData({ pack: typeof val === "function" ? val(this.data.pack) : val }); };
+      const setSession = (val) => { this.setData({ session: typeof val === "function" ? val(this.data.session) : val }); };
+      const setEvidence = (val) => { this.setData({ evidence: typeof val === "function" ? val(this.data.evidence) : val }); };
+      const setEntry = (val) => { this.setData({ entry: typeof val === "function" ? val(this.data.entry) : val }); };
+      const setError = (val) => { this.setData({ error: typeof val === "function" ? val(this.data.error) : val }); };
+      const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
+      const setRemaining = (val) => { this.setData({ remaining: typeof val === "function" ? val(this.data.remaining) : val }); };
+      const setExtendOpen = (val) => { this.setData({ extendOpen: typeof val === "function" ? val(this.data.extendOpen) : val }); };
+      const setExtendSeconds = (val) => { this.setData({ extendSeconds: typeof val === "function" ? val(this.data.extendSeconds) : val }); };
+      const setExtendReason = (val) => { this.setData({ extendReason: typeof val === "function" ? val(this.data.extendReason) : val }); };
+      const setExtendActor = (val) => { this.setData({ extendActor: typeof val === "function" ? val(this.data.extendActor) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -53,7 +66,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_1
       (async () => {
         try {
@@ -72,7 +85,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_2
       (async () => {
         try {
@@ -86,7 +99,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

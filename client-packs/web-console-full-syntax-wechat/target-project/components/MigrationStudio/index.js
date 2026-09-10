@@ -21,9 +21,22 @@ Component({
     dialogReturnFocus: null,
     dialogPanel: null,
     draftNameInput: null,
+    visibleCapabilities: null,
   },
   lifetimes: {
     attached() {
+      const setView = (val) => { this.setData({ view: typeof val === "function" ? val(this.data.view) : val }); };
+      const setQuery = (val) => { this.setData({ query: typeof val === "function" ? val(this.data.query) : val }); };
+      const setStatusFilter = (val) => { this.setData({ statusFilter: typeof val === "function" ? val(this.data.statusFilter) : val }); };
+      const setSelected = (val) => { this.setData({ selected: typeof val === "function" ? val(this.data.selected) : val }); };
+      const setCapabilities = (val) => { this.setData({ capabilities: typeof val === "function" ? val(this.data.capabilities) : val }); };
+      const setSource = (val) => { this.setData({ source: typeof val === "function" ? val(this.data.source) : val }); };
+      const setNote = (val) => { this.setData({ note: typeof val === "function" ? val(this.data.note) : val }); };
+      const setDialogOpen = (val) => { this.setData({ dialogOpen: typeof val === "function" ? val(this.data.dialogOpen) : val }); };
+      const setDrafts = (val) => { this.setData({ drafts: typeof val === "function" ? val(this.data.drafts) : val }); };
+      const setDraftsReady = (val) => { this.setData({ draftsReady: typeof val === "function" ? val(this.data.draftsReady) : val }); };
+      const setDraftCapability = (val) => { this.setData({ draftCapability: typeof val === "function" ? val(this.data.draftCapability) : val }); };
+      const setFeedback = (val) => { this.setData({ feedback: typeof val === "function" ? val(this.data.feedback) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -38,7 +51,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_1
       (async () => {
         try {
@@ -60,7 +73,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_2
       (async () => {
         try {
@@ -75,7 +88,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_3
       (async () => {
         try {
@@ -111,7 +124,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_4
       (async () => {
         try {
@@ -122,7 +135,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

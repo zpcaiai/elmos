@@ -10,7 +10,7 @@ Component({
     },
     compact: {
       type: null,
-      value: "false",
+      value: false,
     },
   },
   data: {

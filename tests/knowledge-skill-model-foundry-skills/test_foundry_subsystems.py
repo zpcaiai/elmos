@@ -9,15 +9,15 @@ ENGINE_SOURCE = ROOT / "engines/knowledge-skill-model-foundry-engine/src"
 if str(ENGINE_SOURCE) not in sys.path:
     sys.path.insert(0, str(ENGINE_SOURCE))
 
-from elmos_foundry.subsystems.ast_codemod_toolkit import ASTCodemodToolkit
-from elmos_foundry.subsystems.polyglot_sql_transpiler import PolyglotSQLTranspiler
-from elmos_foundry.subsystems.prompt_guard_engine import PromptGuardEngine
-from elmos_foundry.subsystems.concurrency_deadlock_engine import ConcurrencyDeadlockEngine
-from elmos_foundry.subsystems.spdx_cyclonedx_license_engine import SPDXCycloneDXLicenseEngine
-from elmos_foundry.subsystems.metamorphic_fuzz_engine import MetamorphicFuzzEngine
-from elmos_foundry.subsystems.formal_contract_synthesizer import FormalContractSynthesizer
-from elmos_foundry.subsystems.model_routing_optimizer import ModelRoutingOptimizer
-from elmos_foundry.subsystems.evaluation_consensus_engine import EvaluationConsensusEngine
+from elmos_foundry.subsystems.ast_codemod_toolkit import ASTCodemodToolkit  # noqa: E402
+from elmos_foundry.subsystems.polyglot_sql_transpiler import PolyglotSQLTranspiler  # noqa: E402
+from elmos_foundry.subsystems.prompt_guard_engine import PromptGuardEngine  # noqa: E402
+from elmos_foundry.subsystems.concurrency_deadlock_engine import ConcurrencyDeadlockEngine  # noqa: E402
+from elmos_foundry.subsystems.spdx_cyclonedx_license_engine import SPDXCycloneDXLicenseEngine  # noqa: E402
+from elmos_foundry.subsystems.metamorphic_fuzz_engine import MetamorphicFuzzEngine  # noqa: E402
+from elmos_foundry.subsystems.formal_contract_synthesizer import FormalContractSynthesizer  # noqa: E402
+from elmos_foundry.subsystems.model_routing_optimizer import ModelRoutingOptimizer  # noqa: E402
+from elmos_foundry.subsystems.evaluation_consensus_engine import EvaluationConsensusEngine  # noqa: E402
 
 
 class FoundrySubsystemsTests(unittest.TestCase):

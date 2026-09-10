@@ -10,7 +10,7 @@ Component({
     },
     size: {
       type: null,
-      value: "20",
+      value: 20,
     },
     className: {
       type: null,

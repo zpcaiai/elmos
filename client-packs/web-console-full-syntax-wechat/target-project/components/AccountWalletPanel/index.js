@@ -18,6 +18,13 @@ Component({
   },
   lifetimes: {
     attached() {
+      const setWallet = (val) => { this.setData({ wallet: typeof val === "function" ? val(this.data.wallet) : val }); };
+      const setLedger = (val) => { this.setData({ ledger: typeof val === "function" ? val(this.data.ledger) : val }); };
+      const setHandoff = (val) => { this.setData({ handoff: typeof val === "function" ? val(this.data.handoff) : val }); };
+      const setAmountYuan = (val) => { this.setData({ amountYuan: typeof val === "function" ? val(this.data.amountYuan) : val }); };
+      const setFeedback = (val) => { this.setData({ feedback: typeof val === "function" ? val(this.data.feedback) : val }); };
+      const setFailure = (val) => { this.setData({ failure: typeof val === "function" ? val(this.data.failure) : val }); };
+      const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -26,7 +33,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_1
       (async () => {
         try {
@@ -60,7 +67,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

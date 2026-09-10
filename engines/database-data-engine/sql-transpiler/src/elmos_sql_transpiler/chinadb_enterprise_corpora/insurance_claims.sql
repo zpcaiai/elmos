@@ -1,182 +1,2298 @@
 -- ============================================================================
--- Enterprise Insurance & Actuarial Claims Production Workload
--- Source Dialects: Oracle PL/SQL & SQL Server T-SQL
+-- Enterprise Life & P&C Insurance Claims, Underwriting & Actuarial Reserves (2,200+ LOC)
+-- IFRS 17 Calculation, Loss Triangles, Claims Adjudication, Reinsurance Cessions
 -- ============================================================================
 
--- Table: Insurance Policyholders
+CREATE SEQUENCE ins_policy_seq START WITH 2000001 INCREMENT BY 1 NOCACHE NOCYCLE;
+CREATE SEQUENCE ins_claim_seq START WITH 4000001 INCREMENT BY 1 NOCACHE NOCYCLE;
+CREATE SEQUENCE ins_payout_seq START WITH 6000001 INCREMENT BY 1 NOCACHE NOCYCLE;
+
+-- Insurance Product Catalogue
+CREATE TABLE ins_products (
+    product_code VARCHAR2(32) NOT NULL,
+    product_name VARCHAR2(128) NOT NULL,
+    line_of_business VARCHAR2(32) NOT NULL,
+    coverage_type VARCHAR2(32) NOT NULL,
+    min_sum_assured NUMBER(18, 4) NOT NULL,
+    max_sum_assured NUMBER(18, 4) NOT NULL,
+    standard_premium_rate NUMBER(8, 6) NOT NULL,
+    status VARCHAR2(16) DEFAULT 'ACTIVE' NOT NULL,
+    CONSTRAINT pk_ins_products PRIMARY KEY (product_code),
+    CONSTRAINT chk_ins_prod_lob CHECK (line_of_business IN ('LIFE', 'HEALTH', 'AUTO', 'PROPERTY', 'CASUALTY'))
+);
+
+-- Policyholder Master Records
 CREATE TABLE ins_policyholders (
     holder_id VARCHAR2(32) NOT NULL,
-    id_card_no VARCHAR2(18) NOT NULL,
-    full_name VARCHAR2(64) NOT NULL,
-    phone_number VARCHAR2(20) NOT NULL,
-    credit_rating VARCHAR2(8) DEFAULT 'AAA' NOT NULL,
-    risk_level NUMBER(3, 0) DEFAULT 1 NOT NULL,
-    status VARCHAR2(16) DEFAULT 'ACTIVE' NOT NULL,
+    holder_name VARCHAR2(128) NOT NULL,
+    id_type VARCHAR2(16) NOT NULL,
+    id_number VARCHAR2(64) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    gender VARCHAR2(8) NOT NULL,
+    smoker_status NUMBER(1) DEFAULT 0 NOT NULL,
+    credit_score NUMBER(4) DEFAULT 700 NOT NULL,
     created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
-    CONSTRAINT pk_ins_holders PRIMARY KEY (holder_id),
-    CONSTRAINT uk_ins_idcard UNIQUE (id_card_no)
+    CONSTRAINT pk_ins_policyholders PRIMARY KEY (holder_id),
+    CONSTRAINT chk_ins_holder_gnd CHECK (gender IN ('MALE', 'FEMALE', 'OTHER'))
 );
 
--- Table: Insurance Policies
+-- Insurance Policy Underwriting Contracts
 CREATE TABLE ins_policies (
     policy_no VARCHAR2(32) NOT NULL,
+    product_code VARCHAR2(32) NOT NULL,
     holder_id VARCHAR2(32) NOT NULL,
-    product_type VARCHAR2(32) NOT NULL,
-    sum_insured NUMBER(18, 4) NOT NULL,
-    deductible NUMBER(18, 4) DEFAULT 0.0000 NOT NULL,
-    premium NUMBER(18, 4) NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
+    sum_assured NUMBER(18, 4) NOT NULL,
+    annual_premium NUMBER(18, 4) NOT NULL,
+    payment_frequency VARCHAR2(16) DEFAULT 'ANNUAL' NOT NULL,
     policy_status VARCHAR2(16) DEFAULT 'IN_FORCE' NOT NULL,
+    effective_date DATE NOT NULL,
+    expiry_date DATE NOT NULL,
+    underwriter_id VARCHAR2(32) DEFAULT 'SYS_UW' NOT NULL,
     created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
     CONSTRAINT pk_ins_policies PRIMARY KEY (policy_no),
-    CONSTRAINT fk_ins_pol_holder FOREIGN KEY (holder_id) REFERENCES ins_policyholders (holder_id),
-    CONSTRAINT chk_ins_pol_status CHECK (policy_status IN ('IN_FORCE', 'EXPIRED', 'CANCELLED', 'SUSPENDED'))
+    CONSTRAINT fk_ins_policies_0 FOREIGN KEY (product_code) REFERENCES ins_products (product_code),
+    CONSTRAINT fk_ins_policies_1 FOREIGN KEY (holder_id) REFERENCES ins_policyholders (holder_id),
+    CONSTRAINT chk_ins_pol_stat CHECK (policy_status IN ('APPLICATION', 'IN_FORCE', 'LAPSED', 'SURRENDERED', 'CLAIMED', 'EXPIRED'))
 );
 
--- Table: Claims Submissions
+-- Policy Beneficiaries and Allocation Ratios
+CREATE TABLE ins_beneficiaries (
+    beneficiary_id VARCHAR2(32) NOT NULL,
+    policy_no VARCHAR2(32) NOT NULL,
+    beneficiary_name VARCHAR2(128) NOT NULL,
+    relationship VARCHAR2(32) NOT NULL,
+    share_percentage NUMBER(5, 2) NOT NULL,
+    CONSTRAINT pk_ins_beneficiaries PRIMARY KEY (beneficiary_id),
+    CONSTRAINT fk_ins_beneficiaries_0 FOREIGN KEY (policy_no) REFERENCES ins_policies (policy_no),
+    CONSTRAINT chk_ins_ben_share CHECK (share_percentage > 0 AND share_percentage <= 100)
+);
+
+-- Policy Premium Billing Schedules
+CREATE TABLE ins_premium_invoices (
+    invoice_no VARCHAR2(32) NOT NULL,
+    policy_no VARCHAR2(32) NOT NULL,
+    due_date DATE NOT NULL,
+    billed_amount NUMBER(18, 4) NOT NULL,
+    paid_amount NUMBER(18, 4) DEFAULT 0.0000 NOT NULL,
+    invoice_status VARCHAR2(16) DEFAULT 'UNPAID' NOT NULL,
+    paid_date DATE,
+    CONSTRAINT pk_ins_premium_invoices PRIMARY KEY (invoice_no),
+    CONSTRAINT fk_ins_premium_invoices_0 FOREIGN KEY (policy_no) REFERENCES ins_policies (policy_no)
+);
+
+-- First Notice of Loss and Claims Adjudication
 CREATE TABLE ins_claims (
-    claim_id VARCHAR2(64) NOT NULL,
+    claim_no VARCHAR2(32) NOT NULL,
     policy_no VARCHAR2(32) NOT NULL,
     incident_date DATE NOT NULL,
-    report_date DATE DEFAULT SYSDATE NOT NULL,
-    claimed_amount NUMBER(18, 4) NOT NULL,
+    reported_date DATE DEFAULT SYSDATE NOT NULL,
+    claim_amount NUMBER(18, 4) NOT NULL,
     approved_amount NUMBER(18, 4) DEFAULT 0.0000 NOT NULL,
-    deductible_applied NUMBER(18, 4) DEFAULT 0.0000 NOT NULL,
-    fraud_risk_score NUMBER(5, 2) DEFAULT 0.00 NOT NULL,
-    claim_status VARCHAR2(16) DEFAULT 'SUBMITTED' NOT NULL,
+    claim_status VARCHAR2(16) DEFAULT 'REPORTED' NOT NULL,
     adjudicator_id VARCHAR2(32),
+    denial_reason VARCHAR2(256),
     created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
-    updated_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
-    CONSTRAINT pk_ins_claims PRIMARY KEY (claim_id),
-    CONSTRAINT fk_ins_claim_policy FOREIGN KEY (policy_no) REFERENCES ins_policies (policy_no),
-    CONSTRAINT chk_ins_claim_status CHECK (claim_status IN ('SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'SETTLED'))
+    CONSTRAINT pk_ins_claims PRIMARY KEY (claim_no),
+    CONSTRAINT fk_ins_claims_0 FOREIGN KEY (policy_no) REFERENCES ins_policies (policy_no),
+    CONSTRAINT chk_ins_clm_stat CHECK (claim_status IN ('REPORTED', 'INVESTIGATING', 'APPROVED', 'REJECTED', 'SETTLED'))
 );
 
--- Table: Actuarial Reserves Ledger
+-- Expert Loss Adjuster Field Reports
+CREATE TABLE ins_claim_assessments (
+    assessment_id VARCHAR2(32) NOT NULL,
+    claim_no VARCHAR2(32) NOT NULL,
+    adjuster_name VARCHAR2(128) NOT NULL,
+    estimated_loss NUMBER(18, 4) NOT NULL,
+    salvage_value NUMBER(18, 4) DEFAULT 0.0000 NOT NULL,
+    assessment_notes CLOB,
+    completed_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
+    CONSTRAINT pk_ins_claim_assessments PRIMARY KEY (assessment_id),
+    CONSTRAINT fk_ins_claim_assessment_0 FOREIGN KEY (claim_no) REFERENCES ins_claims (claim_no)
+);
+
+-- Settled Claim Disbursements and Wire Receipts
+CREATE TABLE ins_claim_payouts (
+    payout_id VARCHAR2(32) NOT NULL,
+    claim_no VARCHAR2(32) NOT NULL,
+    beneficiary_id VARCHAR2(32) NOT NULL,
+    disbursed_amount NUMBER(18, 4) NOT NULL,
+    bank_account_no VARCHAR2(32) NOT NULL,
+    payout_date DATE DEFAULT SYSDATE NOT NULL,
+    payout_status VARCHAR2(16) DEFAULT 'COMPLETED' NOT NULL,
+    CONSTRAINT pk_ins_claim_payouts PRIMARY KEY (payout_id),
+    CONSTRAINT fk_ins_claim_payouts_0 FOREIGN KEY (claim_no) REFERENCES ins_claims (claim_no),
+    CONSTRAINT fk_ins_claim_payouts_1 FOREIGN KEY (beneficiary_id) REFERENCES ins_beneficiaries (beneficiary_id)
+);
+
+-- IBNR and IFRS 17 Best Estimate Liability Reserves
 CREATE TABLE ins_actuarial_reserves (
-    reserve_id VARCHAR2(64) NOT NULL,
-    policy_no VARCHAR2(32) NOT NULL,
-    claim_id VARCHAR2(64),
-    reserve_type VARCHAR2(16) NOT NULL,
-    amount NUMBER(18, 4) NOT NULL,
-    effective_date DATE DEFAULT SYSDATE NOT NULL,
-    created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
-    CONSTRAINT pk_ins_reserves PRIMARY KEY (reserve_id),
-    CONSTRAINT fk_ins_res_policy FOREIGN KEY (policy_no) REFERENCES ins_policies (policy_no),
-    CONSTRAINT chk_ins_res_type CHECK (reserve_type IN ('UNEARNED_PREMIUM', 'OUTSTANDING_CLAIMS', 'IBNR'))
+    reserve_id VARCHAR2(32) NOT NULL,
+    valuation_date DATE NOT NULL,
+    product_code VARCHAR2(32) NOT NULL,
+    accident_year NUMBER(4) NOT NULL,
+    case_reserve NUMBER(20, 4) NOT NULL,
+    ibnr_reserve NUMBER(20, 4) NOT NULL,
+    risk_adjustment NUMBER(20, 4) NOT NULL,
+    csm_amount NUMBER(20, 4) NOT NULL,
+    discounted_reserve NUMBER(20, 4) NOT NULL,
+    CONSTRAINT pk_ins_actuarial_reserves PRIMARY KEY (reserve_id),
+    CONSTRAINT fk_ins_actuarial_reserv_0 FOREIGN KEY (product_code) REFERENCES ins_products (product_code)
 );
 
--- View: Policy Loss Ratio Summary
-CREATE OR REPLACE VIEW v_ins_loss_ratio AS
-SELECT 
-    p.product_type,
-    COUNT(DISTINCT p.policy_no) AS active_policy_count,
-    SUM(p.premium) AS total_earned_premiums,
-    NVL(SUM(c.approved_amount), 0) AS total_claims_paid,
-    ROUND(CASE 
-        WHEN SUM(p.premium) > 0 THEN (NVL(SUM(c.approved_amount), 0) / SUM(p.premium)) * 100.0 
-        ELSE 0.0 
-    END, 2) AS loss_ratio_pct
-FROM ins_policies p
-LEFT JOIN ins_claims c ON p.policy_no = c.policy_no AND c.claim_status = 'SETTLED'
-WHERE p.policy_status = 'IN_FORCE'
-GROUP BY p.product_type;
+-- Proportional and Excess of Loss Reinsurance Treaties
+CREATE TABLE ins_reinsurance_treaties (
+    treaty_code VARCHAR2(32) NOT NULL,
+    reinsurer_name VARCHAR2(128) NOT NULL,
+    treaty_type VARCHAR2(16) NOT NULL,
+    retention_limit NUMBER(18, 4) NOT NULL,
+    cession_percentage NUMBER(5, 2) NOT NULL,
+    effective_year NUMBER(4) NOT NULL,
+    CONSTRAINT pk_ins_reinsurance_treaties PRIMARY KEY (treaty_code),
+    CONSTRAINT chk_ins_re_type CHECK (treaty_type IN ('QUOTA_SHARE', 'SURPLUS', 'EXCESS_OF_LOSS'))
+);
 
--- Stored Procedure: Adjudicate Claim with Fraud Scoring and Coverage Deductible
-CREATE OR REPLACE PROCEDURE sp_ins_adjudicate_claim (
-    p_claim_id IN VARCHAR2,
-    p_adjudicator_id IN VARCHAR2,
-    p_override_fraud IN NUMBER,
-    p_final_decision OUT VARCHAR2,
-    p_payout_amount OUT NUMBER
-)
-IS
-    v_policy_no VARCHAR2(32);
-    v_claimed NUMBER(18, 4);
-    v_status VARCHAR2(16);
-    v_fraud_score NUMBER(5, 2);
-    v_sum_insured NUMBER(18, 4);
-    v_deductible NUMBER(18, 4);
-    v_net_approved NUMBER(18, 4);
+-- Policy Reinsurance Risk and Premium Cessions
+CREATE TABLE ins_reinsurance_cessions (
+    cession_id VARCHAR2(32) NOT NULL,
+    treaty_code VARCHAR2(32) NOT NULL,
+    policy_no VARCHAR2(32) NOT NULL,
+    ceded_sum_assured NUMBER(18, 4) NOT NULL,
+    ceded_premium NUMBER(18, 4) NOT NULL,
+    recovery_amount NUMBER(18, 4) DEFAULT 0.0000 NOT NULL,
+    CONSTRAINT pk_ins_reinsurance_cessions PRIMARY KEY (cession_id),
+    CONSTRAINT fk_ins_reinsurance_cess_0 FOREIGN KEY (treaty_code) REFERENCES ins_reinsurance_treaties (treaty_code),
+    CONSTRAINT fk_ins_reinsurance_cess_1 FOREIGN KEY (policy_no) REFERENCES ins_policies (policy_no)
+);
+
+-- Development Year Cumulative Loss Triangles
+CREATE TABLE ins_loss_triangles (
+    origin_year NUMBER(4) NOT NULL,
+    development_year NUMBER(4) NOT NULL,
+    line_of_business VARCHAR2(32) NOT NULL,
+    cumulative_paid_claims NUMBER(20, 4) NOT NULL,
+    case_incurred_claims NUMBER(20, 4) NOT NULL,
+    CONSTRAINT pk_ins_loss_triangles PRIMARY KEY (origin_year, development_year, line_of_business)
+);
+
+-- Agency Distribution Broker Commissions
+CREATE TABLE ins_agent_commissions (
+    commission_id VARCHAR2(32) NOT NULL,
+    agent_code VARCHAR2(32) NOT NULL,
+    policy_no VARCHAR2(32) NOT NULL,
+    commission_rate NUMBER(6, 4) NOT NULL,
+    payable_amount NUMBER(18, 4) NOT NULL,
+    status VARCHAR2(16) DEFAULT 'PENDING' NOT NULL,
+    settled_date DATE,
+    CONSTRAINT pk_ins_agent_commissions PRIMARY KEY (commission_id),
+    CONSTRAINT fk_ins_agent_commission_0 FOREIGN KEY (policy_no) REFERENCES ins_policies (policy_no)
+);
+
+-- Automated Medical and Financial Underwriting Engines
+CREATE TABLE ins_underwriting_rules (
+    rule_id VARCHAR2(32) NOT NULL,
+    product_code VARCHAR2(32) NOT NULL,
+    condition_expression VARCHAR2(256) NOT NULL,
+    action_outcome VARCHAR2(32) NOT NULL,
+    risk_loading_percentage NUMBER(6, 2) DEFAULT 0.00 NOT NULL,
+    CONSTRAINT pk_ins_underwriting_rules PRIMARY KEY (rule_id),
+    CONSTRAINT fk_ins_underwriting_rul_0 FOREIGN KEY (product_code) REFERENCES ins_products (product_code)
+);
+
+-- Mid-term Policy Modifications and Riders
+CREATE TABLE ins_policy_endorsements (
+    endorsement_id VARCHAR2(32) NOT NULL,
+    policy_no VARCHAR2(32) NOT NULL,
+    endorsement_type VARCHAR2(32) NOT NULL,
+    delta_premium NUMBER(18, 4) NOT NULL,
+    effective_date DATE NOT NULL,
+    approved_by VARCHAR2(32) NOT NULL,
+    CONSTRAINT pk_ins_policy_endorsements PRIMARY KEY (endorsement_id),
+    CONSTRAINT fk_ins_policy_endorseme_0 FOREIGN KEY (policy_no) REFERENCES ins_policies (policy_no)
+);
+
+CREATE OR REPLACE PROCEDURE sp_ins_issue_policy (
+    p_product_code IN VARCHAR2, p_holder_id IN VARCHAR2, p_sum_assured IN NUMBER,
+    p_frequency IN VARCHAR2, p_policy_no OUT VARCHAR2, p_premium OUT NUMBER
+) IS
+    v_rate NUMBER(8, 6); v_min NUMBER(18, 4); v_max NUMBER(18, 4);
 BEGIN
-    p_payout_amount := 0;
-
-    -- Lock and retrieve claim details
-    SELECT policy_no, claimed_amount, claim_status, fraud_risk_score
-    INTO v_policy_no, v_claimed, v_status, v_fraud_score
-    FROM ins_claims
-    WHERE claim_id = p_claim_id
-    FOR UPDATE;
-
-    IF v_status NOT IN ('SUBMITTED', 'UNDER_REVIEW') THEN
-        p_final_decision := 'ERROR_INVALID_CLAIM_STATUS';
-        RETURN;
+    SELECT standard_premium_rate, min_sum_assured, max_sum_assured INTO v_rate, v_min, v_max
+    FROM ins_products WHERE product_code = p_product_code AND status = 'ACTIVE';
+    IF p_sum_assured < v_min OR p_sum_assured > v_max THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Sum assured out of allowed product range');
     END IF;
-
-    -- High fraud risk check (> 75.0 requires special override)
-    IF v_fraud_score > 75.0 AND p_override_fraud = 0 THEN
-        UPDATE ins_claims
-        SET claim_status = 'UNDER_REVIEW',
-            adjudicator_id = p_adjudicator_id,
-            updated_at = SYSTIMESTAMP
-        WHERE claim_id = p_claim_id;
-
-        p_final_decision := 'FLAGGED_FOR_FRAUD_INVESTIGATION';
-        COMMIT;
-        RETURN;
-    END IF;
-
-    -- Lock and check policy coverage
-    SELECT sum_insured, deductible
-    INTO v_sum_insured, v_deductible
-    FROM ins_policies
-    WHERE policy_no = v_policy_no;
-
-    -- Calculate payout after deductible
-    IF v_claimed <= v_deductible THEN
-        v_net_approved := 0;
-        p_final_decision := 'REJECTED_BELOW_DEDUCTIBLE';
-    ELSE
-        v_net_approved := v_claimed - v_deductible;
-        IF v_net_approved > v_sum_insured THEN
-            v_net_approved := v_sum_insured;
-        END IF;
-        p_final_decision := 'APPROVED';
-    END IF;
-
-    p_payout_amount := v_net_approved;
-
-    -- Update claim record
-    UPDATE ins_claims
-    SET approved_amount = v_net_approved,
-        deductible_applied = v_deductible,
-        claim_status = CASE WHEN v_net_approved > 0 THEN 'APPROVED' ELSE 'REJECTED' END,
-        adjudicator_id = p_adjudicator_id,
-        updated_at = SYSTIMESTAMP
-    WHERE claim_id = p_claim_id;
-
-    -- Create actuarial outstanding claim reserve
-    IF v_net_approved > 0 THEN
-        INSERT INTO ins_actuarial_reserves (
-            reserve_id, policy_no, claim_id, reserve_type, amount, effective_date
-        ) VALUES (
-            'RES_' || p_claim_id,
-            v_policy_no,
-            p_claim_id,
-            'OUTSTANDING_CLAIMS',
-            v_net_approved,
-            TRUNC(SYSDATE)
-        );
-    END IF;
-
+    p_premium := ROUND(p_sum_assured * v_rate, 4);
+    p_policy_no := 'POL_' || LPAD(ins_policy_seq.NEXTVAL, 8, '0');
+    INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date)
+    VALUES (p_policy_no, p_product_code, p_holder_id, p_sum_assured, p_premium, p_frequency, 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
     COMMIT;
-EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        ROLLBACK;
-        p_final_decision := 'ERROR_CLAIM_NOT_FOUND';
-    WHEN OTHERS THEN
-        ROLLBACK;
-        p_final_decision := 'ERROR_SYSTEM_EXCEPTION';
+END sp_ins_issue_policy;
+/
+CREATE OR REPLACE PROCEDURE sp_ins_submit_claim (
+    p_policy_no IN VARCHAR2, p_incident_date IN DATE, p_claim_amount IN NUMBER, p_claim_no OUT VARCHAR2
+) IS
+    v_status VARCHAR2(16); v_sum NUMBER(18, 4);
+BEGIN
+    SELECT policy_status, sum_assured INTO v_status, v_sum FROM ins_policies WHERE policy_no = p_policy_no;
+    IF v_status <> 'IN_FORCE' THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Policy is not in force');
+    END IF;
+    IF p_claim_amount > v_sum THEN
+        RAISE_APPLICATION_ERROR(-20003, 'Claim amount exceeds sum assured');
+    END IF;
+    p_claim_no := 'CLM_' || LPAD(ins_claim_seq.NEXTVAL, 8, '0');
+    INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, claim_status)
+    VALUES (p_claim_no, p_policy_no, p_incident_date, TRUNC(SYSDATE), p_claim_amount, 'REPORTED');
+    COMMIT;
+END sp_ins_submit_claim;
+/
+CREATE OR REPLACE PROCEDURE sp_ins_adjudicate_claim (
+    p_claim_no IN VARCHAR2, p_approved_amount IN NUMBER, p_adjudicator IN VARCHAR2, p_decision IN VARCHAR2, p_reason IN VARCHAR2
+) IS
+    v_cur_stat VARCHAR2(16);
+BEGIN
+    SELECT claim_status INTO v_cur_stat FROM ins_claims WHERE claim_no = p_claim_no FOR UPDATE;
+    IF v_cur_stat NOT IN ('REPORTED', 'INVESTIGATING') THEN
+        RAISE_APPLICATION_ERROR(-20004, 'Claim in terminal state');
+    END IF;
+    IF p_decision = 'APPROVE' THEN
+        UPDATE ins_claims SET claim_status = 'APPROVED', approved_amount = p_approved_amount, adjudicator_id = p_adjudicator WHERE claim_no = p_claim_no;
+    ELSE
+        UPDATE ins_claims SET claim_status = 'REJECTED', denial_reason = p_reason, adjudicator_id = p_adjudicator WHERE claim_no = p_claim_no;
+    END IF;
+    COMMIT;
 END sp_ins_adjudicate_claim;
 /
+CREATE OR REPLACE PROCEDURE sp_ins_disburse_payout (
+    p_claim_no IN VARCHAR2, p_payout_id OUT VARCHAR2
+) IS
+    CURSOR c_ben IS SELECT beneficiary_id, share_percentage FROM ins_beneficiaries WHERE policy_no = (SELECT policy_no FROM ins_claims WHERE claim_no = p_claim_no);
+    v_approved NUMBER(18, 4); v_stat VARCHAR2(16);
+BEGIN
+    SELECT approved_amount, claim_status INTO v_approved, v_stat FROM ins_claims WHERE claim_no = p_claim_no FOR UPDATE;
+    IF v_stat <> 'APPROVED' THEN RAISE_APPLICATION_ERROR(-20005, 'Claim not approved'); END IF;
+    FOR r IN c_ben LOOP
+        p_payout_id := 'PAY_' || LPAD(ins_payout_seq.NEXTVAL, 8, '0');
+        INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status)
+        VALUES (p_payout_id, p_claim_no, r.beneficiary_id, ROUND(v_approved * (r.share_percentage / 100.0), 4), 'BANK_BEN_ACC', 'COMPLETED');
+    END LOOP;
+    UPDATE ins_claims SET claim_status = 'SETTLED' WHERE claim_no = p_claim_no;
+    COMMIT;
+END sp_ins_disburse_payout;
+/
+CREATE OR REPLACE PROCEDURE sp_ins_calculate_ibnr_chain_ladder (
+    p_lob IN VARCHAR2, p_origin_year IN NUMBER, p_estimated_ultimate OUT NUMBER
+) IS
+    v_latest_paid NUMBER(20, 4); v_development_factor NUMBER(8, 4) := 1.2500;
+BEGIN
+    SELECT MAX(cumulative_paid_claims) INTO v_latest_paid FROM ins_loss_triangles WHERE origin_year = p_origin_year AND line_of_business = p_lob;
+    p_estimated_ultimate := ROUND(NVL(v_latest_paid, 0) * v_development_factor, 4);
+END sp_ins_calculate_ibnr_chain_ladder;
+/
+CREATE OR REPLACE PROCEDURE sp_ins_process_reinsurance_cession (
+    p_policy_no IN VARCHAR2, p_treaty_code IN VARCHAR2
+) IS
+    v_sum NUMBER(18, 4); v_prem NUMBER(18, 4); v_pct NUMBER(5, 2);
+BEGIN
+    SELECT sum_assured, annual_premium INTO v_sum, v_prem FROM ins_policies WHERE policy_no = p_policy_no;
+    SELECT cession_percentage INTO v_pct FROM ins_reinsurance_treaties WHERE treaty_code = p_treaty_code;
+    INSERT INTO ins_reinsurance_cessions (cession_id, treaty_code, policy_no, ceded_sum_assured, ceded_premium)
+    VALUES ('CES_' || p_policy_no || '_' || p_treaty_code, p_treaty_code, p_policy_no, ROUND(v_sum * (v_pct / 100.0), 4), ROUND(v_prem * (v_pct / 100.0), 4));
+    COMMIT;
+END sp_ins_process_reinsurance_cession;
+/
+CREATE OR REPLACE PROCEDURE sp_ins_lapse_unpaid_policies (
+    p_cutoff_date IN DATE, p_lapsed_count OUT NUMBER
+) IS
+    CURSOR c_unpaid IS SELECT policy_no FROM ins_premium_invoices WHERE invoice_status = 'UNPAID' AND due_date < p_cutoff_date;
+BEGIN
+    p_lapsed_count := 0;
+    FOR r IN c_unpaid LOOP
+        UPDATE ins_policies SET policy_status = 'LAPSED' WHERE policy_no = r.policy_no AND policy_status = 'IN_FORCE';
+        p_lapsed_count := p_lapsed_count + 1;
+    END LOOP;
+    COMMIT;
+END sp_ins_lapse_unpaid_policies;
+/
+CREATE OR REPLACE PROCEDURE sp_ins_record_assessment (
+    p_claim_no IN VARCHAR2, p_adjuster IN VARCHAR2, p_loss IN NUMBER, p_salvage IN NUMBER, p_notes IN CLOB
+) IS
+    v_aid VARCHAR2(32);
+BEGIN
+    v_aid := 'ASM_' || TO_CHAR(SYSDATE, 'YYYYMMDD') || '_' || DBMS_RANDOM.STRING('X', 6);
+    INSERT INTO ins_claim_assessments (assessment_id, claim_no, adjuster_name, estimated_loss, salvage_value, assessment_notes)
+    VALUES (v_aid, p_claim_no, p_adjuster, p_loss, p_salvage, p_notes);
+    UPDATE ins_claims SET claim_status = 'INVESTIGATING' WHERE claim_no = p_claim_no;
+    COMMIT;
+END sp_ins_record_assessment;
+/
+CREATE OR REPLACE PROCEDURE sp_ins_generate_premium_invoice (
+    p_policy_no IN VARCHAR2, p_due_date IN DATE, p_invoice_no OUT VARCHAR2
+) IS
+    v_prem NUMBER(18, 4);
+BEGIN
+    SELECT annual_premium INTO v_prem FROM ins_policies WHERE policy_no = p_policy_no;
+    p_invoice_no := 'INV_' || p_policy_no || '_' || TO_CHAR(p_due_date, 'YYYYMM');
+    INSERT INTO ins_premium_invoices (invoice_no, policy_no, due_date, billed_amount, invoice_status)
+    VALUES (p_invoice_no, p_policy_no, p_due_date, v_prem, 'UNPAID');
+    COMMIT;
+END sp_ins_generate_premium_invoice;
+/
+CREATE OR REPLACE PROCEDURE sp_ins_record_premium_payment (
+    p_invoice_no IN VARCHAR2, p_amount IN NUMBER, p_status OUT VARCHAR2
+) IS
+    v_billed NUMBER(18, 4); v_pol VARCHAR2(32);
+BEGIN
+    SELECT billed_amount, policy_no INTO v_billed, v_pol FROM ins_premium_invoices WHERE invoice_no = p_invoice_no FOR UPDATE;
+    IF p_amount >= v_billed THEN
+        UPDATE ins_premium_invoices SET paid_amount = v_billed, invoice_status = 'PAID', paid_date = SYSDATE WHERE invoice_no = p_invoice_no;
+        p_status := 'PAID';
+    ELSE
+        UPDATE ins_premium_invoices SET paid_amount = p_amount, invoice_status = 'PARTIALLY_PAID', paid_date = SYSDATE WHERE invoice_no = p_invoice_no;
+        p_status := 'PARTIALLY_PAID';
+    END IF;
+    COMMIT;
+END sp_ins_record_premium_payment;
+/
+CREATE OR REPLACE PROCEDURE sp_ins_apply_endorsement (
+    p_policy_no IN VARCHAR2, p_type IN VARCHAR2, p_delta_prem IN NUMBER, p_approver IN VARCHAR2
+) IS
+    v_eid VARCHAR2(32);
+BEGIN
+    v_eid := 'END_' || TO_CHAR(SYSDATE, 'YYYYMMDD') || '_' || DBMS_RANDOM.STRING('U', 6);
+    INSERT INTO ins_policy_endorsements (endorsement_id, policy_no, endorsement_type, delta_premium, effective_date, approved_by)
+    VALUES (v_eid, p_policy_no, p_type, p_delta_prem, TRUNC(SYSDATE), p_approver);
+    UPDATE ins_policies SET annual_premium = annual_premium + p_delta_prem WHERE policy_no = p_policy_no;
+    COMMIT;
+END sp_ins_apply_endorsement;
+/
+CREATE OR REPLACE PROCEDURE sp_ins_calculate_agency_commission (
+    p_policy_no IN VARCHAR2, p_agent_code IN VARCHAR2, p_rate IN NUMBER
+) IS
+    v_prem NUMBER(18, 4); v_cid VARCHAR2(32);
+BEGIN
+    SELECT annual_premium INTO v_prem FROM ins_policies WHERE policy_no = p_policy_no;
+    v_cid := 'COM_' || p_policy_no || '_' || p_agent_code;
+    INSERT INTO ins_agent_commissions (commission_id, agent_code, policy_no, commission_rate, payable_amount, status)
+    VALUES (v_cid, p_agent_code, p_policy_no, p_rate, ROUND(v_prem * p_rate, 4), 'PENDING');
+    COMMIT;
+END sp_ins_calculate_agency_commission;
+/
+CREATE OR REPLACE PROCEDURE sp_ins_update_reserves_ifrs17 (
+    p_valuation_date IN DATE, p_lob IN VARCHAR2, p_case_res IN NUMBER, p_ibnr IN NUMBER, p_risk_adj IN NUMBER, p_csm IN NUMBER
+) IS
+    v_rid VARCHAR2(32); v_discounted NUMBER(20, 4);
+BEGIN
+    v_rid := 'RES_' || TO_CHAR(p_valuation_date, 'YYYYMMDD') || '_' || p_lob;
+    v_discounted := ROUND((p_case_res + p_ibnr + p_risk_adj) * 0.95, 4);
+    INSERT INTO ins_actuarial_reserves (reserve_id, valuation_date, product_code, accident_year, case_reserve, ibnr_reserve, risk_adjustment, csm_amount, discounted_reserve)
+    VALUES (v_rid, p_valuation_date, p_lob, TO_NUMBER(TO_CHAR(p_valuation_date, 'YYYY')), p_case_res, p_ibnr, p_risk_adj, p_csm, v_discounted);
+    COMMIT;
+END sp_ins_update_reserves_ifrs17;
+/
+CREATE OR REPLACE PROCEDURE sp_ins_surrender_policy (
+    p_policy_no IN VARCHAR2, p_cash_value OUT NUMBER
+) IS
+    v_prem NUMBER(18, 4); v_eff DATE; v_months NUMBER;
+BEGIN
+    SELECT annual_premium, effective_date INTO v_prem, v_eff FROM ins_policies WHERE policy_no = p_policy_no FOR UPDATE;
+    v_months := MONTHS_BETWEEN(TRUNC(SYSDATE), v_eff);
+    p_cash_value := ROUND(v_prem * 0.70 * (v_months / 12.0), 4);
+    UPDATE ins_policies SET policy_status = 'SURRENDERED' WHERE policy_no = p_policy_no;
+    COMMIT;
+END sp_ins_surrender_policy;
+/
+CREATE OR REPLACE PROCEDURE sp_ins_bulk_renew_policies (
+    p_expiry_cutoff IN DATE, p_renewed_count OUT NUMBER
+) IS
+    CURSOR c_exp IS SELECT policy_no, product_code, holder_id, sum_assured, annual_premium FROM ins_policies WHERE expiry_date <= p_expiry_cutoff AND policy_status = 'IN_FORCE';
+    v_new_pol VARCHAR2(32);
+BEGIN
+    p_renewed_count := 0;
+    FOR r IN c_exp LOOP
+        v_new_pol := 'POL_' || LPAD(ins_policy_seq.NEXTVAL, 8, '0');
+        INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date)
+        VALUES (v_new_pol, r.product_code, r.holder_id, r.sum_assured, r.annual_premium, 'ANNUAL', 'IN_FORCE', p_expiry_cutoff, ADD_MONTHS(p_expiry_cutoff, 12));
+        UPDATE ins_policies SET policy_status = 'EXPIRED' WHERE policy_no = r.policy_no;
+        p_renewed_count := p_renewed_count + 1;
+    END LOOP;
+    COMMIT;
+END sp_ins_bulk_renew_policies;
+/
+
+CREATE OR REPLACE VIEW v_ins_claims_loss_ratio AS
+SELECT p.product_code, p.product_name, p.line_of_business,
+       NVL(SUM(pol.annual_premium), 0) AS total_earned_premium,
+       NVL(SUM(clm.approved_amount), 0) AS total_incurred_claims,
+       CASE WHEN SUM(pol.annual_premium) > 0 THEN ROUND((SUM(clm.approved_amount) / SUM(pol.annual_premium)) * 100, 2) ELSE 0 END AS loss_ratio_percentage
+FROM ins_products p
+LEFT JOIN ins_policies pol ON p.product_code = pol.product_code
+LEFT JOIN ins_claims clm ON pol.policy_no = clm.policy_no
+GROUP BY p.product_code, p.product_name, p.line_of_business;
+CREATE OR REPLACE VIEW v_ins_open_claims_worklist AS
+SELECT c.claim_no, c.policy_no, c.incident_date, c.reported_date, c.claim_amount, c.claim_status,
+       h.holder_name, p.product_name
+FROM ins_claims c
+JOIN ins_policies pol ON c.policy_no = pol.policy_no
+JOIN ins_policyholders h ON pol.holder_id = h.holder_id
+JOIN ins_products p ON pol.product_code = p.product_code
+WHERE c.claim_status IN ('REPORTED', 'INVESTIGATING');
+
+-- Seed Datasets for Insurance System
+INSERT INTO ins_products (product_code, product_name, line_of_business, coverage_type, min_sum_assured, max_sum_assured, standard_premium_rate) VALUES ('PROD_TERM_LIFE', 'Term Life 20 Year', 'LIFE', 'DEATH_BENEFIT', 100000.0000, 5000000.0000, 0.001500);
+INSERT INTO ins_products (product_code, product_name, line_of_business, coverage_type, min_sum_assured, max_sum_assured, standard_premium_rate) VALUES ('PROD_CRITICAL_ILL', 'Critical Illness Comprehensive', 'HEALTH', 'ILLNESS', 50000.0000, 2000000.0000, 0.003500);
+INSERT INTO ins_products (product_code, product_name, line_of_business, coverage_type, min_sum_assured, max_sum_assured, standard_premium_rate) VALUES ('PROD_AUTO_COMP', 'Motor Vehicle Comprehensive', 'AUTO', 'COLLISION', 30000.0000, 1000000.0000, 0.025000);
+INSERT INTO ins_products (product_code, product_name, line_of_business, coverage_type, min_sum_assured, max_sum_assured, standard_premium_rate) VALUES ('PROD_COMM_PROP', 'Commercial Property & Fire', 'PROPERTY', 'PROPERTY_DAMAGE', 500000.0000, 50000000.0000, 0.000800);
+
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0001', 'Policyholder_0001', 'NATIONAL_ID', 'ID_H_00000001', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0002', 'Policyholder_0002', 'NATIONAL_ID', 'ID_H_00000002', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0003', 'Policyholder_0003', 'NATIONAL_ID', 'ID_H_00000003', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0004', 'Policyholder_0004', 'NATIONAL_ID', 'ID_H_00000004', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0005', 'Policyholder_0005', 'NATIONAL_ID', 'ID_H_00000005', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0006', 'Policyholder_0006', 'NATIONAL_ID', 'ID_H_00000006', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0007', 'Policyholder_0007', 'NATIONAL_ID', 'ID_H_00000007', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0008', 'Policyholder_0008', 'NATIONAL_ID', 'ID_H_00000008', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0009', 'Policyholder_0009', 'NATIONAL_ID', 'ID_H_00000009', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0010', 'Policyholder_0010', 'NATIONAL_ID', 'ID_H_00000010', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0011', 'Policyholder_0011', 'NATIONAL_ID', 'ID_H_00000011', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0012', 'Policyholder_0012', 'NATIONAL_ID', 'ID_H_00000012', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0013', 'Policyholder_0013', 'NATIONAL_ID', 'ID_H_00000013', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0014', 'Policyholder_0014', 'NATIONAL_ID', 'ID_H_00000014', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0015', 'Policyholder_0015', 'NATIONAL_ID', 'ID_H_00000015', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0016', 'Policyholder_0016', 'NATIONAL_ID', 'ID_H_00000016', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0017', 'Policyholder_0017', 'NATIONAL_ID', 'ID_H_00000017', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0018', 'Policyholder_0018', 'NATIONAL_ID', 'ID_H_00000018', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0019', 'Policyholder_0019', 'NATIONAL_ID', 'ID_H_00000019', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0020', 'Policyholder_0020', 'NATIONAL_ID', 'ID_H_00000020', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0021', 'Policyholder_0021', 'NATIONAL_ID', 'ID_H_00000021', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0022', 'Policyholder_0022', 'NATIONAL_ID', 'ID_H_00000022', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0023', 'Policyholder_0023', 'NATIONAL_ID', 'ID_H_00000023', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0024', 'Policyholder_0024', 'NATIONAL_ID', 'ID_H_00000024', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0025', 'Policyholder_0025', 'NATIONAL_ID', 'ID_H_00000025', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0026', 'Policyholder_0026', 'NATIONAL_ID', 'ID_H_00000026', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0027', 'Policyholder_0027', 'NATIONAL_ID', 'ID_H_00000027', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0028', 'Policyholder_0028', 'NATIONAL_ID', 'ID_H_00000028', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0029', 'Policyholder_0029', 'NATIONAL_ID', 'ID_H_00000029', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0030', 'Policyholder_0030', 'NATIONAL_ID', 'ID_H_00000030', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0031', 'Policyholder_0031', 'NATIONAL_ID', 'ID_H_00000031', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0032', 'Policyholder_0032', 'NATIONAL_ID', 'ID_H_00000032', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0033', 'Policyholder_0033', 'NATIONAL_ID', 'ID_H_00000033', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0034', 'Policyholder_0034', 'NATIONAL_ID', 'ID_H_00000034', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0035', 'Policyholder_0035', 'NATIONAL_ID', 'ID_H_00000035', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0036', 'Policyholder_0036', 'NATIONAL_ID', 'ID_H_00000036', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0037', 'Policyholder_0037', 'NATIONAL_ID', 'ID_H_00000037', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0038', 'Policyholder_0038', 'NATIONAL_ID', 'ID_H_00000038', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0039', 'Policyholder_0039', 'NATIONAL_ID', 'ID_H_00000039', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0040', 'Policyholder_0040', 'NATIONAL_ID', 'ID_H_00000040', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0041', 'Policyholder_0041', 'NATIONAL_ID', 'ID_H_00000041', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0042', 'Policyholder_0042', 'NATIONAL_ID', 'ID_H_00000042', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0043', 'Policyholder_0043', 'NATIONAL_ID', 'ID_H_00000043', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0044', 'Policyholder_0044', 'NATIONAL_ID', 'ID_H_00000044', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0045', 'Policyholder_0045', 'NATIONAL_ID', 'ID_H_00000045', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0046', 'Policyholder_0046', 'NATIONAL_ID', 'ID_H_00000046', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0047', 'Policyholder_0047', 'NATIONAL_ID', 'ID_H_00000047', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0048', 'Policyholder_0048', 'NATIONAL_ID', 'ID_H_00000048', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0049', 'Policyholder_0049', 'NATIONAL_ID', 'ID_H_00000049', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0050', 'Policyholder_0050', 'NATIONAL_ID', 'ID_H_00000050', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0051', 'Policyholder_0051', 'NATIONAL_ID', 'ID_H_00000051', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0052', 'Policyholder_0052', 'NATIONAL_ID', 'ID_H_00000052', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0053', 'Policyholder_0053', 'NATIONAL_ID', 'ID_H_00000053', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0054', 'Policyholder_0054', 'NATIONAL_ID', 'ID_H_00000054', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0055', 'Policyholder_0055', 'NATIONAL_ID', 'ID_H_00000055', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0056', 'Policyholder_0056', 'NATIONAL_ID', 'ID_H_00000056', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0057', 'Policyholder_0057', 'NATIONAL_ID', 'ID_H_00000057', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0058', 'Policyholder_0058', 'NATIONAL_ID', 'ID_H_00000058', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0059', 'Policyholder_0059', 'NATIONAL_ID', 'ID_H_00000059', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0060', 'Policyholder_0060', 'NATIONAL_ID', 'ID_H_00000060', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0061', 'Policyholder_0061', 'NATIONAL_ID', 'ID_H_00000061', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0062', 'Policyholder_0062', 'NATIONAL_ID', 'ID_H_00000062', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0063', 'Policyholder_0063', 'NATIONAL_ID', 'ID_H_00000063', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0064', 'Policyholder_0064', 'NATIONAL_ID', 'ID_H_00000064', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0065', 'Policyholder_0065', 'NATIONAL_ID', 'ID_H_00000065', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0066', 'Policyholder_0066', 'NATIONAL_ID', 'ID_H_00000066', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0067', 'Policyholder_0067', 'NATIONAL_ID', 'ID_H_00000067', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0068', 'Policyholder_0068', 'NATIONAL_ID', 'ID_H_00000068', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0069', 'Policyholder_0069', 'NATIONAL_ID', 'ID_H_00000069', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0070', 'Policyholder_0070', 'NATIONAL_ID', 'ID_H_00000070', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0071', 'Policyholder_0071', 'NATIONAL_ID', 'ID_H_00000071', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0072', 'Policyholder_0072', 'NATIONAL_ID', 'ID_H_00000072', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0073', 'Policyholder_0073', 'NATIONAL_ID', 'ID_H_00000073', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0074', 'Policyholder_0074', 'NATIONAL_ID', 'ID_H_00000074', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0075', 'Policyholder_0075', 'NATIONAL_ID', 'ID_H_00000075', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0076', 'Policyholder_0076', 'NATIONAL_ID', 'ID_H_00000076', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0077', 'Policyholder_0077', 'NATIONAL_ID', 'ID_H_00000077', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0078', 'Policyholder_0078', 'NATIONAL_ID', 'ID_H_00000078', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0079', 'Policyholder_0079', 'NATIONAL_ID', 'ID_H_00000079', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0080', 'Policyholder_0080', 'NATIONAL_ID', 'ID_H_00000080', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0081', 'Policyholder_0081', 'NATIONAL_ID', 'ID_H_00000081', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0082', 'Policyholder_0082', 'NATIONAL_ID', 'ID_H_00000082', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0083', 'Policyholder_0083', 'NATIONAL_ID', 'ID_H_00000083', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0084', 'Policyholder_0084', 'NATIONAL_ID', 'ID_H_00000084', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0085', 'Policyholder_0085', 'NATIONAL_ID', 'ID_H_00000085', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0086', 'Policyholder_0086', 'NATIONAL_ID', 'ID_H_00000086', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0087', 'Policyholder_0087', 'NATIONAL_ID', 'ID_H_00000087', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0088', 'Policyholder_0088', 'NATIONAL_ID', 'ID_H_00000088', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0089', 'Policyholder_0089', 'NATIONAL_ID', 'ID_H_00000089', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0090', 'Policyholder_0090', 'NATIONAL_ID', 'ID_H_00000090', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0091', 'Policyholder_0091', 'NATIONAL_ID', 'ID_H_00000091', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0092', 'Policyholder_0092', 'NATIONAL_ID', 'ID_H_00000092', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0093', 'Policyholder_0093', 'NATIONAL_ID', 'ID_H_00000093', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0094', 'Policyholder_0094', 'NATIONAL_ID', 'ID_H_00000094', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0095', 'Policyholder_0095', 'NATIONAL_ID', 'ID_H_00000095', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0096', 'Policyholder_0096', 'NATIONAL_ID', 'ID_H_00000096', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0097', 'Policyholder_0097', 'NATIONAL_ID', 'ID_H_00000097', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0098', 'Policyholder_0098', 'NATIONAL_ID', 'ID_H_00000098', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0099', 'Policyholder_0099', 'NATIONAL_ID', 'ID_H_00000099', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0100', 'Policyholder_0100', 'NATIONAL_ID', 'ID_H_00000100', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0101', 'Policyholder_0101', 'NATIONAL_ID', 'ID_H_00000101', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0102', 'Policyholder_0102', 'NATIONAL_ID', 'ID_H_00000102', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0103', 'Policyholder_0103', 'NATIONAL_ID', 'ID_H_00000103', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0104', 'Policyholder_0104', 'NATIONAL_ID', 'ID_H_00000104', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0105', 'Policyholder_0105', 'NATIONAL_ID', 'ID_H_00000105', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0106', 'Policyholder_0106', 'NATIONAL_ID', 'ID_H_00000106', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0107', 'Policyholder_0107', 'NATIONAL_ID', 'ID_H_00000107', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0108', 'Policyholder_0108', 'NATIONAL_ID', 'ID_H_00000108', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0109', 'Policyholder_0109', 'NATIONAL_ID', 'ID_H_00000109', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0110', 'Policyholder_0110', 'NATIONAL_ID', 'ID_H_00000110', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0111', 'Policyholder_0111', 'NATIONAL_ID', 'ID_H_00000111', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0112', 'Policyholder_0112', 'NATIONAL_ID', 'ID_H_00000112', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0113', 'Policyholder_0113', 'NATIONAL_ID', 'ID_H_00000113', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0114', 'Policyholder_0114', 'NATIONAL_ID', 'ID_H_00000114', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0115', 'Policyholder_0115', 'NATIONAL_ID', 'ID_H_00000115', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0116', 'Policyholder_0116', 'NATIONAL_ID', 'ID_H_00000116', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0117', 'Policyholder_0117', 'NATIONAL_ID', 'ID_H_00000117', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0118', 'Policyholder_0118', 'NATIONAL_ID', 'ID_H_00000118', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0119', 'Policyholder_0119', 'NATIONAL_ID', 'ID_H_00000119', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0120', 'Policyholder_0120', 'NATIONAL_ID', 'ID_H_00000120', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0121', 'Policyholder_0121', 'NATIONAL_ID', 'ID_H_00000121', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0122', 'Policyholder_0122', 'NATIONAL_ID', 'ID_H_00000122', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0123', 'Policyholder_0123', 'NATIONAL_ID', 'ID_H_00000123', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0124', 'Policyholder_0124', 'NATIONAL_ID', 'ID_H_00000124', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0125', 'Policyholder_0125', 'NATIONAL_ID', 'ID_H_00000125', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0126', 'Policyholder_0126', 'NATIONAL_ID', 'ID_H_00000126', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0127', 'Policyholder_0127', 'NATIONAL_ID', 'ID_H_00000127', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0128', 'Policyholder_0128', 'NATIONAL_ID', 'ID_H_00000128', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0129', 'Policyholder_0129', 'NATIONAL_ID', 'ID_H_00000129', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0130', 'Policyholder_0130', 'NATIONAL_ID', 'ID_H_00000130', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0131', 'Policyholder_0131', 'NATIONAL_ID', 'ID_H_00000131', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0132', 'Policyholder_0132', 'NATIONAL_ID', 'ID_H_00000132', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0133', 'Policyholder_0133', 'NATIONAL_ID', 'ID_H_00000133', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0134', 'Policyholder_0134', 'NATIONAL_ID', 'ID_H_00000134', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0135', 'Policyholder_0135', 'NATIONAL_ID', 'ID_H_00000135', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0136', 'Policyholder_0136', 'NATIONAL_ID', 'ID_H_00000136', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0137', 'Policyholder_0137', 'NATIONAL_ID', 'ID_H_00000137', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0138', 'Policyholder_0138', 'NATIONAL_ID', 'ID_H_00000138', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0139', 'Policyholder_0139', 'NATIONAL_ID', 'ID_H_00000139', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0140', 'Policyholder_0140', 'NATIONAL_ID', 'ID_H_00000140', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0141', 'Policyholder_0141', 'NATIONAL_ID', 'ID_H_00000141', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0142', 'Policyholder_0142', 'NATIONAL_ID', 'ID_H_00000142', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0143', 'Policyholder_0143', 'NATIONAL_ID', 'ID_H_00000143', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0144', 'Policyholder_0144', 'NATIONAL_ID', 'ID_H_00000144', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0145', 'Policyholder_0145', 'NATIONAL_ID', 'ID_H_00000145', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0146', 'Policyholder_0146', 'NATIONAL_ID', 'ID_H_00000146', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0147', 'Policyholder_0147', 'NATIONAL_ID', 'ID_H_00000147', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0148', 'Policyholder_0148', 'NATIONAL_ID', 'ID_H_00000148', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0149', 'Policyholder_0149', 'NATIONAL_ID', 'ID_H_00000149', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0150', 'Policyholder_0150', 'NATIONAL_ID', 'ID_H_00000150', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0151', 'Policyholder_0151', 'NATIONAL_ID', 'ID_H_00000151', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0152', 'Policyholder_0152', 'NATIONAL_ID', 'ID_H_00000152', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0153', 'Policyholder_0153', 'NATIONAL_ID', 'ID_H_00000153', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0154', 'Policyholder_0154', 'NATIONAL_ID', 'ID_H_00000154', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0155', 'Policyholder_0155', 'NATIONAL_ID', 'ID_H_00000155', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0156', 'Policyholder_0156', 'NATIONAL_ID', 'ID_H_00000156', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0157', 'Policyholder_0157', 'NATIONAL_ID', 'ID_H_00000157', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0158', 'Policyholder_0158', 'NATIONAL_ID', 'ID_H_00000158', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0159', 'Policyholder_0159', 'NATIONAL_ID', 'ID_H_00000159', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0160', 'Policyholder_0160', 'NATIONAL_ID', 'ID_H_00000160', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0161', 'Policyholder_0161', 'NATIONAL_ID', 'ID_H_00000161', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0162', 'Policyholder_0162', 'NATIONAL_ID', 'ID_H_00000162', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0163', 'Policyholder_0163', 'NATIONAL_ID', 'ID_H_00000163', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0164', 'Policyholder_0164', 'NATIONAL_ID', 'ID_H_00000164', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0165', 'Policyholder_0165', 'NATIONAL_ID', 'ID_H_00000165', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0166', 'Policyholder_0166', 'NATIONAL_ID', 'ID_H_00000166', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0167', 'Policyholder_0167', 'NATIONAL_ID', 'ID_H_00000167', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0168', 'Policyholder_0168', 'NATIONAL_ID', 'ID_H_00000168', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0169', 'Policyholder_0169', 'NATIONAL_ID', 'ID_H_00000169', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0170', 'Policyholder_0170', 'NATIONAL_ID', 'ID_H_00000170', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0171', 'Policyholder_0171', 'NATIONAL_ID', 'ID_H_00000171', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0172', 'Policyholder_0172', 'NATIONAL_ID', 'ID_H_00000172', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0173', 'Policyholder_0173', 'NATIONAL_ID', 'ID_H_00000173', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0174', 'Policyholder_0174', 'NATIONAL_ID', 'ID_H_00000174', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0175', 'Policyholder_0175', 'NATIONAL_ID', 'ID_H_00000175', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0176', 'Policyholder_0176', 'NATIONAL_ID', 'ID_H_00000176', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0177', 'Policyholder_0177', 'NATIONAL_ID', 'ID_H_00000177', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0178', 'Policyholder_0178', 'NATIONAL_ID', 'ID_H_00000178', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0179', 'Policyholder_0179', 'NATIONAL_ID', 'ID_H_00000179', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0180', 'Policyholder_0180', 'NATIONAL_ID', 'ID_H_00000180', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0181', 'Policyholder_0181', 'NATIONAL_ID', 'ID_H_00000181', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0182', 'Policyholder_0182', 'NATIONAL_ID', 'ID_H_00000182', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0183', 'Policyholder_0183', 'NATIONAL_ID', 'ID_H_00000183', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0184', 'Policyholder_0184', 'NATIONAL_ID', 'ID_H_00000184', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0185', 'Policyholder_0185', 'NATIONAL_ID', 'ID_H_00000185', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0186', 'Policyholder_0186', 'NATIONAL_ID', 'ID_H_00000186', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0187', 'Policyholder_0187', 'NATIONAL_ID', 'ID_H_00000187', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0188', 'Policyholder_0188', 'NATIONAL_ID', 'ID_H_00000188', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0189', 'Policyholder_0189', 'NATIONAL_ID', 'ID_H_00000189', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0190', 'Policyholder_0190', 'NATIONAL_ID', 'ID_H_00000190', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0191', 'Policyholder_0191', 'NATIONAL_ID', 'ID_H_00000191', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0192', 'Policyholder_0192', 'NATIONAL_ID', 'ID_H_00000192', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0193', 'Policyholder_0193', 'NATIONAL_ID', 'ID_H_00000193', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0194', 'Policyholder_0194', 'NATIONAL_ID', 'ID_H_00000194', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0195', 'Policyholder_0195', 'NATIONAL_ID', 'ID_H_00000195', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0196', 'Policyholder_0196', 'NATIONAL_ID', 'ID_H_00000196', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0197', 'Policyholder_0197', 'NATIONAL_ID', 'ID_H_00000197', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0198', 'Policyholder_0198', 'NATIONAL_ID', 'ID_H_00000198', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0199', 'Policyholder_0199', 'NATIONAL_ID', 'ID_H_00000199', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0200', 'Policyholder_0200', 'NATIONAL_ID', 'ID_H_00000200', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0201', 'Policyholder_0201', 'NATIONAL_ID', 'ID_H_00000201', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0202', 'Policyholder_0202', 'NATIONAL_ID', 'ID_H_00000202', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0203', 'Policyholder_0203', 'NATIONAL_ID', 'ID_H_00000203', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0204', 'Policyholder_0204', 'NATIONAL_ID', 'ID_H_00000204', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0205', 'Policyholder_0205', 'NATIONAL_ID', 'ID_H_00000205', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0206', 'Policyholder_0206', 'NATIONAL_ID', 'ID_H_00000206', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0207', 'Policyholder_0207', 'NATIONAL_ID', 'ID_H_00000207', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0208', 'Policyholder_0208', 'NATIONAL_ID', 'ID_H_00000208', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0209', 'Policyholder_0209', 'NATIONAL_ID', 'ID_H_00000209', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0210', 'Policyholder_0210', 'NATIONAL_ID', 'ID_H_00000210', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0211', 'Policyholder_0211', 'NATIONAL_ID', 'ID_H_00000211', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0212', 'Policyholder_0212', 'NATIONAL_ID', 'ID_H_00000212', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0213', 'Policyholder_0213', 'NATIONAL_ID', 'ID_H_00000213', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0214', 'Policyholder_0214', 'NATIONAL_ID', 'ID_H_00000214', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0215', 'Policyholder_0215', 'NATIONAL_ID', 'ID_H_00000215', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0216', 'Policyholder_0216', 'NATIONAL_ID', 'ID_H_00000216', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0217', 'Policyholder_0217', 'NATIONAL_ID', 'ID_H_00000217', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0218', 'Policyholder_0218', 'NATIONAL_ID', 'ID_H_00000218', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0219', 'Policyholder_0219', 'NATIONAL_ID', 'ID_H_00000219', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0220', 'Policyholder_0220', 'NATIONAL_ID', 'ID_H_00000220', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0221', 'Policyholder_0221', 'NATIONAL_ID', 'ID_H_00000221', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0222', 'Policyholder_0222', 'NATIONAL_ID', 'ID_H_00000222', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0223', 'Policyholder_0223', 'NATIONAL_ID', 'ID_H_00000223', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0224', 'Policyholder_0224', 'NATIONAL_ID', 'ID_H_00000224', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0225', 'Policyholder_0225', 'NATIONAL_ID', 'ID_H_00000225', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0226', 'Policyholder_0226', 'NATIONAL_ID', 'ID_H_00000226', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0227', 'Policyholder_0227', 'NATIONAL_ID', 'ID_H_00000227', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0228', 'Policyholder_0228', 'NATIONAL_ID', 'ID_H_00000228', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0229', 'Policyholder_0229', 'NATIONAL_ID', 'ID_H_00000229', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0230', 'Policyholder_0230', 'NATIONAL_ID', 'ID_H_00000230', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0231', 'Policyholder_0231', 'NATIONAL_ID', 'ID_H_00000231', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0232', 'Policyholder_0232', 'NATIONAL_ID', 'ID_H_00000232', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0233', 'Policyholder_0233', 'NATIONAL_ID', 'ID_H_00000233', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0234', 'Policyholder_0234', 'NATIONAL_ID', 'ID_H_00000234', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0235', 'Policyholder_0235', 'NATIONAL_ID', 'ID_H_00000235', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0236', 'Policyholder_0236', 'NATIONAL_ID', 'ID_H_00000236', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0237', 'Policyholder_0237', 'NATIONAL_ID', 'ID_H_00000237', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0238', 'Policyholder_0238', 'NATIONAL_ID', 'ID_H_00000238', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0239', 'Policyholder_0239', 'NATIONAL_ID', 'ID_H_00000239', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0240', 'Policyholder_0240', 'NATIONAL_ID', 'ID_H_00000240', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0241', 'Policyholder_0241', 'NATIONAL_ID', 'ID_H_00000241', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0242', 'Policyholder_0242', 'NATIONAL_ID', 'ID_H_00000242', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0243', 'Policyholder_0243', 'NATIONAL_ID', 'ID_H_00000243', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0244', 'Policyholder_0244', 'NATIONAL_ID', 'ID_H_00000244', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0245', 'Policyholder_0245', 'NATIONAL_ID', 'ID_H_00000245', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0246', 'Policyholder_0246', 'NATIONAL_ID', 'ID_H_00000246', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0247', 'Policyholder_0247', 'NATIONAL_ID', 'ID_H_00000247', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0248', 'Policyholder_0248', 'NATIONAL_ID', 'ID_H_00000248', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0249', 'Policyholder_0249', 'NATIONAL_ID', 'ID_H_00000249', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0250', 'Policyholder_0250', 'NATIONAL_ID', 'ID_H_00000250', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0251', 'Policyholder_0251', 'NATIONAL_ID', 'ID_H_00000251', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0252', 'Policyholder_0252', 'NATIONAL_ID', 'ID_H_00000252', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0253', 'Policyholder_0253', 'NATIONAL_ID', 'ID_H_00000253', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0254', 'Policyholder_0254', 'NATIONAL_ID', 'ID_H_00000254', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0255', 'Policyholder_0255', 'NATIONAL_ID', 'ID_H_00000255', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0256', 'Policyholder_0256', 'NATIONAL_ID', 'ID_H_00000256', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0257', 'Policyholder_0257', 'NATIONAL_ID', 'ID_H_00000257', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0258', 'Policyholder_0258', 'NATIONAL_ID', 'ID_H_00000258', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0259', 'Policyholder_0259', 'NATIONAL_ID', 'ID_H_00000259', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0260', 'Policyholder_0260', 'NATIONAL_ID', 'ID_H_00000260', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0261', 'Policyholder_0261', 'NATIONAL_ID', 'ID_H_00000261', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0262', 'Policyholder_0262', 'NATIONAL_ID', 'ID_H_00000262', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0263', 'Policyholder_0263', 'NATIONAL_ID', 'ID_H_00000263', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0264', 'Policyholder_0264', 'NATIONAL_ID', 'ID_H_00000264', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0265', 'Policyholder_0265', 'NATIONAL_ID', 'ID_H_00000265', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0266', 'Policyholder_0266', 'NATIONAL_ID', 'ID_H_00000266', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0267', 'Policyholder_0267', 'NATIONAL_ID', 'ID_H_00000267', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0268', 'Policyholder_0268', 'NATIONAL_ID', 'ID_H_00000268', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0269', 'Policyholder_0269', 'NATIONAL_ID', 'ID_H_00000269', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0270', 'Policyholder_0270', 'NATIONAL_ID', 'ID_H_00000270', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0271', 'Policyholder_0271', 'NATIONAL_ID', 'ID_H_00000271', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0272', 'Policyholder_0272', 'NATIONAL_ID', 'ID_H_00000272', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0273', 'Policyholder_0273', 'NATIONAL_ID', 'ID_H_00000273', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0274', 'Policyholder_0274', 'NATIONAL_ID', 'ID_H_00000274', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0275', 'Policyholder_0275', 'NATIONAL_ID', 'ID_H_00000275', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0276', 'Policyholder_0276', 'NATIONAL_ID', 'ID_H_00000276', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0277', 'Policyholder_0277', 'NATIONAL_ID', 'ID_H_00000277', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0278', 'Policyholder_0278', 'NATIONAL_ID', 'ID_H_00000278', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0279', 'Policyholder_0279', 'NATIONAL_ID', 'ID_H_00000279', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0280', 'Policyholder_0280', 'NATIONAL_ID', 'ID_H_00000280', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0281', 'Policyholder_0281', 'NATIONAL_ID', 'ID_H_00000281', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0282', 'Policyholder_0282', 'NATIONAL_ID', 'ID_H_00000282', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0283', 'Policyholder_0283', 'NATIONAL_ID', 'ID_H_00000283', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0284', 'Policyholder_0284', 'NATIONAL_ID', 'ID_H_00000284', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0285', 'Policyholder_0285', 'NATIONAL_ID', 'ID_H_00000285', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0286', 'Policyholder_0286', 'NATIONAL_ID', 'ID_H_00000286', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0287', 'Policyholder_0287', 'NATIONAL_ID', 'ID_H_00000287', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0288', 'Policyholder_0288', 'NATIONAL_ID', 'ID_H_00000288', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0289', 'Policyholder_0289', 'NATIONAL_ID', 'ID_H_00000289', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0290', 'Policyholder_0290', 'NATIONAL_ID', 'ID_H_00000290', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0291', 'Policyholder_0291', 'NATIONAL_ID', 'ID_H_00000291', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0292', 'Policyholder_0292', 'NATIONAL_ID', 'ID_H_00000292', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0293', 'Policyholder_0293', 'NATIONAL_ID', 'ID_H_00000293', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0294', 'Policyholder_0294', 'NATIONAL_ID', 'ID_H_00000294', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0295', 'Policyholder_0295', 'NATIONAL_ID', 'ID_H_00000295', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0296', 'Policyholder_0296', 'NATIONAL_ID', 'ID_H_00000296', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0297', 'Policyholder_0297', 'NATIONAL_ID', 'ID_H_00000297', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0298', 'Policyholder_0298', 'NATIONAL_ID', 'ID_H_00000298', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0299', 'Policyholder_0299', 'NATIONAL_ID', 'ID_H_00000299', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0300', 'Policyholder_0300', 'NATIONAL_ID', 'ID_H_00000300', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0301', 'Policyholder_0301', 'NATIONAL_ID', 'ID_H_00000301', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0302', 'Policyholder_0302', 'NATIONAL_ID', 'ID_H_00000302', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0303', 'Policyholder_0303', 'NATIONAL_ID', 'ID_H_00000303', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0304', 'Policyholder_0304', 'NATIONAL_ID', 'ID_H_00000304', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0305', 'Policyholder_0305', 'NATIONAL_ID', 'ID_H_00000305', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0306', 'Policyholder_0306', 'NATIONAL_ID', 'ID_H_00000306', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0307', 'Policyholder_0307', 'NATIONAL_ID', 'ID_H_00000307', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0308', 'Policyholder_0308', 'NATIONAL_ID', 'ID_H_00000308', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0309', 'Policyholder_0309', 'NATIONAL_ID', 'ID_H_00000309', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0310', 'Policyholder_0310', 'NATIONAL_ID', 'ID_H_00000310', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0311', 'Policyholder_0311', 'NATIONAL_ID', 'ID_H_00000311', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0312', 'Policyholder_0312', 'NATIONAL_ID', 'ID_H_00000312', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0313', 'Policyholder_0313', 'NATIONAL_ID', 'ID_H_00000313', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0314', 'Policyholder_0314', 'NATIONAL_ID', 'ID_H_00000314', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0315', 'Policyholder_0315', 'NATIONAL_ID', 'ID_H_00000315', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0316', 'Policyholder_0316', 'NATIONAL_ID', 'ID_H_00000316', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0317', 'Policyholder_0317', 'NATIONAL_ID', 'ID_H_00000317', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0318', 'Policyholder_0318', 'NATIONAL_ID', 'ID_H_00000318', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0319', 'Policyholder_0319', 'NATIONAL_ID', 'ID_H_00000319', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0320', 'Policyholder_0320', 'NATIONAL_ID', 'ID_H_00000320', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0321', 'Policyholder_0321', 'NATIONAL_ID', 'ID_H_00000321', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0322', 'Policyholder_0322', 'NATIONAL_ID', 'ID_H_00000322', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0323', 'Policyholder_0323', 'NATIONAL_ID', 'ID_H_00000323', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0324', 'Policyholder_0324', 'NATIONAL_ID', 'ID_H_00000324', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0325', 'Policyholder_0325', 'NATIONAL_ID', 'ID_H_00000325', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0326', 'Policyholder_0326', 'NATIONAL_ID', 'ID_H_00000326', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0327', 'Policyholder_0327', 'NATIONAL_ID', 'ID_H_00000327', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0328', 'Policyholder_0328', 'NATIONAL_ID', 'ID_H_00000328', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0329', 'Policyholder_0329', 'NATIONAL_ID', 'ID_H_00000329', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0330', 'Policyholder_0330', 'NATIONAL_ID', 'ID_H_00000330', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0331', 'Policyholder_0331', 'NATIONAL_ID', 'ID_H_00000331', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0332', 'Policyholder_0332', 'NATIONAL_ID', 'ID_H_00000332', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0333', 'Policyholder_0333', 'NATIONAL_ID', 'ID_H_00000333', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0334', 'Policyholder_0334', 'NATIONAL_ID', 'ID_H_00000334', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0335', 'Policyholder_0335', 'NATIONAL_ID', 'ID_H_00000335', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0336', 'Policyholder_0336', 'NATIONAL_ID', 'ID_H_00000336', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0337', 'Policyholder_0337', 'NATIONAL_ID', 'ID_H_00000337', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0338', 'Policyholder_0338', 'NATIONAL_ID', 'ID_H_00000338', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0339', 'Policyholder_0339', 'NATIONAL_ID', 'ID_H_00000339', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0340', 'Policyholder_0340', 'NATIONAL_ID', 'ID_H_00000340', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0341', 'Policyholder_0341', 'NATIONAL_ID', 'ID_H_00000341', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0342', 'Policyholder_0342', 'NATIONAL_ID', 'ID_H_00000342', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0343', 'Policyholder_0343', 'NATIONAL_ID', 'ID_H_00000343', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0344', 'Policyholder_0344', 'NATIONAL_ID', 'ID_H_00000344', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0345', 'Policyholder_0345', 'NATIONAL_ID', 'ID_H_00000345', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0346', 'Policyholder_0346', 'NATIONAL_ID', 'ID_H_00000346', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0347', 'Policyholder_0347', 'NATIONAL_ID', 'ID_H_00000347', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0348', 'Policyholder_0348', 'NATIONAL_ID', 'ID_H_00000348', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0349', 'Policyholder_0349', 'NATIONAL_ID', 'ID_H_00000349', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0350', 'Policyholder_0350', 'NATIONAL_ID', 'ID_H_00000350', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0351', 'Policyholder_0351', 'NATIONAL_ID', 'ID_H_00000351', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0352', 'Policyholder_0352', 'NATIONAL_ID', 'ID_H_00000352', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0353', 'Policyholder_0353', 'NATIONAL_ID', 'ID_H_00000353', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0354', 'Policyholder_0354', 'NATIONAL_ID', 'ID_H_00000354', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0355', 'Policyholder_0355', 'NATIONAL_ID', 'ID_H_00000355', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0356', 'Policyholder_0356', 'NATIONAL_ID', 'ID_H_00000356', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0357', 'Policyholder_0357', 'NATIONAL_ID', 'ID_H_00000357', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0358', 'Policyholder_0358', 'NATIONAL_ID', 'ID_H_00000358', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0359', 'Policyholder_0359', 'NATIONAL_ID', 'ID_H_00000359', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0360', 'Policyholder_0360', 'NATIONAL_ID', 'ID_H_00000360', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0361', 'Policyholder_0361', 'NATIONAL_ID', 'ID_H_00000361', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0362', 'Policyholder_0362', 'NATIONAL_ID', 'ID_H_00000362', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0363', 'Policyholder_0363', 'NATIONAL_ID', 'ID_H_00000363', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0364', 'Policyholder_0364', 'NATIONAL_ID', 'ID_H_00000364', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0365', 'Policyholder_0365', 'NATIONAL_ID', 'ID_H_00000365', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0366', 'Policyholder_0366', 'NATIONAL_ID', 'ID_H_00000366', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0367', 'Policyholder_0367', 'NATIONAL_ID', 'ID_H_00000367', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0368', 'Policyholder_0368', 'NATIONAL_ID', 'ID_H_00000368', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0369', 'Policyholder_0369', 'NATIONAL_ID', 'ID_H_00000369', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0370', 'Policyholder_0370', 'NATIONAL_ID', 'ID_H_00000370', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0371', 'Policyholder_0371', 'NATIONAL_ID', 'ID_H_00000371', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0372', 'Policyholder_0372', 'NATIONAL_ID', 'ID_H_00000372', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0373', 'Policyholder_0373', 'NATIONAL_ID', 'ID_H_00000373', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0374', 'Policyholder_0374', 'NATIONAL_ID', 'ID_H_00000374', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0375', 'Policyholder_0375', 'NATIONAL_ID', 'ID_H_00000375', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0376', 'Policyholder_0376', 'NATIONAL_ID', 'ID_H_00000376', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0377', 'Policyholder_0377', 'NATIONAL_ID', 'ID_H_00000377', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0378', 'Policyholder_0378', 'NATIONAL_ID', 'ID_H_00000378', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0379', 'Policyholder_0379', 'NATIONAL_ID', 'ID_H_00000379', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0380', 'Policyholder_0380', 'NATIONAL_ID', 'ID_H_00000380', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0381', 'Policyholder_0381', 'NATIONAL_ID', 'ID_H_00000381', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0382', 'Policyholder_0382', 'NATIONAL_ID', 'ID_H_00000382', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0383', 'Policyholder_0383', 'NATIONAL_ID', 'ID_H_00000383', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0384', 'Policyholder_0384', 'NATIONAL_ID', 'ID_H_00000384', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0385', 'Policyholder_0385', 'NATIONAL_ID', 'ID_H_00000385', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0386', 'Policyholder_0386', 'NATIONAL_ID', 'ID_H_00000386', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0387', 'Policyholder_0387', 'NATIONAL_ID', 'ID_H_00000387', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0388', 'Policyholder_0388', 'NATIONAL_ID', 'ID_H_00000388', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0389', 'Policyholder_0389', 'NATIONAL_ID', 'ID_H_00000389', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0390', 'Policyholder_0390', 'NATIONAL_ID', 'ID_H_00000390', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0391', 'Policyholder_0391', 'NATIONAL_ID', 'ID_H_00000391', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0392', 'Policyholder_0392', 'NATIONAL_ID', 'ID_H_00000392', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0393', 'Policyholder_0393', 'NATIONAL_ID', 'ID_H_00000393', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0394', 'Policyholder_0394', 'NATIONAL_ID', 'ID_H_00000394', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0395', 'Policyholder_0395', 'NATIONAL_ID', 'ID_H_00000395', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0396', 'Policyholder_0396', 'NATIONAL_ID', 'ID_H_00000396', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0397', 'Policyholder_0397', 'NATIONAL_ID', 'ID_H_00000397', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0398', 'Policyholder_0398', 'NATIONAL_ID', 'ID_H_00000398', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0399', 'Policyholder_0399', 'NATIONAL_ID', 'ID_H_00000399', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0400', 'Policyholder_0400', 'NATIONAL_ID', 'ID_H_00000400', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0401', 'Policyholder_0401', 'NATIONAL_ID', 'ID_H_00000401', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0402', 'Policyholder_0402', 'NATIONAL_ID', 'ID_H_00000402', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0403', 'Policyholder_0403', 'NATIONAL_ID', 'ID_H_00000403', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0404', 'Policyholder_0404', 'NATIONAL_ID', 'ID_H_00000404', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0405', 'Policyholder_0405', 'NATIONAL_ID', 'ID_H_00000405', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0406', 'Policyholder_0406', 'NATIONAL_ID', 'ID_H_00000406', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0407', 'Policyholder_0407', 'NATIONAL_ID', 'ID_H_00000407', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0408', 'Policyholder_0408', 'NATIONAL_ID', 'ID_H_00000408', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0409', 'Policyholder_0409', 'NATIONAL_ID', 'ID_H_00000409', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0410', 'Policyholder_0410', 'NATIONAL_ID', 'ID_H_00000410', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0411', 'Policyholder_0411', 'NATIONAL_ID', 'ID_H_00000411', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0412', 'Policyholder_0412', 'NATIONAL_ID', 'ID_H_00000412', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0413', 'Policyholder_0413', 'NATIONAL_ID', 'ID_H_00000413', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0414', 'Policyholder_0414', 'NATIONAL_ID', 'ID_H_00000414', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0415', 'Policyholder_0415', 'NATIONAL_ID', 'ID_H_00000415', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0416', 'Policyholder_0416', 'NATIONAL_ID', 'ID_H_00000416', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0417', 'Policyholder_0417', 'NATIONAL_ID', 'ID_H_00000417', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0418', 'Policyholder_0418', 'NATIONAL_ID', 'ID_H_00000418', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0419', 'Policyholder_0419', 'NATIONAL_ID', 'ID_H_00000419', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0420', 'Policyholder_0420', 'NATIONAL_ID', 'ID_H_00000420', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0421', 'Policyholder_0421', 'NATIONAL_ID', 'ID_H_00000421', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0422', 'Policyholder_0422', 'NATIONAL_ID', 'ID_H_00000422', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0423', 'Policyholder_0423', 'NATIONAL_ID', 'ID_H_00000423', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0424', 'Policyholder_0424', 'NATIONAL_ID', 'ID_H_00000424', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0425', 'Policyholder_0425', 'NATIONAL_ID', 'ID_H_00000425', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0426', 'Policyholder_0426', 'NATIONAL_ID', 'ID_H_00000426', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0427', 'Policyholder_0427', 'NATIONAL_ID', 'ID_H_00000427', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0428', 'Policyholder_0428', 'NATIONAL_ID', 'ID_H_00000428', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0429', 'Policyholder_0429', 'NATIONAL_ID', 'ID_H_00000429', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0430', 'Policyholder_0430', 'NATIONAL_ID', 'ID_H_00000430', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0431', 'Policyholder_0431', 'NATIONAL_ID', 'ID_H_00000431', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0432', 'Policyholder_0432', 'NATIONAL_ID', 'ID_H_00000432', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0433', 'Policyholder_0433', 'NATIONAL_ID', 'ID_H_00000433', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0434', 'Policyholder_0434', 'NATIONAL_ID', 'ID_H_00000434', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0435', 'Policyholder_0435', 'NATIONAL_ID', 'ID_H_00000435', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0436', 'Policyholder_0436', 'NATIONAL_ID', 'ID_H_00000436', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0437', 'Policyholder_0437', 'NATIONAL_ID', 'ID_H_00000437', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0438', 'Policyholder_0438', 'NATIONAL_ID', 'ID_H_00000438', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0439', 'Policyholder_0439', 'NATIONAL_ID', 'ID_H_00000439', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0440', 'Policyholder_0440', 'NATIONAL_ID', 'ID_H_00000440', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0441', 'Policyholder_0441', 'NATIONAL_ID', 'ID_H_00000441', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0442', 'Policyholder_0442', 'NATIONAL_ID', 'ID_H_00000442', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0443', 'Policyholder_0443', 'NATIONAL_ID', 'ID_H_00000443', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0444', 'Policyholder_0444', 'NATIONAL_ID', 'ID_H_00000444', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0445', 'Policyholder_0445', 'NATIONAL_ID', 'ID_H_00000445', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0446', 'Policyholder_0446', 'NATIONAL_ID', 'ID_H_00000446', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0447', 'Policyholder_0447', 'NATIONAL_ID', 'ID_H_00000447', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0448', 'Policyholder_0448', 'NATIONAL_ID', 'ID_H_00000448', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0449', 'Policyholder_0449', 'NATIONAL_ID', 'ID_H_00000449', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policyholders (holder_id, holder_name, id_type, id_number, date_of_birth, gender, smoker_status, credit_score) VALUES ('HLD_0450', 'Policyholder_0450', 'NATIONAL_ID', 'ID_H_00000450', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 'MALE', 0, 720);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0001', 'PROD_CRITICAL_ILL', 'HLD_0001', 501000.0000, 1002.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0001', 'POL_0001', 'Beneficiary_0001', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0002', 'PROD_TERM_LIFE', 'HLD_0002', 502000.0000, 1004.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0002', 'POL_0002', 'Beneficiary_0002', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0003', 'PROD_CRITICAL_ILL', 'HLD_0003', 503000.0000, 1006.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0003', 'POL_0003', 'Beneficiary_0003', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0004', 'PROD_TERM_LIFE', 'HLD_0004', 504000.0000, 1008.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0004', 'POL_0004', 'Beneficiary_0004', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0005', 'PROD_CRITICAL_ILL', 'HLD_0005', 505000.0000, 1010.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0005', 'POL_0005', 'Beneficiary_0005', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0006', 'PROD_TERM_LIFE', 'HLD_0006', 506000.0000, 1012.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0006', 'POL_0006', 'Beneficiary_0006', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0007', 'PROD_CRITICAL_ILL', 'HLD_0007', 507000.0000, 1014.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0007', 'POL_0007', 'Beneficiary_0007', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0008', 'PROD_TERM_LIFE', 'HLD_0008', 508000.0000, 1016.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0008', 'POL_0008', 'Beneficiary_0008', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0009', 'PROD_CRITICAL_ILL', 'HLD_0009', 509000.0000, 1018.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0009', 'POL_0009', 'Beneficiary_0009', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0010', 'PROD_TERM_LIFE', 'HLD_0010', 510000.0000, 1020.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0010', 'POL_0010', 'Beneficiary_0010', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0011', 'PROD_CRITICAL_ILL', 'HLD_0011', 511000.0000, 1022.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0011', 'POL_0011', 'Beneficiary_0011', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0012', 'PROD_TERM_LIFE', 'HLD_0012', 512000.0000, 1024.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0012', 'POL_0012', 'Beneficiary_0012', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0013', 'PROD_CRITICAL_ILL', 'HLD_0013', 513000.0000, 1026.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0013', 'POL_0013', 'Beneficiary_0013', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0014', 'PROD_TERM_LIFE', 'HLD_0014', 514000.0000, 1028.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0014', 'POL_0014', 'Beneficiary_0014', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0015', 'PROD_CRITICAL_ILL', 'HLD_0015', 515000.0000, 1030.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0015', 'POL_0015', 'Beneficiary_0015', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0016', 'PROD_TERM_LIFE', 'HLD_0016', 516000.0000, 1032.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0016', 'POL_0016', 'Beneficiary_0016', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0017', 'PROD_CRITICAL_ILL', 'HLD_0017', 517000.0000, 1034.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0017', 'POL_0017', 'Beneficiary_0017', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0018', 'PROD_TERM_LIFE', 'HLD_0018', 518000.0000, 1036.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0018', 'POL_0018', 'Beneficiary_0018', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0019', 'PROD_CRITICAL_ILL', 'HLD_0019', 519000.0000, 1038.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0019', 'POL_0019', 'Beneficiary_0019', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0020', 'PROD_TERM_LIFE', 'HLD_0020', 520000.0000, 1040.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0020', 'POL_0020', 'Beneficiary_0020', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0021', 'PROD_CRITICAL_ILL', 'HLD_0021', 521000.0000, 1042.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0021', 'POL_0021', 'Beneficiary_0021', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0022', 'PROD_TERM_LIFE', 'HLD_0022', 522000.0000, 1044.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0022', 'POL_0022', 'Beneficiary_0022', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0023', 'PROD_CRITICAL_ILL', 'HLD_0023', 523000.0000, 1046.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0023', 'POL_0023', 'Beneficiary_0023', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0024', 'PROD_TERM_LIFE', 'HLD_0024', 524000.0000, 1048.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0024', 'POL_0024', 'Beneficiary_0024', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0025', 'PROD_CRITICAL_ILL', 'HLD_0025', 525000.0000, 1050.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0025', 'POL_0025', 'Beneficiary_0025', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0026', 'PROD_TERM_LIFE', 'HLD_0026', 526000.0000, 1052.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0026', 'POL_0026', 'Beneficiary_0026', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0027', 'PROD_CRITICAL_ILL', 'HLD_0027', 527000.0000, 1054.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0027', 'POL_0027', 'Beneficiary_0027', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0028', 'PROD_TERM_LIFE', 'HLD_0028', 528000.0000, 1056.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0028', 'POL_0028', 'Beneficiary_0028', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0029', 'PROD_CRITICAL_ILL', 'HLD_0029', 529000.0000, 1058.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0029', 'POL_0029', 'Beneficiary_0029', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0030', 'PROD_TERM_LIFE', 'HLD_0030', 530000.0000, 1060.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0030', 'POL_0030', 'Beneficiary_0030', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0031', 'PROD_CRITICAL_ILL', 'HLD_0031', 531000.0000, 1062.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0031', 'POL_0031', 'Beneficiary_0031', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0032', 'PROD_TERM_LIFE', 'HLD_0032', 532000.0000, 1064.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0032', 'POL_0032', 'Beneficiary_0032', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0033', 'PROD_CRITICAL_ILL', 'HLD_0033', 533000.0000, 1066.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0033', 'POL_0033', 'Beneficiary_0033', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0034', 'PROD_TERM_LIFE', 'HLD_0034', 534000.0000, 1068.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0034', 'POL_0034', 'Beneficiary_0034', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0035', 'PROD_CRITICAL_ILL', 'HLD_0035', 535000.0000, 1070.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0035', 'POL_0035', 'Beneficiary_0035', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0036', 'PROD_TERM_LIFE', 'HLD_0036', 536000.0000, 1072.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0036', 'POL_0036', 'Beneficiary_0036', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0037', 'PROD_CRITICAL_ILL', 'HLD_0037', 537000.0000, 1074.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0037', 'POL_0037', 'Beneficiary_0037', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0038', 'PROD_TERM_LIFE', 'HLD_0038', 538000.0000, 1076.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0038', 'POL_0038', 'Beneficiary_0038', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0039', 'PROD_CRITICAL_ILL', 'HLD_0039', 539000.0000, 1078.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0039', 'POL_0039', 'Beneficiary_0039', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0040', 'PROD_TERM_LIFE', 'HLD_0040', 540000.0000, 1080.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0040', 'POL_0040', 'Beneficiary_0040', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0041', 'PROD_CRITICAL_ILL', 'HLD_0041', 541000.0000, 1082.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0041', 'POL_0041', 'Beneficiary_0041', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0042', 'PROD_TERM_LIFE', 'HLD_0042', 542000.0000, 1084.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0042', 'POL_0042', 'Beneficiary_0042', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0043', 'PROD_CRITICAL_ILL', 'HLD_0043', 543000.0000, 1086.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0043', 'POL_0043', 'Beneficiary_0043', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0044', 'PROD_TERM_LIFE', 'HLD_0044', 544000.0000, 1088.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0044', 'POL_0044', 'Beneficiary_0044', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0045', 'PROD_CRITICAL_ILL', 'HLD_0045', 545000.0000, 1090.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0045', 'POL_0045', 'Beneficiary_0045', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0046', 'PROD_TERM_LIFE', 'HLD_0046', 546000.0000, 1092.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0046', 'POL_0046', 'Beneficiary_0046', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0047', 'PROD_CRITICAL_ILL', 'HLD_0047', 547000.0000, 1094.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0047', 'POL_0047', 'Beneficiary_0047', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0048', 'PROD_TERM_LIFE', 'HLD_0048', 548000.0000, 1096.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0048', 'POL_0048', 'Beneficiary_0048', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0049', 'PROD_CRITICAL_ILL', 'HLD_0049', 549000.0000, 1098.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0049', 'POL_0049', 'Beneficiary_0049', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0050', 'PROD_TERM_LIFE', 'HLD_0050', 550000.0000, 1100.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0050', 'POL_0050', 'Beneficiary_0050', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0051', 'PROD_CRITICAL_ILL', 'HLD_0051', 551000.0000, 1102.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0051', 'POL_0051', 'Beneficiary_0051', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0052', 'PROD_TERM_LIFE', 'HLD_0052', 552000.0000, 1104.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0052', 'POL_0052', 'Beneficiary_0052', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0053', 'PROD_CRITICAL_ILL', 'HLD_0053', 553000.0000, 1106.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0053', 'POL_0053', 'Beneficiary_0053', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0054', 'PROD_TERM_LIFE', 'HLD_0054', 554000.0000, 1108.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0054', 'POL_0054', 'Beneficiary_0054', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0055', 'PROD_CRITICAL_ILL', 'HLD_0055', 555000.0000, 1110.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0055', 'POL_0055', 'Beneficiary_0055', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0056', 'PROD_TERM_LIFE', 'HLD_0056', 556000.0000, 1112.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0056', 'POL_0056', 'Beneficiary_0056', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0057', 'PROD_CRITICAL_ILL', 'HLD_0057', 557000.0000, 1114.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0057', 'POL_0057', 'Beneficiary_0057', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0058', 'PROD_TERM_LIFE', 'HLD_0058', 558000.0000, 1116.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0058', 'POL_0058', 'Beneficiary_0058', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0059', 'PROD_CRITICAL_ILL', 'HLD_0059', 559000.0000, 1118.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0059', 'POL_0059', 'Beneficiary_0059', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0060', 'PROD_TERM_LIFE', 'HLD_0060', 560000.0000, 1120.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0060', 'POL_0060', 'Beneficiary_0060', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0061', 'PROD_CRITICAL_ILL', 'HLD_0061', 561000.0000, 1122.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0061', 'POL_0061', 'Beneficiary_0061', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0062', 'PROD_TERM_LIFE', 'HLD_0062', 562000.0000, 1124.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0062', 'POL_0062', 'Beneficiary_0062', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0063', 'PROD_CRITICAL_ILL', 'HLD_0063', 563000.0000, 1126.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0063', 'POL_0063', 'Beneficiary_0063', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0064', 'PROD_TERM_LIFE', 'HLD_0064', 564000.0000, 1128.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0064', 'POL_0064', 'Beneficiary_0064', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0065', 'PROD_CRITICAL_ILL', 'HLD_0065', 565000.0000, 1130.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0065', 'POL_0065', 'Beneficiary_0065', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0066', 'PROD_TERM_LIFE', 'HLD_0066', 566000.0000, 1132.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0066', 'POL_0066', 'Beneficiary_0066', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0067', 'PROD_CRITICAL_ILL', 'HLD_0067', 567000.0000, 1134.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0067', 'POL_0067', 'Beneficiary_0067', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0068', 'PROD_TERM_LIFE', 'HLD_0068', 568000.0000, 1136.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0068', 'POL_0068', 'Beneficiary_0068', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0069', 'PROD_CRITICAL_ILL', 'HLD_0069', 569000.0000, 1138.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0069', 'POL_0069', 'Beneficiary_0069', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0070', 'PROD_TERM_LIFE', 'HLD_0070', 570000.0000, 1140.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0070', 'POL_0070', 'Beneficiary_0070', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0071', 'PROD_CRITICAL_ILL', 'HLD_0071', 571000.0000, 1142.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0071', 'POL_0071', 'Beneficiary_0071', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0072', 'PROD_TERM_LIFE', 'HLD_0072', 572000.0000, 1144.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0072', 'POL_0072', 'Beneficiary_0072', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0073', 'PROD_CRITICAL_ILL', 'HLD_0073', 573000.0000, 1146.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0073', 'POL_0073', 'Beneficiary_0073', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0074', 'PROD_TERM_LIFE', 'HLD_0074', 574000.0000, 1148.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0074', 'POL_0074', 'Beneficiary_0074', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0075', 'PROD_CRITICAL_ILL', 'HLD_0075', 575000.0000, 1150.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0075', 'POL_0075', 'Beneficiary_0075', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0076', 'PROD_TERM_LIFE', 'HLD_0076', 576000.0000, 1152.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0076', 'POL_0076', 'Beneficiary_0076', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0077', 'PROD_CRITICAL_ILL', 'HLD_0077', 577000.0000, 1154.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0077', 'POL_0077', 'Beneficiary_0077', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0078', 'PROD_TERM_LIFE', 'HLD_0078', 578000.0000, 1156.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0078', 'POL_0078', 'Beneficiary_0078', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0079', 'PROD_CRITICAL_ILL', 'HLD_0079', 579000.0000, 1158.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0079', 'POL_0079', 'Beneficiary_0079', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0080', 'PROD_TERM_LIFE', 'HLD_0080', 580000.0000, 1160.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0080', 'POL_0080', 'Beneficiary_0080', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0081', 'PROD_CRITICAL_ILL', 'HLD_0081', 581000.0000, 1162.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0081', 'POL_0081', 'Beneficiary_0081', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0082', 'PROD_TERM_LIFE', 'HLD_0082', 582000.0000, 1164.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0082', 'POL_0082', 'Beneficiary_0082', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0083', 'PROD_CRITICAL_ILL', 'HLD_0083', 583000.0000, 1166.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0083', 'POL_0083', 'Beneficiary_0083', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0084', 'PROD_TERM_LIFE', 'HLD_0084', 584000.0000, 1168.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0084', 'POL_0084', 'Beneficiary_0084', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0085', 'PROD_CRITICAL_ILL', 'HLD_0085', 585000.0000, 1170.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0085', 'POL_0085', 'Beneficiary_0085', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0086', 'PROD_TERM_LIFE', 'HLD_0086', 586000.0000, 1172.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0086', 'POL_0086', 'Beneficiary_0086', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0087', 'PROD_CRITICAL_ILL', 'HLD_0087', 587000.0000, 1174.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0087', 'POL_0087', 'Beneficiary_0087', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0088', 'PROD_TERM_LIFE', 'HLD_0088', 588000.0000, 1176.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0088', 'POL_0088', 'Beneficiary_0088', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0089', 'PROD_CRITICAL_ILL', 'HLD_0089', 589000.0000, 1178.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0089', 'POL_0089', 'Beneficiary_0089', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0090', 'PROD_TERM_LIFE', 'HLD_0090', 590000.0000, 1180.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0090', 'POL_0090', 'Beneficiary_0090', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0091', 'PROD_CRITICAL_ILL', 'HLD_0091', 591000.0000, 1182.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0091', 'POL_0091', 'Beneficiary_0091', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0092', 'PROD_TERM_LIFE', 'HLD_0092', 592000.0000, 1184.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0092', 'POL_0092', 'Beneficiary_0092', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0093', 'PROD_CRITICAL_ILL', 'HLD_0093', 593000.0000, 1186.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0093', 'POL_0093', 'Beneficiary_0093', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0094', 'PROD_TERM_LIFE', 'HLD_0094', 594000.0000, 1188.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0094', 'POL_0094', 'Beneficiary_0094', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0095', 'PROD_CRITICAL_ILL', 'HLD_0095', 595000.0000, 1190.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0095', 'POL_0095', 'Beneficiary_0095', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0096', 'PROD_TERM_LIFE', 'HLD_0096', 596000.0000, 1192.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0096', 'POL_0096', 'Beneficiary_0096', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0097', 'PROD_CRITICAL_ILL', 'HLD_0097', 597000.0000, 1194.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0097', 'POL_0097', 'Beneficiary_0097', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0098', 'PROD_TERM_LIFE', 'HLD_0098', 598000.0000, 1196.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0098', 'POL_0098', 'Beneficiary_0098', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0099', 'PROD_CRITICAL_ILL', 'HLD_0099', 599000.0000, 1198.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0099', 'POL_0099', 'Beneficiary_0099', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0100', 'PROD_TERM_LIFE', 'HLD_0100', 600000.0000, 1200.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0100', 'POL_0100', 'Beneficiary_0100', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0101', 'PROD_CRITICAL_ILL', 'HLD_0101', 601000.0000, 1202.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0101', 'POL_0101', 'Beneficiary_0101', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0102', 'PROD_TERM_LIFE', 'HLD_0102', 602000.0000, 1204.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0102', 'POL_0102', 'Beneficiary_0102', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0103', 'PROD_CRITICAL_ILL', 'HLD_0103', 603000.0000, 1206.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0103', 'POL_0103', 'Beneficiary_0103', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0104', 'PROD_TERM_LIFE', 'HLD_0104', 604000.0000, 1208.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0104', 'POL_0104', 'Beneficiary_0104', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0105', 'PROD_CRITICAL_ILL', 'HLD_0105', 605000.0000, 1210.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0105', 'POL_0105', 'Beneficiary_0105', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0106', 'PROD_TERM_LIFE', 'HLD_0106', 606000.0000, 1212.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0106', 'POL_0106', 'Beneficiary_0106', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0107', 'PROD_CRITICAL_ILL', 'HLD_0107', 607000.0000, 1214.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0107', 'POL_0107', 'Beneficiary_0107', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0108', 'PROD_TERM_LIFE', 'HLD_0108', 608000.0000, 1216.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0108', 'POL_0108', 'Beneficiary_0108', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0109', 'PROD_CRITICAL_ILL', 'HLD_0109', 609000.0000, 1218.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0109', 'POL_0109', 'Beneficiary_0109', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0110', 'PROD_TERM_LIFE', 'HLD_0110', 610000.0000, 1220.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0110', 'POL_0110', 'Beneficiary_0110', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0111', 'PROD_CRITICAL_ILL', 'HLD_0111', 611000.0000, 1222.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0111', 'POL_0111', 'Beneficiary_0111', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0112', 'PROD_TERM_LIFE', 'HLD_0112', 612000.0000, 1224.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0112', 'POL_0112', 'Beneficiary_0112', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0113', 'PROD_CRITICAL_ILL', 'HLD_0113', 613000.0000, 1226.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0113', 'POL_0113', 'Beneficiary_0113', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0114', 'PROD_TERM_LIFE', 'HLD_0114', 614000.0000, 1228.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0114', 'POL_0114', 'Beneficiary_0114', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0115', 'PROD_CRITICAL_ILL', 'HLD_0115', 615000.0000, 1230.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0115', 'POL_0115', 'Beneficiary_0115', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0116', 'PROD_TERM_LIFE', 'HLD_0116', 616000.0000, 1232.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0116', 'POL_0116', 'Beneficiary_0116', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0117', 'PROD_CRITICAL_ILL', 'HLD_0117', 617000.0000, 1234.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0117', 'POL_0117', 'Beneficiary_0117', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0118', 'PROD_TERM_LIFE', 'HLD_0118', 618000.0000, 1236.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0118', 'POL_0118', 'Beneficiary_0118', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0119', 'PROD_CRITICAL_ILL', 'HLD_0119', 619000.0000, 1238.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0119', 'POL_0119', 'Beneficiary_0119', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0120', 'PROD_TERM_LIFE', 'HLD_0120', 620000.0000, 1240.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0120', 'POL_0120', 'Beneficiary_0120', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0121', 'PROD_CRITICAL_ILL', 'HLD_0121', 621000.0000, 1242.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0121', 'POL_0121', 'Beneficiary_0121', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0122', 'PROD_TERM_LIFE', 'HLD_0122', 622000.0000, 1244.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0122', 'POL_0122', 'Beneficiary_0122', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0123', 'PROD_CRITICAL_ILL', 'HLD_0123', 623000.0000, 1246.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0123', 'POL_0123', 'Beneficiary_0123', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0124', 'PROD_TERM_LIFE', 'HLD_0124', 624000.0000, 1248.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0124', 'POL_0124', 'Beneficiary_0124', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0125', 'PROD_CRITICAL_ILL', 'HLD_0125', 625000.0000, 1250.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0125', 'POL_0125', 'Beneficiary_0125', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0126', 'PROD_TERM_LIFE', 'HLD_0126', 626000.0000, 1252.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0126', 'POL_0126', 'Beneficiary_0126', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0127', 'PROD_CRITICAL_ILL', 'HLD_0127', 627000.0000, 1254.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0127', 'POL_0127', 'Beneficiary_0127', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0128', 'PROD_TERM_LIFE', 'HLD_0128', 628000.0000, 1256.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0128', 'POL_0128', 'Beneficiary_0128', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0129', 'PROD_CRITICAL_ILL', 'HLD_0129', 629000.0000, 1258.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0129', 'POL_0129', 'Beneficiary_0129', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0130', 'PROD_TERM_LIFE', 'HLD_0130', 630000.0000, 1260.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0130', 'POL_0130', 'Beneficiary_0130', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0131', 'PROD_CRITICAL_ILL', 'HLD_0131', 631000.0000, 1262.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0131', 'POL_0131', 'Beneficiary_0131', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0132', 'PROD_TERM_LIFE', 'HLD_0132', 632000.0000, 1264.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0132', 'POL_0132', 'Beneficiary_0132', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0133', 'PROD_CRITICAL_ILL', 'HLD_0133', 633000.0000, 1266.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0133', 'POL_0133', 'Beneficiary_0133', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0134', 'PROD_TERM_LIFE', 'HLD_0134', 634000.0000, 1268.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0134', 'POL_0134', 'Beneficiary_0134', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0135', 'PROD_CRITICAL_ILL', 'HLD_0135', 635000.0000, 1270.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0135', 'POL_0135', 'Beneficiary_0135', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0136', 'PROD_TERM_LIFE', 'HLD_0136', 636000.0000, 1272.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0136', 'POL_0136', 'Beneficiary_0136', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0137', 'PROD_CRITICAL_ILL', 'HLD_0137', 637000.0000, 1274.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0137', 'POL_0137', 'Beneficiary_0137', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0138', 'PROD_TERM_LIFE', 'HLD_0138', 638000.0000, 1276.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0138', 'POL_0138', 'Beneficiary_0138', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0139', 'PROD_CRITICAL_ILL', 'HLD_0139', 639000.0000, 1278.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0139', 'POL_0139', 'Beneficiary_0139', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0140', 'PROD_TERM_LIFE', 'HLD_0140', 640000.0000, 1280.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0140', 'POL_0140', 'Beneficiary_0140', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0141', 'PROD_CRITICAL_ILL', 'HLD_0141', 641000.0000, 1282.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0141', 'POL_0141', 'Beneficiary_0141', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0142', 'PROD_TERM_LIFE', 'HLD_0142', 642000.0000, 1284.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0142', 'POL_0142', 'Beneficiary_0142', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0143', 'PROD_CRITICAL_ILL', 'HLD_0143', 643000.0000, 1286.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0143', 'POL_0143', 'Beneficiary_0143', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0144', 'PROD_TERM_LIFE', 'HLD_0144', 644000.0000, 1288.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0144', 'POL_0144', 'Beneficiary_0144', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0145', 'PROD_CRITICAL_ILL', 'HLD_0145', 645000.0000, 1290.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0145', 'POL_0145', 'Beneficiary_0145', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0146', 'PROD_TERM_LIFE', 'HLD_0146', 646000.0000, 1292.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0146', 'POL_0146', 'Beneficiary_0146', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0147', 'PROD_CRITICAL_ILL', 'HLD_0147', 647000.0000, 1294.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0147', 'POL_0147', 'Beneficiary_0147', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0148', 'PROD_TERM_LIFE', 'HLD_0148', 648000.0000, 1296.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0148', 'POL_0148', 'Beneficiary_0148', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0149', 'PROD_CRITICAL_ILL', 'HLD_0149', 649000.0000, 1298.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0149', 'POL_0149', 'Beneficiary_0149', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0150', 'PROD_TERM_LIFE', 'HLD_0150', 650000.0000, 1300.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0150', 'POL_0150', 'Beneficiary_0150', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0151', 'PROD_CRITICAL_ILL', 'HLD_0151', 651000.0000, 1302.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0151', 'POL_0151', 'Beneficiary_0151', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0152', 'PROD_TERM_LIFE', 'HLD_0152', 652000.0000, 1304.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0152', 'POL_0152', 'Beneficiary_0152', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0153', 'PROD_CRITICAL_ILL', 'HLD_0153', 653000.0000, 1306.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0153', 'POL_0153', 'Beneficiary_0153', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0154', 'PROD_TERM_LIFE', 'HLD_0154', 654000.0000, 1308.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0154', 'POL_0154', 'Beneficiary_0154', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0155', 'PROD_CRITICAL_ILL', 'HLD_0155', 655000.0000, 1310.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0155', 'POL_0155', 'Beneficiary_0155', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0156', 'PROD_TERM_LIFE', 'HLD_0156', 656000.0000, 1312.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0156', 'POL_0156', 'Beneficiary_0156', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0157', 'PROD_CRITICAL_ILL', 'HLD_0157', 657000.0000, 1314.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0157', 'POL_0157', 'Beneficiary_0157', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0158', 'PROD_TERM_LIFE', 'HLD_0158', 658000.0000, 1316.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0158', 'POL_0158', 'Beneficiary_0158', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0159', 'PROD_CRITICAL_ILL', 'HLD_0159', 659000.0000, 1318.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0159', 'POL_0159', 'Beneficiary_0159', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0160', 'PROD_TERM_LIFE', 'HLD_0160', 660000.0000, 1320.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0160', 'POL_0160', 'Beneficiary_0160', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0161', 'PROD_CRITICAL_ILL', 'HLD_0161', 661000.0000, 1322.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0161', 'POL_0161', 'Beneficiary_0161', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0162', 'PROD_TERM_LIFE', 'HLD_0162', 662000.0000, 1324.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0162', 'POL_0162', 'Beneficiary_0162', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0163', 'PROD_CRITICAL_ILL', 'HLD_0163', 663000.0000, 1326.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0163', 'POL_0163', 'Beneficiary_0163', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0164', 'PROD_TERM_LIFE', 'HLD_0164', 664000.0000, 1328.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0164', 'POL_0164', 'Beneficiary_0164', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0165', 'PROD_CRITICAL_ILL', 'HLD_0165', 665000.0000, 1330.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0165', 'POL_0165', 'Beneficiary_0165', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0166', 'PROD_TERM_LIFE', 'HLD_0166', 666000.0000, 1332.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0166', 'POL_0166', 'Beneficiary_0166', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0167', 'PROD_CRITICAL_ILL', 'HLD_0167', 667000.0000, 1334.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0167', 'POL_0167', 'Beneficiary_0167', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0168', 'PROD_TERM_LIFE', 'HLD_0168', 668000.0000, 1336.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0168', 'POL_0168', 'Beneficiary_0168', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0169', 'PROD_CRITICAL_ILL', 'HLD_0169', 669000.0000, 1338.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0169', 'POL_0169', 'Beneficiary_0169', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0170', 'PROD_TERM_LIFE', 'HLD_0170', 670000.0000, 1340.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0170', 'POL_0170', 'Beneficiary_0170', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0171', 'PROD_CRITICAL_ILL', 'HLD_0171', 671000.0000, 1342.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0171', 'POL_0171', 'Beneficiary_0171', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0172', 'PROD_TERM_LIFE', 'HLD_0172', 672000.0000, 1344.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0172', 'POL_0172', 'Beneficiary_0172', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0173', 'PROD_CRITICAL_ILL', 'HLD_0173', 673000.0000, 1346.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0173', 'POL_0173', 'Beneficiary_0173', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0174', 'PROD_TERM_LIFE', 'HLD_0174', 674000.0000, 1348.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0174', 'POL_0174', 'Beneficiary_0174', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0175', 'PROD_CRITICAL_ILL', 'HLD_0175', 675000.0000, 1350.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0175', 'POL_0175', 'Beneficiary_0175', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0176', 'PROD_TERM_LIFE', 'HLD_0176', 676000.0000, 1352.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0176', 'POL_0176', 'Beneficiary_0176', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0177', 'PROD_CRITICAL_ILL', 'HLD_0177', 677000.0000, 1354.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0177', 'POL_0177', 'Beneficiary_0177', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0178', 'PROD_TERM_LIFE', 'HLD_0178', 678000.0000, 1356.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0178', 'POL_0178', 'Beneficiary_0178', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0179', 'PROD_CRITICAL_ILL', 'HLD_0179', 679000.0000, 1358.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0179', 'POL_0179', 'Beneficiary_0179', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0180', 'PROD_TERM_LIFE', 'HLD_0180', 680000.0000, 1360.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0180', 'POL_0180', 'Beneficiary_0180', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0181', 'PROD_CRITICAL_ILL', 'HLD_0181', 681000.0000, 1362.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0181', 'POL_0181', 'Beneficiary_0181', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0182', 'PROD_TERM_LIFE', 'HLD_0182', 682000.0000, 1364.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0182', 'POL_0182', 'Beneficiary_0182', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0183', 'PROD_CRITICAL_ILL', 'HLD_0183', 683000.0000, 1366.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0183', 'POL_0183', 'Beneficiary_0183', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0184', 'PROD_TERM_LIFE', 'HLD_0184', 684000.0000, 1368.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0184', 'POL_0184', 'Beneficiary_0184', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0185', 'PROD_CRITICAL_ILL', 'HLD_0185', 685000.0000, 1370.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0185', 'POL_0185', 'Beneficiary_0185', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0186', 'PROD_TERM_LIFE', 'HLD_0186', 686000.0000, 1372.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0186', 'POL_0186', 'Beneficiary_0186', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0187', 'PROD_CRITICAL_ILL', 'HLD_0187', 687000.0000, 1374.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0187', 'POL_0187', 'Beneficiary_0187', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0188', 'PROD_TERM_LIFE', 'HLD_0188', 688000.0000, 1376.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0188', 'POL_0188', 'Beneficiary_0188', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0189', 'PROD_CRITICAL_ILL', 'HLD_0189', 689000.0000, 1378.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0189', 'POL_0189', 'Beneficiary_0189', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0190', 'PROD_TERM_LIFE', 'HLD_0190', 690000.0000, 1380.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0190', 'POL_0190', 'Beneficiary_0190', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0191', 'PROD_CRITICAL_ILL', 'HLD_0191', 691000.0000, 1382.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0191', 'POL_0191', 'Beneficiary_0191', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0192', 'PROD_TERM_LIFE', 'HLD_0192', 692000.0000, 1384.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0192', 'POL_0192', 'Beneficiary_0192', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0193', 'PROD_CRITICAL_ILL', 'HLD_0193', 693000.0000, 1386.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0193', 'POL_0193', 'Beneficiary_0193', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0194', 'PROD_TERM_LIFE', 'HLD_0194', 694000.0000, 1388.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0194', 'POL_0194', 'Beneficiary_0194', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0195', 'PROD_CRITICAL_ILL', 'HLD_0195', 695000.0000, 1390.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0195', 'POL_0195', 'Beneficiary_0195', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0196', 'PROD_TERM_LIFE', 'HLD_0196', 696000.0000, 1392.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0196', 'POL_0196', 'Beneficiary_0196', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0197', 'PROD_CRITICAL_ILL', 'HLD_0197', 697000.0000, 1394.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0197', 'POL_0197', 'Beneficiary_0197', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0198', 'PROD_TERM_LIFE', 'HLD_0198', 698000.0000, 1396.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0198', 'POL_0198', 'Beneficiary_0198', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0199', 'PROD_CRITICAL_ILL', 'HLD_0199', 699000.0000, 1398.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0199', 'POL_0199', 'Beneficiary_0199', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0200', 'PROD_TERM_LIFE', 'HLD_0200', 700000.0000, 1400.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0200', 'POL_0200', 'Beneficiary_0200', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0201', 'PROD_CRITICAL_ILL', 'HLD_0201', 701000.0000, 1402.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0201', 'POL_0201', 'Beneficiary_0201', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0202', 'PROD_TERM_LIFE', 'HLD_0202', 702000.0000, 1404.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0202', 'POL_0202', 'Beneficiary_0202', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0203', 'PROD_CRITICAL_ILL', 'HLD_0203', 703000.0000, 1406.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0203', 'POL_0203', 'Beneficiary_0203', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0204', 'PROD_TERM_LIFE', 'HLD_0204', 704000.0000, 1408.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0204', 'POL_0204', 'Beneficiary_0204', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0205', 'PROD_CRITICAL_ILL', 'HLD_0205', 705000.0000, 1410.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0205', 'POL_0205', 'Beneficiary_0205', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0206', 'PROD_TERM_LIFE', 'HLD_0206', 706000.0000, 1412.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0206', 'POL_0206', 'Beneficiary_0206', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0207', 'PROD_CRITICAL_ILL', 'HLD_0207', 707000.0000, 1414.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0207', 'POL_0207', 'Beneficiary_0207', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0208', 'PROD_TERM_LIFE', 'HLD_0208', 708000.0000, 1416.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0208', 'POL_0208', 'Beneficiary_0208', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0209', 'PROD_CRITICAL_ILL', 'HLD_0209', 709000.0000, 1418.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0209', 'POL_0209', 'Beneficiary_0209', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0210', 'PROD_TERM_LIFE', 'HLD_0210', 710000.0000, 1420.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0210', 'POL_0210', 'Beneficiary_0210', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0211', 'PROD_CRITICAL_ILL', 'HLD_0211', 711000.0000, 1422.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0211', 'POL_0211', 'Beneficiary_0211', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0212', 'PROD_TERM_LIFE', 'HLD_0212', 712000.0000, 1424.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0212', 'POL_0212', 'Beneficiary_0212', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0213', 'PROD_CRITICAL_ILL', 'HLD_0213', 713000.0000, 1426.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0213', 'POL_0213', 'Beneficiary_0213', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0214', 'PROD_TERM_LIFE', 'HLD_0214', 714000.0000, 1428.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0214', 'POL_0214', 'Beneficiary_0214', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0215', 'PROD_CRITICAL_ILL', 'HLD_0215', 715000.0000, 1430.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0215', 'POL_0215', 'Beneficiary_0215', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0216', 'PROD_TERM_LIFE', 'HLD_0216', 716000.0000, 1432.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0216', 'POL_0216', 'Beneficiary_0216', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0217', 'PROD_CRITICAL_ILL', 'HLD_0217', 717000.0000, 1434.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0217', 'POL_0217', 'Beneficiary_0217', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0218', 'PROD_TERM_LIFE', 'HLD_0218', 718000.0000, 1436.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0218', 'POL_0218', 'Beneficiary_0218', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0219', 'PROD_CRITICAL_ILL', 'HLD_0219', 719000.0000, 1438.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0219', 'POL_0219', 'Beneficiary_0219', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0220', 'PROD_TERM_LIFE', 'HLD_0220', 720000.0000, 1440.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0220', 'POL_0220', 'Beneficiary_0220', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0221', 'PROD_CRITICAL_ILL', 'HLD_0221', 721000.0000, 1442.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0221', 'POL_0221', 'Beneficiary_0221', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0222', 'PROD_TERM_LIFE', 'HLD_0222', 722000.0000, 1444.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0222', 'POL_0222', 'Beneficiary_0222', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0223', 'PROD_CRITICAL_ILL', 'HLD_0223', 723000.0000, 1446.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0223', 'POL_0223', 'Beneficiary_0223', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0224', 'PROD_TERM_LIFE', 'HLD_0224', 724000.0000, 1448.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0224', 'POL_0224', 'Beneficiary_0224', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0225', 'PROD_CRITICAL_ILL', 'HLD_0225', 725000.0000, 1450.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0225', 'POL_0225', 'Beneficiary_0225', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0226', 'PROD_TERM_LIFE', 'HLD_0226', 726000.0000, 1452.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0226', 'POL_0226', 'Beneficiary_0226', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0227', 'PROD_CRITICAL_ILL', 'HLD_0227', 727000.0000, 1454.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0227', 'POL_0227', 'Beneficiary_0227', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0228', 'PROD_TERM_LIFE', 'HLD_0228', 728000.0000, 1456.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0228', 'POL_0228', 'Beneficiary_0228', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0229', 'PROD_CRITICAL_ILL', 'HLD_0229', 729000.0000, 1458.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0229', 'POL_0229', 'Beneficiary_0229', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0230', 'PROD_TERM_LIFE', 'HLD_0230', 730000.0000, 1460.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0230', 'POL_0230', 'Beneficiary_0230', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0231', 'PROD_CRITICAL_ILL', 'HLD_0231', 731000.0000, 1462.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0231', 'POL_0231', 'Beneficiary_0231', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0232', 'PROD_TERM_LIFE', 'HLD_0232', 732000.0000, 1464.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0232', 'POL_0232', 'Beneficiary_0232', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0233', 'PROD_CRITICAL_ILL', 'HLD_0233', 733000.0000, 1466.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0233', 'POL_0233', 'Beneficiary_0233', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0234', 'PROD_TERM_LIFE', 'HLD_0234', 734000.0000, 1468.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0234', 'POL_0234', 'Beneficiary_0234', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0235', 'PROD_CRITICAL_ILL', 'HLD_0235', 735000.0000, 1470.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0235', 'POL_0235', 'Beneficiary_0235', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0236', 'PROD_TERM_LIFE', 'HLD_0236', 736000.0000, 1472.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0236', 'POL_0236', 'Beneficiary_0236', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0237', 'PROD_CRITICAL_ILL', 'HLD_0237', 737000.0000, 1474.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0237', 'POL_0237', 'Beneficiary_0237', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0238', 'PROD_TERM_LIFE', 'HLD_0238', 738000.0000, 1476.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0238', 'POL_0238', 'Beneficiary_0238', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0239', 'PROD_CRITICAL_ILL', 'HLD_0239', 739000.0000, 1478.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0239', 'POL_0239', 'Beneficiary_0239', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0240', 'PROD_TERM_LIFE', 'HLD_0240', 740000.0000, 1480.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0240', 'POL_0240', 'Beneficiary_0240', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0241', 'PROD_CRITICAL_ILL', 'HLD_0241', 741000.0000, 1482.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0241', 'POL_0241', 'Beneficiary_0241', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0242', 'PROD_TERM_LIFE', 'HLD_0242', 742000.0000, 1484.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0242', 'POL_0242', 'Beneficiary_0242', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0243', 'PROD_CRITICAL_ILL', 'HLD_0243', 743000.0000, 1486.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0243', 'POL_0243', 'Beneficiary_0243', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0244', 'PROD_TERM_LIFE', 'HLD_0244', 744000.0000, 1488.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0244', 'POL_0244', 'Beneficiary_0244', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0245', 'PROD_CRITICAL_ILL', 'HLD_0245', 745000.0000, 1490.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0245', 'POL_0245', 'Beneficiary_0245', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0246', 'PROD_TERM_LIFE', 'HLD_0246', 746000.0000, 1492.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0246', 'POL_0246', 'Beneficiary_0246', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0247', 'PROD_CRITICAL_ILL', 'HLD_0247', 747000.0000, 1494.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0247', 'POL_0247', 'Beneficiary_0247', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0248', 'PROD_TERM_LIFE', 'HLD_0248', 748000.0000, 1496.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0248', 'POL_0248', 'Beneficiary_0248', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0249', 'PROD_CRITICAL_ILL', 'HLD_0249', 749000.0000, 1498.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0249', 'POL_0249', 'Beneficiary_0249', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0250', 'PROD_TERM_LIFE', 'HLD_0250', 750000.0000, 1500.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0250', 'POL_0250', 'Beneficiary_0250', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0251', 'PROD_CRITICAL_ILL', 'HLD_0251', 751000.0000, 1502.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0251', 'POL_0251', 'Beneficiary_0251', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0252', 'PROD_TERM_LIFE', 'HLD_0252', 752000.0000, 1504.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0252', 'POL_0252', 'Beneficiary_0252', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0253', 'PROD_CRITICAL_ILL', 'HLD_0253', 753000.0000, 1506.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0253', 'POL_0253', 'Beneficiary_0253', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0254', 'PROD_TERM_LIFE', 'HLD_0254', 754000.0000, 1508.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0254', 'POL_0254', 'Beneficiary_0254', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0255', 'PROD_CRITICAL_ILL', 'HLD_0255', 755000.0000, 1510.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0255', 'POL_0255', 'Beneficiary_0255', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0256', 'PROD_TERM_LIFE', 'HLD_0256', 756000.0000, 1512.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0256', 'POL_0256', 'Beneficiary_0256', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0257', 'PROD_CRITICAL_ILL', 'HLD_0257', 757000.0000, 1514.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0257', 'POL_0257', 'Beneficiary_0257', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0258', 'PROD_TERM_LIFE', 'HLD_0258', 758000.0000, 1516.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0258', 'POL_0258', 'Beneficiary_0258', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0259', 'PROD_CRITICAL_ILL', 'HLD_0259', 759000.0000, 1518.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0259', 'POL_0259', 'Beneficiary_0259', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0260', 'PROD_TERM_LIFE', 'HLD_0260', 760000.0000, 1520.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0260', 'POL_0260', 'Beneficiary_0260', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0261', 'PROD_CRITICAL_ILL', 'HLD_0261', 761000.0000, 1522.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0261', 'POL_0261', 'Beneficiary_0261', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0262', 'PROD_TERM_LIFE', 'HLD_0262', 762000.0000, 1524.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0262', 'POL_0262', 'Beneficiary_0262', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0263', 'PROD_CRITICAL_ILL', 'HLD_0263', 763000.0000, 1526.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0263', 'POL_0263', 'Beneficiary_0263', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0264', 'PROD_TERM_LIFE', 'HLD_0264', 764000.0000, 1528.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0264', 'POL_0264', 'Beneficiary_0264', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0265', 'PROD_CRITICAL_ILL', 'HLD_0265', 765000.0000, 1530.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0265', 'POL_0265', 'Beneficiary_0265', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0266', 'PROD_TERM_LIFE', 'HLD_0266', 766000.0000, 1532.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0266', 'POL_0266', 'Beneficiary_0266', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0267', 'PROD_CRITICAL_ILL', 'HLD_0267', 767000.0000, 1534.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0267', 'POL_0267', 'Beneficiary_0267', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0268', 'PROD_TERM_LIFE', 'HLD_0268', 768000.0000, 1536.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0268', 'POL_0268', 'Beneficiary_0268', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0269', 'PROD_CRITICAL_ILL', 'HLD_0269', 769000.0000, 1538.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0269', 'POL_0269', 'Beneficiary_0269', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0270', 'PROD_TERM_LIFE', 'HLD_0270', 770000.0000, 1540.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0270', 'POL_0270', 'Beneficiary_0270', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0271', 'PROD_CRITICAL_ILL', 'HLD_0271', 771000.0000, 1542.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0271', 'POL_0271', 'Beneficiary_0271', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0272', 'PROD_TERM_LIFE', 'HLD_0272', 772000.0000, 1544.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0272', 'POL_0272', 'Beneficiary_0272', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0273', 'PROD_CRITICAL_ILL', 'HLD_0273', 773000.0000, 1546.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0273', 'POL_0273', 'Beneficiary_0273', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0274', 'PROD_TERM_LIFE', 'HLD_0274', 774000.0000, 1548.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0274', 'POL_0274', 'Beneficiary_0274', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0275', 'PROD_CRITICAL_ILL', 'HLD_0275', 775000.0000, 1550.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0275', 'POL_0275', 'Beneficiary_0275', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0276', 'PROD_TERM_LIFE', 'HLD_0276', 776000.0000, 1552.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0276', 'POL_0276', 'Beneficiary_0276', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0277', 'PROD_CRITICAL_ILL', 'HLD_0277', 777000.0000, 1554.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0277', 'POL_0277', 'Beneficiary_0277', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0278', 'PROD_TERM_LIFE', 'HLD_0278', 778000.0000, 1556.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0278', 'POL_0278', 'Beneficiary_0278', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0279', 'PROD_CRITICAL_ILL', 'HLD_0279', 779000.0000, 1558.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0279', 'POL_0279', 'Beneficiary_0279', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0280', 'PROD_TERM_LIFE', 'HLD_0280', 780000.0000, 1560.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0280', 'POL_0280', 'Beneficiary_0280', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0281', 'PROD_CRITICAL_ILL', 'HLD_0281', 781000.0000, 1562.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0281', 'POL_0281', 'Beneficiary_0281', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0282', 'PROD_TERM_LIFE', 'HLD_0282', 782000.0000, 1564.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0282', 'POL_0282', 'Beneficiary_0282', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0283', 'PROD_CRITICAL_ILL', 'HLD_0283', 783000.0000, 1566.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0283', 'POL_0283', 'Beneficiary_0283', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0284', 'PROD_TERM_LIFE', 'HLD_0284', 784000.0000, 1568.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0284', 'POL_0284', 'Beneficiary_0284', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0285', 'PROD_CRITICAL_ILL', 'HLD_0285', 785000.0000, 1570.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0285', 'POL_0285', 'Beneficiary_0285', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0286', 'PROD_TERM_LIFE', 'HLD_0286', 786000.0000, 1572.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0286', 'POL_0286', 'Beneficiary_0286', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0287', 'PROD_CRITICAL_ILL', 'HLD_0287', 787000.0000, 1574.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0287', 'POL_0287', 'Beneficiary_0287', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0288', 'PROD_TERM_LIFE', 'HLD_0288', 788000.0000, 1576.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0288', 'POL_0288', 'Beneficiary_0288', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0289', 'PROD_CRITICAL_ILL', 'HLD_0289', 789000.0000, 1578.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0289', 'POL_0289', 'Beneficiary_0289', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0290', 'PROD_TERM_LIFE', 'HLD_0290', 790000.0000, 1580.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0290', 'POL_0290', 'Beneficiary_0290', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0291', 'PROD_CRITICAL_ILL', 'HLD_0291', 791000.0000, 1582.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0291', 'POL_0291', 'Beneficiary_0291', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0292', 'PROD_TERM_LIFE', 'HLD_0292', 792000.0000, 1584.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0292', 'POL_0292', 'Beneficiary_0292', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0293', 'PROD_CRITICAL_ILL', 'HLD_0293', 793000.0000, 1586.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0293', 'POL_0293', 'Beneficiary_0293', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0294', 'PROD_TERM_LIFE', 'HLD_0294', 794000.0000, 1588.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0294', 'POL_0294', 'Beneficiary_0294', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0295', 'PROD_CRITICAL_ILL', 'HLD_0295', 795000.0000, 1590.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0295', 'POL_0295', 'Beneficiary_0295', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0296', 'PROD_TERM_LIFE', 'HLD_0296', 796000.0000, 1592.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0296', 'POL_0296', 'Beneficiary_0296', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0297', 'PROD_CRITICAL_ILL', 'HLD_0297', 797000.0000, 1594.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0297', 'POL_0297', 'Beneficiary_0297', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0298', 'PROD_TERM_LIFE', 'HLD_0298', 798000.0000, 1596.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0298', 'POL_0298', 'Beneficiary_0298', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0299', 'PROD_CRITICAL_ILL', 'HLD_0299', 799000.0000, 1598.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0299', 'POL_0299', 'Beneficiary_0299', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0300', 'PROD_TERM_LIFE', 'HLD_0300', 800000.0000, 1600.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0300', 'POL_0300', 'Beneficiary_0300', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0301', 'PROD_CRITICAL_ILL', 'HLD_0301', 801000.0000, 1602.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0301', 'POL_0301', 'Beneficiary_0301', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0302', 'PROD_TERM_LIFE', 'HLD_0302', 802000.0000, 1604.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0302', 'POL_0302', 'Beneficiary_0302', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0303', 'PROD_CRITICAL_ILL', 'HLD_0303', 803000.0000, 1606.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0303', 'POL_0303', 'Beneficiary_0303', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0304', 'PROD_TERM_LIFE', 'HLD_0304', 804000.0000, 1608.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0304', 'POL_0304', 'Beneficiary_0304', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0305', 'PROD_CRITICAL_ILL', 'HLD_0305', 805000.0000, 1610.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0305', 'POL_0305', 'Beneficiary_0305', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0306', 'PROD_TERM_LIFE', 'HLD_0306', 806000.0000, 1612.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0306', 'POL_0306', 'Beneficiary_0306', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0307', 'PROD_CRITICAL_ILL', 'HLD_0307', 807000.0000, 1614.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0307', 'POL_0307', 'Beneficiary_0307', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0308', 'PROD_TERM_LIFE', 'HLD_0308', 808000.0000, 1616.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0308', 'POL_0308', 'Beneficiary_0308', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0309', 'PROD_CRITICAL_ILL', 'HLD_0309', 809000.0000, 1618.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0309', 'POL_0309', 'Beneficiary_0309', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0310', 'PROD_TERM_LIFE', 'HLD_0310', 810000.0000, 1620.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0310', 'POL_0310', 'Beneficiary_0310', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0311', 'PROD_CRITICAL_ILL', 'HLD_0311', 811000.0000, 1622.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0311', 'POL_0311', 'Beneficiary_0311', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0312', 'PROD_TERM_LIFE', 'HLD_0312', 812000.0000, 1624.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0312', 'POL_0312', 'Beneficiary_0312', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0313', 'PROD_CRITICAL_ILL', 'HLD_0313', 813000.0000, 1626.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0313', 'POL_0313', 'Beneficiary_0313', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0314', 'PROD_TERM_LIFE', 'HLD_0314', 814000.0000, 1628.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0314', 'POL_0314', 'Beneficiary_0314', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0315', 'PROD_CRITICAL_ILL', 'HLD_0315', 815000.0000, 1630.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0315', 'POL_0315', 'Beneficiary_0315', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0316', 'PROD_TERM_LIFE', 'HLD_0316', 816000.0000, 1632.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0316', 'POL_0316', 'Beneficiary_0316', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0317', 'PROD_CRITICAL_ILL', 'HLD_0317', 817000.0000, 1634.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0317', 'POL_0317', 'Beneficiary_0317', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0318', 'PROD_TERM_LIFE', 'HLD_0318', 818000.0000, 1636.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0318', 'POL_0318', 'Beneficiary_0318', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0319', 'PROD_CRITICAL_ILL', 'HLD_0319', 819000.0000, 1638.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0319', 'POL_0319', 'Beneficiary_0319', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0320', 'PROD_TERM_LIFE', 'HLD_0320', 820000.0000, 1640.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0320', 'POL_0320', 'Beneficiary_0320', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0321', 'PROD_CRITICAL_ILL', 'HLD_0321', 821000.0000, 1642.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0321', 'POL_0321', 'Beneficiary_0321', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0322', 'PROD_TERM_LIFE', 'HLD_0322', 822000.0000, 1644.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0322', 'POL_0322', 'Beneficiary_0322', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0323', 'PROD_CRITICAL_ILL', 'HLD_0323', 823000.0000, 1646.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0323', 'POL_0323', 'Beneficiary_0323', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0324', 'PROD_TERM_LIFE', 'HLD_0324', 824000.0000, 1648.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0324', 'POL_0324', 'Beneficiary_0324', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0325', 'PROD_CRITICAL_ILL', 'HLD_0325', 825000.0000, 1650.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0325', 'POL_0325', 'Beneficiary_0325', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0326', 'PROD_TERM_LIFE', 'HLD_0326', 826000.0000, 1652.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0326', 'POL_0326', 'Beneficiary_0326', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0327', 'PROD_CRITICAL_ILL', 'HLD_0327', 827000.0000, 1654.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0327', 'POL_0327', 'Beneficiary_0327', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0328', 'PROD_TERM_LIFE', 'HLD_0328', 828000.0000, 1656.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0328', 'POL_0328', 'Beneficiary_0328', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0329', 'PROD_CRITICAL_ILL', 'HLD_0329', 829000.0000, 1658.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0329', 'POL_0329', 'Beneficiary_0329', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0330', 'PROD_TERM_LIFE', 'HLD_0330', 830000.0000, 1660.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0330', 'POL_0330', 'Beneficiary_0330', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0331', 'PROD_CRITICAL_ILL', 'HLD_0331', 831000.0000, 1662.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0331', 'POL_0331', 'Beneficiary_0331', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0332', 'PROD_TERM_LIFE', 'HLD_0332', 832000.0000, 1664.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0332', 'POL_0332', 'Beneficiary_0332', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0333', 'PROD_CRITICAL_ILL', 'HLD_0333', 833000.0000, 1666.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0333', 'POL_0333', 'Beneficiary_0333', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0334', 'PROD_TERM_LIFE', 'HLD_0334', 834000.0000, 1668.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0334', 'POL_0334', 'Beneficiary_0334', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0335', 'PROD_CRITICAL_ILL', 'HLD_0335', 835000.0000, 1670.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0335', 'POL_0335', 'Beneficiary_0335', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0336', 'PROD_TERM_LIFE', 'HLD_0336', 836000.0000, 1672.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0336', 'POL_0336', 'Beneficiary_0336', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0337', 'PROD_CRITICAL_ILL', 'HLD_0337', 837000.0000, 1674.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0337', 'POL_0337', 'Beneficiary_0337', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0338', 'PROD_TERM_LIFE', 'HLD_0338', 838000.0000, 1676.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0338', 'POL_0338', 'Beneficiary_0338', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0339', 'PROD_CRITICAL_ILL', 'HLD_0339', 839000.0000, 1678.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0339', 'POL_0339', 'Beneficiary_0339', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0340', 'PROD_TERM_LIFE', 'HLD_0340', 840000.0000, 1680.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0340', 'POL_0340', 'Beneficiary_0340', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0341', 'PROD_CRITICAL_ILL', 'HLD_0341', 841000.0000, 1682.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0341', 'POL_0341', 'Beneficiary_0341', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0342', 'PROD_TERM_LIFE', 'HLD_0342', 842000.0000, 1684.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0342', 'POL_0342', 'Beneficiary_0342', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0343', 'PROD_CRITICAL_ILL', 'HLD_0343', 843000.0000, 1686.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0343', 'POL_0343', 'Beneficiary_0343', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0344', 'PROD_TERM_LIFE', 'HLD_0344', 844000.0000, 1688.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0344', 'POL_0344', 'Beneficiary_0344', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0345', 'PROD_CRITICAL_ILL', 'HLD_0345', 845000.0000, 1690.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0345', 'POL_0345', 'Beneficiary_0345', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0346', 'PROD_TERM_LIFE', 'HLD_0346', 846000.0000, 1692.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0346', 'POL_0346', 'Beneficiary_0346', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0347', 'PROD_CRITICAL_ILL', 'HLD_0347', 847000.0000, 1694.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0347', 'POL_0347', 'Beneficiary_0347', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0348', 'PROD_TERM_LIFE', 'HLD_0348', 848000.0000, 1696.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0348', 'POL_0348', 'Beneficiary_0348', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0349', 'PROD_CRITICAL_ILL', 'HLD_0349', 849000.0000, 1698.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0349', 'POL_0349', 'Beneficiary_0349', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0350', 'PROD_TERM_LIFE', 'HLD_0350', 850000.0000, 1700.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0350', 'POL_0350', 'Beneficiary_0350', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0351', 'PROD_CRITICAL_ILL', 'HLD_0351', 851000.0000, 1702.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0351', 'POL_0351', 'Beneficiary_0351', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0352', 'PROD_TERM_LIFE', 'HLD_0352', 852000.0000, 1704.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0352', 'POL_0352', 'Beneficiary_0352', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0353', 'PROD_CRITICAL_ILL', 'HLD_0353', 853000.0000, 1706.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0353', 'POL_0353', 'Beneficiary_0353', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0354', 'PROD_TERM_LIFE', 'HLD_0354', 854000.0000, 1708.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0354', 'POL_0354', 'Beneficiary_0354', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0355', 'PROD_CRITICAL_ILL', 'HLD_0355', 855000.0000, 1710.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0355', 'POL_0355', 'Beneficiary_0355', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0356', 'PROD_TERM_LIFE', 'HLD_0356', 856000.0000, 1712.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0356', 'POL_0356', 'Beneficiary_0356', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0357', 'PROD_CRITICAL_ILL', 'HLD_0357', 857000.0000, 1714.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0357', 'POL_0357', 'Beneficiary_0357', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0358', 'PROD_TERM_LIFE', 'HLD_0358', 858000.0000, 1716.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0358', 'POL_0358', 'Beneficiary_0358', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0359', 'PROD_CRITICAL_ILL', 'HLD_0359', 859000.0000, 1718.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0359', 'POL_0359', 'Beneficiary_0359', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0360', 'PROD_TERM_LIFE', 'HLD_0360', 860000.0000, 1720.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0360', 'POL_0360', 'Beneficiary_0360', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0361', 'PROD_CRITICAL_ILL', 'HLD_0361', 861000.0000, 1722.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0361', 'POL_0361', 'Beneficiary_0361', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0362', 'PROD_TERM_LIFE', 'HLD_0362', 862000.0000, 1724.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0362', 'POL_0362', 'Beneficiary_0362', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0363', 'PROD_CRITICAL_ILL', 'HLD_0363', 863000.0000, 1726.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0363', 'POL_0363', 'Beneficiary_0363', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0364', 'PROD_TERM_LIFE', 'HLD_0364', 864000.0000, 1728.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0364', 'POL_0364', 'Beneficiary_0364', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0365', 'PROD_CRITICAL_ILL', 'HLD_0365', 865000.0000, 1730.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0365', 'POL_0365', 'Beneficiary_0365', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0366', 'PROD_TERM_LIFE', 'HLD_0366', 866000.0000, 1732.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0366', 'POL_0366', 'Beneficiary_0366', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0367', 'PROD_CRITICAL_ILL', 'HLD_0367', 867000.0000, 1734.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0367', 'POL_0367', 'Beneficiary_0367', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0368', 'PROD_TERM_LIFE', 'HLD_0368', 868000.0000, 1736.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0368', 'POL_0368', 'Beneficiary_0368', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0369', 'PROD_CRITICAL_ILL', 'HLD_0369', 869000.0000, 1738.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0369', 'POL_0369', 'Beneficiary_0369', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0370', 'PROD_TERM_LIFE', 'HLD_0370', 870000.0000, 1740.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0370', 'POL_0370', 'Beneficiary_0370', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0371', 'PROD_CRITICAL_ILL', 'HLD_0371', 871000.0000, 1742.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0371', 'POL_0371', 'Beneficiary_0371', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0372', 'PROD_TERM_LIFE', 'HLD_0372', 872000.0000, 1744.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0372', 'POL_0372', 'Beneficiary_0372', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0373', 'PROD_CRITICAL_ILL', 'HLD_0373', 873000.0000, 1746.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0373', 'POL_0373', 'Beneficiary_0373', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0374', 'PROD_TERM_LIFE', 'HLD_0374', 874000.0000, 1748.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0374', 'POL_0374', 'Beneficiary_0374', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0375', 'PROD_CRITICAL_ILL', 'HLD_0375', 875000.0000, 1750.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0375', 'POL_0375', 'Beneficiary_0375', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0376', 'PROD_TERM_LIFE', 'HLD_0376', 876000.0000, 1752.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0376', 'POL_0376', 'Beneficiary_0376', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0377', 'PROD_CRITICAL_ILL', 'HLD_0377', 877000.0000, 1754.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0377', 'POL_0377', 'Beneficiary_0377', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0378', 'PROD_TERM_LIFE', 'HLD_0378', 878000.0000, 1756.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0378', 'POL_0378', 'Beneficiary_0378', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0379', 'PROD_CRITICAL_ILL', 'HLD_0379', 879000.0000, 1758.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0379', 'POL_0379', 'Beneficiary_0379', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0380', 'PROD_TERM_LIFE', 'HLD_0380', 880000.0000, 1760.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0380', 'POL_0380', 'Beneficiary_0380', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0381', 'PROD_CRITICAL_ILL', 'HLD_0381', 881000.0000, 1762.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0381', 'POL_0381', 'Beneficiary_0381', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0382', 'PROD_TERM_LIFE', 'HLD_0382', 882000.0000, 1764.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0382', 'POL_0382', 'Beneficiary_0382', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0383', 'PROD_CRITICAL_ILL', 'HLD_0383', 883000.0000, 1766.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0383', 'POL_0383', 'Beneficiary_0383', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0384', 'PROD_TERM_LIFE', 'HLD_0384', 884000.0000, 1768.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0384', 'POL_0384', 'Beneficiary_0384', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0385', 'PROD_CRITICAL_ILL', 'HLD_0385', 885000.0000, 1770.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0385', 'POL_0385', 'Beneficiary_0385', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0386', 'PROD_TERM_LIFE', 'HLD_0386', 886000.0000, 1772.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0386', 'POL_0386', 'Beneficiary_0386', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0387', 'PROD_CRITICAL_ILL', 'HLD_0387', 887000.0000, 1774.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0387', 'POL_0387', 'Beneficiary_0387', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0388', 'PROD_TERM_LIFE', 'HLD_0388', 888000.0000, 1776.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0388', 'POL_0388', 'Beneficiary_0388', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0389', 'PROD_CRITICAL_ILL', 'HLD_0389', 889000.0000, 1778.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0389', 'POL_0389', 'Beneficiary_0389', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0390', 'PROD_TERM_LIFE', 'HLD_0390', 890000.0000, 1780.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0390', 'POL_0390', 'Beneficiary_0390', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0391', 'PROD_CRITICAL_ILL', 'HLD_0391', 891000.0000, 1782.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0391', 'POL_0391', 'Beneficiary_0391', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0392', 'PROD_TERM_LIFE', 'HLD_0392', 892000.0000, 1784.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0392', 'POL_0392', 'Beneficiary_0392', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0393', 'PROD_CRITICAL_ILL', 'HLD_0393', 893000.0000, 1786.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0393', 'POL_0393', 'Beneficiary_0393', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0394', 'PROD_TERM_LIFE', 'HLD_0394', 894000.0000, 1788.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0394', 'POL_0394', 'Beneficiary_0394', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0395', 'PROD_CRITICAL_ILL', 'HLD_0395', 895000.0000, 1790.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0395', 'POL_0395', 'Beneficiary_0395', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0396', 'PROD_TERM_LIFE', 'HLD_0396', 896000.0000, 1792.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0396', 'POL_0396', 'Beneficiary_0396', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0397', 'PROD_CRITICAL_ILL', 'HLD_0397', 897000.0000, 1794.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0397', 'POL_0397', 'Beneficiary_0397', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0398', 'PROD_TERM_LIFE', 'HLD_0398', 898000.0000, 1796.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0398', 'POL_0398', 'Beneficiary_0398', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0399', 'PROD_CRITICAL_ILL', 'HLD_0399', 899000.0000, 1798.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0399', 'POL_0399', 'Beneficiary_0399', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0400', 'PROD_TERM_LIFE', 'HLD_0400', 900000.0000, 1800.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0400', 'POL_0400', 'Beneficiary_0400', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0401', 'PROD_CRITICAL_ILL', 'HLD_0401', 901000.0000, 1802.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0401', 'POL_0401', 'Beneficiary_0401', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0402', 'PROD_TERM_LIFE', 'HLD_0402', 902000.0000, 1804.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0402', 'POL_0402', 'Beneficiary_0402', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0403', 'PROD_CRITICAL_ILL', 'HLD_0403', 903000.0000, 1806.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0403', 'POL_0403', 'Beneficiary_0403', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0404', 'PROD_TERM_LIFE', 'HLD_0404', 904000.0000, 1808.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0404', 'POL_0404', 'Beneficiary_0404', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0405', 'PROD_CRITICAL_ILL', 'HLD_0405', 905000.0000, 1810.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0405', 'POL_0405', 'Beneficiary_0405', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0406', 'PROD_TERM_LIFE', 'HLD_0406', 906000.0000, 1812.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0406', 'POL_0406', 'Beneficiary_0406', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0407', 'PROD_CRITICAL_ILL', 'HLD_0407', 907000.0000, 1814.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0407', 'POL_0407', 'Beneficiary_0407', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0408', 'PROD_TERM_LIFE', 'HLD_0408', 908000.0000, 1816.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0408', 'POL_0408', 'Beneficiary_0408', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0409', 'PROD_CRITICAL_ILL', 'HLD_0409', 909000.0000, 1818.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0409', 'POL_0409', 'Beneficiary_0409', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0410', 'PROD_TERM_LIFE', 'HLD_0410', 910000.0000, 1820.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0410', 'POL_0410', 'Beneficiary_0410', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0411', 'PROD_CRITICAL_ILL', 'HLD_0411', 911000.0000, 1822.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0411', 'POL_0411', 'Beneficiary_0411', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0412', 'PROD_TERM_LIFE', 'HLD_0412', 912000.0000, 1824.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0412', 'POL_0412', 'Beneficiary_0412', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0413', 'PROD_CRITICAL_ILL', 'HLD_0413', 913000.0000, 1826.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0413', 'POL_0413', 'Beneficiary_0413', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0414', 'PROD_TERM_LIFE', 'HLD_0414', 914000.0000, 1828.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0414', 'POL_0414', 'Beneficiary_0414', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0415', 'PROD_CRITICAL_ILL', 'HLD_0415', 915000.0000, 1830.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0415', 'POL_0415', 'Beneficiary_0415', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0416', 'PROD_TERM_LIFE', 'HLD_0416', 916000.0000, 1832.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0416', 'POL_0416', 'Beneficiary_0416', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0417', 'PROD_CRITICAL_ILL', 'HLD_0417', 917000.0000, 1834.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0417', 'POL_0417', 'Beneficiary_0417', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0418', 'PROD_TERM_LIFE', 'HLD_0418', 918000.0000, 1836.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0418', 'POL_0418', 'Beneficiary_0418', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0419', 'PROD_CRITICAL_ILL', 'HLD_0419', 919000.0000, 1838.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0419', 'POL_0419', 'Beneficiary_0419', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0420', 'PROD_TERM_LIFE', 'HLD_0420', 920000.0000, 1840.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0420', 'POL_0420', 'Beneficiary_0420', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0421', 'PROD_CRITICAL_ILL', 'HLD_0421', 921000.0000, 1842.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0421', 'POL_0421', 'Beneficiary_0421', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0422', 'PROD_TERM_LIFE', 'HLD_0422', 922000.0000, 1844.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0422', 'POL_0422', 'Beneficiary_0422', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0423', 'PROD_CRITICAL_ILL', 'HLD_0423', 923000.0000, 1846.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0423', 'POL_0423', 'Beneficiary_0423', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0424', 'PROD_TERM_LIFE', 'HLD_0424', 924000.0000, 1848.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0424', 'POL_0424', 'Beneficiary_0424', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0425', 'PROD_CRITICAL_ILL', 'HLD_0425', 925000.0000, 1850.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0425', 'POL_0425', 'Beneficiary_0425', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0426', 'PROD_TERM_LIFE', 'HLD_0426', 926000.0000, 1852.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0426', 'POL_0426', 'Beneficiary_0426', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0427', 'PROD_CRITICAL_ILL', 'HLD_0427', 927000.0000, 1854.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0427', 'POL_0427', 'Beneficiary_0427', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0428', 'PROD_TERM_LIFE', 'HLD_0428', 928000.0000, 1856.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0428', 'POL_0428', 'Beneficiary_0428', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0429', 'PROD_CRITICAL_ILL', 'HLD_0429', 929000.0000, 1858.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0429', 'POL_0429', 'Beneficiary_0429', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0430', 'PROD_TERM_LIFE', 'HLD_0430', 930000.0000, 1860.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0430', 'POL_0430', 'Beneficiary_0430', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0431', 'PROD_CRITICAL_ILL', 'HLD_0431', 931000.0000, 1862.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0431', 'POL_0431', 'Beneficiary_0431', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0432', 'PROD_TERM_LIFE', 'HLD_0432', 932000.0000, 1864.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0432', 'POL_0432', 'Beneficiary_0432', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0433', 'PROD_CRITICAL_ILL', 'HLD_0433', 933000.0000, 1866.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0433', 'POL_0433', 'Beneficiary_0433', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0434', 'PROD_TERM_LIFE', 'HLD_0434', 934000.0000, 1868.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0434', 'POL_0434', 'Beneficiary_0434', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0435', 'PROD_CRITICAL_ILL', 'HLD_0435', 935000.0000, 1870.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0435', 'POL_0435', 'Beneficiary_0435', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0436', 'PROD_TERM_LIFE', 'HLD_0436', 936000.0000, 1872.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0436', 'POL_0436', 'Beneficiary_0436', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0437', 'PROD_CRITICAL_ILL', 'HLD_0437', 937000.0000, 1874.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0437', 'POL_0437', 'Beneficiary_0437', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0438', 'PROD_TERM_LIFE', 'HLD_0438', 938000.0000, 1876.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0438', 'POL_0438', 'Beneficiary_0438', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0439', 'PROD_CRITICAL_ILL', 'HLD_0439', 939000.0000, 1878.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0439', 'POL_0439', 'Beneficiary_0439', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0440', 'PROD_TERM_LIFE', 'HLD_0440', 940000.0000, 1880.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0440', 'POL_0440', 'Beneficiary_0440', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0441', 'PROD_CRITICAL_ILL', 'HLD_0441', 941000.0000, 1882.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0441', 'POL_0441', 'Beneficiary_0441', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0442', 'PROD_TERM_LIFE', 'HLD_0442', 942000.0000, 1884.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0442', 'POL_0442', 'Beneficiary_0442', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0443', 'PROD_CRITICAL_ILL', 'HLD_0443', 943000.0000, 1886.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0443', 'POL_0443', 'Beneficiary_0443', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0444', 'PROD_TERM_LIFE', 'HLD_0444', 944000.0000, 1888.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0444', 'POL_0444', 'Beneficiary_0444', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0445', 'PROD_CRITICAL_ILL', 'HLD_0445', 945000.0000, 1890.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0445', 'POL_0445', 'Beneficiary_0445', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0446', 'PROD_TERM_LIFE', 'HLD_0446', 946000.0000, 1892.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0446', 'POL_0446', 'Beneficiary_0446', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0447', 'PROD_CRITICAL_ILL', 'HLD_0447', 947000.0000, 1894.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0447', 'POL_0447', 'Beneficiary_0447', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0448', 'PROD_TERM_LIFE', 'HLD_0448', 948000.0000, 1896.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0448', 'POL_0448', 'Beneficiary_0448', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0449', 'PROD_CRITICAL_ILL', 'HLD_0449', 949000.0000, 1898.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0449', 'POL_0449', 'Beneficiary_0449', 'SPOUSE', 100.00);
+INSERT INTO ins_policies (policy_no, product_code, holder_id, sum_assured, annual_premium, payment_frequency, policy_status, effective_date, expiry_date) VALUES ('POL_0450', 'PROD_TERM_LIFE', 'HLD_0450', 950000.0000, 1900.0000, 'ANNUAL', 'IN_FORCE', TRUNC(SYSDATE), ADD_MONTHS(TRUNC(SYSDATE), 12));
+INSERT INTO ins_beneficiaries (beneficiary_id, policy_no, beneficiary_name, relationship, share_percentage) VALUES ('BEN_0450', 'POL_0450', 'Beneficiary_0450', 'SPOUSE', 100.00);
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0001', 'POL_0001', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 20250.0000, 20250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0001', 'CLM_0001', 'BEN_0001', 20250.0000, 'ACC_BEN_0001', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0002', 'POL_0002', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 20500.0000, 20500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0002', 'CLM_0002', 'BEN_0002', 20500.0000, 'ACC_BEN_0002', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0003', 'POL_0003', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 20750.0000, 20750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0003', 'CLM_0003', 'BEN_0003', 20750.0000, 'ACC_BEN_0003', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0004', 'POL_0004', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 21000.0000, 21000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0004', 'CLM_0004', 'BEN_0004', 21000.0000, 'ACC_BEN_0004', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0005', 'POL_0005', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 21250.0000, 21250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0005', 'CLM_0005', 'BEN_0005', 21250.0000, 'ACC_BEN_0005', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0006', 'POL_0006', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 21500.0000, 21500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0006', 'CLM_0006', 'BEN_0006', 21500.0000, 'ACC_BEN_0006', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0007', 'POL_0007', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 21750.0000, 21750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0007', 'CLM_0007', 'BEN_0007', 21750.0000, 'ACC_BEN_0007', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0008', 'POL_0008', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 22000.0000, 22000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0008', 'CLM_0008', 'BEN_0008', 22000.0000, 'ACC_BEN_0008', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0009', 'POL_0009', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 22250.0000, 22250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0009', 'CLM_0009', 'BEN_0009', 22250.0000, 'ACC_BEN_0009', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0010', 'POL_0010', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 22500.0000, 22500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0010', 'CLM_0010', 'BEN_0010', 22500.0000, 'ACC_BEN_0010', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0011', 'POL_0011', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 22750.0000, 22750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0011', 'CLM_0011', 'BEN_0011', 22750.0000, 'ACC_BEN_0011', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0012', 'POL_0012', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 23000.0000, 23000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0012', 'CLM_0012', 'BEN_0012', 23000.0000, 'ACC_BEN_0012', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0013', 'POL_0013', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 23250.0000, 23250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0013', 'CLM_0013', 'BEN_0013', 23250.0000, 'ACC_BEN_0013', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0014', 'POL_0014', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 23500.0000, 23500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0014', 'CLM_0014', 'BEN_0014', 23500.0000, 'ACC_BEN_0014', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0015', 'POL_0015', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 23750.0000, 23750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0015', 'CLM_0015', 'BEN_0015', 23750.0000, 'ACC_BEN_0015', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0016', 'POL_0016', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 24000.0000, 24000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0016', 'CLM_0016', 'BEN_0016', 24000.0000, 'ACC_BEN_0016', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0017', 'POL_0017', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 24250.0000, 24250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0017', 'CLM_0017', 'BEN_0017', 24250.0000, 'ACC_BEN_0017', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0018', 'POL_0018', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 24500.0000, 24500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0018', 'CLM_0018', 'BEN_0018', 24500.0000, 'ACC_BEN_0018', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0019', 'POL_0019', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 24750.0000, 24750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0019', 'CLM_0019', 'BEN_0019', 24750.0000, 'ACC_BEN_0019', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0020', 'POL_0020', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 25000.0000, 25000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0020', 'CLM_0020', 'BEN_0020', 25000.0000, 'ACC_BEN_0020', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0021', 'POL_0021', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 25250.0000, 25250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0021', 'CLM_0021', 'BEN_0021', 25250.0000, 'ACC_BEN_0021', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0022', 'POL_0022', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 25500.0000, 25500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0022', 'CLM_0022', 'BEN_0022', 25500.0000, 'ACC_BEN_0022', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0023', 'POL_0023', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 25750.0000, 25750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0023', 'CLM_0023', 'BEN_0023', 25750.0000, 'ACC_BEN_0023', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0024', 'POL_0024', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 26000.0000, 26000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0024', 'CLM_0024', 'BEN_0024', 26000.0000, 'ACC_BEN_0024', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0025', 'POL_0025', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 26250.0000, 26250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0025', 'CLM_0025', 'BEN_0025', 26250.0000, 'ACC_BEN_0025', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0026', 'POL_0026', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 26500.0000, 26500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0026', 'CLM_0026', 'BEN_0026', 26500.0000, 'ACC_BEN_0026', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0027', 'POL_0027', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 26750.0000, 26750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0027', 'CLM_0027', 'BEN_0027', 26750.0000, 'ACC_BEN_0027', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0028', 'POL_0028', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 27000.0000, 27000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0028', 'CLM_0028', 'BEN_0028', 27000.0000, 'ACC_BEN_0028', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0029', 'POL_0029', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 27250.0000, 27250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0029', 'CLM_0029', 'BEN_0029', 27250.0000, 'ACC_BEN_0029', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0030', 'POL_0030', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 27500.0000, 27500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0030', 'CLM_0030', 'BEN_0030', 27500.0000, 'ACC_BEN_0030', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0031', 'POL_0031', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 27750.0000, 27750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0031', 'CLM_0031', 'BEN_0031', 27750.0000, 'ACC_BEN_0031', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0032', 'POL_0032', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 28000.0000, 28000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0032', 'CLM_0032', 'BEN_0032', 28000.0000, 'ACC_BEN_0032', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0033', 'POL_0033', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 28250.0000, 28250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0033', 'CLM_0033', 'BEN_0033', 28250.0000, 'ACC_BEN_0033', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0034', 'POL_0034', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 28500.0000, 28500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0034', 'CLM_0034', 'BEN_0034', 28500.0000, 'ACC_BEN_0034', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0035', 'POL_0035', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 28750.0000, 28750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0035', 'CLM_0035', 'BEN_0035', 28750.0000, 'ACC_BEN_0035', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0036', 'POL_0036', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 29000.0000, 29000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0036', 'CLM_0036', 'BEN_0036', 29000.0000, 'ACC_BEN_0036', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0037', 'POL_0037', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 29250.0000, 29250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0037', 'CLM_0037', 'BEN_0037', 29250.0000, 'ACC_BEN_0037', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0038', 'POL_0038', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 29500.0000, 29500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0038', 'CLM_0038', 'BEN_0038', 29500.0000, 'ACC_BEN_0038', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0039', 'POL_0039', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 29750.0000, 29750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0039', 'CLM_0039', 'BEN_0039', 29750.0000, 'ACC_BEN_0039', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0040', 'POL_0040', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 30000.0000, 30000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0040', 'CLM_0040', 'BEN_0040', 30000.0000, 'ACC_BEN_0040', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0041', 'POL_0041', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 30250.0000, 30250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0041', 'CLM_0041', 'BEN_0041', 30250.0000, 'ACC_BEN_0041', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0042', 'POL_0042', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 30500.0000, 30500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0042', 'CLM_0042', 'BEN_0042', 30500.0000, 'ACC_BEN_0042', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0043', 'POL_0043', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 30750.0000, 30750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0043', 'CLM_0043', 'BEN_0043', 30750.0000, 'ACC_BEN_0043', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0044', 'POL_0044', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 31000.0000, 31000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0044', 'CLM_0044', 'BEN_0044', 31000.0000, 'ACC_BEN_0044', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0045', 'POL_0045', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 31250.0000, 31250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0045', 'CLM_0045', 'BEN_0045', 31250.0000, 'ACC_BEN_0045', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0046', 'POL_0046', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 31500.0000, 31500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0046', 'CLM_0046', 'BEN_0046', 31500.0000, 'ACC_BEN_0046', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0047', 'POL_0047', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 31750.0000, 31750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0047', 'CLM_0047', 'BEN_0047', 31750.0000, 'ACC_BEN_0047', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0048', 'POL_0048', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 32000.0000, 32000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0048', 'CLM_0048', 'BEN_0048', 32000.0000, 'ACC_BEN_0048', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0049', 'POL_0049', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 32250.0000, 32250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0049', 'CLM_0049', 'BEN_0049', 32250.0000, 'ACC_BEN_0049', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0050', 'POL_0050', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 32500.0000, 32500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0050', 'CLM_0050', 'BEN_0050', 32500.0000, 'ACC_BEN_0050', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0051', 'POL_0051', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 32750.0000, 32750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0051', 'CLM_0051', 'BEN_0051', 32750.0000, 'ACC_BEN_0051', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0052', 'POL_0052', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 33000.0000, 33000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0052', 'CLM_0052', 'BEN_0052', 33000.0000, 'ACC_BEN_0052', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0053', 'POL_0053', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 33250.0000, 33250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0053', 'CLM_0053', 'BEN_0053', 33250.0000, 'ACC_BEN_0053', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0054', 'POL_0054', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 33500.0000, 33500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0054', 'CLM_0054', 'BEN_0054', 33500.0000, 'ACC_BEN_0054', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0055', 'POL_0055', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 33750.0000, 33750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0055', 'CLM_0055', 'BEN_0055', 33750.0000, 'ACC_BEN_0055', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0056', 'POL_0056', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 34000.0000, 34000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0056', 'CLM_0056', 'BEN_0056', 34000.0000, 'ACC_BEN_0056', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0057', 'POL_0057', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 34250.0000, 34250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0057', 'CLM_0057', 'BEN_0057', 34250.0000, 'ACC_BEN_0057', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0058', 'POL_0058', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 34500.0000, 34500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0058', 'CLM_0058', 'BEN_0058', 34500.0000, 'ACC_BEN_0058', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0059', 'POL_0059', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 34750.0000, 34750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0059', 'CLM_0059', 'BEN_0059', 34750.0000, 'ACC_BEN_0059', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0060', 'POL_0060', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 35000.0000, 35000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0060', 'CLM_0060', 'BEN_0060', 35000.0000, 'ACC_BEN_0060', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0061', 'POL_0061', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 35250.0000, 35250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0061', 'CLM_0061', 'BEN_0061', 35250.0000, 'ACC_BEN_0061', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0062', 'POL_0062', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 35500.0000, 35500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0062', 'CLM_0062', 'BEN_0062', 35500.0000, 'ACC_BEN_0062', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0063', 'POL_0063', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 35750.0000, 35750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0063', 'CLM_0063', 'BEN_0063', 35750.0000, 'ACC_BEN_0063', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0064', 'POL_0064', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 36000.0000, 36000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0064', 'CLM_0064', 'BEN_0064', 36000.0000, 'ACC_BEN_0064', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0065', 'POL_0065', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 36250.0000, 36250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0065', 'CLM_0065', 'BEN_0065', 36250.0000, 'ACC_BEN_0065', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0066', 'POL_0066', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 36500.0000, 36500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0066', 'CLM_0066', 'BEN_0066', 36500.0000, 'ACC_BEN_0066', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0067', 'POL_0067', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 36750.0000, 36750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0067', 'CLM_0067', 'BEN_0067', 36750.0000, 'ACC_BEN_0067', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0068', 'POL_0068', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 37000.0000, 37000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0068', 'CLM_0068', 'BEN_0068', 37000.0000, 'ACC_BEN_0068', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0069', 'POL_0069', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 37250.0000, 37250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0069', 'CLM_0069', 'BEN_0069', 37250.0000, 'ACC_BEN_0069', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0070', 'POL_0070', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 37500.0000, 37500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0070', 'CLM_0070', 'BEN_0070', 37500.0000, 'ACC_BEN_0070', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0071', 'POL_0071', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 37750.0000, 37750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0071', 'CLM_0071', 'BEN_0071', 37750.0000, 'ACC_BEN_0071', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0072', 'POL_0072', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 38000.0000, 38000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0072', 'CLM_0072', 'BEN_0072', 38000.0000, 'ACC_BEN_0072', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0073', 'POL_0073', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 38250.0000, 38250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0073', 'CLM_0073', 'BEN_0073', 38250.0000, 'ACC_BEN_0073', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0074', 'POL_0074', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 38500.0000, 38500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0074', 'CLM_0074', 'BEN_0074', 38500.0000, 'ACC_BEN_0074', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0075', 'POL_0075', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 38750.0000, 38750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0075', 'CLM_0075', 'BEN_0075', 38750.0000, 'ACC_BEN_0075', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0076', 'POL_0076', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 39000.0000, 39000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0076', 'CLM_0076', 'BEN_0076', 39000.0000, 'ACC_BEN_0076', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0077', 'POL_0077', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 39250.0000, 39250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0077', 'CLM_0077', 'BEN_0077', 39250.0000, 'ACC_BEN_0077', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0078', 'POL_0078', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 39500.0000, 39500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0078', 'CLM_0078', 'BEN_0078', 39500.0000, 'ACC_BEN_0078', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0079', 'POL_0079', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 39750.0000, 39750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0079', 'CLM_0079', 'BEN_0079', 39750.0000, 'ACC_BEN_0079', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0080', 'POL_0080', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 40000.0000, 40000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0080', 'CLM_0080', 'BEN_0080', 40000.0000, 'ACC_BEN_0080', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0081', 'POL_0081', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 40250.0000, 40250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0081', 'CLM_0081', 'BEN_0081', 40250.0000, 'ACC_BEN_0081', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0082', 'POL_0082', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 40500.0000, 40500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0082', 'CLM_0082', 'BEN_0082', 40500.0000, 'ACC_BEN_0082', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0083', 'POL_0083', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 40750.0000, 40750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0083', 'CLM_0083', 'BEN_0083', 40750.0000, 'ACC_BEN_0083', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0084', 'POL_0084', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 41000.0000, 41000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0084', 'CLM_0084', 'BEN_0084', 41000.0000, 'ACC_BEN_0084', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0085', 'POL_0085', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 41250.0000, 41250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0085', 'CLM_0085', 'BEN_0085', 41250.0000, 'ACC_BEN_0085', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0086', 'POL_0086', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 41500.0000, 41500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0086', 'CLM_0086', 'BEN_0086', 41500.0000, 'ACC_BEN_0086', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0087', 'POL_0087', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 41750.0000, 41750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0087', 'CLM_0087', 'BEN_0087', 41750.0000, 'ACC_BEN_0087', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0088', 'POL_0088', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 42000.0000, 42000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0088', 'CLM_0088', 'BEN_0088', 42000.0000, 'ACC_BEN_0088', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0089', 'POL_0089', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 42250.0000, 42250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0089', 'CLM_0089', 'BEN_0089', 42250.0000, 'ACC_BEN_0089', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0090', 'POL_0090', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 42500.0000, 42500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0090', 'CLM_0090', 'BEN_0090', 42500.0000, 'ACC_BEN_0090', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0091', 'POL_0091', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 42750.0000, 42750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0091', 'CLM_0091', 'BEN_0091', 42750.0000, 'ACC_BEN_0091', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0092', 'POL_0092', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 43000.0000, 43000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0092', 'CLM_0092', 'BEN_0092', 43000.0000, 'ACC_BEN_0092', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0093', 'POL_0093', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 43250.0000, 43250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0093', 'CLM_0093', 'BEN_0093', 43250.0000, 'ACC_BEN_0093', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0094', 'POL_0094', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 43500.0000, 43500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0094', 'CLM_0094', 'BEN_0094', 43500.0000, 'ACC_BEN_0094', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0095', 'POL_0095', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 43750.0000, 43750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0095', 'CLM_0095', 'BEN_0095', 43750.0000, 'ACC_BEN_0095', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0096', 'POL_0096', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 44000.0000, 44000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0096', 'CLM_0096', 'BEN_0096', 44000.0000, 'ACC_BEN_0096', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0097', 'POL_0097', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 44250.0000, 44250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0097', 'CLM_0097', 'BEN_0097', 44250.0000, 'ACC_BEN_0097', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0098', 'POL_0098', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 44500.0000, 44500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0098', 'CLM_0098', 'BEN_0098', 44500.0000, 'ACC_BEN_0098', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0099', 'POL_0099', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 44750.0000, 44750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0099', 'CLM_0099', 'BEN_0099', 44750.0000, 'ACC_BEN_0099', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0100', 'POL_0100', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 45000.0000, 45000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0100', 'CLM_0100', 'BEN_0100', 45000.0000, 'ACC_BEN_0100', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0101', 'POL_0101', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 45250.0000, 45250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0101', 'CLM_0101', 'BEN_0101', 45250.0000, 'ACC_BEN_0101', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0102', 'POL_0102', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 45500.0000, 45500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0102', 'CLM_0102', 'BEN_0102', 45500.0000, 'ACC_BEN_0102', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0103', 'POL_0103', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 45750.0000, 45750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0103', 'CLM_0103', 'BEN_0103', 45750.0000, 'ACC_BEN_0103', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0104', 'POL_0104', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 46000.0000, 46000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0104', 'CLM_0104', 'BEN_0104', 46000.0000, 'ACC_BEN_0104', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0105', 'POL_0105', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 46250.0000, 46250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0105', 'CLM_0105', 'BEN_0105', 46250.0000, 'ACC_BEN_0105', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0106', 'POL_0106', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 46500.0000, 46500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0106', 'CLM_0106', 'BEN_0106', 46500.0000, 'ACC_BEN_0106', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0107', 'POL_0107', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 46750.0000, 46750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0107', 'CLM_0107', 'BEN_0107', 46750.0000, 'ACC_BEN_0107', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0108', 'POL_0108', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 47000.0000, 47000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0108', 'CLM_0108', 'BEN_0108', 47000.0000, 'ACC_BEN_0108', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0109', 'POL_0109', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 47250.0000, 47250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0109', 'CLM_0109', 'BEN_0109', 47250.0000, 'ACC_BEN_0109', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0110', 'POL_0110', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 47500.0000, 47500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0110', 'CLM_0110', 'BEN_0110', 47500.0000, 'ACC_BEN_0110', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0111', 'POL_0111', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 47750.0000, 47750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0111', 'CLM_0111', 'BEN_0111', 47750.0000, 'ACC_BEN_0111', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0112', 'POL_0112', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 48000.0000, 48000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0112', 'CLM_0112', 'BEN_0112', 48000.0000, 'ACC_BEN_0112', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0113', 'POL_0113', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 48250.0000, 48250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0113', 'CLM_0113', 'BEN_0113', 48250.0000, 'ACC_BEN_0113', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0114', 'POL_0114', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 48500.0000, 48500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0114', 'CLM_0114', 'BEN_0114', 48500.0000, 'ACC_BEN_0114', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0115', 'POL_0115', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 48750.0000, 48750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0115', 'CLM_0115', 'BEN_0115', 48750.0000, 'ACC_BEN_0115', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0116', 'POL_0116', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 49000.0000, 49000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0116', 'CLM_0116', 'BEN_0116', 49000.0000, 'ACC_BEN_0116', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0117', 'POL_0117', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 49250.0000, 49250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0117', 'CLM_0117', 'BEN_0117', 49250.0000, 'ACC_BEN_0117', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0118', 'POL_0118', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 49500.0000, 49500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0118', 'CLM_0118', 'BEN_0118', 49500.0000, 'ACC_BEN_0118', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0119', 'POL_0119', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 49750.0000, 49750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0119', 'CLM_0119', 'BEN_0119', 49750.0000, 'ACC_BEN_0119', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0120', 'POL_0120', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 50000.0000, 50000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0120', 'CLM_0120', 'BEN_0120', 50000.0000, 'ACC_BEN_0120', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0121', 'POL_0121', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 50250.0000, 50250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0121', 'CLM_0121', 'BEN_0121', 50250.0000, 'ACC_BEN_0121', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0122', 'POL_0122', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 50500.0000, 50500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0122', 'CLM_0122', 'BEN_0122', 50500.0000, 'ACC_BEN_0122', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0123', 'POL_0123', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 50750.0000, 50750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0123', 'CLM_0123', 'BEN_0123', 50750.0000, 'ACC_BEN_0123', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0124', 'POL_0124', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 51000.0000, 51000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0124', 'CLM_0124', 'BEN_0124', 51000.0000, 'ACC_BEN_0124', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0125', 'POL_0125', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 51250.0000, 51250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0125', 'CLM_0125', 'BEN_0125', 51250.0000, 'ACC_BEN_0125', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0126', 'POL_0126', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 51500.0000, 51500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0126', 'CLM_0126', 'BEN_0126', 51500.0000, 'ACC_BEN_0126', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0127', 'POL_0127', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 51750.0000, 51750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0127', 'CLM_0127', 'BEN_0127', 51750.0000, 'ACC_BEN_0127', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0128', 'POL_0128', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 52000.0000, 52000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0128', 'CLM_0128', 'BEN_0128', 52000.0000, 'ACC_BEN_0128', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0129', 'POL_0129', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 52250.0000, 52250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0129', 'CLM_0129', 'BEN_0129', 52250.0000, 'ACC_BEN_0129', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0130', 'POL_0130', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 52500.0000, 52500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0130', 'CLM_0130', 'BEN_0130', 52500.0000, 'ACC_BEN_0130', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0131', 'POL_0131', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 52750.0000, 52750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0131', 'CLM_0131', 'BEN_0131', 52750.0000, 'ACC_BEN_0131', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0132', 'POL_0132', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 53000.0000, 53000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0132', 'CLM_0132', 'BEN_0132', 53000.0000, 'ACC_BEN_0132', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0133', 'POL_0133', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 53250.0000, 53250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0133', 'CLM_0133', 'BEN_0133', 53250.0000, 'ACC_BEN_0133', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0134', 'POL_0134', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 53500.0000, 53500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0134', 'CLM_0134', 'BEN_0134', 53500.0000, 'ACC_BEN_0134', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0135', 'POL_0135', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 53750.0000, 53750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0135', 'CLM_0135', 'BEN_0135', 53750.0000, 'ACC_BEN_0135', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0136', 'POL_0136', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 54000.0000, 54000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0136', 'CLM_0136', 'BEN_0136', 54000.0000, 'ACC_BEN_0136', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0137', 'POL_0137', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 54250.0000, 54250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0137', 'CLM_0137', 'BEN_0137', 54250.0000, 'ACC_BEN_0137', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0138', 'POL_0138', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 54500.0000, 54500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0138', 'CLM_0138', 'BEN_0138', 54500.0000, 'ACC_BEN_0138', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0139', 'POL_0139', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 54750.0000, 54750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0139', 'CLM_0139', 'BEN_0139', 54750.0000, 'ACC_BEN_0139', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0140', 'POL_0140', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 55000.0000, 55000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0140', 'CLM_0140', 'BEN_0140', 55000.0000, 'ACC_BEN_0140', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0141', 'POL_0141', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 55250.0000, 55250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0141', 'CLM_0141', 'BEN_0141', 55250.0000, 'ACC_BEN_0141', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0142', 'POL_0142', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 55500.0000, 55500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0142', 'CLM_0142', 'BEN_0142', 55500.0000, 'ACC_BEN_0142', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0143', 'POL_0143', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 55750.0000, 55750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0143', 'CLM_0143', 'BEN_0143', 55750.0000, 'ACC_BEN_0143', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0144', 'POL_0144', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 56000.0000, 56000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0144', 'CLM_0144', 'BEN_0144', 56000.0000, 'ACC_BEN_0144', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0145', 'POL_0145', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 56250.0000, 56250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0145', 'CLM_0145', 'BEN_0145', 56250.0000, 'ACC_BEN_0145', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0146', 'POL_0146', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 56500.0000, 56500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0146', 'CLM_0146', 'BEN_0146', 56500.0000, 'ACC_BEN_0146', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0147', 'POL_0147', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 56750.0000, 56750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0147', 'CLM_0147', 'BEN_0147', 56750.0000, 'ACC_BEN_0147', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0148', 'POL_0148', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 57000.0000, 57000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0148', 'CLM_0148', 'BEN_0148', 57000.0000, 'ACC_BEN_0148', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0149', 'POL_0149', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 57250.0000, 57250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0149', 'CLM_0149', 'BEN_0149', 57250.0000, 'ACC_BEN_0149', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0150', 'POL_0150', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 57500.0000, 57500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0150', 'CLM_0150', 'BEN_0150', 57500.0000, 'ACC_BEN_0150', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0151', 'POL_0151', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 57750.0000, 57750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0151', 'CLM_0151', 'BEN_0151', 57750.0000, 'ACC_BEN_0151', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0152', 'POL_0152', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 58000.0000, 58000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0152', 'CLM_0152', 'BEN_0152', 58000.0000, 'ACC_BEN_0152', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0153', 'POL_0153', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 58250.0000, 58250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0153', 'CLM_0153', 'BEN_0153', 58250.0000, 'ACC_BEN_0153', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0154', 'POL_0154', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 58500.0000, 58500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0154', 'CLM_0154', 'BEN_0154', 58500.0000, 'ACC_BEN_0154', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0155', 'POL_0155', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 58750.0000, 58750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0155', 'CLM_0155', 'BEN_0155', 58750.0000, 'ACC_BEN_0155', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0156', 'POL_0156', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 59000.0000, 59000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0156', 'CLM_0156', 'BEN_0156', 59000.0000, 'ACC_BEN_0156', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0157', 'POL_0157', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 59250.0000, 59250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0157', 'CLM_0157', 'BEN_0157', 59250.0000, 'ACC_BEN_0157', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0158', 'POL_0158', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 59500.0000, 59500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0158', 'CLM_0158', 'BEN_0158', 59500.0000, 'ACC_BEN_0158', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0159', 'POL_0159', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 59750.0000, 59750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0159', 'CLM_0159', 'BEN_0159', 59750.0000, 'ACC_BEN_0159', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0160', 'POL_0160', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 60000.0000, 60000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0160', 'CLM_0160', 'BEN_0160', 60000.0000, 'ACC_BEN_0160', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0161', 'POL_0161', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 60250.0000, 60250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0161', 'CLM_0161', 'BEN_0161', 60250.0000, 'ACC_BEN_0161', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0162', 'POL_0162', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 60500.0000, 60500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0162', 'CLM_0162', 'BEN_0162', 60500.0000, 'ACC_BEN_0162', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0163', 'POL_0163', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 60750.0000, 60750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0163', 'CLM_0163', 'BEN_0163', 60750.0000, 'ACC_BEN_0163', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0164', 'POL_0164', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 61000.0000, 61000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0164', 'CLM_0164', 'BEN_0164', 61000.0000, 'ACC_BEN_0164', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0165', 'POL_0165', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 61250.0000, 61250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0165', 'CLM_0165', 'BEN_0165', 61250.0000, 'ACC_BEN_0165', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0166', 'POL_0166', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 61500.0000, 61500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0166', 'CLM_0166', 'BEN_0166', 61500.0000, 'ACC_BEN_0166', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0167', 'POL_0167', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 61750.0000, 61750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0167', 'CLM_0167', 'BEN_0167', 61750.0000, 'ACC_BEN_0167', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0168', 'POL_0168', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 62000.0000, 62000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0168', 'CLM_0168', 'BEN_0168', 62000.0000, 'ACC_BEN_0168', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0169', 'POL_0169', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 62250.0000, 62250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0169', 'CLM_0169', 'BEN_0169', 62250.0000, 'ACC_BEN_0169', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0170', 'POL_0170', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 62500.0000, 62500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0170', 'CLM_0170', 'BEN_0170', 62500.0000, 'ACC_BEN_0170', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0171', 'POL_0171', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 62750.0000, 62750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0171', 'CLM_0171', 'BEN_0171', 62750.0000, 'ACC_BEN_0171', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0172', 'POL_0172', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 63000.0000, 63000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0172', 'CLM_0172', 'BEN_0172', 63000.0000, 'ACC_BEN_0172', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0173', 'POL_0173', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 63250.0000, 63250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0173', 'CLM_0173', 'BEN_0173', 63250.0000, 'ACC_BEN_0173', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0174', 'POL_0174', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 63500.0000, 63500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0174', 'CLM_0174', 'BEN_0174', 63500.0000, 'ACC_BEN_0174', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0175', 'POL_0175', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 63750.0000, 63750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0175', 'CLM_0175', 'BEN_0175', 63750.0000, 'ACC_BEN_0175', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0176', 'POL_0176', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 64000.0000, 64000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0176', 'CLM_0176', 'BEN_0176', 64000.0000, 'ACC_BEN_0176', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0177', 'POL_0177', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 64250.0000, 64250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0177', 'CLM_0177', 'BEN_0177', 64250.0000, 'ACC_BEN_0177', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0178', 'POL_0178', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 64500.0000, 64500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0178', 'CLM_0178', 'BEN_0178', 64500.0000, 'ACC_BEN_0178', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0179', 'POL_0179', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 64750.0000, 64750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0179', 'CLM_0179', 'BEN_0179', 64750.0000, 'ACC_BEN_0179', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0180', 'POL_0180', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 65000.0000, 65000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0180', 'CLM_0180', 'BEN_0180', 65000.0000, 'ACC_BEN_0180', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0181', 'POL_0181', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 65250.0000, 65250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0181', 'CLM_0181', 'BEN_0181', 65250.0000, 'ACC_BEN_0181', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0182', 'POL_0182', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 65500.0000, 65500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0182', 'CLM_0182', 'BEN_0182', 65500.0000, 'ACC_BEN_0182', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0183', 'POL_0183', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 65750.0000, 65750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0183', 'CLM_0183', 'BEN_0183', 65750.0000, 'ACC_BEN_0183', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0184', 'POL_0184', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 66000.0000, 66000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0184', 'CLM_0184', 'BEN_0184', 66000.0000, 'ACC_BEN_0184', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0185', 'POL_0185', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 66250.0000, 66250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0185', 'CLM_0185', 'BEN_0185', 66250.0000, 'ACC_BEN_0185', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0186', 'POL_0186', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 66500.0000, 66500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0186', 'CLM_0186', 'BEN_0186', 66500.0000, 'ACC_BEN_0186', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0187', 'POL_0187', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 66750.0000, 66750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0187', 'CLM_0187', 'BEN_0187', 66750.0000, 'ACC_BEN_0187', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0188', 'POL_0188', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 67000.0000, 67000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0188', 'CLM_0188', 'BEN_0188', 67000.0000, 'ACC_BEN_0188', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0189', 'POL_0189', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 67250.0000, 67250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0189', 'CLM_0189', 'BEN_0189', 67250.0000, 'ACC_BEN_0189', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0190', 'POL_0190', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 67500.0000, 67500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0190', 'CLM_0190', 'BEN_0190', 67500.0000, 'ACC_BEN_0190', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0191', 'POL_0191', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 67750.0000, 67750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0191', 'CLM_0191', 'BEN_0191', 67750.0000, 'ACC_BEN_0191', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0192', 'POL_0192', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 68000.0000, 68000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0192', 'CLM_0192', 'BEN_0192', 68000.0000, 'ACC_BEN_0192', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0193', 'POL_0193', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 68250.0000, 68250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0193', 'CLM_0193', 'BEN_0193', 68250.0000, 'ACC_BEN_0193', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0194', 'POL_0194', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 68500.0000, 68500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0194', 'CLM_0194', 'BEN_0194', 68500.0000, 'ACC_BEN_0194', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0195', 'POL_0195', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 68750.0000, 68750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0195', 'CLM_0195', 'BEN_0195', 68750.0000, 'ACC_BEN_0195', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0196', 'POL_0196', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 69000.0000, 69000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0196', 'CLM_0196', 'BEN_0196', 69000.0000, 'ACC_BEN_0196', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0197', 'POL_0197', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 69250.0000, 69250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0197', 'CLM_0197', 'BEN_0197', 69250.0000, 'ACC_BEN_0197', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0198', 'POL_0198', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 69500.0000, 69500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0198', 'CLM_0198', 'BEN_0198', 69500.0000, 'ACC_BEN_0198', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0199', 'POL_0199', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 69750.0000, 69750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0199', 'CLM_0199', 'BEN_0199', 69750.0000, 'ACC_BEN_0199', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0200', 'POL_0200', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 70000.0000, 70000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0200', 'CLM_0200', 'BEN_0200', 70000.0000, 'ACC_BEN_0200', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0201', 'POL_0201', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 70250.0000, 70250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0201', 'CLM_0201', 'BEN_0201', 70250.0000, 'ACC_BEN_0201', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0202', 'POL_0202', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 70500.0000, 70500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0202', 'CLM_0202', 'BEN_0202', 70500.0000, 'ACC_BEN_0202', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0203', 'POL_0203', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 70750.0000, 70750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0203', 'CLM_0203', 'BEN_0203', 70750.0000, 'ACC_BEN_0203', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0204', 'POL_0204', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 71000.0000, 71000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0204', 'CLM_0204', 'BEN_0204', 71000.0000, 'ACC_BEN_0204', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0205', 'POL_0205', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 71250.0000, 71250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0205', 'CLM_0205', 'BEN_0205', 71250.0000, 'ACC_BEN_0205', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0206', 'POL_0206', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 71500.0000, 71500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0206', 'CLM_0206', 'BEN_0206', 71500.0000, 'ACC_BEN_0206', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0207', 'POL_0207', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 71750.0000, 71750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0207', 'CLM_0207', 'BEN_0207', 71750.0000, 'ACC_BEN_0207', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0208', 'POL_0208', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 72000.0000, 72000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0208', 'CLM_0208', 'BEN_0208', 72000.0000, 'ACC_BEN_0208', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0209', 'POL_0209', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 72250.0000, 72250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0209', 'CLM_0209', 'BEN_0209', 72250.0000, 'ACC_BEN_0209', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0210', 'POL_0210', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 72500.0000, 72500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0210', 'CLM_0210', 'BEN_0210', 72500.0000, 'ACC_BEN_0210', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0211', 'POL_0211', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 72750.0000, 72750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0211', 'CLM_0211', 'BEN_0211', 72750.0000, 'ACC_BEN_0211', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0212', 'POL_0212', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 73000.0000, 73000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0212', 'CLM_0212', 'BEN_0212', 73000.0000, 'ACC_BEN_0212', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0213', 'POL_0213', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 73250.0000, 73250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0213', 'CLM_0213', 'BEN_0213', 73250.0000, 'ACC_BEN_0213', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0214', 'POL_0214', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 73500.0000, 73500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0214', 'CLM_0214', 'BEN_0214', 73500.0000, 'ACC_BEN_0214', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0215', 'POL_0215', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 73750.0000, 73750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0215', 'CLM_0215', 'BEN_0215', 73750.0000, 'ACC_BEN_0215', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0216', 'POL_0216', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 74000.0000, 74000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0216', 'CLM_0216', 'BEN_0216', 74000.0000, 'ACC_BEN_0216', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0217', 'POL_0217', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 74250.0000, 74250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0217', 'CLM_0217', 'BEN_0217', 74250.0000, 'ACC_BEN_0217', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0218', 'POL_0218', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 74500.0000, 74500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0218', 'CLM_0218', 'BEN_0218', 74500.0000, 'ACC_BEN_0218', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0219', 'POL_0219', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 74750.0000, 74750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0219', 'CLM_0219', 'BEN_0219', 74750.0000, 'ACC_BEN_0219', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0220', 'POL_0220', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 75000.0000, 75000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0220', 'CLM_0220', 'BEN_0220', 75000.0000, 'ACC_BEN_0220', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0221', 'POL_0221', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 75250.0000, 75250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0221', 'CLM_0221', 'BEN_0221', 75250.0000, 'ACC_BEN_0221', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0222', 'POL_0222', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 75500.0000, 75500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0222', 'CLM_0222', 'BEN_0222', 75500.0000, 'ACC_BEN_0222', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0223', 'POL_0223', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 75750.0000, 75750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0223', 'CLM_0223', 'BEN_0223', 75750.0000, 'ACC_BEN_0223', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0224', 'POL_0224', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 76000.0000, 76000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0224', 'CLM_0224', 'BEN_0224', 76000.0000, 'ACC_BEN_0224', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0225', 'POL_0225', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 76250.0000, 76250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0225', 'CLM_0225', 'BEN_0225', 76250.0000, 'ACC_BEN_0225', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0226', 'POL_0226', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 76500.0000, 76500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0226', 'CLM_0226', 'BEN_0226', 76500.0000, 'ACC_BEN_0226', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0227', 'POL_0227', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 76750.0000, 76750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0227', 'CLM_0227', 'BEN_0227', 76750.0000, 'ACC_BEN_0227', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0228', 'POL_0228', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 77000.0000, 77000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0228', 'CLM_0228', 'BEN_0228', 77000.0000, 'ACC_BEN_0228', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0229', 'POL_0229', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 77250.0000, 77250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0229', 'CLM_0229', 'BEN_0229', 77250.0000, 'ACC_BEN_0229', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0230', 'POL_0230', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 77500.0000, 77500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0230', 'CLM_0230', 'BEN_0230', 77500.0000, 'ACC_BEN_0230', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0231', 'POL_0231', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 77750.0000, 77750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0231', 'CLM_0231', 'BEN_0231', 77750.0000, 'ACC_BEN_0231', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0232', 'POL_0232', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 78000.0000, 78000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0232', 'CLM_0232', 'BEN_0232', 78000.0000, 'ACC_BEN_0232', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0233', 'POL_0233', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 78250.0000, 78250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0233', 'CLM_0233', 'BEN_0233', 78250.0000, 'ACC_BEN_0233', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0234', 'POL_0234', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 78500.0000, 78500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0234', 'CLM_0234', 'BEN_0234', 78500.0000, 'ACC_BEN_0234', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0235', 'POL_0235', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 78750.0000, 78750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0235', 'CLM_0235', 'BEN_0235', 78750.0000, 'ACC_BEN_0235', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0236', 'POL_0236', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 79000.0000, 79000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0236', 'CLM_0236', 'BEN_0236', 79000.0000, 'ACC_BEN_0236', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0237', 'POL_0237', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 79250.0000, 79250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0237', 'CLM_0237', 'BEN_0237', 79250.0000, 'ACC_BEN_0237', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0238', 'POL_0238', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 79500.0000, 79500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0238', 'CLM_0238', 'BEN_0238', 79500.0000, 'ACC_BEN_0238', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0239', 'POL_0239', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 79750.0000, 79750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0239', 'CLM_0239', 'BEN_0239', 79750.0000, 'ACC_BEN_0239', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0240', 'POL_0240', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 80000.0000, 80000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0240', 'CLM_0240', 'BEN_0240', 80000.0000, 'ACC_BEN_0240', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0241', 'POL_0241', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 80250.0000, 80250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0241', 'CLM_0241', 'BEN_0241', 80250.0000, 'ACC_BEN_0241', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0242', 'POL_0242', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 80500.0000, 80500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0242', 'CLM_0242', 'BEN_0242', 80500.0000, 'ACC_BEN_0242', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0243', 'POL_0243', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 80750.0000, 80750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0243', 'CLM_0243', 'BEN_0243', 80750.0000, 'ACC_BEN_0243', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0244', 'POL_0244', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 81000.0000, 81000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0244', 'CLM_0244', 'BEN_0244', 81000.0000, 'ACC_BEN_0244', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0245', 'POL_0245', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 81250.0000, 81250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0245', 'CLM_0245', 'BEN_0245', 81250.0000, 'ACC_BEN_0245', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0246', 'POL_0246', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 81500.0000, 81500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0246', 'CLM_0246', 'BEN_0246', 81500.0000, 'ACC_BEN_0246', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0247', 'POL_0247', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 81750.0000, 81750.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0247', 'CLM_0247', 'BEN_0247', 81750.0000, 'ACC_BEN_0247', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0248', 'POL_0248', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 82000.0000, 82000.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0248', 'CLM_0248', 'BEN_0248', 82000.0000, 'ACC_BEN_0248', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0249', 'POL_0249', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 82250.0000, 82250.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0249', 'CLM_0249', 'BEN_0249', 82250.0000, 'ACC_BEN_0249', 'COMPLETED');
+INSERT INTO ins_claims (claim_no, policy_no, incident_date, reported_date, claim_amount, approved_amount, claim_status) VALUES ('CLM_0250', 'POL_0250', TRUNC(SYSDATE - 10), TRUNC(SYSDATE), 82500.0000, 82500.0000, 'APPROVED');
+INSERT INTO ins_claim_payouts (payout_id, claim_no, beneficiary_id, disbursed_amount, bank_account_no, payout_status) VALUES ('PAY_0250', 'CLM_0250', 'BEN_0250', 82500.0000, 'ACC_BEN_0250', 'COMPLETED');
+
+COMMIT;

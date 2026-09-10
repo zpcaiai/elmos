@@ -77,7 +77,56 @@ class GoldenDbTargetLowerer(ChinaDbTargetLowerer):
                 flags=re.IGNORECASE,
                 applies_to_dialects=["all"],
             ),
+            DialectLoweringRule(
+                rule_id="goldendb_auto_inc",
+                description="Map IDENTITY to AUTO_INCREMENT in GoldenDB",
+                pattern=r"\bIDENTITY\s*\(\s*\d+\s*,\s*\d+\s*\)",
+                replacement="AUTO_INCREMENT",
+                is_regex=True,
+                flags=re.IGNORECASE,
+                applies_to_dialects=["tsql", "sqlserver"],
+            ),
         ]
+
+    def _build_error_code_mappings(self) -> dict[str, str]:
+        """Translate error codes to GoldenDB MySQL wire error codes."""
+        return {
+            "ORA-00001": "1062",
+            "ORA-00942": "1146",
+            "ORA-00904": "1054",
+            "ORA-01400": "1048",
+            "23505": "1062",
+            "42P01": "1146",
+            "42703": "1054",
+            "2627": "1062",
+            "208": "1146",
+        }
+
+    def _build_catalog_queries(self) -> dict[str, str]:
+        """GoldenDB distributed catalog inspection queries."""
+        return {
+            "tables": (
+                "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES "
+                "WHERE TABLE_SCHEMA = DATABASE() ORDER BY TABLE_NAME"
+            ),
+            "columns": (
+                "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, "
+                "NUMERIC_PRECISION, NUMERIC_SCALE, IS_NULLABLE "
+                "FROM INFORMATION_SCHEMA.COLUMNS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tab_name "
+                "ORDER BY ORDINAL_POSITION"
+            ),
+            "indexes": (
+                "SELECT INDEX_NAME, TABLE_NAME, NON_UNIQUE "
+                "FROM INFORMATION_SCHEMA.STATISTICS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tab_name"
+            ),
+            "partitions": (
+                "SELECT PARTITION_NAME, PARTITION_EXPRESSION, TABLE_ROWS "
+                "FROM INFORMATION_SCHEMA.PARTITIONS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tab_name"
+            ),
+        }
 
     def lower_procedure(self, source_sql: str, source_dialect: str) -> str:
         """Lower procedure to GoldenDB stored procedure."""
@@ -103,3 +152,22 @@ class GoldenDbTargetLowerer(ChinaDbTargetLowerer):
     def lower_sequence(self, source_sql: str, source_dialect: str) -> str:
         """Lower sequence creation and nextval."""
         return source_sql
+
+    def lower_package(self, source_sql: str, source_dialect: str) -> str:
+        """Lower package for GoldenDB."""
+        res = self.lower_data_types(source_sql, source_dialect)
+        res = self.lower_builtin_functions(res, source_dialect)
+        res = self.apply_custom_rules(res, source_dialect)
+        return res
+
+    def lower_partition_clause(self, source_sql: str, source_dialect: str) -> str:
+        """Lower table partitioning for GoldenDB."""
+        res = source_sql
+        return res
+
+    def lower_index_definition(self, source_sql: str, source_dialect: str) -> str:
+        """Lower index definition for GoldenDB."""
+        res = self.lower_data_types(source_sql, source_dialect)
+        res = self.apply_custom_rules(res, source_dialect)
+        return res
+

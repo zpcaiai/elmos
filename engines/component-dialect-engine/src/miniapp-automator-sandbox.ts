@@ -129,8 +129,35 @@ export class HeadlessMiniProgramSandbox {
       };
 
       try {
-        vm.createContext(modContext);
-        vm.runInContext(code, modContext);
+        const proxyContext = new Proxy(modContext, {
+          has(target, prop) {
+            if (prop in target) return true;
+            if (typeof prop === "string" && prop in globalThis) return true;
+            return true;
+          },
+          get(target, prop, receiver) {
+            if (prop in target) {
+              return Reflect.get(target, prop, receiver);
+            }
+            if (typeof prop === "string") {
+              if (prop in globalThis) {
+                return (globalThis as Record<string, unknown>)[prop];
+              }
+              if (prop.startsWith("set") || prop.startsWith("on") || prop.startsWith("handle")) {
+                return () => {};
+              }
+              if (prop === "window" || prop === "document") {
+                return {};
+              }
+              if (prop === "fetch") {
+                return () => Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+              }
+            }
+            return undefined;
+          },
+        });
+        vm.createContext(proxyContext);
+        vm.runInContext(code, proxyContext);
         const res = (modContext.module as { exports: unknown }).exports;
         loadedModules.set(filePath, res);
         return res;

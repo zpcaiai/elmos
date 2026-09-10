@@ -332,7 +332,7 @@
           "status": "PASSED"
         },
         "rust": {
-          "code_length": 945,
+          "code_length": 936,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
@@ -385,7 +385,7 @@
           "status": "PASSED"
         },
         "rust": {
-          "code_length": 959,
+          "code_length": 939,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },

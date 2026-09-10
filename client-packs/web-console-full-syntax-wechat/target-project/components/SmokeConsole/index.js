@@ -11,6 +11,8 @@ Component({
   },
   lifetimes: {
     attached() {
+      const setDraft = (val) => { this.setData({ draft: typeof val === "function" ? val(this.data.draft) : val }); };
+      const setProjectRef = (val) => { this.setData({ projectRef: typeof val === "function" ? val(this.data.projectRef) : val }); };
     },
     detached() {
     },

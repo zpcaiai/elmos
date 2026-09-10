@@ -6,7 +6,7 @@ Component({
   properties: {
     embedded: {
       type: null,
-      value: "false",
+      value: false,
     },
   },
   data: {
@@ -24,6 +24,17 @@ Component({
   },
   lifetimes: {
     attached() {
+      const setOrganizations = (val) => { this.setData({ organizations: typeof val === "function" ? val(this.data.organizations) : val }); };
+      const setSelectedId = (val) => { this.setData({ selectedId: typeof val === "function" ? val(this.data.selectedId) : val }); };
+      const setMembers = (val) => { this.setData({ members: typeof val === "function" ? val(this.data.members) : val }); };
+      const setName = (val) => { this.setData({ name: typeof val === "function" ? val(this.data.name) : val }); };
+      const setRegion = (val) => { this.setData({ region: typeof val === "function" ? val(this.data.region) : val }); };
+      const setInviteEmail = (val) => { this.setData({ inviteEmail: typeof val === "function" ? val(this.data.inviteEmail) : val }); };
+      const setInviteRole = (val) => { this.setData({ inviteRole: typeof val === "function" ? val(this.data.inviteRole) : val }); };
+      const setInvitationToken = (val) => { this.setData({ invitationToken: typeof val === "function" ? val(this.data.invitationToken) : val }); };
+      const setAcceptToken = (val) => { this.setData({ acceptToken: typeof val === "function" ? val(this.data.acceptToken) : val }); };
+      const setFeedback = (val) => { this.setData({ feedback: typeof val === "function" ? val(this.data.feedback) : val }); };
+      const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -33,7 +44,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_1
       (async () => {
         try {
@@ -41,7 +52,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

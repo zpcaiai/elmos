@@ -15,6 +15,11 @@ Component({
   },
   lifetimes: {
     attached() {
+      const setSubscription = (val) => { this.setData({ subscription: typeof val === "function" ? val(this.data.subscription) : val }); };
+      const setState = (val) => { this.setData({ state: typeof val === "function" ? val(this.data.state) : val }); };
+      const setConfirming = (val) => { this.setData({ confirming: typeof val === "function" ? val(this.data.confirming) : val }); };
+      const setPending = (val) => { this.setData({ pending: typeof val === "function" ? val(this.data.pending) : val }); };
+      const setMessage = (val) => { this.setData({ message: typeof val === "function" ? val(this.data.message) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -25,7 +30,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

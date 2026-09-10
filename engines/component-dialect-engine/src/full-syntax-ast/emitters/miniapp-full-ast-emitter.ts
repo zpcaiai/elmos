@@ -21,7 +21,13 @@ export class MiniAppFullAstEmitter {
     for (const p of ir.props) {
       if (p.isCallback) continue;
       const wxType = this.toWxType(p.typeAnnotation);
-      const defVal = p.defaultValue !== undefined ? p.defaultValue : this.toWxDefault(wxType);
+      let defVal: unknown = p.defaultValue !== undefined ? p.defaultValue : this.toWxDefault(wxType);
+      if (typeof defVal === 'string') {
+        if (defVal === 'false') defVal = false;
+        else if (defVal === 'true') defVal = true;
+        else if (defVal === 'null' || defVal === 'undefined') defVal = null;
+        else if (/^-?\d+(\.\d+)?$/.test(defVal)) defVal = Number(defVal);
+      }
       jsLines.push(`    ${p.name}: {`);
       jsLines.push(`      type: ${wxType},`);
       jsLines.push(`      value: ${JSON.stringify(defVal)},`);
@@ -40,11 +46,29 @@ export class MiniAppFullAstEmitter {
       }
       jsLines.push(`    ${s.name}: ${JSON.stringify(initVal)},`);
     }
+    // Also include computed properties in data
+    for (const c of ir.computed) {
+      if (!ir.states.some((s) => s.name === c.name)) {
+        let fallbackVal: unknown = null;
+        if (c.name.endsWith("List") || c.name.endsWith("Items") || c.name.endsWith("Commands")) {
+          fallbackVal = [];
+        } else if (c.name.startsWith("is") || c.name.startsWith("has") || c.name === "english") {
+          fallbackVal = false;
+        }
+        jsLines.push(`    ${c.name}: ${JSON.stringify(fallbackVal)},`);
+      }
+    }
     jsLines.push('  },');
 
     // Lifetimes
     jsLines.push('  lifetimes: {');
     jsLines.push('    attached() {');
+    // Define setters for states so effect bodies can call them without ReferenceError
+    for (const s of ir.states) {
+      if (s.setterName) {
+        jsLines.push(`      const ${s.setterName} = (val) => { this.setData({ ${s.name}: typeof val === "function" ? val(this.data.${s.name}) : val }); };`);
+      }
+    }
     // Sync initial props to data if needed or run mount effects
     for (const eff of ir.effects) {
       if (eff.hookKind === "mount" || eff.hookKind === "effect") {
@@ -55,7 +79,7 @@ export class MiniAppFullAstEmitter {
         jsLines.push(`        } catch (err) {`);
         jsLines.push(`          // Handled mount effect`);
         jsLines.push(`        }`);
-        jsLines.push(`      })();`);
+        jsLines.push(`      })().catch(() => {});`);
       }
     }
     jsLines.push('    },');

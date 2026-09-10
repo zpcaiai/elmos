@@ -58,9 +58,63 @@ Component({
     financialUnknown: "",
     financialResolutionRefs: {},
     financialIdempotencyKeys: "new Map<string, string>()",
+    periodLabel: null,
+    taskEvents: null,
+    repositoryEvents: null,
   },
   lifetimes: {
     attached() {
+      const setHours = (val) => { this.setData({ hours: typeof val === "function" ? val(this.data.hours) : val }); };
+      const setBusinessLine = (val) => { this.setData({ businessLine: typeof val === "function" ? val(this.data.businessLine) : val }); };
+      const setResult = (val) => { this.setData({ result: typeof val === "function" ? val(this.data.result) : val }); };
+      const setState = (val) => { this.setData({ state: typeof val === "function" ? val(this.data.state) : val }); };
+      const setView = (val) => { this.setData({ view: typeof val === "function" ? val(this.data.view) : val }); };
+      const setError = (val) => { this.setData({ error: typeof val === "function" ? val(this.data.error) : val }); };
+      const setNotice = (val) => { this.setData({ notice: typeof val === "function" ? val(this.data.notice) : val }); };
+      const setBusyAction = (val) => { this.setData({ busyAction: typeof val === "function" ? val(this.data.busyAction) : val }); };
+      const setExportDays = (val) => { this.setData({ exportDays: typeof val === "function" ? val(this.data.exportDays) : val }); };
+      const setExportBusy = (val) => { this.setData({ exportBusy: typeof val === "function" ? val(this.data.exportBusy) : val }); };
+      const setExportError = (val) => { this.setData({ exportError: typeof val === "function" ? val(this.data.exportError) : val }); };
+      const setExportNotice = (val) => { this.setData({ exportNotice: typeof val === "function" ? val(this.data.exportNotice) : val }); };
+      const setReplayRunId = (val) => { this.setData({ replayRunId: typeof val === "function" ? val(this.data.replayRunId) : val }); };
+      const setReplayBusy = (val) => { this.setData({ replayBusy: typeof val === "function" ? val(this.data.replayBusy) : val }); };
+      const setReplayError = (val) => { this.setData({ replayError: typeof val === "function" ? val(this.data.replayError) : val }); };
+      const setReplay = (val) => { this.setData({ replay: typeof val === "function" ? val(this.data.replay) : val }); };
+      const setQuota = (val) => { this.setData({ quota: typeof val === "function" ? val(this.data.quota) : val }); };
+      const setQuotaBusy = (val) => { this.setData({ quotaBusy: typeof val === "function" ? val(this.data.quotaBusy) : val }); };
+      const setQuotaError = (val) => { this.setData({ quotaError: typeof val === "function" ? val(this.data.quotaError) : val }); };
+      const setQuotaNotice = (val) => { this.setData({ quotaNotice: typeof val === "function" ? val(this.data.quotaNotice) : val }); };
+      const setQuotaTokenLimit = (val) => { this.setData({ quotaTokenLimit: typeof val === "function" ? val(this.data.quotaTokenLimit) : val }); };
+      const setQuotaCreditLimit = (val) => { this.setData({ quotaCreditLimit: typeof val === "function" ? val(this.data.quotaCreditLimit) : val }); };
+      const setQuotaReason = (val) => { this.setData({ quotaReason: typeof val === "function" ? val(this.data.quotaReason) : val }); };
+      const setOperationsJobs = (val) => { this.setData({ operationsJobs: typeof val === "function" ? val(this.data.operationsJobs) : val }); };
+      const setOperationsJobsLoaded = (val) => { this.setData({ operationsJobsLoaded: typeof val === "function" ? val(this.data.operationsJobsLoaded) : val }); };
+      const setOperationsJobsBusy = (val) => { this.setData({ operationsJobsBusy: typeof val === "function" ? val(this.data.operationsJobsBusy) : val }); };
+      const setOperationsJobsError = (val) => { this.setData({ operationsJobsError: typeof val === "function" ? val(this.data.operationsJobsError) : val }); };
+      const setOperationsJobsNotice = (val) => { this.setData({ operationsJobsNotice: typeof val === "function" ? val(this.data.operationsJobsNotice) : val }); };
+      const setOperationsJobBusinessLine = (val) => { this.setData({ operationsJobBusinessLine: typeof val === "function" ? val(this.data.operationsJobBusinessLine) : val }); };
+      const setOperationsJobStatus = (val) => { this.setData({ operationsJobStatus: typeof val === "function" ? val(this.data.operationsJobStatus) : val }); };
+      const setOperationsJobCancelBusy = (val) => { this.setData({ operationsJobCancelBusy: typeof val === "function" ? val(this.data.operationsJobCancelBusy) : val }); };
+      const setRunnerFleet = (val) => { this.setData({ runnerFleet: typeof val === "function" ? val(this.data.runnerFleet) : val }); };
+      const setRunnerFleetLoaded = (val) => { this.setData({ runnerFleetLoaded: typeof val === "function" ? val(this.data.runnerFleetLoaded) : val }); };
+      const setRunnerFleetBusy = (val) => { this.setData({ runnerFleetBusy: typeof val === "function" ? val(this.data.runnerFleetBusy) : val }); };
+      const setRunnerFleetStatus = (val) => { this.setData({ runnerFleetStatus: typeof val === "function" ? val(this.data.runnerFleetStatus) : val }); };
+      const setRunnerFleetActionBusy = (val) => { this.setData({ runnerFleetActionBusy: typeof val === "function" ? val(this.data.runnerFleetActionBusy) : val }); };
+      const setRunnerFleetError = (val) => { this.setData({ runnerFleetError: typeof val === "function" ? val(this.data.runnerFleetError) : val }); };
+      const setRunnerFleetNotice = (val) => { this.setData({ runnerFleetNotice: typeof val === "function" ? val(this.data.runnerFleetNotice) : val }); };
+      const setAdminSection = (val) => { this.setData({ adminSection: typeof val === "function" ? val(this.data.adminSection) : val }); };
+      const setSystemReadiness = (val) => { this.setData({ systemReadiness: typeof val === "function" ? val(this.data.systemReadiness) : val }); };
+      const setSystemReadinessBusy = (val) => { this.setData({ systemReadinessBusy: typeof val === "function" ? val(this.data.systemReadinessBusy) : val }); };
+      const setSystemReadinessError = (val) => { this.setData({ systemReadinessError: typeof val === "function" ? val(this.data.systemReadinessError) : val }); };
+      const setFinancialStatus = (val) => { this.setData({ financialStatus: typeof val === "function" ? val(this.data.financialStatus) : val }); };
+      const setFinancialCases = (val) => { this.setData({ financialCases: typeof val === "function" ? val(this.data.financialCases) : val }); };
+      const setFinancialLoaded = (val) => { this.setData({ financialLoaded: typeof val === "function" ? val(this.data.financialLoaded) : val }); };
+      const setFinancialLoadBusy = (val) => { this.setData({ financialLoadBusy: typeof val === "function" ? val(this.data.financialLoadBusy) : val }); };
+      const setFinancialBusyAction = (val) => { this.setData({ financialBusyAction: typeof val === "function" ? val(this.data.financialBusyAction) : val }); };
+      const setFinancialError = (val) => { this.setData({ financialError: typeof val === "function" ? val(this.data.financialError) : val }); };
+      const setFinancialNotice = (val) => { this.setData({ financialNotice: typeof val === "function" ? val(this.data.financialNotice) : val }); };
+      const setFinancialUnknown = (val) => { this.setData({ financialUnknown: typeof val === "function" ? val(this.data.financialUnknown) : val }); };
+      const setFinancialResolutionRefs = (val) => { this.setData({ financialResolutionRefs: typeof val === "function" ? val(this.data.financialResolutionRefs) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -70,7 +124,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
       // Lifecycle effect effect_1
       (async () => {
         try {
@@ -94,7 +148,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

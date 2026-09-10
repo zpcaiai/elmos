@@ -18,6 +18,15 @@ Component({
   },
   lifetimes: {
     attached() {
+      const setSkill = (val) => { this.setData({ skill: typeof val === "function" ? val(this.data.skill) : val }); };
+      const setMode = (val) => { this.setData({ mode: typeof val === "function" ? val(this.data.mode) : val }); };
+      const setWorkspacePath = (val) => { this.setData({ workspacePath: typeof val === "function" ? val(this.data.workspacePath) : val }); };
+      const setRunnerToken = (val) => { this.setData({ runnerToken: typeof val === "function" ? val(this.data.runnerToken) : val }); };
+      const setTenantId = (val) => { this.setData({ tenantId: typeof val === "function" ? val(this.data.tenantId) : val }); };
+      const setActorId = (val) => { this.setData({ actorId: typeof val === "function" ? val(this.data.actorId) : val }); };
+      const setJob = (val) => { this.setData({ job: typeof val === "function" ? val(this.data.job) : val }); };
+      const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
+      const setError = (val) => { this.setData({ error: typeof val === "function" ? val(this.data.error) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -30,7 +39,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

@@ -13,6 +13,7 @@
  */
 
 import { HeadlessMiniProgramSandbox, ComponentMountResult } from "./miniapp-automator-sandbox";
+import { HTMLParser, HeadlessBoxLayoutEngine, DOMNode } from "./headless-differential-suite/headless-browser-dom";
 
 export interface DeviceViewport {
   width: number;
@@ -103,52 +104,59 @@ export class L5VisualInteractionOracle {
       children: [],
     };
 
+    if (!markup || !markup.trim()) {
+      return [rootBox];
+    }
+
+    const parsedNodes = HTMLParser.parse(markup);
+    if (!parsedNodes || parsedNodes.length === 0) {
+      return [rootBox];
+    }
+
+    const wrapper = new DOMNode("element", "div");
+    for (const node of parsedNodes) {
+      wrapper.appendChild(node);
+    }
+
+    HeadlessBoxLayoutEngine.computeLayout(wrapper, this.viewport.width, this.viewport.height);
+
     const elements: LayoutBox[] = [rootBox];
-    const tagRegex = /<([a-zA-Z0-9_-]+)([^>]*)>([\s\S]*?)<\/\1>|<([a-zA-Z0-9_-]+)([^>]*)\/>/g;
-    let match: RegExpExecArray | null;
-    let currentY = 16;
     let boxIndex = 0;
 
-    while ((match = tagRegex.exec(markup)) !== null) {
-      const tagName = (match[1] || match[4] || "div").toLowerCase();
-      const rawAttrs = match[2] || match[5] || "";
-      const content = match[3] || "";
-      const textOnly = content.replace(/<[^>]+>/g, " ").trim();
-
-      let itemWidth = Math.max(80, Math.min(this.viewport.width - 32, 360));
-      let itemHeight = Math.max(32, Math.min(120, 24 + textOnly.length * 1.2));
-      let bgColor = tagName === "button" ? 0x3568d4ff : 0xffffffff;
-
-      const styleMatch = rawAttrs.match(/style="([^"]*)"/i);
-      if (styleMatch && styleMatch[1]) {
-        const styleStr = styleMatch[1];
-        const hMatch = styleStr.match(/height:\s*(\d+)px/i);
-        if (hMatch && hMatch[1]) {
-          itemHeight = parseInt(hMatch[1], 10);
+    const traverse = (node: DOMNode) => {
+      if (node.nodeType === "element") {
+        const rect = node.computedLayout?.rect || { x: 0, y: 0, width: 0, height: 0 };
+        const tagName = (node.tagName || "div").toLowerCase();
+        let bgColor = tagName === "button" ? 0x3568d4ff : 0xffffffff;
+        const style = node.style || {};
+        if (style["background-color"]) {
+          const hex = style["background-color"].replace("#", "");
+          if (hex.length === 6) {
+            bgColor = (parseInt(hex, 16) << 8) | 0xff;
+          }
         }
-        const bgMatch = styleStr.match(/background-color:\s*#([0-9a-fA-F]{6})/i);
-        if (bgMatch && bgMatch[1]) {
-          bgColor = (parseInt(bgMatch[1], 16) << 8) | 0xff;
-        }
+        const box: LayoutBox = {
+          id: `box-${boxIndex++}`,
+          tag: tagName,
+          text: (node.nodeValue || "").slice(0, 100),
+          x: rect.x,
+          y: rect.y,
+          width: rect.width,
+          height: rect.height,
+          bgColor,
+          textColor: tagName === "button" ? 0xffffffff : 0x172033ff,
+          children: [],
+        };
+        rootBox.children.push(box);
+        elements.push(box);
       }
+      for (const child of node.children) {
+        traverse(child);
+      }
+    };
 
-      const box: LayoutBox = {
-        id: `box-${boxIndex++}`,
-        tag: tagName,
-        text: textOnly.slice(0, 100),
-        x: 16,
-        y: currentY,
-        width: itemWidth,
-        height: itemHeight,
-        bgColor,
-        textColor: tagName === "button" ? 0xffffffff : 0x172033ff,
-        children: [],
-      };
-      rootBox.children.push(box);
-      elements.push(box);
-
-      currentY += itemHeight + 12;
-      if (currentY > this.viewport.height - 40) break;
+    for (const child of wrapper.children) {
+      traverse(child);
     }
 
     return elements;
@@ -172,8 +180,8 @@ export class L5VisualInteractionOracle {
     const root = elements[0];
     grid.fill(root ? root.bgColor : 0xf4f6faff);
 
-    const scaleX = cols / (root ? root.width : this.viewport.width);
-    const scaleY = rows / (root ? root.height : this.viewport.height);
+    const scaleX = cols / this.viewport.width;
+    const scaleY = rows / this.viewport.height;
 
     for (let i = 1; i < elements.length; i++) {
       const child = elements[i];

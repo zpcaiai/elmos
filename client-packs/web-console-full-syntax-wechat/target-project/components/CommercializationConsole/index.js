@@ -12,6 +12,9 @@ Component({
   },
   lifetimes: {
     attached() {
+      const setPayload = (val) => { this.setData({ payload: typeof val === "function" ? val(this.data.payload) : val }); };
+      const setSelected = (val) => { this.setData({ selected: typeof val === "function" ? val(this.data.selected) : val }); };
+      const setRefreshing = (val) => { this.setData({ refreshing: typeof val === "function" ? val(this.data.refreshing) : val }); };
       // Lifecycle effect effect_0
       (async () => {
         try {
@@ -19,7 +22,7 @@ Component({
         } catch (err) {
           // Handled mount effect
         }
-      })();
+      })().catch(() => {});
     },
     detached() {
     },

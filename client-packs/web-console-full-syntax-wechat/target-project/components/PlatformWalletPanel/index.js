@@ -28,6 +28,19 @@ Component({
   },
   lifetimes: {
     attached() {
+      const setWallets = (val) => { this.setData({ wallets: typeof val === "function" ? val(this.data.wallets) : val }); };
+      const setTopups = (val) => { this.setData({ topups: typeof val === "function" ? val(this.data.topups) : val }); };
+      const setLoaded = (val) => { this.setData({ loaded: typeof val === "function" ? val(this.data.loaded) : val }); };
+      const setExpanded = (val) => { this.setData({ expanded: typeof val === "function" ? val(this.data.expanded) : val }); };
+      const setLedger = (val) => { this.setData({ ledger: typeof val === "function" ? val(this.data.ledger) : val }); };
+      const setLedgerBusy = (val) => { this.setData({ ledgerBusy: typeof val === "function" ? val(this.data.ledgerBusy) : val }); };
+      const setDenial = (val) => { this.setData({ denial: typeof val === "function" ? val(this.data.denial) : val }); };
+      const setNotice = (val) => { this.setData({ notice: typeof val === "function" ? val(this.data.notice) : val }); };
+      const setBusy = (val) => { this.setData({ busy: typeof val === "function" ? val(this.data.busy) : val }); };
+      const setTarget = (val) => { this.setData({ target: typeof val === "function" ? val(this.data.target) : val }); };
+      const setAmountYuan = (val) => { this.setData({ amountYuan: typeof val === "function" ? val(this.data.amountYuan) : val }); };
+      const setDirection = (val) => { this.setData({ direction: typeof val === "function" ? val(this.data.direction) : val }); };
+      const setReason = (val) => { this.setData({ reason: typeof val === "function" ? val(this.data.reason) : val }); };
     },
     detached() {
     },

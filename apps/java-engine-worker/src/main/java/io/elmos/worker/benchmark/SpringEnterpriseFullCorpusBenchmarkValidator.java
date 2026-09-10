@@ -7,6 +7,8 @@ import io.elmos.worker.workflow.SpringModernizationEndToEndWorkflowEngine;
 import io.elmos.worker.workflow.SpringModernizationEndToEndWorkflowEngine.WorkflowRequest;
 import io.elmos.worker.workflow.SpringModernizationEndToEndWorkflowEngine.WorkflowResult;
 
+import io.elmos.worker.validation.SpringEnterpriseModernizationAuditSuite.ProjectAuditVerdict;
+
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,8 +41,30 @@ public final class SpringEnterpriseFullCorpusBenchmarkValidator {
             boolean isProductionReady,
             String certificationLevel,
             double auditScore,
-            long executionTimeMillis
-    ) {}
+            long executionTimeMillis,
+            ProjectAuditVerdict auditVerdict
+    ) {
+        public ProjectBenchmarkMetric(
+                String projectId,
+                String projectName,
+                ProjectDomain domain,
+                String sourceBootVersion,
+                String sourceJavaVersion,
+                int sourceLoc,
+                int targetLoc,
+                int rulesAppliedCount,
+                boolean modernizationSucceeded,
+                boolean equivalenceCertified,
+                boolean isProductionReady,
+                String certificationLevel,
+                double auditScore,
+                long executionTimeMillis
+        ) {
+            this(projectId, projectName, domain, sourceBootVersion, sourceJavaVersion, sourceLoc, targetLoc,
+                    rulesAppliedCount, modernizationSucceeded, equivalenceCertified, isProductionReady,
+                    certificationLevel, auditScore, executionTimeMillis, null);
+        }
+    }
 
     public record DomainSummary(
             ProjectDomain domain,
@@ -127,7 +151,8 @@ public final class SpringEnterpriseFullCorpusBenchmarkValidator {
                     result.isProductionReady(),
                     result.certificationLevel(),
                     score,
-                    duration
+                    duration,
+                    result.auditVerdict()
             ));
         }
 
