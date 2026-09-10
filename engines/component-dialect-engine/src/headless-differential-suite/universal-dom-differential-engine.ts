@@ -356,46 +356,33 @@ export class UniversalDOMDifferentialEngine {
 
     const t = tagName.toLowerCase();
 
-    // Containers
-    if (['div', 'section', 'article', 'main', 'header', 'footer', 'nav', 'aside', 'view', 'block'].includes(t)) {
+    // Universal Block Containers (in WeChat MiniApp and cross-platform UI, all block elements map to view)
+    if ([
+      'div', 'section', 'article', 'main', 'header', 'footer', 'nav', 'aside',
+      'view', 'block', 'form', 'fieldset', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'p', 'ul', 'ol', 'li', 'table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th'
+    ].includes(t)) {
       return 'container';
     }
-    // Typography
-    if (['span', 'p', 'b', 'i', 'strong', 'em', 'small', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'text'].includes(t)) {
+    // Universal Inline Typography & Text
+    if (['span', 'b', 'i', 'strong', 'em', 'small', 'label', 'text', 'code', 'pre', 'abbr', 'time'].includes(t)) {
       return 'text';
     }
-    // Buttons
+    // Interactive Buttons
     if (['button'].includes(t)) {
       return 'button';
     }
-    // Inputs & Form Controls
-    if (['input', 'textarea'].includes(t)) {
+    // Form Inputs & Controls
+    if (['input', 'textarea', 'select', 'switch', 'slider'].includes(t)) {
       return 'input';
     }
-    // Links / Navigation
-    if (['a', 'navigator'].includes(t)) {
+    // Navigation / Links
+    if (['a', 'navigator', 'link'].includes(t)) {
       return 'navigation';
     }
-    // Images
-    if (['img', 'image', 'svg'].includes(t)) {
+    // Media & Visuals
+    if (['img', 'image', 'svg', 'canvas', 'icon'].includes(t)) {
       return 'image';
-    }
-    // Lists
-    if (['ul', 'ol'].includes(t)) {
-      return 'list';
-    }
-    if (['li'].includes(t)) {
-      return 'list-item';
-    }
-    // Tables
-    if (['table'].includes(t)) {
-      return 'table';
-    }
-    if (['tr'].includes(t)) {
-      return 'table-row';
-    }
-    if (['td', 'th'].includes(t)) {
-      return 'table-cell';
     }
 
     return t;

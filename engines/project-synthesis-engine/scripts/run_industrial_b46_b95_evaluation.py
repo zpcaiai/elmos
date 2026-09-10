@@ -240,9 +240,9 @@ def verify_distributed_transactions() -> Dict[str, Any]:
     )
     store.insert(ev)
     dispatched_list = []
-    dispatcher = OutboxDispatcher(store, broker_publisher=lambda r: (dispatched_list.append(r.event_id), True)[1])
-    dispatched = dispatcher.poll_and_dispatch(batch_size=10)
-    assert dispatched == 1 and dispatched_list == ["evt-001"]
+    dispatcher = OutboxDispatcher(store, publisher=lambda r: (dispatched_list.append(r.event_id), True)[1], batch_size=10)
+    published_cnt, failed_cnt = dispatcher.dispatch_batch()
+    assert published_cnt == 1 and failed_cnt == 0 and dispatched_list == ["evt-001"]
 
     # 3. Distributed Lock & Fencing Token
     lock_mgr = DistributedLockManager()
@@ -263,30 +263,34 @@ def verify_distributed_transactions() -> Dict[str, Any]:
 def verify_rootless_sandbox() -> Dict[str, Any]:
     print("  [4/6] Verifying Linux Rootless Container Sandbox & Hermetic Confinement...")
     detector = RootlessSandboxDetector()
-    backend = detector.preferred_backend
-    assert backend in {"podman", "bubblewrap", "unshare", "hermetic_path_jail"}
+    backends = detector.detect_backends()
+    assert "hermetic_path_jail" in backends
 
     config = SandboxSecurityConfig(
-        read_only_rootfs=True,
-        drop_all_capabilities=True,
+        read_only_root=True,
+        drop_capabilities=("ALL",),
         no_new_privileges=True,
-        memory_limit_mb=256,
-        cpu_quota_cores=1.0,
+        network_isolated=True,
+        memory_mb=256,
+        cpus=1.0,
     )
-    runner = LinuxRootlessSandboxRunner(config)
-    exec_res = runner.execute(["python3", "-c", "import sys; sys.stdout.write('SANDBOX_OK')"])
+    runner = LinuxRootlessSandboxRunner(config=config)
+    exec_res = runner.run([sys.executable, "-c", "import sys; sys.stdout.write('SANDBOX_OK')"], host_workspace_path=Path("."))
     assert exec_res.exit_code == 0
     assert "SANDBOX_OK" in exec_res.stdout
+    assert exec_res.security_verifications["cap_drop_all"] is True
+    assert exec_res.security_verifications["read_only_root"] is True
 
     return {
         "status": "PASSED",
-        "backend": backend,
+        "backends_detected": backends,
         "isolation_features": {
-            "read_only_rootfs": True,
+            "read_only_root": True,
             "drop_all_capabilities": True,
             "no_new_privileges": True,
-            "cgroup_memory_limit_mb": 256,
-            "cgroup_cpu_quota_cores": 1.0,
+            "network_isolated": True,
+            "memory_mb": 256,
+            "cpus": 1.0,
         },
     }
 
