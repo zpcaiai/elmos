@@ -1,0 +1,154 @@
+{
+  "route_id": "java-spring-to-csharp-aspnet",
+  "source": {
+    "language_versions": [
+      "17",
+      "21"
+    ],
+    "framework_versions": [
+      "spring-boot-3.x"
+    ]
+  },
+  "target": {
+    "language_versions": [
+      "csharp-12"
+    ],
+    "framework_versions": [
+      "aspnet-core-8",
+      "ef-core-8"
+    ]
+  },
+  "required_stages": [
+    "repository-intake",
+    "semantic-model",
+    "psp-uir",
+    "framework-contract",
+    "code-generation",
+    "build",
+    "test-migration",
+    "repair",
+    "behavior-verification",
+    "database-migration",
+    "pull-request",
+    "private-runner",
+    "canary",
+    "cutover",
+    "hypercare",
+    "customer-handoff"
+  ],
+  "stage_results": [
+    {
+      "stage": "repository-intake",
+      "status": "passed",
+      "evidence": [
+        "evidence/repository-intake.manifest.json"
+      ]
+    },
+    {
+      "stage": "semantic-model",
+      "status": "passed",
+      "evidence": [
+        "evidence/semantic-model.manifest.json"
+      ]
+    },
+    {
+      "stage": "psp-uir",
+      "status": "passed",
+      "evidence": [
+        "evidence/psp-uir.manifest.json"
+      ]
+    },
+    {
+      "stage": "framework-contract",
+      "status": "passed",
+      "evidence": [
+        "evidence/framework-contract.manifest.json"
+      ]
+    },
+    {
+      "stage": "code-generation",
+      "status": "passed",
+      "evidence": [
+        "evidence/code-generation.manifest.json"
+      ]
+    },
+    {
+      "stage": "build",
+      "status": "passed",
+      "evidence": [
+        "evidence/build.manifest.json"
+      ]
+    },
+    {
+      "stage": "test-migration",
+      "status": "passed",
+      "evidence": [
+        "evidence/test-migration.manifest.json"
+      ]
+    },
+    {
+      "stage": "repair",
+      "status": "passed",
+      "evidence": [
+        "evidence/repair.manifest.json"
+      ]
+    },
+    {
+      "stage": "behavior-verification",
+      "status": "passed",
+      "evidence": [
+        "evidence/behavior-verification.manifest.json"
+      ]
+    },
+    {
+      "stage": "database-migration",
+      "status": "passed",
+      "evidence": [
+        "evidence/database-migration.manifest.json"
+      ]
+    },
+    {
+      "stage": "pull-request",
+      "status": "passed",
+      "evidence": [
+        "evidence/pull-request.manifest.json"
+      ]
+    },
+    {
+      "stage": "private-runner",
+      "status": "passed",
+      "evidence": [
+        "evidence/private-runner.manifest.json"
+      ]
+    },
+    {
+      "stage": "canary",
+      "status": "passed",
+      "evidence": [
+        "evidence/canary.manifest.json"
+      ]
+    },
+    {
+      "stage": "cutover",
+      "status": "passed",
+      "evidence": [
+        "evidence/cutover.manifest.json"
+      ]
+    },
+    {
+      "stage": "hypercare",
+      "status": "passed",
+      "evidence": [
+        "evidence/hypercare.manifest.json"
+      ]
+    },
+    {
+      "stage": "customer-handoff",
+      "status": "passed",
+      "evidence": [
+        "evidence/customer-handoff.manifest.json"
+      ]
+    }
+  ],
+  "status": "certified"
+}

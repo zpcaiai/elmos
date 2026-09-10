@@ -1,0 +1,10 @@
+{
+  "artifact_sha256": "457859b0c9930120b45ab822084846b965f6cd28791460ed9b64b0ae5f0c5205",
+  "environment_sha256": "9107b2f7f78bc4a8e8436a707ce20784da29426fc4e9b633ef714ff3c6ba1666",
+  "files": [
+    {
+      "path": "evidence/customer-handoff.log",
+      "sha256": "9689f66f97325fec8bcb7dcb4627b5c7f254f17c8bb166574ec08df73ba86688"
+    }
+  ]
+}

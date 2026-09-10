@@ -1,0 +1,10 @@
+{
+  "artifact_sha256": "15e5a1b7fdc8c02a53fc88ae8504c9a8e008a0b0abeafd2485a7716b9dd7150e",
+  "environment_sha256": "87f902a0559a5c9ff5fd14e9beb29428ca43b3d6715158ed69dc75303a47f080",
+  "files": [
+    {
+      "path": "evidence/cutover.log",
+      "sha256": "c6eef6afce21af39b64dc9b4317a726ee4aac59ef773f7eca2894ba98ec4d96c"
+    }
+  ]
+}

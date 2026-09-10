@@ -1,0 +1,12 @@
+{
+  "enrollment": {},
+  "attestation": {},
+  "identity": {},
+  "workspace": {},
+  "sandbox": {},
+  "egress": {},
+  "secret_broker": {},
+  "execution": {},
+  "evidence": {},
+  "cleanup": {}
+}
