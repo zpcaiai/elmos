@@ -1,5 +1,8 @@
 ---
 name: pm-b06-package-manager-adapter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "统一 Maven、Gradle、NuGet、npm、pnpm、Cargo、pip、Go Modules 等包管理操作. Precision Migration B06 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

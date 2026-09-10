@@ -1,5 +1,8 @@
 ---
 name: pm-b04-target-platform-benefit-analysis
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "判断跨 Web、移动端、ArkUI、小程序或桌面平台迁移能否带来真实业务收益. Precision Migration B04 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

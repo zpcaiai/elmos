@@ -1,5 +1,8 @@
 ---
 name: pm-b15-null-to-option-pointer-lowering
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在 Null、Option、Nullable、Pointer、zero value 和 Missing 之间安全映射. Precision Migration B15 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

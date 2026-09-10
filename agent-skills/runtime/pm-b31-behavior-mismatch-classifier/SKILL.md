@@ -1,5 +1,8 @@
 ---
 name: pm-b31-behavior-mismatch-classifier
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将差异分类为请求、状态、路由、数据、副作用、并发、视觉、平台或性能问题. Precision Migration B31 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

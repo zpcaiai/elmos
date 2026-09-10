@@ -1,5 +1,8 @@
 ---
 name: pm-b13-idiomatic-target-code-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在保持契约前提下生成目标语言惯用、可维护、可测试的实现. Precision Migration B13 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

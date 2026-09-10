@@ -1,5 +1,8 @@
 ---
 name: pm-b12-source-location-mapper
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "维护源 AST、IR、目标代码、诊断和证据之间的双向位置映射. Precision Migration B12 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

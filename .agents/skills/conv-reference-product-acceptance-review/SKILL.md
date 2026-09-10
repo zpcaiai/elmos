@@ -1,7 +1,13 @@
 ---
 name: conv-reference-product-acceptance-review
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 组织产品、架构、安全、数据、运维、商业和客户Owner评审全部收敛成果。
 metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
   source_package: batch46-product-convergence-complete-skills
   source_id: '1535'
   source_name: b46-reference-product-acceptance-review

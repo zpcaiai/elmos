@@ -1,5 +1,8 @@
 ---
 name: conv-core-extension-boundary
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 保持Control Plane内核稳定，把语言、框架、数据库、云和行业能力留在Pack/Extension层。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

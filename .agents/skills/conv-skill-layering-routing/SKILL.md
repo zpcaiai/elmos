@@ -1,5 +1,8 @@
 ---
 name: conv-skill-layering-routing
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 将数百个Skill组织为Meta、Orchestrator、Implementation、Test/Operations四层。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

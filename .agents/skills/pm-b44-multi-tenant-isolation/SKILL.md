@@ -1,5 +1,8 @@
 ---
 name: pm-b44-multi-tenant-isolation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "实现租户、仓库、工作区、数据、模型、缓存、密钥和证据隔离. Precision Migration B44 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

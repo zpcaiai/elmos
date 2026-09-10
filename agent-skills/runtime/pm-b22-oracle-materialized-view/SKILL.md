@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-materialized-view
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移物化视图、刷新模式、日志、查询重写和一致性. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

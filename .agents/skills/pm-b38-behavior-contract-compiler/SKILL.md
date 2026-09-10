@@ -1,5 +1,8 @@
 ---
 name: pm-b38-behavior-contract-compiler
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "把 Skill 业务规则编译为类型、Effect、状态、接口和验证契约. Precision Migration B38 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

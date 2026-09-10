@@ -1,5 +1,8 @@
 ---
 name: pm-b21-dynamic-sql-converter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "解析、枚举、参数化和重写动态 SQL，并检测注入与不可解析路径. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

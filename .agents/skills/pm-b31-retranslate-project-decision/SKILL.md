@@ -1,5 +1,8 @@
 ---
 name: pm-b31-retranslate-project-decision
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "判断整体架构、技术选型或功能覆盖过差时是否重新转换整库. Precision Migration B31 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

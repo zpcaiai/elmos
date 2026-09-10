@@ -1,0 +1,4 @@
+interface:
+  display_name: "B89 R Parser and Semantic Model"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b89-r-parser-and-semantic-model to execute this ELMOS Language Pack Skill with fail-closed evidence."

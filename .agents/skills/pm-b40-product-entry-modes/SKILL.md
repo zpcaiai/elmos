@@ -1,5 +1,8 @@
 ---
 name: pm-b40-product-entry-modes
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "统一已有失败项目修复、源项目转换认证和从Skills零开始生成三种入口，并自动选择复用与执行策略. Precision Migration B40 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

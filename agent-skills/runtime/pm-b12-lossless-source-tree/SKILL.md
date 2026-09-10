@@ -1,5 +1,8 @@
 ---
 name: pm-b12-lossless-source-tree
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "构建保留空白、注释、顺序、源位置和语法细节的无损源码树. Precision Migration B12 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

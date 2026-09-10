@@ -4357,3 +4357,231 @@ class DbMigrationScript:
     applied: bool = False
     applied_at: str = ""
     rollback_tested: bool = False
+
+# ─── Independent Expert Validation Models ───────────────────────────
+
+class ExpertDomain(str, Enum):
+    SECURITY = "security"
+    PERFORMANCE = "performance"
+    ARCHITECTURE = "architecture"
+    DATABASE = "database"
+    COMPLIANCE = "compliance"
+    ACCESSIBILITY = "accessibility"
+    DATA_PRIVACY = "data_privacy"
+
+class ExpertValidationOutcome(str, Enum):
+    APPROVED = "approved"
+    CONDITIONALLY_APPROVED = "conditionally_approved"
+    REJECTED = "rejected"
+    NEEDS_REWORK = "needs_rework"
+    DEFERRED = "deferred"
+
+@dataclass
+class ExpertValidator:
+    validator_id: str
+    name: str
+    domain: ExpertDomain
+    organization: str = ""
+    credentials: List[str] = field(default_factory=list)
+    active: bool = True
+    total_reviews: int = 0
+    approval_rate: float = 0.0
+    avg_review_hours: float = 0.0
+    conflicts_of_interest: List[str] = field(default_factory=list)  # org names
+
+@dataclass
+class ExpertReview:
+    review_id: str
+    validator_id: str
+    subject_id: str  # what is being reviewed
+    domain: ExpertDomain
+    outcome: ExpertValidationOutcome = ExpertValidationOutcome.DEFERRED
+    findings: List[str] = field(default_factory=list)
+    conditions: List[str] = field(default_factory=list)  # for conditional approval
+    score: float = 0.0  # 0-10
+    submitted_at: str = ""
+    reviewed_at: str = ""
+    review_hours: float = 0.0
+    independent: bool = True  # no conflict of interest
+
+
+# ─── Scale Performance Certification Models ─────────────────────────
+
+class PerformanceTestType(str, Enum):
+    LOAD = "load"
+    STRESS = "stress"
+    SPIKE = "spike"
+    SOAK = "soak"
+    BASELINE = "baseline"
+
+class PerformanceVerdict(str, Enum):
+    PASS = "pass"
+    FAIL = "fail"
+    DEGRADED = "degraded"
+    INCONCLUSIVE = "inconclusive"
+
+@dataclass
+class PerformanceBenchmark:
+    benchmark_id: str
+    name: str
+    test_type: PerformanceTestType
+    target_rps: int = 0  # requests per second
+    target_p99_ms: float = 0.0
+    target_p95_ms: float = 0.0
+    target_error_rate_pct: float = 1.0
+    max_cpu_pct: float = 80.0
+    max_memory_pct: float = 80.0
+    duration_minutes: int = 30
+    concurrent_users: int = 100
+
+@dataclass
+class PerformanceResult:
+    result_id: str
+    benchmark_id: str
+    actual_rps: int = 0
+    actual_p99_ms: float = 0.0
+    actual_p95_ms: float = 0.0
+    actual_error_rate_pct: float = 0.0
+    actual_cpu_pct: float = 0.0
+    actual_memory_pct: float = 0.0
+    duration_minutes: int = 0
+    verdict: PerformanceVerdict = PerformanceVerdict.INCONCLUSIVE
+    tested_at: str = ""
+    environment: str = ""
+    notes: str = ""
+
+
+# ─── Security Data Certification Models ─────────────────────────────
+
+class SecurityControlStatus(str, Enum):
+    NOT_IMPLEMENTED = "not_implemented"
+    PARTIAL = "partial"
+    IMPLEMENTED = "implemented"
+    VERIFIED = "verified"
+    FAILED = "failed"
+
+class DataProtectionLevel(str, Enum):
+    PUBLIC = "public"
+    INTERNAL = "internal"
+    CONFIDENTIAL = "confidential"
+    RESTRICTED = "restricted"
+    TOP_SECRET = "top_secret"
+
+@dataclass
+class SecurityControl:
+    control_id: str
+    framework: str  # SOC2, ISO27001, NIST, etc.
+    control_name: str
+    description: str = ""
+    status: SecurityControlStatus = SecurityControlStatus.NOT_IMPLEMENTED
+    evidence_ids: List[str] = field(default_factory=list)
+    verified_by: str = ""
+    verified_at: str = ""
+    last_tested: str = ""
+    test_frequency_days: int = 90
+    compensating_control: str = ""
+
+@dataclass
+class DataClassification:
+    classification_id: str
+    data_type: str  # PII, PHI, PCI, financial, etc.
+    protection_level: DataProtectionLevel
+    storage_location: str = ""
+    encrypted_at_rest: bool = False
+    encrypted_in_transit: bool = False
+    retention_days: int = 365
+    cross_border: bool = False
+    compliant: bool = False
+    owner: str = ""
+
+# ─── PSIRT Security Incident Models ─────────────────────────────────
+
+class PsirtSeverity(str, Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+class PsirtStatus(str, Enum):
+    REPORTED = "reported"
+    TRIAGED = "triaged"
+    INVESTIGATING = "investigating"
+    FIX_DEVELOPING = "fix_developing"
+    FIX_AVAILABLE = "fix_available"
+    DISCLOSED = "disclosed"
+    CLOSED = "closed"
+
+@dataclass
+class SecurityVulnerability:
+    vuln_id: str
+    title: str
+    description: str
+    severity: PsirtSeverity
+    status: PsirtStatus = PsirtStatus.REPORTED
+    cve_id: str = ""
+    cvss_score: float = 0.0  # 0-10
+    affected_versions: List[str] = field(default_factory=list)
+    fixed_version: str = ""
+    reporter: str = ""
+    assignee: str = ""
+    reported_at: str = ""
+    disclosed_at: str = ""
+    sla_hours: int = 72  # response SLA
+    patch_url: str = ""
+    workaround: str = ""
+    exploited_in_wild: bool = False
+
+@dataclass
+class PsirtAdvisory:
+    advisory_id: str
+    vuln_id: str
+    title: str
+    summary: str = ""
+    affected_products: List[str] = field(default_factory=list)
+    remediation: str = ""
+    published: bool = False
+    published_at: str = ""
+
+# ─── Human Curation Governance Models ───────────────────────────────
+
+class CurationAction(str, Enum):
+    APPROVE = "approve"
+    REJECT = "reject"
+    MODIFY = "modify"
+    FLAG = "flag"
+    DEFER = "defer"
+
+class ContentCategory(str, Enum):
+    KNOWLEDGE = "knowledge"
+    RECIPE = "recipe"
+    RULE = "rule"
+    PATTERN = "pattern"
+    TRAINING_DATA = "training_data"
+    POLICY = "policy"
+
+@dataclass
+class CurationItem:
+    item_id: str
+    category: ContentCategory
+    title: str
+    content_hash: str = ""
+    source: str = ""  # ai_generated, human_authored, imported
+    quality_score: float = 0.0  # 0-1
+    curator: str = ""
+    action: CurationAction = CurationAction.DEFER
+    review_notes: str = ""
+    created_at: str = ""
+    curated_at: str = ""
+    auto_generated: bool = False
+    conflicts_with: List[str] = field(default_factory=list)  # item_ids
+
+@dataclass
+class CurationPolicy:
+    policy_id: str
+    name: str
+    category: ContentCategory
+    auto_approve_threshold: float = 0.9  # quality_score threshold
+    require_human_review: bool = True
+    min_reviewers: int = 1
+    max_age_days: int = 90
+    created_at: str = ""

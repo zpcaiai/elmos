@@ -1,5 +1,8 @@
 ---
 name: pm-b29-automatic-test-generation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从接口、源码、数据、状态、副作用、生产Trace和形式契约生成可跨源目标执行的测试. Precision Migration B29 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

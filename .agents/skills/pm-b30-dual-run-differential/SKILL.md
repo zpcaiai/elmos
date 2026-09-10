@@ -1,5 +1,8 @@
 ---
 name: pm-b30-dual-run-differential
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "让源系统和目标系统在同一输入、环境和初始状态下并行运行，并比较完整可观察行为. Precision Migration B30 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

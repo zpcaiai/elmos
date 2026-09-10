@@ -1,5 +1,8 @@
 ---
 name: pm-b17-form-validation-mapping
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "映射表单字段、校验、触摸状态、错误显示、提交与异步校验. Precision Migration B17 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

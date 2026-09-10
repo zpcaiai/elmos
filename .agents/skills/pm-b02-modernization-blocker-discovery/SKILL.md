@@ -1,5 +1,8 @@
 ---
 name: pm-b02-modernization-blocker-discovery
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "发现反射、动态加载、原生库、私有框架、平台 API、隐式事务和未观测行为等阻断项. Precision Migration B02 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

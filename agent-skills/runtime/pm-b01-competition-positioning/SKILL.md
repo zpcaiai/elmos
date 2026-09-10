@@ -1,5 +1,8 @@
 ---
 name: pm-b01-competition-positioning
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "持续识别国内外现代化、代码转换、数据库迁移和验证产品的能力边界，并形成可执行的差异化与商业切入策略. Precision Migration B01 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

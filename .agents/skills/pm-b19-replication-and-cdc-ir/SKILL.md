@@ -1,5 +1,8 @@
 ---
 name: pm-b19-replication-and-cdc-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达日志、位点、快照、增量、顺序、冲突、Exactly-once 和切换. Precision Migration B19 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

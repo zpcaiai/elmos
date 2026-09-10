@@ -1,5 +1,8 @@
 ---
 name: pm-b39-database-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成 Schema、迁移、索引、Seed、备份、保留和数据测试. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

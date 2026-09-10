@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/52-target-goldendb/SKILL.md"
   source_sha256: "sha256:a85fef4353e2cdc663a2214466bd6303838a0e0e4295f4a9a6dd37913e8908ef"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # GoldenDB Target Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `52-target-goldendb`
 - **Version:** `1.0.0`
 - **Category:** target-adapter
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 - **Depends on:** `02-semantic-db-ir`, `03-rule-mutation-dsl`, `05-ddl-auto-conversion`, `06-sql-auto-conversion`, `07-plsql-tsql-conversion`
 
 ## Objective

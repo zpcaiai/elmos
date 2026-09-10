@@ -1,5 +1,8 @@
 ---
 name: pm-b10-dependency-injection-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达生命周期、Scope、绑定、工厂、拦截器、代理和条件注册. Precision Migration B10 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

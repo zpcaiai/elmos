@@ -1,5 +1,8 @@
 ---
 name: pm-b28-missing-test-gap-analysis
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "按接口、状态、错误、权限、数据、副作用、并发、故障和 Journey 找缺口. Precision Migration B28 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

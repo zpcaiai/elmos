@@ -1,5 +1,8 @@
 ---
 name: conv-capability-package-metamodel
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 统一Route、Framework、Database、Client、Cloud、Verification和Extension Pack的身份、生命周期、Owner、兼容与Evidence。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

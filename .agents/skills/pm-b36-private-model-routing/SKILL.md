@@ -1,5 +1,8 @@
 ---
 name: pm-b36-private-model-routing
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在数据策略、内网、国产化和硬件约束下选择客户私有模型. Precision Migration B36 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

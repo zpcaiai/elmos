@@ -1,5 +1,8 @@
 ---
 name: pm-b38-skill-marketplace-package
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "打包签名、许可证、权限、安装、升级、示例、证据和发布元数据. Precision Migration B38 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

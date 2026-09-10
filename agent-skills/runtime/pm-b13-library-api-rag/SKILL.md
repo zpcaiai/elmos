@@ -1,5 +1,8 @@
 ---
 name: pm-b13-library-api-rag
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "检索目标语言真实 API、版本、导入、示例、语义条件和替代库. Precision Migration B13 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b11-recipe-composition-and-ordering
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "解决规则依赖、顺序、冲突、幂等和可交换性. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

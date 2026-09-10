@@ -583,6 +583,8 @@ class NativeBridge:
                     for fn_item in data.get("functions", []):
                         u_meth = cls._convert_syn_function(fn_item)
                         target_cls.methods.append(u_meth)
+            if not target_cls.methods:
+                return None
             return module
         except Exception as ex:
             logger.debug("Exception running C# Roslyn bridge: %s", ex)

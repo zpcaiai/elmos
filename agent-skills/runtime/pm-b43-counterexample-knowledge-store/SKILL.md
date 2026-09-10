@@ -1,5 +1,8 @@
 ---
 name: pm-b43-counterexample-knowledge-store
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "存储方向、源码模式、错误目标、最小反例、根因、修复和版本. Precision Migration B43 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

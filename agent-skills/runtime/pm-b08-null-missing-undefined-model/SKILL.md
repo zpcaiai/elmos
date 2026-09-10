@@ -1,5 +1,8 @@
 ---
 name: pm-b08-null-missing-undefined-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "严格区分 Null、Missing、Undefined、Empty、Zero value 和未初始化. Precision Migration B08 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

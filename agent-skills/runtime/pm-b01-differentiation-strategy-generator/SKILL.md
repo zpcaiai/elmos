@@ -1,5 +1,8 @@
 ---
 name: pm-b01-differentiation-strategy-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成模型中立、深度验证、私有部署、行业语义和证据交付导向的差异化方案. Precision Migration B01 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: conv-pack-lifecycle-certification-unifier
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 统一所有Pack的draft到revoked生命周期、续证、EOL和撤销传播。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

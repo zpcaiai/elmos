@@ -1,5 +1,8 @@
 ---
 name: pm-b31-suspected-code-slice-locator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将反例映射到最相关的源目标文件、符号、调用和规则. Precision Migration B31 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b24-mysql-enum-and-set
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 ENUM/SET 的顺序、隐式数值、校验和 Schema 演进. Precision Migration B24 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b41-semantic-loss-report
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "报告每项无损、归一化、近似、适配、未验证和不支持语义. Precision Migration B41 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

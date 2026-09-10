@@ -1,5 +1,8 @@
 ---
 name: pm-b23-sqlserver-merge
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 MERGE，并评估并发、重复匹配和目标平台安全替代. Precision Migration B23 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

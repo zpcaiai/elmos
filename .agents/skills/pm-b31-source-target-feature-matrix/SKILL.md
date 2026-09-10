@@ -1,5 +1,8 @@
 ---
 name: pm-b31-source-target-feature-matrix
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从源目标仓库建立页面、接口、状态、数据、权限、平台能力和运维功能矩阵. Precision Migration B31 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

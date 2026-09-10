@@ -1,5 +1,8 @@
 ---
 name: pm-b08-gradual-type-recovery
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "结合静态分析、运行 Trace、Schema 和测试恢复动态语言真实类型与对象形状. Precision Migration B08 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

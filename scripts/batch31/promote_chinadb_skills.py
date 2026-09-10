@@ -30,15 +30,26 @@ for spec in SKILL_SPECS:
     text = agents_skill_file.read_text(encoding="utf-8")
 
     # Update frontmatter
-    text = re.sub(r'implementation_state:\s*"?[A-Za-z0-9_-]+"?', 'implementation_state: "VERIFIED"', text)
-    text = re.sub(r'external_evidence_status:\s*"?[A-Za-z0-9_-]+"?', 'external_evidence_status: "LOCAL_EXECUTED"', text)
+    text = re.sub(
+        r'implementation_state:\s*"?[A-Za-z0-9_-]+"?',
+        'implementation_state: "VERIFIED"',
+        text,
+    )
+    text = re.sub(
+        r'external_evidence_status:\s*"?[A-Za-z0-9_-]+"?',
+        'external_evidence_status: "LOCAL_EXECUTED"',
+        text,
+    )
 
     # Ensure implementation_state is in top-level frontmatter if not present
     parts = text.split("---", 2)
     if len(parts) >= 3:
         fm = parts[1]
         if "implementation_state:" not in fm:
-            fm = f'\nimplementation_state: "VERIFIED"\nexternal_evidence_status: "LOCAL_EXECUTED"\n' + fm
+            fm = (
+                '\nimplementation_state: "VERIFIED"\nexternal_evidence_status: "LOCAL_EXECUTED"\n'
+                + fm
+            )
             text = f"---{fm}---{parts[2]}"
 
     # Update body status line if present
@@ -76,7 +87,11 @@ for spec in SKILL_SPECS:
         },
     }
     contract_file = runtime_skill_dir / "compiled-contract.json"
-    contract_file.write_text(json.dumps(contract, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    contract_file.write_text(
+        json.dumps(contract, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     promoted += 1
 
-print(f"Successfully promoted {promoted} ChinaDB skills to VERIFIED with compiled contracts!")
+print(
+    f"Successfully promoted {promoted} ChinaDB skills to VERIFIED with compiled contracts!"
+)

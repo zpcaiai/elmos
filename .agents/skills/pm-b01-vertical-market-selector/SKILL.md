@@ -1,5 +1,8 @@
 ---
 name: pm-b01-vertical-market-selector
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从语言方向、行业、客户类型和交付痛点中选择最有商业闭环的垂直市场. Precision Migration B01 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

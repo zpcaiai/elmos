@@ -1,5 +1,8 @@
 ---
 name: pm-b38-domain-model-compiler
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "把实体、值对象、关系、不变量和事件编译为语言无关领域模型. Precision Migration B38 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B87 Vb Forms UI Event Modeler"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b87-vb-forms-ui-event-modeler to execute this ELMOS Language Pack Skill with fail-closed evidence."

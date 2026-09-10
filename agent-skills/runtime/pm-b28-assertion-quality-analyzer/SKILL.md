@@ -1,5 +1,8 @@
 ---
 name: pm-b28-assertion-quality-analyzer
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "检测无断言、弱断言、仅状态码、过度快照和未验证副作用等问题. Precision Migration B28 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

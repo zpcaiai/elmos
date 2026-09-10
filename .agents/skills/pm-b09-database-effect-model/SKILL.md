@@ -1,5 +1,8 @@
 ---
 name: pm-b09-database-effect-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达表读写、事务、锁、隔离级别、触发器和过程代码数据库 Effect. Precision Migration B09 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

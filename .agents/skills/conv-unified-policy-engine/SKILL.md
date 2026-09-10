@@ -1,5 +1,8 @@
 ---
 name: conv-unified-policy-engine
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 统一代码出域、模型、工具、Runner、Extension、审批、预算、驻留和Retention决策。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

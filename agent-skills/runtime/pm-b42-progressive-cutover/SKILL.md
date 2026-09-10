@@ -1,5 +1,8 @@
 ---
 name: pm-b42-progressive-cutover
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "按模块、流量、租户或能力逐步切换并验证每级门槛. Precision Migration B42 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

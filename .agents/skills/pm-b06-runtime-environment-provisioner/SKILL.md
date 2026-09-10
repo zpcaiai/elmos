@@ -1,5 +1,8 @@
 ---
 name: pm-b06-runtime-environment-provisioner
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "按任务创建 Linux、Windows、macOS、浏览器、移动端或证明环境. Precision Migration B06 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

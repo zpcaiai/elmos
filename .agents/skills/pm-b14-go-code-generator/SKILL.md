@@ -1,5 +1,8 @@
 ---
 name: pm-b14-go-code-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从目标语义 IR 生成可构建、符合 Go 惯例且可追踪到源位置的代码. Precision Migration B14 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -90,26 +90,31 @@ class FrontendFormalCampaignTests(unittest.TestCase):
             env=node_env,
         )
         cls.toolchain_evidence = cls.root / "toolchain-evidence.json"
-        subprocess.run(
-            [
-                sys.executable,
-                str(ROOT / "tooling" / "run_frontend_formal_toolchains.py"),
-                str(cls.engine_output / "frontend-formal-route-campaign.json"),
-                "--output",
-                str(cls.toolchain_evidence),
-                "--profile",
-                "harmony-arkui",
-                "--harmony-tool",
-                "/nonexistent/hvigorw",
-                "--no-network",
-                "--timeout-seconds",
-                "2",
-            ],
-            cwd=ROOT,
-            check=True,
-            capture_output=True,
-            text=True,
-        )
+        try:
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "tooling" / "run_frontend_formal_toolchains.py"),
+                    str(cls.engine_output / "frontend-formal-route-campaign.json"),
+                    "--output",
+                    str(cls.toolchain_evidence),
+                    "--profile",
+                    "harmony-arkui",
+                    "--harmony-tool",
+                    "/nonexistent/hvigorw",
+                    "--no-network",
+                    "--timeout-seconds",
+                    "2",
+                ],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        except subprocess.CalledProcessError as err:
+            raise RuntimeError(
+                f"run_frontend_formal_toolchains failed:\nSTDOUT:\n{err.stdout}\nSTDERR:\n{err.stderr}"
+            ) from err
         staging = cls.root / "staging"
         client, verification = generator.build_packs(
             ROOT,

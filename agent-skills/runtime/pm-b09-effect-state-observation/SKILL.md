@@ -1,5 +1,8 @@
 ---
 name: pm-b09-effect-state-observation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在普通类型之外显式表达副作用、事务、资源、状态机、协议和可观察行为，以支持真正的行为等价验证. Precision Migration B09 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b42-dual-write-validation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "验证源目标双写一致性、冲突、顺序、补偿和回收策略. Precision Migration B42 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

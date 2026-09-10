@@ -1,5 +1,8 @@
 ---
 name: pm-b28-source-test-inventory
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "盘点单元、集成、契约、E2E、性能、安全、数据和设备测试. Precision Migration B28 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

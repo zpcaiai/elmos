@@ -1,5 +1,8 @@
 ---
 name: pm-b24-mysql-innodb-transaction-behavior
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 InnoDB MVCC、锁、间隙锁、隔离和死锁重试. Precision Migration B24 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

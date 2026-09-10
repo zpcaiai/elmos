@@ -1,5 +1,8 @@
 ---
 name: pm-b02-technical-debt-inventory
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成版本、框架、依赖、安全、架构、测试和运维技术债清单，并按风险和收益排序. Precision Migration B02 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

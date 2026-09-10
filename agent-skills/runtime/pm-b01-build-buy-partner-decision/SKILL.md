@@ -1,5 +1,8 @@
 ---
 name: pm-b01-build-buy-partner-decision
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "依据战略重要性、成熟度、成本、数据壁垒和交付责任，决定自研、采购、集成或合作. Precision Migration B01 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

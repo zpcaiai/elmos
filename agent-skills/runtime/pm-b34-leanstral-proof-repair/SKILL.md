@@ -1,5 +1,8 @@
 ---
 name: pm-b34-leanstral-proof-repair
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "根据 Lean 编译与语言服务器反馈定位并修复证明失败. Precision Migration B34 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

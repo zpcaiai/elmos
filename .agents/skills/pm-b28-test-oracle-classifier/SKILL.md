@@ -1,5 +1,8 @@
 ---
 name: pm-b28-test-oracle-classifier
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "标注 Oracle 来源为源运行、源测试、规格、业务规则、Trace、形式规格或 AI 推断. Precision Migration B28 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

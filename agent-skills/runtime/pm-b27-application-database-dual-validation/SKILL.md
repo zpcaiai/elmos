@@ -1,5 +1,8 @@
 ---
 name: pm-b27-application-database-dual-validation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在相同输入和初始数据下比较应用+数据库的输出、状态和副作用. Precision Migration B27 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

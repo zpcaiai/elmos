@@ -1,5 +1,8 @@
 ---
 name: pm-b27-query-plan-regression-analysis
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "比较目标查询计划、估算、实际行数、IO、锁和资源退化. Precision Migration B27 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

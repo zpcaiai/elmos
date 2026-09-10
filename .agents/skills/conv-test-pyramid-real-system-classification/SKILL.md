@@ -1,5 +1,8 @@
 ---
 name: conv-test-pyramid-real-system-classification
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 统一Schema、Component、Integration、E2E、Production-like、Customer Acceptance和Continuous Certification层次。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

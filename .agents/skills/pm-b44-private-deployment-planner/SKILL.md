@@ -1,5 +1,8 @@
 ---
 name: pm-b44-private-deployment-planner
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "根据网络、数据、模型、工具链、规模和合规规划私有部署拓扑. Precision Migration B44 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

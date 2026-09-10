@@ -1,5 +1,8 @@
 ---
 name: pm-b23-sqlserver-cdc-and-change-tracking
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 CDC、Change Tracking、位点、保留和消费接口. Precision Migration B23 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

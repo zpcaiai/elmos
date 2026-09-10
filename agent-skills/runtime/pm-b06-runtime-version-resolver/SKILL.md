@@ -1,5 +1,8 @@
 ---
 name: pm-b06-runtime-version-resolver
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "选择与项目和目标部署一致的 Runtime、解释器、虚拟机和系统库版本. Precision Migration B06 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b23-sqlserver-agent
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 SQL Agent Job、Step、Schedule、Operator、Proxy 和历史. Precision Migration B23 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

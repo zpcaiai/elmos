@@ -1,5 +1,8 @@
 ---
 name: pm-b19-database-schema-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达 Schema、表、列、类型、默认值、约束、注释和依赖. Precision Migration B19 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b31-regenerate-module-decision
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "判断模块质量或语义偏差过大时是否保留外围并重新生成核心模块. Precision Migration B31 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

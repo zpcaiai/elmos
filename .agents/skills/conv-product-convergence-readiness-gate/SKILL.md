@@ -1,5 +1,8 @@
 ---
 name: conv-product-convergence-readiness-gate
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 只有统一内核、Reference Route、Runner、两家客户和可盈利交付证据齐全时才宣称成熟产品就绪。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

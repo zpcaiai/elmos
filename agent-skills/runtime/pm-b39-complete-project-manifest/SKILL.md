@@ -1,5 +1,8 @@
 ---
 name: pm-b39-complete-project-manifest
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "定义应用、业务、数据、安全、运维、测试、部署和文档的必需构件清单. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

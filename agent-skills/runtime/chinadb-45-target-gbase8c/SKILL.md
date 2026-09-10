@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/45-target-gbase8c/SKILL.md"
   source_sha256: "sha256:e271c1fb78a0ee21d1dcf55516ddbcdb80b61449a7914abb44f8774e0ebe3f92"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # GBase 8c Target Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `45-target-gbase8c`
 - **Version:** `1.0.0`
 - **Category:** target-adapter
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 - **Depends on:** `02-semantic-db-ir`, `03-rule-mutation-dsl`, `05-ddl-auto-conversion`, `06-sql-auto-conversion`, `07-plsql-tsql-conversion`
 
 ## Objective

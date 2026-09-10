@@ -1,5 +1,8 @@
 ---
 name: pm-b12-lossless-semantic-transformation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在能够确定性重写时尽可能保留源结构、注释、格式、位置和未修改代码，支持最小补丁与安全回滚. Precision Migration B12 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

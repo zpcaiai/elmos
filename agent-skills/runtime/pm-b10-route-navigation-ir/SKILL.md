@@ -1,5 +1,8 @@
 ---
 name: pm-b10-route-navigation-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达路由、参数、守卫、返回栈、深链接、Tab、恢复和导航结果. Precision Migration B10 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

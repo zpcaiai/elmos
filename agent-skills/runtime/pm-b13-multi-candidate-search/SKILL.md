@@ -1,5 +1,8 @@
 ---
 name: pm-b13-multi-candidate-search
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "并行生成架构、库映射和实现候选，并保留差异与来源. Precision Migration B13 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

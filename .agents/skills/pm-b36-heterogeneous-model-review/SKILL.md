@@ -1,5 +1,8 @@
 ---
 name: pm-b36-heterogeneous-model-review
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "由不同供应商模型独立生成测试、攻击假设和审查高风险实现. Precision Migration B36 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

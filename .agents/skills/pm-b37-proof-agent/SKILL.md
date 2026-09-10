@@ -1,5 +1,8 @@
 ---
 name: pm-b37-proof-agent
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成证明义务、调用 Leanstral/SMT、解释反例并回写测试. Precision Migration B37 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

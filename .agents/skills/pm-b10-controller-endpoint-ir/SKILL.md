@@ -1,5 +1,8 @@
 ---
 name: pm-b10-controller-endpoint-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "统一路由、参数、校验、鉴权、响应、错误、流式接口和协议契约. Precision Migration B10 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

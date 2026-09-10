@@ -1,5 +1,8 @@
 ---
 name: pm-b08-datetime-timezone-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "建模 Instant、Local time、Offset、时区、精度、闰秒和夏令时. Precision Migration B08 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

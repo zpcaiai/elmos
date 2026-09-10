@@ -1,5 +1,8 @@
 ---
 name: pm-b08-canonical-primitive-types
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "定义位宽、符号、编码、布尔、字节、字符串和基础值类型的统一语义. Precision Migration B08 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

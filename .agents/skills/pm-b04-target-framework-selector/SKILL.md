@@ -1,5 +1,8 @@
 ---
 name: pm-b04-target-framework-selector
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "基于业务形态、非功能需求、团队能力和生态成熟度选择目标框架. Precision Migration B04 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

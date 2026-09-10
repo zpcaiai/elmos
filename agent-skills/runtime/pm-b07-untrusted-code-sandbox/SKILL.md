@@ -1,5 +1,8 @@
 ---
 name: pm-b07-untrusted-code-sandbox
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在强隔离、非 root、受限系统调用和可销毁环境中执行不可信代码. Precision Migration B07 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

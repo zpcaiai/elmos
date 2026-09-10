@@ -1,5 +1,8 @@
 ---
 name: pm-b17-event-effect-trace-recovery
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "恢复用户事件、网络、存储、导航、定时器和平台调用的 Effect Trace. Precision Migration B17 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

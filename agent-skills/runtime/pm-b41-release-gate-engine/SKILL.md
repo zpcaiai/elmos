@@ -1,5 +1,8 @@
 ---
 name: pm-b41-release-gate-engine
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "以硬门槛而非平均分决定是否允许发布、灰度或要求人工. Precision Migration B41 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

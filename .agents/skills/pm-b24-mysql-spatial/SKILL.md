@@ -1,5 +1,8 @@
 ---
 name: pm-b24-mysql-spatial
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移空间类型、SRID、函数、索引和坐标语义. Precision Migration B24 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

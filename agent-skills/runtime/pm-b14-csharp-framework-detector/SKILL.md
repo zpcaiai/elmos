@@ -1,5 +1,8 @@
 ---
 name: pm-b14-csharp-framework-detector
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "识别 C# 仓库中的主流框架、版本、约定、插件和隐式运行时行为. Precision Migration B14 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

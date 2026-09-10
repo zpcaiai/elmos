@@ -1,5 +1,8 @@
 ---
 name: pm-b41-evidence-release-gates
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "把转换来源、证明、测试、差分、性能、风险和语义损失汇聚为可签名的证据包和硬性发布门禁. Precision Migration B41 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

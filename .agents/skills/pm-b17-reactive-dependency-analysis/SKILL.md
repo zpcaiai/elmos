@@ -1,5 +1,8 @@
 ---
 name: pm-b17-reactive-dependency-analysis
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "分析响应式读写、Computed、Watcher、Hook 依赖、派生状态和闭包捕获. Precision Migration B17 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

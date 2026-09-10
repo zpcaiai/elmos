@@ -1,5 +1,8 @@
 ---
 name: pm-b05-repository-inventory-scanner
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "盘点源码、模块、资源、配置、脚本、生成代码、数据库对象、测试和部署资产. Precision Migration B05 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

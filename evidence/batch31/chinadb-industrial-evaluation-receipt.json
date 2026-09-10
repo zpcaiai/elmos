@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0",
   "businessLine": "3. 数据库与 SQL 方言迁移 (含 ChinaDB)",
-  "evaluatedAt": "2026-09-10T09:44:44.671734+00:00",
-  "durationSeconds": 0.559,
+  "evaluatedAt": "2026-09-10T22:53:26.892883+00:00",
+  "durationSeconds": 0.158,
   "closureStatus": "100%_INDUSTRIAL_CLOSED",
   "overallVerdict": "PASSED",
   "metrics": {
@@ -111,68 +111,24 @@
         "stress": {
           "totalTransactions": 160,
           "concurrency": 8,
-          "durationSeconds": 0.118,
-          "tps": 1357.8,
+          "durationSeconds": 0.013,
+          "tps": 12518.7,
           "latenciesMs": {
             "p50": 0.05,
-            "p90": 0.13,
-            "p95": 0.22,
-            "p99": 0.93
+            "p90": 0.06,
+            "p95": 0.08,
+            "p99": 0.15
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.0
+          "finalTotalBalance": 99999.99999999999
         }
       },
       {
         "targetId": "kingbasees",
         "protocol": "POSTGRES",
         "port": 54321,
-        "mode": "PROTOCOL_LAB",
-        "isReady": true,
-        "latencyMs": 0.03,
-        "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
-          "tablesFound": [
-            "accounts",
-            "tx_history"
-          ],
-          "accountPrimaryKeyVerified": true
-        },
-        "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
-          "mismatchedCount": 0,
-          "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
-        },
-        "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.037,
-          "tps": 4360.9,
-          "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.09,
-            "p95": 0.14,
-            "p99": 0.55
-          },
-          "sloPassed": true,
-          "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.00000000003
-        }
-      },
-      {
-        "targetId": "opengauss",
-        "protocol": "POSTGRES",
-        "port": 5432,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
         "latencyMs": 0.02,
@@ -199,13 +155,13 @@
         "stress": {
           "totalTransactions": 160,
           "concurrency": 8,
-          "durationSeconds": 0.016,
-          "tps": 10173.3,
+          "durationSeconds": 0.01,
+          "tps": 16210.1,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.1,
-            "p95": 0.2,
-            "p99": 0.52
+            "p50": 0.04,
+            "p90": 0.06,
+            "p95": 0.09,
+            "p99": 0.16
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
@@ -214,9 +170,9 @@
         }
       },
       {
-        "targetId": "tidb",
-        "protocol": "MYSQL",
-        "port": 4000,
+        "targetId": "opengauss",
+        "protocol": "POSTGRES",
+        "port": 5432,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
         "latencyMs": 0.01,
@@ -243,13 +199,57 @@
         "stress": {
           "totalTransactions": 160,
           "concurrency": 8,
-          "durationSeconds": 0.018,
-          "tps": 9067.9,
+          "durationSeconds": 0.012,
+          "tps": 12867.8,
           "latenciesMs": {
-            "p50": 0.03,
-            "p90": 0.13,
-            "p95": 0.25,
-            "p99": 0.4
+            "p50": 0.05,
+            "p90": 0.06,
+            "p95": 0.08,
+            "p99": 0.14
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.0
+        }
+      },
+      {
+        "targetId": "tidb",
+        "protocol": "MYSQL",
+        "port": 4000,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.02,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.01,
+          "tps": 16305.1,
+          "latenciesMs": {
+            "p50": 0.05,
+            "p90": 0.05,
+            "p95": 0.08,
+            "p99": 0.13
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
@@ -263,7 +263,7 @@
         "port": 9088,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.01,
+        "latencyMs": 0.02,
         "ddl": {
           "statementsExecuted": 3,
           "statementsSucceeded": 3,
@@ -287,13 +287,57 @@
         "stress": {
           "totalTransactions": 160,
           "concurrency": 8,
-          "durationSeconds": 0.029,
-          "tps": 5456.5,
+          "durationSeconds": 0.01,
+          "tps": 16474.6,
           "latenciesMs": {
             "p50": 0.04,
-            "p90": 0.07,
-            "p95": 0.1,
-            "p99": 0.18
+            "p90": 0.06,
+            "p95": 0.09,
+            "p99": 0.14
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 99999.99999999999
+        }
+      },
+      {
+        "targetId": "gbase-8c",
+        "protocol": "POSTGRES",
+        "port": 54322,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.03,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.008,
+          "tps": 21294.1,
+          "latenciesMs": {
+            "p50": 0.04,
+            "p90": 0.05,
+            "p95": 0.05,
+            "p99": 0.08
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
@@ -302,9 +346,9 @@
         }
       },
       {
-        "targetId": "gbase-8c",
-        "protocol": "POSTGRES",
-        "port": 54322,
+        "targetId": "gbase-8a",
+        "protocol": "MYSQL",
+        "port": 5258,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
         "latencyMs": 0.02,
@@ -331,13 +375,13 @@
         "stress": {
           "totalTransactions": 160,
           "concurrency": 8,
-          "durationSeconds": 0.014,
-          "tps": 11210.9,
+          "durationSeconds": 0.012,
+          "tps": 12969.8,
           "latenciesMs": {
             "p50": 0.05,
-            "p90": 0.1,
-            "p95": 0.15,
-            "p99": 0.37
+            "p90": 0.05,
+            "p95": 0.07,
+            "p99": 0.12
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
@@ -346,9 +390,9 @@
         }
       },
       {
-        "targetId": "gbase-8a",
-        "protocol": "MYSQL",
-        "port": 5258,
+        "targetId": "highgo-hgdb",
+        "protocol": "POSTGRES",
+        "port": 5866,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
         "latencyMs": 0.01,
@@ -375,13 +419,13 @@
         "stress": {
           "totalTransactions": 160,
           "concurrency": 8,
-          "durationSeconds": 0.095,
-          "tps": 1678.7,
+          "durationSeconds": 0.012,
+          "tps": 13114.4,
           "latenciesMs": {
             "p50": 0.04,
-            "p90": 0.21,
-            "p95": 0.57,
-            "p99": 4.33
+            "p90": 0.08,
+            "p95": 0.09,
+            "p99": 0.24
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
@@ -390,56 +434,12 @@
         }
       },
       {
-        "targetId": "highgo-hgdb",
-        "protocol": "POSTGRES",
-        "port": 5866,
-        "mode": "PROTOCOL_LAB",
-        "isReady": true,
-        "latencyMs": 0.03,
-        "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
-          "tablesFound": [
-            "accounts",
-            "tx_history"
-          ],
-          "accountPrimaryKeyVerified": true
-        },
-        "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
-          "mismatchedCount": 0,
-          "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
-        },
-        "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.024,
-          "tps": 6669.2,
-          "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.22,
-            "p95": 0.32,
-            "p99": 1.29
-          },
-          "sloPassed": true,
-          "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.00000000001
-        }
-      },
-      {
         "targetId": "oceanbase-oracle",
         "protocol": "POSTGRES",
         "port": 2883,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.03,
+        "latencyMs": 0.01,
         "ddl": {
           "statementsExecuted": 3,
           "statementsSucceeded": 3,
@@ -463,13 +463,13 @@
         "stress": {
           "totalTransactions": 160,
           "concurrency": 8,
-          "durationSeconds": 0.026,
-          "tps": 6101.4,
+          "durationSeconds": 0.009,
+          "tps": 18669.1,
           "latenciesMs": {
-            "p50": 0.03,
-            "p90": 0.18,
-            "p95": 0.28,
-            "p99": 0.49
+            "p50": 0.04,
+            "p90": 0.05,
+            "p95": 0.05,
+            "p99": 0.1
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
@@ -507,13 +507,13 @@
         "stress": {
           "totalTransactions": 160,
           "concurrency": 8,
-          "durationSeconds": 0.026,
-          "tps": 6242.1,
+          "durationSeconds": 0.011,
+          "tps": 14231.4,
           "latenciesMs": {
             "p50": 0.05,
-            "p90": 0.16,
-            "p95": 0.3,
-            "p99": 0.84
+            "p90": 0.07,
+            "p95": 0.09,
+            "p99": 0.14
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
@@ -525,50 +525,6 @@
         "targetId": "gaussdb-oracle",
         "protocol": "POSTGRES",
         "port": 8000,
-        "mode": "PROTOCOL_LAB",
-        "isReady": true,
-        "latencyMs": 0.32,
-        "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
-          "tablesFound": [
-            "accounts",
-            "tx_history"
-          ],
-          "accountPrimaryKeyVerified": true
-        },
-        "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
-          "mismatchedCount": 0,
-          "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
-        },
-        "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.041,
-          "tps": 3886.1,
-          "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.18,
-            "p95": 0.38,
-            "p99": 1.73
-          },
-          "sloPassed": true,
-          "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.0
-        }
-      },
-      {
-        "targetId": "gaussdb-m",
-        "protocol": "MYSQL",
-        "port": 3307,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
         "latencyMs": 0.02,
@@ -595,13 +551,13 @@
         "stress": {
           "totalTransactions": 160,
           "concurrency": 8,
-          "durationSeconds": 0.033,
-          "tps": 4892.7,
+          "durationSeconds": 0.013,
+          "tps": 12075.1,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.12,
-            "p95": 0.38,
-            "p99": 1.28
+            "p50": 0.04,
+            "p90": 0.07,
+            "p95": 0.09,
+            "p99": 0.19
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
@@ -610,9 +566,9 @@
         }
       },
       {
-        "targetId": "goldendb",
+        "targetId": "gaussdb-m",
         "protocol": "MYSQL",
-        "port": 2953,
+        "port": 3307,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
         "latencyMs": 0.01,
@@ -639,13 +595,57 @@
         "stress": {
           "totalTransactions": 160,
           "concurrency": 8,
-          "durationSeconds": 0.024,
-          "tps": 6746.2,
+          "durationSeconds": 0.014,
+          "tps": 11595.7,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.21,
-            "p95": 0.44,
-            "p99": 1.22
+            "p50": 0.04,
+            "p90": 0.05,
+            "p95": 0.09,
+            "p99": 0.24
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.0
+        }
+      },
+      {
+        "targetId": "goldendb",
+        "protocol": "MYSQL",
+        "port": 2953,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.03,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.01,
+          "tps": 16765.6,
+          "latenciesMs": {
+            "p50": 0.04,
+            "p90": 0.06,
+            "p95": 0.07,
+            "p99": 0.17
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,

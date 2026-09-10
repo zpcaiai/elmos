@@ -1,5 +1,8 @@
 ---
 name: pm-b03-conversion-feasibility-estimator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "判断整体转换、局部迁移、兼容层、重新设计或保持源实现的可行性. Precision Migration B03 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

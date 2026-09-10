@@ -17,7 +17,7 @@ Mandatory Criteria:
 8. Cryptographic Attestation: Merkle hash chain and tamper-evident L5 certification dossier.
 """
 
-# ruff: noqa: E402
+# ruff: noqa: BLE001
 
 from __future__ import annotations
 
@@ -31,13 +31,15 @@ import time
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 # Resolve paths
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 DIALECT_SRC = REPO_ROOT / "engines" / "sql-dialect-engine" / "src"
-TRANSPILER_SRC = REPO_ROOT / "engines" / "database-data-engine" / "sql-transpiler" / "src"
+TRANSPILER_SRC = (
+    REPO_ROOT / "engines" / "database-data-engine" / "sql-transpiler" / "src"
+)
 
 for p in (DIALECT_SRC, TRANSPILER_SRC):
     if str(p) not in sys.path:
@@ -123,14 +125,20 @@ class GateCertificationDossier:
 class BusinessLine3L5GateRunner:
     """Executes the 8-phase rigorous L5 Autonomous Certification Gate."""
 
-    BUSINESS_LINE_DIRS = [
+    BUSINESS_LINE_DIRS: ClassVar[list[str]] = [
         "engines/sql-dialect-engine",
         "engines/database-data-engine/sql-transpiler",
         "scripts/batch31",
         "tests/batch31",
     ]
 
-    EXCLUDE_DIRS = {".venv", "venv", "__pycache__", ".pytest_cache", ".git"}
+    EXCLUDE_DIRS: ClassVar[set[str]] = {
+        ".venv",
+        "venv",
+        "__pycache__",
+        ".pytest_cache",
+        ".git",
+    }
 
     def __init__(
         self,
@@ -188,7 +196,7 @@ class BusinessLine3L5GateRunner:
             for root, dirs, files in os.walk(abs_dir):
                 dirs[:] = [d for d in dirs if d not in self.EXCLUDE_DIRS]
                 for file_name in sorted(files):
-                    if not (file_name.endswith(".py") or file_name.endswith(".sql")):
+                    if not file_name.endswith((".py", ".sql")):
                         continue
 
                     file_path = Path(root) / file_name
@@ -225,7 +233,10 @@ class BusinessLine3L5GateRunner:
         self.log(f"  Files scanned: {files_scanned} files", "INFO")
         self.log(f"  Python LOC:    {py_lines:,} lines", "INFO")
         self.log(f"  SQL LOC:       {sql_lines:,} lines", "INFO")
-        self.log(f"  Total LOC:     {total_lines:,} lines (Threshold: {self.min_loc:,})", "INFO")
+        self.log(
+            f"  Total LOC:     {total_lines:,} lines (Threshold: {self.min_loc:,})",
+            "INFO",
+        )
         self.log(f"  Merkle Root:   {merkle_root}", "INFO")
 
         passed = True
@@ -238,7 +249,10 @@ class BusinessLine3L5GateRunner:
             errors.append(err_msg)
             passed = False
         else:
-            self.log(f"  Scale verification PASSED ({total_lines:,} >= {self.min_loc:,})", "PASS")
+            self.log(
+                f"  Scale verification PASSED ({total_lines:,} >= {self.min_loc:,})",
+                "PASS",
+            )
 
         duration_ms = (time.perf_counter() - t0) * 1000
         return PhaseResult(
@@ -366,7 +380,9 @@ class BusinessLine3L5GateRunner:
 
         # Invariant checks
         if not dossier.overall_success:
-            errors.append("Engine execute_full_migration reported overall_success == False")
+            errors.append(
+                "Engine execute_full_migration reported overall_success == False"
+            )
 
         if dossier.human_review_backlog_count != 0:
             errors.append(
@@ -379,9 +395,7 @@ class BusinessLine3L5GateRunner:
             )
 
         if dossier.cdc_divergence_count != 0:
-            errors.append(
-                f"CDC divergence detected: {dossier.cdc_divergence_count}"
-            )
+            errors.append(f"CDC divergence detected: {dossier.cdc_divergence_count}")
 
         passed = len(errors) == 0
         if passed:
@@ -486,7 +500,10 @@ class BusinessLine3L5GateRunner:
 
             target_results[target] = target_diag
             if self.verbose:
-                self.log(f"  Target [{target:18s}]: Lowering OK, DDL Introspection OK", "INFO")
+                self.log(
+                    f"  Target [{target:18s}]: Lowering OK, DDL Introspection OK",
+                    "INFO",
+                )
 
         passed = len(errors) == 0
         if passed:
@@ -514,7 +531,9 @@ class BusinessLine3L5GateRunner:
     def run_phase_4_enterprise_corpora_invariants(self) -> PhaseResult:
         """Validates real business logic and financial mass-balance conservation."""
         t0 = time.perf_counter()
-        self.log("Phase 4: Verifying Enterprise Business Corpora & Invariants...", "HEAD")
+        self.log(
+            "Phase 4: Verifying Enterprise Business Corpora & Invariants...", "HEAD"
+        )
 
         errors: list[str] = []
         domain_metrics: dict[str, Any] = {}
@@ -522,10 +541,23 @@ class BusinessLine3L5GateRunner:
         # 1. Banking Settlement
         try:
             entries = [
-                LedgerEntry("L1", "ACC_001", "J1", "DEBIT", 250000.0, 750000.0, "CNY", "Debit"),
-                LedgerEntry("L2", "ACC_002", "J1", "CREDIT", 250000.0, 1250000.0, "CNY", "Credit"),
+                LedgerEntry(
+                    "L1", "ACC_001", "J1", "DEBIT", 250000.0, 750000.0, "CNY", "Debit"
+                ),
+                LedgerEntry(
+                    "L2",
+                    "ACC_002",
+                    "J1",
+                    "CREDIT",
+                    250000.0,
+                    1250000.0,
+                    "CNY",
+                    "Credit",
+                ),
             ]
-            balanced, diff, errs = BankingSettlementCorpus.verify_double_entry_conservation(entries)
+            balanced, diff, _errs = (
+                BankingSettlementCorpus.verify_double_entry_conservation(entries)
+            )
             if not balanced or diff != 0.0:
                 errors.append(f"Banking double-entry balance check failed: diff={diff}")
 
@@ -549,9 +581,13 @@ class BusinessLine3L5GateRunner:
                 BeneficiaryRecord("B1", "POL_01", "Ben 1", "SPOUSE", 60.0),
                 BeneficiaryRecord("B2", "POL_01", "Ben 2", "CHILD", 40.0),
             ]
-            b_ok, total_pct, _ = InsuranceClaimsCorpus.verify_beneficiary_allocation_total(bens)
+            b_ok, total_pct, _ = (
+                InsuranceClaimsCorpus.verify_beneficiary_allocation_total(bens)
+            )
             if not b_ok or abs(total_pct - 100.0) > 0.001:
-                errors.append(f"Insurance beneficiary allocation != 100%: total={total_pct}")
+                errors.append(
+                    f"Insurance beneficiary allocation != 100%: total={total_pct}"
+                )
 
             triangle = [
                 LossTriangleRecord(2024, 1, "CASUALTY", 500000.0, 600000.0),
@@ -568,7 +604,9 @@ class BusinessLine3L5GateRunner:
                 "beneficiary_allocated_pct": total_pct,
                 "ibnr_reserve": ibnr,
             }
-            self.log("  Insurance: 100% beneficiary allocation, IFRS 17 IBNR OK", "INFO")
+            self.log(
+                "  Insurance: 100% beneficiary allocation, IFRS 17 IBNR OK", "INFO"
+            )
         except Exception as ex:
             errors.append(f"Insurance corpus verification failed: {ex}")
 
@@ -577,7 +615,7 @@ class BusinessLine3L5GateRunner:
             sub = TelecomRatingCorpus.get_seed_subscribers(count=1)[0]
             plan = TelecomRatingCorpus.get_seed_rate_plans()[0]
             wallet = QuotaWalletRecord("W1", sub.subscriber_id, "MINUTES", 500, 0, 500)
-            charge, deducted, status = TelecomRatingCorpus.rate_voice_cdr_in_memory(
+            charge, _deducted, status = TelecomRatingCorpus.rate_voice_cdr_in_memory(
                 sub, plan, wallet, duration_seconds=120
             )
             if not status.startswith("RATED") or charge <= 0:
@@ -596,16 +634,22 @@ class BusinessLine3L5GateRunner:
         try:
             skus = SupplyChainLogisticsCorpus.get_seed_skus(count=1)
             rate = SupplyChainLogisticsCorpus.get_seed_freight_rates()[0]
-            cost = SupplyChainLogisticsCorpus.calculate_freight_cost(rate, weight_kg=12.0)
+            cost = SupplyChainLogisticsCorpus.calculate_freight_cost(
+                rate, weight_kg=12.0
+            )
             expected_freight = rate.base_fee + 12.0 * rate.per_kg_rate
             if abs(cost - expected_freight) > 0.01:
-                errors.append(f"Freight cost mismatch: expected {expected_freight}, got {cost}")
+                errors.append(
+                    f"Freight cost mismatch: expected {expected_freight}, got {cost}"
+                )
 
             domain_metrics["supply_chain"] = {
                 "sku_verified": skus[0].sku_id,
                 "calculated_freight": cost,
             }
-            self.log("  Supply Chain: ATP inventory and freight tier calculation OK", "INFO")
+            self.log(
+                "  Supply Chain: ATP inventory and freight tier calculation OK", "INFO"
+            )
         except Exception as ex:
             errors.append(f"Supply chain corpus verification failed: {ex}")
 
@@ -615,7 +659,9 @@ class BusinessLine3L5GateRunner:
             payroll = ErpPayrollCorpus.calculate_employee_payroll_in_memory(
                 emp, attendance=None, period_month="202603"
             )
-            mb_ok, mb_diff, mb_msg = ErpPayrollCorpus.verify_payroll_mass_balance(payroll)
+            mb_ok, _mb_diff, mb_msg = ErpPayrollCorpus.verify_payroll_mass_balance(
+                payroll
+            )
             if not mb_ok:
                 errors.append(f"Payroll mass balance violation: {mb_msg}")
 
@@ -626,7 +672,9 @@ class BusinessLine3L5GateRunner:
                 "net_salary": payroll.net_salary,
                 "mass_balance_msg": mb_msg,
             }
-            self.log("  ERP Payroll: 7-bracket progressive tax & mass-balance OK", "INFO")
+            self.log(
+                "  ERP Payroll: 7-bracket progressive tax & mass-balance OK", "INFO"
+            )
         except Exception as ex:
             errors.append(f"ERP payroll corpus verification failed: {ex}")
 
@@ -653,7 +701,9 @@ class BusinessLine3L5GateRunner:
     def run_phase_5_ast_self_healing_closed_loop(self) -> PhaseResult:
         """Validates autonomous repair of dialect errors without human review."""
         t0 = time.perf_counter()
-        self.log("Phase 5: Validating L5 AST Self-Healing Closed-Loop Engine...", "HEAD")
+        self.log(
+            "Phase 5: Validating L5 AST Self-Healing Closed-Loop Engine...", "HEAD"
+        )
 
         healing_engine = AutonomousDatabaseSelfHealingEngine()
 
@@ -693,13 +743,19 @@ class BusinessLine3L5GateRunner:
         healed_count = 0
         for failing_sql, raw_err, target_engine in test_cases:
             try:
-                ok, repaired_sql, receipt = healing_engine.autonomous_repair_and_verify(
-                    failing_sql=failing_sql,
-                    raw_error=raw_err,
-                    target_engine=target_engine,
-                    sandbox_verifier=sandbox,
+                ok, _repaired_sql, receipt = (
+                    healing_engine.autonomous_repair_and_verify(
+                        failing_sql=failing_sql,
+                        raw_error=raw_err,
+                        target_engine=target_engine,
+                        sandbox_verifier=sandbox,
+                    )
                 )
-                if not ok or not receipt.verification_passed or not receipt.zero_human_intervention:
+                if (
+                    not ok
+                    or not receipt.verification_passed
+                    or not receipt.zero_human_intervention
+                ):
                     errors.append(
                         f"Self-healing failed for target {target_engine}: {raw_err}"
                     )
@@ -744,7 +800,9 @@ class BusinessLine3L5GateRunner:
     def run_phase_6_cdc_replication_reconciliation(self) -> PhaseResult:
         """Validates transactional CDC event replication and hash cascade reconciliation."""
         t0 = time.perf_counter()
-        self.log("Phase 6: Verifying Real-Time CDC Replication & Reconciliation...", "HEAD")
+        self.log(
+            "Phase 6: Verifying Real-Time CDC Replication & Reconciliation...", "HEAD"
+        )
 
         orchestrator = ChinaDbContainerOrchestrator()
         ddl_executor = ChinaDbDdlExecutor(orchestrator)
@@ -787,7 +845,9 @@ class BusinessLine3L5GateRunner:
 
             applied_count = cdc.apply_batch("dm8", events)
             if applied_count != len(events):
-                errors.append(f"CDC batch apply mismatch: expected {len(events)}, applied {applied_count}")
+                errors.append(
+                    f"CDC batch apply mismatch: expected {len(events)}, applied {applied_count}"
+                )
 
             receipt = cdc.reconcile_table_data(
                 source_records=source_records,
@@ -812,7 +872,10 @@ class BusinessLine3L5GateRunner:
 
         passed = len(errors) == 0
         if passed:
-            self.log("  CDC bi-directional replication & hash reconciliation 100% matched", "PASS")
+            self.log(
+                "  CDC bi-directional replication & hash reconciliation 100% matched",
+                "PASS",
+            )
         else:
             for err in errors:
                 self.log(f"  {err}", "FAIL")
@@ -825,7 +888,9 @@ class BusinessLine3L5GateRunner:
             duration_ms=duration_ms,
             details={
                 "events_replicated": 25,
-                "is_consistent": receipt.is_consistent if "receipt" in locals() else False,
+                "is_consistent": receipt.is_consistent
+                if "receipt" in locals()
+                else False,
             },
             errors=errors,
         )
@@ -836,7 +901,10 @@ class BusinessLine3L5GateRunner:
     def run_phase_7_concurrency_stress_slo(self) -> PhaseResult:
         """Validates multi-threaded OLTP workload and <= 75.0 ms P95 latency SLO."""
         t0 = time.perf_counter()
-        self.log("Phase 7: Running High-Concurrency Stress & Latency SLO Benchmark...", "HEAD")
+        self.log(
+            "Phase 7: Running High-Concurrency Stress & Latency SLO Benchmark...",
+            "HEAD",
+        )
 
         errors: list[str] = []
         stress = ChinaDbStressEngine()
@@ -885,7 +953,10 @@ class BusinessLine3L5GateRunner:
 
         passed = len(errors) == 0
         if passed:
-            self.log(f"  SLO verified: P95 = {p95:.2f}ms <= 75.0ms, Error Rate = 0.00%", "PASS")
+            self.log(
+                f"  SLO verified: P95 = {p95:.2f}ms <= 75.0ms, Error Rate = 0.00%",
+                "PASS",
+            )
 
         duration_ms = (time.perf_counter() - t0) * 1000
         return PhaseResult(
@@ -909,7 +980,9 @@ class BusinessLine3L5GateRunner:
     def run_phase_8_cryptographic_certification(self) -> PhaseResult:
         """Assembles immutable Merkle hash chain and issues official certification."""
         t0 = time.perf_counter()
-        self.log("Phase 8: Assembling Cryptographic Attestation & Issuing Dossier...", "HEAD")
+        self.log(
+            "Phase 8: Assembling Cryptographic Attestation & Issuing Dossier...", "HEAD"
+        )
 
         # Check all previous phases
         prev_failures = [p for p in self.phase_results if not p.passed]
@@ -926,7 +999,11 @@ class BusinessLine3L5GateRunner:
         iso_now = datetime.now(UTC).isoformat()
 
         # Compute combined Merkle root
-        merkle_root = self.phase_results[0].details.get("merkle_root", "N/A") if self.phase_results else "N/A"
+        merkle_root = (
+            self.phase_results[0].details.get("merkle_root", "N/A")
+            if self.phase_results
+            else "N/A"
+        )
 
         # Find stress latency
         p95_latency = 0.0
@@ -970,9 +1047,17 @@ class BusinessLine3L5GateRunner:
         if self.certify and passed:
             report_dir = REPO_ROOT / "certification" / "reports"
             report_dir.mkdir(parents=True, exist_ok=True)
-            report_path = report_dir / "business-line-3-database-chinadb-l5-certification.json"
-            report_path.write_text(json.dumps(asdict(dossier), indent=2, ensure_ascii=False), encoding="utf-8")
-            self.log(f"  Tamper-evident certification dossier written to: {report_path}", "PASS")
+            report_path = (
+                report_dir / "business-line-3-database-chinadb-l5-certification.json"
+            )
+            report_path.write_text(
+                json.dumps(asdict(dossier), indent=2, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            self.log(
+                f"  Tamper-evident certification dossier written to: {report_path}",
+                "PASS",
+            )
 
         duration_ms = (time.perf_counter() - t0) * 1000
         return PhaseResult(
@@ -1033,7 +1118,9 @@ class BusinessLine3L5GateRunner:
         print("  " + "-" * 76)
         for p in self.phase_results:
             status_str = "\033[92mPASS\033[0m" if p.passed else "\033[91mFAIL\033[0m"
-            print(f"  {p.phase_number:<6} {p.name:<52} {p.duration_ms:>7.1f}ms   {status_str}")
+            print(
+                f"  {p.phase_number:<6} {p.name:<52} {p.duration_ms:>7.1f}ms   {status_str}"
+            )
         print("  " + "-" * 76)
         print(f"  Total Duration: {total_duration_sec:.2f} seconds")
         print(f"  Total Business Line 3 LOC: {self.total_loc:,} lines")
@@ -1041,10 +1128,14 @@ class BusinessLine3L5GateRunner:
         print("=" * 80)
 
         if all_passed:
-            print("\n\033[92m>>> [SUCCESS] BUSINESS LINE 3 CERTIFIED AT L5 AUTONOMOUS LEVEL <<<\033[0m\n")
+            print(
+                "\n\033[92m>>> [SUCCESS] BUSINESS LINE 3 CERTIFIED AT L5 AUTONOMOUS LEVEL <<<\033[0m\n"
+            )
             return 0
         else:
-            print("\n\033[91m>>> [FAILURE] GATE CHECKS FAILED - CERTIFICATION DENIED <<<\033[0m\n")
+            print(
+                "\n\033[91m>>> [FAILURE] GATE CHECKS FAILED - CERTIFICATION DENIED <<<\033[0m\n"
+            )
             return 1
 
 
@@ -1052,11 +1143,27 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Run the Industrial L5 Autonomous Certification Gate for Business Line 3."
     )
-    parser.add_argument("--strict", action="store_true", default=True, help="Enforce strict zero tolerance.")
-    parser.add_argument("--certify", action="store_true", default=True, help="Issue signed certification JSON.")
-    parser.add_argument("--min-loc", type=int, default=80000, help="Minimum code volume requirement.")
-    parser.add_argument("--skip-long-stress", action="store_true", help="Run shorter stress test.")
-    parser.add_argument("--verbose", "-v", action="store_true", help="Verbose diagnostics output.")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        default=True,
+        help="Enforce strict zero tolerance.",
+    )
+    parser.add_argument(
+        "--certify",
+        action="store_true",
+        default=True,
+        help="Issue signed certification JSON.",
+    )
+    parser.add_argument(
+        "--min-loc", type=int, default=80000, help="Minimum code volume requirement."
+    )
+    parser.add_argument(
+        "--skip-long-stress", action="store_true", help="Run shorter stress test."
+    )
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Verbose diagnostics output."
+    )
     args = parser.parse_args()
 
     runner = BusinessLine3L5GateRunner(

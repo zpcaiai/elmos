@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/05-ddl-auto-conversion/SKILL.md"
   source_sha256: "sha256:5043945ca97a0a07ff207fd0646b6d6dd554fc5cd38f5ecfbe0b7dcc728cd857"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # DDL Automatic Conversion
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `05-ddl-auto-conversion`
 - **Version:** `1.0.0`
 - **Category:** core/conversion
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

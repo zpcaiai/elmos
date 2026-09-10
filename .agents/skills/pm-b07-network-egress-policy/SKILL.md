@@ -1,5 +1,8 @@
 ---
 name: pm-b07-network-egress-policy
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "默认禁止外网，按域名、协议、时间和任务最小化开放依赖获取与测试出口. Precision Migration B07 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

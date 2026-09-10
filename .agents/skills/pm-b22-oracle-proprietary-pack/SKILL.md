@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-proprietary-pack
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "识别 Oracle 专有能力并为每项选择直接映射、重写、模拟、外置服务、保留 Oracle 或不支持. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -42,24 +42,26 @@ class CSharpAstParser(BaseAstParser):
         super().__init__('csharp')
 
     def parse(self, source_code: str) -> UniversalModule:
-        # 1. Attempt genuine native Roslyn compiler first
-        native_mod = NativeBridge.parse_csharp_with_roslyn(source_code)
-        if native_mod and (native_mod.classes or native_mod.free_functions):
-            return native_mod
+        class_blocks = self._extract_class_blocks(source_code)
+
+        # 1. Attempt genuine native Roslyn compiler first for single clean non-controller class
+        if len(class_blocks) <= 1 and not any(is_ctrl for _, _, _, is_ctrl, _ in class_blocks):
+            native_mod = NativeBridge.parse_csharp_with_roslyn(source_code)
+            if native_mod and (any(c.methods for c in native_mod.classes) or native_mod.free_functions):
+                return native_mod
 
         module = UniversalModule(name='CSharpModule', source_language='csharp')
 
         # Usings
-        for u in re.finditer(r'using\s+([a-zA-Z0-9_.]+)\s*;', source_code):
+        for u in re.finditer(r'(?:^|\s)using\s+([a-zA-Z0-9_.]+)\s*;', source_code):
             module.imports.append(u.group(1))
 
         # Namespace
-        ns_match = re.search(r'namespace\s+([a-zA-Z0-9_.]+)', source_code)
+        ns_match = re.search(r'(?:^|\s)namespace\s+([a-zA-Z0-9_.]+)', source_code)
         if ns_match:
             module.package_name = ns_match.group(1)
 
         # Classes
-        class_blocks = self._extract_class_blocks(source_code)
         for cls_name, annotations, base_route, is_controller, body in class_blocks:
             cls = self._parse_class_body(cls_name, annotations, base_route, is_controller, body)
             module.classes.append(cls)

@@ -1,5 +1,8 @@
 ---
 name: pm-b16-python-to-csharp-direction-pack
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "提供从 Python 到 C# 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现. Precision Migration B16 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

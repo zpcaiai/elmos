@@ -1,5 +1,8 @@
 ---
 name: pm-b39-backend-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成 API、领域、数据、消息、任务、安全、测试和运行配置. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

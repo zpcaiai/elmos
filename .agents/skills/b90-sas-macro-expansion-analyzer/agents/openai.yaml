@@ -1,0 +1,4 @@
+interface:
+  display_name: "B90 Sas Macro Expansion Analyzer"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b90-sas-macro-expansion-analyzer to execute this ELMOS Language Pack Skill with fail-closed evidence."

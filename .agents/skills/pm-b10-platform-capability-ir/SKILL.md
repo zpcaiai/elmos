@@ -1,5 +1,8 @@
 ---
 name: pm-b10-platform-capability-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达支付、分享、通知、相机、定位、蓝牙、文件、设备和权限能力. Precision Migration B10 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

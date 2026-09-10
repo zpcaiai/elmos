@@ -1,5 +1,8 @@
 ---
 name: pm-b20-incremental-cdc-migration
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "规划和执行日志/触发器/时间戳增量迁移及位点恢复. Precision Migration B20 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

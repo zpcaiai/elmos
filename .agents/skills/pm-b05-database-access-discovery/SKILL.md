@@ -1,5 +1,8 @@
 ---
 name: pm-b05-database-access-discovery
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "识别 ORM、原生 SQL、存储过程、事务、锁、迁移和数据库对象依赖. Precision Migration B05 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

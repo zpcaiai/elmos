@@ -1,0 +1,4 @@
+interface:
+  display_name: "B87 Vbnet Modernization Profile"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b87-vbnet-modernization-profile to execute this ELMOS Language Pack Skill with fail-closed evidence."

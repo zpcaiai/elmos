@@ -1,5 +1,8 @@
 ---
 name: pm-b02-repository-modernization-assessment
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "对源仓库执行端到端现代化评估，覆盖架构、代码、依赖、数据、安全、测试、运维和团队适配. Precision Migration B02 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

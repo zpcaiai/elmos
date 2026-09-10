@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/16-release-ci-quality-gates/SKILL.md"
   source_sha256: "sha256:b384333568afae69f0b4ddba2b4604b2ade96cc6c5f3feeb3044923f7715d6aa"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Release CI & Quality Gates
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `16-release-ci-quality-gates`
 - **Version:** `1.0.0`
 - **Category:** core/release
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

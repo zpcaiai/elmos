@@ -1,5 +1,8 @@
 ---
 name: pm-b43-successful-repair-rule-induction
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从重复成功修复中归纳新规则、前置条件和测试. Precision Migration B43 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

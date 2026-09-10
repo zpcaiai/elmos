@@ -1,5 +1,8 @@
 ---
 name: pm-b02-assessment-report-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "输出管理层摘要、技术评估、风险登记、路线图和可审计证据索引. Precision Migration B02 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

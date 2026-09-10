@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/65-observability-migration-control-plane/SKILL.md"
   source_sha256: "sha256:6344bf1f80bcd3ac073d9493a4c89c70f6379dbef8b866e03e746d935791e2a8"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Migration Observability & Control Plane
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `65-observability-migration-control-plane`
 - **Version:** `1.0.0`
 - **Category:** operations
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

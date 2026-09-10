@@ -1,5 +1,8 @@
 ---
 name: conv-deterministic-migration-engine-reference
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 实现Java Semantic Model、PSP/UIR、C# Emitter、Source Map、FCM、Recipe与Diagnostic主链。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

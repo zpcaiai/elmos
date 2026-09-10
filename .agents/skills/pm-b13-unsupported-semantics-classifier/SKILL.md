@@ -1,5 +1,8 @@
 ---
 name: pm-b13-unsupported-semantics-classifier
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将无法可靠转换的语义分类为需适配、需重构、保留源服务或不支持. Precision Migration B13 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

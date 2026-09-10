@@ -1,5 +1,8 @@
 ---
 name: pm-b44-customer-private-rule-pack
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "安全开发、测试、签名、部署和升级客户私有转换规则与知识. Precision Migration B44 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

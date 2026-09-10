@@ -1,5 +1,8 @@
 ---
 name: pm-b33-permission-non-expansion-obligation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成迁移后权限集合不扩大、拒绝规则不弱化的义务. Precision Migration B33 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

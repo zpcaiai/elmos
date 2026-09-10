@@ -1,5 +1,8 @@
 ---
 name: pm-b20-sequence-and-identity-converter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "转换 Sequence、Identity、Auto Increment 和应用取号方式. Precision Migration B20 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

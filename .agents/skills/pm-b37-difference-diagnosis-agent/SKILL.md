@@ -1,5 +1,8 @@
 ---
 name: pm-b37-difference-diagnosis-agent
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "分析源目标差分、定位根因、提出修复或规格冲突分类. Precision Migration B37 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

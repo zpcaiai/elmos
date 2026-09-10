@@ -1,5 +1,8 @@
 ---
 name: pm-b35-model-checking-runner
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "运行状态空间探索、对称约简、边界配置和反例提取. Precision Migration B35 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

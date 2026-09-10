@@ -1,5 +1,8 @@
 ---
 name: pm-b38-skill-dependency-resolver
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "解析 Skill 依赖、版本范围、传递依赖、可选能力和安装顺序. Precision Migration B38 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

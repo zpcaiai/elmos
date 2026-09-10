@@ -1,5 +1,8 @@
 ---
 name: conv-durable-workflow-runtime
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 让迁移、认证、升级、发布、退役共享同一套版本化、可恢复的工作流内核。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

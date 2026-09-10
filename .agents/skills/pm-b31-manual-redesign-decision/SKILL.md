@@ -1,5 +1,8 @@
 ---
 name: pm-b31-manual-redesign-decision
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "识别目标平台无直接等价能力或 UX 需重构时的人工设计点. Precision Migration B31 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

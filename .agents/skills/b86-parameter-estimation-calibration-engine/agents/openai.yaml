@@ -1,0 +1,4 @@
+interface:
+  display_name: "B86 Parameter Estimation Calibration Engine"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b86-parameter-estimation-calibration-engine to execute this ELMOS Language Pack Skill with fail-closed evidence."

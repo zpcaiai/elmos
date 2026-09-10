@@ -1,0 +1,4 @@
+interface:
+  display_name: "B86 Physical Component Connector Modeler"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b86-physical-component-connector-modeler to execute this ELMOS Language Pack Skill with fail-closed evidence."

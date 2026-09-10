@@ -1,5 +1,8 @@
 ---
 name: pm-b31-minimal-counterexample-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成能稳定复现源目标不等价的最小输入、状态和事件轨迹. Precision Migration B31 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

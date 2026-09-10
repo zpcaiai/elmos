@@ -1,5 +1,8 @@
 ---
 name: pm-b37-multi-agent-worktree-manager
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "为并行 Agent 创建隔离 Worktree/Workspace，控制冲突、合并和回滚. Precision Migration B37 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

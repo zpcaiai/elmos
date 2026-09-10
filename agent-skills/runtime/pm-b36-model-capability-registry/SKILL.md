@@ -1,5 +1,8 @@
 ---
 name: pm-b36-model-capability-registry
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "登记模型版本、上下文、工具能力、部署方式、成本和各方向实测指标. Precision Migration B36 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

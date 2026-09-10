@@ -1,7 +1,13 @@
 ---
 name: conv-repeatable-profitable-delivery-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 验证标准Scope、人员结构、单位成本、报价、毛利、周期和风险准备金可复制。
 metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
   source_package: batch46-product-convergence-complete-skills
   source_id: '1533'
   source_name: b46-repeatable-profitable-delivery-model

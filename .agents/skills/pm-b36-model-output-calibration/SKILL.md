@@ -1,5 +1,8 @@
 ---
 name: pm-b36-model-output-calibration
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "用客观构建、测试、差分和历史数据校准模型置信表达. Precision Migration B36 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

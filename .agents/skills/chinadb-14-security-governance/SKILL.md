@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/14-security-governance/SKILL.md"
   source_sha256: "sha256:73d738d6f680c909ba12ea2ffc8b9a0cdc686a8bda04d89ec4e7547f269b9dc4"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Security, Secrets & Governance
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `14-security-governance`
 - **Version:** `1.0.0`
 - **Category:** core/security
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b13-llm-candidate-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "向模型提供最小语义切片、契约、方向包和验收测试，生成受约束候选. Precision Migration B13 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

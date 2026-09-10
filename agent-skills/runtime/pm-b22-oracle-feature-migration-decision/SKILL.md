@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-feature-migration-decision
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "为 Oracle 专有能力输出 DIRECT_MAP、REWRITE、EMULATE、EXTERNALIZE、RETAIN 或 UNSUPPORTED. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b09-transaction-effect-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达事务传播、保存点、提交、回滚、补偿和部分可见性. Precision Migration B09 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

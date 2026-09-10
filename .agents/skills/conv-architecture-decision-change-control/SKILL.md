@@ -1,5 +1,8 @@
 ---
 name: conv-architecture-decision-change-control
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 防止继续无边界扩张，确保每项新能力有业务证据、Owner和退出条件。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

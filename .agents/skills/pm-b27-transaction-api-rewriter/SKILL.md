@@ -1,5 +1,8 @@
 ---
 name: pm-b27-transaction-api-rewriter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移应用事务 API、传播、隔离、超时、重试和补偿. Precision Migration B27 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

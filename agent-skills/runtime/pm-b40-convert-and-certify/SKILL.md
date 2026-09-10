@@ -1,5 +1,8 @@
 ---
 name: pm-b40-convert-and-certify
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "输入源仓库与目标技术栈，执行评估、转换、验证、修复和证据签发. Precision Migration B40 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

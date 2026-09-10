@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/63-migration-estimation-commercial-report/SKILL.md"
   source_sha256: "sha256:9a80aa736a6ca607df0c982be4feed8ca10c5da9cbbaccb519c9bb9c466305fe"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Commercial Assessment, Estimation & Delivery Report
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `63-migration-estimation-commercial-report`
 - **Version:** `1.0.0`
 - **Category:** commercial
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

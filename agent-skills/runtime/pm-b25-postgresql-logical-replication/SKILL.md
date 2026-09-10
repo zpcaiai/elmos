@@ -1,5 +1,8 @@
 ---
 name: pm-b25-postgresql-logical-replication
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Publication、Subscription、Slot、冲突和 DDL 管理. Precision Migration B25 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

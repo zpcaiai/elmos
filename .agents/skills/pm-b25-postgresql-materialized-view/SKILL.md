@@ -1,5 +1,8 @@
 ---
 name: pm-b25-postgresql-materialized-view
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移物化视图、并发刷新、唯一索引和刷新调度. Precision Migration B25 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

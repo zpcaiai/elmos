@@ -1,5 +1,8 @@
 ---
 name: pm-b09-ui-state-machine-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达 Loading、Success、Failure、Refresh、Submitting 等 UI 状态与事件转换. Precision Migration B09 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: conv-validation-lab-evidence-store
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 实现Source/Target双运行、Golden、Mutation/Fuzz、性能、安全和Evidence持久化。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

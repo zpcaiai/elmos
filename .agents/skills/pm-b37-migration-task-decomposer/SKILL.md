@@ -1,5 +1,8 @@
 ---
 name: pm-b37-migration-task-decomposer
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "按依赖、风险、模块、语言和验证边界拆分迁移任务图. Precision Migration B37 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

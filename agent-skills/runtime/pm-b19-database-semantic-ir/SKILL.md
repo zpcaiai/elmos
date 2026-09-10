@@ -1,5 +1,8 @@
 ---
 name: pm-b19-database-semantic-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "建立厂商中立的数据库 Schema、SQL、过程代码、事务、专有能力、复制和性能语义表示. Precision Migration B19 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

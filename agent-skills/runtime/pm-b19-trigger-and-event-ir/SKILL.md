@@ -1,5 +1,8 @@
 ---
 name: pm-b19-trigger-and-event-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达行级/语句级、前/后触发器、事件调度、执行顺序和递归. Precision Migration B19 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

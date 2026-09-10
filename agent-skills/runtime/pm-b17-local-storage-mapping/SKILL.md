@@ -1,5 +1,8 @@
 ---
 name: pm-b17-local-storage-mapping
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "映射 Cookie、LocalStorage、IndexedDB、SharedPreferences 和平台安全存储. Precision Migration B17 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

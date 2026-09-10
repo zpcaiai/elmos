@@ -1,5 +1,8 @@
 ---
 name: pm-b13-adapter-and-shim-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在无法无损翻译时生成兼容层、RPC、FFI、Schema Carrier 或临时 Shim. Precision Migration B13 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b21-exception-handler-converter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "映射异常类别、处理顺序、回滚、继续执行和错误返回. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

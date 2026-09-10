@@ -1,5 +1,8 @@
 ---
 name: pm-b25-postgresql-event-trigger
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Event Trigger、DDL 事件、命令标签和递归风险. Precision Migration B25 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b30-visual-differential-comparator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "比较关键区域、布局、文本、主题、响应式和感知视觉差异. Precision Migration B30 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

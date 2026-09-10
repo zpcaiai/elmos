@@ -1,5 +1,8 @@
 ---
 name: pm-b34-lemma-library-retrieval
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "检索项目、Mathlib、方向包和历史证明中的可复用引理. Precision Migration B34 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/15-evidence-ledger-reproducibility/SKILL.md"
   source_sha256: "sha256:0b67ffffcf0cebf1a26ae5410a1aa5709a1067895e3059278daf0d4640ed74ba"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Evidence Ledger & Reproducibility
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `15-evidence-ledger-reproducibility`
 - **Version:** `1.0.0`
 - **Category:** core/evidence
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

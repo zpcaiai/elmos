@@ -1,5 +1,8 @@
 ---
 name: pm-b34-semantic-core-lean-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "把 Semantic Core、类型、Effect、状态和求值关系编码为 Lean 定义. Precision Migration B34 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

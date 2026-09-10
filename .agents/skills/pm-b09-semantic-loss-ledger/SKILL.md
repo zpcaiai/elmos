@@ -1,5 +1,8 @@
 ---
 name: pm-b09-semantic-loss-ledger
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "逐模块记录无损、归一化、近似、需适配、未验证和不支持的语义损失. Precision Migration B09 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

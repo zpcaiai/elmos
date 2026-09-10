@@ -1,7 +1,13 @@
 ---
 name: conv-convergence-roadmap-p0-p3
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: 将统一内核、Reference Product、生产接管、规模生态分为有Gate的阶段计划。
 metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
   source_package: batch46-product-convergence-complete-skills
   source_id: '1528'
   source_name: b46-convergence-roadmap-p0-p3

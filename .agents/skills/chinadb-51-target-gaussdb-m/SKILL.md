@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/51-target-gaussdb-m/SKILL.md"
   source_sha256: "sha256:996f9a944a454788b3346bdb3efc635f412b4704e1c62bc33a44a73b2aa9eaf3"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # GaussDB M-Compatible Target Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `51-target-gaussdb-m`
 - **Version:** `1.0.0`
 - **Category:** target-adapter
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 - **Depends on:** `02-semantic-db-ir`, `03-rule-mutation-dsl`, `05-ddl-auto-conversion`, `06-sql-auto-conversion`, `07-plsql-tsql-conversion`
 
 ## Objective

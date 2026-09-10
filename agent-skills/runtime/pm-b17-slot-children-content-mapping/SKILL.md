@@ -1,5 +1,8 @@
 ---
 name: pm-b17-slot-children-content-mapping
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "映射 Slot、Scoped Slot、Children、Render Props、Builder 和内容投影. Precision Migration B17 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b32-advanced-dynamic-validation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "使用反例搜索、变异、系统化调度、故障注入和确定性回放覆盖普通测试难以触达的语义风险. Precision Migration B32 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

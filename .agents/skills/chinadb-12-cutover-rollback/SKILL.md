@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/12-cutover-rollback/SKILL.md"
   source_sha256: "sha256:cae703d92168691986523cc422720554b3be59bd26650024270b47e5a59b9187"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Cutover, Rehearsal & Rollback
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `12-cutover-rollback`
 - **Version:** `1.0.0`
 - **Category:** core/operations
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

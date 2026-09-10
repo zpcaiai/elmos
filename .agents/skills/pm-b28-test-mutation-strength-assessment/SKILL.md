@@ -1,5 +1,8 @@
 ---
 name: pm-b28-test-mutation-strength-assessment
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "通过通用和方向专用变异衡量测试能否发现真实转换错误. Precision Migration B28 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

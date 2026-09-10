@@ -35,11 +35,11 @@ for spec in B31_SKILL_SPECS:
         fm = parts[1]
         if "implementation_state:" not in fm:
             new_lines = [
-                f'name: {alias}',
+                f"name: {alias}",
                 'implementation_state: "VERIFIED"',
                 'external_evidence_status: "LOCAL_EXECUTED"',
                 'production_certification: "NOT_CERTIFIED"',
-                'metadata:',
+                "metadata:",
                 '  source_package: "batch31-database-skills"',
                 '  source_version: "1.0.0"',
                 '  implementation_state: "VERIFIED"',
@@ -47,10 +47,19 @@ for spec in B31_SKILL_SPECS:
                 '  production_certification: "NOT_CERTIFIED"',
             ]
             # Replace name line with full block
-            fm = re.sub(rf"^name:\s*{re.escape(alias)}.*$", "\n".join(new_lines), fm, flags=re.MULTILINE)
+            fm = re.sub(
+                rf"^name:\s*{re.escape(alias)}.*$",
+                "\n".join(new_lines),
+                fm,
+                flags=re.MULTILINE,
+            )
             text = f"---{fm}---{parts[2]}"
         else:
-            text = re.sub(r'implementation_state:\s*"?[A-Za-z0-9_-]+"?', 'implementation_state: "VERIFIED"', text)
+            text = re.sub(
+                r'implementation_state:\s*"?[A-Za-z0-9_-]+"?',
+                'implementation_state: "VERIFIED"',
+                text,
+            )
 
     agents_skill_file.write_text(text, encoding="utf-8")
 
@@ -80,7 +89,11 @@ for spec in B31_SKILL_SPECS:
         },
     }
     contract_file = runtime_skill_dir / "compiled-contract.json"
-    contract_file.write_text(json.dumps(contract, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    contract_file.write_text(
+        json.dumps(contract, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     promoted += 1
 
-print(f"Successfully promoted {promoted} Batch 31 skills to VERIFIED with compiled contracts!")
+print(
+    f"Successfully promoted {promoted} Batch 31 skills to VERIFIED with compiled contracts!"
+)

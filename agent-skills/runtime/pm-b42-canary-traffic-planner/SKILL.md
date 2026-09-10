@@ -1,5 +1,8 @@
 ---
 name: pm-b42-canary-traffic-planner
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "选择低风险租户、用户、接口和流量比例设计 Canary 阶段. Precision Migration B42 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

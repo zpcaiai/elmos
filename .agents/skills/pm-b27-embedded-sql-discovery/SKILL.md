@@ -1,5 +1,8 @@
 ---
 name: pm-b27-embedded-sql-discovery
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "发现源码、模板、配置、报表和脚本中的嵌入式 SQL 与动态片段. Precision Migration B27 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

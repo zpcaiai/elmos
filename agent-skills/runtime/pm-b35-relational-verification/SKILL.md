@@ -1,5 +1,8 @@
 ---
 name: pm-b35-relational-verification
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "验证两个实现之间的输入、状态、输出和 Effect 关系. Precision Migration B35 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

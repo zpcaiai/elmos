@@ -1,5 +1,8 @@
 ---
 name: pm-b33-nullability-preservation-obligation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成 Null、Missing、Undefined、Option、Pointer 和 zero value 的保持义务. Precision Migration B33 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 
