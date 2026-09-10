@@ -1,6 +1,6 @@
 {
   "schema_version": "elmos.frontend-to-miniapp.local-runtime-evidence.v1",
-  "implementation_digest": "sha256:39ef53b479db747d6881d3ebeb8e364c1d1c807f98ef377539607dc0e7d4bcb1",
+  "implementation_digest": "sha256:bfb9aa5253052894f9c8ee29b4cc1d42bd7b3ba83ee68f35051c097940d32699",
   "state": "DECLARED",
   "scope": "bounded-local-engineering",
   "receipt": {

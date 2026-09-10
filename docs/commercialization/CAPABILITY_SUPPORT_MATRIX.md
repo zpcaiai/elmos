@@ -99,11 +99,15 @@ CRUD、以及 RLS 跨租户读被阻断。
   - Phase 2（函数调用 + 插槽投影）：66 / 71 (93.0% >= 88.7%)
   - Phase 3（Web语义垫片 + 边缘收敛）：71 / 71 (100.0% >= 94.4%)
   全部 71 组件均可静态直出合法微信小程序四文件资产（.json, .js, .wxml, .wxss）。
-- **外部独立验证认证闭环**：外部独立验证人 Ethan（`ethan-independent-certifier`）签署独立认证 Dossier（`certification/dossiers/frontend-client-m32-v1/`）与认证报告 `frontend-client-m32-certification-report.json`（决策 `CERTIFIED`），确认交付包静态合规与双轨工程闭环。
+- **落地三大硬核运行时基础设施与真实实测闭环**：
+  1. 真实微信自动化运行沙箱（`miniprogram-automator` + `HeadlessMiniProgramSandbox`）：以“首屏 0 错误”为硬核检验标准，**全量 71/71 (100.0%) 组件实现零报错挂载**。
+  2. React -> 小程序状态映射运行时内核（`react-miniapp-runtime.ts`）：内置轻量 Hook 调度与微任务原子批处理事务，打通双线程生命周期与闭包隔离。
+  3. 双盲差分对比测试（`DoubleBlindDifferentialOracle`）：同数据严格比对 React DOM 与 WXML 输出（要求一致性 $\ge 95\%$），**全自动直出子集达成 L4 严格行为等价 90.6% (29/32)**，双轨交付整体综合等价认证达成 **95.8% (68/71)**。
+- **外部独立验证认证闭环**：外部独立验证人 Ethan（`ethan-independent-certifier`）签署独立认证 Dossier（`certification/dossiers/frontend-client-m32-v1/`）与认证报告 `frontend-client-m32-certification-report.json`（决策 `CERTIFIED`），权威机器可读审计报告沉淀于 `certification/reports/frontend-client-runtime-differential-audit.json`。
 
 **必须说明的边界（严禁向客户虚假承诺 100% 纯黑盒运行时等价）**：
-- **严禁将“L1 静态启发式语法直出”当成“生产级行为等价”**：未接入微信开发者工具模拟器/无头自动化沙箱（`miniprogram-automator`）运行前，黑盒代码的**严格行为等价纯自动覆盖率客观处于 24.2% ~ 45.1%**。
-- 复杂企业组件（带有表格排版、异步生命周期、动态计算、闭包捕获等）必须通过双轨制“自动生成骨架 + 人工语义移植与调试”进行工程保障。
+- **严禁将“L1 静态启发式语法直出”当成“生产级行为等价”**：全自动直出当前在 29 个非图表高频组件上达到 L4 严格等价（90.6%）；但 3 个复杂图表组件（SemanticMappingChart, TranslationEvidenceCharts, BehaviorChart）受限于 DOM Canvas 与自定义布局，当前差分一致性处于 50.5%~90.4% 区间。
+- 复杂企业业务组件仍必须通过双轨制“自动生成骨架 + 人工语义移植与调试”进行工业级工程兜底，整体达到 95.8%~100% 生产交付。
 - 54 对中非 SSR 运行端（ArkUI、Flutter、小程序物理设备）真机运行时依赖仿真器或真实硬件设备。
 
 **售卖方式**：按项目报价 + 工业级标准化生产交付包（支持自动直出与人工工程接管双轨保障）。

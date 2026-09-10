@@ -1,0 +1,1055 @@
+{
+  "schemaVersion": 1,
+  "timestamp": "2026-09-10T06:06:44.296Z",
+  "packKey": "web-console-next16-react19-wechat-v1",
+  "totals": {
+    "totalComponents": 71,
+    "l3FirstScreenZeroErrorsCount": 71,
+    "l3MountPassRatePercent": 100,
+    "l4DifferentialEquivalentCount": 29,
+    "l4DifferentialPassRatePercent": 40.8,
+    "dispositionBreakdown": {
+      "automatic": {
+        "total": 32,
+        "l3Passed": 32,
+        "l4Passed": 29,
+        "l4PassRatePercent": 90.6
+      },
+      "handPorted": {
+        "total": 39,
+        "l3Passed": 39,
+        "l4Passed": 0,
+        "l4PassRatePercent": 0
+      }
+    },
+    "dualTrackDelivery": {
+      "totalDelivered": 71,
+      "automaticL4Passed": 29,
+      "handPortedGoldenPassed": 39,
+      "compositeCertifiedCount": 68,
+      "compositeCertifiedRatePercent": 95.8
+    }
+  },
+  "components": [
+    {
+      "componentName": "AccountOrganizationStudio",
+      "sourcePath": "app/account/AccountOrganizationStudio.tsx",
+      "targetPath": "target-project/components/AccountOrganizationStudio",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.25,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0.6260869565217392,
+      "diagnostics": [
+        "Consistency 25% fell below 95.0% threshold (text: 0%, structure: 63%)"
+      ]
+    },
+    {
+      "componentName": "AccountWalletPanel",
+      "sourcePath": "app/account/AccountWalletPanel.tsx",
+      "targetPath": "target-project/components/AccountWalletPanel",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.338,
+      "textSimilarity": 0.08333333333333333,
+      "structuralSimilarity": 0.7191011235955056,
+      "diagnostics": [
+        "Consistency 34% fell below 95.0% threshold (text: 8%, structure: 72%)"
+      ]
+    },
+    {
+      "componentName": "AccountPage",
+      "sourcePath": "app/account/page.tsx",
+      "targetPath": "target-project/components/AccountPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "Empty",
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "target-project/components/Empty",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "EventTable",
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "target-project/components/EventTable",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Source React render failed: Cannot read properties of undefined (reading 'length')",
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "IncidentCard",
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "target-project/components/IncidentCard",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "OperationsAdmin",
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "target-project/components/OperationsAdmin",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.161,
+      "textSimilarity": 0.02564102564102564,
+      "structuralSimilarity": 0.36363636363636365,
+      "diagnostics": [
+        "Consistency 16% fell below 95.0% threshold (text: 3%, structure: 36%)"
+      ]
+    },
+    {
+      "componentName": "RemediationCard",
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "target-project/components/RemediationCard",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "AdminPage",
+      "sourcePath": "app/admin/page.tsx",
+      "targetPath": "target-project/components/AdminPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "PlatformJobsPanel",
+      "sourcePath": "app/admin/PlatformJobsPanel.tsx",
+      "targetPath": "target-project/components/PlatformJobsPanel",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.257,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0.6419753086419753,
+      "diagnostics": [
+        "Consistency 26% fell below 95.0% threshold (text: 0%, structure: 64%)"
+      ]
+    },
+    {
+      "componentName": "PlatformWalletPanel",
+      "sourcePath": "app/admin/PlatformWalletPanel.tsx",
+      "targetPath": "target-project/components/PlatformWalletPanel",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.242,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0.6046511627906976,
+      "diagnostics": [
+        "Consistency 24% fell below 95.0% threshold (text: 0%, structure: 60%)"
+      ]
+    },
+    {
+      "componentName": "CommercializationConsole",
+      "sourcePath": "app/commercialization/CommercializationConsole.tsx",
+      "targetPath": "target-project/components/CommercializationConsole",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Source React render failed: payload.stages.find is not a function",
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "CommercializationPage",
+      "sourcePath": "app/commercialization/page.tsx",
+      "targetPath": "target-project/components/CommercializationPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "AccountSessionProvider",
+      "sourcePath": "app/components/AccountSessionProvider.tsx",
+      "targetPath": "target-project/components/AccountSessionProvider",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "AppShell",
+      "sourcePath": "app/components/AppShell.tsx",
+      "targetPath": "target-project/components/AppShell",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.06,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0.1509433962264151,
+      "diagnostics": [
+        "Consistency 6% fell below 95.0% threshold (text: 0%, structure: 15%)"
+      ]
+    },
+    {
+      "componentName": "Icon",
+      "sourcePath": "app/components/Icon.tsx",
+      "targetPath": "target-project/components/Icon",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "BehaviorChart",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/BehaviorChart",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.505,
+      "textSimilarity": 0.3902439024390244,
+      "structuralSimilarity": 0.6774193548387096,
+      "diagnostics": [
+        "Consistency 51% fell below 95.0% threshold (text: 39%, structure: 68%)"
+      ]
+    },
+    {
+      "componentName": "CoverageMeter",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/CoverageMeter",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "EmptyEvidence",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/EmptyEvidence",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "EquivalenceMatrix",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/EquivalenceMatrix",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Source React render failed: Cannot read properties of undefined (reading 'targets')",
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "EvidenceGraph",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/EvidenceGraph",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Source React render failed: Cannot read properties of undefined (reading 'map')",
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "ProjectEvidenceCharts",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/ProjectEvidenceCharts",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.342,
+      "textSimilarity": 0.07407407407407407,
+      "structuralSimilarity": 0.7428571428571429,
+      "diagnostics": [
+        "Consistency 34% fell below 95.0% threshold (text: 7%, structure: 74%)"
+      ]
+    },
+    {
+      "componentName": "SemanticMappingChart",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/SemanticMappingChart",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.904,
+      "textSimilarity": 0.8947368421052632,
+      "structuralSimilarity": 0.918918918918919,
+      "diagnostics": [
+        "Consistency 90% fell below 95.0% threshold (text: 89%, structure: 92%)"
+      ]
+    },
+    {
+      "componentName": "StatusMark",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/StatusMark",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "TranslationEvidenceCharts",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/TranslationEvidenceCharts",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.855,
+      "textSimilarity": 0.9365079365079365,
+      "structuralSimilarity": 0.7333333333333333,
+      "diagnostics": [
+        "Consistency 86% fell below 95.0% threshold (text: 94%, structure: 73%)"
+      ]
+    },
+    {
+      "componentName": "RuntimeDeploymentGuide",
+      "sourcePath": "app/components/RuntimeDeploymentGuide.tsx",
+      "targetPath": "target-project/components/RuntimeDeploymentGuide",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Source React render failed: Cannot read properties of undefined (reading 'localProfiles')",
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "SmokeRunButton",
+      "sourcePath": "app/components/SmokeRunButton.tsx",
+      "targetPath": "target-project/components/SmokeRunButton",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.123,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0.3076923076923077,
+      "diagnostics": [
+        "Consistency 12% fell below 95.0% threshold (text: 0%, structure: 31%)"
+      ]
+    },
+    {
+      "componentName": "StatusChip",
+      "sourcePath": "app/components/StatusChip.tsx",
+      "targetPath": "target-project/components/StatusChip",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "UiPreferencesProvider",
+      "sourcePath": "app/components/UiPreferencesProvider.tsx",
+      "targetPath": "target-project/components/UiPreferencesProvider",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "FrontendTransformationStudio",
+      "sourcePath": "app/frontend/FrontendTransformationStudio.tsx",
+      "targetPath": "target-project/components/FrontendTransformationStudio",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Source React render failed: Cannot read properties of undefined (reading 'filter')",
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "FrontendTransformationPage",
+      "sourcePath": "app/frontend/page.tsx",
+      "targetPath": "target-project/components/FrontendTransformationPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "GenerationPage",
+      "sourcePath": "app/generation/page.tsx",
+      "targetPath": "target-project/components/GenerationPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "ProjectGenerationStudio",
+      "sourcePath": "app/generation/ProjectGenerationStudio.tsx",
+      "targetPath": "target-project/components/ProjectGenerationStudio",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Source React render failed: Execution error evaluating React module: catalog_1.generationTargets.map is not a function",
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "GovernanceWorkspace",
+      "sourcePath": "app/governance/GovernanceWorkspace.tsx",
+      "targetPath": "target-project/components/GovernanceWorkspace",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.282,
+      "textSimilarity": 0.16352201257861634,
+      "structuralSimilarity": 0.45977011494252873,
+      "diagnostics": [
+        "Consistency 28% fell below 95.0% threshold (text: 16%, structure: 46%)"
+      ]
+    },
+    {
+      "componentName": "GovernancePage",
+      "sourcePath": "app/governance/page.tsx",
+      "targetPath": "target-project/components/GovernancePage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "HelpCenter",
+      "sourcePath": "app/help/HelpCenter.tsx",
+      "targetPath": "target-project/components/HelpCenter",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.115,
+      "textSimilarity": 0.037037037037037035,
+      "structuralSimilarity": 0.23076923076923078,
+      "diagnostics": [
+        "Consistency 12% fell below 95.0% threshold (text: 4%, structure: 23%)"
+      ]
+    },
+    {
+      "componentName": "HelpPage",
+      "sourcePath": "app/help/page.tsx",
+      "targetPath": "target-project/components/HelpPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "MultimodalIntakeWorkbench",
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "targetPath": "target-project/components/MultimodalIntakeWorkbench",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.172,
+      "textSimilarity": 0.10309278350515463,
+      "structuralSimilarity": 0.27586206896551724,
+      "diagnostics": [
+        "Consistency 17% fell below 95.0% threshold (text: 10%, structure: 28%)"
+      ]
+    },
+    {
+      "componentName": "MultimodalIntakePage",
+      "sourcePath": "app/intake/page.tsx",
+      "targetPath": "target-project/components/MultimodalIntakePage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "RootLayout",
+      "sourcePath": "app/layout.tsx",
+      "targetPath": "target-project/components/RootLayout",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.22,
+      "textSimilarity": 0.2,
+      "structuralSimilarity": 0.25,
+      "diagnostics": [
+        "Consistency 22% fell below 95.0% threshold (text: 20%, structure: 25%)"
+      ]
+    },
+    {
+      "componentName": "LoginPage",
+      "sourcePath": "app/login/page.tsx",
+      "targetPath": "target-project/components/LoginPage",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.333,
+      "textSimilarity": 0.10256410256410256,
+      "structuralSimilarity": 0.6779661016949152,
+      "diagnostics": [
+        "Consistency 33% fell below 95.0% threshold (text: 10%, structure: 68%)"
+      ]
+    },
+    {
+      "componentName": "Marketplace",
+      "sourcePath": "app/migration/MigrationStudio.tsx",
+      "targetPath": "target-project/components/Marketplace",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 0.977,
+      "textSimilarity": 0.9904761904761905,
+      "structuralSimilarity": 0.9576271186440678,
+      "diagnostics": []
+    },
+    {
+      "componentName": "MigrationStudio",
+      "sourcePath": "app/migration/MigrationStudio.tsx",
+      "targetPath": "target-project/components/MigrationStudio",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Source React render failed: capabilities.filter is not a function",
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "MigrationPage",
+      "sourcePath": "app/migration/page.tsx",
+      "targetPath": "target-project/components/MigrationPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "ChinaDbSqlPreflightStudio",
+      "sourcePath": "app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "targetPath": "target-project/components/ChinaDbSqlPreflightStudio",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Source React render failed: chinadbSqlContracts_1.chinaDbSqlSourceProfiles.map is not a function",
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "ChinaDbSqlPreflightPage",
+      "sourcePath": "app/migration/sql/page.tsx",
+      "targetPath": "target-project/components/ChinaDbSqlPreflightPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "ObservabilityWorkspace",
+      "sourcePath": "app/observability/ObservabilityWorkspace.tsx",
+      "targetPath": "target-project/components/ObservabilityWorkspace",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.24,
+      "textSimilarity": 0.08955223880597014,
+      "structuralSimilarity": 0.46511627906976744,
+      "diagnostics": [
+        "Consistency 24% fell below 95.0% threshold (text: 9%, structure: 47%)"
+      ]
+    },
+    {
+      "componentName": "ObservabilityPage",
+      "sourcePath": "app/observability/page.tsx",
+      "targetPath": "target-project/components/ObservabilityPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "RepositoryOrchestrationPage",
+      "sourcePath": "app/orchestration/page.tsx",
+      "targetPath": "target-project/components/RepositoryOrchestrationPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "RepositoryOrchestratorWorkbench",
+      "sourcePath": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "targetPath": "target-project/components/RepositoryOrchestratorWorkbench",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.267,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0.6666666666666666,
+      "diagnostics": [
+        "Consistency 27% fell below 95.0% threshold (text: 0%, structure: 67%)"
+      ]
+    },
+    {
+      "componentName": "Home",
+      "sourcePath": "app/page.tsx",
+      "targetPath": "target-project/components/Home",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 0.987,
+      "textSimilarity": 0.9929742388758782,
+      "structuralSimilarity": 0.9777777777777777,
+      "diagnostics": []
+    },
+    {
+      "componentName": "PlaygroundPage",
+      "sourcePath": "app/playground/page.tsx",
+      "targetPath": "target-project/components/PlaygroundPage",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.218,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0.5454545454545454,
+      "diagnostics": [
+        "Consistency 22% fell below 95.0% threshold (text: 0%, structure: 55%)"
+      ]
+    },
+    {
+      "componentName": "PlaygroundWorkspace",
+      "sourcePath": "app/playground/PlaygroundWorkspace.tsx",
+      "targetPath": "target-project/components/PlaygroundWorkspace",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.318,
+      "textSimilarity": 0.19607843137254902,
+      "structuralSimilarity": 0.5,
+      "diagnostics": [
+        "Consistency 32% fell below 95.0% threshold (text: 20%, structure: 50%)"
+      ]
+    },
+    {
+      "componentName": "PlanBillingAction",
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "targetPath": "target-project/components/PlanBillingAction",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Source React render failed: Cannot read properties of undefined (reading 'planId')",
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "SubscriptionManager",
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "targetPath": "target-project/components/SubscriptionManager",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.148,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0.37037037037037035,
+      "diagnostics": [
+        "Consistency 15% fell below 95.0% threshold (text: 0%, structure: 37%)"
+      ]
+    },
+    {
+      "componentName": "PricingPage",
+      "sourcePath": "app/pricing/page.tsx",
+      "targetPath": "target-project/components/PricingPage",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Source React render failed: Cannot read properties of undefined (reading 'status')",
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "UsageDashboard",
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "targetPath": "target-project/components/UsageDashboard",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.301,
+      "textSimilarity": 0.05714285714285714,
+      "structuralSimilarity": 0.6666666666666666,
+      "diagnostics": [
+        "Consistency 30% fell below 95.0% threshold (text: 6%, structure: 67%)"
+      ]
+    },
+    {
+      "componentName": "UsageMeter",
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "targetPath": "target-project/components/UsageMeter",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "ModernizationProofStudio",
+      "sourcePath": "app/proof-loop/ModernizationProofStudio.tsx",
+      "targetPath": "target-project/components/ModernizationProofStudio",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.031,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0.07692307692307693,
+      "diagnostics": [
+        "Consistency 3% fell below 95.0% threshold (text: 0%, structure: 8%)"
+      ]
+    },
+    {
+      "componentName": "ModernizationProofPage",
+      "sourcePath": "app/proof-loop/page.tsx",
+      "targetPath": "target-project/components/ModernizationProofPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "RepositoriesPage",
+      "sourcePath": "app/repositories/page.tsx",
+      "targetPath": "target-project/components/RepositoriesPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "RepositoryWorkspaceStudio",
+      "sourcePath": "app/repositories/RepositoryWorkspaceStudio.tsx",
+      "targetPath": "target-project/components/RepositoryWorkspaceStudio",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.334,
+      "textSimilarity": 0.02857142857142857,
+      "structuralSimilarity": 0.7924528301886793,
+      "diagnostics": [
+        "Consistency 33% fell below 95.0% threshold (text: 3%, structure: 79%)"
+      ]
+    },
+    {
+      "componentName": "SkillsPage",
+      "sourcePath": "app/skills/page.tsx",
+      "targetPath": "target-project/components/SkillsPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "PrecisionMigrationJobs",
+      "sourcePath": "app/skills/PrecisionMigrationJobs.tsx",
+      "targetPath": "target-project/components/PrecisionMigrationJobs",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.042,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0.1038961038961039,
+      "diagnostics": [
+        "Consistency 4% fell below 95.0% threshold (text: 0%, structure: 10%)"
+      ]
+    },
+    {
+      "componentName": "SkillsWorkspace",
+      "sourcePath": "app/skills/SkillsWorkspace.tsx",
+      "targetPath": "target-project/components/SkillsWorkspace",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Source React render failed: Execution error evaluating React module: Cannot read properties of undefined (reading 'ADAPTER_DECLARED')",
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    },
+    {
+      "componentName": "SmokePage",
+      "sourcePath": "app/smoke/page.tsx",
+      "targetPath": "target-project/components/SmokePage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "SmokeConsole",
+      "sourcePath": "app/smoke/SmokeConsole.tsx",
+      "targetPath": "target-project/components/SmokeConsole",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 0.99,
+      "textSimilarity": 1,
+      "structuralSimilarity": 0.9743589743589743,
+      "diagnostics": []
+    },
+    {
+      "componentName": "SpringModernizationPage",
+      "sourcePath": "app/spring/page.tsx",
+      "targetPath": "target-project/components/SpringModernizationPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "SpringModernizationStudio",
+      "sourcePath": "app/spring/SpringModernizationStudio.tsx",
+      "targetPath": "target-project/components/SpringModernizationStudio",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0.091,
+      "textSimilarity": 0.024615384615384615,
+      "structuralSimilarity": 0.19123505976095617,
+      "diagnostics": [
+        "Consistency 9% fell below 95.0% threshold (text: 2%, structure: 19%)"
+      ]
+    },
+    {
+      "componentName": "TranslationPage",
+      "sourcePath": "app/translation/page.tsx",
+      "targetPath": "target-project/components/TranslationPage",
+      "disposition": "AUTOMATIC",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
+    },
+    {
+      "componentName": "TranslationStudio",
+      "sourcePath": "app/translation/TranslationStudio.tsx",
+      "targetPath": "target-project/components/TranslationStudio",
+      "disposition": "HAND_PORTED",
+      "l3Mounted": true,
+      "l3Errors": [],
+      "l4Equivalent": false,
+      "consistencyScore": 0,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0,
+      "diagnostics": [
+        "Source React render failed: Execution error evaluating React module: businessLines_1.directedLanguageRoutes.map is not a function",
+        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
+      ]
+    }
+  ]
+}
