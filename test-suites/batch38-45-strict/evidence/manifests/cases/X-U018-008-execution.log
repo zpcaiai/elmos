@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U018-008 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 供应链篡改与Provenance / evidence-tamper / 场景8
-Category: evidence-tamper
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:21.012332Z][X-U018-008] Starting execution of X-U018-008 (供应链篡改与Provenance / evidence-tamper / 场景8) [Category=evidence-tamper, Priority=P2]
+[2026-09-10T08:26:21.012335Z][X-U018-008] Bound Skill: tst-supply-chain-tamper-provenance-vex | Product Skill IDs: []
+[2026-09-10T08:26:21.012338Z][X-U018-008] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:21.023424Z][X-U018-008] Security: Minted RS256 token (JTI=e3517385..., Exp=1789032381)
+[2026-09-10T08:26:21.049772Z][X-U018-008] KMS: Envelope encrypted 37 bytes under key key-x-u018-008 v1 (DEK wrapped)
+[2026-09-10T08:26:21.065608Z][X-U018-008] [CROSS-SEC-GOV] Initializing X-U018-008 (U018) Category=evidence-tamper
+[2026-09-10T08:26:21.065614Z][X-U018-008] Supply Chain Security: Evaluating SLSA Level 3 provenance, SBOM and VEX declarations
+[2026-09-10T08:26:21.065619Z][X-U018-008] Tampering with in-toto attestation signature...
+[2026-09-10T08:26:21.065632Z][X-U018-008] Completed execution of X-U018-008 in 53.3ms: Status=PASSED
+[2026-09-10T08:26:21.065634Z][X-U018-008] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:21.065645Z][X-U018-008] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

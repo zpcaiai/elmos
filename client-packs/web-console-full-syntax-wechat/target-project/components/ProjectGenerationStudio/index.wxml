@@ -28,14 +28,8 @@
     </view>
     <view class="metric-card">
       <text>本地 Runner</text>
-      <text class="{{`metric-word ${runnerReady ? &quot;&quot; : &quot;warning-text&quot;}`}}">
-        <text wx:if="{{runnerReady}}">{{"READY"}}</text>
-        <text wx:else>{{runnerReadiness?.status ?? "CHECKING"}}</text>
-      </text>
-      <text>
-        <text>{{runnerReadiness?.isolation ?? capability?.localRunner.isolation ?? "NOT_CONFIGURED"}}</text>
-        <text>· 持久恢复</text>
-      </text>
+      <text class="{{`metric-word ${runnerReady ? &quot;&quot; : &quot;warning-text&quot;}`}}">{{runnerReady ? "READY" : runnerReadiness?.status ?? "CHECKING"}}</text>
+      <text>{{runnerReadiness?.isolation ?? capability?.localRunner.isolation ?? "NOT_CONFIGURED"}} · 持久恢复</text>
     </view>
   </view>
   <view class="source-notice generation-notice" role="{{capabilityError ? &quot;alert&quot; : &quot;status&quot;}}">
@@ -76,10 +70,7 @@
         <text class="generation-field">
           <text>审批者标识</text>
           <input value="{{reviewer}}" required="true" readOnly="{{accountRunner}}" pattern="{{&quot;[A-Za-z0-9](?:[A-Za-z0-9._:@]|/|-){2,199}&quot;}}" autoComplete="off" aria-describedby="reviewer-hint" bindchange="onChange" />
-          <text id="reviewer-hint">
-            <text wx:if="{{accountRunner}}">{{"来自已验证企业账户，不能在请求中覆盖。"}}</text>
-            <text wx:else>{{"必须与短期 Runner 凭证绑定的 Actor 完全一致；不填写密钥或邮箱凭证。"}}</text>
-          </text>
+          <text id="reviewer-hint">{{accountRunner ? "来自已验证企业账户，不能在请求中覆盖。" : "必须与短期 Runner 凭证绑定的 Actor 完全一致；不填写密钥或邮箱凭证。"}}</text>
         </text>
         <text class="generation-field" htmlFor="generation-persistence">
           <text>数据配置</text>
@@ -87,11 +78,7 @@
             <view value="in-memory">内存 Starter</view>
             <view value="postgresql">PostgreSQL 17.5 生产配置</view>
           </view>
-          <text>
-            <text>生产配置生成前向迁移、RLS、恢复与真实集成测试；仅对具备仓库可复现验收证据的单语言目标开放：</text>
-            <text>{{productionProfileLabels}}</text>
-            <text>。</text>
-          </text>
+          <text>生产配置生成前向迁移、RLS、恢复与真实集成测试；仅对具备仓库可复现验收证据的单语言目标开放： {{productionProfileLabels}} 。</text>
         </text>
         <text class="generation-field" htmlFor="generation-auth-mode">
           <text>认证配置</text>
@@ -105,10 +92,7 @@
         <text class="generation-field">
           <text>租户标识</text>
           <input value="{{tenantId}}" required="true" readOnly="{{accountRunner}}" pattern="{{accountRunner ? undefined : &quot;[a-z][a-z0-9\\-]{2,62}&quot;}}" autoComplete="off" aria-describedby="tenant-hint" bindchange="onChange" />
-          <text id="tenant-hint">
-            <text wx:if="{{accountRunner}}">{{"来自已验证 organization_id；切换租户请使用账户菜单。"}}</text>
-            <text wx:else>{{"必须与短期 Runner 凭证绑定的租户完全一致；请求头不能自行切换租户。"}}</text>
-          </text>
+          <text id="tenant-hint">{{accountRunner ? "来自已验证 organization_id；切换租户请使用账户菜单。" : "必须与短期 Runner 凭证绑定的租户完全一致；请求头不能自行切换租户。"}}</text>
         </text>
         <view wx:if="{{accountRunner}}" class="generation-field locked-target">
           <text>账户授权</text>
@@ -168,17 +152,12 @@
           <view class="generation-source-actions">
             <button type="button" class="button button-secondary" disabled="{{sourceBusy || runnerBusy || !runnerCredentialReady}}" bindtap="onTap">
               <Icon name="{{sourceBusy ? &quot;refresh&quot; : &quot;spark&quot;}}" size="{{14}}" class="{{sourceBusy ? &quot;spinning&quot; : &quot;&quot;}}" />
-              <text wx:if="{{sourceBusy}}">{{"正在提取与绑定"}}</text>
-              <text wx:else>{{"解析并合并来源"}}</text>
+              <text>{{sourceBusy ? "正在提取与绑定" : "解析并合并来源"}}</text>
             </button>
             <text>来源包与当前租户、审批者和摘要绑定 60 分钟；仓库内容只读取、不执行，合并文本仍需人工审阅。</text>
           </view>
           <view wx:if="{{sourceBundle}}" class="generation-source-results" aria-label="已绑定来源">
-            <text>
-              <text>{{sourceBundle.sources.length}}</text>
-              <text>个来源 ·</text>
-              <text>{{sourceBundle.bundleSha256.slice(0, 12)}}</text>
-            </text>
+            <text>{{sourceBundle.sources.length}} 个来源 · {{sourceBundle.bundleSha256.slice(0, 12)}}</text>
             <text wx:for="{{sourceBundle.sources}}" wx:for-item="source" wx:key="source.id" key="{{source.id}}">
               <text>{{source.id}}</text>
               <text>·</text>
@@ -190,8 +169,7 @@
               <text>/</text>
               <text>{{source.extractedCharacters}}</text>
               <text>字</text>
-              <text wx:if="{{source.truncated}}">{{" · 已截取"}}</text>
-              <text wx:else>{{""}}</text>
+              <text>{{source.truncated ? " · 已截取" : ""}}</text>
             </text>
             <text wx:for="{{sourceBundle.warnings}}" wx:for-item="warning" wx:key="warning.id" key="{{warning}}">{{warning}}</text>
           </view>
@@ -216,23 +194,9 @@
               <Icon name="{{profile.icon}}" size="{{21}}" />
             </text>
             <text class="target-copy">
-              <text>
-                <text>{{profile.language}}</text>
-                <text>{{profile.runtime}}</text>
-              </text>
-              <text>
-                <text>{{profile.framework}}</text>
-                <text>·</text>
-                <text>{{profile.maturity}}</text>
-              </text>
-              <text>
-                <text>{{profile.sourceSkill}}</text>
-                <text>· :</text>
-                <text>{{profile.port}}</text>
-                <text>· 生产</text>
-                <text wx:if="{{profile.productionEntityScope === "multi-entity"}}">{{"多实体"}}</text>
-                <text wx:else>{{"单实体"}}</text>
-              </text>
+              <text>{{profile.language}} {{profile.runtime}}</text>
+              <text>{{profile.framework}} · {{profile.maturity}}</text>
+              <text>{{profile.sourceSkill}} · : {{profile.port}} · 生产 {{profile.productionEntityScope === "multi-entity" ? "多实体" : "单实体"}}</text>
             </text>
           </text>
         </view>
@@ -244,10 +208,7 @@
             <text class="overline">LOCAL REVIEW DRAFTS</text>
             <view id="generation-drafts-title">已保存的生成交接</view>
           </view>
-          <text>
-            <text>{{savedDrafts.length}}</text>
-            <text>/ 50</text>
-          </text>
+          <text>{{savedDrafts.length}} / 50</text>
         </view>
         <view wx:if="{{savedDrafts.length === 0}}" class="generation-drafts-empty">提交有效项目意图后，草稿会保存在当前浏览器，刷新页面仍可恢复。</view>
         <view wx:else class="generation-draft-list">
@@ -257,11 +218,7 @@
             </text>
             <view>
               <text>{{saved.name}}</text>
-              <text>
-                <text>{{saved.targets.join(" + ")}}</text>
-                <text>·</text>
-                <text>{{new Date(saved.createdAt).toLocaleString("zh-CN")}}</text>
-              </text>
+              <text>{{saved.targets.join(" + ")}} · {{new Date(saved.createdAt).toLocaleString("zh-CN")}}</text>
             </view>
             <StatusChip status="{{draft?.id === saved.id ? &quot;REVIEW&quot; : &quot;DRAFT&quot;}}" compact="true" />
             <button type="button" class="button button-secondary compact-button" aria-label="{{`恢复草稿 ${saved.name}`}}" bindtap="onTap">恢复</button>
@@ -277,10 +234,7 @@
             <text class="overline">PLANNED ASSETS</text>
             <view id="assets-title">生成计划包含</view>
           </view>
-          <text>
-            <text wx:if="{{job}}">{{job.status}}</text>
-            <text wx:else>{{"实际未生成"}}</text>
-          </text>
+          <text>{{job ? job.status : "实际未生成"}}</text>
         </view>
         <view class="asset-grid">
           <view wx:for="{{plannedAssets}}" wx:for-item="asset" wx:key="asset.id" class="asset-item" key="{{asset.title}}">
@@ -305,33 +259,16 @@
         <view wx:if="{{!analysis}}" class="generation-drafts-empty">锁定 Intent 后运行需求分析；批准前必须查看实体、字段、规则、权限和开放问题。</view>
         <view wx:else class="generation-analysis-grid">
           <view class="generation-analysis-card">
-            <text>
-              <text>实体与字段 ·</text>
-              <text>{{analysis.request.entities.length}}</text>
-            </text>
+            <text>实体与字段 · {{analysis.request.entities.length}}</text>
             <view wx:for="{{analysis.request.entities}}" wx:key="item.id" class="analysis-entity" key="{{item.singular}}">
-              <text>
-                <text>{{item.singular}}</text>
-                <text>→</text>
-                <text>{{item.plural}}</text>
-              </text>
+              <text>{{item.singular}} → {{item.plural}}</text>
               <text>{{item.fields.map((field) => `${field.name}:${field.type}${field.required ? "!" : "?"}`).join(" · ")}}</text>
             </view>
           </view>
           <view class="generation-analysis-card">
             <text>需求与规则</text>
-            <text>
-              <text>{{analysis.request.requirements.length}}</text>
-              <text>项需求 ·</text>
-              <text>{{analysis.request.acceptance_criteria.length}}</text>
-              <text>项验收条件 ·</text>
-              <text>{{analysis.request.business_rules.length}}</text>
-              <text>条业务规则</text>
-            </text>
-            <text>
-              <text>审阅摘要 ·</text>
-              <text>{{analysis.requestDigest.slice(0, 16)}}</text>
-            </text>
+            <text>{{analysis.request.requirements.length}} 项需求 · {{analysis.request.acceptance_criteria.length}} 项验收条件 · {{analysis.request.business_rules.length}} 条业务规则</text>
+            <text>审阅摘要 · {{analysis.requestDigest.slice(0, 16)}}</text>
             <text wx:for="{{analysis.request.business_rules}}" wx:for-item="rule" wx:key="rule.id" key="{{rule.id}}">
               <text>{{rule.id}}</text>
               <text>·</text>
@@ -339,15 +276,8 @@
             </text>
           </view>
           <view wx:if="{{analysis.request.requirement_sources && analysis.request.source_bundle_sha256}}" class="generation-analysis-card">
-            <text>
-              <text>来源证明 ·</text>
-              <text>{{analysis.request.requirement_sources.length}}</text>
-            </text>
-            <text>
-              <text>来源包</text>
-              <text>{{analysis.request.source_bundle_sha256.slice(0, 16)}}</text>
-              <text>· 已绑定当前审批摘要</text>
-            </text>
+            <text>来源证明 · {{analysis.request.requirement_sources.length}}</text>
+            <text>来源包 {{analysis.request.source_bundle_sha256.slice(0, 16)}} · 已绑定当前审批摘要</text>
             <text wx:for="{{analysis.request.requirement_sources}}" wx:for-item="source" wx:key="source.id" key="{{source.id}}">
               <text>{{source.id}}</text>
               <text>·</text>
@@ -360,22 +290,15 @@
           </view>
           <view class="generation-analysis-card">
             <text>关系与权限</text>
-            <text>
-              <text>{{analysis.request.relations.length}}</text>
-              <text>条关系 ·</text>
-              <text>{{analysis.request.permissions.length}}</text>
-              <text>条声明性权限；</text>
-              <text wx:if="{{analysis.request.project.auth_mode === "none"}}">{{"当前无认证，仅用于本地 Starter。"}}</text>
-              <text wx:else>{{`当前 ${analysis.request.project.auth_mode.toUpperCase()} 默认拒绝并执行租户/权限契约。`}}</text>
-            </text>
+            <text>{{analysis.request.relations.length}} 条关系 · {{analysis.request.permissions.length}} 条声明性权限； {{analysis.request.project.auth_mode === "none"
+                      ? "当前无认证，仅用于本地 Starter。"
+                      : `当前 ${analysis.request.project.auth_mode.toUpperCase()} 默认拒绝并执行租户/权限契约。`}}</text>
             <text wx:for="{{analysis.request.relations}}" wx:for-item="relation" wx:key="relation.id" key="{{`${relation.source}-${relation.source_field ?? &quot;&quot;}-${relation.target}-${relation.target_field ?? &quot;&quot;}`}}">
               <text>{{relation.source}}</text>
-              <text wx:if="{{relation.source_field}}">{{`.${relation.source_field}`}}</text>
-              <text wx:else>{{""}}</text>
+              <text>{{relation.source_field ? `.${relation.source_field}` : ""}}</text>
               <text>{{relation.kind}}</text>
               <text>{{relation.target}}</text>
-              <text wx:if="{{relation.target_field}}">{{`.${relation.target_field}`}}</text>
-              <text wx:else>{{""}}</text>
+              <text>{{relation.target_field ? `.${relation.target_field}` : ""}}</text>
             </text>
             <text wx:if="{{analysis.request.relations.length === 0}}">当前未声明实体关系</text>
             <text wx:for="{{analysis.request.permissions}}" wx:for-item="permission" wx:key="permission.id" key="{{`${permission.actor}-${permission.action}-${permission.resource}-${permission.effect}`}}">
@@ -388,10 +311,7 @@
             </text>
           </view>
           <view class="{{`generation-analysis-card ${analysis.request.open_questions.length ? &quot;analysis-blocked&quot; : &quot;&quot;}`}}">
-            <text>
-              <text>开放问题 ·</text>
-              <text>{{analysis.request.open_questions.length}}</text>
-            </text>
+            <text>开放问题 · {{analysis.request.open_questions.length}}</text>
             <text wx:for="{{analysis.request.open_questions}}" wx:for-item="question" wx:key="question.id" key="{{question.id}}">
               <text>{{question.id}}</text>
               <text>·</text>
@@ -452,10 +372,7 @@
             </view>
             <view>
               <text>预览剩余</text>
-              <text>
-                <text wx:if="{{["STARTING", "RUNNING"].includes(job.runtime.status)}}">{{runtimeCountdown}}</text>
-                <text wx:else>{{"--:--"}}</text>
-              </text>
+              <text>{{["STARTING", "RUNNING"].includes(job.runtime.status) ? runtimeCountdown : "--:--"}}</text>
             </view>
             <view>
               <text>隔离</text>
@@ -475,17 +392,11 @@
           <view wx:if="{{job.artifacts.length > 0}}" class="generation-artifact-tree" aria-label="生成文件树">
             <view>
               <text>生成文件树</text>
-              <text>
-                <text>{{job.artifacts.length}}</text>
-                <text>个内容寻址文件</text>
-              </text>
+              <text>{{job.artifacts.length}} 个内容寻址文件</text>
             </view>
             <view wx:for="{{artifactGroups}}" wx:for-item="[root, artifacts]" wx:key="[root, artifacts].id" key="{{root}}">
               <view>
-                <text>
-                  <text>{{root}}</text>
-                  <text>/</text>
-                </text>
+                <text>{{root}} /</text>
                 <text>{{artifacts.length}}</text>
               </view>
               <view>
@@ -563,23 +474,16 @@
             <view class="generation-github-actions">
               <button class="button button-primary" type="button" disabled="{{githubBusy || job.status !== &quot;COMPLETED&quot; || !job.artifactReady || !githubConfirmed || githubToken.trim().length &lt; 20 || (accountRunner &amp;&amp; !accountCanPublish)}}" bindtap="onTap">
                 <Icon name="repository" size="{{15}}" />
-                <text wx:if="{{githubBusy}}">{{"正在创建并校验…"}}</text>
-                <text wx:else>{{"一键上传 GitHub"}}</text>
+                <text>{{githubBusy ? "正在创建并校验…" : "一键上传 GitHub"}}</text>
               </button>
               <text wx:if="{{accountRunner && !accountCanPublish}}">当前账户没有 repository:push，服务端会拒绝外部写入。</text>
             </view>
-            <view wx:if="{{job.githubPublication?.status === "PUBLISHED" && job.githubPublication.repositoryUrl}}" class="generation-github-receipt">
+            <view wx:if="{{job.githubPublication?.status === 'PUBLISHED' && job.githubPublication.repositoryUrl}}" class="generation-github-receipt">
               <text>{{job.githubPublication.repositoryFullName}}</text>
-              <text>
-                <text>main ·</text>
-                <text>{{job.githubPublication.commitSha?.slice(0, 12)}}</text>
-                <text>·</text>
-                <text>{{job.githubPublication.fileCount}}</text>
-                <text>个文件</text>
-              </text>
+              <text>main · {{job.githubPublication.commitSha?.slice(0, 12)}} · {{job.githubPublication.fileCount}} 个文件</text>
               <navigator href="{{job.githubPublication.repositoryUrl}}" target="_blank" rel="noreferrer">在 GitHub 查看</navigator>
             </view>
-            <view wx:if="{{job.githubPublication?.status === "BLOCKED"}}" class="generation-job-reason" role="alert">{{job.githubPublication.reason}}</view>
+            <view wx:if="{{job.githubPublication?.status === 'BLOCKED'}}" class="generation-job-reason" role="alert">{{job.githubPublication.reason}}</view>
           </view>
         </view>
       </view>
@@ -592,7 +496,7 @@
           </text>
         </view>
         <view class="generation-submit-actions">
-          <button wx:if="{{job && !["COMPLETED", "PARTIAL", "BLOCKED", "CANCELLED"].includes(job.status)}}" class="button button-secondary" type="button" disabled="{{runnerBusy || !runnerCredentialReady}}" bindtap="onTap">
+          <button wx:if="{{job && !['COMPLETED', 'PARTIAL', 'BLOCKED', 'CANCELLED'].includes(job.status)}}" class="button button-secondary" type="button" disabled="{{runnerBusy || !runnerCredentialReady}}" bindtap="onTap">
             <Icon name="close" size="{{16}}" />
             <text>取消任务</text>
           </button>
@@ -643,20 +547,10 @@
               <Icon name="{{profile.icon}}" size="{{15}}" />
             </text>
             <text>
-              <text>
-                <text>{{profile.language}}</text>
-                <text>{{profile.runtime}}</text>
-              </text>
-              <text>
-                <text>{{profile.framework}}</text>
-                <text>·</text>
-                <text>{{profile.verificationStatus}}</text>
-              </text>
+              <text>{{profile.language}} {{profile.runtime}}</text>
+              <text>{{profile.framework}} · {{profile.verificationStatus}}</text>
             </text>
-            <text>
-              <text>:</text>
-              <text>{{profile.port}}</text>
-            </text>
+            <text>: {{profile.port}}</text>
           </view>
           <view wx:if="{{previewProfiles.length === 0}}" class="preview-empty">尚未选择目标技术栈。</view>
         </view>
@@ -671,11 +565,7 @@
             <text>{{index + 1}}</text>
             <text>
               <text>{{phase.title}}</text>
-              <text>
-                <text>{{phase.batch}}</text>
-                <text>·</text>
-                <text>{{phase.detail}}</text>
-              </text>
+              <text>{{phase.batch}} · {{phase.detail}}</text>
             </text>
           </view>
         </view>
@@ -700,10 +590,7 @@
             <code>{{item.command}}</code>
           </view>
         </view>
-        <text>
-          <text wx:if="{{draft}}">{{"先导出 project-intent.json；命令与 Project Synthesis 1.2.0 引擎契约对应，任何一步失败都应停止。"}}</text>
-          <text wx:else>{{"先提交有效表单以锁定 Intent 和命令，防止复制仍在变化的未审阅输入。"}}</text>
-        </text>
+        <text>{{draft ? "先导出 project-intent.json；命令与 Project Synthesis 1.2.0 引擎契约对应，任何一步失败都应停止。" : "先提交有效表单以锁定 Intent 和命令，防止复制仍在变化的未审阅输入。"}}</text>
       </view>
       <view class="generation-boundary">
         <Icon name="shield" size="{{19}}" />

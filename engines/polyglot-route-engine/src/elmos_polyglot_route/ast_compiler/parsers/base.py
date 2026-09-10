@@ -45,6 +45,31 @@ class BaseAstParser(ABC):
         """Parse raw source code into a UniversalModule."""
         pass
 
+    @staticmethod
+    def find_matching_brace(text: str, start_index: int) -> int:
+        """Finds index of matching closing brace '}' starting from '{' at or after start_index."""
+        depth = 0
+        idx = text.find('{', start_index)
+        if idx == -1:
+            return -1
+        in_string = False
+        in_char = False
+        for i in range(idx, len(text)):
+            ch = text[i]
+            if ch == '"' and not in_char and (i == 0 or text[i - 1] != '\\'):
+                in_string = not in_string
+            elif ch == "'" and not in_string and (i == 0 or text[i - 1] != '\\'):
+                in_char = not in_char
+            elif not in_string and not in_char:
+                if ch == '{':
+                    depth += 1
+                elif ch == '}':
+                    depth -= 1
+                    if depth == 0:
+                        return i
+        return -1
+
+
     def parse_type(self, raw_type: str) -> UniversalType:
         """Normalize language-specific type string into UniversalType."""
         t = raw_type.strip()

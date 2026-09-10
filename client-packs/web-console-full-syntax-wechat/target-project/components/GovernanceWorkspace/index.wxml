@@ -21,37 +21,27 @@
       </button>
     </view>
   </view>
-  <view wx:if="{{activeTab === "mutation"}}" class="{{styles.mainGrid}}">
+  <view wx:if="{{activeTab === 'mutation'}}" class="{{styles.mainGrid}}">
     <view class="{{styles.panel}}">
       <view class="{{styles.panelHeader}}">
         <view>待测业务逻辑 (Source Code)</view>
         <button type="button" class="{{styles.runBtn}}" disabled="{{isAnalyzing}}" bindtap="handleRunMutation">
           <Icon name="play" size="{{14}}" />
-          <text wx:if="{{isAnalyzing}}">{{"生成示例中..."}}</text>
-          <text wx:else>{{"生成变异结果示例（不执行 Runner）"}}</text>
+          <text>{{isAnalyzing ? "生成示例中..." : "生成变异结果示例（不执行 Runner）"}}</text>
         </button>
       </view>
       <textarea aria-label="待测业务逻辑示例" class="{{styles.editor}}" value="{{codeSnippet}}" rows="{{8}}" bindchange="onChange" />
       <view class="{{styles.scoreBoard}}" aria-label="变异测试示例状态">
         <view class="{{styles.scoreItem}}">
-          <text class="{{styles.scoreVal}}">
-            <text wx:if="{{mutationResults}}">{{"75.0%"}}</text>
-            <text wx:else>{{"NOT_RUN"}}</text>
-          </text>
+          <text class="{{styles.scoreVal}}">{{mutationResults ? "75.0%" : "NOT_RUN"}}</text>
           <text class="{{styles.scoreLbl}}">变异杀伤率 (Kill Score)</text>
         </view>
         <view class="{{styles.scoreItem}}">
-          <text class="{{styles.scoreVal}}">
-            <text wx:if="{{mutationResults}}">{{"3 / 4"}}</text>
-            <text wx:else>{{"—"}}</text>
-          </text>
+          <text class="{{styles.scoreVal}}">{{mutationResults ? "3 / 4" : "—"}}</text>
           <text class="{{styles.scoreLbl}}">已击杀变异体 (Killed Mutants)</text>
         </view>
         <view class="{{styles.scoreItem}}">
-          <text class="{{styles.scoreVal}}">
-            <text wx:if="{{mutationResults}}">{{"1"}}</text>
-            <text wx:else>{{"—"}}</text>
-          </text>
+          <text class="{{styles.scoreVal}}">{{mutationResults ? "1" : "—"}}</text>
           <text class="{{styles.scoreLbl}}">存活变异体 (Survived)</text>
         </view>
       </view>
@@ -59,10 +49,7 @@
     <view class="{{styles.panel}}">
       <view class="{{styles.panelHeader}}">
         <view>变异体示例 (Illustrative Mutants)</view>
-        <text class="{{styles.metaTag}}">
-          <text wx:if="{{mutationResults}}">{{"SAMPLE_ONLY"}}</text>
-          <text wx:else>{{"NOT_RUN"}}</text>
-        </text>
+        <text class="{{styles.metaTag}}">{{mutationResults ? "SAMPLE_ONLY" : "NOT_RUN"}}</text>
       </view>
       <view class="{{styles.mutantList}}">
         <view wx:if="{{!mutationResults}}" class="{{styles.emptyState}}">尚未生成示例；真实变异测试、编译与测试回放均为 NOT_RUN。</view>
@@ -88,7 +75,7 @@
       </view>
     </view>
   </view>
-  <view wx:if="{{activeTab === "api-diff"}}" class="{{styles.fullPanel}}">
+  <view wx:if="{{activeTab === 'api-diff'}}" class="{{styles.fullPanel}}">
     <view class="{{styles.panelHeader}}">
       <view>API 契约差分静态示例</view>
       <text class="{{styles.dangerTag}}">SAMPLE_ONLY · NOT_RUN</text>
@@ -113,7 +100,7 @@
       </view>
     </view>
   </view>
-  <view wx:if="{{activeTab === "cas-cache"}}" class="{{styles.fullPanel}}">
+  <view wx:if="{{activeTab === 'cas-cache'}}" class="{{styles.fullPanel}}">
     <view class="{{styles.panelHeader}}">
       <view>浏览器内缓存状态示例</view>
       <button type="button" class="{{styles.purgeBtn}}" bindtap="handlePurgeL1">
@@ -133,18 +120,12 @@
         <text class="{{styles.mDesc}}">多级缓存持久化总单元</text>
       </view>
       <view class="{{styles.metricCard}}">
-        <text class="{{styles.mValue}}">
-          <text>{{(cacheStats.hitRatio * 100).toFixed(1)}}</text>
-          <text>%</text>
-        </text>
+        <text class="{{styles.mValue}}">{{(cacheStats.hitRatio * 100).toFixed(1)}} %</text>
         <text class="{{styles.mLabel}}">Cache Hit Ratio</text>
         <text class="{{styles.mDesc}}">CAS 命中加速比</text>
       </view>
       <view class="{{styles.metricCard}}">
-        <text class="{{styles.mValue}}">
-          <text>{{cacheStats.bloomFilterBits}}</text>
-          <text>bits</text>
-        </text>
+        <text class="{{styles.mValue}}">{{cacheStats.bloomFilterBits}} bits</text>
         <text class="{{styles.mLabel}}">Bloom Filter Active</text>
         <text class="{{styles.mDesc}}">布隆过滤器极速预检</text>
       </view>

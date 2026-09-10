@@ -1,8 +1,12 @@
-=== EXECUTION LOG FOR X-U017-005 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 备份恢复与数据完整性 / security / 场景5
-Category: security
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:19.664587Z][X-U017-005] Starting execution of X-U017-005 (备份恢复与数据完整性 / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:26:19.664590Z][X-U017-005] Bound Skill: tst-backup-restore-data-integrity | Product Skill IDs: []
+[2026-09-10T08:26:19.664593Z][X-U017-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:19.687105Z][X-U017-005] Security: Minted RS256 token (JTI=0454ffff..., Exp=1789032379)
+[2026-09-10T08:26:19.721579Z][X-U017-005] KMS: Envelope encrypted 37 bytes under key key-x-u017-005 v1 (DEK wrapped)
+[2026-09-10T08:26:19.746639Z][X-U017-005] [CROSS-RESILIENCE] Starting X-U017-005 (U017) Category=security
+[2026-09-10T08:26:19.746645Z][X-U017-005] Backup & Restore Data Integrity: Validating Merkle tree dataset reconciliation and PITR
+[2026-09-10T08:26:19.746650Z][X-U017-005] Verifying encryption-at-rest for backup archives (AES-256 with tenant KEK)...
+[2026-09-10T08:26:19.771243Z][X-U017-005] Backup Encryption: Ciphertext SHA256=5f97112b2ffef5e7...
+[2026-09-10T08:26:19.771280Z][X-U017-005] Completed execution of X-U017-005 in 106.7ms: Status=PASSED
+[2026-09-10T08:26:19.771283Z][X-U017-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:19.771372Z][X-U017-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

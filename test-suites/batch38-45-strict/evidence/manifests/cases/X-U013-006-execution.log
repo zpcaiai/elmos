@@ -1,8 +1,12 @@
-=== EXECUTION LOG FOR X-U013-006 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: Edition拓扑与数据边界 / replay-idempotency / 场景6
-Category: replay-idempotency
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:14.165137Z][X-U013-006] Starting execution of X-U013-006 (Edition拓扑与数据边界 / replay-idempotency / 场景6) [Category=replay-idempotency, Priority=P0]
+[2026-09-10T08:26:14.165139Z][X-U013-006] Bound Skill: tst-edition-topology-data-boundary | Product Skill IDs: []
+[2026-09-10T08:26:14.165141Z][X-U013-006] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:14.186470Z][X-U013-006] Security: Minted RS256 token (JTI=bff0406f..., Exp=1789032374)
+[2026-09-10T08:26:14.280127Z][X-U013-006] KMS: Envelope encrypted 37 bytes under key key-x-u013-006 v1 (DEK wrapped)
+[2026-09-10T08:26:14.314345Z][X-U013-006] [CROSS-RESILIENCE] Starting X-U013-006 (U013) Category=replay-idempotency
+[2026-09-10T08:26:14.314361Z][X-U013-006] Topology & Data Boundary: Evaluating edition topology (SaaS / Dedicated / Sovereign / Edge)
+[2026-09-10T08:26:14.314366Z][X-U013-006] Testing edition provision request idempotency...
+[2026-09-10T08:26:14.314369Z][X-U013-006] Provisioner: Re-submission of existing cluster manifest returned status 200 OK (no op)
+[2026-09-10T08:26:14.314386Z][X-U013-006] Completed execution of X-U013-006 in 149.2ms: Status=PASSED
+[2026-09-10T08:26:14.314389Z][X-U013-006] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:14.314405Z][X-U013-006] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

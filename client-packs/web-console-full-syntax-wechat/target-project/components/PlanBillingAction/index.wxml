@@ -1,18 +1,9 @@
-<view class="{{styles.subscriptionPanel}}" aria-label="当前订阅">
-  <view class="{{styles.subscriptionCopy}}">
-    <text>当前订阅</text>
-    <text>{{copy}}</text>
-    <text wx:if="{{message}}" role="status">{{message}}</text>
-  </view>
-  <view class="{{styles.subscriptionActions}}">
-    <button wx:if="{{state === "UNAVAILABLE"}}" class="button button-secondary" type="button" bindtap="onTap">重试</button>
-    <button wx:if="{{state === "READY" && subscription?.canCancel && !confirming}}" class="button button-secondary" type="button" bindtap="onTap">到期取消</button>
-    <block wx:if="{{state === "READY" && subscription?.canCancel && confirming}}">
-      <button class="button button-secondary" type="button" disabled="{{pending}}" bindtap="onTap">保留订阅</button>
-      <button class="button button-primary" type="button" disabled="{{pending}}" bindtap="cancel">
-        <text wx:if="{{pending}}">{{"正在提交…"}}</text>
-        <text wx:else>{{"确认到期取消"}}</text>
-      </button>
-    </block>
-  </view>
+<view class="{{styles.actionStack}}">
+  <button class="{{`button ${plan.featured ? &quot;button-primary&quot; : &quot;button-secondary&quot;}`}}" type="button" disabled="{{pending || paidUnavailable}}" bindtap="activate">
+    <text>{{pending ? "正在处理…" : trial ? "开始免费体验" : paidUnavailable ? "等待开放" : "安全结账"}}</text>
+    <Icon wx:if="{{!pending}}" name="{{paidUnavailable ? &quot;clock&quot; : &quot;arrow&quot;}}" size="{{15}}" />
+  </button>
+  <image wx:if="{{qrCode && qrCode.planId === plan.planId}}" class="{{styles.paymentQrCode}}" src="{{`data:image/svg+xml;utf8,${encodeURIComponent(qrCode.svg)}`}}" alt="微信支付二维码" width="{{220}}" height="{{220}}" />
+  <view wx:if="{{message}}" class="{{failed ? styles.actionError : styles.actionSuccess}}" role="{{failed ? &quot;alert&quot; : &quot;status&quot;}}">{{message}}</view>
+  <view wx:else class="{{styles.actionHint}}">{{trial ? "需登录并具有已验证邮箱或手机号" : paidUnavailable ? "完成支付、税务与成本门禁后开放" : "跳转至支付页或扫码完成支付"}}</view>
 </view>

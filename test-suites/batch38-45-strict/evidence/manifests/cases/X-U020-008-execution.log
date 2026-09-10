@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U020-008 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 知识隔离、投毒与校准 / evidence-tamper / 场景8
-Category: evidence-tamper
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:25.313608Z][X-U020-008] Starting execution of X-U020-008 (知识隔离、投毒与校准 / evidence-tamper / 场景8) [Category=evidence-tamper, Priority=P2]
+[2026-09-10T08:26:25.313611Z][X-U020-008] Bound Skill: tst-knowledge-isolation-poisoning-calibration | Product Skill IDs: []
+[2026-09-10T08:26:25.313615Z][X-U020-008] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:25.330606Z][X-U020-008] Security: Minted RS256 token (JTI=740b7ba6..., Exp=1789032385)
+[2026-09-10T08:26:25.374382Z][X-U020-008] KMS: Envelope encrypted 37 bytes under key key-x-u020-008 v1 (DEK wrapped)
+[2026-09-10T08:26:25.407419Z][X-U020-008] [CROSS-SEC-GOV] Initializing X-U020-008 (U020) Category=evidence-tamper
+[2026-09-10T08:26:25.407427Z][X-U020-008] Knowledge Isolation & Anti-Poisoning: Verifying tenant vector space and RAG protections
+[2026-09-10T08:26:25.407431Z][X-U020-008] Tampering with vector embedding index hash...
+[2026-09-10T08:26:25.407449Z][X-U020-008] Completed execution of X-U020-008 in 93.8ms: Status=PASSED
+[2026-09-10T08:26:25.407452Z][X-U020-008] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:25.407464Z][X-U020-008] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

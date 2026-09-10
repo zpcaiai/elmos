@@ -33,125 +33,156 @@ Component({
   lifetimes: {
     attached() {
       // Lifecycle effect effect_0
-      try {
-        if (!accountRunner || !account.principal) return;
+      (async () => {
+        try {
+          if (!accountRunner || !account.principal)
+        return;
     setTenantId(account.principal.organizationId);
     setActorId(account.principal.actorId);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_1
-      try {
-        const value = new URLSearchParams(window.location.search)
-      .get("repositoryWorkspaceId")?.trim().toLowerCase() ?? "";
-    if (/^[0-9a-f-]{36}$/.test(value)) setRepositoryWorkspaceId(value);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+      (async () => {
+        try {
+          const value = new URLSearchParams(window.location.search)
+        .get("repositoryWorkspaceId")?.trim().toLowerCase() ?? "";
+    if (/^[0-9a-f-]{36}$/.test(value))
+        setRepositoryWorkspaceId(value);
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_2
-      try {
-        const controller = new AbortController();
+      (async () => {
+        try {
+          const controller = new AbortController();
     fetch("/api/capabilities/translation", { cache: "no-store", signal: controller.signal })
-      .then(async (response) => {
-        const payload = await response.json().catch(() => null) as
-          | TranslationCapabilityResponse
-          | { status?: string; errorCode?: string; message?: string }
-          | null;
+        .then(async (response) => {
+        const payload = await response.json().catch(() => null);
         if (!response.ok || !payload || !("routes" in payload)) {
-          const detail = payload && "errorCode" in payload && payload.errorCode
-            ? `${payload.errorCode}：${payload.message ?? ""}`
-            : `HTTP_${response.status}`;
-          throw new Error(detail);
+            const detail = payload && "errorCode" in payload && payload.errorCode
+                ? `${payload.errorCode}：${payload.message ?? ""}`
+                : `HTTP_${response.status}`;
+            throw new Error(detail);
         }
         setCapability(payload);
         setCapabilityError("");
-      })
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
+    })
+        .catch((error) => {
+        if (error instanceof DOMException && error.name === "AbortError")
+            return;
         setCapability(null);
-        setCapabilityError(
-          `路线能力契约不可读取（${error instanceof Error ? error.message : "UNKNOWN"}）；`
-          + "所有路线状态保持 NOT_RUN，页面不会展示未读取到的通过结论。",
-        );
-      });
+        setCapabilityError(`路线能力契约不可读取（${error instanceof Error ? error.message : "UNKNOWN"}）；`
+            + "所有路线状态保持 NOT_RUN，页面不会展示未读取到的通过结论。");
+    });
     try {
-      const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "null") as Handoff | null;
-      if (isStoredHandoff(stored)) setHandoff(stored);
-    } catch {
-      try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* Storage may be denied. */ }
+        const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "null");
+        if (isStoredHandoff(stored))
+            setHandoff(stored);
+    }
+    catch {
+        try {
+            window.localStorage.removeItem(STORAGE_KEY);
+        }
+        catch { /* Storage may be denied. */ }
     }
     return () => controller.abort();
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_3
-      try {
-        fetch("/api/translation/health", { cache: "no-store" })
-      .then(async (response) => {
-        const payload = await response.json() as TranslationRunnerHealth;
+      (async () => {
+        try {
+          fetch("/api/translation/health", { cache: "no-store" })
+        .then(async (response) => {
+        const payload = await response.json();
         setRunnerHealth(payload);
-      })
-      .catch(() => setRunnerHealth({
+    })
+        .catch(() => setRunnerHealth({
         status: "BLOCKED",
         isolation: "NOT_CONFIGURED",
         sourceStorage: "BLOCKED",
         activeJobs: 0,
         reason: "TRANSLATION_RUNNER_HEALTH_UNAVAILABLE",
-      }));
+    }));
     const latest = window.sessionStorage.getItem(JOB_STORAGE_KEY);
-    if (latest && /^[0-9a-f-]{36}$/.test(latest)) setRecoveryJobId(latest);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+    if (latest && /^[0-9a-f-]{36}$/.test(latest))
+        setRecoveryJobId(latest);
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_4
-      try {
-        if (!job || !["QUEUED", "PRECHECK", "RUNNING"].includes(job.status)) return;
+      (async () => {
+        try {
+          if (!job || !["QUEUED", "PRECHECK", "RUNNING"].includes(job.status))
+        return;
     const timer = window.setInterval(() => {
-      void runnerRequest<TranslationJob>(`/api/translation/jobs/${job.id}`)
-        .then(setJob)
-        .catch((error: Error) => setFeedback(`任务刷新失败：${error.message}`));
+        void runnerRequest(`/api/translation/jobs/${job.id}`)
+            .then(setJob)
+            .catch((error) => setFeedback(`任务刷新失败：${error.message}`));
     }, 1_500);
     return () => window.clearInterval(timer);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_5
-      try {
-        if (!feedback) return;
+      (async () => {
+        try {
+          if (!feedback)
+        return;
     const timer = window.setTimeout(() => setFeedback(""), 5_200);
     return () => window.clearTimeout(timer);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },
   },
   methods: {
     resetDerivedState() {
-      setHandoff(null);
+      try {
+        setHandoff(null);
     setRepositoryPlan(null);
     setDiscovery(null);
     setWorkUnitFilter("");
     setWorkUnitPage(0);
+      } catch (err) {
+        console.warn("resetDerivedState execution warning:", err);
+      }
     },
     chooseSource(id) {
-      setSourceLanguage(id);
+      try {
+        setSourceLanguage(id);
     if (id === targetLanguage) {
         const replacement = languages.find((language) => language.id !== id);
         if (replacement)
             setTargetLanguage(replacement.id);
     }
     resetDerivedState();
+      } catch (err) {
+        console.warn("chooseSource execution warning:", err);
+      }
     },
     chooseTarget(id) {
-      if (id === sourceLanguage)
+      try {
+        if (id === sourceLanguage)
         return;
     setTargetLanguage(id);
     resetDerivedState();
+      } catch (err) {
+        console.warn("chooseTarget execution warning:", err);
+      }
     },
     saveHandoff() {
-      if (!selectedRoute) {
+      try {
+        if (!selectedRoute) {
         setFeedback("当前源/目标组合在仓库路线契约中不存在，无法生成交接。");
         return;
     }
@@ -195,9 +226,13 @@ Component({
     catch {
         setFeedback("浏览器未允许保存；当前交接仍可导出。");
     }
+      } catch (err) {
+        console.warn("saveHandoff execution warning:", err);
+      }
     },
-    importInventory(event) {
-      const file = event.target.files?.[0];
+    async importInventory(event) {
+      try {
+        const file = event.target.files?.[0];
     event.target.value = "";
     if (!file)
         return;
@@ -247,9 +282,13 @@ Component({
     finally {
         setImporting(false);
     }
+      } catch (err) {
+        console.warn("importInventory execution warning:", err);
+      }
     },
-    importDiscovery(event) {
-      const file = event.target.files?.[0];
+    async importDiscovery(event) {
+      try {
+        const file = event.target.files?.[0];
     event.target.value = "";
     if (!file || !selectedRoute || !repositoryPlan)
         return;
@@ -291,18 +330,26 @@ Component({
     finally {
         setImporting(false);
     }
+      } catch (err) {
+        console.warn("importDiscovery execution warning:", err);
+      }
     },
-    copyText(value, message) {
+    async copyText(value, message) {
       try {
+        try {
         await navigator.clipboard.writeText(value);
         setFeedback(message);
     }
     catch {
         setFeedback("浏览器未允许访问剪贴板，请手动复制。");
     }
+      } catch (err) {
+        console.warn("copyText execution warning:", err);
+      }
     },
-    runnerRequest(url, init) {
-      const response = await fetch(url, {
+    async runnerRequest(url, init) {
+      try {
+        const response = await fetch(url, {
         cache: "no-store",
         ...init,
         headers: {
@@ -325,9 +372,13 @@ Component({
         throw new Error(reason || `HTTP_${response.status}`);
     }
     return payload;
+      } catch (err) {
+        console.warn("runnerRequest execution warning:", err);
+      }
     },
-    startRepositoryPipeline() {
-      if (!selectedRouteExecutable) {
+    async startRepositoryPipeline() {
+      try {
+        if (!selectedRouteExecutable) {
         setFeedback("当前路线没有本地 Profile 通过证据，受控执行保持关闭。");
         return;
     }
@@ -359,9 +410,13 @@ Component({
     finally {
         setJobBusy(false);
     }
+      } catch (err) {
+        console.warn("startRepositoryPipeline execution warning:", err);
+      }
     },
-    recoverRepositoryPipeline() {
-      setJobBusy(true);
+    async recoverRepositoryPipeline() {
+      try {
+        setJobBusy(true);
     try {
         const next = await runnerRequest(`/api/translation/jobs/${recoveryJobId.trim()}`);
         setJob(next);
@@ -374,9 +429,13 @@ Component({
     finally {
         setJobBusy(false);
     }
+      } catch (err) {
+        console.warn("recoverRepositoryPipeline execution warning:", err);
+      }
     },
-    cancelRepositoryPipeline() {
-      if (!job)
+    async cancelRepositoryPipeline() {
+      try {
+        if (!job)
         return;
     setJobBusy(true);
     try {
@@ -391,9 +450,13 @@ Component({
     finally {
         setJobBusy(false);
     }
+      } catch (err) {
+        console.warn("cancelRepositoryPipeline execution warning:", err);
+      }
     },
-    downloadRepositoryArtifact() {
-      if (!job?.artifactReady || !job.artifactSha256 || !job.artifactSize)
+    async downloadRepositoryArtifact() {
+      try {
+        if (!job?.artifactReady || !job.artifactSha256 || !job.artifactSize)
         return;
     setJobBusy(true);
     try {
@@ -419,9 +482,13 @@ Component({
     finally {
         setJobBusy(false);
     }
+      } catch (err) {
+        console.warn("downloadRepositoryArtifact execution warning:", err);
+      }
     },
-    downloadConversionReport(format) {
-      const descriptor = format === "markdown"
+    async downloadConversionReport(format) {
+      try {
+        const descriptor = format === "markdown"
         ? job?.reportMarkdown
         : format === "json" ? job?.reportJson : job?.reportBundle;
     if (!job?.reportReady || !descriptor)
@@ -451,9 +518,13 @@ Component({
     finally {
         setJobBusy(false);
     }
+      } catch (err) {
+        console.warn("downloadConversionReport execution warning:", err);
+      }
     },
     exportHandoff() {
-      if (!handoff || !selectedRoute) {
+      try {
+        if (!handoff || !selectedRoute) {
         setFeedback("请先保存当前路线交接。");
         return;
     }
@@ -473,9 +544,13 @@ Component({
     };
     triggerBrowserDownload(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }), `${handoff.routeId}-handoff.json`);
     setFeedback("路线交接已导出，所有执行与认证状态保持 NOT_RUN / NOT_CERTIFIED。");
+      } catch (err) {
+        console.warn("exportHandoff execution warning:", err);
+      }
     },
     exportWorkUnits() {
-      if (!repositoryPlan)
+      try {
+        if (!repositoryPlan)
         return;
     const header = "source_path,source_sha256,source_bytes,status,execution_status,unsupported_until_discovered\n";
     const rows = repositoryPlan.work_units.map((unit) => [
@@ -488,6 +563,9 @@ Component({
     ].map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
     triggerBrowserDownload(new Blob([header + rows + "\n"], { type: "text/csv" }), `${repositoryPlan.route_id}-work-units.csv`);
     setFeedback("工作单元清单已导出为 CSV；每个单元的执行状态仍为 NOT_RUN。");
+      } catch (err) {
+        console.warn("exportWorkUnits execution warning:", err);
+      }
     },
   },
 });

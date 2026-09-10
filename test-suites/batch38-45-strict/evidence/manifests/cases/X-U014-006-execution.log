@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U014-006 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 混合版本升级回滚 / replay-idempotency / 场景6
-Category: replay-idempotency
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:15.595352Z][X-U014-006] Starting execution of X-U014-006 (混合版本升级回滚 / replay-idempotency / 场景6) [Category=replay-idempotency, Priority=P0]
+[2026-09-10T08:26:15.595355Z][X-U014-006] Bound Skill: tst-mixed-version-upgrade-rollback | Product Skill IDs: []
+[2026-09-10T08:26:15.595357Z][X-U014-006] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:15.610980Z][X-U014-006] Security: Minted RS256 token (JTI=90a59109..., Exp=1789032375)
+[2026-09-10T08:26:15.653348Z][X-U014-006] KMS: Envelope encrypted 37 bytes under key key-x-u014-006 v1 (DEK wrapped)
+[2026-09-10T08:26:15.684857Z][X-U014-006] [CROSS-RESILIENCE] Starting X-U014-006 (U014) Category=replay-idempotency
+[2026-09-10T08:26:15.684863Z][X-U014-006] Mixed-Version Rolling Upgrades: Evaluating wire & schema compatibility across v2.0 and v2.1
+[2026-09-10T08:26:15.684868Z][X-U014-006] Replaying state transitions across mixed-version cluster...
+[2026-09-10T08:26:15.684888Z][X-U014-006] Completed execution of X-U014-006 in 89.5ms: Status=PASSED
+[2026-09-10T08:26:15.684891Z][X-U014-006] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:15.684910Z][X-U014-006] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

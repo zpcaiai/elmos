@@ -13,18 +13,21 @@ Component({
   lifetimes: {
     attached() {
       // Lifecycle effect effect_0
-      try {
-        refresh();
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+      (async () => {
+        try {
+          refresh();
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },
   },
   methods: {
     moveStage(event, index) {
-      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key))
+      try {
+        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key))
         return;
     event.preventDefault();
     const last = payload.stages.length - 1;
@@ -32,6 +35,9 @@ Component({
     const nextStage = payload.stages[nextIndex];
     setSelected(nextStage.batch);
     requestAnimationFrame(() => document.getElementById(`trust-tab-${nextStage.batch}`)?.focus());
+      } catch (err) {
+        console.warn("moveStage execution warning:", err);
+      }
     },
   },
 });

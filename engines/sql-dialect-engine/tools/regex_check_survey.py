@@ -4,6 +4,7 @@ Deciding whether regex belongs in the subset needs the patterns, not the count.
 """
 
 from __future__ import annotations
+
 import argparse
 import contextlib
 import io

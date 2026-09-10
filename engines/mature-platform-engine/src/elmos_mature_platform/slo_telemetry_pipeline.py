@@ -66,6 +66,8 @@ class EnterpriseSloCollector:
         now = time.time()
         self.samples[name].append(MetricSample(name=name, value=value, timestamp=now, labels=labels or {}))
 
+    record_metric_sample = record_sample
+
     def record_zero_tolerance_event(self, category: ZeroToleranceCategory, details: str) -> None:
         self.zero_tolerance_counters[category.value] += 1
         self._log(f"CRITICAL ZERO-TOLERANCE VIOLATION: {category.value} -> {details}")

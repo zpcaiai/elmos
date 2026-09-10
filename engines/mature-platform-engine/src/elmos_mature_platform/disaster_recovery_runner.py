@@ -61,7 +61,6 @@ class DisasterRecoveryRunner:
                 else:
                     next_level.append(left)
             nodes = next_level
-
         return nodes[0]
 
     def reconcile_data_stores(
@@ -109,6 +108,8 @@ class DisasterRecoveryRunner:
             primary_root_hash=source_tree.hash_value,
             replica_root_hash=replica_tree.hash_value,
         )
+
+    reconcile_datasets = reconcile_data_stores
 
     def execute_disaster_recovery_drill(
         self,

@@ -9,7 +9,6 @@ try:
     import jsonschema
 except ImportError:
     jsonschema = None
-import pytest
 
 from elmos_sql_dialect.database_handoff_ledger import DatabaseHandoffLedger
 from elmos_sql_dialect.scan import ScanFinding

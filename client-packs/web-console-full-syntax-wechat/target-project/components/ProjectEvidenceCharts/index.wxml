@@ -1,105 +1,45 @@
-<view class="translation-evidence-charts" aria-labelledby="translation-evidence-title">
+<view class="project-evidence-charts" aria-labelledby="project-evidence-title">
   <view class="evidence-section-heading">
     <text>
-      <view id="translation-evidence-title">转换语义与行为覆盖</view>
-      <text>编译器语义主题和行为用例使用不同分母</text>
+      <view id="project-evidence-title">项目结构与等价证据</view>
+      <text>{{insights.stage}} · 结论上限 {{insights.claim_ceiling}}</text>
     </text>
-    <StatusMark status="{{semanticCoverage != null || behaviorCoverage != null ? &quot;REPRESENTED&quot; : &quot;NOT_RUN&quot;}}" compact="true" />
+    <text class="evidence-heading-statuses">
+      <StatusMark status="{{structureStatus}}" compact="true" />
+      <StatusMark status="{{insights.certification_status === &quot;NOT_CERTIFIED&quot; ? &quot;NOT_RUN&quot; : &quot;UNKNOWN&quot;}}" compact="true" />
+    </text>
   </view>
-  <view class="translation-coverage-grid">
-    <view class="translation-coverage-card">
-      <view class="evidence-section-heading">
+  <view class="evidence-graph-grid">
+    <EvidenceGraph title="{{insights.project_structure ? &quot;完整项目结构&quot; : &quot;生成流程结构（兼容视图）&quot;}}" description="{{insights.project_structure
+            ? `${insights.project_structure.coverage.classified_file_count} / ${insights.project_structure.coverage.managed_file_count} 个托管文件已分类`
+            : `${insights.structure.node_count} 个节点 · ${insights.structure.edge_count} 条关系`}}" nodes="{{preferredStructure.nodes}}" edges="{{preferredStructure.edges}}" status="{{structureStatus}}" />
+    <EvidenceGraph wx:if="{{dependencies}}" title="声明依赖图" description="{{`${dependencies.nodes.length} 个坐标 · ${dependencies.edges.length} 条声明关系 · 完整解析 ${insights.declared_dependencies?.complete ? &quot;是&quot; : &quot;否&quot;}`}}" nodes="{{dependencies.nodes}}" edges="{{dependencies.edges}}" status="{{insights.declared_dependencies?.resolution.status ?? &quot;NOT_RUN&quot;}}" />
+    <figure wx:else class="evidence-graph-card">
+      <figcaption>
         <text>
-          <view>Semantic coverage</view>
-          <text>{{semanticCoverage?.profile ?? "compiler-semantic-symbol-coverage-v1"}}</text>
+          <text>声明依赖图</text>
+          <text>仅接受服务端校验后的声明依赖</text>
         </text>
-        <StatusMark status="{{semanticCoverage?.status ?? &quot;NOT_RUN&quot;}}" compact="true" />
-      </view>
-      <block wx:if="{{semanticCoverage != null}}">
-        <CoverageMeter label="编译器语义主题" status="{{semanticCoverage.complete ? &quot;PASSED&quot; : semanticCoverage.status}}" passed="{{semanticCoverage.statusCounts.PASSED}}" total="{{semanticCoverage.subjectCount}}" counts="{{semanticCoverage.statusCounts}}" />
-        <view class="evidence-facts">
-          <view>
-            <view>源语言</view>
-            <view>{{semanticCoverage.sourceLanguage}}</view>
-          </view>
-          <view>
-            <view>语义清单</view>
-            <view>
-              <StatusMark status="{{semanticCoverage.inventoryStatus}}" compact="true" />
-            </view>
-          </view>
-          <view>
-            <view>完整</view>
-            <view>
-              <text wx:if="{{semanticCoverage.complete}}">{{"YES"}}</text>
-              <text wx:else>{{"NO"}}</text>
-            </view>
-          </view>
-          <view>
-            <view>主题分母</view>
-            <view>{{semanticCoverage.subjectCount}}</view>
-          </view>
-        </view>
-      </block>
-      <EmptyEvidence wx:else title="语义覆盖尚未返回" detail="任务状态不会替代逐主题 semanticCoverage。" />
+        <StatusMark status="NOT_RUN" compact="true" />
+      </figcaption>
+      <EmptyEvidence title="声明依赖尚未返回" detail="不会从 package 文件名或构建日志推断依赖完整性。" />
+    </figure>
+  </view>
+  <view class="evidence-dimension" aria-labelledby="generation-coverage-title">
+    <view class="evidence-section-heading">
+      <text>
+        <view id="generation-coverage-title">多维完成度</view>
+        <text>每个维度使用独立且精确的分母</text>
+      </text>
     </view>
-    <view class="translation-coverage-card">
-      <view class="evidence-section-heading">
-        <text>
-          <view>Behavior coverage</view>
-          <text>{{behaviorCoverage?.profile ?? "typed-pure-function-v1"}}</text>
-        </text>
-        <StatusMark status="{{behaviorCoverage?.status ?? &quot;NOT_RUN&quot;}}" compact="true" />
-      </view>
-      <block wx:if="{{behaviorCoverage != null}}">
-        <CoverageMeter label="工作单元行为回放" status="{{behaviorCoverage.complete ? &quot;PASSED&quot; : behaviorCoverage.status}}" passed="{{behaviorCoverage.statusCounts.PASSED}}" total="{{behaviorCoverage.workUnitCount}}" counts="{{behaviorCoverage.statusCounts}}" />
-        <view class="evidence-facts">
-          <view>
-            <view>行为用例</view>
-            <view>
-              <text>{{behaviorCoverage.behaviorCaseCount}}</text>
-              <text>·</text>
-              <text>{{behaviorCoverage.behaviorCaseCountScope}}</text>
-            </view>
-          </view>
-          <view>
-            <view>已核算工作单元</view>
-            <view>
-              <text>{{behaviorCoverage.accountedWorkUnitCount}}</text>
-              <text>/</text>
-              <text>{{behaviorCoverage.workUnitCount}}</text>
-            </view>
-          </view>
-          <view>
-            <view>已尝试 / 未解析</view>
-            <view>
-              <text>{{behaviorCoverage.attemptedWorkUnitCount}}</text>
-              <text>/</text>
-              <text>{{behaviorCoverage.unresolvedWorkUnitCount}}</text>
-            </view>
-          </view>
-          <view>
-            <view>完整</view>
-            <view>
-              <text wx:if="{{behaviorCoverage.complete}}">{{"YES"}}</text>
-              <text wx:else>{{"NO"}}</text>
-            </view>
-          </view>
-          <view>
-            <view>独立验证</view>
-            <view>
-              <StatusMark status="{{behaviorCoverage.independentVerificationStatus}}" compact="true" />
-            </view>
-          </view>
-          <view>
-            <view>外部验证</view>
-            <view>
-              <StatusMark status="{{behaviorCoverage.externalVerificationStatus}}" compact="true" />
-            </view>
-          </view>
-        </view>
-      </block>
-      <EmptyEvidence wx:else title="行为覆盖尚未返回" detail="任务完成不会替代逐工作单元 behaviorCoverage。" />
+    <view class="evidence-coverage-grid">
+      <CoverageMeter wx:for="{{insights.coverage}}" wx:for-item="dimension" wx:key="dimension.id" key="{{dimension.id}}" label="{{dimension.label}}" status="{{dimension.status}}" passed="{{dimension.passed}}" total="{{dimension.total}}" />
     </view>
+  </view>
+  <SemanticMappingChart semantic="{{insights.semantic}}" />
+  <BehaviorChart behavior="{{insights.behavior}}" />
+  <view class="evidence-boundary" role="note">
+    <text>证据边界</text>
+    <text>外部验证 {{insights.external_verification_status}} · 认证 {{insights.certification_status}}</text>
   </view>
 </view>

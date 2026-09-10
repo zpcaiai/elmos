@@ -4,11 +4,11 @@ Component({
     styleIsolation: "apply-shared",
   },
   properties: {
-    events: {
+    proposal: {
       type: null,
       value: null,
     },
-    empty: {
+    disabled: {
       type: null,
       value: null,
     },
@@ -22,5 +22,14 @@ Component({
     },
   },
   methods: {
+    onApprove(e) {
+      this.triggerEvent("approve", e.detail);
+    },
+    onReject(e) {
+      this.triggerEvent("reject", e.detail);
+    },
+    onPrepareScm(e) {
+      this.triggerEvent("preparescm", e.detail);
+    },
   },
 });

@@ -49,18 +49,24 @@ export class MiniAppFullAstEmitter {
     for (const eff of ir.effects) {
       if (eff.hookKind === "mount" || eff.hookKind === "effect") {
         jsLines.push(`      // Lifecycle effect ${eff.id}`);
-        jsLines.push(`      try {`);
-        jsLines.push(`        ${eff.bodyCode.replace(/^[^{]*{/, "").replace(/}[^}]*$/, "").trim()}`);
-        jsLines.push(`      } catch (err) {`);
-        jsLines.push(`        console.error("Effect execution error:", err);`);
-        jsLines.push(`      }`);
+        jsLines.push(`      (async () => {`);
+        jsLines.push(`        try {`);
+        jsLines.push(`          ${this.cleanBodyCode(eff.bodyCode)}`);
+        jsLines.push(`        } catch (err) {`);
+        jsLines.push(`          // Handled mount effect`);
+        jsLines.push(`        }`);
+        jsLines.push(`      })();`);
       }
     }
     jsLines.push('    },');
     jsLines.push('    detached() {');
     for (const eff of ir.effects) {
       if (eff.hookKind === "unmount") {
-        jsLines.push(`      ${this.cleanBodyCode(eff.bodyCode)}`);
+        jsLines.push(`      try {`);
+        jsLines.push(`        ${this.cleanBodyCode(eff.bodyCode)}`);
+        jsLines.push(`      } catch (err) {`);
+        jsLines.push(`        // Handled unmount effect`);
+        jsLines.push(`      }`);
       }
     }
     jsLines.push('    },');
@@ -70,8 +76,14 @@ export class MiniAppFullAstEmitter {
     jsLines.push('  methods: {');
     for (const m of ir.methods) {
       const params = m.parameters.map((p) => p.name).join(", ");
-      jsLines.push(`    ${m.name}(${params}) {`);
-      jsLines.push(`      ${this.cleanBodyCode(m.bodyCode)}`);
+      const isAsync = m.isAsync || m.bodyCode.includes("await");
+      const asyncPrefix = isAsync ? "async " : "";
+      jsLines.push(`    ${asyncPrefix}${m.name}(${params}) {`);
+      jsLines.push(`      try {`);
+      jsLines.push(`        ${this.cleanBodyCode(m.bodyCode)}`);
+      jsLines.push(`      } catch (err) {`);
+      jsLines.push(`        console.warn("${m.name} execution warning:", err);`);
+      jsLines.push(`      }`);
       jsLines.push(`    },`);
     }
 
@@ -160,9 +172,17 @@ export class MiniAppFullAstEmitter {
     }
 
     if (node.kind === "conditional" && node.condition) {
-      const thenStr = this.emitWxmlNodeWithDirective(node.condition.thenNode, `wx:if="{{${node.condition.test}}}"`, indentLevel);
+      const isNullish = (n?: FullSyntaxNode) => {
+        if (!n) return true;
+        if (n.kind === "expression" && (!n.expression || n.expression === "null" || n.expression === "undefined")) return true;
+        if (n.kind === "fragment" && (!n.children || n.children.length === 0)) return true;
+        if (n.kind === "text" && !(n.text || "").trim()) return true;
+        return false;
+      };
+
+      const thenStr = this.emitWxmlNodeWithDirective(node.condition.thenNode, `wx:if="{{${this.formatExprAttr(node.condition.test)}}}"`, indentLevel);
       let elseStr = "";
-      if (node.condition.elseNode) {
+      if (node.condition.elseNode && !isNullish(node.condition.elseNode)) {
         elseStr = "\n" + this.emitWxmlNodeWithDirective(node.condition.elseNode, "wx:else", indentLevel);
       }
       return `${thenStr}${elseStr}`;
@@ -172,7 +192,7 @@ export class MiniAppFullAstEmitter {
       const keyAttr = node.loop.keyExpr ? ` wx:key="${node.loop.keyExpr}"` : "";
       const itemAttr = node.loop.itemName !== "item" ? ` wx:for-item="${node.loop.itemName}"` : "";
       const indexAttr = node.loop.indexName ? ` wx:for-index="${node.loop.indexName}"` : "";
-      const forDirective = `wx:for="{{${node.loop.sourceExpr}}}"${itemAttr}${indexAttr}${keyAttr}`;
+      const forDirective = `wx:for="{{${this.formatExprAttr(node.loop.sourceExpr)}}}"${itemAttr}${indexAttr}${keyAttr}`;
       return this.emitWxmlNodeWithDirective(node.loop.bodyNode, forDirective, indentLevel);
     }
 
@@ -219,6 +239,16 @@ export class MiniAppFullAstEmitter {
     if (validChildren.length === 1 && firstChild && firstChild.kind === "expression") {
       const exprVal = (firstChild.expression || "").trim();
       return `${indent}<${tag}${attrStr}>{{${exprVal}}}</${tag}>`;
+    }
+
+    const allTextOrExpr = validChildren.every((c) => c.kind === "text" || c.kind === "expression");
+    if (allTextOrExpr) {
+      const inlineContent = validChildren.map((c) => {
+        if (c.kind === "text") return escapeXml((c.text || "").trim());
+        if (c.kind === "expression") return `{{${(c.expression || "").trim()}}}`;
+        return "";
+      }).join(" ");
+      return `${indent}<${tag}${attrStr}>${inlineContent}</${tag}>`;
     }
 
     const childStrs = validChildren.map((c) => this.emitWxmlNode(c, indentLevel + 2)).filter(Boolean);
@@ -334,16 +364,20 @@ export class MiniAppFullAstEmitter {
     return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
   }
 
+  private formatExprAttr(expr: string): string {
+    return (expr || "").replace(/"/g, "'");
+  }
+
   private cleanBodyCode(code: string): string {
     const unwrapped = code.replace(/^[^{]*{/, "").replace(/}[^}]*$/, "").trim();
     try {
-      const transpiled = ts.transpileModule(`function __tmp() { ${unwrapped} }`, {
+      const transpiled = ts.transpileModule(`async function __tmp() { ${unwrapped} }`, {
         compilerOptions: {
           target: ts.ScriptTarget.ES2022,
           removeComments: false,
         }
       }).outputText;
-      return transpiled.replace(/function __tmp\(\) \{/, "").replace(/\}[^}]*$/, "").trim();
+      return transpiled.replace(/async function __tmp\(\) \{/, "").replace(/\}[^}]*$/, "").trim();
     } catch {
       return unwrapped;
     }

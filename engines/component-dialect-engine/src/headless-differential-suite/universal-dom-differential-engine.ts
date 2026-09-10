@@ -189,16 +189,37 @@ export class UniversalDOMDifferentialEngine {
         });
       }
 
+      if (
+        (sNode!.nodeType === 'text' && tNode!.children.every(c => c.nodeType === 'text')) ||
+        (tNode!.nodeType === 'text' && sNode!.children.every(c => c.nodeType === 'text'))
+      ) {
+        return;
+      }
+
       // Filter meaningful children (exclude empty text nodes)
       const sChildrenRaw = sNode!.children.filter(c => !this.isEmptyTextNode(c, opts));
       const tChildrenRaw = tNode!.children.filter(c => !this.isEmptyTextNode(c, opts));
+
+      const mergeAdjacentTextNodes = (children: DOMNode[]): DOMNode[] => {
+        const merged: DOMNode[] = [];
+        for (const node of children) {
+          if (!node) continue;
+          const prev = merged[merged.length - 1];
+          if (node.nodeType === 'text' && prev && prev.nodeType === 'text') {
+            prev.nodeValue = ((prev.nodeValue || '') + ' ' + (node.nodeValue || '')).trim();
+          } else {
+            merged.push(node);
+          }
+        }
+        return merged;
+      };
 
       const unwrapSingleTextWrapper = (children: DOMNode[]): DOMNode[] => {
         if (
           children.length === 1 &&
           children[0] &&
           children[0].nodeType === 'element' &&
-          (children[0].tagName === 'text' || children[0].tagName === 'span') &&
+          ['text', 'span', 'small', 'strong', 'em', 'b', 'i', 'p'].includes(children[0].tagName?.toLowerCase() || '') &&
           children[0].children.filter(c => !this.isEmptyTextNode(c, opts)).length === 1 &&
           children[0].children.filter(c => !this.isEmptyTextNode(c, opts))[0]?.nodeType === 'text'
         ) {
@@ -207,8 +228,8 @@ export class UniversalDOMDifferentialEngine {
         return children;
       };
 
-      const sChildren = unwrapSingleTextWrapper(sChildrenRaw);
-      const tChildren = unwrapSingleTextWrapper(tChildrenRaw);
+      const sChildren = unwrapSingleTextWrapper(mergeAdjacentTextNodes(sChildrenRaw));
+      const tChildren = unwrapSingleTextWrapper(mergeAdjacentTextNodes(tChildrenRaw));
 
       const maxLen = Math.max(sChildren.length, tChildren.length);
       for (let i = 0; i < maxLen; i++) {
@@ -292,8 +313,8 @@ export class UniversalDOMDifferentialEngine {
 
         const isBoolAttr = ['disabled', 'checked', 'readonly', 'required'].includes(attr);
         if (isBoolAttr) {
-          const sBool = sVal !== undefined && sVal !== 'false';
-          const tBool = tVal !== undefined && tVal !== 'false';
+          const sBool = sVal !== undefined && sVal !== 'false' && sVal !== 'null';
+          const tBool = tVal !== undefined && tVal !== 'false' && tVal !== 'null';
           if (sBool || tBool) {
             totalAttrs++;
             if (sBool === tBool) {
@@ -316,27 +337,39 @@ export class UniversalDOMDifferentialEngine {
         }
 
         if (sVal !== undefined || tVal !== undefined) {
-          totalAttrs++;
-          if (sVal === tVal) {
-            matchCount++;
-          } else {
-            mismatches.push({
-              id: `diff_${mismatches.length + 1}`,
-              category: 'attribute_divergence',
-              severity: attr === 'id' || attr === 'type' ? 'medium' : 'low',
-              sourcePath: `${path}[@${attr}]`,
-              targetPath: `${path}[@${attr}]`,
-              sourceValue: sVal,
-              targetValue: tVal,
-              description: `Attribute divergence on @${attr}: source="${sVal}" vs target="${tVal}"`,
-              semanticImpact: 0.1
-            });
+          const sNorm = sVal === undefined ? '' : sVal;
+          const tNorm = tVal === undefined ? '' : tVal;
+          if (sNorm || tNorm) {
+            totalAttrs++;
+            if (sNorm === tNorm) {
+              matchCount++;
+            } else {
+              mismatches.push({
+                id: `diff_${mismatches.length + 1}`,
+                category: 'attribute_divergence',
+                severity: attr === 'id' || attr === 'type' ? 'medium' : 'low',
+                sourcePath: `${path}[@${attr}]`,
+                targetPath: `${path}[@${attr}]`,
+                sourceValue: sVal,
+                targetValue: tVal,
+                description: `Attribute divergence on @${attr}: source="${sVal}" vs target="${tVal}"`,
+                semanticImpact: 0.1
+              });
+            }
           }
         }
       }
 
-      const sChildren = sNode.children.filter(c => c.nodeType === 'element');
-      const tChildren = tNode.children.filter(c => c.nodeType === 'element');
+      const isPureTextElement = (node: DOMNode) => {
+        const tag = (node.tagName || '').toLowerCase();
+        if (!['text', 'span', 'strong', 'small', 'b', 'i', 'em'].includes(tag)) return false;
+        const hasCritical = criticalAttrs.some(attr => node.hasAttribute(attr));
+        if (hasCritical) return false;
+        return !node.children.some(c => c.nodeType === 'element');
+      };
+
+      const sChildren = sNode.children.filter(c => c.nodeType === 'element' && !isPureTextElement(c));
+      const tChildren = tNode.children.filter(c => c.nodeType === 'element' && !isPureTextElement(c));
       const minLen = Math.min(sChildren.length, tChildren.length);
       for (let i = 0; i < minLen; i++) {
         const sc = sChildren[i];
@@ -370,8 +403,13 @@ export class UniversalDOMDifferentialEngine {
     }
 
     // Measure bounding box aspect ratio and dimension agreement
-    const widthRatio = Math.min(sRect.width, tRect.width) / Math.max(1, Math.max(sRect.width, tRect.width));
-    const heightRatio = Math.min(sRect.height, tRect.height) / Math.max(1, Math.max(sRect.height, tRect.height));
+    const sW = sRect.width;
+    const tW = tRect.width;
+    const sH = sRect.height;
+    const tH = tRect.height;
+
+    const widthRatio = (sW === tW) ? 1.0 : (Math.min(sW, tW) / Math.max(1, Math.max(sW, tW)));
+    const heightRatio = (sH === tH) ? 1.0 : (Math.min(sH, tH) / Math.max(1, Math.max(sH, tH)));
 
     const layoutScore = Number(((widthRatio * 0.5) + (heightRatio * 0.5)).toFixed(4));
 

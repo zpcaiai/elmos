@@ -12,17 +12,12 @@
     </view>
   </view>
   <view wx:if="{{loading}}" class="{{styles.notice}}" role="status">正在从后端加载唯一模型目录…</view>
-  <text wx:else>{{null}}</text>
   <view wx:if="{{catalogError}}" class="{{styles.error}}" role="alert">{{catalogError}}</view>
-  <text wx:else>{{null}}</text>
   <block wx:if="{{catalog}}">
     <view class="{{styles.catalogSection}}" aria-labelledby="execution-model-heading">
       <view class="{{styles.sectionHeader}}">
         <view>
-          <text class="{{styles.eyebrow}}">
-            <text>Immutable selection ·</text>
-            <text>{{catalog.catalogVersion}}</text>
-          </text>
+          <text class="{{styles.eyebrow}}">Immutable selection · {{catalog.catalogVersion}}</text>
           <view id="execution-model-heading">执行模型</view>
         </view>
         <text class="{{styles.status}}" data-tone="{{statusTone(catalog.status)}}">{{catalog.status}}</text>
@@ -33,7 +28,6 @@
           <view wx:for="{{catalog.reasons}}" wx:for-item="reason" wx:key="reason.id" key="{{reason}}">{{readableReason(reason)}}</view>
         </view>
       </view>
-      <text wx:else>{{null}}</text>
       <fieldset class="{{styles.modeFieldset}}">
         <legend class="sr-only">选择 Smart 或手动模型模式</legend>
         <text class="{{`${styles.modeCard} ${mode === &quot;smart&quot; ? styles.selected : &quot;&quot;}`}}">
@@ -68,11 +62,7 @@
           </text>
           <text class="{{styles.modelMeta}}">
             <text>{{model.provider}}</text>
-            <text>
-              <text>Cost</text>
-              <text>{{model.relativeCostTier}}</text>
-              <text>/5</text>
-            </text>
+            <text>Cost {{model.relativeCostTier}} /5</text>
             <text>{{model.highestRoutingTier}}</text>
           </text>
           <text>{{model.roleHint.replaceAll("_", " ")}}</text>
@@ -83,7 +73,7 @@
         </text>
       </view>
       <view class="{{styles.policyRow}}">
-        <text wx:if="{{mode === "manual"}}" class="{{styles.toggle}}">
+        <text wx:if="{{mode === 'manual'}}" class="{{styles.toggle}}">
           <input type="checkbox" checked="{{fallbackEnabled}}" bindchange="onChange" />
           <text>模型失败时允许 allowlist 内智能 fallback</text>
         </text>
@@ -115,11 +105,11 @@
       </view>
       <view class="{{styles.riskGrid}}">
         <text wx:for="{{([
-                ["security", "安全"],
-                ["dataMigration", "数据迁移"],
-                ["concurrency", "并发"],
-                ["publicContract", "公共契约"],
-                ["blastRadius", "爆炸半径"],
+                ['security', '安全'],
+                ['dataMigration', '数据迁移'],
+                ['concurrency', '并发'],
+                ['publicContract', '公共契约'],
+                ['blastRadius', '爆炸半径'],
               ] as const)}}" wx:for-item="[field, label]" wx:key="[field, label].id" key="{{field}}">
           <text>{{label}}</text>
           <view value="{{risk[field]}}" bindchange="onChange">
@@ -132,17 +122,12 @@
         </text>
       </view>
       <view class="{{styles.preflightAction}}">
-        <view>
-          <text wx:if="{{mode === "manual" && !selectedDescriptor?.selectable}}">{{"所有目录项当前均未配置，无法锁定手动模型；可使用 Smart 验证阻断原因。"}}</text>
-          <text wx:else>{{"预检仅验证选择、风险与配置，不会创建任务或调用模型。"}}</text>
-        </view>
-        <button type="button" disabled="{{!canPreflight}}" bindtap="onTap">
-          <text wx:if="{{submitting}}">{{"预检中…"}}</text>
-          <text wx:else>{{"运行保守预检"}}</text>
-        </button>
+        <view>{{mode === "manual" && !selectedDescriptor?.selectable
+                  ? "所有目录项当前均未配置，无法锁定手动模型；可使用 Smart 验证阻断原因。"
+                  : "预检仅验证选择、风险与配置，不会创建任务或调用模型。"}}</view>
+        <button type="button" disabled="{{!canPreflight}}" bindtap="onTap">{{submitting ? "预检中…" : "运行保守预检"}}</button>
       </view>
       <view wx:if="{{preflightError}}" class="{{styles.error}}" role="alert">{{preflightError}}</view>
-      <text wx:else>{{null}}</text>
     </view>
     <view wx:if="{{result}}" class="{{styles.resultSection}}" aria-labelledby="preflight-result-heading" aria-live="polite">
       <view class="{{styles.sectionHeader}}">
@@ -156,38 +141,22 @@
         <view>
           <text>模型配置</text>
           <text>{{result.configurationStatus}}</text>
-          <text>
-            <text>风险下限</text>
-            <text>{{result.minimumRoutingTier}}</text>
-            <text>· resolved</text>
-            <text>{{result.resolvedModel ?? "none"}}</text>
-          </text>
+          <text>风险下限 {{result.minimumRoutingTier}} · resolved {{result.resolvedModel ?? "none"}}</text>
         </view>
         <view>
           <text>任务 DAG</text>
           <text>{{result.dag.status}}</text>
-          <text>
-            <text>{{result.dag.tasks.length}}</text>
-            <text>tasks ·</text>
-            <text>{{result.dag.waves.length}}</text>
-            <text>waves</text>
-          </text>
+          <text>{{result.dag.tasks.length}} tasks · {{result.dag.waves.length}} waves</text>
         </view>
         <view>
           <text>成本估算</text>
           <text>{{result.cost.status}}</text>
-          <text>
-            <text wx:if="{{result.cost.estimatedRunCost === null}}">{{"未产生估算"}}</text>
-            <text wx:else>{{`${result.cost.currency} ${result.cost.estimatedRunCost}`}}</text>
-          </text>
+          <text>{{result.cost.estimatedRunCost === null ? "未产生估算" : `${result.cost.currency} ${result.cost.estimatedRunCost}`}}</text>
         </view>
         <view>
           <text>认证</text>
           <text>{{result.evidence.certification}}</text>
-          <text>
-            <text>external</text>
-            <text>{{result.evidence.externalVerification}}</text>
-          </text>
+          <text>external {{result.evidence.externalVerification}}</text>
         </view>
       </view>
       <view class="{{styles.resultColumns}}">
@@ -208,7 +177,6 @@
         <view>
           <view>不可变选择与审计解释</view>
           <code wx:if="{{result.selection}}" class="{{styles.digest}}">{{result.selection.digest}}</code>
-          <text wx:else>{{null}}</text>
           <view>
             <view wx:for="{{result.auditExplanation}}" wx:key="item.id" key="{{item}}">{{item}}</view>
           </view>
@@ -221,7 +189,6 @@
         </text>
       </view>
     </view>
-    <text wx:else>{{null}}</text>
     <view class="mt-8 p-5 rounded-xl border border-border bg-card/60 shadow-lg" aria-labelledby="pipeline-sandbox-heading">
       <view class="flex items-center justify-between mb-4">
         <view>
@@ -247,12 +214,12 @@
       </view>
       <view class="grid grid-cols-1 md:grid-cols-6 gap-2 mb-4">
         <view wx:for="{{[
-                { step: "1", title: "源码摄取与解析", status: "INGESTED", desc: "AST 抽象树提取与依赖图" },
-                { step: "2", title: "Polyglot 语义转换", status: "TRANSFORMED", desc: "784 路线精确语义重写" },
-                { step: "3", title: "SMT 形式化验证", status: "SAT_PROVED", desc: "Z3/CVC5 不可判定项证明" },
-                { step: "4", title: "差分 Fuzzing", status: "FUZZ_PASSED", desc: "双向行为与边界测试" },
-                { step: "5", title: "FinOps 计量", status: "METERED", desc: "Token与实时成本核算" },
-                { step: "6", title: "SLSA 证据回执", status: "CERTIFIED", desc: "Merkle 防篡改数字防伪" },
+                { step: '1', title: '源码摄取与解析', status: 'INGESTED', desc: 'AST 抽象树提取与依赖图' },
+                { step: '2', title: 'Polyglot 语义转换', status: 'TRANSFORMED', desc: '784 路线精确语义重写' },
+                { step: '3', title: 'SMT 形式化验证', status: 'SAT_PROVED', desc: 'Z3/CVC5 不可判定项证明' },
+                { step: '4', title: '差分 Fuzzing', status: 'FUZZ_PASSED', desc: '双向行为与边界测试' },
+                { step: '5', title: 'FinOps 计量', status: 'METERED', desc: 'Token与实时成本核算' },
+                { step: '6', title: 'SLSA 证据回执', status: 'CERTIFIED', desc: 'Merkle 防篡改数字防伪' },
               ]}}" wx:for-item="s" wx:key="s.id" key="{{s.step}}" class="p-3 rounded-lg border border-border/80 bg-background/50 flex flex-col justify-between">
           <view>
             <view class="flex items-center justify-between mb-1">
@@ -273,5 +240,4 @@
       </view>
     </view>
   </block>
-  <text wx:else>{{null}}</text>
 </view>

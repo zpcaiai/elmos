@@ -1,8 +1,12 @@
-=== EXECUTION LOG FOR X-U004-007 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: Evidence完整性与防伪 / version-drift / 场景7
-Category: version-drift
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:12.721719Z][X-U004-007] Starting execution of X-U004-007 (Evidence完整性与防伪 / version-drift / 场景7) [Category=version-drift, Priority=P1]
+[2026-09-10T08:26:12.721723Z][X-U004-007] Bound Skill: tst-b38-45-evidence-integrity-anti-cheating | Product Skill IDs: []
+[2026-09-10T08:26:12.721724Z][X-U004-007] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:12.756981Z][X-U004-007] Security: Minted RS256 token (JTI=b3a87533..., Exp=1789032372)
+[2026-09-10T08:26:12.810870Z][X-U004-007] KMS: Envelope encrypted 37 bytes under key key-x-u004-007 v1 (DEK wrapped)
+[2026-09-10T08:26:12.870054Z][X-U004-007] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U004-007 (U004)
+[2026-09-10T08:26:12.870063Z][X-U004-007] Executing category=version-drift on U004
+[2026-09-10T08:26:12.870071Z][X-U004-007] Evidence Integrity & Anti-Cheating: Validating non-repudiation controls...
+[2026-09-10T08:26:12.870077Z][X-U004-007] Verifying evidence schema upgrade from v1.0 to v2.0...
+[2026-09-10T08:26:12.870105Z][X-U004-007] Completed execution of X-U004-007 in 148.4ms: Status=PASSED
+[2026-09-10T08:26:12.870109Z][X-U004-007] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:12.870129Z][X-U004-007] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

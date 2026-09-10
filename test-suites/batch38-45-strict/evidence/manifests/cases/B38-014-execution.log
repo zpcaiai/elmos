@@ -1,13 +1,13 @@
-[2026-09-10T08:18:24.243983Z][B38-014] Starting execution of B38-014 (Batch 38部署与升级 / boundary / 场景14) [Category=boundary, Priority=P0]
-[2026-09-10T08:18:24.243987Z][B38-014] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1330, 1338]
-[2026-09-10T08:18:24.243988Z][B38-014] Provisioning isolated multi-region simulation environment and security services...
-[2026-09-10T08:18:24.254833Z][B38-014] Security: Minted RS256 token (JTI=f63597a6..., Exp=1789031904)
-[2026-09-10T08:18:24.281461Z][B38-014] KMS: Envelope encrypted 34 bytes under key key-b38-014 v1 (DEK wrapped)
-[2026-09-10T08:18:24.354218Z][B38-014] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-014
-[2026-09-10T08:18:24.354223Z][B38-014] Executing Edge / Plant-Restricted Edition synchronization...
-[2026-09-10T08:18:24.354227Z][B38-014] Site Topology: Edge Gateway connected over intermittent satellite link (250ms latency, 2% loss)
-[2026-09-10T08:18:24.354230Z][B38-014] Local Store-and-Forward: Queued 120 telemetry events in local append-only WAL
-[2026-09-10T08:18:24.354231Z][B38-014] Link Restoration: Synchronized edge WAL with central region, Merkle hash confirmed identical
-[2026-09-10T08:18:24.354245Z][B38-014] Completed execution of B38-014 in 110.3ms: Status=PASSED
-[2026-09-10T08:18:24.354248Z][B38-014] Assertion Summary: 4/4 assertions passed
-[2026-09-10T08:18:24.354259Z][B38-014] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}
+[2026-09-10T08:25:38.646094Z][B38-014] Starting execution of B38-014 (Batch 38部署与升级 / boundary / 场景14) [Category=boundary, Priority=P0]
+[2026-09-10T08:25:38.646097Z][B38-014] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1330, 1338]
+[2026-09-10T08:25:38.646098Z][B38-014] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:38.657288Z][B38-014] Security: Minted RS256 token (JTI=51a728ea..., Exp=1789032338)
+[2026-09-10T08:25:38.681241Z][B38-014] KMS: Envelope encrypted 34 bytes under key key-b38-014 v1 (DEK wrapped)
+[2026-09-10T08:25:38.755690Z][B38-014] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-014
+[2026-09-10T08:25:38.755697Z][B38-014] Executing Edge / Plant-Restricted Edition synchronization...
+[2026-09-10T08:25:38.755699Z][B38-014] Site Topology: Edge Gateway connected over intermittent satellite link (250ms latency, 2% loss)
+[2026-09-10T08:25:38.755702Z][B38-014] Local Store-and-Forward: Queued 120 telemetry events in local append-only WAL
+[2026-09-10T08:25:38.755703Z][B38-014] Link Restoration: Synchronized edge WAL with central region, Merkle hash confirmed identical
+[2026-09-10T08:25:38.755718Z][B38-014] Completed execution of B38-014 in 109.6ms: Status=PASSED
+[2026-09-10T08:25:38.755721Z][B38-014] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:25:38.755734Z][B38-014] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

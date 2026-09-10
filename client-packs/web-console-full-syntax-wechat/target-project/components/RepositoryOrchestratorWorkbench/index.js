@@ -22,48 +22,60 @@ Component({
   lifetimes: {
     attached() {
       // Lifecycle effect effect_0
-      try {
-        const controller = new AbortController();
+      (async () => {
+        try {
+          const controller = new AbortController();
     async function loadCatalog() {
-      setLoading(true);
-      setCatalogError(null);
-      try {
-        const response = await fetch("/api/repository-orchestrator/models", {
-          method: "GET",
-          headers: { Accept: "application/json" },
-          cache: "no-store",
-          signal: controller.signal,
-        });
-        const raw = await responseJson(response);
-        if (!response.ok) throw new Error(failureMessage(raw, "模型目录当前不可用。"));
-        const parsed = parseRepositoryModelCatalog(raw);
-        setCatalog(parsed);
-        setMode(parsed.defaultMode);
-        setOptimizationProfile(parsed.optimizationProfiles[0]);
-        setVerificationPolicy(parsed.verificationPolicies[0]);
-      } catch (error) {
-        if (controller.signal.aborted) return;
-        setCatalogError(error instanceof Error ? error.message : "模型目录当前不可用。");
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
+        setLoading(true);
+        setCatalogError(null);
+        try {
+            const response = await fetch("/api/repository-orchestrator/models", {
+                method: "GET",
+                headers: { Accept: "application/json" },
+                cache: "no-store",
+                signal: controller.signal,
+            });
+            const raw = await responseJson(response);
+            if (!response.ok)
+                throw new Error(failureMessage(raw, "模型目录当前不可用。"));
+            const parsed = parseRepositoryModelCatalog(raw);
+            setCatalog(parsed);
+            setMode(parsed.defaultMode);
+            setOptimizationProfile(parsed.optimizationProfiles[0]);
+            setVerificationPolicy(parsed.verificationPolicies[0]);
+        }
+        catch (error) {
+            if (controller.signal.aborted)
+                return;
+            setCatalogError(error instanceof Error ? error.message : "模型目录当前不可用。");
+        }
+        finally {
+            if (!controller.signal.aborted)
+                setLoading(false);
+        }
     }
     void loadCatalog();
     return () => controller.abort();
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },
   },
   methods: {
     updateRisk(field, value) {
-      setRisk((current) => ({ ...current, [field]: value }));
+      try {
+        setRisk((current) => ({ ...current, [field]: value }));
     setResult(null);
+      } catch (err) {
+        console.warn("updateRisk execution warning:", err);
+      }
     },
-    submitPreflight() {
-      if (!catalog || !canPreflight)
+    async submitPreflight() {
+      try {
+        if (!catalog || !canPreflight)
         return;
     const request = {
         schemaVersion: "1.0",
@@ -100,6 +112,9 @@ Component({
     finally {
         setSubmitting(false);
     }
+      } catch (err) {
+        console.warn("submitPreflight execution warning:", err);
+      }
     },
   },
 });

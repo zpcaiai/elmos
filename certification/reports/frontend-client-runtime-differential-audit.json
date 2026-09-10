@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "timestamp": "2026-09-10T08:10:57.699Z",
+  "timestamp": "2026-09-10T08:41:16.590Z",
   "packKey": "web-console-next16-react19-wechat-v1",
   "totals": {
     "totalComponents": 71,
@@ -39,9 +39,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9663,
-      "textSimilarity": 0.95,
-      "structuralSimilarity": 0.9636,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -52,9 +52,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
-      "textSimilarity": 0.95,
-      "structuralSimilarity": 0.95,
+      "consistencyScore": 0.9882,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -65,7 +65,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -130,7 +130,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 1,
+      "consistencyScore": 0.975,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -143,7 +143,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -156,9 +156,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9862,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.9655,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -169,9 +169,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.976,
+      "consistencyScore": 0.997,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.95,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -182,9 +182,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9767,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.9868,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -195,7 +195,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -208,7 +208,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -221,9 +221,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9831,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.974,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -234,7 +234,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -247,9 +247,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9667,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.95,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -260,9 +260,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9667,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.95,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -273,9 +273,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9667,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.95,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -286,9 +286,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9667,
+      "consistencyScore": 0.97,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.95,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -299,9 +299,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9667,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.95,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -312,9 +312,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9667,
+      "consistencyScore": 0.9917,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.95,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -325,9 +325,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9667,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.95,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -338,9 +338,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9667,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.95,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -351,9 +351,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9667,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.95,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -364,7 +364,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9812,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -377,9 +377,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.96,
+      "consistencyScore": 0.9925,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.95,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -390,7 +390,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -403,7 +403,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -416,9 +416,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9724,
-      "textSimilarity": 0.9963,
-      "structuralSimilarity": 0.9665,
+      "consistencyScore": 0.9974,
+      "textSimilarity": 1,
+      "structuralSimilarity": 0.9957,
       "diagnostics": []
     },
     {
@@ -429,7 +429,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -442,7 +442,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -455,9 +455,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9811,
-      "textSimilarity": 0.9928,
-      "structuralSimilarity": 0.961,
+      "consistencyScore": 0.9989,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -468,9 +468,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
-      "textSimilarity": 0.95,
-      "structuralSimilarity": 0.95,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -481,7 +481,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -507,7 +507,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -520,9 +520,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9655,
-      "textSimilarity": 0.981,
-      "structuralSimilarity": 0.9554,
+      "consistencyScore": 0.9956,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -533,7 +533,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -546,7 +546,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -572,9 +572,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9904,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.9759,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -585,9 +585,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9904,
+      "consistencyScore": 0.9856,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.9759,
+      "structuralSimilarity": 0.9639,
       "diagnostics": []
     },
     {
@@ -598,7 +598,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -611,9 +611,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
-      "textSimilarity": 0.95,
-      "structuralSimilarity": 0.95,
+      "consistencyScore": 0.9659,
+      "textSimilarity": 0.9667,
+      "structuralSimilarity": 0.9635,
       "diagnostics": []
     },
     {
@@ -624,7 +624,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -637,9 +637,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
-      "textSimilarity": 0.95,
-      "structuralSimilarity": 0.95,
+      "consistencyScore": 0.9967,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -650,7 +650,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -663,7 +663,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -689,9 +689,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9868,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.9937,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -702,7 +702,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -715,9 +715,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
-      "textSimilarity": 0.95,
-      "structuralSimilarity": 0.95,
+      "consistencyScore": 0.9933,
+      "textSimilarity": 1,
+      "structuralSimilarity": 0.9833,
       "diagnostics": []
     },
     {
@@ -754,9 +754,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9604,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.9545,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -767,9 +767,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 0.9875,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.9583,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -780,9 +780,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.9583,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -793,9 +793,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.9558,
-      "textSimilarity": 0.95,
-      "structuralSimilarity": 0.9506,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -806,7 +806,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -819,7 +819,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -832,9 +832,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
-      "structuralSimilarity": 0.95,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -845,7 +845,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -871,9 +871,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.981,
-      "textSimilarity": 0.9908,
-      "structuralSimilarity": 0.9814,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -884,7 +884,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -910,7 +910,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -923,9 +923,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
-      "textSimilarity": 0.95,
-      "structuralSimilarity": 0.95,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
       "diagnostics": []
     },
     {
@@ -936,7 +936,7 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
+      "consistencyScore": 1,
       "textSimilarity": 1,
       "structuralSimilarity": 1,
       "diagnostics": []
@@ -949,9 +949,9 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": true,
-      "consistencyScore": 0.95,
-      "textSimilarity": 0.9776,
-      "structuralSimilarity": 0.95,
+      "consistencyScore": 0.9962,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
       "diagnostics": []
     }
   ]

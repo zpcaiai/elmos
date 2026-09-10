@@ -60,34 +60,80 @@ export class MiniAppSSREvaluator {
     return root;
   }
 
+  private static extractObjectBlock(code: string, key: string): string | null {
+    const regex = new RegExp(key + '\\s*:\\s*\\{');
+    const match = regex.exec(code);
+    if (!match) return null;
+    const start = match.index + match[0].length - 1;
+    let depth = 0;
+    for (let i = start; i < code.length; i++) {
+      if (code[i] === '{') depth++;
+      else if (code[i] === '}') {
+        depth--;
+        if (depth === 0) {
+          return code.slice(start, i + 1);
+        }
+      }
+    }
+    return null;
+  }
+
   private static extractComponentDefaults(jsCode: string): { data: Record<string, any>; properties: Record<string, any> } {
     const data: Record<string, any> = {};
     const properties: Record<string, any> = {};
 
     try {
-      // Extract data: { ... }
-      const dataMatch = jsCode.match(/data\s*:\s*\{([^}]+)\}/);
-      if (dataMatch && dataMatch[1]) {
-        const entryRegex = /([a-zA-Z0-9_$]+)\s*:\s*('(?:\\'|[^'])*'|"(?:\\"|[^"])*"|[^,}]+)/g;
-        let m: RegExpExecArray | null;
-        while ((m = entryRegex.exec(dataMatch[1])) !== null) {
-          const key = m[1];
-          const rawVal = m[2];
-          if (key && rawVal) {
-            data[key.trim()] = this.parseLiteral(rawVal.trim());
+      const dataBlock = this.extractObjectBlock(jsCode, 'data');
+      if (dataBlock) {
+        try {
+          const evalData = new Function('return (' + dataBlock + ');')();
+          if (evalData && typeof evalData === 'object') {
+            Object.assign(data, evalData);
+          }
+        } catch {
+          const entryRegex = /([a-zA-Z0-9_$]+)\s*:\s*('(?:\\'|[^'])*'|"(?:\\"|[^"])*"|[^,}]+)/g;
+          let m: RegExpExecArray | null;
+          while ((m = entryRegex.exec(dataBlock)) !== null) {
+            const key = m[1];
+            const rawVal = m[2];
+            if (key && rawVal) {
+              data[key.trim()] = this.parseLiteral(rawVal.trim());
+            }
           }
         }
       }
 
-      // Extract properties: { ... }
-      const propMatch = jsCode.match(/properties\s*:\s*\{([^}]+)\}/);
-      if (propMatch && propMatch[1]) {
-        const propEntryRegex = /([a-zA-Z0-9_$]+)\s*:\s*(?:\{|[^,}]+)/g;
-        let m: RegExpExecArray | null;
-        while ((m = propEntryRegex.exec(propMatch[1])) !== null) {
-          const key = m[1];
-          if (key) {
-            properties[key.trim()] = null;
+      const propBlock = this.extractObjectBlock(jsCode, 'properties');
+      if (propBlock) {
+        try {
+          const evalProps = new Function('return (' + propBlock + ');')();
+          if (evalProps && typeof evalProps === 'object') {
+            for (const [k, v] of Object.entries(evalProps)) {
+              if (v && typeof v === 'object' && 'value' in (v as any)) {
+                properties[k] = (v as any).value;
+              } else if ((v as any) === String) {
+                properties[k] = '';
+              } else if ((v as any) === Number) {
+                properties[k] = 0;
+              } else if ((v as any) === Boolean) {
+                properties[k] = false;
+              } else if ((v as any) === Array) {
+                properties[k] = [];
+              } else if ((v as any) === Object) {
+                properties[k] = {};
+              } else {
+                properties[k] = v;
+              }
+            }
+          }
+        } catch {
+          const propEntryRegex = /([a-zA-Z0-9_$]+)\s*:\s*(?:\{|[^,}]+)/g;
+          let m: RegExpExecArray | null;
+          while ((m = propEntryRegex.exec(propBlock)) !== null) {
+            const key = m[1];
+            if (key) {
+              properties[key.trim()] = null;
+            }
           }
         }
       }
@@ -103,6 +149,8 @@ export class MiniAppSSREvaluator {
     if (rawVal === 'false') return false;
     if (rawVal === 'null') return null;
     if (rawVal === 'undefined') return undefined;
+    if (rawVal === '[]') return [];
+    if (rawVal === '{}') return {};
     if (/^-?\d+(\.\d+)?$/.test(rawVal)) return Number(rawVal);
     if ((rawVal.startsWith('"') && rawVal.endsWith('"')) || (rawVal.startsWith("'") && rawVal.endsWith("'"))) {
       return rawVal.slice(1, -1);
@@ -292,6 +340,18 @@ export class MiniAppSSREvaluator {
     // Copy and interpolate attributes
     for (const [key, val] of Object.entries(node.attributes)) {
       if (key.startsWith('wx:')) continue;
+      const lowerKey = key.toLowerCase();
+      const isBoolAttr = ['disabled', 'checked', 'readonly', 'required'].includes(lowerKey);
+      if (isBoolAttr && val.trim().startsWith('{{') && val.trim().endsWith('}}')) {
+        const expr = val.trim().replace(/^\{\{|\}\}$/g, '');
+        const evaluatedBool = Boolean(this.evaluateExpression(expr, scope));
+        if (evaluatedBool) {
+          element.setAttribute(key, 'true');
+        } else {
+          element.setAttribute(key, 'false');
+        }
+        continue;
+      }
       const interpolatedVal = this.interpolate(val, scope);
       element.setAttribute(key, interpolatedVal);
     }
@@ -315,8 +375,15 @@ export class MiniAppSSREvaluator {
   }
 
   public static evaluateExpression(expression: string, scope: Record<string, any>): any {
-    const trimmed = expression.replace(/^\{\{|\}\}$/g, "").trim();
-    if (!trimmed) return '';
+    const unescaped = expression.replace(/^\{\{|\}\}$/g, "")
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&#39;/g, "'")
+      .trim();
+    if (!unescaped) return '';
+    const trimmed = unescaped;
 
     // Simple literals
     if (trimmed === 'true') return true;

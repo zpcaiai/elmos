@@ -49,10 +49,7 @@
           <text>{{profile.label}}</text>
           <text>{{profile.framework}}</text>
         </text>
-        <text class="runtime-profile-port">
-          <text>:</text>
-          <text>{{profile.port}}</text>
-        </text>
+        <text class="runtime-profile-port">: {{profile.port}}</text>
         <Icon name="chevron" size="{{15}}" />
       </view>
       <view class="runtime-profile-body">

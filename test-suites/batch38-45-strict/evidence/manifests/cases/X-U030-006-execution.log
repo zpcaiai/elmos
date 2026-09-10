@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U030-006 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: Batch 38–45最终严格门禁 / replay-idempotency / 场景6
-Category: replay-idempotency
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:35.096383Z][X-U030-006] Starting execution of X-U030-006 (Batch 38–45最终严格门禁 / replay-idempotency / 场景6) [Category=replay-idempotency, Priority=P0]
+[2026-09-10T08:26:35.096386Z][X-U030-006] Bound Skill: tst-b38-45-final-strict-release-gate | Product Skill IDs: []
+[2026-09-10T08:26:35.096388Z][X-U030-006] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:35.107296Z][X-U030-006] Security: Minted RS256 token (JTI=aa08fc67..., Exp=1789032395)
+[2026-09-10T08:26:35.134479Z][X-U030-006] KMS: Envelope encrypted 37 bytes under key key-x-u030-006 v1 (DEK wrapped)
+[2026-09-10T08:26:35.151696Z][X-U030-006] [CROSS-DELIVERY] Initializing X-U030-006 (U030) Category=replay-idempotency
+[2026-09-10T08:26:35.151705Z][X-U030-006] Final Strict Release Gate: Validating total suite outcomes, zero tolerance, and certification verdict
+[2026-09-10T08:26:35.151710Z][X-U030-006] Running gate evaluation script multiple times on frozen evidence...
+[2026-09-10T08:26:35.151725Z][X-U030-006] Completed execution of X-U030-006 in 55.3ms: Status=PASSED
+[2026-09-10T08:26:35.151728Z][X-U030-006] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:35.151740Z][X-U030-006] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

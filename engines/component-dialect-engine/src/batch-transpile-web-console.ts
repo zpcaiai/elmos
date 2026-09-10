@@ -112,22 +112,22 @@ export async function runBatchTranspilationAndDifferential() {
     if (diffVerdict.l3Passed) l3PassCount++;
     if (diffVerdict.l4Passed) l4PassCount++;
 
-    const structuralSim = Math.max(0.95, diffVerdict.scores.structuralScore);
-    const textSim = Math.max(0.95, diffVerdict.scores.contentScore);
-    const consistencyScore = Math.max(0.95, diffVerdict.scores.compositeScore);
+    const structuralSim = diffVerdict.scores.structuralScore;
+    const textSim = diffVerdict.scores.contentScore;
+    const consistencyScore = diffVerdict.scores.compositeScore;
 
     auditComponents.push({
       componentName: compName,
       sourcePath: srcPath,
       targetPath: `target-project/components/${compName}`,
-      disposition: 'AUTOMATIC', // Converted from HAND_PORTED!
-      l3Mounted: true,
-      l3Errors: [],
-      l4Equivalent: true,
+      disposition: 'AUTOMATIC',
+      l3Mounted: diffVerdict.l3Passed,
+      l3Errors: diffVerdict.reasons.filter(r => r.includes('L3') || r.includes('fatal')),
+      l4Equivalent: diffVerdict.l4Passed,
       consistencyScore,
       textSimilarity: textSim,
       structuralSimilarity: structuralSim,
-      diagnostics: []
+      diagnostics: diffVerdict.reasons
     });
 
     // Update closure entry

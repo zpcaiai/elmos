@@ -1,8 +1,13 @@
-=== EXECUTION LOG FOR X-U004-002 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: Evidence完整性与防伪 / boundary / 场景2
-Category: boundary
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:11.742003Z][X-U004-002] Starting execution of X-U004-002 (Evidence完整性与防伪 / boundary / 场景2) [Category=boundary, Priority=P0]
+[2026-09-10T08:26:11.742006Z][X-U004-002] Bound Skill: tst-b38-45-evidence-integrity-anti-cheating | Product Skill IDs: []
+[2026-09-10T08:26:11.742007Z][X-U004-002] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:11.755480Z][X-U004-002] Security: Minted RS256 token (JTI=123a4888..., Exp=1789032371)
+[2026-09-10T08:26:11.793374Z][X-U004-002] KMS: Envelope encrypted 37 bytes under key key-x-u004-002 v1 (DEK wrapped)
+[2026-09-10T08:26:11.897836Z][X-U004-002] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U004-002 (U004)
+[2026-09-10T08:26:11.897843Z][X-U004-002] Executing category=boundary on U004
+[2026-09-10T08:26:11.897849Z][X-U004-002] Evidence Integrity & Anti-Cheating: Validating non-repudiation controls...
+[2026-09-10T08:26:11.897852Z][X-U004-002] Testing oversized log payload truncation boundary...
+[2026-09-10T08:26:11.897854Z][X-U004-002] Log Truncator: Preserved first 50KB and last 50KB with integrity hash intact
+[2026-09-10T08:26:11.897880Z][X-U004-002] Completed execution of X-U004-002 in 155.9ms: Status=PASSED
+[2026-09-10T08:26:11.897883Z][X-U004-002] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:11.897900Z][X-U004-002] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

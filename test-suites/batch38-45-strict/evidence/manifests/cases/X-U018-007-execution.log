@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U018-007 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 供应链篡改与Provenance / version-drift / 场景7
-Category: version-drift
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:20.944251Z][X-U018-007] Starting execution of X-U018-007 (供应链篡改与Provenance / version-drift / 场景7) [Category=version-drift, Priority=P1]
+[2026-09-10T08:26:20.944254Z][X-U018-007] Bound Skill: tst-supply-chain-tamper-provenance-vex | Product Skill IDs: []
+[2026-09-10T08:26:20.944257Z][X-U018-007] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:20.955290Z][X-U018-007] Security: Minted RS256 token (JTI=6209d420..., Exp=1789032380)
+[2026-09-10T08:26:20.985261Z][X-U018-007] KMS: Envelope encrypted 37 bytes under key key-x-u018-007 v1 (DEK wrapped)
+[2026-09-10T08:26:21.011594Z][X-U018-007] [CROSS-SEC-GOV] Initializing X-U018-007 (U018) Category=version-drift
+[2026-09-10T08:26:21.011598Z][X-U018-007] Supply Chain Security: Evaluating SLSA Level 3 provenance, SBOM and VEX declarations
+[2026-09-10T08:26:21.011603Z][X-U018-007] Comparing SBOM across minor version upgrade...
+[2026-09-10T08:26:21.011618Z][X-U018-007] Completed execution of X-U018-007 in 67.4ms: Status=PASSED
+[2026-09-10T08:26:21.011621Z][X-U018-007] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:21.011632Z][X-U018-007] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

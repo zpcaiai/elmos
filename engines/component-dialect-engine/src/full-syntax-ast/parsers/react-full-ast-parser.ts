@@ -71,26 +71,46 @@ export class ReactFullAstParser {
     // Find the main component function/arrow declaration
     let compDecl: ts.FunctionDeclaration | ts.ArrowFunction | ts.FunctionExpression | null = null;
 
-    ts.forEachChild(sourceFile, (node) => {
-      if (ts.isFunctionDeclaration(node) && node.name) {
-        if (!compName || node.name.text === compName || /^[A-Z]/.test(node.name.text)) {
+    if (componentNameHint) {
+      ts.forEachChild(sourceFile, (node) => {
+        if (ts.isFunctionDeclaration(node) && node.name?.text === componentNameHint) {
           compDecl = node;
           compName = node.name.text;
-        }
-      } else if (ts.isVariableStatement(node)) {
-        for (const decl of node.declarationList.declarations) {
-          if (ts.isIdentifier(decl.name) && decl.initializer) {
-            if (
-              (ts.isArrowFunction(decl.initializer) || ts.isFunctionExpression(decl.initializer)) &&
-              (!compName || decl.name.text === compName || /^[A-Z]/.test(decl.name.text))
-            ) {
-              compDecl = decl.initializer;
-              compName = decl.name.text;
+        } else if (ts.isVariableStatement(node)) {
+          for (const decl of node.declarationList.declarations) {
+            if (ts.isIdentifier(decl.name) && decl.name.text === componentNameHint && decl.initializer) {
+              if (ts.isArrowFunction(decl.initializer) || ts.isFunctionExpression(decl.initializer)) {
+                compDecl = decl.initializer;
+                compName = decl.name.text;
+              }
             }
           }
         }
-      }
-    });
+      });
+    }
+
+    if (!compDecl) {
+      ts.forEachChild(sourceFile, (node) => {
+        if (ts.isFunctionDeclaration(node) && node.name) {
+          if (!compName || node.name.text === compName || /^[A-Z]/.test(node.name.text)) {
+            compDecl = node;
+            compName = node.name.text;
+          }
+        } else if (ts.isVariableStatement(node)) {
+          for (const decl of node.declarationList.declarations) {
+            if (ts.isIdentifier(decl.name) && decl.initializer) {
+              if (
+                (ts.isArrowFunction(decl.initializer) || ts.isFunctionExpression(decl.initializer)) &&
+                (!compName || decl.name.text === compName || /^[A-Z]/.test(decl.name.text))
+              ) {
+                compDecl = decl.initializer;
+                compName = decl.name.text;
+              }
+            }
+          }
+        }
+      });
+    }
 
     if (!compName) {
       compName = "ReactComponent";
@@ -264,6 +284,24 @@ function extractDeps(depsNode: ts.Node, sourceFile: ts.SourceFile): string[] {
   return [];
 }
 
+function isJsxBranch(node: ts.Node | undefined): boolean {
+  if (!node) return false;
+  let current = node;
+  while (ts.isParenthesizedExpression(current)) {
+    current = current.expression;
+  }
+  if (ts.isJsxElement(current) || ts.isJsxSelfClosingElement(current) || ts.isJsxFragment(current)) {
+    return true;
+  }
+  if (ts.isConditionalExpression(current)) {
+    return isJsxBranch(current.whenTrue) || isJsxBranch(current.whenFalse);
+  }
+  if (ts.isBinaryExpression(current) && current.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) {
+    return isJsxBranch(current.right);
+  }
+  return false;
+}
+
 function parseJsxNode(
   node: ts.Node,
   sourceFile: ts.SourceFile,
@@ -372,40 +410,69 @@ function parseJsxNode(
 
     // Check for conditional ternary: condition ? <A/> : <B/>
     if (ts.isConditionalExpression(expr)) {
-      const conditionStr = expr.condition.getText(sourceFile);
-      const thenNode = parseJsxNode(expr.whenTrue, sourceFile, generateId, containerApis, thirdPartyComponents) || {
-        id: generateId("empty"),
-        kind: "fragment",
-        children: [],
-      };
-      const elseNode = parseJsxNode(expr.whenFalse, sourceFile, generateId, containerApis, thirdPartyComponents) || undefined;
-      return {
-        id: generateId("cond"),
-        kind: "conditional",
-        condition: {
-          test: conditionStr,
-          thenNode,
-          elseNode,
-        },
-      };
+      if (isJsxBranch(expr.whenTrue) || isJsxBranch(expr.whenFalse)) {
+        const isNullish = (n: ts.Node) => {
+          const t = n.getText(sourceFile).trim();
+          return t === "null" || t === "undefined" || t === "false" || t === '""';
+        };
+
+        if (isNullish(expr.whenTrue) && !isNullish(expr.whenFalse)) {
+          const conditionStr = `!(${expr.condition.getText(sourceFile)})`;
+          const thenNode = parseJsxNode(expr.whenFalse, sourceFile, generateId, containerApis, thirdPartyComponents) || {
+            id: generateId("empty"),
+            kind: "fragment",
+            children: [],
+          };
+          return {
+            id: generateId("cond"),
+            kind: "conditional",
+            condition: {
+              test: conditionStr,
+              thenNode,
+            },
+          };
+        }
+
+        const conditionStr = expr.condition.getText(sourceFile);
+        const thenNode = parseJsxNode(expr.whenTrue, sourceFile, generateId, containerApis, thirdPartyComponents) || {
+          id: generateId("empty"),
+          kind: "fragment",
+          children: [],
+        };
+        const elseNode = isNullish(expr.whenFalse)
+          ? undefined
+          : parseJsxNode(expr.whenFalse, sourceFile, generateId, containerApis, thirdPartyComponents) || undefined;
+
+        return {
+          id: generateId("cond"),
+          kind: "conditional",
+          condition: {
+            test: conditionStr,
+            thenNode,
+            elseNode,
+          },
+        };
+      }
     }
 
     // Check for logical && conditional: condition && <Node/>
     if (ts.isBinaryExpression(expr) && expr.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) {
-      const conditionStr = expr.left.getText(sourceFile);
-      const thenNode = parseJsxNode(expr.right, sourceFile, generateId, containerApis, thirdPartyComponents) || {
-        id: generateId("empty"),
-        kind: "fragment",
-        children: [],
-      };
-      return {
-        id: generateId("cond"),
-        kind: "conditional",
-        condition: {
-          test: conditionStr,
-          thenNode,
-        },
-      };
+      if (isJsxBranch(expr.right)) {
+        const conditionStr = expr.left.getText(sourceFile);
+        const thenNode = parseJsxNode(expr.right, sourceFile, generateId, containerApis, thirdPartyComponents) || {
+          id: generateId("empty"),
+          kind: "fragment",
+          children: [],
+        };
+        return {
+          id: generateId("cond"),
+          kind: "conditional",
+          condition: {
+            test: conditionStr,
+            thenNode,
+          },
+        };
+      }
     }
 
     // Check for list mapping: items.map((item, index) => <Node/>)

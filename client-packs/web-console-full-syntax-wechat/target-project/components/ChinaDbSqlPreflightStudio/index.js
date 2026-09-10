@@ -20,44 +20,52 @@ Component({
   lifetimes: {
     attached() {
       // Lifecycle effect effect_0
-      try {
-        const controller = new AbortController();
+      (async () => {
+        try {
+          const controller = new AbortController();
     async function loadCapabilities() {
-      try {
-        const response = await fetch("/api/capabilities/database-sql", {
-          cache: "no-store",
-          signal: controller.signal,
-        });
-        const payload = await responseJson(response);
-        if (!response.ok) throw apiError(payload, "CHINADB_SQL_CAPABILITIES_UNAVAILABLE");
-        const parsed = parseChinaDbSqlCapabilities(payload);
-        setCapabilities(parsed);
-        setFields((current) => ({
-          ...current,
-          targetId: parsed.targets.some((target) => target.id === current.targetId)
-            ? current.targetId
-            : parsed.targets[0].id,
-        }));
-      } catch (loadError) {
-        if (controller.signal.aborted) return;
-        setError(errorMessage(loadError));
-        requestAnimationFrame(() => errorSummary.current?.focus());
-      } finally {
-        if (!controller.signal.aborted) setLoadingCapabilities(false);
-      }
+        try {
+            const response = await fetch("/api/capabilities/database-sql", {
+                cache: "no-store",
+                signal: controller.signal,
+            });
+            const payload = await responseJson(response);
+            if (!response.ok)
+                throw apiError(payload, "CHINADB_SQL_CAPABILITIES_UNAVAILABLE");
+            const parsed = parseChinaDbSqlCapabilities(payload);
+            setCapabilities(parsed);
+            setFields((current) => ({
+                ...current,
+                targetId: parsed.targets.some((target) => target.id === current.targetId)
+                    ? current.targetId
+                    : parsed.targets[0].id,
+            }));
+        }
+        catch (loadError) {
+            if (controller.signal.aborted)
+                return;
+            setError(errorMessage(loadError));
+            requestAnimationFrame(() => errorSummary.current?.focus());
+        }
+        finally {
+            if (!controller.signal.aborted)
+                setLoadingCapabilities(false);
+        }
     }
     void loadCapabilities();
     return () => controller.abort();
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },
   },
   methods: {
     updateField(key, value) {
-      if (key === "targetId" && typeof value === "string" && targetPresets[value]) {
+      try {
+        if (key === "targetId" && typeof value === "string" && targetPresets[value]) {
         setFields((current) => ({
             ...current,
             targetId: value,
@@ -68,23 +76,39 @@ Component({
         setFields((current) => ({ ...current, [key]: value }));
     }
     setResult(null);
+      } catch (err) {
+        console.warn("updateField execution warning:", err);
+      }
     },
     addParameter() {
-      if (parameters.length >= chinaDbSqlParameterLimit)
+      try {
+        if (parameters.length >= chinaDbSqlParameterLimit)
         return;
     setParameters((current) => [...current, { name: "", logicalType: "", nullable: false }]);
     setResult(null);
+      } catch (err) {
+        console.warn("addParameter execution warning:", err);
+      }
     },
     updateParameter(index, patch) {
-      setParameters((current) => current.map((parameter, parameterIndex) => (parameterIndex === index ? { ...parameter, ...patch } : parameter)));
+      try {
+        setParameters((current) => current.map((parameter, parameterIndex) => (parameterIndex === index ? { ...parameter, ...patch } : parameter)));
     setResult(null);
+      } catch (err) {
+        console.warn("updateParameter execution warning:", err);
+      }
     },
     removeParameter(index) {
-      setParameters((current) => current.filter((_, parameterIndex) => parameterIndex !== index));
+      try {
+        setParameters((current) => current.filter((_, parameterIndex) => parameterIndex !== index));
     setResult(null);
+      } catch (err) {
+        console.warn("removeParameter execution warning:", err);
+      }
     },
-    submit(event) {
-      event.preventDefault();
+    async submit(event) {
+      try {
+        event.preventDefault();
     if (!capabilities || busy)
         return;
     setBusy(true);
@@ -130,9 +154,16 @@ Component({
             activeAssessment.current = null;
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("submit execution warning:", err);
+      }
     },
     cancelAssessment() {
-      activeAssessment.current?.abort();
+      try {
+        activeAssessment.current?.abort();
+      } catch (err) {
+        console.warn("cancelAssessment execution warning:", err);
+      }
     },
   },
 });

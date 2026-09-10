@@ -33,8 +33,9 @@ Component({
     },
   },
   methods: {
-    submitAdjustment(event) {
-      event.preventDefault();
+    async submitAdjustment(event) {
+      try {
+        event.preventDefault();
     setNotice("");
     const parsed = Number(amountYuan);
     if (!Number.isFinite(parsed) || parsed <= 0) {
@@ -85,6 +86,9 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("submitAdjustment execution warning:", err);
+      }
     },
   },
 });

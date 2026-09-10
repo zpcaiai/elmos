@@ -62,15 +62,10 @@
       </view>
       <view class="form-note">提交不会重试非幂等写操作；服务端按租户、Actor 与规范请求摘要生成幂等键。证据必须含独立 Producer/Verifier、签名校验、重算字节和内容地址。</view>
       <view class="business-actions">
-        <button class="button button-primary" type="button" disabled="{{busy || !projectId.trim() || !repositoryId.trim() || !policyDigest.trim()}}" bindtap="onTap">
-          <text wx:if="{{busy}}">{{"处理中…"}}</text>
-          <text wx:else>{{"提交证据闭环"}}</text>
-        </button>
+        <button class="button button-primary" type="button" disabled="{{busy || !projectId.trim() || !repositoryId.trim() || !policyDigest.trim()}}" bindtap="onTap">{{busy ? "处理中…" : "提交证据闭环"}}</button>
         <button wx:if="{{job && !terminal.has(job.status)}}" class="button button-secondary" type="button" disabled="{{busy}}" bindtap="onTap">取消作业</button>
-        <text wx:else>{{null}}</text>
       </view>
       <view wx:if="{{error}}" class="field-error" role="alert">{{error}}</view>
-      <text wx:else>{{null}}</text>
     </view>
     <view class="surface-card detail-panel proof-loop-summary" aria-labelledby="proof-loop-summary-title">
       <view class="card-heading">
@@ -93,10 +88,7 @@
         <view>
           <view>合同摘要</view>
           <view>
-            <code>
-              <text>{{selected.canonicalSha256.slice(0, 22)}}</text>
-              <text>…</text>
-            </code>
+            <code>{{selected.canonicalSha256.slice(0, 22)}} …</code>
           </view>
         </view>
         <view>
@@ -109,7 +101,6 @@
         <text>Subject Digest</text>
         <code>{{subjectDigest}}</code>
       </view>
-      <text wx:else>{{null}}</text>
       <view wx:if="{{selected}}">
         <view>声明的证据槽位</view>
         <view>
@@ -118,7 +109,6 @@
           </view>
         </view>
       </view>
-      <text wx:else>{{null}}</text>
       <view wx:if="{{job}}" class="proof-job" aria-live="polite">
         <view class="generation-progress" aria-label="{{`作业进度 ${job.progress}%`}}">
           <text style="{{{ width: `${job.progress}%` }}}" />
@@ -146,18 +136,12 @@
             <view>失败代码</view>
             <view>{{job.failureCode}}</view>
           </view>
-          <text wx:else>{{null}}</text>
         </view>
         <view wx:if="{{job.artifacts?.length}}" class="proof-artifacts">
           <view wx:for="{{job.artifacts}}" wx:for-item="artifact" wx:key="artifact.id" key="{{`${artifact.role}:${artifact.contentSha256}`}}">
             <text>{{artifact.role}}</text>
             <text>{{artifact.filename}}</text>
-            <code>
-              <text>{{artifact.contentSha256.slice(0, 22)}}</text>
-              <text>… ·</text>
-              <text>{{artifact.byteSize}}</text>
-              <text>B</text>
-            </code>
+            <code>{{artifact.contentSha256.slice(0, 22)}} … · {{artifact.byteSize}} B</code>
           </view>
         </view>
         <view wx:else class="form-note">结果工件尚未由对象存储发布。</view>

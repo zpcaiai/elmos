@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U020-002 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 知识隔离、投毒与校准 / boundary / 场景2
-Category: boundary
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:23.703109Z][X-U020-002] Starting execution of X-U020-002 (知识隔离、投毒与校准 / boundary / 场景2) [Category=boundary, Priority=P0]
+[2026-09-10T08:26:23.703114Z][X-U020-002] Bound Skill: tst-knowledge-isolation-poisoning-calibration | Product Skill IDs: []
+[2026-09-10T08:26:23.703124Z][X-U020-002] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:23.782545Z][X-U020-002] Security: Minted RS256 token (JTI=ce8751d5..., Exp=1789032383)
+[2026-09-10T08:26:24.056517Z][X-U020-002] KMS: Envelope encrypted 37 bytes under key key-x-u020-002 v1 (DEK wrapped)
+[2026-09-10T08:26:24.428655Z][X-U020-002] [CROSS-SEC-GOV] Initializing X-U020-002 (U020) Category=boundary
+[2026-09-10T08:26:24.428685Z][X-U020-002] Knowledge Isolation & Anti-Poisoning: Verifying tenant vector space and RAG protections
+[2026-09-10T08:26:24.428696Z][X-U020-002] Testing similarity score threshold boundary (min_score = 0.85)...
+[2026-09-10T08:26:24.428727Z][X-U020-002] Completed execution of X-U020-002 in 725.6ms: Status=PASSED
+[2026-09-10T08:26:24.428732Z][X-U020-002] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:24.428754Z][X-U020-002] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

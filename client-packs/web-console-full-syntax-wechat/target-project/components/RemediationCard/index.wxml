@@ -1,32 +1,19 @@
-<view class="{{styles.tableWrap}}">
+<view class="{{styles.controlCard}}">
   <view>
-    <view>
-      <view>
-        <view>时间</view>
-        <view>业务线</view>
-        <view>动作</view>
-        <view>目标</view>
-        <view>结果</view>
-        <view>耗时</view>
-      </view>
-    </view>
-    <view>
-      <view wx:for="{{events}}" wx:key="item.id" key="{{item.eventId}}">
-        <view>{{formatTime(item.occurredAt)}}</view>
-        <view>{{lineLabels[item.businessLine] ?? item.businessLine}}</view>
-        <view>
-          <code>{{item.action}}</code>
-        </view>
-        <view title="{{item.target}}">{{displayTarget(item.target)}}</view>
-        <view>
-          <text class="{{item.result === &quot;FAILURE&quot; ? styles.resultBad : styles.resultGood}}">{{item.result}}</text>
-          <text wx:if="{{item.errorCode}}">{{item.errorCode}}</text>
-        </view>
-        <view>
-          <text wx:if="{{item.durationMs === null}}">{{"—"}}</text>
-          <text wx:else>{{`${item.durationMs} ms`}}</text>
-        </view>
-      </view>
-    </view>
+    <text class="{{styles.kind}}">{{proposal.remediationKind}}</text>
+    <text>{{proposal.titleCode}}</text>
   </view>
+  <code>{{proposal.recipeId}}</code>
+  <view>{{proposal.status}} · 风险 {{proposal.riskLevel}}</view>
+  <text aria-label="{{`前置摘要：${proposal.preconditionDigest}`}}">前置摘要： {{proposal.preconditionDigest.slice(0, 24)}} …</text>
+  <view wx:if="{{proposal.status === 'PROPOSED'}}" class="{{styles.inlineActions}}">
+    <button class="primary-button" type="button" disabled="{{disabled}}" bindtap="onTap">批准</button>
+    <button class="secondary-button" type="button" disabled="{{disabled}}" bindtap="onTap">拒绝</button>
+  </view>
+  <button wx:if="{{proposal.status === 'APPROVED'}}" class="primary-button" type="button" disabled="{{disabled}}" bindtap="onTap">生成摘要绑定 SCM 计划</button>
+  <text wx:if="{{proposal.artifactDigest}}" aria-label="{{`产物摘要：${proposal.artifactDigest}`}}">
+    <text>产物摘要：</text>
+    <text>{{proposal.artifactDigest.slice(0, 24)}}</text>
+    <text>…</text>
+  </text>
 </view>

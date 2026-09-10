@@ -1,15 +1,15 @@
-[2026-09-10T08:18:24.622811Z][B38-020] Starting execution of B38-020 (Batch 38部署与升级 / evidence-tamper / 场景20) [Category=evidence-tamper, Priority=P2]
-[2026-09-10T08:18:24.622814Z][B38-020] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1336, 1344]
-[2026-09-10T08:18:24.622815Z][B38-020] Provisioning isolated multi-region simulation environment and security services...
-[2026-09-10T08:18:24.632173Z][B38-020] Security: Minted RS256 token (JTI=624c9f2f..., Exp=1789031904)
-[2026-09-10T08:18:24.660803Z][B38-020] KMS: Envelope encrypted 34 bytes under key key-b38-020 v1 (DEK wrapped)
-[2026-09-10T08:18:24.681314Z][B38-020] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-020
-[2026-09-10T08:18:24.681322Z][B38-020] Executing Canary Rolling Upgrade with Progressive Traffic Steering...
-[2026-09-10T08:18:24.681323Z][B38-020] Wave 1 (5% traffic): Deploying v2.1.0 to canary pods in zone us-east-1a
-[2026-09-10T08:18:24.681325Z][B38-020] Telemetry Observation: Monitoring P99 latency and error rates for 30s
-[2026-09-10T08:18:24.681326Z][B38-020] Canary Health: Error rate 0.000%, P95=28.4ms, P99=41.2ms
-[2026-09-10T08:18:24.681327Z][B38-020] Wave 2 (25% traffic): Expanding rollout to us-east-1b and eu-west-1a
-[2026-09-10T08:18:24.681332Z][B38-020] Wave 3 (100% traffic): Full promotion completed across all availability zones
-[2026-09-10T08:18:24.681351Z][B38-020] Completed execution of B38-020 in 58.5ms: Status=PASSED
-[2026-09-10T08:18:24.681354Z][B38-020] Assertion Summary: 3/3 assertions passed
-[2026-09-10T08:18:24.681363Z][B38-020] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}
+[2026-09-10T08:25:39.176932Z][B38-020] Starting execution of B38-020 (Batch 38部署与升级 / evidence-tamper / 场景20) [Category=evidence-tamper, Priority=P2]
+[2026-09-10T08:25:39.176935Z][B38-020] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1336, 1344]
+[2026-09-10T08:25:39.176936Z][B38-020] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:39.186535Z][B38-020] Security: Minted RS256 token (JTI=b1822182..., Exp=1789032339)
+[2026-09-10T08:25:39.218431Z][B38-020] KMS: Envelope encrypted 34 bytes under key key-b38-020 v1 (DEK wrapped)
+[2026-09-10T08:25:39.235878Z][B38-020] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-020
+[2026-09-10T08:25:39.235883Z][B38-020] Executing Canary Rolling Upgrade with Progressive Traffic Steering...
+[2026-09-10T08:25:39.235885Z][B38-020] Wave 1 (5% traffic): Deploying v2.1.0 to canary pods in zone us-east-1a
+[2026-09-10T08:25:39.235886Z][B38-020] Telemetry Observation: Monitoring P99 latency and error rates for 30s
+[2026-09-10T08:25:39.235887Z][B38-020] Canary Health: Error rate 0.000%, P95=28.4ms, P99=41.2ms
+[2026-09-10T08:25:39.235889Z][B38-020] Wave 2 (25% traffic): Expanding rollout to us-east-1b and eu-west-1a
+[2026-09-10T08:25:39.235892Z][B38-020] Wave 3 (100% traffic): Full promotion completed across all availability zones
+[2026-09-10T08:25:39.235908Z][B38-020] Completed execution of B38-020 in 59.0ms: Status=PASSED
+[2026-09-10T08:25:39.235910Z][B38-020] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:39.235922Z][B38-020] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

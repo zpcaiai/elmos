@@ -36,82 +36,100 @@ Component({
   lifetimes: {
     attached() {
       // Lifecycle effect effect_0
-      try {
-        if (!accountRunner || !account.principal) return;
+      (async () => {
+        try {
+          if (!accountRunner || !account.principal)
+        return;
     setTenantId(account.principal.organizationId);
     setActorId(account.principal.actorId);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_1
-      try {
-        api<Capability>("/api/spring-upgrades/capabilities")
-      .then((value) => {
+      (async () => {
+        try {
+          api("/api/spring-upgrades/capabilities")
+        .then((value) => {
         setCapability(value);
         setTargetSpringBoot((current) => current || value.targetTuple.springBoot);
         setTargetJava((current) => current || value.targetTuple.java);
         setCapabilityError("");
-      })
-      .catch((error: Error) => {
+    })
+        .catch((error) => {
         setCapability(null);
         setCapabilityError(error.message);
         notify(error.message, "error");
-      });
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+    });
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_2
-      try {
-        refreshGithubCatalog()
-      .catch(() => {
+      (async () => {
+        try {
+          refreshGithubCatalog()
+        .catch(() => {
         setGithubCatalogStatus("NOT_CONFIGURED");
         setGithubRepositories([]);
-      });
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+    });
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_3
-      try {
-        const runId = window.sessionStorage.getItem(latestRunStorageKey);
-    if (runId && /^[0-9a-f-]{36}$/i.test(runId)) setRecoveryRunId(runId);
+      (async () => {
+        try {
+          const runId = window.sessionStorage.getItem(latestRunStorageKey);
+    if (runId && /^[0-9a-f-]{36}$/i.test(runId))
+        setRecoveryRunId(runId);
     const parameters = new URLSearchParams(window.location.search);
     const workspaceId = parameters.get("repositoryWorkspaceId")?.trim().toLowerCase() ?? "";
     const commit = parameters.get("expectedCommitSha")?.trim().toLowerCase() ?? "";
     const ref = parameters.get("requestedRef")?.trim() ?? "";
     if (/^[0-9a-f-]{36}$/.test(workspaceId) && /^[0-9a-f]{40}$/.test(commit)) {
-      setRepositoryWorkspaceId(workspaceId);
-      setExpectedCommitSha(commit);
-      if (ref) setRequestedRef(ref);
-      setSourceMode("REPOSITORY_WORKSPACE");
+        setRepositoryWorkspaceId(workspaceId);
+        setExpectedCommitSha(commit);
+        if (ref)
+            setRequestedRef(ref);
+        setSourceMode("REPOSITORY_WORKSPACE");
     }
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_4
-      try {
-        if (!run || !["QUEUED", "RUNNING"].includes(run.status) && run.runtimeStatus !== "STARTING") return;
+      (async () => {
+        try {
+          if (!run || !["QUEUED", "RUNNING"].includes(run.status) && run.runtimeStatus !== "STARTING")
+        return;
     const timer = window.setInterval(() => {
-      refresh(run.runId).catch((error: Error) => notify(error.message, "error"));
+        refresh(run.runId).catch((error) => notify(error.message, "error"));
     }, 1_500);
     return () => window.clearInterval(timer);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_5
-      try {
-        if (!feedback || feedbackKind === "error") return;
+      (async () => {
+        try {
+          if (!feedback || feedbackKind === "error")
+        return;
     const timer = window.setTimeout(() => setFeedback(""), 6_000);
     return () => window.clearTimeout(timer);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },
   },
   methods: {
-    submit(event) {
-      event.preventDefault();
+    async submit(event) {
+      try {
+        event.preventDefault();
     if (busy || migrationActive || !selectedTargetSupported)
         return;
     setBusy(true);
@@ -154,9 +172,13 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("submit execution warning:", err);
+      }
     },
-    connectGithubApp() {
-      setBusy(true);
+    async connectGithubApp() {
+      try {
+        setBusy(true);
     setFeedback("");
     try {
         const result = await api("/api/github-installation", {
@@ -172,9 +194,13 @@ Component({
         notify(error.message, "error");
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("connectGithubApp execution warning:", err);
+      }
     },
-    lifecycle(path, body) {
-      if (!run)
+    async lifecycle(path, body) {
+      try {
+        if (!run)
         return;
     setBusy(true);
     try {
@@ -192,9 +218,13 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("lifecycle execution warning:", err);
+      }
     },
-    toggleLogs() {
-      if (!run)
+    async toggleLogs() {
+      try {
+        if (!run)
         return;
     const next = !showLogs;
     setShowLogs(next);
@@ -206,9 +236,13 @@ Component({
             notify(error instanceof Error ? error.message : "日志不可用", "error");
         }
     }
+      } catch (err) {
+        console.warn("toggleLogs execution warning:", err);
+      }
     },
-    downloadArtifact() {
-      if (!run?.downloadAvailable || !run.artifactSha256 || !run.artifactSize)
+    async downloadArtifact() {
+      try {
+        if (!run?.downloadAvailable || !run.artifactSha256 || !run.artifactSize)
         return;
     setBusy(true);
     try {
@@ -244,9 +278,13 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("downloadArtifact execution warning:", err);
+      }
     },
-    recoverRun() {
-      if (!/^[0-9a-f-]{36}$/i.test(recoveryRunId) || !credentialsReady)
+    async recoverRun() {
+      try {
+        if (!/^[0-9a-f-]{36}$/i.test(recoveryRunId) || !credentialsReady)
         return;
     setBusy(true);
     try {
@@ -259,6 +297,9 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("recoverRun execution warning:", err);
+      }
     },
   },
 });

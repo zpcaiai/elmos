@@ -201,6 +201,8 @@ class EnterpriseChaosEngine:
             self._log(f"Error reverting fault {fault_id}: {exc}")
             return False
 
+    clear_fault = revert_fault
+
     def abort_all_chaos(self, reason: str = "Safety Governor Intervention") -> int:
         """Emergency blast-radius killswitch: reverts all currently active faults."""
         self._log(f"BLAST RADIUS GOVERNOR ABORT TRIGGERED: {reason}")

@@ -237,6 +237,8 @@ class EnterpriseOidcProvider:
 
         return True, claims, "OK: Validated"
 
+    validate_token = verify_token
+
     def revoke_token(self, jti: str, tenant_id: str, actor: str, reason: str = "Security revocation") -> None:
         """Revokes a specific token by JTI."""
         now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")

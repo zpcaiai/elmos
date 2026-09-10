@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import textwrap
 from typing import Any
 
 from ..ir import (
@@ -44,8 +45,9 @@ class PythonAstParser(BaseAstParser):
         super().__init__('python')
 
     def parse(self, source_code: str) -> UniversalModule:
+        clean_source = textwrap.dedent(source_code).strip()
         try:
-            tree = ast.parse(source_code)
+            tree = ast.parse(clean_source)
         except SyntaxError as ex:
             # Fallback module with raw snippet if syntax error
             module = UniversalModule(name='PythonModule', source_language='python')

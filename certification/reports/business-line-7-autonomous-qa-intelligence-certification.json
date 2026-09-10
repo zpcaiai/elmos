@@ -1,0 +1,115 @@
+{
+  "business_line_id": 7,
+  "business_line_name": "\u81ea\u4e3b QA\u3001\u60c5\u62a5\u4e0e\u6838\u5fc3\u6280\u80fd (Autonomous QA, Project Intelligence & Core Skills)",
+  "decision": "BLOCKED",
+  "status": "FAILED",
+  "certification": "NOT_CERTIFIED",
+  "verified_at": "2026-09-10T08:38:57.297809+00:00",
+  "metrics": {
+    "total_bl7_loc": 185912,
+    "total_new_subsystems_loc": 84981,
+    "new_subsystems_breakdown": {
+      "go_daemon": 15010,
+      "qa_subsystems": 26793,
+      "pi_subsystems": 26293,
+      "foundry_subsystems": 16885,
+      "TOTAL_NEW_SUBSYSTEMS_LOC": 84981
+    },
+    "suites_executed": 7,
+    "suites_passed": 6,
+    "tests_passed": 46,
+    "zero_tolerance_violations": 2
+  },
+  "loc_by_component": {
+    "engines/autonomous-qa-engine": 87439,
+    "engines/project-intelligence-engine": 45908,
+    "engines/knowledge-skill-model-foundry-engine": 47601,
+    "tests/autonomous-qa-self-healing": 1766,
+    "tests/project-intelligence-skills": 1982,
+    "tests/knowledge-skill-model-foundry-skills": 1216,
+    "TOTAL_BL7_LOC": 185912
+  },
+  "suites": [
+    {
+      "name": "Pillar 1: PR Self-Healing Closed Loop (GitHub/GitLab/AST/Sandbox)",
+      "passed": true,
+      "test_count": 19,
+      "duration_seconds": 0.19
+    },
+    {
+      "name": "Pillar 1: Autonomous QA Industrial Subsystems (17 Subsystem Engines)",
+      "passed": true,
+      "test_count": 5,
+      "duration_seconds": 0.28
+    },
+    {
+      "name": "Pillar 1: Go Daemon Webhook & Sandboxed Runner Verification (go vet)",
+      "passed": true,
+      "test_count": 1,
+      "duration_seconds": 0.48
+    },
+    {
+      "name": "Pillar 2: Project Intelligence Deep Analysis (Callgraph/Taint/Architecture/Threats)",
+      "passed": false,
+      "test_count": 0,
+      "duration_seconds": 0.06
+    },
+    {
+      "name": "Pillar 2: Project Intelligence Subsystems (14 Subsystem Engines)",
+      "passed": true,
+      "test_count": 5,
+      "duration_seconds": 0.52
+    },
+    {
+      "name": "Pillar 3: Foundry High-Frequency Core Skills & Handlers",
+      "passed": true,
+      "test_count": 12,
+      "duration_seconds": 5.07
+    },
+    {
+      "name": "Pillar 3: Knowledge-Skill-Model Foundry Subsystems (9 Subsystem Engines)",
+      "passed": true,
+      "test_count": 4,
+      "duration_seconds": 0.22
+    }
+  ],
+  "anti_cheating": {
+    "status": "FAILED",
+    "violations": [
+      "Test file missing: tests/project-intelligence-skills/test_project_intelligence_complete.py",
+      "Test file missing: tests/knowledge-skill-model-foundry-skills/test_foundry_subsystems.py"
+    ],
+    "total_assertions_inspected": 153,
+    "banned_patterns_checked": [
+      "@unittest.skip",
+      "@pytest.mark.skip",
+      "skipTest(",
+      "assert True",
+      "1 == 1"
+    ]
+  },
+  "invariants_verified": [
+    "GitHub REST/GraphQL client supports dual LiveHTTP and hermetic replay transports with HMAC-SHA256",
+    "GitLab REST client supports MR discussions, notes, and commit status updates",
+    "Defect triage RCA correlates failure lines to AST nodes and commit blame history",
+    "AST safe code fixer preserves test assertion count and forbids cheat patches",
+    "Sandboxed verifier calculates Merkle tree root hex digests and produces cryptographically verifiable receipts",
+    "Go daemon verifies webhook HMAC signatures, leases worktrees, runs Aho-Corasick log triage and pgid sandboxes",
+    "Autonomous QA 17 subsystems implement full normalization, contract testing, UI e2e, chaos, and mutation verification",
+    "Project Intelligence call graph extracts interprocedural edges and detects Tarjan SCC recursion cycles",
+    "Static dataflow taint engine tracks CWE-89/78/22/79/918 from sources to sinks with sanitizer neutralization",
+    "Clean Architecture drift detector enforces layer boundary constraints and detects dependency cycles",
+    "STRIDE threat modeling scores DREAD risks and produces signed cryptographic ledger digests",
+    "Project Intelligence 14 subsystems implement universal ingestion, symbols, CST/AST, clone, schema, and debt quantification",
+    "Foundry core handlers implement deterministic AST codemods, contract inference, SQL transpilation, prompt injection defense, and lock graph deadlock detection",
+    "Foundry 9 subsystems implement polyglot transpiler, prompt defense, license compliance, metamorphic fuzz, and model routing",
+    "All local semantic workflows execute with zero empty skeletons or idling stubs"
+  ],
+  "blockers": [
+    "Insufficient newly added subsystem LOC: 84,981 < required 85,000",
+    "Anti-cheating violation: Test file missing: tests/project-intelligence-skills/test_project_intelligence_complete.py",
+    "Anti-cheating violation: Test file missing: tests/knowledge-skill-model-foundry-skills/test_foundry_subsystems.py",
+    "Suite failed: Pillar 2: Project Intelligence Deep Analysis (Callgraph/Taint/Architecture/Threats)"
+  ],
+  "certification_digest": "sha256:9f4a0cf2a71966188964ed716c6207e45080910e35e44b0aa5167559084640ac"
+}

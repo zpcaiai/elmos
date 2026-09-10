@@ -1,8 +1,12 @@
-=== EXECUTION LOG FOR X-U025-005 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 客户证据与独立评审 / security / 场景5
-Category: security
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:29.821388Z][X-U025-005] Starting execution of X-U025-005 (客户证据与独立评审 / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:26:29.821392Z][X-U025-005] Bound Skill: tst-customer-evidence-independent-review | Product Skill IDs: []
+[2026-09-10T08:26:29.821396Z][X-U025-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:29.845231Z][X-U025-005] Security: Minted RS256 token (JTI=68dceca4..., Exp=1789032389)
+[2026-09-10T08:26:29.888100Z][X-U025-005] KMS: Envelope encrypted 37 bytes under key key-x-u025-005 v1 (DEK wrapped)
+[2026-09-10T08:26:29.908501Z][X-U025-005] [CROSS-DELIVERY] Initializing X-U025-005 (U025) Category=security
+[2026-09-10T08:26:29.908508Z][X-U025-005] Independent Review & Customer Evidence: Verifying external audit packages and UAT sign-offs
+[2026-09-10T08:26:29.908513Z][X-U025-005] Verifying that implementing engineers cannot sign independent review artifacts...
+[2026-09-10T08:26:29.908516Z][X-U025-005] Dual Control: Authoring agent blocked from performing reviewer sign-off
+[2026-09-10T08:26:29.908536Z][X-U025-005] Completed execution of X-U025-005 in 87.2ms: Status=PASSED
+[2026-09-10T08:26:29.908538Z][X-U025-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:29.908551Z][X-U025-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

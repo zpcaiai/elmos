@@ -4,11 +4,7 @@ Component({
     styleIsolation: "apply-shared",
   },
   properties: {
-    semanticCoverage: {
-      type: null,
-      value: null,
-    },
-    behaviorCoverage: {
+    behavior: {
       type: null,
       value: null,
     },

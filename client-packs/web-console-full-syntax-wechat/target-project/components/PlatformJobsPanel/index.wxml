@@ -4,10 +4,9 @@
       <text class="overline">PLATFORM EXECUTION</text>
       <view>全平台任务执行</view>
     </view>
-    <text>
-      <text wx:if="{{loaded}}">{{`${rows.length} 条 · 失败/丢失 ${failing.length} · 已扣费 ${charged.length}`}}</text>
-      <text wx:else>{{"跨组织 · 每组织最多 25 条"}}</text>
-    </text>
+    <text>{{loaded
+            ? `${rows.length} 条 · 失败/丢失 ${failing.length} · 已扣费 ${charged.length}`
+            : "跨组织 · 每组织最多 25 条"}}</text>
   </view>
   <view>跨组织视图，需要平台管理员身份，与上方按租户隔离的作业队列是两条通道。
         每一行同时给出执行结果和这次执行实际扣了多少钱——回答「客户说被多扣了」
@@ -25,8 +24,7 @@
     </text>
     <button class="secondary-button" type="button" disabled="{{busy}}" bindtap="onTap">
       <Icon name="{{busy ? &quot;refresh&quot; : &quot;search&quot;}}" size="{{17}}" />
-      <text wx:if="{{busy}}">{{"读取中…"}}</text>
-      <text wx:else>{{"读取任务"}}</text>
+      <text>{{busy ? "读取中…" : "读取任务"}}</text>
     </button>
   </view>
   <view wx:if="{{denial}}" class="{{styles.bad}}" role="alert">

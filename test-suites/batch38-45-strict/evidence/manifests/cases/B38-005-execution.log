@@ -1,14 +1,14 @@
-[2026-09-10T08:18:22.974646Z][B38-005] Starting execution of B38-005 (Batch 38部署与升级 / security / 场景5) [Category=security, Priority=P0]
-[2026-09-10T08:18:22.974654Z][B38-005] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1329, 1345]
-[2026-09-10T08:18:22.974657Z][B38-005] Provisioning isolated multi-region simulation environment and security services...
-[2026-09-10T08:18:22.992969Z][B38-005] Security: Minted RS256 token (JTI=48b83d21..., Exp=1789031902)
-[2026-09-10T08:18:23.041225Z][B38-005] KMS: Envelope encrypted 34 bytes under key key-b38-005 v1 (DEK wrapped)
-[2026-09-10T08:18:23.080464Z][B38-005] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-005
-[2026-09-10T08:18:23.080470Z][B38-005] Executing Automatic Rollback on Injection of Simulated Regression...
-[2026-09-10T08:18:23.080475Z][B38-005] Canary Wave 1 (5% traffic): Injecting faulty worker pod with synthetic 500 status
-[2026-09-10T08:18:23.080476Z][B38-005] Health Monitor: Detected error rate spike to 3.2% (> 1.0% threshold)
-[2026-09-10T08:18:23.080477Z][B38-005] Governor Action: Triggering instant automated canary rollback to stable v2.0.0
-[2026-09-10T08:18:23.080501Z][B38-005] Rollback Execution: Drained canary pods, restored traffic to baseline, verified 0 dropped requests
-[2026-09-10T08:18:23.080529Z][B38-005] Completed execution of B38-005 in 105.9ms: Status=PASSED
-[2026-09-10T08:18:23.080533Z][B38-005] Assertion Summary: 3/3 assertions passed
-[2026-09-10T08:18:23.080543Z][B38-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}
+[2026-09-10T08:25:38.009627Z][B38-005] Starting execution of B38-005 (Batch 38部署与升级 / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:25:38.009631Z][B38-005] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1329, 1345]
+[2026-09-10T08:25:38.009633Z][B38-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:38.020133Z][B38-005] Security: Minted RS256 token (JTI=b8faa5f8..., Exp=1789032338)
+[2026-09-10T08:25:38.046812Z][B38-005] KMS: Envelope encrypted 34 bytes under key key-b38-005 v1 (DEK wrapped)
+[2026-09-10T08:25:38.062775Z][B38-005] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-005
+[2026-09-10T08:25:38.062785Z][B38-005] Executing Automatic Rollback on Injection of Simulated Regression...
+[2026-09-10T08:25:38.062788Z][B38-005] Canary Wave 1 (5% traffic): Injecting faulty worker pod with synthetic 500 status
+[2026-09-10T08:25:38.062790Z][B38-005] Health Monitor: Detected error rate spike to 3.2% (> 1.0% threshold)
+[2026-09-10T08:25:38.062791Z][B38-005] Governor Action: Triggering instant automated canary rollback to stable v2.0.0
+[2026-09-10T08:25:38.062794Z][B38-005] Rollback Execution: Drained canary pods, restored traffic to baseline, verified 0 dropped requests
+[2026-09-10T08:25:38.062810Z][B38-005] Completed execution of B38-005 in 53.2ms: Status=PASSED
+[2026-09-10T08:25:38.062813Z][B38-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:38.062826Z][B38-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

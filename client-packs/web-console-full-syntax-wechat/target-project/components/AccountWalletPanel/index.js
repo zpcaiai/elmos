@@ -19,48 +19,56 @@ Component({
   lifetimes: {
     attached() {
       // Lifecycle effect effect_0
-      try {
-        if (account.status === "authenticated") void load();
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+      (async () => {
+        try {
+          if (account.status === "authenticated")
+    void load();
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_1
-      try {
-        if (!handoff || handoff.status === "CREDITED" || handoff.status === "EXPIRED") return;
+      (async () => {
+        try {
+          if (!handoff || handoff.status === "CREDITED" || handoff.status === "EXPIRED")
+        return;
     let cancelled = false;
     const timer = setInterval(async () => {
-      try {
-        const response = await fetch(
-          `/api/wallet/topup/${encodeURIComponent(handoff.topupOrderId)}`,
-          { cache: "no-store", credentials: "same-origin" });
-        if (!response.ok || cancelled) return;
-        const order = await response.json().catch(() => null) as { status?: string } | null;
-        if (!order?.status || cancelled) return;
-        if (order.status !== handoff.status) {
-          setHandoff((current) => current && { ...current, status: order.status as string });
+        try {
+            const response = await fetch(`/api/wallet/topup/${encodeURIComponent(handoff.topupOrderId)}`, { cache: "no-store", credentials: "same-origin" });
+            if (!response.ok || cancelled)
+                return;
+            const order = await response.json().catch(() => null);
+            if (!order?.status || cancelled)
+                return;
+            if (order.status !== handoff.status) {
+                setHandoff((current) => current && { ...current, status: order.status });
+            }
+            if (order.status === "CREDITED") {
+                idempotencyKey.current = "";
+                keyAmount.current = -1;
+                setFeedback("充值已入账。");
+                await load();
+            }
         }
-        if (order.status === "CREDITED") {
-          idempotencyKey.current = "";
-          keyAmount.current = -1;
-          setFeedback("充值已入账。");
-          await load();
+        catch {
+            // 轮询失败不打扰用户：下一轮会再试，真到不了会停在「已付款待入账」，
+            // 那本身就是给运营看的信号。
         }
-      } catch {
-        // 轮询失败不打扰用户：下一轮会再试，真到不了会停在「已付款待入账」，
-        // 那本身就是给运营看的信号。
-      }
     }, 4000);
     return () => { cancelled = true; clearInterval(timer); };
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },
   },
   methods: {
-    submitTopup(event) {
-      event.preventDefault();
+    async submitTopup(event) {
+      try {
+        event.preventDefault();
     setFeedback("");
     setFailure("");
     const parsed = Number(amountYuan);
@@ -105,6 +113,9 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("submitTopup execution warning:", err);
+      }
     },
   },
 });

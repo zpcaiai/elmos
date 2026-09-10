@@ -148,7 +148,7 @@ def execute_cross_cutting_orchestration(
             trace("Simulating hardware clock drift of +30 seconds...")
             fault_drift = FaultDescriptor(
                 fault_id=f"clock-drift-{case_id.lower()}",
-                fault_type=FaultType.CLOCK_DRIFT,
+                fault_type=FaultType.CLOCK_SKEW_DRIFT,
                 target_region=RegionId.EU_WEST_1,
                 target_node_ids=["eu-node-1"],
                 parameters={"offset_seconds": 30.0},

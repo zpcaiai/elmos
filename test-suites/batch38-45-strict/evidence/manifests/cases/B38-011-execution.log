@@ -1,13 +1,13 @@
-[2026-09-10T08:18:23.849551Z][B38-011] Starting execution of B38-011 (Batch 38部署与升级 / privacy / 场景11) [Category=privacy, Priority=P1]
-[2026-09-10T08:18:23.849557Z][B38-011] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1327, 1335]
-[2026-09-10T08:18:23.849559Z][B38-011] Provisioning isolated multi-region simulation environment and security services...
-[2026-09-10T08:18:23.880169Z][B38-011] Security: Minted RS256 token (JTI=b6854702..., Exp=1789031903)
-[2026-09-10T08:18:23.936681Z][B38-011] KMS: Envelope encrypted 34 bytes under key key-b38-011 v1 (DEK wrapped)
-[2026-09-10T08:18:24.069198Z][B38-011] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-011
-[2026-09-10T08:18:24.069218Z][B38-011] Executing Zero-Downtime Expand-Contract Database Migration...
-[2026-09-10T08:18:24.069252Z][B38-011] Migration Phase EXPAND: ALTER TABLE t_enterprise_deployments ADD COLUMN spec_v2 VARCHAR(255) NULL -> APPLIED
-[2026-09-10T08:18:24.069254Z][B38-011] Migration Phase DUAL_WRITE: UPDATE t_enterprise_deployments SET spec_v2 = spec_v1 WHERE spec_v2 IS NULL -> VERIFIED_100_PERCENT
-[2026-09-10T08:18:24.069257Z][B38-011] Migration Phase CONTRACT: ALTER TABLE t_enterprise_deployments DROP COLUMN spec_v1 -> APPLIED
-[2026-09-10T08:18:24.069281Z][B38-011] Completed execution of B38-011 in 219.7ms: Status=PASSED
-[2026-09-10T08:18:24.069285Z][B38-011] Assertion Summary: 3/3 assertions passed
-[2026-09-10T08:18:24.072022Z][B38-011] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}
+[2026-09-10T08:25:38.486549Z][B38-011] Starting execution of B38-011 (Batch 38部署与升级 / privacy / 场景11) [Category=privacy, Priority=P1]
+[2026-09-10T08:25:38.486554Z][B38-011] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1327, 1335]
+[2026-09-10T08:25:38.486555Z][B38-011] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:38.494982Z][B38-011] Security: Minted RS256 token (JTI=df49e5e7..., Exp=1789032338)
+[2026-09-10T08:25:38.517582Z][B38-011] KMS: Envelope encrypted 34 bytes under key key-b38-011 v1 (DEK wrapped)
+[2026-09-10T08:25:38.531488Z][B38-011] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-011
+[2026-09-10T08:25:38.531492Z][B38-011] Executing Zero-Downtime Expand-Contract Database Migration...
+[2026-09-10T08:25:38.531511Z][B38-011] Migration Phase EXPAND: ALTER TABLE t_enterprise_deployments ADD COLUMN spec_v2 VARCHAR(255) NULL -> APPLIED
+[2026-09-10T08:25:38.531513Z][B38-011] Migration Phase DUAL_WRITE: UPDATE t_enterprise_deployments SET spec_v2 = spec_v1 WHERE spec_v2 IS NULL -> VERIFIED_100_PERCENT
+[2026-09-10T08:25:38.531514Z][B38-011] Migration Phase CONTRACT: ALTER TABLE t_enterprise_deployments DROP COLUMN spec_v1 -> APPLIED
+[2026-09-10T08:25:38.531528Z][B38-011] Completed execution of B38-011 in 45.0ms: Status=PASSED
+[2026-09-10T08:25:38.531530Z][B38-011] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:38.531541Z][B38-011] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

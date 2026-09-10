@@ -14,5 +14,4 @@
     </view>
   </view>
   <SmokeRunButton wx:if="{{projectRef}}" key="{{projectRef}}" projectRef="{{projectRef}}" />
-  <text wx:else>{{null}}</text>
 </view>

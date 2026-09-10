@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U014-002 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 混合版本升级回滚 / boundary / 场景2
-Category: boundary
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:14.912230Z][X-U014-002] Starting execution of X-U014-002 (混合版本升级回滚 / boundary / 场景2) [Category=boundary, Priority=P0]
+[2026-09-10T08:26:14.912233Z][X-U014-002] Bound Skill: tst-mixed-version-upgrade-rollback | Product Skill IDs: []
+[2026-09-10T08:26:14.912235Z][X-U014-002] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:14.929200Z][X-U014-002] Security: Minted RS256 token (JTI=ef460f48..., Exp=1789032374)
+[2026-09-10T08:26:14.969756Z][X-U014-002] KMS: Envelope encrypted 37 bytes under key key-x-u014-002 v1 (DEK wrapped)
+[2026-09-10T08:26:15.251052Z][X-U014-002] [CROSS-RESILIENCE] Starting X-U014-002 (U014) Category=boundary
+[2026-09-10T08:26:15.251065Z][X-U014-002] Mixed-Version Rolling Upgrades: Evaluating wire & schema compatibility across v2.0 and v2.1
+[2026-09-10T08:26:15.251070Z][X-U014-002] Testing mixed-version state under maximum payload size (10MB payload)...
+[2026-09-10T08:26:15.251094Z][X-U014-002] Completed execution of X-U014-002 in 338.9ms: Status=PASSED
+[2026-09-10T08:26:15.251097Z][X-U014-002] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:15.251113Z][X-U014-002] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

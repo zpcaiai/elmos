@@ -25,12 +25,8 @@
     <Icon name="clock" size="{{17}}" />
     <view>
       <text>套餐目录已实现，收款尚未开放</text>
-      <text>
-        <text>当前目录版本</text>
-        <text>{{pricingCatalog.catalogVersion}}</text>
-        <text>为 DRAFT；支付、税务与开票均为
+      <text>当前目录版本 {{pricingCatalog.catalogVersion}} 为 DRAFT；支付、税务与开票均为
             NOT_CONFIGURED。</text>
-      </text>
     </view>
     <navigator href="/commercialization">
       <text>查看控制面</text>
@@ -56,39 +52,29 @@
         <view class="{{styles.planDescription}}">{{plan.description}}</view>
         <view class="{{styles.priceLine}}">
           <text>{{formatCny(plan.priceFen)}}</text>
-          <text>
-            <text>/</text>
-            <text>{{plan.billingLabel}}</text>
-          </text>
+          <text>/ {{plan.billingLabel}}</text>
         </view>
-        <view wx:if="{{plan.planId === "elmos-pro-annual"}}" class="{{styles.savings}}">
+        <view wx:if="{{plan.planId === 'elmos-pro-annual'}}" class="{{styles.savings}}">
           <text>折合</text>
           <text>{{formatCny(plan.effectiveMonthlyFen)}}</text>
           <text>/月，比连续月付节省 ¥258.00</text>
         </view>
-        <view wx:if="{{plan.planId === "elmos-free-trial"}}" class="{{styles.savings}}">一次性额度 · 到期不自动扣费</view>
-        <view wx:if="{{plan.planId === "elmos-pro-monthly"}}" class="{{styles.savings}}">随时按月评估 · 不自动超额计费</view>
+        <view wx:if="{{plan.planId === 'elmos-free-trial'}}" class="{{styles.savings}}">一次性额度 · 到期不自动扣费</view>
+        <view wx:if="{{plan.planId === 'elmos-pro-monthly'}}" class="{{styles.savings}}">随时按月评估 · 不自动超额计费</view>
         <view class="{{styles.quotaPanel}}" aria-label="{{`${plan.name}用量额度`}}">
           <view>
             <text>模型 Token</text>
             <text>{{formatQuota(plan.tokens)}}</text>
-            <text>
-              <text wx:if="{{plan.allowanceWindow === "MONTHLY"}}">{{"每月重置"}}</text>
-              <text wx:else>{{"14 天总额"}}</text>
-            </text>
+            <text>{{plan.allowanceWindow === "MONTHLY" ? "每月重置" : "14 天总额"}}</text>
           </view>
           <view>
             <text>平台 Credits</text>
             <text>{{formatQuota(plan.credits)}}</text>
-            <text>
-              <text wx:if="{{plan.allowanceWindow === "MONTHLY"}}">{{"每月重置"}}</text>
-              <text wx:else>{{"14 天总额"}}</text>
-            </text>
+            <text>{{plan.allowanceWindow === "MONTHLY" ? "每月重置" : "14 天总额"}}</text>
           </view>
         </view>
-        <view wx:if="{{plan.allowanceWindow === "MONTHLY"}}" class="{{styles.annualCeiling}}">
-          <text wx:if="{{plan.planId === "elmos-pro-annual"}}">{{"年度合同上限"}}</text>
-          <text wx:else>{{"连续使用 12 个月"}}</text>
+        <view wx:if="{{plan.allowanceWindow === 'MONTHLY'}}" class="{{styles.annualCeiling}}">
+          <text>{{plan.planId === "elmos-pro-annual" ? "年度合同上限" : "连续使用 12 个月"}}</text>
           <text>：</text>
           <text>{{formatQuota(plan.annualTokens)}}</text>
           <text>token ·</text>
@@ -123,12 +109,7 @@
         <view class="{{styles.priceLine}}">
           <text>{{formatCny(product.priceFen)}}</text>
         </view>
-        <view class="{{styles.savings}}">
-          <text>{{formatQuota(product.credits)}}</text>
-          <text>Credits ·</text>
-          <text>{{product.expiryDays}}</text>
-          <text>天有效</text>
-        </view>
+        <view class="{{styles.savings}}">{{formatQuota(product.credits)}} Credits · {{product.expiryDays}} 天有效</view>
         <ProductBillingAction product="{{product}}" orderable="{{catalogOrderable}}" />
       </view>
       <view wx:for="{{pricingCatalog.oneTimeProducts}}" wx:for-item="product" wx:key="product.id" class="{{styles.planCard}}" key="{{product.sku}}">
@@ -138,11 +119,7 @@
         <view class="{{styles.priceLine}}">
           <text>{{formatCny(product.priceFen)}}</text>
         </view>
-        <view class="{{styles.savings}}">
-          <text>绑定一个项目 · 最多</text>
-          <text>{{product.maxRunnerMinutes}}</text>
-          <text>分钟 Runner</text>
-        </view>
+        <view class="{{styles.savings}}">绑定一个项目 · 最多 {{product.maxRunnerMinutes}} 分钟 Runner</view>
         <ProductBillingAction product="{{product}}" orderable="{{catalogOrderable}}" />
       </view>
     </view>
@@ -161,11 +138,7 @@
       </view>
       <view wx:for="{{pricingCatalog.creditRates}}" wx:for-item="rate" wx:key="rate.id" class="{{styles.rateRow}}" role="row" key="{{rate.operationKey}}">
         <text role="cell">{{rate.label}}</text>
-        <text role="cell">
-          <text>{{rate.credits}}</text>
-          <text>credits /</text>
-          <text>{{rate.unit}}</text>
-        </text>
+        <text role="cell">{{rate.credits}} credits / {{rate.unit}}</text>
       </view>
     </view>
   </view>

@@ -12,12 +12,11 @@
   </view>
   <view class="source-notice" role="status" aria-live="polite">
     <Icon name="{{capabilities ? &quot;check&quot; : &quot;clock&quot;}}" size="{{16}}" />
-    <text>
-      <text wx:if="{{loadingCapabilities}}">{{"正在读取受保护的 control-plane 能力快照…"}}</text>
-      <text wx:else>{{capabilities
+    <text>{{loadingCapabilities
+            ? "正在读取受保护的 control-plane 能力快照…"
+            : capabilities
               ? `已绑定 ${capabilities.targetCount} 个目标、${capabilities.plannedRouteCount} 条规划路线；不会连接数据库。`
               : "能力服务不可用；提交保持禁用。"}}</text>
-    </text>
     <StatusChip status="{{capabilities ? &quot;LOCAL_ADAPTER&quot; : &quot;BLOCKED&quot;}}" compact="true" />
   </view>
   <view wx:if="{{error}}" ref="{{errorSummary}}" class="{{styles.errorSummary}}" role="alert" tabIndex="{{-1}}">
@@ -50,10 +49,9 @@
             </view>
           </text>
         </view>
-        <view id="sql-source-profile-hint" class="{{styles.sourceProfileHint}}">
-          <text wx:if="{{sourceRoutePlanned}}">{{"该源家族存在 13 条商业目标规划路线；仅在显式兼容模式下有限发射 SQL，不代表厂商原生适配。"}}</text>
-          <text wx:else>{{"该 Profile 仅用于 typed source intake，不在 78 条商业规划路线内；结果将明确标记 COMMERCIAL_ROUTE_NOT_PLANNED。"}}</text>
-        </view>
+        <view id="sql-source-profile-hint" class="{{styles.sourceProfileHint}}">{{sourceRoutePlanned
+                ? "该源家族存在 13 条商业目标规划路线；仅在显式兼容模式下有限发射 SQL，不代表厂商原生适配。"
+                : "该 Profile 仅用于 typed source intake，不在 78 条商业规划路线内；结果将明确标记 COMMERCIAL_ROUTE_NOT_PLANNED。"}}</view>
       </fieldset>
       <fieldset class="{{styles.fieldset}}" aria-describedby="{{selectedTarget ? &quot;sql-target-requirement&quot; : undefined}}">
         <legend>目标精确元组</legend>
@@ -104,11 +102,7 @@
       <fieldset class="{{styles.fieldset}}">
         <legend>参数契约</legend>
         <view class="{{styles.parameterToolbar}}">
-          <view>
-            <text>仅声明名称、逻辑类型与 nullability；最多</text>
-            <text>{{chinaDbSqlParameterLimit}}</text>
-            <text>项。</text>
-          </view>
+          <view>仅声明名称、逻辑类型与 nullability；最多 {{chinaDbSqlParameterLimit}} 项。</view>
           <button type="button" class="button button-secondary" disabled="{{parameters.length &gt;= chinaDbSqlParameterLimit}}" bindtap="addParameter">
             <Icon name="plus" size="{{15}}" />
             <text>添加参数</text>
@@ -138,11 +132,7 @@
       <text class="{{styles.sqlField}}" htmlFor="sql-source">
         <text>源 SQL</text>
         <textarea id="sql-source" aria-describedby="sql-source-hint" value="{{fields.sql}}" placeholder="粘贴已脱敏的查询；不要包含凭据、个人信息或未授权生产数据。" required="true" spellCheck="{{false}}" bindchange="onChange" />
-        <text id="sql-source-hint">
-          <text>UTF-8 最大</text>
-          <text>{{chinaDbSqlInputLimitBytes / 1024}}</text>
-          <text>KiB。SQL 只发送到同源 BFF 和受信 control-plane，不保存为草稿。</text>
-        </text>
+        <text id="sql-source-hint">UTF-8 最大 {{chinaDbSqlInputLimitBytes / 1024}} KiB。SQL 只发送到同源 BFF 和受信 control-plane，不保存为草稿。</text>
       </text>
       <view class="{{styles.digestBlock}}">
         <text>能力快照摘要</text>
@@ -154,10 +144,7 @@
       </view>
       <view class="{{styles.actions}}">
         <button wx:if="{{busy}}" class="button button-secondary" type="button" bindtap="cancelAssessment">取消本次预检</button>
-        <button class="button button-primary" type="submit" disabled="{{!capabilities || busy}}">
-          <text wx:if="{{busy}}">{{"正在评估…"}}</text>
-          <text wx:else>{{"运行 SQL 预检"}}</text>
-        </button>
+        <button class="button button-primary" type="submit" disabled="{{!capabilities || busy}}">{{busy ? "正在评估…" : "运行 SQL 预检"}}</button>
       </view>
     </form>
     <view class="{{`surface-card ${styles.boundaryCard}`}}">
@@ -174,10 +161,7 @@
         </view>
         <view>
           <view>目标 SQL</view>
-          <view>
-            <text wx:if="{{capabilities?.boundaries.targetSqlMayBeEmitted}}">{{"LOCAL_ONLY"}}</text>
-            <text wx:else>{{"PROHIBITED"}}</text>
-          </view>
+          <view>{{capabilities?.boundaries.targetSqlMayBeEmitted ? "LOCAL_ONLY" : "PROHIBITED"}}</view>
         </view>
         <view>
           <view>外部执行</view>
@@ -195,16 +179,8 @@
     <view class="{{styles.resultHeading}}">
       <view>
         <text class="overline">TYPED SOURCE ASSESSMENT</text>
-        <view id="sql-preflight-result-title">
-          <text>预检结果：</text>
-          <text wx:if="{{result.state === "LOCAL_EMITTED"}}">{{"本地已发射"}}</text>
-          <text wx:else>{{"已阻断"}}</text>
-        </view>
-        <view>
-          <text>{{result.routeId}}</text>
-          <text>·</text>
-          <text>{{result.queryId}}</text>
-        </view>
+        <view id="sql-preflight-result-title">预检结果： {{result.state === "LOCAL_EMITTED" ? "本地已发射" : "已阻断"}}</view>
+        <view>{{result.routeId}} · {{result.queryId}}</view>
       </view>
       <StatusChip status="{{result.state}}" />
     </view>
@@ -215,10 +191,7 @@
       </view>
       <view>
         <text>目标 SQL</text>
-        <text>
-          <text wx:if="{{result.targetSql}}">{{"已生成本地 SQL"}}</text>
-          <text wx:else>{{"NULL · 未生成"}}</text>
-        </text>
+        <text>{{result.targetSql ? "已生成本地 SQL" : "NULL · 未生成"}}</text>
       </view>
       <view>
         <text>目标状态</text>
@@ -244,10 +217,7 @@
               <code>{{blocker.code}}</code>
             </view>
             <view>{{blocker.message}}</view>
-            <text>
-              <text wx:if="{{blocker.statementIndex === null}}">{{"全局阻断"}}</text>
-              <text wx:else>{{`Statement ${blocker.statementIndex}`}}</text>
-            </text>
+            <text>{{blocker.statementIndex === null ? "全局阻断" : `Statement ${blocker.statementIndex}`}}</text>
           </view>
         </view>
       </view>

@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR B42-016 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: 42
-Title: Batch 42成熟Agent / dependency-failure / 场景16
-Category: dependency-failure
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:25:48.925777Z][B42-016] Starting execution of B42-016 (Batch 42成熟Agent / dependency-failure / 场景16) [Category=dependency-failure, Priority=P2]
+[2026-09-10T08:25:48.925783Z][B42-016] Bound Skill: tst-b42-agent-factory | Product Skill IDs: [1420, 1428]
+[2026-09-10T08:25:48.925785Z][B42-016] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:48.968095Z][B42-016] Security: Minted RS256 token (JTI=a6b8d079..., Exp=1789032348)
+[2026-09-10T08:25:49.158077Z][B42-016] KMS: Envelope encrypted 34 bytes under key key-b42-016 v1 (DEK wrapped)
+[2026-09-10T08:25:49.230973Z][B42-016] [B42-AGENT-FACTORY] Initializing agent governance runtime for B42-016
+[2026-09-10T08:25:49.230985Z][B42-016] Executing Batch 42 agent governance scenario B42-016 [Category=dependency-failure]...
+[2026-09-10T08:25:49.230989Z][B42-016] Heartbeat Monitor: Verified active leases and fence token monotonic ordering
+[2026-09-10T08:25:49.231015Z][B42-016] Completed execution of B42-016 in 305.2ms: Status=PASSED
+[2026-09-10T08:25:49.231018Z][B42-016] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:49.231036Z][B42-016] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

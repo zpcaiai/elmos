@@ -16,7 +16,10 @@ def test_cdc_event_application_and_row_hash_reconciliation():
     orchestrator.execute_query(target, "DROP TABLE IF EXISTS customers;")
     orchestrator.execute_query(
         target,
-        "CREATE TABLE customers (cust_id VARCHAR(32) PRIMARY KEY, name VARCHAR(100), balance NUMERIC(12, 2));",
+        (
+            "CREATE TABLE customers (cust_id VARCHAR(32) PRIMARY KEY, "
+            "name VARCHAR(100), balance NUMERIC(12, 2));"
+        ),
     )
 
     # 1. Apply batch of CDC INSERT events

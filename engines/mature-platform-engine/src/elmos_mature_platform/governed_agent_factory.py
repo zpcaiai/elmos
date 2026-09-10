@@ -63,6 +63,9 @@ class GovernedAgentFactory:
             requires_human_approval=True,
             sandbox_required=True,
         )
+        # Aliases for common tool names
+        self.tool_boundaries["read_file"] = self.tool_boundaries["file_read"]
+        self.tool_boundaries["write_file"] = self.tool_boundaries["file_write"]
 
     def register_agent(
         self,

@@ -1,12 +1,12 @@
-[2026-09-10T08:18:24.422286Z][B38-016] Starting execution of B38-016 (Batch 38部署与升级 / dependency-failure / 场景16) [Category=dependency-failure, Priority=P2]
-[2026-09-10T08:18:24.422290Z][B38-016] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1332, 1340]
-[2026-09-10T08:18:24.422291Z][B38-016] Provisioning isolated multi-region simulation environment and security services...
-[2026-09-10T08:18:24.431644Z][B38-016] Security: Minted RS256 token (JTI=d6b87f8a..., Exp=1789031904)
-[2026-09-10T08:18:24.457695Z][B38-016] KMS: Envelope encrypted 34 bytes under key key-b38-016 v1 (DEK wrapped)
-[2026-09-10T08:18:24.471558Z][B38-016] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-016
-[2026-09-10T08:18:24.471563Z][B38-016] Executing Batch 38 deployment lifecycle scenario B38-016 [Category=dependency-failure]...
-[2026-09-10T08:18:24.471567Z][B38-016] Topology Contract: Verifying edition boundaries and resource quota limits
-[2026-09-10T08:18:24.471568Z][B38-016] Resource Attribution: Checked CPU/RAM allocation bounds for tenant workspace
-[2026-09-10T08:18:24.471581Z][B38-016] Completed execution of B38-016 in 49.3ms: Status=PASSED
-[2026-09-10T08:18:24.471583Z][B38-016] Assertion Summary: 3/3 assertions passed
-[2026-09-10T08:18:24.471591Z][B38-016] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}
+[2026-09-10T08:25:38.824780Z][B38-016] Starting execution of B38-016 (Batch 38部署与升级 / dependency-failure / 场景16) [Category=dependency-failure, Priority=P2]
+[2026-09-10T08:25:38.824784Z][B38-016] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1332, 1340]
+[2026-09-10T08:25:38.824786Z][B38-016] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:38.834271Z][B38-016] Security: Minted RS256 token (JTI=bdfc5262..., Exp=1789032338)
+[2026-09-10T08:25:38.858586Z][B38-016] KMS: Envelope encrypted 34 bytes under key key-b38-016 v1 (DEK wrapped)
+[2026-09-10T08:25:38.873488Z][B38-016] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-016
+[2026-09-10T08:25:38.873495Z][B38-016] Executing Batch 38 deployment lifecycle scenario B38-016 [Category=dependency-failure]...
+[2026-09-10T08:25:38.873498Z][B38-016] Topology Contract: Verifying edition boundaries and resource quota limits
+[2026-09-10T08:25:38.873499Z][B38-016] Resource Attribution: Checked CPU/RAM allocation bounds for tenant workspace
+[2026-09-10T08:25:38.873513Z][B38-016] Completed execution of B38-016 in 48.7ms: Status=PASSED
+[2026-09-10T08:25:38.873515Z][B38-016] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:38.873527Z][B38-016] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

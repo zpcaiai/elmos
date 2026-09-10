@@ -92,16 +92,8 @@
           <text>{{target.slice(0, 1)}}</text>
         </text>
         <view>
-          <text>
-            <text>{{selectedRoute.batch}}</text>
-            <text>·</text>
-            <text>{{selectedRoute.skillId}}</text>
-          </text>
-          <view>
-            <text>{{source}}</text>
-            <text>→</text>
-            <text>{{target}}</text>
-          </view>
+          <text>{{selectedRoute.batch}} · {{selectedRoute.skillId}}</text>
+          <view>{{source}} → {{target}}</view>
           <code>{{selectedRoute.skillName}}</code>
         </view>
       </view>
@@ -161,12 +153,7 @@
               <Icon name="close" size="{{14}}" />
             </button>
           </text>
-          <text class="{{styles.resultCount}}">
-            <text>显示</text>
-            <text>{{visibleSkills.length}}</text>
-            <text>/</text>
-            <text>{{filteredSkills.length}}</text>
-          </text>
+          <text class="{{styles.resultCount}}">显示 {{visibleSkills.length}} / {{filteredSkills.length}}</text>
         </view>
         <view wx:if="{{visibleSkills.length}}" class="{{styles.skillGrid}}">
           <button wx:for="{{visibleSkills}}" wx:for-item="skill" wx:key="skill.id" type="button" class="{{`${styles.skillCard} ${selectedSkill?.id === skill.id ? styles.selectedSkill : &quot;&quot;}`}}" key="{{skill.id}}" aria-pressed="{{selectedSkill?.id === skill.id}}" bindtap="onTap">
@@ -191,12 +178,7 @@
       </view>
       <view class="{{styles.skillInspector}}" aria-live="polite">
         <block wx:if="{{selectedSkill}}">
-          <text class="{{styles.inspectorBatch}}">
-            <text>{{selectedSkill.batch}}</text>
-            <text>/</text>
-            <text>{{selectedSkill.certificateFamily}}</text>
-            <text>family</text>
-          </text>
+          <text class="{{styles.inspectorBatch}}">{{selectedSkill.batch}} / {{selectedSkill.certificateFamily}} family</text>
           <view>{{selectedSkill.title}}</view>
           <code>{{selectedSkill.id}}</code>
           <view>{{selectedSkill.description}}</view>
@@ -280,7 +262,7 @@
             <text>
               <text>Risk</text>
               <view aria-label="FRT Risk" value="{{risk}}" bindchange="onChange">
-                <view wx:for="{{["R0", "R1", "R2", "R3", "R4", "R5"]}}" wx:for-item="value" wx:key="value.id" key="{{value}}">{{value}}</view>
+                <view wx:for="{{['R0', 'R1', 'R2', 'R3', 'R4', 'R5']}}" wx:for-item="value" wx:key="value.id" key="{{value}}">{{value}}</view>
               </view>
             </text>
           </view>
@@ -339,7 +321,7 @@
           </view>
         </view>
         <view class="{{styles.runActions}}" aria-label="FRT 运行操作">
-          <button wx:for="{{(["PLAN", "ANALYZE", "EXECUTE", "VERIFY"] as const)}}" wx:for-item="action" wx:key="action.id" type="button" key="{{action}}" disabled="{{busy}}" bindtap="onTap">{{action}}</button>
+          <button wx:for="{{(['PLAN', 'ANALYZE', 'EXECUTE', 'VERIFY'] as const)}}" wx:for-item="action" wx:key="action.id" type="button" key="{{action}}" disabled="{{busy}}" bindtap="onTap">{{action}}</button>
         </view>
         <view wx:if="{{operationError}}" class="{{styles.operationError}}" role="alert">{{operationError}}</view>
       </view>
@@ -379,10 +361,7 @@
               <view wx:for="{{run.findings}}" wx:for-index="index" wx:key="item.id" key="{{`${item.code}-${index}`}}" data-severity="{{item.severity}}">
                 <text>{{item.code}}</text>
                 <view>{{item.message}}</view>
-                <text>
-                  <text wx:if="{{item.blocking}}">{{"BLOCKING"}}</text>
-                  <text wx:else>{{item.severity}}</text>
-                </text>
+                <text>{{item.blocking ? "BLOCKING" : item.severity}}</text>
               </view>
             </view>
             <view wx:else>暂无 Finding。</view>
@@ -392,10 +371,7 @@
               <text>Artifacts</text>
               <button type="button" disabled="{{!run}}" bindtap="downloadArtifacts">下载 JSON</button>
             </view>
-            <pre tabIndex="{{0}}" aria-label="FRT 运行产物 JSON">
-              <text wx:if="{{run}}">{{JSON.stringify(run.artifacts, null, 2)}}</text>
-              <text wx:else>{{"{}"}}</text>
-            </pre>
+            <pre tabIndex="{{0}}" aria-label="FRT 运行产物 JSON">{{run ? JSON.stringify(run.artifacts, null, 2) : "{}"}}</pre>
           </view>
           <view>
             <view>
@@ -425,16 +401,8 @@
             <view wx:if="{{audit.length}}" tabIndex="{{0}}" aria-label="FRT Audit trail">
               <view wx:for="{{audit}}" wx:key="item.id" key="{{item.sequence}}">
                 <text>{{item.event}}</text>
-                <text>
-                  <text>{{item.state}}</text>
-                  <text>· v</text>
-                  <text>{{item.version}}</text>
-                </text>
-                <text>
-                  <text>{{item.actor}}</text>
-                  <text>·</text>
-                  <text>{{new Date(item.at).toLocaleString()}}</text>
-                </text>
+                <text>{{item.state}} · v {{item.version}}</text>
+                <text>{{item.actor}} · {{new Date(item.at).toLocaleString()}}</text>
               </view>
             </view>
             <view wx:else>运行创建后显示持久化审计事件。</view>

@@ -403,6 +403,10 @@ class ReconciliationResult:
     primary_root_hash: str = ""
     replica_root_hash: str = ""
 
+    @property
+    def mismatched_keys(self) -> List[str]:
+        return self.divergent_keys
+
 
 @dataclass
 class DrDrillExecution:
@@ -472,6 +476,10 @@ class InvoiceLineItem:
     metered_units: float
     reconciled: bool
     discrepancy: float = 0.0
+
+    @property
+    def invoice_id(self) -> str:
+        return self.item_id
 
 
 @dataclass

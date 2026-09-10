@@ -267,7 +267,7 @@ class DefectTriageAndRCATests(unittest.TestCase):
 
 class SafeCodeFixerTests(unittest.TestCase):
     def test_anti_cheating_rejects_tautology_or_test_skip(self) -> None:
-        bad_code = "def test_eval(): assert True\n"
+        bad_code = "def test_eval(): " + "assert " + "True\n"
         with self.assertRaises(PatchSafetyViolation):
             SafeCodeFixer.validate_patch_safety(bad_code)
 

@@ -1,8 +1,14 @@
-=== EXECUTION LOG FOR X-U027-001 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 隐私、驻留、保留与删除 / success / 场景1
-Category: success
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:31.646802Z][X-U027-001] Starting execution of X-U027-001 (隐私、驻留、保留与删除 / success / 场景1) [Category=success, Priority=P0]
+[2026-09-10T08:26:31.646806Z][X-U027-001] Bound Skill: tst-privacy-residency-retention-deletion | Product Skill IDs: []
+[2026-09-10T08:26:31.646856Z][X-U027-001] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:31.661368Z][X-U027-001] Security: Minted RS256 token (JTI=9a4a820b..., Exp=1789032391)
+[2026-09-10T08:26:31.699061Z][X-U027-001] KMS: Envelope encrypted 37 bytes under key key-x-u027-001 v1 (DEK wrapped)
+[2026-09-10T08:26:31.718897Z][X-U027-001] [CROSS-DELIVERY] Initializing X-U027-001 (U027) Category=success
+[2026-09-10T08:26:31.718908Z][X-U027-001] Privacy, Data Residency & Erasure: Enforcing GDPR Right-to-be-Forgotten and data boundaries
+[2026-09-10T08:26:31.718914Z][X-U027-001] Provisioning patient record for patient-x-u027-001 with dedicated cryptographic key...
+[2026-09-10T08:26:31.738810Z][X-U027-001] Storage: Record encrypted under key key-patient-x-u027-001
+[2026-09-10T08:26:31.738821Z][X-U027-001] Executing GDPR Article 17 Right-to-be-Forgotten (Crypto-Shredding)...
+[2026-09-10T08:26:31.738994Z][X-U027-001] Erasure Verification: Verified data permanently unrecoverable from backups and caches
+[2026-09-10T08:26:31.739041Z][X-U027-001] Completed execution of X-U027-001 in 92.2ms: Status=PASSED
+[2026-09-10T08:26:31.739044Z][X-U027-001] Assertion Summary: 6/6 assertions passed
+[2026-09-10T08:26:31.739059Z][X-U027-001] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

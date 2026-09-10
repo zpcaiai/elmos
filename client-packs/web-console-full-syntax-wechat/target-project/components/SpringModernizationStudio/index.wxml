@@ -18,33 +18,20 @@
   <view class="metric-grid metric-grid-four" aria-label="精确迁移路线">
     <view class="metric-card">
       <text>精确源路线</text>
-      <text class="{{`metric-word ${capability ? &quot;&quot; : &quot;warning-text&quot;}`}}">
-        <text wx:if="{{capability}}">{{`${capability.routes?.length ?? 1} 条`}}</text>
-        <text wx:else>{{"UNKNOWN"}}</text>
-      </text>
-      <text>
-        <text wx:if="{{capability}}">{{`${verifiedRouteCount} 个 PASSED_LOCAL 精确点；NOT_RUN / NOT_IMPLEMENTED 均不计为通过`}}</text>
-        <text wx:else>{{"能力契约未读取"}}</text>
-      </text>
+      <text class="{{`metric-word ${capability ? &quot;&quot; : &quot;warning-text&quot;}`}}">{{capability ? `${capability.routes?.length ?? 1} 条` : "UNKNOWN"}}</text>
+      <text>{{capability ? `${verifiedRouteCount} 个 PASSED_LOCAL 精确点；NOT_RUN / NOT_IMPLEMENTED 均不计为通过` : "能力契约未读取"}}</text>
     </view>
     <view class="metric-card">
       <text>目标版本</text>
-      <text class="{{`metric-word ${evidenceTarget ? &quot;&quot; : &quot;warning-text&quot;}`}}">
-        <text wx:if="{{evidenceTarget}}">{{`Boot ${evidenceTarget.springBoot}`}}</text>
-        <text wx:else>{{"UNKNOWN"}}</text>
-      </text>
-      <text>
-        <text wx:if="{{evidenceTarget}}">{{`Java ${evidenceTarget.java} · ${run ? "当前 Run 不可变目标" : "下一次请求目标"}`}}</text>
-        <text wx:else>{{"能力契约未读取"}}</text>
-      </text>
+      <text class="{{`metric-word ${evidenceTarget ? &quot;&quot; : &quot;warning-text&quot;}`}}">{{evidenceTarget ? `Boot ${evidenceTarget.springBoot}` : "UNKNOWN"}}</text>
+      <text>{{evidenceTarget
+              ? `Java ${evidenceTarget.java} · ${run ? "当前 Run 不可变目标" : "下一次请求目标"}`
+              : "能力契约未读取"}}</text>
     </view>
     <view class="metric-card">
       <text>OpenRewrite</text>
       <text class="{{`metric-word ${capability ? &quot;&quot; : &quot;warning-text&quot;}`}}">{{capability?.openRewrite.rewriteSpring ?? "UNKNOWN"}}</text>
-      <text>
-        <text wx:if="{{capability}}">{{`Plugin ${capability.openRewrite.mavenPlugin} · 固定 Recipes`}}</text>
-        <text wx:else>{{"能力契约未读取"}}</text>
-      </text>
+      <text>{{capability ? `Plugin ${capability.openRewrite.mavenPlugin} · 固定 Recipes` : "能力契约未读取"}}</text>
     </view>
     <view class="metric-card">
       <text>独立裁判</text>
@@ -89,7 +76,7 @@
             <view value="MATERIALIZED_SNAPSHOT">受控 Snapshot Workspace</view>
           </view>
         </text>
-        <block wx:if="{{sourceMode === "PUBLIC_GIT"}}">
+        <block wx:if="{{sourceMode === 'PUBLIC_GIT'}}">
           <text class="spring-field-wide">
             <text>Git 仓库 URL</text>
             <input required="true" type="url" value="{{repositoryUrl}}" placeholder="https://github.com/org/repo.git" bindchange="onChange" />
@@ -215,40 +202,32 @@
         <view class="locked-target spring-field-wide">
           <text>锁定转换路线</text>
           <text>{{lockedRouteLabel}}</text>
-          <text>
-            <text wx:if="{{capability}}">{{`路线来自 Engine 能力契约 ${capability.packKey}；构建工具限定 ${capability.sourceTuple.build}，`
-                    + "版本不精确匹配会在 FINGERPRINT 阶段 fail closed，不做模糊升级。"}}</text>
-            <text wx:else>{{"Engine 能力契约尚未读取；在读取到精确版本元组之前，页面不展示任何具体版本号。"}}</text>
-          </text>
+          <text>{{capability
+                  ? `路线来自 Engine 能力契约 ${capability.packKey}；构建工具限定 ${capability.sourceTuple.build}，`
+                    + "版本不精确匹配会在 FINGERPRINT 阶段 fail closed，不做模糊升级。"
+                  : "Engine 能力契约尚未读取；在读取到精确版本元组之前，页面不展示任何具体版本号。"}}</text>
         </view>
       </view>
       <text class="spring-start-toggle">
         <input type="checkbox" checked="{{startAfterVerification}}" disabled="{{!runtimeReady}}" bindchange="onChange" />
         <text>
           <text>验证通过后自动一键启动</text>
-          <text>
-            <text wx:if="{{runtimeReady}}">{{"独立验证 PASS 后，在每次运行专属的 Rootless 容器中执行。"}}</text>
-            <text wx:else>{{capability?.runtimeRunnerReason ?? "独立 Runtime Runner 尚未配置。"}}</text>
-          </text>
+          <text>{{runtimeReady ? "独立验证 PASS 后，在每次运行专属的 Rootless 容器中执行。" : capability?.runtimeRunnerReason ?? "独立 Runtime Runner 尚未配置。"}}</text>
         </text>
       </text>
       <text class="spring-start-toggle">
         <input type="checkbox" checked="{{allowExperimentalRoutes}}" disabled="{{capability?.operatorExperimentalRoutesEnabled !== true}}" bindchange="onChange" />
         <text>
           <text>允许实验性升级路线</text>
-          <text>
-            <text wx:if="{{capability?.operatorExperimentalRoutesEnabled === true}}">{{"需要本次请求再次明确选择；实验路线不属于首发正式承诺。"}}</text>
-            <text wx:else>{{"运营方未启用实验路线；首发仅开放目录内唯一 DESIGN_PARTNER 路线。"}}</text>
-          </text>
+          <text>{{capability?.operatorExperimentalRoutesEnabled === true ? "需要本次请求再次明确选择；实验路线不属于首发正式承诺。" : "运营方未启用实验路线；首发仅开放目录内唯一 DESIGN_PARTNER 路线。"}}</text>
         </text>
       </text>
       <view class="business-actions">
         <button class="button button-primary" type="submit" disabled="{{busy || migrationActive || !runnerReady || !credentialsReady || !selectedTargetSupported}}">
           <Icon name="{{busy ? &quot;refresh&quot; : &quot;workflow&quot;}}" size="{{16}}" class="{{busy ? &quot;spinning&quot; : undefined}}" />
-          <text wx:if="{{migrationActive}}">{{"迁移运行中"}}</text>
-          <text wx:else>{{!runnerReady ? "隔离 Runner 未配置" : credentialsReady ? "开始真实迁移" : "登录企业账户或填写本地短期身份"}}</text>
+          <text>{{migrationActive ? "迁移运行中" : !runnerReady ? "隔离 Runner 未配置" : credentialsReady ? "开始真实迁移" : "登录企业账户或填写本地短期身份"}}</text>
         </button>
-        <button wx:if="{{run && ["QUEUED", "RUNNING"].includes(run.status)}}" class="button button-secondary" type="button" disabled="{{busy}}" bindtap="onTap">取消迁移</button>
+        <button wx:if="{{run && ['QUEUED', 'RUNNING'].includes(run.status)}}" class="button button-secondary" type="button" disabled="{{busy}}" bindtap="onTap">取消迁移</button>
       </view>
     </form>
     <view class="surface-card business-summary spring-run-summary">
@@ -262,10 +241,7 @@
       <view class="spring-run-facts">
         <view>
           <view>Run / Attempt</view>
-          <view>
-            <text wx:if="{{run}}">{{`${run.runId.slice(0, 8)} · #${run.attempt}`}}</text>
-            <text wx:else>{{"尚未创建"}}</text>
-          </view>
+          <view>{{run ? `${run.runId.slice(0, 8)} · #${run.attempt}` : "尚未创建"}}</view>
         </view>
         <view>
           <view>Commit</view>
@@ -281,18 +257,11 @@
         </view>
         <view>
           <view>Artifact</view>
-          <view>
-            <text>{{formatBytes(run?.artifactSize)}}</text>
-            <text>·</text>
-            <text>{{shortDigest(run?.artifactSha256)}}</text>
-          </view>
+          <view>{{formatBytes(run?.artifactSize)}} · {{shortDigest(run?.artifactSha256)}}</view>
         </view>
         <view>
           <view>Health</view>
-          <view>
-            <text wx:if="{{run?.runtimeStatus === "HEALTHY"}}">{{`127.0.0.1:${run.runtimePort}${run.healthPath}`}}</text>
-            <text wx:else>{{run?.runtimeStatus ?? "NOT_RUN"}}</text>
-          </view>
+          <view>{{run?.runtimeStatus === "HEALTHY" ? `127.0.0.1:${run.runtimePort}${run.healthPath}` : run?.runtimeStatus ?? "NOT_RUN"}}</view>
         </view>
       </view>
       <view class="business-form-grid">
@@ -309,25 +278,13 @@
       </view>
       <view class="locked-target">
         <text>隔离 Runtime Runner</text>
-        <text>
-          <text wx:if="{{runtimeReady}}">{{"READY · 可一键启动"}}</text>
-          <text wx:else>{{"BLOCKED · 不降级执行"}}</text>
-        </text>
+        <text>{{runtimeReady ? "READY · 可一键启动" : "BLOCKED · 不降级执行"}}</text>
         <text>{{capability?.runtimeRunnerReason ?? "正在读取 Runtime Runner 能力。"}}</text>
       </view>
       <view wx:if="{{run?.fingerprint}}" class="spring-fingerprint">
         <text>检测结果</text>
-        <text>
-          <text>{{fingerprintSourceLabel(run.fingerprint)}}</text>
-          <text>· Java</text>
-          <text>{{run.fingerprint.javaVersion}}</text>
-          <text>·</text>
-          <text>{{run.fingerprint.buildTool}}</text>
-        </text>
-        <text>
-          <text>能力：</text>
-          <text>{{run.fingerprint.activeCapabilities.join("、") || "未识别"}}</text>
-        </text>
+        <text>{{fingerprintSourceLabel(run.fingerprint)}} · Java {{run.fingerprint.javaVersion}} · {{run.fingerprint.buildTool}}</text>
+        <text>能力： {{run.fingerprint.activeCapabilities.join("、") || "未识别"}}</text>
         <text wx:if="{{run.fingerprint.unknowns.length > 0}}" class="warning-text">
           <text>未知项：</text>
           <text>{{run.fingerprint.unknowns.join("、")}}</text>
@@ -353,8 +310,7 @@
         </button>
         <button class="button button-secondary" type="button" disabled="{{!run}}" bindtap="toggleLogs">
           <Icon name="file" size="{{15}}" />
-          <text wx:if="{{showLogs}}">{{"收起日志"}}</text>
-          <text wx:else>{{"查看日志"}}</text>
+          <text>{{showLogs ? "收起日志" : "查看日志"}}</text>
         </button>
       </view>
     </view>
@@ -378,18 +334,10 @@
         <text role="columnheader">证据</text>
       </view>
       <view wx:for="{{capability.routes}}" wx:for-item="route" wx:key="route.id" class="{{`spring-route-row ${route.evidenceStatus === &quot;PASSED_LOCAL&quot; ? &quot;spring-route-verified&quot; : &quot;&quot;}`}}" role="row" key="{{route.routeId}}">
-        <text role="cell" title="{{`${route.routeId}${route.notes ? ` · ${route.notes}` : &quot;&quot;}`}}">
-          <text>{{routeSourceFamilyLabel(route)}}</text>
-          <text>{{routeSourceConstraintLabel(route)}}</text>
-        </text>
+        <text role="cell" title="{{`${route.routeId}${route.notes ? ` · ${route.notes}` : &quot;&quot;}`}}">{{routeSourceFamilyLabel(route)}} {{routeSourceConstraintLabel(route)}}</text>
         <text role="cell">{{route.sourceJavaVersions.join(" / ")}}</text>
         <text role="cell">{{route.buildTool}}</text>
-        <text role="cell">
-          <text>Boot</text>
-          <text>{{route.targetSpringBoot}}</text>
-          <text>· Java</text>
-          <text>{{route.targetJava}}</text>
-        </text>
+        <text role="cell">Boot {{route.targetSpringBoot}} · Java {{route.targetJava}}</text>
         <text role="cell">{{routeEvidenceLabel(route)}}</text>
       </view>
     </view>
@@ -435,7 +383,7 @@
       <Icon name="{{feedbackKind === &quot;error&quot; ? &quot;lock&quot; : &quot;check&quot;}}" size="{{17}}" />
     </text>
     <text class="feedback-message">{{feedback}}</text>
-    <button wx:if="{{feedbackKind === "error" && feedback}}" type="button" aria-label="关闭错误提示" bindtap="onTap">
+    <button wx:if="{{feedbackKind === 'error' && feedback}}" type="button" aria-label="关闭错误提示" bindtap="onTap">
       <Icon name="close" size="{{15}}" />
     </button>
   </view>

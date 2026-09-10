@@ -33,26 +33,35 @@ Component({
   lifetimes: {
     attached() {
       // Lifecycle effect effect_0
-      try {
+      (async () => {
         try {
-      const stored = sessionStorage.getItem(workspaceStorageKey) ?? "";
-      if (workspaceIdPattern.test(stored)) setRecoveryId(stored);
-    } catch {
-      // Recovery remains available through explicit UUID entry.
+          try {
+        const stored = sessionStorage.getItem(workspaceStorageKey) ?? "";
+        if (workspaceIdPattern.test(stored))
+            setRecoveryId(stored);
     }
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+    catch {
+        // Recovery remains available through explicit UUID entry.
+    }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },
   },
   methods: {
     authorization() {
-      return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+      try {
+        return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+      } catch (err) {
+        console.warn("authorization execution warning:", err);
+      }
     },
-    jsonRequest(url, init) {
-      const response = await fetch(url, {
+    async jsonRequest(url, init) {
+      try {
+        const response = await fetch(url, {
         ...init,
         cache: "no-store",
         headers: {
@@ -66,9 +75,13 @@ Component({
         throw new Error(payload.message || payload.errorCode || `HTTP_${response.status}`);
     }
     return payload;
+      } catch (err) {
+        console.warn("jsonRequest execution warning:", err);
+      }
     },
     changeProvider(next) {
-      setProvider(next);
+      try {
+        setProvider(next);
     if (next === "GITHUB") {
         setProviderInstanceId("github.com");
         setCloneUrl("https://github.com/");
@@ -81,9 +94,13 @@ Component({
         setProviderInstanceId("self-hosted");
         setCloneUrl("https://");
     }
+      } catch (err) {
+        console.warn("changeProvider execution warning:", err);
+      }
     },
-    createWorkspace(event) {
-      event.preventDefault();
+    async createWorkspace(event) {
+      try {
+        event.preventDefault();
     setBusy(true);
     setFeedback("");
     try {
@@ -116,16 +133,24 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("createWorkspace execution warning:", err);
+      }
     },
-    refreshWorkspace() {
-      if (!workspace)
+    async refreshWorkspace() {
+      try {
+        if (!workspace)
         throw new Error("请先建立工作区。");
     const refreshed = normalizeWorkspace(await jsonRequest(`/api/repository-workspaces/${workspace.workspaceId}`));
     setWorkspace(refreshed);
     return refreshed;
+      } catch (err) {
+        console.warn("refreshWorkspace execution warning:", err);
+      }
     },
-    commitWorkspace() {
-      if (!workspace || workspace.pendingPaths.length === 0)
+    async commitWorkspace() {
+      try {
+        if (!workspace || workspace.pendingPaths.length === 0)
         return;
     setBusy(true);
     setFeedback("");
@@ -148,9 +173,13 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("commitWorkspace execution warning:", err);
+      }
     },
-    pushWorkspace() {
-      if (!workspace || workspace.pendingPaths.length > 0
+    async pushWorkspace() {
+      try {
+        if (!workspace || workspace.pendingPaths.length > 0
         || !window.confirm(`将 ${workspace.branch} 推送到远端仓库？不会强推、合并或部署。`))
         return;
     setBusy(true);
@@ -172,9 +201,13 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("pushWorkspace execution warning:", err);
+      }
     },
-    createPullRequest() {
-      if (!workspace || workspace.pushedCommit !== workspace.currentHeadCommit
+    async createPullRequest() {
+      try {
+        if (!workspace || workspace.pushedCommit !== workspace.currentHeadCommit
         || !window.confirm(`将在 ${workspace.provider} 创建面向 ${baseBranch} 的 PR。继续？`))
         return;
     setBusy(true);
@@ -200,9 +233,13 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("createPullRequest execution warning:", err);
+      }
     },
-    recoverWorkspace() {
-      if (!recoveryId)
+    async recoverWorkspace() {
+      try {
+        if (!recoveryId)
         return;
     setBusy(true);
     setFeedback("");
@@ -223,9 +260,13 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("recoverWorkspace execution warning:", err);
+      }
     },
-    openFile(file) {
-      if (!workspace)
+    async openFile(file) {
+      try {
+        if (!workspace)
         return;
     setBusy(true);
     setFeedback("");
@@ -240,9 +281,13 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("openFile execution warning:", err);
+      }
     },
-    applyChange() {
-      if (!workspace || !selected)
+    async applyChange() {
+      try {
+        if (!workspace || !selected)
         return;
     setBusy(true);
     setFeedback("");
@@ -275,9 +320,13 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("applyChange execution warning:", err);
+      }
     },
     beginNewFile() {
-      const path = newPath.trim();
+      try {
+        const path = newPath.trim();
     if (!path || path.startsWith("/") || path.split("/").includes("..") || path.includes("\\")) {
         setFeedback("请输入仓库内的安全相对路径。");
         return;
@@ -295,9 +344,13 @@ Component({
     });
     setEditor("");
     setFeedback("新文件尚未写入；填写内容并保存后才会进入隔离工作区。");
+      } catch (err) {
+        console.warn("beginNewFile execution warning:", err);
+      }
     },
-    deleteSelectedFile() {
-      if (!workspace || !selected?.sha256
+    async deleteSelectedFile() {
+      try {
+        if (!workspace || !selected?.sha256
         || !window.confirm(`删除 ${selected.path}？该操作只影响隔离工作区。`))
         return;
     setBusy(true);
@@ -330,9 +383,13 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("deleteSelectedFile execution warning:", err);
+      }
     },
-    deleteWorkspace() {
-      if (!workspace || !window.confirm("删除此隔离工作区？未推送的本地修改将被移除。"))
+    async deleteWorkspace() {
+      try {
+        if (!workspace || !window.confirm("删除此隔离工作区？未推送的本地修改将被移除。"))
         return;
     setBusy(true);
     setFeedback("");
@@ -353,22 +410,34 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("deleteWorkspace execution warning:", err);
+      }
     },
     continueToProjectGeneration() {
-      if (!workspace || workspace.completeness !== "COMPLETE")
+      try {
+        if (!workspace || workspace.completeness !== "COMPLETE")
         return;
     const search = new URLSearchParams({ repositoryWorkspaceId: workspace.workspaceId });
     window.location.assign(`/generation?${search}`);
+      } catch (err) {
+        console.warn("continueToProjectGeneration execution warning:", err);
+      }
     },
     continueToTranslation() {
-      if (!workspace || workspace.completeness !== "COMPLETE"
+      try {
+        if (!workspace || workspace.completeness !== "COMPLETE"
         || workspace.pendingPaths.length > 0)
         return;
     const search = new URLSearchParams({ repositoryWorkspaceId: workspace.workspaceId });
     window.location.assign(`/translation?${search}`);
+      } catch (err) {
+        console.warn("continueToTranslation execution warning:", err);
+      }
     },
     continueToSpring() {
-      if (!workspace || workspace.completeness !== "COMPLETE"
+      try {
+        if (!workspace || workspace.completeness !== "COMPLETE"
         || workspace.pendingPaths.length > 0)
         return;
     const search = new URLSearchParams({
@@ -377,6 +446,9 @@ Component({
         requestedRef: workspace.requestedRef,
     });
     window.location.assign(`/spring?${search}`);
+      } catch (err) {
+        console.warn("continueToSpring execution warning:", err);
+      }
     },
   },
 });

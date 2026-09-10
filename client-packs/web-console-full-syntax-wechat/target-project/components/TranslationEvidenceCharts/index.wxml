@@ -30,10 +30,7 @@
           </view>
           <view>
             <view>完整</view>
-            <view>
-              <text wx:if="{{semanticCoverage.complete}}">{{"YES"}}</text>
-              <text wx:else>{{"NO"}}</text>
-            </view>
+            <view>{{semanticCoverage.complete ? "YES" : "NO"}}</view>
           </view>
           <view>
             <view>主题分母</view>
@@ -56,34 +53,19 @@
         <view class="evidence-facts">
           <view>
             <view>行为用例</view>
-            <view>
-              <text>{{behaviorCoverage.behaviorCaseCount}}</text>
-              <text>·</text>
-              <text>{{behaviorCoverage.behaviorCaseCountScope}}</text>
-            </view>
+            <view>{{behaviorCoverage.behaviorCaseCount}} · {{behaviorCoverage.behaviorCaseCountScope}}</view>
           </view>
           <view>
             <view>已核算工作单元</view>
-            <view>
-              <text>{{behaviorCoverage.accountedWorkUnitCount}}</text>
-              <text>/</text>
-              <text>{{behaviorCoverage.workUnitCount}}</text>
-            </view>
+            <view>{{behaviorCoverage.accountedWorkUnitCount}} / {{behaviorCoverage.workUnitCount}}</view>
           </view>
           <view>
             <view>已尝试 / 未解析</view>
-            <view>
-              <text>{{behaviorCoverage.attemptedWorkUnitCount}}</text>
-              <text>/</text>
-              <text>{{behaviorCoverage.unresolvedWorkUnitCount}}</text>
-            </view>
+            <view>{{behaviorCoverage.attemptedWorkUnitCount}} / {{behaviorCoverage.unresolvedWorkUnitCount}}</view>
           </view>
           <view>
             <view>完整</view>
-            <view>
-              <text wx:if="{{behaviorCoverage.complete}}">{{"YES"}}</text>
-              <text wx:else>{{"NO"}}</text>
-            </view>
+            <view>{{behaviorCoverage.complete ? "YES" : "NO"}}</view>
           </view>
           <view>
             <view>独立验证</view>

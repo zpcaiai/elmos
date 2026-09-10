@@ -30,27 +30,33 @@ Component({
   lifetimes: {
     attached() {
       // Lifecycle effect effect_0
-      try {
-        setInputJson(initialContractInput(selectedSkill));
+      (async () => {
+        try {
+          setInputJson(initialContractInput(selectedSkill));
     setOperationError("");
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_1
-      try {
-        if (!run || !["QUEUED", "RUNNING"].includes(run.state)) return;
+      (async () => {
+        try {
+          if (!run || !["QUEUED", "RUNNING"].includes(run.state))
+        return;
     const timer = window.setInterval(() => void refreshRun(run.runId), 1_500);
     return () => window.clearInterval(timer);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },
   },
   methods: {
     requestHeaders(json) {
-      return {
+      try {
+        return {
         ...(json ? { "content-type": "application/json" } : {}),
         ...(tenantId && actorId && runnerToken ? {
             authorization: `Bearer ${runnerToken}`,
@@ -58,17 +64,29 @@ Component({
             "x-elmos-actor": actorId,
         } : {}),
     };
+      } catch (err) {
+        console.warn("requestHeaders execution warning:", err);
+      }
     },
     scopedRunUrl(path) {
-      const query = new URLSearchParams({ workspaceId, projectId, environmentId, releaseId });
+      try {
+        const query = new URLSearchParams({ workspaceId, projectId, environmentId, releaseId });
     return `${path}?${query.toString()}`;
+      } catch (err) {
+        console.warn("scopedRunUrl execution warning:", err);
+      }
     },
-    sourceDigest(input) {
-      const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonicalInput(input)));
+    async sourceDigest(input) {
+      try {
+        const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonicalInput(input)));
     return `sha256:${Array.from(new Uint8Array(bytes), value => value.toString(16).padStart(2, "0")).join("")}`;
+      } catch (err) {
+        console.warn("sourceDigest execution warning:", err);
+      }
     },
-    chooseRepositoryFiles(files) {
-      if (!files)
+    async chooseRepositoryFiles(files) {
+      try {
+        if (!files)
         return;
     setOperationError("");
     const selected = [...files];
@@ -80,9 +98,13 @@ Component({
     for (const file of selected)
         loaded[file.webkitRelativePath || file.name] = await file.text();
     setSourceFiles(loaded);
+      } catch (err) {
+        console.warn("chooseRepositoryFiles execution warning:", err);
+      }
     },
-    refreshRun(runId) {
-      if (!runId)
+    async refreshRun(runId) {
+      try {
+        if (!runId)
         return;
     // A transient disconnect on one read surface must not discard the other
     // successful response or leave the mutation controls permanently busy.
@@ -102,9 +124,13 @@ Component({
     if (auditResult.status === "fulfilled" && auditResult.value.ok) {
         setAudit((await auditResult.value.json()).audit);
     }
+      } catch (err) {
+        console.warn("refreshRun execution warning:", err);
+      }
     },
-    startRun(action) {
-      if (!selectedSkill)
+    async startRun(action) {
+      try {
+        if (!selectedSkill)
         return;
     setBusy(true);
     setOperationError("");
@@ -173,9 +199,13 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("startRun execution warning:", err);
+      }
     },
-    transition(operation) {
-      if (!run)
+    async transition(operation) {
+      try {
+        if (!run)
         return;
     setBusy(true);
     setOperationError("");
@@ -199,31 +229,50 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("transition execution warning:", err);
+      }
     },
     downloadArtifacts() {
-      if (!run)
+      try {
+        if (!run)
         return;
     triggerBrowserDownload(new Blob([JSON.stringify(run.artifacts, null, 2)], { type: "application/json" }), `${run.runId}-artifacts.json`);
+      } catch (err) {
+        console.warn("downloadArtifacts execution warning:", err);
+      }
     },
     chooseSource(value) {
-      setSource(value);
+      try {
+        setSource(value);
     if (value === target) {
         setTarget(frtCatalog.technologyStacks.find((candidate) => candidate !== value) ?? "React");
     }
+      } catch (err) {
+        console.warn("chooseSource execution warning:", err);
+      }
     },
     chooseTarget(value) {
-      setTarget(value);
+      try {
+        setTarget(value);
     if (value === source) {
         setSource(frtCatalog.technologyStacks.find((candidate) => candidate !== value) ?? "Vue 3");
     }
+      } catch (err) {
+        console.warn("chooseTarget execution warning:", err);
+      }
     },
     openRouteSkill() {
-      if (!selectedRoute)
+      try {
+        if (!selectedRoute)
         return;
     setBatch(selectedRoute.batch);
     setQuery(selectedRoute.skillId);
     setSelectedSkillId(selectedRoute.skillId);
     document.getElementById("frt-skill-catalog")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      } catch (err) {
+        console.warn("openRouteSkill execution warning:", err);
+      }
     },
   },
 });

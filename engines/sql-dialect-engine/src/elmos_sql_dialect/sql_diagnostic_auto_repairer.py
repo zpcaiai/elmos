@@ -7,8 +7,8 @@ to reconcile common dialect divergences before and during migration.
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass, field
-from typing import Mapping
 
 
 @dataclass(frozen=True)

@@ -1,105 +1,21 @@
-<view class="translation-evidence-charts" aria-labelledby="translation-evidence-title">
-  <view class="evidence-section-heading">
-    <text>
-      <view id="translation-evidence-title">转换语义与行为覆盖</view>
-      <text>编译器语义主题和行为用例使用不同分母</text>
-    </text>
-    <StatusMark status="{{semanticCoverage != null || behaviorCoverage != null ? &quot;REPRESENTED&quot; : &quot;NOT_RUN&quot;}}" compact="true" />
+<view class="evidence-meter">
+  <view class="evidence-meter-heading">
+    <text>{{label}}</text>
+    <text>{{safePassed}} / {{safeTotal}}</text>
+    <StatusMark status="{{status}}" compact="true" />
   </view>
-  <view class="translation-coverage-grid">
-    <view class="translation-coverage-card">
-      <view class="evidence-section-heading">
-        <text>
-          <view>Semantic coverage</view>
-          <text>{{semanticCoverage?.profile ?? "compiler-semantic-symbol-coverage-v1"}}</text>
-        </text>
-        <StatusMark status="{{semanticCoverage?.status ?? &quot;NOT_RUN&quot;}}" compact="true" />
-      </view>
-      <block wx:if="{{semanticCoverage != null}}">
-        <CoverageMeter label="编译器语义主题" status="{{semanticCoverage.complete ? &quot;PASSED&quot; : semanticCoverage.status}}" passed="{{semanticCoverage.statusCounts.PASSED}}" total="{{semanticCoverage.subjectCount}}" counts="{{semanticCoverage.statusCounts}}" />
-        <view class="evidence-facts">
-          <view>
-            <view>源语言</view>
-            <view>{{semanticCoverage.sourceLanguage}}</view>
-          </view>
-          <view>
-            <view>语义清单</view>
-            <view>
-              <StatusMark status="{{semanticCoverage.inventoryStatus}}" compact="true" />
-            </view>
-          </view>
-          <view>
-            <view>完整</view>
-            <view>
-              <text wx:if="{{semanticCoverage.complete}}">{{"YES"}}</text>
-              <text wx:else>{{"NO"}}</text>
-            </view>
-          </view>
-          <view>
-            <view>主题分母</view>
-            <view>{{semanticCoverage.subjectCount}}</view>
-          </view>
-        </view>
-      </block>
-      <EmptyEvidence wx:else title="语义覆盖尚未返回" detail="任务状态不会替代逐主题 semanticCoverage。" />
+  <view class="evidence-meter-track" role="{{safeTotal &gt; 0 ? &quot;progressbar&quot; : &quot;status&quot;}}" aria-label="{{`${label}，${valueText}`}}">
+    <text wx:for="{{segments}}" wx:for-item="segment" wx:key="segment.id" aria-hidden="true" class="{{`evidence-meter-segment evidence-segment-${statusPresentation[segment.status].tone}`}}" key="{{segment.status}}" style="{{{ width: `${safeTotal &gt; 0 ? Math.min(100, segment.count / safeTotal * 100) : 0}%` }}}" />
+  </view>
+  <view class="evidence-meter-legend" aria-label="{{`${label}状态明细`}}">
+    <view wx:for="{{segments}}" wx:for-item="segment" wx:key="segment.id" key="{{segment.status}}">
+      <text aria-hidden="true" class="{{`evidence-legend-dot evidence-segment-${statusPresentation[segment.status].tone}`}}" />
+      <text>{{statusPresentation[segment.status].label}}</text>
+      <text>{{segment.count}}</text>
     </view>
-    <view class="translation-coverage-card">
-      <view class="evidence-section-heading">
-        <text>
-          <view>Behavior coverage</view>
-          <text>{{behaviorCoverage?.profile ?? "typed-pure-function-v1"}}</text>
-        </text>
-        <StatusMark status="{{behaviorCoverage?.status ?? &quot;NOT_RUN&quot;}}" compact="true" />
-      </view>
-      <block wx:if="{{behaviorCoverage != null}}">
-        <CoverageMeter label="工作单元行为回放" status="{{behaviorCoverage.complete ? &quot;PASSED&quot; : behaviorCoverage.status}}" passed="{{behaviorCoverage.statusCounts.PASSED}}" total="{{behaviorCoverage.workUnitCount}}" counts="{{behaviorCoverage.statusCounts}}" />
-        <view class="evidence-facts">
-          <view>
-            <view>行为用例</view>
-            <view>
-              <text>{{behaviorCoverage.behaviorCaseCount}}</text>
-              <text>·</text>
-              <text>{{behaviorCoverage.behaviorCaseCountScope}}</text>
-            </view>
-          </view>
-          <view>
-            <view>已核算工作单元</view>
-            <view>
-              <text>{{behaviorCoverage.accountedWorkUnitCount}}</text>
-              <text>/</text>
-              <text>{{behaviorCoverage.workUnitCount}}</text>
-            </view>
-          </view>
-          <view>
-            <view>已尝试 / 未解析</view>
-            <view>
-              <text>{{behaviorCoverage.attemptedWorkUnitCount}}</text>
-              <text>/</text>
-              <text>{{behaviorCoverage.unresolvedWorkUnitCount}}</text>
-            </view>
-          </view>
-          <view>
-            <view>完整</view>
-            <view>
-              <text wx:if="{{behaviorCoverage.complete}}">{{"YES"}}</text>
-              <text wx:else>{{"NO"}}</text>
-            </view>
-          </view>
-          <view>
-            <view>独立验证</view>
-            <view>
-              <StatusMark status="{{behaviorCoverage.independentVerificationStatus}}" compact="true" />
-            </view>
-          </view>
-          <view>
-            <view>外部验证</view>
-            <view>
-              <StatusMark status="{{behaviorCoverage.externalVerificationStatus}}" compact="true" />
-            </view>
-          </view>
-        </view>
-      </block>
-      <EmptyEvidence wx:else title="行为覆盖尚未返回" detail="任务完成不会替代逐工作单元 behaviorCoverage。" />
+    <view wx:if="{{segments.length === 0}}">
+      <StatusMark status="NOT_RUN" compact="true" />
+      <text>0</text>
     </view>
   </view>
 </view>

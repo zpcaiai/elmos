@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U021-008 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: Agent对抗、权限与失控 / evidence-tamper / 场景8
-Category: evidence-tamper
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:26.522334Z][X-U021-008] Starting execution of X-U021-008 (Agent对抗、权限与失控 / evidence-tamper / 场景8) [Category=evidence-tamper, Priority=P2]
+[2026-09-10T08:26:26.522339Z][X-U021-008] Bound Skill: tst-agent-adversarial-permission-runaway | Product Skill IDs: []
+[2026-09-10T08:26:26.522342Z][X-U021-008] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:26.534024Z][X-U021-008] Security: Minted RS256 token (JTI=38240bf6..., Exp=1789032386)
+[2026-09-10T08:26:26.561471Z][X-U021-008] KMS: Envelope encrypted 37 bytes under key key-x-u021-008 v1 (DEK wrapped)
+[2026-09-10T08:26:26.578744Z][X-U021-008] [CROSS-SEC-GOV] Initializing X-U021-008 (U021) Category=evidence-tamper
+[2026-09-10T08:26:26.578751Z][X-U021-008] Agent Governance & Safety: Evaluating L0-L4 autonomy, tool permission barriers, and dead-man killswitch
+[2026-09-10T08:26:26.578756Z][X-U021-008] Tampering with agent trajectory log digest...
+[2026-09-10T08:26:26.578772Z][X-U021-008] Completed execution of X-U021-008 in 56.4ms: Status=PASSED
+[2026-09-10T08:26:26.578775Z][X-U021-008] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:26.578788Z][X-U021-008] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

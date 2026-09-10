@@ -1,8 +1,14 @@
-=== EXECUTION LOG FOR X-U015-001 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: Air-gap离线更新撤销 / success / 场景1
-Category: success
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:16.495123Z][X-U015-001] Starting execution of X-U015-001 (Air-gap离线更新撤销 / success / 场景1) [Category=success, Priority=P0]
+[2026-09-10T08:26:16.495128Z][X-U015-001] Bound Skill: tst-airgap-offline-update-revocation | Product Skill IDs: []
+[2026-09-10T08:26:16.495133Z][X-U015-001] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:16.519366Z][X-U015-001] Security: Minted RS256 token (JTI=7113d7a5..., Exp=1789032376)
+[2026-09-10T08:26:16.579088Z][X-U015-001] KMS: Envelope encrypted 37 bytes under key key-x-u015-001 v1 (DEK wrapped)
+[2026-09-10T08:26:16.630515Z][X-U015-001] [CROSS-RESILIENCE] Starting X-U015-001 (U015) Category=success
+[2026-09-10T08:26:16.630522Z][X-U015-001] Air-Gap Offline Updates: Verifying offline signed bundles and CRL certificate revocation
+[2026-09-10T08:26:16.630526Z][X-U015-001] Loading offline signed update archive: release-v2.1.0-airgap.tar.gz
+[2026-09-10T08:26:16.630529Z][X-U015-001] Cryptographic Verification: Verifying SHA-256 digest + X.509 RSA-2048 code signature
+[2026-09-10T08:26:16.630531Z][X-U015-001] Certificate Validation: Checking embedded Certificate Revocation List (CRL)
+[2026-09-10T08:26:16.630532Z][X-U015-001] Signature Valid: Release signed by ethan-certifier; CRL status = VALID
+[2026-09-10T08:26:16.630547Z][X-U015-001] Completed execution of X-U015-001 in 135.4ms: Status=PASSED
+[2026-09-10T08:26:16.630549Z][X-U015-001] Assertion Summary: 6/6 assertions passed
+[2026-09-10T08:26:16.630561Z][X-U015-001] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

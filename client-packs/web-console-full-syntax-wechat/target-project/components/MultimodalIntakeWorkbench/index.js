@@ -63,290 +63,300 @@ Component({
   lifetimes: {
     attached() {
       // Lifecycle effect effect_4
-      try {
-        let active = true;
+      (async () => {
+        try {
+          let active = true;
     setReviewIdentityScope("");
     setReviewClaims({});
-    if (account.status === "loading") return () => { active = false; };
+    if (account.status === "loading")
+        return () => { active = false; };
     if (account.status === "anonymous") {
-      try {
-        const scopedKeys: string[] = [];
-        for (let index = 0; index < sessionStorage.length; index += 1) {
-          const key = sessionStorage.key(index);
-          if (key && (
-            key === legacyReviewClaimStorageKey
-            || key.startsWith(`${reviewClaimStoragePrefix}:`)
-            || key.startsWith(`${legacyReviewEnqueueStoragePrefix}:`)
-          )) scopedKeys.push(key);
+        try {
+            const scopedKeys = [];
+            for (let index = 0; index < sessionStorage.length; index += 1) {
+                const key = sessionStorage.key(index);
+                if (key && (key === legacyReviewClaimStorageKey
+                    || key.startsWith(`${reviewClaimStoragePrefix}:`)
+                    || key.startsWith(`${legacyReviewEnqueueStoragePrefix}:`)))
+                    scopedKeys.push(key);
+            }
+            for (const key of scopedKeys)
+                sessionStorage.removeItem(key);
         }
-        for (const key of scopedKeys) sessionStorage.removeItem(key);
-      } catch {
-        // Server-side actor binding remains authoritative when local cleanup fails.
-      }
-      // V2 enqueue recovery records contain only opaque handles, scoped
-      // digests, and idempotency keys. Preserve those records so the same actor
-      // can reconcile an UNKNOWN result after signing in again. Legacy V1
-      // records contained the exact correction input and are removed above.
-      return () => { active = false; };
+        catch {
+            // Server-side actor binding remains authoritative when local cleanup fails.
+        }
+        // V2 enqueue recovery records contain only opaque handles, scoped
+        // digests, and idempotency keys. Preserve those records so the same actor
+        // can reconcile an UNKNOWN result after signing in again. Legacy V1
+        // records contained the exact correction input and are removed above.
+        return () => { active = false; };
     }
     const identity = account.status === "authenticated" && account.principal
-      ? {
-          schema_version: "multimodal-review-browser-scope-v1",
-          organization_id: account.principal.organizationId,
-          actor_id: account.principal.actorId,
+        ? {
+            schema_version: "multimodal-review-browser-scope-v1",
+            organization_id: account.principal.organizationId,
+            actor_id: account.principal.actorId,
         }
-      : {
-          schema_version: "multimodal-review-browser-scope-v1",
-          local_runner: true,
+        : {
+            schema_version: "multimodal-review-browser-scope-v1",
+            local_runner: true,
         };
     void sha256(new TextEncoder().encode(canonicalStrictJson(identity)).buffer).then((digest) => {
-      if (active) setReviewIdentityScope(`sha256:${digest}`);
+        if (active)
+            setReviewIdentityScope(`sha256:${digest}`);
     });
     return () => { active = false; };
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
-      // Lifecycle effect effect_5
-      try {
-        if (!reviewIdentityScope) return;
-    try {
-      const legacy = sessionStorage.getItem(legacyReviewClaimStorageKey);
-      setLegacyReviewClaimDiscarded(legacy !== null);
-      if (legacy !== null) sessionStorage.removeItem(legacyReviewClaimStorageKey);
-      const rawEnqueueKeys: string[] = [];
-      for (let index = 0; index < sessionStorage.length; index += 1) {
-        const key = sessionStorage.key(index);
-        if (key?.startsWith(`${legacyReviewEnqueueStoragePrefix}:`)) {
-          rawEnqueueKeys.push(key);
+        } catch (err) {
+          // Handled mount effect
         }
-      }
-      for (const key of rawEnqueueKeys) sessionStorage.removeItem(key);
-    } catch {
-      setLegacyReviewClaimDiscarded(false);
+      })();
+      // Lifecycle effect effect_5
+      (async () => {
+        try {
+          if (!reviewIdentityScope)
+        return;
+    try {
+        const legacy = sessionStorage.getItem(legacyReviewClaimStorageKey);
+        setLegacyReviewClaimDiscarded(legacy !== null);
+        if (legacy !== null)
+            sessionStorage.removeItem(legacyReviewClaimStorageKey);
+        const rawEnqueueKeys = [];
+        for (let index = 0; index < sessionStorage.length; index += 1) {
+            const key = sessionStorage.key(index);
+            if (key?.startsWith(`${legacyReviewEnqueueStoragePrefix}:`)) {
+                rawEnqueueKeys.push(key);
+            }
+        }
+        for (const key of rawEnqueueKeys)
+            sessionStorage.removeItem(key);
+    }
+    catch {
+        setLegacyReviewClaimDiscarded(false);
     }
     setReviewClaims(loadReviewClaims(reviewIdentityScope));
     void updateReviewEnqueueRecoveryState(reviewIdentityScope, projectId);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_6
-      try {
-        const now = Date.now();
+      (async () => {
+        try {
+          const now = Date.now();
     const boundaries = [
-      ...Object.values(reviewClaims).map((claim) => (
-        claim.fence === undefined
-          ? claim.created_at + pendingReviewClaimRecoveryMs
-          : Date.parse(claim.expires_at as string)
-      )),
-      ...reviewTasks.flatMap((task) => (
-        task.claim_expires_at ? [Date.parse(task.claim_expires_at)] : []
-      )),
+        ...Object.values(reviewClaims).map((claim) => (claim.fence === undefined
+            ? claim.created_at + pendingReviewClaimRecoveryMs
+            : Date.parse(claim.expires_at))),
+        ...reviewTasks.flatMap((task) => (task.claim_expires_at ? [Date.parse(task.claim_expires_at)] : [])),
     ].filter((value) => Number.isFinite(value) && value > now);
-    if (boundaries.length === 0) return undefined;
+    if (boundaries.length === 0)
+        return undefined;
     const delay = Math.min(Math.min(...boundaries) - now + 25, 2_147_000_000);
     const timer = window.setTimeout(() => {
-      setReviewClock((current) => current + 1);
-      if (!reviewIdentityScope) return;
-      const retained = Object.fromEntries(Object.entries(reviewClaims).filter(([, claim]) => (
-        validReviewClaim(claim, reviewIdentityScope)
-      ))) as Record<string, ReviewClaim>;
-      if (
-        Object.keys(retained).length !== Object.keys(reviewClaims).length
-        && persistReviewClaims(retained, reviewIdentityScope)
-      ) {
-        setReviewClaims(retained);
-      }
+        setReviewClock((current) => current + 1);
+        if (!reviewIdentityScope)
+            return;
+        const retained = Object.fromEntries(Object.entries(reviewClaims).filter(([, claim]) => (validReviewClaim(claim, reviewIdentityScope))));
+        if (Object.keys(retained).length !== Object.keys(reviewClaims).length
+            && persistReviewClaims(retained, reviewIdentityScope)) {
+            setReviewClaims(retained);
+        }
     }, delay);
     return () => window.clearTimeout(timer);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_7
-      try {
-        if (reviewIdentityScope) void ensureRecoveryStore();
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+      (async () => {
+        try {
+          if (reviewIdentityScope)
+    void ensureRecoveryStore();
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_8
-      try {
-        if (typeof EventSource === "undefined" || !safeProject(projectId)) return undefined;
+      (async () => {
+        try {
+          if (typeof EventSource === "undefined" || !safeProject(projectId))
+        return undefined;
     const jobIds = parseStrictJson(activeProgressJobKey, {
-      maximumDepth: 2,
-      maximumNodes: maximumBatchAssets + 1,
+        maximumDepth: 2,
+        maximumNodes: maximumBatchAssets + 1,
     });
-    if (!Array.isArray(jobIds) || jobIds.length === 0) return undefined;
+    if (!Array.isArray(jobIds) || jobIds.length === 0)
+        return undefined;
     let active = true;
-    const streams: EventSource[] = [];
+    const streams = [];
     for (const value of jobIds) {
-      if (typeof value !== "string" || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(value)) {
-        continue;
-      }
-      const jobId = value;
-      const stream = new EventSource(
-        `/api/multimodal-intake/v1/progress/jobs/${encodeURIComponent(jobId)}`
-        + `?projectId=${encodeURIComponent(projectId)}`,
-        { withCredentials: true },
-      );
-      let streamClosed = false;
-      const closeStream = () => {
-        if (streamClosed) return;
-        streamClosed = true;
-        stream.close();
-      };
-      streams.push(stream);
-      stream.addEventListener("progress", (rawEvent) => {
-        const event = rawEvent as MessageEvent<string>;
-        void validatedJobProgressEvent(event.data, jobId, event.lastEventId).then((progress) => {
-          if (!active) return;
-          const state = progress.state as string;
-          const phase: AssetPhase = state === "COMPLETED"
-            ? "READY"
-            : ["PARTIAL", "NEEDS_REVIEW"].includes(state)
-              ? "NEEDS_REVIEW"
-              : ["FAILED", "BLOCKED", "CANCELLED"].includes(state)
-                ? "BLOCKED"
-                : "PROCESSING";
-          const terminal = ["READY", "NEEDS_REVIEW", "BLOCKED"].includes(phase);
-          setAssets((current) => current.map((asset) => (
-            asset.processingJobId === jobId
-              ? {
-                  ...asset,
-                  phase,
-                  progress: terminal ? 100 : Math.max(asset.progress, 80),
-                  ...(terminal ? { processingJobId: undefined } : {}),
-                }
-              : asset
-          )));
-          if (terminal) closeStream();
-        }).catch(() => {
-          closeStream();
-          if (!active) return;
-          setAssets((current) => current.map((asset) => (
-            asset.processingJobId === jobId
-              ? { ...asset, code: "MULTIMODAL_PROGRESS_EVENT_INVALID" }
-              : asset
-          )));
+        if (typeof value !== "string" || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(value)) {
+            continue;
+        }
+        const jobId = value;
+        const stream = new EventSource(`/api/multimodal-intake/v1/progress/jobs/${encodeURIComponent(jobId)}`
+            + `?projectId=${encodeURIComponent(projectId)}`, { withCredentials: true });
+        let streamClosed = false;
+        const closeStream = () => {
+            if (streamClosed)
+                return;
+            streamClosed = true;
+            stream.close();
+        };
+        streams.push(stream);
+        stream.addEventListener("progress", (rawEvent) => {
+            const event = rawEvent;
+            void validatedJobProgressEvent(event.data, jobId, event.lastEventId).then((progress) => {
+                if (!active)
+                    return;
+                const state = progress.state;
+                const phase = state === "COMPLETED"
+                    ? "READY"
+                    : ["PARTIAL", "NEEDS_REVIEW"].includes(state)
+                        ? "NEEDS_REVIEW"
+                        : ["FAILED", "BLOCKED", "CANCELLED"].includes(state)
+                            ? "BLOCKED"
+                            : "PROCESSING";
+                const terminal = ["READY", "NEEDS_REVIEW", "BLOCKED"].includes(phase);
+                setAssets((current) => current.map((asset) => (asset.processingJobId === jobId
+                    ? {
+                        ...asset,
+                        phase,
+                        progress: terminal ? 100 : Math.max(asset.progress, 80),
+                        ...(terminal ? { processingJobId: undefined } : {}),
+                    }
+                    : asset)));
+                if (terminal)
+                    closeStream();
+            }).catch(() => {
+                closeStream();
+                if (!active)
+                    return;
+                setAssets((current) => current.map((asset) => (asset.processingJobId === jobId
+                    ? { ...asset, code: "MULTIMODAL_PROGRESS_EVENT_INVALID" }
+                    : asset)));
+            });
         });
-      });
-      stream.addEventListener("error", () => {
-        // The BFF response is deliberately one bounded batch. Never let native
-        // EventSource turn a close or transport failure into an unbounded retry
-        // loop; the existing tenant-bound get_session poll is the sole fallback.
-        closeStream();
-        if (!active) return;
-        setAssets((current) => current.map((asset) => (
-          asset.processingJobId === jobId
-            ? { ...asset, code: "MULTIMODAL_PROGRESS_STREAM_UNAVAILABLE_POLLING" }
-            : asset
-        )));
-      });
+        stream.addEventListener("error", () => {
+            // The BFF response is deliberately one bounded batch. Never let native
+            // EventSource turn a close or transport failure into an unbounded retry
+            // loop; the existing tenant-bound get_session poll is the sole fallback.
+            closeStream();
+            if (!active)
+                return;
+            setAssets((current) => current.map((asset) => (asset.processingJobId === jobId
+                ? { ...asset, code: "MULTIMODAL_PROGRESS_STREAM_UNAVAILABLE_POLLING" }
+                : asset)));
+        });
     }
     return () => {
-      active = false;
-      for (const stream of streams) stream.close();
+        active = false;
+        for (const stream of streams)
+            stream.close();
     };
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_9
-      try {
-        let identityGuard: IntakeIdentityGuard;
+      (async () => {
+        try {
+          let identityGuard;
     try {
-      identityGuard = captureIntakeIdentity();
-    } catch {
-      return undefined;
+        identityGuard = captureIntakeIdentity();
     }
-    const sessions = [...new Set(
-      assets
-        .filter((asset) => asset.sessionId && !["READY", "QUARANTINED"].includes(asset.phase) && !asset.permanentBlock)
-        .map((asset) => asset.sessionId as string),
-    )];
-    if (busy || !safeProject(projectId) || sessions.length === 0) return undefined;
+    catch {
+        return undefined;
+    }
+    const sessions = [...new Set(assets
+            .filter((asset) => asset.sessionId && !["READY", "QUARANTINED"].includes(asset.phase) && !asset.permanentBlock)
+            .map((asset) => asset.sessionId))];
+    if (busy || !safeProject(projectId) || sessions.length === 0)
+        return undefined;
     let active = true;
     const poll = async () => {
-      for (const sessionId of sessions) {
-        try {
-          const response = await executeGuardedIntakeSkill(
-            identityGuard,
-            projectId,
-            "elmos-multimodal-input-orchestrator",
-            "get_session",
-            { session_id: sessionId },
-            `mmi-progress-${sessionId}-${Math.floor(Date.now() / 5_000)}`,
-          );
-          const observed = nestedRecord(response).assets;
-          if (!active || !intakeIdentityIsCurrent(identityGuard) || !Array.isArray(observed)) continue;
-          const byId = new Map(observed
-            .filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object" && !Array.isArray(item) && typeof (item as Record<string, unknown>).asset_id === "string")
-            .map((item) => [String(item.asset_id), {
-              status: String(item.status ?? "PROCESSING").toUpperCase(),
-              version: positiveInteger(item.version),
-            }]));
-          setAssets((current) => {
-            let changed = false;
-            const next = current.map((asset) => {
-              const observedAsset = asset.assetId ? byId.get(asset.assetId) : undefined;
-              if (!observedAsset) return asset;
-              // Corrections create a new immutable asset version. A lagging
-              // session snapshot must never regress that newer local state.
-              if (
-                asset.assetVersion
-                && (!observedAsset.version || observedAsset.version < asset.assetVersion)
-              ) return asset;
-              const state = observedAsset.status;
-              const phase: AssetPhase = state === "READY" || state === "COMPLETED"
-                ? "READY"
-                : state === "NEEDS_REVIEW" || state === "PARTIAL"
-                  ? "NEEDS_REVIEW"
-                  : state === "QUARANTINED"
-                    ? "QUARANTINED"
-                    : state === "FAILED" || state === "BLOCKED"
-                      ? "BLOCKED"
-                      : "PROCESSING";
-              const progress = ["READY", "NEEDS_REVIEW", "QUARANTINED", "BLOCKED"].includes(phase)
-                ? 100
-                : Math.max(asset.progress, 80);
-              if (
-                phase === asset.phase
-                && progress === asset.progress
-                && (!observedAsset.version || observedAsset.version === asset.assetVersion)
-              ) return asset;
-              changed = true;
-              return {
-                ...asset,
-                phase,
-                progress,
-                ...(observedAsset.version ? { assetVersion: observedAsset.version } : {}),
-              };
-            });
-            return changed ? next : current;
-          });
-        } catch {
-          // Recovery metadata remains authoritative for the next bounded poll.
+        for (const sessionId of sessions) {
+            try {
+                const response = await executeGuardedIntakeSkill(identityGuard, projectId, "elmos-multimodal-input-orchestrator", "get_session", { session_id: sessionId }, `mmi-progress-${sessionId}-${Math.floor(Date.now() / 5_000)}`);
+                const observed = nestedRecord(response).assets;
+                if (!active || !intakeIdentityIsCurrent(identityGuard) || !Array.isArray(observed))
+                    continue;
+                const byId = new Map(observed
+                    .filter((item) => Boolean(item) && typeof item === "object" && !Array.isArray(item) && typeof item.asset_id === "string")
+                    .map((item) => [String(item.asset_id), {
+                        status: String(item.status ?? "PROCESSING").toUpperCase(),
+                        version: positiveInteger(item.version),
+                    }]));
+                setAssets((current) => {
+                    let changed = false;
+                    const next = current.map((asset) => {
+                        const observedAsset = asset.assetId ? byId.get(asset.assetId) : undefined;
+                        if (!observedAsset)
+                            return asset;
+                        // Corrections create a new immutable asset version. A lagging
+                        // session snapshot must never regress that newer local state.
+                        if (asset.assetVersion
+                            && (!observedAsset.version || observedAsset.version < asset.assetVersion))
+                            return asset;
+                        const state = observedAsset.status;
+                        const phase = state === "READY" || state === "COMPLETED"
+                            ? "READY"
+                            : state === "NEEDS_REVIEW" || state === "PARTIAL"
+                                ? "NEEDS_REVIEW"
+                                : state === "QUARANTINED"
+                                    ? "QUARANTINED"
+                                    : state === "FAILED" || state === "BLOCKED"
+                                        ? "BLOCKED"
+                                        : "PROCESSING";
+                        const progress = ["READY", "NEEDS_REVIEW", "QUARANTINED", "BLOCKED"].includes(phase)
+                            ? 100
+                            : Math.max(asset.progress, 80);
+                        if (phase === asset.phase
+                            && progress === asset.progress
+                            && (!observedAsset.version || observedAsset.version === asset.assetVersion))
+                            return asset;
+                        changed = true;
+                        return {
+                            ...asset,
+                            phase,
+                            progress,
+                            ...(observedAsset.version ? { assetVersion: observedAsset.version } : {}),
+                        };
+                    });
+                    return changed ? next : current;
+                });
+            }
+            catch {
+                // Recovery metadata remains authoritative for the next bounded poll.
+            }
         }
-      }
     };
     void poll();
     const timer = window.setInterval(() => { void poll(); }, 5_000);
     return () => { active = false; window.clearInterval(timer); };
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_10
-      try {
-        estimateRequestOwner.current += 1;
+      (async () => {
+        try {
+          estimateRequestOwner.current += 1;
     setEstimate(null);
     setEstimateBusy(false);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },
   },
   methods: {
     captureIntakeIdentity() {
-      const identityScope = activeIdentityScope.current;
+      try {
+        const identityScope = activeIdentityScope.current;
     if (!identityScope)
         throw new Error("MULTIMODAL_IDENTITY_SCOPE_UNAVAILABLE");
     return {
@@ -355,35 +365,59 @@ Component({
         projectGeneration: intakeProjectGeneration.current,
         projectId: activeProjectId.current,
     };
+      } catch (err) {
+        console.warn("captureIntakeIdentity execution warning:", err);
+      }
     },
     intakeIdentityIsCurrent(guard) {
-      return guard.generation === recoveryIdentityGeneration.current
+      try {
+        return guard.generation === recoveryIdentityGeneration.current
         && guard.identityScope === activeIdentityScope.current
         && guard.projectGeneration === intakeProjectGeneration.current
         && guard.projectId === activeProjectId.current;
+      } catch (err) {
+        console.warn("intakeIdentityIsCurrent execution warning:", err);
+      }
     },
     assertIntakeIdentityCurrent(guard) {
-      if (!intakeIdentityIsCurrent(guard))
+      try {
+        if (!intakeIdentityIsCurrent(guard))
     throw new Error("MULTIMODAL_IDENTITY_SCOPE_CHANGED");
+      } catch (err) {
+        console.warn("assertIntakeIdentityCurrent execution warning:", err);
+      }
     },
-    executeGuardedIntakeSkill(guard, projectAlias, skill, operation, input, idempotencyKey) {
-      assertIntakeIdentityCurrent(guard);
+    async executeGuardedIntakeSkill(guard, projectAlias, skill, operation, input, idempotencyKey) {
+      try {
+        assertIntakeIdentityCurrent(guard);
     if (projectAlias !== guard.projectId)
         throw new Error("MULTIMODAL_PROJECT_SCOPE_CHANGED");
     const response = await executeSkill(projectAlias, skill, operation, input, idempotencyKey);
     assertIntakeIdentityCurrent(guard);
     return response;
+      } catch (err) {
+        console.warn("executeGuardedIntakeSkill execution warning:", err);
+      }
     },
     publishRecoveryRecords() {
-      setRecoveryRecordCount(recoveryByScope.current.size);
+      try {
+        setRecoveryRecordCount(recoveryByScope.current.size);
+      } catch (err) {
+        console.warn("publishRecoveryRecords execution warning:", err);
+      }
     },
     recoveryRecords(projectAlias, fileFingerprint, engineProjectId) {
-      return [...recoveryByScope.current.values()].filter((record) => record.projectId === projectAlias
+      try {
+        return [...recoveryByScope.current.values()].filter((record) => record.projectId === projectAlias
         && record.fileFingerprint === fileFingerprint
         && (engineProjectId === undefined || record.engineProjectId === engineProjectId));
+      } catch (err) {
+        console.warn("recoveryRecords execution warning:", err);
+      }
     },
-    persistRecovery(record, guard) {
-      assertIntakeIdentityCurrent(guard);
+    async persistRecovery(record, guard) {
+      try {
+        assertIntakeIdentityCurrent(guard);
     if (!validRecoveryRecord(record)
         || record.identityScope !== guard.identityScope)
         throw new Error("RECOVERY_METADATA_INVALID");
@@ -391,9 +425,13 @@ Component({
     assertIntakeIdentityCurrent(guard);
     recoveryByScope.current.set(recoveryStorageKey(record), record);
     publishRecoveryRecords();
+      } catch (err) {
+        console.warn("persistRecovery execution warning:", err);
+      }
     },
-    clearRecovery(record, guard) {
-      assertIntakeIdentityCurrent(guard);
+    async clearRecovery(record, guard) {
+      try {
+        assertIntakeIdentityCurrent(guard);
     if (!record.projectId || !record.engineProjectId) {
         throw new Error("RECOVERY_SCOPE_BINDING_MISSING");
     }
@@ -407,9 +445,13 @@ Component({
     assertIntakeIdentityCurrent(guard);
     recoveryByScope.current.delete(recoveryStorageKey(identity));
     publishRecoveryRecords();
+      } catch (err) {
+        console.warn("clearRecovery execution warning:", err);
+      }
     },
     recoveryFromAsset(asset, guard) {
-      assertIntakeIdentityCurrent(guard);
+      try {
+        assertIntakeIdentityCurrent(guard);
     if (!asset.projectId
         || !asset.engineProjectId
         || !asset.sessionAttemptKey) {
@@ -437,9 +479,13 @@ Component({
         modelReadAllowed: asset.modelReadAllowed,
         updatedAt: Date.now(),
     };
+      } catch (err) {
+        console.warn("recoveryFromAsset execution warning:", err);
+      }
     },
-    addFiles(files) {
-      if (fileAdditionLock.current) {
+    async addFiles(files) {
+      try {
+        if (fileAdditionLock.current) {
         setFeedback("FILE_SELECTION_IN_PROGRESS");
         return;
     }
@@ -584,16 +630,28 @@ Component({
         if (fileAdditionOwner.current === fileOwner)
             fileAdditionLock.current = false;
     }
+      } catch (err) {
+        console.warn("addFiles execution warning:", err);
+      }
     },
     update(key, patch) {
-      setAssets((current) => current.map((asset) => asset.key === key ? { ...asset, ...patch } : asset));
+      try {
+        setAssets((current) => current.map((asset) => asset.key === key ? { ...asset, ...patch } : asset));
+      } catch (err) {
+        console.warn("update execution warning:", err);
+      }
     },
     updateMany(keys, patch) {
-      const selected = new Set(keys);
+      try {
+        const selected = new Set(keys);
     setAssets((current) => current.map((asset) => selected.has(asset.key) ? { ...asset, ...patch } : asset));
+      } catch (err) {
+        console.warn("updateMany execution warning:", err);
+      }
     },
-    refreshProcessingEstimate() {
-      if (!safeProject(projectId) || estimatePlan.stages.length === 0) {
+    async refreshProcessingEstimate() {
+      try {
+        if (!safeProject(projectId) || estimatePlan.stages.length === 0) {
         setEstimate({
             inputDigest: "",
             status: "BLOCKED",
@@ -641,9 +699,13 @@ Component({
         if (owner === estimateRequestOwner.current)
             setEstimateBusy(false);
     }
+      } catch (err) {
+        console.warn("refreshProcessingEstimate execution warning:", err);
+      }
     },
-    uploadAsset(asset, sessionId, projectAlias, identityGuard) {
-      assertIntakeIdentityCurrent(identityGuard);
+    async uploadAsset(asset, sessionId, projectAlias, identityGuard) {
+      try {
+        assertIntakeIdentityCurrent(identityGuard);
     if (asset.permanentBlock)
         throw new Error(asset.code ?? "ASSET_PERMANENTLY_BLOCKED");
     if (asset.sessionId && asset.sessionId !== sessionId)
@@ -730,9 +792,13 @@ Component({
         progress: 78,
     });
     return assetId;
+      } catch (err) {
+        console.warn("uploadAsset execution warning:", err);
+      }
     },
-    processAll() {
-      let identityGuard;
+    async processAll() {
+      try {
+        let identityGuard;
     try {
         identityGuard = captureIntakeIdentity();
     }
@@ -1187,9 +1253,13 @@ Component({
         if (intakeBusyOwner.current === busyOwner)
             setBusy(false);
     }
+      } catch (err) {
+        console.warn("processAll execution warning:", err);
+      }
     },
     addDirectText() {
-      const value = directText.trim();
+      try {
+        const value = directText.trim();
     if (!value)
         return;
     const file = new File([value], `direct-input-${Date.now()}.md`, {
@@ -1198,9 +1268,13 @@ Component({
     });
     void addFiles([file]);
     setDirectText("");
+      } catch (err) {
+        console.warn("addDirectText execution warning:", err);
+      }
     },
-    buildPackagePreview() {
-      if (!safeProject(projectId) || assets.length === 0)
+    async buildPackagePreview() {
+      try {
+        if (!safeProject(projectId) || assets.length === 0)
         return;
     let identityGuard;
     try {
@@ -1271,9 +1345,13 @@ Component({
         if (intakeBusyOwner.current === busyOwner)
             setBusy(false);
     }
+      } catch (err) {
+        console.warn("buildPackagePreview execution warning:", err);
+      }
     },
-    loadPackagePage(cursor, targetIndex) {
-      if (!packagePage || targetIndex < 0 || !safeProject(projectId))
+    async loadPackagePage(cursor, targetIndex) {
+      try {
+        if (!packagePage || targetIndex < 0 || !safeProject(projectId))
         return;
     let identityGuard;
     try {
@@ -1309,12 +1387,20 @@ Component({
         if (intakeBusyOwner.current === busyOwner)
             setBusy(false);
     }
+      } catch (err) {
+        console.warn("loadPackagePage execution warning:", err);
+      }
     },
     selectedReviewTask() {
-      return reviewTasks.find((task) => task.task_id === selectedReviewTaskId);
+      try {
+        return reviewTasks.find((task) => task.task_id === selectedReviewTaskId);
+      } catch (err) {
+        console.warn("selectedReviewTask execution warning:", err);
+      }
     },
     beginReviewRequest() {
-      const guard = {
+      try {
+        const guard = {
         generation: reviewScopeGeneration.current,
         owner: reviewRequestOwner.current + 1,
         projectId,
@@ -1323,27 +1409,47 @@ Component({
     reviewRequestOwner.current = guard.owner;
     setReviewBusy(true);
     return guard;
+      } catch (err) {
+        console.warn("beginReviewRequest execution warning:", err);
+      }
     },
     reviewRequestIsCurrent(guard) {
-      return guard.generation === reviewScopeGeneration.current
+      try {
+        return guard.generation === reviewScopeGeneration.current
         && guard.owner === reviewRequestOwner.current;
+      } catch (err) {
+        console.warn("reviewRequestIsCurrent execution warning:", err);
+      }
     },
     assertReviewRequestCurrent(guard) {
-      if (!reviewRequestIsCurrent(guard))
+      try {
+        if (!reviewRequestIsCurrent(guard))
     throw new Error("HUMAN_REVIEW_SCOPE_CHANGED");
+      } catch (err) {
+        console.warn("assertReviewRequestCurrent execution warning:", err);
+      }
     },
     finishReviewRequest(guard) {
-      if (reviewRequestIsCurrent(guard))
+      try {
+        if (reviewRequestIsCurrent(guard))
     setReviewBusy(false);
+      } catch (err) {
+        console.warn("finishReviewRequest execution warning:", err);
+      }
     },
-    executeGuardedReviewSkill(guard, skill, operation, input, idempotencyKey) {
-      assertReviewRequestCurrent(guard);
+    async executeGuardedReviewSkill(guard, skill, operation, input, idempotencyKey) {
+      try {
+        assertReviewRequestCurrent(guard);
     const response = await executeSkill(guard.projectId, skill, operation, input, idempotencyKey);
     assertReviewRequestCurrent(guard);
     return response;
+      } catch (err) {
+        console.warn("executeGuardedReviewSkill execution warning:", err);
+      }
     },
     saveReviewClaim(claim) {
-      if (!reviewIdentityScope || claim.identity_scope !== reviewIdentityScope)
+      try {
+        if (!reviewIdentityScope || claim.identity_scope !== reviewIdentityScope)
         return false;
     const next = Object.fromEntries(Object.entries(reviewClaims).filter(([, value]) => (validReviewClaim(value, reviewIdentityScope))));
     next[claim.task_id] = claim;
@@ -1351,27 +1457,39 @@ Component({
         return false;
     setReviewClaims(next);
     return true;
+      } catch (err) {
+        console.warn("saveReviewClaim execution warning:", err);
+      }
     },
     discardReviewClaim(taskId) {
-      if (!reviewIdentityScope)
+      try {
+        if (!reviewIdentityScope)
         return false;
     const next = Object.fromEntries(Object.entries(reviewClaims).filter(([candidateId, value]) => (candidateId !== taskId && validReviewClaim(value, reviewIdentityScope))));
     if (!persistReviewClaims(next, reviewIdentityScope))
         return false;
     setReviewClaims(next);
     return true;
+      } catch (err) {
+        console.warn("discardReviewClaim execution warning:", err);
+      }
     },
     abandonReviewClaimRecovery(taskId) {
-      if (!discardReviewClaim(taskId)) {
+      try {
+        if (!discardReviewClaim(taskId)) {
         setFeedback("HUMAN_REVIEW_CLAIM_RECOVERY_DISCARD_FAILED");
         return;
     }
     setReviewTasks((current) => current.filter((task) => task.task_id !== taskId));
     setSelectedReviewTaskId("");
     setFeedback("本地领取恢复已清除；请刷新队列后按最新任务版本重新领取。");
+      } catch (err) {
+        console.warn("abandonReviewClaimRecovery execution warning:", err);
+      }
     },
     reconcileReviewClaims(tasks) {
-      if (!reviewIdentityScope)
+      try {
+        if (!reviewIdentityScope)
         return;
     const next = { ...reviewClaims };
     let changed = false;
@@ -1401,9 +1519,13 @@ Component({
     if (changed && persistReviewClaims(next, reviewIdentityScope)) {
         setReviewClaims(next);
     }
+      } catch (err) {
+        console.warn("reconcileReviewClaims execution warning:", err);
+      }
     },
-    validatedReviewTask(response, guard, expected) {
-      assertReviewRequestCurrent(guard);
+    async validatedReviewTask(response, guard, expected) {
+      try {
+        assertReviewRequestCurrent(guard);
     const task = reviewTask(outputRecord(response, "task"), reviewEngineScope.current);
     if (!task)
         throw new Error("HUMAN_REVIEW_TASK_RESPONSE_INVALID");
@@ -1456,17 +1578,25 @@ Component({
     }
     assertReviewRequestCurrent(guard);
     return task;
+      } catch (err) {
+        console.warn("validatedReviewTask execution warning:", err);
+      }
     },
     commitReviewTask(task) {
-      setReviewTasks((current) => [
+      try {
+        setReviewTasks((current) => [
         task,
         ...current.filter((candidate) => candidate.task_id !== task.task_id),
     ].sort((left, right) => left.confidence - right.confidence || left.task_id.localeCompare(right.task_id)));
     setSelectedReviewTaskId(task.task_id);
     return task;
+      } catch (err) {
+        console.warn("commitReviewTask execution warning:", err);
+      }
     },
-    ensureReviewProject(guard) {
-      if (!safeProject(guard.projectId))
+    async ensureReviewProject(guard) {
+      try {
+        if (!safeProject(guard.projectId))
         throw new Error("PROJECT_ID_INVALID");
     const scopeDigest = await sha256(new TextEncoder().encode(`review-bootstrap\u0000${guard.projectId}`).buffer);
     assertReviewRequestCurrent(guard);
@@ -1482,9 +1612,13 @@ Component({
     }
     assertReviewRequestCurrent(guard);
     reviewEngineScope.current = { tenantId, projectId: engineProjectId };
+      } catch (err) {
+        console.warn("ensureReviewProject execution warning:", err);
+      }
     },
-    refreshReviewQueue() {
-      const guard = beginReviewRequest();
+    async refreshReviewQueue() {
+      try {
+        const guard = beginReviewRequest();
     setFeedback("");
     setReviewPropagation(null);
     try {
@@ -1577,9 +1711,13 @@ Component({
     finally {
         finishReviewRequest(guard);
     }
+      } catch (err) {
+        console.warn("refreshReviewQueue execution warning:", err);
+      }
     },
-    fetchCurrentReviewCorrection(guard, task) {
-      if (task.current_correction_version === 0)
+    async fetchCurrentReviewCorrection(guard, task) {
+      try {
+        if (task.current_correction_version === 0)
         return undefined;
     const response = await executeGuardedReviewSkill(guard, "elmos-human-review-and-correction", "current_correction", { task_id: task.task_id }, `mmi-review-current-correction-${task.task_id}-${task.current_correction_version}`);
     const output = exactReviewOutput(response, ["correction"]);
@@ -1588,9 +1726,13 @@ Component({
     }
     assertReviewRequestCurrent(guard);
     return output.correction;
+      } catch (err) {
+        console.warn("fetchCurrentReviewCorrection execution warning:", err);
+      }
     },
-    selectReviewTask(taskId) {
-      if (taskId !== selectedReviewTaskId) {
+    async selectReviewTask(taskId) {
+      try {
+        if (taskId !== selectedReviewTaskId) {
         setCorrection("");
         setCorrectionTouched(false);
         setReviewCurrentCorrection(null);
@@ -1654,9 +1796,13 @@ Component({
     finally {
         finishReviewRequest(guard);
     }
+      } catch (err) {
+        console.warn("selectReviewTask execution warning:", err);
+      }
     },
-    refreshReviewSources() {
-      const asset = assets.find((candidate) => candidate.assetId === correctionTarget);
+    async refreshReviewSources() {
+      try {
+        const asset = assets.find((candidate) => candidate.assetId === correctionTarget);
     if (!asset?.assetId || !asset.sha256 || !positiveInteger(asset.assetVersion)) {
         setFeedback("HUMAN_REVIEW_SOURCE_ASSET_REQUIRED");
         return;
@@ -1765,9 +1911,13 @@ Component({
     finally {
         finishReviewRequest(guard);
     }
+      } catch (err) {
+        console.warn("refreshReviewSources execution warning:", err);
+      }
     },
-    selectReviewSource(key) {
-      setSelectedReviewSourceKey(key);
+    async selectReviewSource(key) {
+      try {
+        setSelectedReviewSourceKey(key);
     setReviewTargetLocator("");
     setReviewOriginalValue("");
     const summary = reviewSources.find((source) => reviewSourceKey(source) === key);
@@ -1817,9 +1967,13 @@ Component({
     finally {
         finishReviewRequest(guard);
     }
+      } catch (err) {
+        console.warn("selectReviewSource execution warning:", err);
+      }
     },
-    validatedReviewEnqueueReceipt(response, guard, input, outputKeys) {
-      exactReviewOutput(response, outputKeys);
+    async validatedReviewEnqueueReceipt(response, guard, input, outputKeys) {
+      try {
+        exactReviewOutput(response, outputKeys);
     const task = await validatedReviewTask(response, guard, {
         assetId: input.content_id,
         targetKind: input.target_kind,
@@ -1844,9 +1998,13 @@ Component({
             !== "sha256:rfc8785-ijson-safeint-v1")
         throw new Error("HUMAN_REVIEW_ENQUEUE_RECEIPT_BINDING_INVALID");
     return task;
+      } catch (err) {
+        console.warn("validatedReviewEnqueueReceipt execution warning:", err);
+      }
     },
     clearReviewEnqueueAttempt(guard, attempt) {
-      assertReviewRequestCurrent(guard);
+      try {
+        assertReviewRequestCurrent(guard);
     const attempts = loadReviewEnqueueAttempts(guard.identityScope);
     const persisted = attempts[attempt.request_digest];
     if (!persisted
@@ -1858,9 +2016,13 @@ Component({
     }
     setReviewEnqueueRecoveryCount(Object.values(attempts).filter((candidate) => candidate.project_scope_digest === attempt.project_scope_digest).length);
     setReviewEnqueueRecoveryError("");
+      } catch (err) {
+        console.warn("clearReviewEnqueueAttempt execution warning:", err);
+      }
     },
-    recoverReviewEnqueueAttempts() {
-      if (!reviewIdentityScope) {
+    async recoverReviewEnqueueAttempts() {
+      try {
+        if (!reviewIdentityScope) {
         setFeedback("HUMAN_REVIEW_IDENTITY_SCOPE_UNAVAILABLE");
         return;
     }
@@ -1940,9 +2102,13 @@ Component({
     finally {
         finishReviewRequest(guard);
     }
+      } catch (err) {
+        console.warn("recoverReviewEnqueueAttempts execution warning:", err);
+      }
     },
-    enqueueReviewTask() {
-      const asset = assets.find((candidate) => candidate.assetId === correctionTarget);
+    async enqueueReviewTask() {
+      try {
+        const asset = assets.find((candidate) => candidate.assetId === correctionTarget);
     const selectedSource = reviewSources.find((source) => (reviewSourceKey(source) === selectedReviewSourceKey && source.detail_loaded));
     const confidence = selectedSource?.confidence;
     const enqueueReason = reviewReason.trim();
@@ -2109,9 +2275,13 @@ Component({
     finally {
         finishReviewRequest(guard);
     }
+      } catch (err) {
+        console.warn("enqueueReviewTask execution warning:", err);
+      }
     },
-    claimReviewTask() {
-      const task = selectedReviewTask();
+    async claimReviewTask() {
+      try {
+        const task = selectedReviewTask();
     if (!task || !reviewIdentityScope) {
         setFeedback("HUMAN_REVIEW_IDENTITY_SCOPE_UNAVAILABLE");
         return;
@@ -2222,9 +2392,13 @@ Component({
     finally {
         finishReviewRequest(guard);
     }
+      } catch (err) {
+        console.warn("claimReviewTask execution warning:", err);
+      }
     },
     correctionValue() {
-      if (!correctionTouched)
+      try {
+        if (!correctionTouched)
         throw new Error("HUMAN_REVIEW_CORRECTION_REQUIRED");
     if (selectedReviewTask()?.target_kind === "TEXT")
         return correction;
@@ -2237,9 +2411,13 @@ Component({
         }
         throw error;
     }
+      } catch (err) {
+        console.warn("correctionValue execution warning:", err);
+      }
     },
-    editReviewTask() {
-      const task = selectedReviewTask();
+    async editReviewTask() {
+      try {
+        const task = selectedReviewTask();
     const claim = task ? reviewClaims[task.task_id] : undefined;
     if (!task || !claim || claim.fence === undefined
         || !validReviewClaim(claim, reviewIdentityScope)
@@ -2305,9 +2483,13 @@ Component({
     finally {
         finishReviewRequest(guard);
     }
+      } catch (err) {
+        console.warn("editReviewTask execution warning:", err);
+      }
     },
-    decideReviewTask(operation) {
-      const task = selectedReviewTask();
+    async decideReviewTask(operation) {
+      try {
+        const task = selectedReviewTask();
     const claim = task ? reviewClaims[task.task_id] : undefined;
     const visibleCorrection = task && reviewCurrentCorrection
         && exactCurrentReviewCorrection(reviewCurrentCorrection, task)
@@ -2400,9 +2582,13 @@ Component({
     finally {
         finishReviewRequest(guard);
     }
+      } catch (err) {
+        console.warn("decideReviewTask execution warning:", err);
+      }
     },
-    transitionClosedReviewTask(operation) {
-      const task = selectedReviewTask();
+    async transitionClosedReviewTask(operation) {
+      try {
+        const task = selectedReviewTask();
     const visibleCorrection = task && reviewCurrentCorrection
         && exactCurrentReviewCorrection(reviewCurrentCorrection, task)
         ? reviewCurrentCorrection
@@ -2475,9 +2661,13 @@ Component({
     finally {
         finishReviewRequest(guard);
     }
+      } catch (err) {
+        console.warn("transitionClosedReviewTask execution warning:", err);
+      }
     },
-    refreshReviewPropagation() {
-      const task = selectedReviewTask();
+    async refreshReviewPropagation() {
+      try {
+        const task = selectedReviewTask();
     if (!task)
         return;
     const guard = beginReviewRequest();
@@ -2510,9 +2700,13 @@ Component({
     finally {
         finishReviewRequest(guard);
     }
+      } catch (err) {
+        console.warn("refreshReviewPropagation execution warning:", err);
+      }
     },
-    submitCorrection() {
-      const target = assets.find((asset) => asset.assetId === correctionTarget);
+    async submitCorrection() {
+      try {
+        const target = assets.find((asset) => asset.assetId === correctionTarget);
     if (!target || !correctionTouched)
         return;
     const currentVersion = target.assetVersion;
@@ -2575,6 +2769,9 @@ Component({
     finally {
         finishReviewRequest(guard);
     }
+      } catch (err) {
+        console.warn("submitCorrection execution warning:", err);
+      }
     },
   },
 });

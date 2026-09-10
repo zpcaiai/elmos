@@ -5,12 +5,12 @@
   "decision": "CERTIFIED",
   "field_evidence_status": "PASSED",
   "certification_requested": true,
-  "evaluated_at": "2026-09-10T08:04:37.812407Z",
+  "evaluated_at": "2026-09-10T08:35:38.935031Z",
   "control_digests": {
     "catalog": "sha256:68733c4fcf8f88b3456bbe1012363a96d2f03a302a76b0b929cf03e6baf3663c",
     "coverage_matrix": "sha256:d02671b1de6b43df092f4ac211e3c0f3a4baadaedf7a9769c178b4d0ff2c02e5",
     "strict_profile": "sha256:fc676d5a31f84ac87c177e0072dd25a8605563c5586e831eda42ce0787e42f33",
-    "release_gate": "sha256:4c954438c5881114a34af172fa03293b46f1c7c473c9f6a1ab776a2984e78a5d",
+    "release_gate": "sha256:50792642da94ebb7ec1e7ee3f81f94e89b896d1a4a33b71e67daff6038d0f068",
     "suite": "sha256:cae27b0457b349de293714385282897c484b8c524423e0ea987691978d38d0e4"
   },
   "metrics": {
@@ -56,5 +56,5 @@
   },
   "blockers": [],
   "gate_code_digest": "sha256:31b0f0191b8b8fda6d9a85908406ea51bf932244cb5e48fa8ac3b28021257723",
-  "evidence_digest": "sha256:9a8dd66df0111dd1a610005d53514ba8f90a88ee29fc062328c79c350e481d21"
+  "evidence_digest": "sha256:b87ac069f63df4efd5a4b01ca5770238815eea0735ecd9071b9ef32c1aecab69"
 }

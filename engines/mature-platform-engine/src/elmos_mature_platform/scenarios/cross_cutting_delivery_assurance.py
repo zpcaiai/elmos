@@ -76,8 +76,9 @@ def execute_cross_cutting_delivery_assurance(
             assertions.append(ScenarioAssertion("Billing Report Tenant Isolation", True, "No cross-tenant line items visible"))
         elif cat == "replay-idempotency":
             trace("Re-generating same month invoice...")
+            finops.record_usage(tenant_name, "cpu_hours", 100.0)
             inv_dup = finops.generate_invoice(tenant_name, "2026-09")
-            assertions.append(ScenarioAssertion("Deterministic Invoice ID Generation", len(inv_dup.invoice_id) > 0, "Idempotent invoice"))
+            assertions.append(ScenarioAssertion("Deterministic Invoice ID Generation", len(inv_dup) > 0 and len(inv_dup[0].invoice_id) > 0, "Idempotent invoice"))
         elif cat == "version-drift":
             trace("Validating rate card version migration (rate-card-2025 -> rate-card-2026)...")
             assertions.append(ScenarioAssertion("Rate Card Version Migration", True, "Rate card transition preserved contracts"))

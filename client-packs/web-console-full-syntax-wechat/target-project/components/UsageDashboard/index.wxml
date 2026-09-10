@@ -26,32 +26,22 @@
   <view wx:if="{{session}}" class="{{styles.sessionBar}}">
     <view>
       <text class="{{styles.liveDot}}" aria-hidden="true" />
-      <text>
-        <text wx:if="{{readState.kind === "loading"}}">{{"正在同步"}}</text>
-        <text wx:else>{{"账户计量已连接"}}</text>
-      </text>
-      <text>
-        <text wx:if="{{session.kind === "account"}}">{{"安全账户会话 · 租户由身份声明确定"}}</text>
-        <text wx:else>{{`${session.credentials.tenantId} · ${session.credentials.actorId}`}}</text>
-      </text>
+      <text>{{readState.kind === "loading" ? "正在同步" : "账户计量已连接"}}</text>
+      <text>{{session.kind === "account"
+                ? "安全账户会话 · 租户由身份声明确定"
+                : `${session.credentials.tenantId} · ${session.credentials.actorId}`}}</text>
     </view>
-    <button wx:if="{{session.kind === "local"}}" class="button button-secondary" type="button" bindtap="onTap">断开本地连接</button>
+    <button wx:if="{{session.kind === 'local'}}" class="button button-secondary" type="button" bindtap="onTap">断开本地连接</button>
   </view>
-  <view class="{{styles.announcement}}" aria-live="polite" aria-atomic="true">
-    <text wx:if="{{readState.kind === "idle"}}">{{"连接本地开发凭证后显示可信用量。"}}</text>
-    <text wx:if="{{readState.kind === "loading"}}">{{"正在读取最新用量。"}}</text>
-    <text wx:if="{{error}}">{{`${error.code}：${error.message}`}}</text>
-    <text wx:if="{{readState.kind === "current"}}">{{snapshot?.status === "CURRENT"
+  <view class="{{styles.announcement}}" aria-live="polite" aria-atomic="true">{{readState.kind === "idle" && "连接本地开发凭证后显示可信用量。"}} {{readState.kind === "loading" && "正在读取最新用量。"}} {{error && `${error.code}：${error.message}`}} {{readState.kind === "current" && (
+          snapshot?.status === "CURRENT"
             ? "已同步全部已对账用量。"
-            : `当前有 ${snapshot?.unreconciledEventCount ?? 0} 条未对账事件。`}}</text>
-  </view>
+            : `当前有 ${snapshot?.unreconciledEventCount ?? 0} 条未对账事件。`
+        )}}</view>
   <view wx:if="{{error}}" class="{{styles.errorNotice}}" role="alert">
     <Icon name="{{error.status === &quot;NOT_CONFIGURED&quot; ? &quot;clock&quot; : &quot;help&quot;}}" size="{{17}}" />
     <view>
-      <text>
-        <text wx:if="{{error.status === "NOT_CONFIGURED"}}">{{"计量源尚未就绪"}}</text>
-        <text wx:else>{{"实时读数暂不可用"}}</text>
-      </text>
+      <text>{{error.status === "NOT_CONFIGURED" ? "计量源尚未就绪" : "实时读数暂不可用"}}</text>
       <text>{{error.message}}</text>
     </view>
   </view>
@@ -64,25 +54,13 @@
       </view>
       <view>
         <text>刷新状态</text>
-        <text class="{{snapshot.status === &quot;PARTIAL&quot; ? styles.warning : &quot;&quot;}}">
-          <text wx:if="{{readState.kind === "stale"}}">{{"STALE"}}</text>
-          <text wx:else>{{snapshot.status}}</text>
-        </text>
-        <text>
-          <text>更新于</text>
-          <text>{{localTime(snapshot.generatedAt)}}</text>
-        </text>
+        <text class="{{snapshot.status === &quot;PARTIAL&quot; ? styles.warning : &quot;&quot;}}">{{readState.kind === "stale" ? "STALE" : snapshot.status}}</text>
+        <text>更新于 {{localTime(snapshot.generatedAt)}}</text>
       </view>
       <view>
         <text>额度重置</text>
-        <text>
-          <text wx:if="{{snapshot.period.resetsAt}}">{{localTime(snapshot.period.resetsAt)}}</text>
-          <text wx:else>{{"到期后结束"}}</text>
-        </text>
-        <text>
-          <text>{{localTime(snapshot.period.startsAt)}}</text>
-          <text>起</text>
-        </text>
+        <text>{{snapshot.period.resetsAt ? localTime(snapshot.period.resetsAt) : "到期后结束"}}</text>
+        <text>{{localTime(snapshot.period.startsAt)}} 起</text>
       </view>
     </view>
     <view class="{{styles.meterGrid}}">
@@ -100,11 +78,7 @@
         <text>未对账事件</text>
         <text>{{snapshot.unreconciledEventCount}}</text>
       </text>
-      <text>
-        <text>事件水位</text>
-        <text wx:if="{{snapshot.eventWatermark}}">{{localTime(snapshot.eventWatermark)}}</text>
-        <text wx:else>{{"暂无事件"}}</text>
-      </text>
+      <text>事件水位 {{snapshot.eventWatermark ? localTime(snapshot.eventWatermark) : "暂无事件"}}</text>
     </view>
   </block>
   <view wx:if="{{!allowLocalCredentials && snapshot}}" class="{{styles.insights}}" aria-labelledby="usage-insights-title">
@@ -118,9 +92,9 @@
         <Icon name="external" size="{{14}}" />
       </navigator>
     </view>
-    <view wx:if="{{insights.kind === "loading"}}" class="{{styles.insightStatus}}">正在读取历史明细。</view>
-    <view wx:if="{{insights.kind === "error"}}" class="{{styles.insightError}}">{{insights.message}}</view>
-    <block wx:if="{{insights.kind === "ready"}}">
+    <view wx:if="{{insights.kind === 'loading'}}" class="{{styles.insightStatus}}">正在读取历史明细。</view>
+    <view wx:if="{{insights.kind === 'error'}}" class="{{styles.insightError}}">{{insights.message}}</view>
+    <block wx:if="{{insights.kind === 'ready'}}">
       <view class="{{styles.forecast}}">
         <text>额度预测</text>
         <text>{{forecast?.label}}</text>
@@ -136,10 +110,7 @@
         </view>
         <view wx:for="{{insights.history.slice(-8).reverse()}}" wx:for-item="point" wx:key="point.id" class="{{styles.historyRow}}" role="row" key="{{`${point.bucketStartsAt}-${point.meterId}-${point.tokenClass}-${point.actorId}-${point.projectId}-${point.jobId}-${point.model}`}}">
           <text role="cell">{{localDate(point.bucketStartsAt)}}</text>
-          <text role="cell" title="{{point.operationKey}}">
-            <text wx:if="{{point.meterId === "model-token-v1"}}">{{"Token"}}</text>
-            <text wx:else>{{"Credit"}}</text>
-          </text>
+          <text role="cell" title="{{point.operationKey}}">{{point.meterId === "model-token-v1" ? "Token" : "Credit"}}</text>
           <text role="cell">{{point.tokenClass ?? "—"}}</text>
           <text role="cell">{{point.actorId}}</text>
           <text role="cell">{{Number(point.net).toLocaleString("zh-CN")}}</text>
@@ -157,20 +128,16 @@
             <text role="columnheader">数量</text>
             <text role="columnheader">对账</text>
           </view>
-          <view wx:for="{{insights.events.filter((event) => event.meterId === "model-token-v1")
+          <view wx:for="{{insights.events.filter((event) => event.meterId === 'model-token-v1')
                     .slice(0, 100)}}" wx:for-item="event" wx:key="event.id" class="{{styles.eventRow}}" role="row" key="{{event.usageEventId}}">
             <text role="cell">{{localTime(event.occurredAt)}}</text>
-            <text role="cell" title="{{`${event.projectId ?? &quot;—&quot;} / ${event.jobId ?? &quot;—&quot;}`}}">
-              <text>{{event.projectId ?? "—"}}</text>
-              <text>/</text>
-              <text>{{event.jobId ?? "—"}}</text>
-            </text>
+            <text role="cell" title="{{`${event.projectId ?? &quot;—&quot;} / ${event.jobId ?? &quot;—&quot;}`}}">{{event.projectId ?? "—"}} / {{event.jobId ?? "—"}}</text>
             <text role="cell" title="{{event.model ?? &quot;—&quot;}}">{{event.model ?? "—"}}</text>
             <text role="cell">{{event.tokenClass ?? "—"}}</text>
             <text role="cell">{{Number(event.quantity).toLocaleString("zh-CN")}}</text>
             <text role="cell">{{event.reconciliationStatus}}</text>
           </view>
-          <view wx:if="{{insights.events.every((event) => event.meterId !== "model-token-v1")}}" class="{{styles.emptyHistory}}">近 30 天暂无逐笔 Token 消耗事件。</view>
+          <view wx:if="{{insights.events.every((event) => event.meterId !== 'model-token-v1')}}" class="{{styles.emptyHistory}}">近 30 天暂无逐笔 Token 消耗事件。</view>
         </view>
       </view>
       <view class="{{styles.alertPanel}}">
@@ -192,13 +159,9 @@
         <text class="{{styles.channel}}">
           <input type="checkbox" checked="{{insights.preference.emailEnabled}}" disabled="{{!emailAlertsEnabled}}" bindchange="onChange" />
           <text>邮件提醒</text>
-          <text wx:if="{{emailAlertsEnabled}}">{{""}}</text>
-          <text wx:else>{{"（未配置）"}}</text>
+          <text>{{emailAlertsEnabled ? "" : "（未配置）"}}</text>
         </text>
-        <button class="button button-primary" type="button" disabled="{{savingAlerts}}" bindtap="onTap">
-          <text wx:if="{{savingAlerts}}">{{"保存中"}}</text>
-          <text wx:else>{{"保存提醒"}}</text>
-        </button>
+        <button class="button button-primary" type="button" disabled="{{savingAlerts}}" bindtap="onTap">{{savingAlerts ? "保存中" : "保存提醒"}}</button>
       </view>
     </block>
   </view>

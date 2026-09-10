@@ -1,14 +1,14 @@
-[2026-09-10T08:18:23.616750Z][B38-009] Starting execution of B38-009 (Batch 38部署与升级 / recovery / 场景9) [Category=recovery, Priority=P0]
-[2026-09-10T08:18:23.616788Z][B38-009] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1325, 1333]
-[2026-09-10T08:18:23.616793Z][B38-009] Provisioning isolated multi-region simulation environment and security services...
-[2026-09-10T08:18:23.661096Z][B38-009] Security: Minted RS256 token (JTI=d7a7e711..., Exp=1789031903)
-[2026-09-10T08:18:23.704219Z][B38-009] KMS: Envelope encrypted 34 bytes under key key-b38-009 v1 (DEK wrapped)
-[2026-09-10T08:18:23.729842Z][B38-009] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-009
-[2026-09-10T08:18:23.729850Z][B38-009] Executing Multi-Tenant SaaS & Dedicated Edition deployment...
-[2026-09-10T08:18:23.729853Z][B38-009] Topology: Deploying microvm-isolated runner pods across us-east-1 and eu-west-1
-[2026-09-10T08:18:23.729872Z][B38-009] Cluster control plane bound to active leader: us-node-1
-[2026-09-10T08:18:23.729875Z][B38-009] Configuring ingress proxy: mTLS enabled, TLS 1.3 only, cipher suite TLS_AES_256_GCM_SHA384
-[2026-09-10T08:18:23.729877Z][B38-009] Probing container root filesystem: verified read-only (ro), tmpfs mounted at /run and /tmp
-[2026-09-10T08:18:23.729893Z][B38-009] Completed execution of B38-009 in 113.3ms: Status=PASSED
-[2026-09-10T08:18:23.729896Z][B38-009] Assertion Summary: 3/3 assertions passed
-[2026-09-10T08:18:23.729905Z][B38-009] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}
+[2026-09-10T08:25:38.381340Z][B38-009] Starting execution of B38-009 (Batch 38部署与升级 / recovery / 场景9) [Category=recovery, Priority=P0]
+[2026-09-10T08:25:38.381343Z][B38-009] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1325, 1333]
+[2026-09-10T08:25:38.381344Z][B38-009] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:38.391206Z][B38-009] Security: Minted RS256 token (JTI=0f206a76..., Exp=1789032338)
+[2026-09-10T08:25:38.420572Z][B38-009] KMS: Envelope encrypted 34 bytes under key key-b38-009 v1 (DEK wrapped)
+[2026-09-10T08:25:38.436321Z][B38-009] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-009
+[2026-09-10T08:25:38.436330Z][B38-009] Executing Multi-Tenant SaaS & Dedicated Edition deployment...
+[2026-09-10T08:25:38.436335Z][B38-009] Topology: Deploying microvm-isolated runner pods across us-east-1 and eu-west-1
+[2026-09-10T08:25:38.436356Z][B38-009] Cluster control plane bound to active leader: us-node-1
+[2026-09-10T08:25:38.436359Z][B38-009] Configuring ingress proxy: mTLS enabled, TLS 1.3 only, cipher suite TLS_AES_256_GCM_SHA384
+[2026-09-10T08:25:38.436362Z][B38-009] Probing container root filesystem: verified read-only (ro), tmpfs mounted at /run and /tmp
+[2026-09-10T08:25:38.436379Z][B38-009] Completed execution of B38-009 in 55.0ms: Status=PASSED
+[2026-09-10T08:25:38.436381Z][B38-009] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:38.436392Z][B38-009] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -1,8 +1,12 @@
-=== EXECUTION LOG FOR X-U027-003 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 隐私、驻留、保留与删除 / negative / 场景3
-Category: negative
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:31.857614Z][X-U027-003] Starting execution of X-U027-003 (隐私、驻留、保留与删除 / negative / 场景3) [Category=negative, Priority=P1]
+[2026-09-10T08:26:31.857617Z][X-U027-003] Bound Skill: tst-privacy-residency-retention-deletion | Product Skill IDs: []
+[2026-09-10T08:26:31.857620Z][X-U027-003] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:31.868028Z][X-U027-003] Security: Minted RS256 token (JTI=2d4f27c3..., Exp=1789032391)
+[2026-09-10T08:26:31.896205Z][X-U027-003] KMS: Envelope encrypted 37 bytes under key key-x-u027-003 v1 (DEK wrapped)
+[2026-09-10T08:26:31.931056Z][X-U027-003] [CROSS-DELIVERY] Initializing X-U027-003 (U027) Category=negative
+[2026-09-10T08:26:31.931067Z][X-U027-003] Privacy, Data Residency & Erasure: Enforcing GDPR Right-to-be-Forgotten and data boundaries
+[2026-09-10T08:26:31.931074Z][X-U027-003] Attempting cross-border transfer of EU citizen data to US region...
+[2026-09-10T08:26:31.931077Z][X-U027-003] Residency Firewall: Egress to non-EU destination blocked by Data Sovereignty Policy
+[2026-09-10T08:26:31.931097Z][X-U027-003] Completed execution of X-U027-003 in 73.5ms: Status=PASSED
+[2026-09-10T08:26:31.931100Z][X-U027-003] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:31.931113Z][X-U027-003] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -1,11 +1,11 @@
-[2026-09-10T08:18:30.309190Z][B40-004] Starting execution of B40-004 (Batch 40供应链与合规 / dependency-failure / 场景4) [Category=dependency-failure, Priority=P2]
-[2026-09-10T08:18:30.309196Z][B40-004] Bound Skill: tst-b40-supply-chain-compliance | Product Skill IDs: [1372, 1388]
-[2026-09-10T08:18:30.309199Z][B40-004] Provisioning isolated multi-region simulation environment and security services...
-[2026-09-10T08:18:30.362811Z][B40-004] Security: Minted RS256 token (JTI=c89ead46..., Exp=1789031910)
-[2026-09-10T08:18:30.453617Z][B40-004] KMS: Envelope encrypted 34 bytes under key key-b40-004 v1 (DEK wrapped)
-[2026-09-10T08:18:30.488269Z][B40-004] [B40-SUPPLY-CHAIN] Initializing security & compliance assessment for B40-004
-[2026-09-10T08:18:30.488278Z][B40-004] Executing Vulnerability Assessment & VEX (Vulnerability Exploitability Exchange)...
-[2026-09-10T08:18:30.488343Z][B40-004] VEX Status: CVE CVE-2026-4401 on libcrypto marked as 'not_affected' (CVSS 4.2)
-[2026-09-10T08:18:30.488406Z][B40-004] Completed execution of B40-004 in 179.2ms: Status=PASSED
-[2026-09-10T08:18:30.488411Z][B40-004] Assertion Summary: 3/3 assertions passed
-[2026-09-10T08:18:30.488449Z][B40-004] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}
+[2026-09-10T08:25:42.594937Z][B40-004] Starting execution of B40-004 (Batch 40供应链与合规 / dependency-failure / 场景4) [Category=dependency-failure, Priority=P2]
+[2026-09-10T08:25:42.594941Z][B40-004] Bound Skill: tst-b40-supply-chain-compliance | Product Skill IDs: [1372, 1388]
+[2026-09-10T08:25:42.594942Z][B40-004] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:42.605811Z][B40-004] Security: Minted RS256 token (JTI=0403818a..., Exp=1789032342)
+[2026-09-10T08:25:42.647183Z][B40-004] KMS: Envelope encrypted 34 bytes under key key-b40-004 v1 (DEK wrapped)
+[2026-09-10T08:25:42.685618Z][B40-004] [B40-SUPPLY-CHAIN] Initializing security & compliance assessment for B40-004
+[2026-09-10T08:25:42.685624Z][B40-004] Executing Vulnerability Assessment & VEX (Vulnerability Exploitability Exchange)...
+[2026-09-10T08:25:42.685664Z][B40-004] VEX Status: CVE CVE-2026-4401 on libcrypto marked as 'not_affected' (CVSS 4.2)
+[2026-09-10T08:25:42.685682Z][B40-004] Completed execution of B40-004 in 90.7ms: Status=PASSED
+[2026-09-10T08:25:42.685685Z][B40-004] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:42.685698Z][B40-004] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -35,6 +35,7 @@ dropped.
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
 import os
@@ -1045,26 +1046,23 @@ def _classify(
                 lowerer = ProceduralAstLowerer()
                 upper_raw = raw_sql.strip().upper()
                 if "TRIGGER" in upper_raw and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
-                    try:
+                    with contextlib.suppress(Exception):
                         trig = lowerer.parse_trigger(raw_sql, source_dialect=dialect)
                         _ = lowerer.lower_trigger(trig)
                         return "IN_SUBSET", None, None
-                    except Exception:
-                        pass
-                if any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE")) and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
-                    try:
+                if (
+                    any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE"))
+                    and ("CREATE" in upper_raw or "REPLACE" in upper_raw)
+                ):
+                    with contextlib.suppress(Exception):
                         rtn = lowerer.parse_routine(raw_sql, source_dialect=dialect)
                         _ = lowerer.lower_routine(rtn)
                         return "IN_SUBSET", None, None
-                    except Exception:
-                        pass
                 if upper_raw.startswith("BEGIN") or upper_raw.startswith("DECLARE"):
-                    try:
+                    with contextlib.suppress(Exception):
                         body = lowerer.parse_body_block(raw_sql, source_dialect=dialect)
                         _ = lowerer.lower_block(body)
                         return "IN_SUBSET", None, None
-                    except Exception:
-                        pass
             # Not covered by any certified DDL profile. This is the single
             # most important number in the report, so it is produced by the
             # same fail-closed path as everything else rather than by a
@@ -1077,26 +1075,23 @@ def _classify(
             lowerer = ProceduralAstLowerer()
             upper_raw = raw_sql.strip().upper()
             if "TRIGGER" in upper_raw and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
-                try:
+                with contextlib.suppress(Exception):
                     trig = lowerer.parse_trigger(raw_sql, source_dialect=dialect)
                     _ = lowerer.lower_trigger(trig)
                     return "IN_SUBSET", None, None
-                except Exception:
-                    pass
-            if any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE")) and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
-                try:
+            if (
+                any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE"))
+                and ("CREATE" in upper_raw or "REPLACE" in upper_raw)
+            ):
+                with contextlib.suppress(Exception):
                     rtn = lowerer.parse_routine(raw_sql, source_dialect=dialect)
                     _ = lowerer.lower_routine(rtn)
                     return "IN_SUBSET", None, None
-                except Exception:
-                    pass
             if upper_raw.startswith("BEGIN") or upper_raw.startswith("DECLARE"):
-                try:
+                with contextlib.suppress(Exception):
                     body = lowerer.parse_body_block(raw_sql, source_dialect=dialect)
                     _ = lowerer.lower_block(body)
                     return "IN_SUBSET", None, None
-                except Exception:
-                    pass
         return "OUT_OF_SUBSET", exc.code, exc.message
     except Exception as exc:  # noqa: BLE001 - deliberately broad; see below
         # NOT a subset boundary -- a defect in this engine. Kept separate so
@@ -1150,7 +1145,11 @@ def _recover_statements(
             txt = raw.text.strip()
             upper = txt.upper()
             if not accumulating:
-                if (any(k in upper for k in ("PROCEDURE", "FUNCTION", "TRIGGER", "PACKAGE")) and ("CREATE" in upper or "REPLACE" in upper)) or upper.startswith("DECLARE") or upper.startswith("BEGIN"):
+                is_routine_start = (
+                    any(k in upper for k in ("PROCEDURE", "FUNCTION", "TRIGGER", "PACKAGE"))
+                    and ("CREATE" in upper or "REPLACE" in upper)
+                ) or upper.startswith("DECLARE") or upper.startswith("BEGIN")
+                if is_routine_start:
                     if _is_end_of_routine(upper):
                         merged_statements.append(raw)
                     else:
@@ -1194,7 +1193,7 @@ def _recover_statements(
                 lowerer = ProceduralAstLowerer()
                 upper_raw = raw.text.strip().upper()
                 if "TRIGGER" in upper_raw and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
-                    try:
+                    with contextlib.suppress(Exception):
                         trig = lowerer.parse_trigger(raw.text, source_dialect=source_dialect)
                         _ = lowerer.lower_trigger(trig)
                         findings.append(
@@ -1211,10 +1210,11 @@ def _recover_statements(
                             )
                         )
                         continue
-                    except Exception:
-                        pass
-                elif any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE")) and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
-                    try:
+                elif (
+                    any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE"))
+                    and ("CREATE" in upper_raw or "REPLACE" in upper_raw)
+                ):
+                    with contextlib.suppress(Exception):
                         rtn = lowerer.parse_routine(raw.text, source_dialect=source_dialect)
                         _ = lowerer.lower_routine(rtn)
                         findings.append(
@@ -1231,10 +1231,8 @@ def _recover_statements(
                             )
                         )
                         continue
-                    except Exception:
-                        pass
                 elif upper_raw.startswith("BEGIN") or upper_raw.startswith("DECLARE"):
-                    try:
+                    with contextlib.suppress(Exception):
                         body = lowerer.parse_body_block(raw.text, source_dialect=source_dialect)
                         _ = lowerer.lower_block(body)
                         findings.append(
@@ -1251,8 +1249,6 @@ def _recover_statements(
                             )
                         )
                         continue
-                    except Exception:
-                        pass
             findings.append(
                 ScanFinding(
                     relative,

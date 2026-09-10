@@ -282,7 +282,7 @@ def execute_concurrency_race_analysis(payload: Mapping[str, Any]) -> Mapping[str
         visited.add(u)
         stack.add(u)
         path.append(u)
-        for v in wait_for_graph[u]:
+        for v in wait_for_graph.get(u, set()):
             if v not in visited:
                 if check_deadlock(v, path):
                     return True
@@ -294,7 +294,7 @@ def execute_concurrency_race_analysis(payload: Mapping[str, Any]) -> Mapping[str
         path.pop()
         return False
 
-    for lock in wait_for_graph:
+    for lock in list(wait_for_graph.keys()):
         if lock not in visited:
             if check_deadlock(lock, []):
                 has_deadlock = True
@@ -368,6 +368,7 @@ HIGH_FREQUENCY_CORE_HANDLERS: dict[str, Any] = {
     "formal-invariant-synthesis": execute_contract_invariant_inference,
     # SQL & Database Dialect
     "sql-dialect-transpiler": execute_sql_dialect_transpilation,
+    "sql-dialect-parser-and-semantic-ir": execute_sql_dialect_transpilation,
     "database-semantic-compiler": execute_sql_dialect_transpilation,
     "dynamic-sql-bind-identifier-safety": execute_sql_dialect_transpilation,
     "sql-ddl-dml-constraint-conversion": execute_sql_dialect_transpilation,

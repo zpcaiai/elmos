@@ -2,17 +2,14 @@
 
 from __future__ import annotations
 
-import os
-from pathlib import Path
 import tempfile
-
-import pytest
+from pathlib import Path
 
 from elmos_sql_dialect.models import Dialect
 from elmos_sql_dialect.procedural_ast_lowerer import (
+    ParamMode,
     ProceduralAstLowerer,
     RoutineKind,
-    ParamMode,
 )
 from elmos_sql_dialect.scan import scan_repository
 

@@ -1,8 +1,13 @@
-=== EXECUTION LOG FOR X-U004-003 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: Evidence完整性与防伪 / negative / 场景3
-Category: negative
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:11.898925Z][X-U004-003] Starting execution of X-U004-003 (Evidence完整性与防伪 / negative / 场景3) [Category=negative, Priority=P1]
+[2026-09-10T08:26:11.898928Z][X-U004-003] Bound Skill: tst-b38-45-evidence-integrity-anti-cheating | Product Skill IDs: []
+[2026-09-10T08:26:11.898930Z][X-U004-003] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:11.930646Z][X-U004-003] Security: Minted RS256 token (JTI=bff4c518..., Exp=1789032371)
+[2026-09-10T08:26:12.170239Z][X-U004-003] KMS: Envelope encrypted 37 bytes under key key-x-u004-003 v1 (DEK wrapped)
+[2026-09-10T08:26:12.208651Z][X-U004-003] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U004-003 (U004)
+[2026-09-10T08:26:12.208662Z][X-U004-003] Executing category=negative on U004
+[2026-09-10T08:26:12.208666Z][X-U004-003] Evidence Integrity & Anti-Cheating: Validating non-repudiation controls...
+[2026-09-10T08:26:12.208668Z][X-U004-003] Attempting to submit simulated result with 'mock' execution kind...
+[2026-09-10T08:26:12.208670Z][X-U004-003] Anti-Cheat Gate: REJECTED execution_kind='mock'. Only 'real' allowed.
+[2026-09-10T08:26:12.208692Z][X-U004-003] Completed execution of X-U004-003 in 309.8ms: Status=PASSED
+[2026-09-10T08:26:12.208694Z][X-U004-003] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:12.208708Z][X-U004-003] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

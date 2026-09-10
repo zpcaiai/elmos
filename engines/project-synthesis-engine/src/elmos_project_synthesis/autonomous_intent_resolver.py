@@ -157,6 +157,40 @@ def auto_resolve_open_questions(
     return resolved, journal
 
 
+
+def infer_domain_archetype(draft: Dict[str, Any]) -> str:
+    """Autonomously infer the enterprise domain archetype from draft description, project metadata, and entities."""
+    project_obj = draft.get("project") if isinstance(draft.get("project"), dict) else {}
+    desc = (draft.get("description") or project_obj.get("description") or "").lower()
+    name = (draft.get("name") or project_obj.get("name") or "").lower()
+    
+    entities = draft.get("entities", [])
+    ent_names = []
+    for e in entities:
+        if isinstance(e, dict):
+            ent_names.append(e.get("singular", "").lower())
+            ent_names.append(e.get("plural", "").lower())
+        elif isinstance(e, str):
+            ent_names.append(e.lower())
+
+    requirements = draft.get("requirements", [])
+    req_texts = [r.get("statement", "").lower() for r in requirements if isinstance(r, dict)]
+
+    combined_text = f"{name} {desc} {' '.join(ent_names)} {' '.join(req_texts)}"
+
+    banking_keywords = ["bank", "ledger", "account", "journal", "debit", "credit", "transfer", "currency", "financial", "payment"]
+    supply_keywords = ["supply", "warehouse", "bin", "inventory", "stock", "shipping", "carrier", "logistics", "sku", "fulfillment"]
+    billing_keywords = ["billing", "subscription", "saas", "meter", "invoice", "proration", "tier", "usage"]
+
+    if any(k in combined_text for k in banking_keywords):
+        return "banking"
+    elif any(k in combined_text for k in supply_keywords):
+        return "supply_chain"
+    elif any(k in combined_text for k in billing_keywords):
+        return "saas_billing"
+    return "general"
+
+
 def autonomous_resolve_and_approve(
     draft: Dict[str, Any],
     actor: str = AUTONOMOUS_GOVERNOR_ACTOR,

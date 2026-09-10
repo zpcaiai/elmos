@@ -1,8 +1,12 @@
-=== EXECUTION LOG FOR X-U018-004 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 供应链篡改与Provenance / dependency-failure / 场景4
-Category: dependency-failure
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:20.743932Z][X-U018-004] Starting execution of X-U018-004 (供应链篡改与Provenance / dependency-failure / 场景4) [Category=dependency-failure, Priority=P2]
+[2026-09-10T08:26:20.743936Z][X-U018-004] Bound Skill: tst-supply-chain-tamper-provenance-vex | Product Skill IDs: []
+[2026-09-10T08:26:20.743938Z][X-U018-004] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:20.759393Z][X-U018-004] Security: Minted RS256 token (JTI=8e1bbdf3..., Exp=1789032380)
+[2026-09-10T08:26:20.804026Z][X-U018-004] KMS: Envelope encrypted 37 bytes under key key-x-u018-004 v1 (DEK wrapped)
+[2026-09-10T08:26:20.830385Z][X-U018-004] [CROSS-SEC-GOV] Initializing X-U018-004 (U018) Category=dependency-failure
+[2026-09-10T08:26:20.830397Z][X-U018-004] Supply Chain Security: Evaluating SLSA Level 3 provenance, SBOM and VEX declarations
+[2026-09-10T08:26:20.830402Z][X-U018-004] Simulating vulnerability database (NVD) upstream mirror timeout...
+[2026-09-10T08:26:20.830404Z][X-U018-004] Local Cache: Utilized locally mirrored VEX knowledge base with valid cache TTL
+[2026-09-10T08:26:20.830424Z][X-U018-004] Completed execution of X-U018-004 in 86.5ms: Status=PASSED
+[2026-09-10T08:26:20.830427Z][X-U018-004] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:20.830441Z][X-U018-004] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

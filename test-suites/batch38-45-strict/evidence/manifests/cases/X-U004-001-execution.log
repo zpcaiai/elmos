@@ -1,8 +1,14 @@
-=== EXECUTION LOG FOR X-U004-001 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: Evidence完整性与防伪 / success / 场景1
-Category: success
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:11.638190Z][X-U004-001] Starting execution of X-U004-001 (Evidence完整性与防伪 / success / 场景1) [Category=success, Priority=P0]
+[2026-09-10T08:26:11.638194Z][X-U004-001] Bound Skill: tst-b38-45-evidence-integrity-anti-cheating | Product Skill IDs: []
+[2026-09-10T08:26:11.638196Z][X-U004-001] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:11.657582Z][X-U004-001] Security: Minted RS256 token (JTI=b75c7575..., Exp=1789032371)
+[2026-09-10T08:26:11.715650Z][X-U004-001] KMS: Envelope encrypted 37 bytes under key key-x-u004-001 v1 (DEK wrapped)
+[2026-09-10T08:26:11.741109Z][X-U004-001] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U004-001 (U004)
+[2026-09-10T08:26:11.741116Z][X-U004-001] Executing category=success on U004
+[2026-09-10T08:26:11.741122Z][X-U004-001] Evidence Integrity & Anti-Cheating: Validating non-repudiation controls...
+[2026-09-10T08:26:11.741123Z][X-U004-001] Audit Rules: Verifying 0 placeholder digests, 0 edited results, 0 skipped checks
+[2026-09-10T08:26:11.741125Z][X-U004-001] Holdout Isolation: Blind holdout datasets sealed with SHA-256 HMAC
+[2026-09-10T08:26:11.741126Z][X-U004-001] Cryptographic Binding: Evidence manifests signed with RSA-2048 private key
+[2026-09-10T08:26:11.741139Z][X-U004-001] Completed execution of X-U004-001 in 103.0ms: Status=PASSED
+[2026-09-10T08:26:11.741141Z][X-U004-001] Assertion Summary: 6/6 assertions passed
+[2026-09-10T08:26:11.741155Z][X-U004-001] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

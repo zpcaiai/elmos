@@ -2,8 +2,11 @@
   "case_id": "X-U001-008",
   "status": "passed",
   "artifact_digest": "sha256:b7b94ba4bed96aedc93ef251b53321d74026bab2278b1c5db46409137d29ac95",
-  "environment_digest": "sha256:b0815f6c29cf22edc5107cfaca9a0b0a152ee98123ae84a7a38f9bdc9a3a6c9c",
-  "started_at": "2026-09-10T01:48:51Z",
-  "finished_at": "2026-09-10T02:23:51Z",
-  "execution_kind": "real"
+  "environment_digest": "sha256:d4c6bb387cf1b7c6da991a408b7e0098afe1bde41995ab8345f2b41fbaebeb1d",
+  "started_at": "2026-09-10T08:26:07.060071Z",
+  "finished_at": "2026-09-10T08:26:07.152013Z",
+  "execution_kind": "real",
+  "duration_seconds": 0.09194231033325195,
+  "assertions_count": 3,
+  "passed_assertions": 3
 }

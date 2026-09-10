@@ -42,6 +42,7 @@ class UniversalType:
     type_args: list[UniversalType] = field(default_factory=list)
     is_nullable: bool = False
     is_reference: bool = True
+    pointer_kind: str | None = None  # None, 'raw', 'unique', 'shared', 'weak', 'strong'
 
     @classmethod
     def primitive(cls, kind: PrimitiveKind | str) -> UniversalType:
@@ -89,6 +90,18 @@ class UniversalType:
         return cls(kind='result', name='Result', element_type=ok_type, value_type=err_type)
 
     @classmethod
+    def unique_ptr_of(cls, elem: UniversalType) -> UniversalType:
+        return cls(kind='pointer', name='unique_ptr', element_type=elem, pointer_kind='unique')
+
+    @classmethod
+    def shared_ptr_of(cls, elem: UniversalType) -> UniversalType:
+        return cls(kind='pointer', name='shared_ptr', element_type=elem, pointer_kind='shared')
+
+    @classmethod
+    def arc_strong(cls, elem: UniversalType) -> UniversalType:
+        return cls(kind='pointer', name='arc_strong', element_type=elem, pointer_kind='strong')
+
+    @classmethod
     def custom(cls, name: str) -> UniversalType:
         return cls(kind='custom', name=name)
 
@@ -126,7 +139,7 @@ class UniversalExpr:
 @dataclass
 class LiteralExpr(UniversalExpr):
     value: Any
-    type_kind: str  # int, float, bool, string, null
+    type_kind: str = 'string'  # int, float, bool, string, null
 
 
 @dataclass
@@ -357,6 +370,41 @@ class UniversalClass:
     is_interface: bool = False
 
 
+# UI Declarations for React, Flutter, VB6 Form, etc.
+@dataclass
+class UIEventBinding:
+    event_name: str  # onClick, onPressed, onChange, Form_Load, Command1_Click
+    handler_method_name: str
+    inline_statements: list[UniversalStmt] = field(default_factory=list)
+
+
+@dataclass
+class UIViewNode:
+    tag: str  # Button, Text, Container, Column, Row, TextField, Form
+    props: dict[str, UniversalExpr] = field(default_factory=dict)
+    events: list[UIEventBinding] = field(default_factory=list)
+    children: list[UIViewNode] = field(default_factory=list)
+    text_content: str | None = None
+
+
+@dataclass
+class UIStateVar:
+    name: str
+    type_info: UniversalType
+    initial_value: UniversalExpr | None = None
+
+
+@dataclass
+class UIComponentDecl:
+    name: str
+    props: list[UniversalParam] = field(default_factory=list)
+    state_vars: list[UIStateVar] = field(default_factory=list)
+    methods: list[UniversalMethod] = field(default_factory=list)
+    root_view: UIViewNode | None = None
+    lifecycle_hooks: dict[str, list[UniversalStmt]] = field(default_factory=dict)  # on_mount, on_update, on_destroy
+    is_stateful: bool = True
+
+
 @dataclass
 class UniversalModule:
     name: str
@@ -365,4 +413,6 @@ class UniversalModule:
     imports: list[str] = field(default_factory=list)
     classes: list[UniversalClass] = field(default_factory=list)
     free_functions: list[UniversalMethod] = field(default_factory=list)
+    ui_components: list[UIComponentDecl] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
+

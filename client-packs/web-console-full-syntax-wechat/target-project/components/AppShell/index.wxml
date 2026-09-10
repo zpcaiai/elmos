@@ -1,27 +1,20 @@
 <view class="{{`app-shell ${adminSurface ? &quot;admin-shell&quot; : &quot;&quot;}`}}">
-  <navigator class="skip-link" href="#main-content">
-    <text wx:if="{{english}}">{{"Skip to main content"}}</text>
-    <text wx:else>{{"跳到主要内容"}}</text>
-  </navigator>
+  <navigator class="skip-link" href="#main-content">{{english ? "Skip to main content" : "跳到主要内容"}}</navigator>
   <view class="{{`sidebar ${mobileOpen ? &quot;sidebar-open&quot; : &quot;&quot;}`}}" aria-label="{{english ? &quot;Primary navigation&quot; : &quot;主导航&quot;}}">
     <view class="brand-row">
       <navigator class="brand-mark" href="/" bindtap="onTap">E</navigator>
       <view>
         <text>ELMOS</text>
-        <text>
-          <text wx:if="{{adminSurface}}">{{english ? "Administrator center" : "管理员中心"}}</text>
-          <text wx:else>{{english ? "Control center" : "控制中心"}}</text>
-        </text>
+        <text>{{adminSurface
+              ? (english ? "Administrator center" : "管理员中心")
+              : (english ? "Control center" : "控制中心")}}</text>
       </view>
       <button class="icon-button sidebar-close" aria-label="{{english ? &quot;Close navigation&quot; : &quot;关闭导航&quot;}}" bindtap="closeSidebar">
         <Icon name="close" />
       </button>
     </view>
     <view class="primary-nav">
-      <text class="nav-label">
-        <text wx:if="{{english}}">{{"Product features · user access"}}</text>
-        <text wx:else>{{"产品功能 · 用户端"}}</text>
-      </text>
+      <text class="nav-label">{{english ? "Product features · user access" : "产品功能 · 用户端"}}</text>
       <navigator wx:for="{{userNavigation}}" wx:key="item.id" class="{{`nav-item ${active ? &quot;active&quot; : &quot;&quot;}`}}" href="{{item.href}}" key="{{item.href}}" aria-current="{{active ? &quot;page&quot; : undefined}}" bindtap="closeSidebar">
         <Icon name="{{item.icon}}" size="{{19}}" />
         <text>
@@ -30,10 +23,7 @@
         </text>
       </navigator>
       <block wx:if="{{operationsNavigation.length > 0}}">
-        <text class="nav-label nav-label-operations">
-          <text wx:if="{{english}}">{{"Platform operations · administrator"}}</text>
-          <text wx:else>{{"平台运营 · 管理员端"}}</text>
-        </text>
+        <text class="nav-label nav-label-operations">{{english ? "Platform operations · administrator" : "平台运营 · 管理员端"}}</text>
         <navigator wx:for="{{operationsNavigation}}" wx:key="item.id" class="{{`nav-item admin-nav-item ${active ? &quot;active&quot; : &quot;&quot;}`}}" href="{{item.href}}" key="{{item.href}}" aria-current="{{active ? &quot;page&quot; : undefined}}" bindtap="closeSidebar">
           <Icon name="{{item.icon}}" size="{{19}}" />
           <text>
@@ -50,40 +40,32 @@
       </text>
       <view>
         <text>Fail closed</text>
-        <text>
-          <text wx:if="{{english}}">{{"Not run is not passed"}}</text>
-          <text wx:else>{{"未运行不等于通过"}}</text>
-        </text>
+        <text>{{english ? "Not run is not passed" : "未运行不等于通过"}}</text>
       </view>
     </view>
     <view class="secondary-nav" aria-label="{{english ? &quot;Utility navigation&quot; : &quot;辅助导航&quot;}}">
       <navigator class="{{`secondary-link ${styles.readableSecondary}`}}" href="/api/capabilities/migration" target="_blank" rel="noreferrer">
         <Icon name="box" size="{{18}}" />
-        <text wx:if="{{english}}">{{"Capability API"}}</text>
-        <text wx:else>{{"能力 API"}}</text>
+        <text>{{english ? "Capability API" : "能力 API"}}</text>
       </navigator>
       <button class="{{`secondary-link ${styles.readableSecondary}`}}" type="button" data-telemetry-ignore="true" bindtap="toggleTelemetry">
         <Icon name="{{telemetryEnabled ? &quot;check&quot; : &quot;close&quot;}}" size="{{18}}" />
-        <text wx:if="{{english}}">{{`Anonymous performance log: ${telemetryEnabled ? "on" : "off"}`}}</text>
-        <text wx:else>{{`匿名性能日志：${telemetryEnabled ? "开" : "关"}`}}</text>
+        <text>{{english
+              ? `Anonymous performance log: ${telemetryEnabled ? "on" : "off"}`
+              : `匿名性能日志：${telemetryEnabled ? "开" : "关"}`}}</text>
       </button>
       <navigator class="{{`secondary-link ${styles.readableSecondary}`}}" href="/help">
         <Icon name="help" size="{{18}}" />
-        <text wx:if="{{english}}">{{"Help and readiness"}}</text>
-        <text wx:else>{{"帮助与就绪状态"}}</text>
+        <text>{{english ? "Help and readiness" : "帮助与就绪状态"}}</text>
       </navigator>
     </view>
     <view class="profile-area">
-      <block wx:if="{{account.status === "authenticated" && account.principal}}">
+      <block wx:if="{{account.status === 'authenticated' && account.principal}}">
         <button class="profile-row" type="button" aria-expanded="{{profileOpen}}" aria-controls="account-profile-menu" bindtap="onTap">
           <text class="{{`avatar ${hasAdminAccess ? &quot;admin-avatar&quot; : &quot;&quot;}`}}">{{account.principal.displayName.slice(0, 1)}}</text>
           <view>
             <text>{{account.principal.displayName}}</text>
-            <text>
-              <text wx:if="{{hasAdminAccess}}">{{(english ? "Administrator" : "管理员") + " · "}}</text>
-              <text wx:else>{{""}}</text>
-              <text>{{account.principal.organizationId}}</text>
-            </text>
+            <text>{{hasAdminAccess ? (english ? "Administrator" : "管理员") + " · " : ""}} {{account.principal.organizationId}}</text>
           </view>
           <Icon name="chevron" size="{{16}}" />
         </button>
@@ -93,44 +75,26 @@
             <text>{{account.principal.roles.join(" · ") || "无业务角色"}}</text>
             <text wx:if="{{hasAdminAccess}}" class="admin-session-badge">管理员会话</text>
           </view>
-          <navigator href="/account" bindtap="closeSidebar">
-            <text wx:if="{{english}}">{{"Account and organizations"}}</text>
-            <text wx:else>{{"账户与组织"}}</text>
-          </navigator>
+          <navigator href="/account" bindtap="closeSidebar">{{english ? "Account and organizations" : "账户与组织"}}</navigator>
           <text wx:if="{{account.principal.memberships.length > 1}}">
-            <text>
-              <text wx:if="{{english}}">{{"Current tenant"}}</text>
-              <text wx:else>{{"当前租户"}}</text>
-            </text>
+            <text>{{english ? "Current tenant" : "当前租户"}}</text>
             <view value="{{account.principal.organizationId}}" bindchange="onChange">
               <view wx:for="{{account.principal.memberships}}" wx:for-item="membership" wx:key="membership.id" value="{{membership.organizationId}}" key="{{membership.organizationId}}">{{membership.organizationId}}</view>
             </view>
           </text>
-          <button type="button" bindtap="onTap">
-            <text wx:if="{{english}}">{{"Sign out securely"}}</text>
-            <text wx:else>{{"安全退出"}}</text>
-          </button>
+          <button type="button" bindtap="onTap">{{english ? "Sign out securely" : "安全退出"}}</button>
         </view>
       </block>
       <block wx:else>
         <navigator class="{{`profile-row profile-login-row ${pathname === &quot;/login&quot; ? &quot;active&quot; : &quot;&quot;}`}}" href="{{`/login?${new URLSearchParams({ returnTo: pathname })}`}}" bindtap="closeSidebar">
           <text class="avatar">访</text>
           <view>
-            <text>
-              <text wx:if="{{english}}">{{"User sign in"}}</text>
-              <text wx:else>{{"用户登录"}}</text>
-            </text>
-            <text>
-              <text wx:if="{{english}}">{{"Signed out · click to sign in"}}</text>
-              <text wx:else>{{"未登录 · 点击进入登录"}}</text>
-            </text>
+            <text>{{english ? "User sign in" : "用户登录"}}</text>
+            <text>{{english ? "Signed out · click to sign in" : "未登录 · 点击进入登录"}}</text>
           </view>
           <Icon name="chevron" size="{{16}}" />
         </navigator>
-        <navigator class="profile-guest-admin" href="{{`/admin/login?${new URLSearchParams({ returnTo: &quot;/admin&quot; })}`}}" bindtap="closeSidebar">
-          <text wx:if="{{english}}">{{"Administrator sign in"}}</text>
-          <text wx:else>{{"管理员登录"}}</text>
-        </navigator>
+        <navigator class="profile-guest-admin" href="{{`/admin/login?${new URLSearchParams({ returnTo: &quot;/admin&quot; })}`}}" bindtap="closeSidebar">{{english ? "Administrator sign in" : "管理员登录"}}</navigator>
       </block>
     </view>
   </view>
@@ -147,40 +111,24 @@
       </view>
       <button class="command-trigger" aria-label="{{english ? &quot;Open global search&quot; : &quot;打开全局搜索&quot;}}" bindtap="onTap">
         <Icon name="search" size="{{16}}" />
-        <text>
-          <text wx:if="{{english}}">{{"Search pages and capabilities"}}</text>
-          <text wx:else>{{"搜索页面或功能"}}</text>
-        </text>
+        <text>{{english ? "Search pages and capabilities" : "搜索页面或功能"}}</text>
         <kbd>⌘ K</kbd>
       </button>
       <view class="topbar-actions">
         <text class="environment-pill">
           <text />
-          <text wx:if="{{english}}">{{"Local contract environment"}}</text>
-          <text wx:else>{{"本地契约环境"}}</text>
+          <text>{{english ? "Local contract environment" : "本地契约环境"}}</text>
         </text>
         <text class="topbar-divider" />
-        <button class="preference-button" type="button" aria-label="{{english ? &quot;Switch navigation and help to Chinese&quot; : &quot;将导航和帮助切换为英文&quot;}}" bindtap="onTap">
-          <text wx:if="{{english}}">{{"中"}}</text>
-          <text wx:else>{{"EN"}}</text>
-        </button>
-        <button class="preference-button" type="button" aria-label="{{preferences.theme === &quot;light&quot; ? (english ? &quot;Use dark theme&quot; : &quot;使用深色主题&quot;) : (english ? &quot;Use light theme&quot; : &quot;使用浅色主题&quot;)}}" bindtap="onTap">
-          <text wx:if="{{preferences.theme === "light"}}">{{"☾"}}</text>
-          <text wx:else>{{"☀"}}</text>
-        </button>
+        <button class="preference-button" type="button" aria-label="{{english ? &quot;Switch navigation and help to Chinese&quot; : &quot;将导航和帮助切换为英文&quot;}}" bindtap="onTap">{{english ? "中" : "EN"}}</button>
+        <button class="preference-button" type="button" aria-label="{{preferences.theme === &quot;light&quot; ? (english ? &quot;Use dark theme&quot; : &quot;使用深色主题&quot;) : (english ? &quot;Use light theme&quot; : &quot;使用浅色主题&quot;)}}" bindtap="onTap">{{preferences.theme === "light" ? "☾" : "☀"}}</button>
         <button class="icon-button" aria-label="{{english ? &quot;Reload current page (clears unsaved input)&quot; : &quot;重新载入当前页面（会清除未保存输入）&quot;}}" bindtap="reloadPage">
           <Icon name="refresh" size="{{18}}" />
         </button>
-        <button wx:if="{{account.status === "authenticated"}}" class="{{`top-avatar ${hasAdminAccess ? &quot;admin-avatar&quot; : &quot;&quot;}`}}" type="button" aria-label="{{english ? &quot;Open account menu&quot; : &quot;打开账户菜单&quot;}}" bindtap="toggleTopProfileMenu">{{account.principal?.displayName.slice(0, 1) ?? "企"}}</button>
+        <button wx:if="{{account.status === 'authenticated'}}" class="{{`top-avatar ${hasAdminAccess ? &quot;admin-avatar&quot; : &quot;&quot;}`}}" type="button" aria-label="{{english ? &quot;Open account menu&quot; : &quot;打开账户菜单&quot;}}" bindtap="toggleTopProfileMenu">{{account.principal?.displayName.slice(0, 1) ?? "企"}}</button>
         <view wx:else class="anonymous-login-actions">
-          <navigator class="{{`top-login-link ${pathname === &quot;/login&quot; ? &quot;active&quot; : &quot;&quot;}`}}" href="{{`/login?${new URLSearchParams({ returnTo: pathname })}`}}">
-            <text wx:if="{{english}}">{{"User sign in"}}</text>
-            <text wx:else>{{"用户登录"}}</text>
-          </navigator>
-          <navigator class="{{`top-login-link top-admin-login-link ${pathname.startsWith(&quot;/admin&quot;) ? &quot;active&quot; : &quot;&quot;}`}}" href="{{`/admin/login?${new URLSearchParams({ returnTo: &quot;/admin&quot; })}`}}">
-            <text wx:if="{{english}}">{{"Admin sign in"}}</text>
-            <text wx:else>{{"管理员登录"}}</text>
-          </navigator>
+          <navigator class="{{`top-login-link ${pathname === &quot;/login&quot; ? &quot;active&quot; : &quot;&quot;}`}}" href="{{`/login?${new URLSearchParams({ returnTo: pathname })}`}}">{{english ? "User sign in" : "用户登录"}}</navigator>
+          <navigator class="{{`top-login-link top-admin-login-link ${pathname.startsWith(&quot;/admin&quot;) ? &quot;active&quot; : &quot;&quot;}`}}" href="{{`/admin/login?${new URLSearchParams({ returnTo: &quot;/admin&quot; })}`}}">{{english ? "Admin sign in" : "管理员登录"}}</navigator>
         </view>
       </view>
     </view>
@@ -191,10 +139,7 @@
   <view class="mobile-bottom-nav" aria-label="{{english ? &quot;Mobile primary navigation&quot; : &quot;移动端主导航&quot;}}">
     <navigator wx:for="{{mobileNavigation}}" wx:key="item.id" href="{{item.href}}" class="{{active ? &quot;active&quot; : &quot;&quot;}}" aria-current="{{active ? &quot;page&quot; : undefined}}" key="{{item.href}}">
       <Icon name="{{item.icon}}" size="{{19}}" />
-      <text>
-        <text wx:if="{{english}}">{{label}}</text>
-        <text wx:else>{{label.replace("Spring 老项目翻新", "Spring").replace("全库跨语言转换", "转换").replace("多语言项目生成", "生成").replace("前端转换工厂", "前端").replace("功能能力中心", "功能")}}</text>
-      </text>
+      <text>{{english ? label : label.replace("Spring 老项目翻新", "Spring").replace("全库跨语言转换", "转换").replace("多语言项目生成", "生成").replace("前端转换工厂", "前端").replace("功能能力中心", "功能")}}</text>
     </navigator>
   </view>
   <button wx:if="{{showBackToTop}}" class="back-to-top" type="button" aria-label="返回页面顶部" bindtap="scrollToTop">

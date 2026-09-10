@@ -1,8 +1,12 @@
-=== EXECUTION LOG FOR X-U014-009 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 混合版本升级回滚 / recovery / 场景9
-Category: recovery
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:16.070528Z][X-U014-009] Starting execution of X-U014-009 (混合版本升级回滚 / recovery / 场景9) [Category=recovery, Priority=P0]
+[2026-09-10T08:26:16.070532Z][X-U014-009] Bound Skill: tst-mixed-version-upgrade-rollback | Product Skill IDs: []
+[2026-09-10T08:26:16.070536Z][X-U014-009] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:16.094863Z][X-U014-009] Security: Minted RS256 token (JTI=80a580a0..., Exp=1789032376)
+[2026-09-10T08:26:16.162609Z][X-U014-009] KMS: Envelope encrypted 37 bytes under key key-x-u014-009 v1 (DEK wrapped)
+[2026-09-10T08:26:16.197533Z][X-U014-009] [CROSS-RESILIENCE] Starting X-U014-009 (U014) Category=recovery
+[2026-09-10T08:26:16.197543Z][X-U014-009] Mixed-Version Rolling Upgrades: Evaluating wire & schema compatibility across v2.0 and v2.1
+[2026-09-10T08:26:16.197550Z][X-U014-009] Executing automated rollback to v2.0 upon simulated canary error spike...
+[2026-09-10T08:26:16.197552Z][X-U014-009] Rollback: Traffic reverted 100% to v2.0 in 2.4 seconds; error rate returned to 0.00%
+[2026-09-10T08:26:16.197578Z][X-U014-009] Completed execution of X-U014-009 in 127.0ms: Status=PASSED
+[2026-09-10T08:26:16.197583Z][X-U014-009] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:16.197604Z][X-U014-009] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

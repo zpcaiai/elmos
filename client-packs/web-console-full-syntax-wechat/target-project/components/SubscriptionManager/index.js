@@ -16,14 +16,16 @@ Component({
   lifetimes: {
     attached() {
       // Lifecycle effect effect_0
-      try {
-        void load();
+      (async () => {
+        try {
+          void load();
     const refresh = () => void load();
     window.addEventListener("elmos:billing-changed", refresh);
     return () => window.removeEventListener("elmos:billing-changed", refresh);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },

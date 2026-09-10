@@ -204,8 +204,15 @@ def execute_cross_cutting_resilience(
         
         if cat == "success":
             trace("Baseline Cluster: Active-active in US-EAST-1, EU-WEST-1, AP-SOUTHEAST-1")
-            # Partition AP region
-            chaos.partition_region(RegionId.AP_SOUTHEAST_1)
+            # Partition AP region via Chaos Fault
+            f_part = FaultDescriptor(
+                fault_id=f"part-ap-{case_id.lower()}",
+                fault_type=FaultType.NETWORK_PARTITION,
+                target_region=RegionId.AP_SOUTHEAST_1,
+                target_node_ids=["ap-node-1", "ap-node-2", "ap-node-3"],
+                parameters={},
+            )
+            chaos.inject_fault(f_part)
             trace("Chaos: Injected complete network partition for Region AP-SOUTHEAST-1")
             
             # Replicate between US and EU (majority quorum = 6/9 nodes)
@@ -213,7 +220,7 @@ def execute_cross_cutting_resilience(
             rep_ok, rep_msg = sim.replicate_transaction("state_dr", "dr_val", leader.fencing_token if leader else 0)
             trace(f"Quorum Replication Result: {rep_msg}")
             
-            chaos.heal_partition(RegionId.AP_SOUTHEAST_1)
+            chaos.revert_fault(f_part.fault_id)
             trace("Chaos: Healed partition for AP-SOUTHEAST-1; region reconciled via Raft log replay")
             
             assertions.append(ScenarioAssertion("Quorum Availability Under Partition", rep_ok, "Majority quorum maintained writes"))

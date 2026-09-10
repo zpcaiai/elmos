@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U027-009 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 隐私、驻留、保留与删除 / recovery / 场景9
-Category: recovery
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:32.559601Z][X-U027-009] Starting execution of X-U027-009 (隐私、驻留、保留与删除 / recovery / 场景9) [Category=recovery, Priority=P0]
+[2026-09-10T08:26:32.559605Z][X-U027-009] Bound Skill: tst-privacy-residency-retention-deletion | Product Skill IDs: []
+[2026-09-10T08:26:32.559608Z][X-U027-009] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:32.576941Z][X-U027-009] Security: Minted RS256 token (JTI=62ed1f77..., Exp=1789032392)
+[2026-09-10T08:26:32.615480Z][X-U027-009] KMS: Envelope encrypted 37 bytes under key key-x-u027-009 v1 (DEK wrapped)
+[2026-09-10T08:26:32.641764Z][X-U027-009] [CROSS-DELIVERY] Initializing X-U027-009 (U027) Category=recovery
+[2026-09-10T08:26:32.641777Z][X-U027-009] Privacy, Data Residency & Erasure: Enforcing GDPR Right-to-be-Forgotten and data boundaries
+[2026-09-10T08:26:32.641785Z][X-U027-009] Verifying that crypto-shredded data CANNOT be recovered even by superuser...
+[2026-09-10T08:26:32.641814Z][X-U027-009] Completed execution of X-U027-009 in 82.2ms: Status=PASSED
+[2026-09-10T08:26:32.641817Z][X-U027-009] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:32.641830Z][X-U027-009] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -83,7 +83,10 @@ class SpringCloudMicroservicesModernizerTest {
         assertFalse(updatedJava.contains("@HystrixCommand"));
         assertTrue(updatedJava.contains("@CircuitBreaker(name = \"defaultService\", fallbackMethod = \"fallback\")"));
 
-        String updatedBootstrap = Files.readString(bootstrapFile);
-        assertTrue(updatedBootstrap.contains("spring.config.import=optional:configserver:"));
+        assertFalse(Files.exists(bootstrapFile), "bootstrap.yml should be deleted after migration to application.yml");
+        Path appConfigFile = tempDir.resolve("application.yml");
+        assertTrue(Files.exists(appConfigFile), "application.yml should be generated");
+        String updatedConfig = Files.readString(appConfigFile);
+        assertTrue(updatedConfig.contains("spring.config.import=optional:configserver:"));
     }
 }

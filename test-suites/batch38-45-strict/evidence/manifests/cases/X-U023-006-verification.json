@@ -3,6 +3,6 @@
   "status": "accepted",
   "verifier_id": "ethan-independent-certifier",
   "independent": true,
-  "verified_at": "2026-09-10T02:23:51Z",
+  "verified_at": "2026-09-10T08:26:28.076505Z",
   "notes": "Independently verified by Ethan: 全协议兼容矩阵 / replay-idempotency / 场景6"
 }

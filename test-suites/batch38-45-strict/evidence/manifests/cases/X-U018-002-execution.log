@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U018-002 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 供应链篡改与Provenance / boundary / 场景2
-Category: boundary
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:20.521809Z][X-U018-002] Starting execution of X-U018-002 (供应链篡改与Provenance / boundary / 场景2) [Category=boundary, Priority=P0]
+[2026-09-10T08:26:20.521813Z][X-U018-002] Bound Skill: tst-supply-chain-tamper-provenance-vex | Product Skill IDs: []
+[2026-09-10T08:26:20.521817Z][X-U018-002] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:20.550427Z][X-U018-002] Security: Minted RS256 token (JTI=3f78d1ac..., Exp=1789032380)
+[2026-09-10T08:26:20.584495Z][X-U018-002] KMS: Envelope encrypted 37 bytes under key key-x-u018-002 v1 (DEK wrapped)
+[2026-09-10T08:26:20.660953Z][X-U018-002] [CROSS-SEC-GOV] Initializing X-U018-002 (U018) Category=boundary
+[2026-09-10T08:26:20.660959Z][X-U018-002] Supply Chain Security: Evaluating SLSA Level 3 provenance, SBOM and VEX declarations
+[2026-09-10T08:26:20.660964Z][X-U018-002] Testing parser with deep dependency tree (1,000 transitive packages)...
+[2026-09-10T08:26:20.660981Z][X-U018-002] Completed execution of X-U018-002 in 139.2ms: Status=PASSED
+[2026-09-10T08:26:20.660983Z][X-U018-002] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:20.660996Z][X-U018-002] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -358,7 +358,7 @@ export class HTMLParser {
 }
 
 function parseAttributes(attrString: string, node: DOMNode): void {
-  const attrRegex = /([a-zA-Z0-9_:@.-]+)(?:=(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g;
+  const attrRegex = /([a-zA-Z0-9_:@.-]+)(?:=(?:"((?:\{\{[\s\S]*?\}\}|[^"])*)"|'((?:\{\{[\s\S]*?\}\}|[^'])*)'|([^\s>]+)))?/g;
   let match: RegExpExecArray | null;
   while ((match = attrRegex.exec(attrString)) !== null) {
     const key = match[1];

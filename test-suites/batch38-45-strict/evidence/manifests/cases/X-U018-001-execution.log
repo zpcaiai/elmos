@@ -1,8 +1,13 @@
-=== EXECUTION LOG FOR X-U018-001 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 供应链篡改与Provenance / success / 场景1
-Category: success
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:20.382936Z][X-U018-001] Starting execution of X-U018-001 (供应链篡改与Provenance / success / 场景1) [Category=success, Priority=P0]
+[2026-09-10T08:26:20.382939Z][X-U018-001] Bound Skill: tst-supply-chain-tamper-provenance-vex | Product Skill IDs: []
+[2026-09-10T08:26:20.382943Z][X-U018-001] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:20.395062Z][X-U018-001] Security: Minted RS256 token (JTI=4ccdbf31..., Exp=1789032380)
+[2026-09-10T08:26:20.478169Z][X-U018-001] KMS: Envelope encrypted 37 bytes under key key-x-u018-001 v1 (DEK wrapped)
+[2026-09-10T08:26:20.517986Z][X-U018-001] [CROSS-SEC-GOV] Initializing X-U018-001 (U018) Category=success
+[2026-09-10T08:26:20.517994Z][X-U018-001] Supply Chain Security: Evaluating SLSA Level 3 provenance, SBOM and VEX declarations
+[2026-09-10T08:26:20.518001Z][X-U018-001] Parsing CycloneDX / SPDX SBOM with 2 certified packages...
+[2026-09-10T08:26:20.518004Z][X-U018-001] Verifying SLSA Level 3 signed provenance attestation from isolated hermetic builder...
+[2026-09-10T08:26:20.518006Z][X-U018-001] VEX Assessment: 0 known exploitable vulnerabilities in deployed container image
+[2026-09-10T08:26:20.518023Z][X-U018-001] Completed execution of X-U018-001 in 135.1ms: Status=PASSED
+[2026-09-10T08:26:20.518026Z][X-U018-001] Assertion Summary: 6/6 assertions passed
+[2026-09-10T08:26:20.518043Z][X-U018-001] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

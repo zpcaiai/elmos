@@ -49,13 +49,10 @@
     <view class="business-actions">
       <button class="button button-primary" type="button" disabled="{{busy || !skill.trim()}}" bindtap="onTap">提交作业</button>
       <button wx:if="{{job && !terminal.has(job.status)}}" class="button button-secondary" type="button" disabled="{{busy}}" bindtap="onTap">取消</button>
-      <text wx:else>{{null}}</text>
       <button wx:if="{{job && terminal.has(job.status)}}" class="button button-secondary" type="button" disabled="{{busy}}" bindtap="onTap">重试</button>
-      <text wx:else>{{null}}</text>
     </view>
   </view>
   <view wx:if="{{error}}" class="field-error" role="alert">{{error}}</view>
-  <text wx:else>{{null}}</text>
   <view wx:if="{{job}}" class="precision-job-result" aria-live="polite">
     <view>
       <text>Job ID</text>
@@ -63,10 +60,7 @@
     </view>
     <view>
       <text>进度</text>
-      <text>
-        <text>{{job.progress}}</text>
-        <text>%</text>
-      </text>
+      <text>{{job.progress}} %</text>
     </view>
     <view>
       <text>执行状态</text>
@@ -76,13 +70,10 @@
       <text>重试来源</text>
       <code>{{job.retry_of}}</code>
     </view>
-    <text wx:else>{{null}}</text>
     <view wx:if="{{job.artifacts?.length}}" class="precision-artifacts">
       <text>证据产物</text>
       <text wx:for="{{job.artifacts}}" wx:for-item="artifact" wx:key="artifact.id">{{name ? <button className="precision-artifact-link" type="button" key={artifact.digest ?? name} onClick={() => void download(artifact)}>{name}<small>{artifact.digest?.slice(0, 20)}… · {artifact.size_bytes} bytes</small></button> : null}}</text>
     </view>
-    <text wx:else>{{null}}</text>
   </view>
-  <text wx:else>{{null}}</text>
   <text class="form-note">UI 只能触发清单中的受控 handler；缺少精确原生或外部能力时会失败关闭，不会执行请求携带的命令。</text>
 </view>

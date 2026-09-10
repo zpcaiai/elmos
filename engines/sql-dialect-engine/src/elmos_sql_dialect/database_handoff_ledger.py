@@ -9,9 +9,9 @@ from __future__ import annotations
 import hashlib
 import json
 from collections import Counter
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 from .scan import FeasibilityReport, ScanFinding
 
@@ -76,7 +76,9 @@ def _recommended_action(reason_code: str) -> str:
     if "NAMESPACE" in reason_code:
         return "Apply reviewed schema mapping in namespace-profile and rerun scanner."
     if "INDEX" in reason_code:
-        return "Rewrite unsupported expression/predicate index using target-supported function index or generated column."
+        return (
+            "Rewrite unsupported expression/predicate index using target-supported function index or generated column."
+        )
     return "Implement target dialect adapter shim and attach dual-run execution verification evidence."
 
 
@@ -96,7 +98,9 @@ class DatabaseHandoffLedger:
         return cls(findings=report.findings, source_report_digest=raw_digest)
 
     @classmethod
-    def from_findings(cls, findings: Sequence[ScanFinding], report_digest: str = "sha256:" + "0" * 64) -> DatabaseHandoffLedger:
+    def from_findings(
+        cls, findings: Sequence[ScanFinding], report_digest: str = "sha256:" + "0" * 64
+    ) -> DatabaseHandoffLedger:
         return cls(findings=list(findings), source_report_digest=report_digest)
 
     @property
@@ -218,10 +222,12 @@ class DatabaseHandoffLedger:
             code = item.reason_code or "UNKNOWN"
             counts[_priority(code)] += 1
 
-        lines.append(f"| Priority | Count | Description |")
-        lines.append(f"| :--- | :---: | :--- |")
-        lines.append(f"| **P0** | `{counts['P0']}` | Critical architectural blockers (Dynamic SQL, Autonomous Tx, RLS) |")
-        lines.append(f"| **P1** | `{counts['P1']}` | Dialect feature gaps (Expression Index, IF NOT EXISTS, Strict Routines) |")
+        lines.append("| Priority | Count | Description |")
+        lines.append("| :--- | :---: | :--- |")
+        p0_desc = "Critical architectural blockers (Dynamic SQL, Autonomous Tx, RLS)"
+        p1_desc = "Dialect feature gaps (Expression Index, IF NOT EXISTS, Strict Routines)"
+        lines.append(f"| **P0** | `{counts['P0']}` | {p0_desc} |")
+        lines.append(f"| **P1** | `{counts['P1']}` | {p1_desc} |")
         lines.append(f"| **P2** | `{counts['P2']}` | Standard dialect refactorings & schema mappings |")
         lines.append("")
 
@@ -231,6 +237,7 @@ class DatabaseHandoffLedger:
         for idx, finding in enumerate(self.manual_items, 1):
             code = finding.reason_code or "MANUAL_MIGRATION"
             prio = _priority(code)
+            cmd = f'uv run elmos-sql-dialect test-statement --input "{finding.excerpt}"'
             lines.extend(
                 [
                     f"### Item #{idx:03d} [{prio}] `{code}`",
@@ -238,7 +245,7 @@ class DatabaseHandoffLedger:
                     f"- **Statement Excerpt**: `{finding.excerpt}`",
                     f"- **Root Cause**: {finding.reason}",
                     f"- **Recommended Remediation**: {_recommended_action(code)}",
-                    f"- **Verification Command**: `uv run elmos-sql-dialect test-statement --input \"{finding.excerpt}\"`",
+                    f"- **Verification Command**: `{cmd}`",
                     "",
                 ]
             )

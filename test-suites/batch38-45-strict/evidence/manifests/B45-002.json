@@ -5,10 +5,10 @@
   "case_digest": "sha256:3e1bd64e4ffcf714437ca3d0cb064cd70fbc24941c4364e4198dba00571b9d0c",
   "catalog_digest": "sha256:68733c4fcf8f88b3456bbe1012363a96d2f03a302a76b0b929cf03e6baf3663c",
   "artifact_digest": "sha256:b7b94ba4bed96aedc93ef251b53321d74026bab2278b1c5db46409137d29ac95",
-  "environment_digest": "sha256:b0815f6c29cf22edc5107cfaca9a0b0a152ee98123ae84a7a38f9bdc9a3a6c9c",
+  "environment_digest": "sha256:d4c6bb387cf1b7c6da991a408b7e0098afe1bde41995ab8345f2b41fbaebeb1d",
   "execution_kind": "real",
-  "started_at": "2026-09-10T01:48:51Z",
-  "finished_at": "2026-09-10T02:23:51Z",
+  "started_at": "2026-09-10T08:25:58.194308Z",
+  "finished_at": "2026-09-10T08:25:58.545547Z",
   "executor": {
     "id": "elmos-b38-45-platform-executor",
     "role": "executor"
@@ -32,32 +32,32 @@
     {
       "role": "environment-binding",
       "path": "shared/environment.json",
-      "sha256": "sha256:b0815f6c29cf22edc5107cfaca9a0b0a152ee98123ae84a7a38f9bdc9a3a6c9c",
+      "sha256": "sha256:d4c6bb387cf1b7c6da991a408b7e0098afe1bde41995ab8345f2b41fbaebeb1d",
       "bytes": 273
     },
     {
       "role": "execution-log",
       "path": "cases/B45-002-execution.log",
-      "sha256": "sha256:1e0dc18bf90b414417a41cec6cad73f41e3cdf3c8ed4a0c2a2f375ed55b8ac46",
-      "bytes": 227
+      "sha256": "sha256:d5fd7f4cb2cc9193c89e2b16a0f6ca38c3a1520b4d9fe49b8cbd6474dcce9867",
+      "bytes": 1740
     },
     {
       "role": "execution-result",
       "path": "cases/B45-002-execution.json",
-      "sha256": "sha256:97e731b013333500e5cd2111c605d575c7e62d1b168c9f447ed9e62c235af69f",
-      "bytes": 353
+      "sha256": "sha256:68fd0125722f3abf1d2452e659118d696afd06387b51ab50c2246753569adb93",
+      "bytes": 459
     },
     {
       "role": "provenance",
       "path": "shared/provenance.json",
-      "sha256": "sha256:c94760af62fc01b79b215fee7214ce2bd7d47fda66ccec75dd372766adc33d9c",
+      "sha256": "sha256:0c0b05e0ee4d6f5c845407fa22f2ef202f1f861a0130936e0c1f6953358f62b4",
       "bytes": 444
     },
     {
       "role": "verification",
       "path": "cases/B45-002-verification.json",
-      "sha256": "sha256:9265eaedc31eac57b098f40f328c10905eef5f726b7e9d9d3a767cf6f1186d52",
-      "bytes": 258
+      "sha256": "sha256:74e37f5ecf5af410c46779c23923e14f56af95850767e56d8c7783bcf8ef727e",
+      "bytes": 265
     },
     {
       "role": "replay-script",
@@ -68,13 +68,13 @@
     {
       "role": "holdout-attestation",
       "path": "shared/holdout-attestation.json",
-      "sha256": "sha256:425a28888047f74681873230c27d48dc19cd46b775795da3728673ac23e92489",
+      "sha256": "sha256:055d5851b369de705605052df2128700bfc1377b724d2fba6a36353eb80a2b7e",
       "bytes": 222
     },
     {
       "role": "representative-attestation",
       "path": "shared/representative-attestation.json",
-      "sha256": "sha256:9bae9f3e6f54ff70552f1d30a043d3fca38026e990f318c8bb1be09a0fda3dd9",
+      "sha256": "sha256:86d27148758c2ec84626aac1def798890c35963311d860f6a6c503bce1380130",
       "bytes": 236
     }
   ],

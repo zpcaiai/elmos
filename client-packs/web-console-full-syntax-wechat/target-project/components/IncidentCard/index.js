@@ -4,11 +4,15 @@ Component({
     styleIsolation: "apply-shared",
   },
   properties: {
-    events: {
+    incident: {
       type: null,
       value: null,
     },
-    empty: {
+    businessLineLabel: {
+      type: null,
+      value: null,
+    },
+    disabled: {
       type: null,
       value: null,
     },
@@ -22,5 +26,11 @@ Component({
     },
   },
   methods: {
+    onAssign(e) {
+      this.triggerEvent("assign", e.detail);
+    },
+    onResolve(e) {
+      this.triggerEvent("resolve", e.detail);
+    },
   },
 });

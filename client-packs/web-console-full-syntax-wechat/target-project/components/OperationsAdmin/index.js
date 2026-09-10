@@ -4,23 +4,739 @@ Component({
     styleIsolation: "apply-shared",
   },
   properties: {
-    events: {
-      type: null,
-      value: null,
-    },
-    empty: {
-      type: null,
-      value: null,
-    },
   },
   data: {
+    hours: "24",
+    businessLine: "ALL",
+    result: "ALL",
+    state: "LOCKED",
+    view: null,
+    error: "",
+    notice: "",
+    busyAction: "",
+    exportDays: "7",
+    exportBusy: false,
+    exportError: "",
+    exportNotice: "",
+    replayRunId: "",
+    replayBusy: false,
+    replayError: "",
+    replay: null,
+    quota: null,
+    quotaBusy: false,
+    quotaError: "",
+    quotaNotice: "",
+    quotaTokenLimit: "",
+    quotaCreditLimit: "",
+    quotaReason: "",
+    operationsJobs: [],
+    operationsJobsLoaded: false,
+    operationsJobsBusy: false,
+    operationsJobsError: "",
+    operationsJobsNotice: "",
+    operationsJobBusinessLine: "ALL",
+    operationsJobStatus: "ALL",
+    operationsJobCancelBusy: "",
+    runnerFleet: [],
+    runnerFleetLoaded: false,
+    runnerFleetBusy: false,
+    runnerFleetStatus: "ALL",
+    runnerFleetActionBusy: "",
+    runnerFleetError: "",
+    runnerFleetNotice: "",
+    adminSection: "USERS",
+    systemReadiness: null,
+    systemReadinessBusy: false,
+    systemReadinessError: "",
+    financialStatus: "OPEN",
+    financialCases: [],
+    financialLoaded: false,
+    financialLoadBusy: false,
+    financialBusyAction: "",
+    financialError: "",
+    financialNotice: "",
+    financialUnknown: "",
+    financialResolutionRefs: {},
+    financialIdempotencyKeys: "new Map<string, string>()",
   },
   lifetimes: {
     attached() {
+      // Lifecycle effect effect_0
+      (async () => {
+        try {
+          if (adminSection === "CONFIG" && state === "READY" && !systemReadiness) {
+        void loadSystemReadiness();
+    }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
+      // Lifecycle effect effect_1
+      (async () => {
+        try {
+          setOperationsJobs([]);
+    setOperationsJobsLoaded(false);
+    setOperationsJobsError("");
+    setOperationsJobsNotice("");
+    setOperationsJobCancelBusy("");
+    setRunnerFleet([]);
+    setRunnerFleetLoaded(false);
+    setRunnerFleetError("");
+    setRunnerFleetNotice("");
+    setRunnerFleetActionBusy("");
+    setFinancialCases([]);
+    setFinancialLoaded(false);
+    setFinancialError("");
+    setFinancialNotice("");
+    setFinancialUnknown("");
+    setFinancialResolutionRefs({});
+    financialIdempotencyKeys.current.clear();
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },
   },
   methods: {
+    async loadSystemReadiness() {
+      try {
+        setSystemReadinessBusy(true);
+    setSystemReadinessError("");
+    try {
+        const response = await fetch("/api/health?probe=readiness", {
+            cache: "no-store",
+            credentials: "same-origin",
+        });
+        const payload = await response.json();
+        if (!response.ok && payload.status !== "BLOCKED") {
+            throw new Error(payload.message || "系统依赖状态读取失败。");
+        }
+        setSystemReadiness(payload);
+    }
+    catch (readinessFailure) {
+        setSystemReadiness(null);
+        setSystemReadinessError(readinessFailure instanceof Error ? readinessFailure.message : "系统依赖状态读取失败。");
+    }
+    finally {
+        setSystemReadinessBusy(false);
+    }
+      } catch (err) {
+        console.warn("loadSystemReadiness execution warning:", err);
+      }
+    },
+    async downloadAuditExport() {
+      try {
+        if (account.status !== "authenticated" || !account.principal?.isPlatformAdmin) {
+        setExportError("请先通过独立管理员入口登录已验证的管理员账户。");
+        return;
+    }
+    setExportBusy(true);
+    setExportError("");
+    setExportNotice("");
+    const rows = [];
+    let cursor = null;
+    let truncated = false;
+    try {
+        for (let page = 0;; page++) {
+            if (page >= MAX_EXPORT_PAGES) {
+                truncated = true;
+                break;
+            }
+            const query = new URLSearchParams({
+                days: exportDays,
+                businessLine,
+                result,
+                limit: "200",
+            });
+            if (cursor) {
+                query.set("afterOccurredAt", cursor.at);
+                query.set("afterEventId", cursor.id);
+            }
+            const response = await fetch(`/api/admin/audit-export?${query}`, {
+                credentials: "same-origin",
+                cache: "no-store",
+            });
+            const payload = await response.json();
+            if (!response.ok)
+                throw new Error(payload.message || "审计导出读取失败。");
+            rows.push(...payload.rows);
+            if (!payload.hasMore || !payload.nextOccurredAt || !payload.nextEventId)
+                break;
+            cursor = { at: payload.nextOccurredAt, id: payload.nextEventId };
+        }
+        if (rows.length === 0) {
+            setExportNotice("所选窗口内没有审计记录。");
+            return;
+        }
+        downloadCsv(rows, exportDays);
+        setExportNotice(truncated
+            ? `已导出前 ${rows.length} 行后停止：窗口过大，请缩短天数或收窄业务线后重新导出。`
+            : `已导出 ${rows.length} 行。`);
+    }
+    catch (downloadError) {
+        setExportError(downloadError instanceof Error ? downloadError.message : "审计导出读取失败。");
+    }
+    finally {
+        setExportBusy(false);
+    }
+      } catch (err) {
+        console.warn("downloadAuditExport execution warning:", err);
+      }
+    },
+    async loadReplay() {
+      try {
+        const runId = replayRunId.trim();
+    if (!runId) {
+        setReplayError("请输入迁移运行 ID。");
+        return;
+    }
+    if (account.status !== "authenticated" || !account.principal?.isPlatformAdmin) {
+        setReplayError("请先通过独立管理员入口登录已验证的管理员账户。");
+        return;
+    }
+    setReplayBusy(true);
+    setReplayError("");
+    setReplay(null);
+    try {
+        const response = await fetch(`/api/admin/run-replay/${encodeURIComponent(runId)}`, {
+            credentials: "same-origin",
+            cache: "no-store",
+        });
+        const payload = await response.json();
+        if (!response.ok) {
+            throw new Error(response.status === 404
+                ? "本租户下没有这个运行 ID。"
+                : payload.message || "运行历史读取失败。");
+        }
+        setReplay(payload);
+    }
+    catch (replayFailure) {
+        setReplayError(replayFailure instanceof Error ? replayFailure.message : "运行历史读取失败。");
+    }
+    finally {
+        setReplayBusy(false);
+    }
+      } catch (err) {
+        console.warn("loadReplay execution warning:", err);
+      }
+    },
+    async loadQuota() {
+      try {
+        if (account.status !== "authenticated" || !account.principal?.isPlatformAdmin) {
+        setQuotaError("请先通过独立管理员入口登录已验证的管理员账户。");
+        return;
+    }
+    setQuotaBusy(true);
+    setQuotaError("");
+    setQuotaNotice("");
+    try {
+        const response = await fetch("/api/admin/tenant-quota", {
+            credentials: "same-origin",
+            cache: "no-store",
+        });
+        const payload = await response.json();
+        if (!response.ok)
+            throw new Error(payload.message || "配额读取失败。");
+        setQuota(payload);
+        setQuotaTokenLimit(payload.tokenLimit);
+        setQuotaCreditLimit(payload.creditLimit);
+    }
+    catch (quotaFailure) {
+        setQuota(null);
+        setQuotaError(quotaFailure instanceof Error ? quotaFailure.message : "配额读取失败。");
+    }
+    finally {
+        setQuotaBusy(false);
+    }
+      } catch (err) {
+        console.warn("loadQuota execution warning:", err);
+      }
+    },
+    async submitQuotaAdjustment(event) {
+      try {
+        event.preventDefault();
+    if (!quota)
+        return;
+    setQuotaBusy(true);
+    setQuotaError("");
+    setQuotaNotice("");
+    try {
+        const response = await fetch("/api/admin/tenant-quota", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "same-origin",
+            cache: "no-store",
+            body: JSON.stringify({
+                quotaAllocationId: quota.quotaAllocationId,
+                tokenLimit: quotaTokenLimit.trim(),
+                creditLimit: quotaCreditLimit.trim(),
+                expectedVersion: quota.allocationVersion,
+                reasonCode: quotaReason.trim().toUpperCase(),
+            }),
+        });
+        const payload = await response.json();
+        if (!response.ok) {
+            throw new Error(response.status === 409
+                ? "配额已被其他管理员改动，请重新读取后再调整。"
+                : payload.message || "配额调整失败。");
+        }
+        setQuota(payload);
+        setQuotaTokenLimit(payload.tokenLimit);
+        setQuotaCreditLimit(payload.creditLimit);
+        setQuotaReason("");
+        setQuotaNotice(`已调整，当前版本 ${payload.allocationVersion}。`);
+    }
+    catch (adjustFailure) {
+        setQuotaError(adjustFailure instanceof Error ? adjustFailure.message : "配额调整失败。");
+    }
+    finally {
+        setQuotaBusy(false);
+    }
+      } catch (err) {
+        console.warn("submitQuotaAdjustment execution warning:", err);
+      }
+    },
+    async loadOperationsJobs() {
+      try {
+        if (account.status !== "authenticated" || !account.principal?.isPlatformAdmin) {
+        setOperationsJobsError("请先通过独立管理员入口登录已验证的管理员账户。");
+        return;
+    }
+    setOperationsJobsBusy(true);
+    setOperationsJobsError("");
+    setOperationsJobsNotice("");
+    setOperationsJobs([]);
+    setOperationsJobsLoaded(false);
+    try {
+        const query = new URLSearchParams({ limit: "100" });
+        if (operationsJobBusinessLine !== "ALL") {
+            query.set("businessLine", operationsJobBusinessLine);
+        }
+        if (operationsJobStatus !== "ALL")
+            query.set("status", operationsJobStatus);
+        const response = await fetch(`/api/admin/jobs?${query}`, {
+            credentials: "same-origin",
+            cache: "no-store",
+        });
+        const payload = await response.json();
+        if (!response.ok)
+            throw new Error(payload.message || "持久作业列表读取失败。");
+        if (payload.schemaVersion !== "1.0.0"
+            || !Array.isArray(payload.items)
+            || payload.items.length > 100
+            || !payload.items.every(isOperationsJob)
+            || typeof payload.limit !== "number"
+            || typeof payload.scanned !== "number"
+            || typeof payload.scanTruncated !== "boolean") {
+            throw new Error("控制面返回了不受支持的持久作业数据。");
+        }
+        setOperationsJobs(payload.items);
+        setOperationsJobsLoaded(true);
+        if (payload.scanTruncated) {
+            setOperationsJobsNotice(`已扫描 ${payload.scanned} 条后达到服务端上限；请收窄状态或业务线。`);
+        }
+    }
+    catch (jobsFailure) {
+        setOperationsJobsError(jobsFailure instanceof Error ? jobsFailure.message : "持久作业列表读取失败。");
+    }
+    finally {
+        setOperationsJobsBusy(false);
+    }
+      } catch (err) {
+        console.warn("loadOperationsJobs execution warning:", err);
+      }
+    },
+    async cancelOperationsJob(job) {
+      try {
+        if (!can("OPERATOR")) {
+        setOperationsJobsError("取消作业需要 OPERATOR 或更高权限。");
+        return;
+    }
+    setOperationsJobCancelBusy(job.jobId);
+    setOperationsJobsError("");
+    setOperationsJobsNotice("");
+    let response;
+    try {
+        response = await fetch(`/api/admin/jobs/${encodeURIComponent(job.jobId)}/cancel`, {
+            method: "POST",
+            credentials: "same-origin",
+            cache: "no-store",
+        });
+    }
+    catch {
+        setOperationsJobsError("取消请求结果未知，系统未自动重试。请先重新读取作业状态，再决定是否人工重放。");
+        setOperationsJobCancelBusy("");
+        return;
+    }
+    let payload = {};
+    try {
+        payload = await response.json();
+    }
+    catch {
+        // A confirmed non-2xx response can still be surfaced without inventing a body.
+    }
+    if (!response.ok) {
+        setOperationsJobsError(response.status === 409
+            ? "该作业已进入终态，无法再取消；请重新读取列表。"
+            : payload.message || payload.errorCode || "作业取消被拒绝。");
+        setOperationsJobCancelBusy("");
+        return;
+    }
+    if (payload.schemaVersion !== "1.0.0"
+        || payload.jobId !== job.jobId
+        || payload.cancelRequested !== true
+        || typeof payload.status !== "string"
+        || !knownJobStatuses.has(payload.status)
+        || typeof payload.idempotentReplay !== "boolean") {
+        setOperationsJobsError("取消请求已返回，但结果无法确认。系统未自动重试，请重新读取作业。");
+        setOperationsJobCancelBusy("");
+        return;
+    }
+    setOperationsJobs((current) => current.map((candidate) => (candidate.jobId === job.jobId
+        ? { ...candidate, status: payload.status, cancelRequested: true }
+        : candidate)));
+    setOperationsJobsNotice(payload.idempotentReplay
+        ? "该作业之前已请求取消；本次为幂等确认。"
+        : "取消请求已被持久队列接受。");
+    setOperationsJobCancelBusy("");
+      } catch (err) {
+        console.warn("cancelOperationsJob execution warning:", err);
+      }
+    },
+    async loadRunnerFleet() {
+      try {
+        if (account.status !== "authenticated" || !account.principal?.isPlatformAdmin) {
+        setRunnerFleetError("请先通过独立管理员入口登录已验证的管理员账户。");
+        return;
+    }
+    setRunnerFleetBusy(true);
+    setRunnerFleetError("");
+    setRunnerFleetNotice("");
+    setRunnerFleet([]);
+    setRunnerFleetLoaded(false);
+    try {
+        const query = new URLSearchParams({ limit: "100" });
+        if (runnerFleetStatus !== "ALL")
+            query.set("status", runnerFleetStatus);
+        const response = await fetch(`/api/admin/runners?${query}`, {
+            credentials: "same-origin",
+            cache: "no-store",
+        });
+        const payload = await response.json();
+        if (!response.ok)
+            throw new Error(payload.message || "Runner Fleet 读取失败。");
+        if (payload.schemaVersion !== "1.0.0"
+            || !Array.isArray(payload.items)
+            || payload.items.length > 100
+            || !payload.items.every(isRunnerFleetNode)
+            || payload.returned !== payload.items.length
+            || typeof payload.truncated !== "boolean") {
+            throw new Error("控制面返回了不受支持的 Runner Fleet 数据。");
+        }
+        setRunnerFleet(payload.items);
+        setRunnerFleetLoaded(true);
+        if (payload.truncated) {
+            setRunnerFleetNotice("列表已达 100 个节点上限；请按状态收窄结果。");
+        }
+    }
+    catch (fleetFailure) {
+        setRunnerFleetError(fleetFailure instanceof Error ? fleetFailure.message : "Runner Fleet 读取失败。");
+    }
+    finally {
+        setRunnerFleetBusy(false);
+    }
+      } catch (err) {
+        console.warn("loadRunnerFleet execution warning:", err);
+      }
+    },
+    async mutateRunnerFleetNode(node, action) {
+      try {
+        if (account.status !== "authenticated") {
+        setRunnerFleetError("Runner 证明和排空只接受已验证的管理员企业 OIDC 会话。");
+        return;
+    }
+    const requiredRole = action === "drain" ? "OPERATOR" : "APPROVER";
+    if (!can(requiredRole)) {
+        setRunnerFleetError(`该 Runner 操作需要 ${requiredRole} 权限。`);
+        return;
+    }
+    const actionId = `${node.runnerNodeId}:${action}`;
+    setRunnerFleetActionBusy(actionId);
+    setRunnerFleetError("");
+    setRunnerFleetNotice("");
+    let response;
+    try {
+        response = await fetch(`/api/admin/runners/${encodeURIComponent(node.runnerNodeId)}/${action}`, {
+            method: "POST",
+            credentials: "same-origin",
+            cache: "no-store",
+        });
+    }
+    catch {
+        setRunnerFleetError("Runner 操作结果未知，系统未自动重试。请先重新读取 Fleet 状态。");
+        setRunnerFleetActionBusy("");
+        return;
+    }
+    let payload = {};
+    try {
+        payload = await response.json();
+    }
+    catch {
+        // Preserve the authoritative HTTP outcome without inventing a response body.
+    }
+    const expectedStatus = action === "drain" ? "DRAINING" : "READY";
+    if (!response.ok) {
+        setRunnerFleetError(payload.message || payload.errorCode || payload.code || "Runner 管理操作被拒绝。");
+        setRunnerFleetActionBusy("");
+        return;
+    }
+    if (payload.runnerNodeId !== node.runnerNodeId || payload.status !== expectedStatus) {
+        setRunnerFleetError("Runner 操作已返回，但结果无法确认。系统未自动重试，请重新读取 Fleet。");
+        setRunnerFleetActionBusy("");
+        return;
+    }
+    setRunnerFleetActionBusy("");
+    await loadRunnerFleet();
+    setRunnerFleetNotice(action === "drain" ? "Runner 排空请求已确认。" : "Runner attestation 已经独立验证并进入 READY。");
+      } catch (err) {
+        console.warn("mutateRunnerFleetNode execution warning:", err);
+      }
+    },
+    async loadFinancialReconciliation() {
+      try {
+        if (account.status !== "authenticated") {
+        setFinancialCases([]);
+        setFinancialLoaded(false);
+        setFinancialError("财务对账只接受已验证的管理员企业 OIDC 会话。");
+        return;
+    }
+    setFinancialLoadBusy(true);
+    setFinancialError("");
+    setFinancialNotice("");
+    setFinancialUnknown("");
+    try {
+        const query = new URLSearchParams({ status: financialStatus, limit: "100" });
+        const response = await fetch(`/api/admin/billing/reconciliation?${query}`, {
+            credentials: "same-origin",
+            cache: "no-store",
+        });
+        const payload = await response.json();
+        if (!response.ok)
+            throw new Error(payload.message || "财务对账列表读取失败。");
+        if (payload.schemaVersion !== "1.0.0"
+            || !Array.isArray(payload.items)
+            || payload.items.length > 200
+            || !payload.items.every(isReconciliationCase)) {
+            throw new Error("商业服务返回了不受支持的财务对账数据。");
+        }
+        setFinancialCases(payload.items);
+        setFinancialLoaded(true);
+    }
+    catch (loadFailure) {
+        setFinancialCases([]);
+        setFinancialLoaded(false);
+        setFinancialError(loadFailure instanceof Error ? loadFailure.message : "财务对账列表读取失败。");
+    }
+    finally {
+        setFinancialLoadBusy(false);
+    }
+      } catch (err) {
+        console.warn("loadFinancialReconciliation execution warning:", err);
+      }
+    },
+    stableFinancialIdempotencyKey(reconciliationCaseId, resolutionStatus, resolutionRef) {
+      try {
+        const tuple = JSON.stringify([reconciliationCaseId, resolutionStatus, resolutionRef]);
+    const existing = financialIdempotencyKeys.current.get(tuple);
+    if (existing)
+        return { tuple, key: existing };
+    const key = `finance-${resolutionStatus.toLowerCase()}-${crypto.randomUUID()}`;
+    financialIdempotencyKeys.current.set(tuple, key);
+    return { tuple, key };
+      } catch (err) {
+        console.warn("stableFinancialIdempotencyKey execution warning:", err);
+      }
+    },
+    async resolveFinancialReconciliation(item, resolutionStatus) {
+      try {
+        if (account.status !== "authenticated") {
+        setFinancialError("财务对账只接受企业 OIDC 会话。");
+        return;
+    }
+    if (!account.principal?.permissions.includes("admin:approve")) {
+        setFinancialError("当前企业账户缺少 admin:approve，不能结案财务对账。");
+        return;
+    }
+    const resolutionRef = (financialResolutionRefs[item.reconciliationCaseId] ?? "").trim();
+    if (!/^[A-Za-z0-9][A-Za-z0-9._:/-]{7,254}$/.test(resolutionRef)) {
+        setFinancialError("处理依据必须是 8 到 255 字符的稳定外部证据代号。");
+        return;
+    }
+    const attempt = stableFinancialIdempotencyKey(item.reconciliationCaseId, resolutionStatus, resolutionRef);
+    const actionId = `${item.reconciliationCaseId}:${resolutionStatus}`;
+    setFinancialBusyAction(actionId);
+    setFinancialError("");
+    setFinancialNotice("");
+    setFinancialUnknown("");
+    let response;
+    try {
+        response = await fetch("/api/admin/billing/reconciliation", {
+            method: "POST",
+            credentials: "same-origin",
+            cache: "no-store",
+            headers: {
+                "Content-Type": "application/json",
+                "Idempotency-Key": attempt.key,
+            },
+            body: JSON.stringify({
+                reconciliationCaseId: item.reconciliationCaseId,
+                resolutionStatus,
+                resolutionRef,
+            }),
+        });
+    }
+    catch {
+        setFinancialUnknown("本次结案结果未知，系统未自动重试。请先重新读取案件状态；若人工确认需要重放，当前页面会对相同案件、状态和依据复用原 Idempotency-Key。");
+        setFinancialBusyAction("");
+        return;
+    }
+    let payload = null;
+    try {
+        payload = await response.json();
+    }
+    catch {
+        payload = null;
+    }
+    if (response.status >= 500
+        || payload?.status === "UNKNOWN"
+        || payload?.operationMayHaveCompleted === true
+        || (response.ok && payload?.status !== resolutionStatus)) {
+        setFinancialUnknown("本次结案结果未知，系统未自动重试。请先重新读取案件状态；若人工确认需要重放，当前页面会对相同案件、状态和依据复用原 Idempotency-Key。");
+        setFinancialBusyAction("");
+        return;
+    }
+    if (!response.ok) {
+        setFinancialError(typeof payload?.message === "string" ? payload.message : "财务对账结案被拒绝。");
+        setFinancialBusyAction("");
+        return;
+    }
+    financialIdempotencyKeys.current.delete(attempt.tuple);
+    // The resolve endpoint confirms only the terminal status, not the database
+    // timestamp or resolver fields. Remove the case from this OPEN result set
+    // instead of inventing those evidence-bearing values in the browser.
+    setFinancialCases((current) => current.filter((candidate) => candidate.reconciliationCaseId !== item.reconciliationCaseId));
+    setFinancialNotice(resolutionStatus === "RESOLVED" ? "上游已确认案件为 RESOLVED。" : "上游已确认案件为 REJECTED。");
+    setFinancialBusyAction("");
+      } catch (err) {
+        console.warn("resolveFinancialReconciliation execution warning:", err);
+      }
+    },
+    async loadData() {
+      try {
+        if (account.status !== "authenticated" || !account.principal?.isPlatformAdmin) {
+        setState("ERROR");
+        setError("请先通过独立管理员入口登录已验证的管理员账户。");
+        return;
+    }
+    setState("LOADING");
+    setError("");
+    try {
+        const query = new URLSearchParams({ hours, businessLine, result, limit: "60" });
+        const response = await fetch(`/api/admin/operations?${query}`, {
+            credentials: "same-origin",
+            cache: "no-store",
+        });
+        const payload = await response.json();
+        if (!response.ok)
+            throw new Error(payload.message || "管理端数据读取失败。");
+        setView(payload);
+        setState("READY");
+    }
+    catch (loadError) {
+        setView(null);
+        setState("ERROR");
+        setError(loadError instanceof Error ? loadError.message : "管理端数据读取失败。");
+    }
+      } catch (err) {
+        console.warn("loadData execution warning:", err);
+      }
+    },
+    async load(event) {
+      try {
+        event?.preventDefault();
+    await loadData();
+      } catch (err) {
+        console.warn("load execution warning:", err);
+      }
+    },
+    async mutate(action, body) {
+      try {
+        setBusyAction(action);
+    setError("");
+    setNotice("");
+    try {
+        const response = await fetch("/api/admin/operations", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "same-origin",
+            body: JSON.stringify({ action, ...body }),
+        });
+        const payload = await response.json();
+        if (!response.ok)
+            throw new Error(payload.message || "管理操作执行失败。");
+        setNotice(`操作已完成：${payload.status ?? payload.decision ?? action}`);
+        await loadData();
+    }
+    catch (actionError) {
+        setState("READY");
+        setError(actionError instanceof Error ? actionError.message : "管理操作执行失败。");
+    }
+    finally {
+        setBusyAction("");
+    }
+      } catch (err) {
+        console.warn("mutate execution warning:", err);
+      }
+    },
+    lock() {
+      try {
+        setView(null);
+    setOperationsJobs([]);
+    setOperationsJobsLoaded(false);
+    setOperationsJobsError("");
+    setOperationsJobsNotice("");
+    setOperationsJobCancelBusy("");
+    setRunnerFleet([]);
+    setRunnerFleetLoaded(false);
+    setRunnerFleetError("");
+    setRunnerFleetNotice("");
+    setRunnerFleetActionBusy("");
+    setFinancialCases([]);
+    setFinancialLoaded(false);
+    setFinancialResolutionRefs({});
+    setFinancialError("");
+    setFinancialNotice("");
+    setFinancialUnknown("");
+    financialIdempotencyKeys.current.clear();
+    setError("");
+    setNotice("");
+    setState("LOCKED");
+      } catch (err) {
+        console.warn("lock execution warning:", err);
+      }
+    },
+    can(required) {
+      try {
+        return Boolean(view && roleRank[view.role] >= roleRank[required]);
+      } catch (err) {
+        console.warn("can execution warning:", err);
+      }
+    },
   },
 });

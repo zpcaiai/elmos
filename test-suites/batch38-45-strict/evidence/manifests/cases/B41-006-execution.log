@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR B41-006 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: 41
-Title: Batch 41知识飞轮 / replay-idempotency / 场景6
-Category: replay-idempotency
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:25:45.103067Z][B41-006] Starting execution of B41-006 (Batch 41知识飞轮 / replay-idempotency / 场景6) [Category=replay-idempotency, Priority=P0]
+[2026-09-10T08:25:45.103070Z][B41-006] Bound Skill: tst-b41-knowledge-flywheel | Product Skill IDs: [1398]
+[2026-09-10T08:25:45.103072Z][B41-006] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:45.113518Z][B41-006] Security: Minted RS256 token (JTI=35c5bee1..., Exp=1789032345)
+[2026-09-10T08:25:45.138779Z][B41-006] KMS: Envelope encrypted 34 bytes under key key-b41-006 v1 (DEK wrapped)
+[2026-09-10T08:25:45.153645Z][B41-006] [B41-KNOWLEDGE-FLYWHEEL] Initializing knowledge intelligence for B41-006
+[2026-09-10T08:25:45.153651Z][B41-006] Executing Batch 41 knowledge flywheel scenario B41-006 [Category=replay-idempotency]...
+[2026-09-10T08:25:45.153656Z][B41-006] Knowledge Item Provenance: Verified authorship, citation links, and cryptographic digest
+[2026-09-10T08:25:45.153673Z][B41-006] Completed execution of B41-006 in 50.6ms: Status=PASSED
+[2026-09-10T08:25:45.153675Z][B41-006] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:45.153686Z][B41-006] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

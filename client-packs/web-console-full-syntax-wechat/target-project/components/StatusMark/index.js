@@ -4,13 +4,13 @@ Component({
     styleIsolation: "apply-shared",
   },
   properties: {
-    semanticCoverage: {
+    status: {
       type: null,
       value: null,
     },
-    behaviorCoverage: {
+    compact: {
       type: null,
-      value: null,
+      value: "false",
     },
   },
   data: {

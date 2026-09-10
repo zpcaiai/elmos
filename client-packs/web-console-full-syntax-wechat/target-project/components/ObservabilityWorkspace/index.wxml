@@ -22,15 +22,11 @@
     </view>
   </view>
   <view class="{{styles.mainGrid}}">
-    <block wx:if="{{activeTab === "traces"}}">
+    <block wx:if="{{activeTab === 'traces'}}">
       <view class="{{styles.panel}}">
         <view class="{{styles.panelHeader}}">
           <view>Trace Waterfall 字段示例</view>
-          <text class="{{styles.metaTag}}">
-            <text>SAMPLE_ONLY ·</text>
-            <text>{{totalDuration.toFixed(1)}}</text>
-            <text>ms</text>
-          </text>
+          <text class="{{styles.metaTag}}">SAMPLE_ONLY · {{totalDuration.toFixed(1)}} ms</text>
         </view>
         <view class="{{styles.waterfallList}}">
           <button wx:for="{{sampleSpans}}" wx:for-item="span" wx:key="span.id" type="button" key="{{span.id}}" class="{{`${styles.spanRow} ${isSelected ? styles.spanRowSelected : &quot;&quot;}`}}" aria-pressed="{{isSelected}}" bindtap="onTap">
@@ -39,10 +35,7 @@
               <text class="{{styles.spanName}}">{{span.name}}</text>
             </view>
             <view class="{{styles.spanBarContainer}}">
-              <view class="{{styles.spanBar}}" style="{{{ width: `${widthPct}%` }}}">
-                <text>{{span.durationMs}}</text>
-                <text>ms</text>
-              </view>
+              <view class="{{styles.spanBar}}" style="{{{ width: `${widthPct}%` }}}">{{span.durationMs}} ms</view>
             </view>
           </button>
         </view>
@@ -64,10 +57,7 @@
             </view>
             <view class="{{styles.kvItem}}">
               <text class="{{styles.kLabel}}">持续耗时</text>
-              <text class="{{styles.kValue}}">
-                <text>{{selectedSpan.durationMs}}</text>
-                <text>ms</text>
-              </text>
+              <text class="{{styles.kValue}}">{{selectedSpan.durationMs}} ms</text>
             </view>
           </view>
           <view class="{{styles.subHeading}}">Attributes (OpenTelemetry Attributes)</view>
@@ -75,7 +65,7 @@
         </view>
       </view>
     </block>
-    <view wx:if="{{activeTab === "metrics"}}" class="{{styles.fullPanel}}">
+    <view wx:if="{{activeTab === 'metrics'}}" class="{{styles.fullPanel}}">
       <view class="{{styles.panelHeader}}">
         <view>Prometheus 指标名称示例</view>
         <text class="{{styles.metaTag}}">Scrape Status: NOT_RUN</text>
@@ -103,7 +93,7 @@
         </view>
       </view>
     </view>
-    <view wx:if="{{activeTab === "slsa"}}" class="{{styles.fullPanel}}">
+    <view wx:if="{{activeTab === 'slsa'}}" class="{{styles.fullPanel}}">
       <view class="{{styles.panelHeader}}">
         <view>In-Toto / SLSA 凭证字段结构示例</view>
         <text class="{{styles.metaTag}}">Verification: NOT_RUN</text>

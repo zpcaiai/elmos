@@ -186,8 +186,8 @@ def execute_cross_cutting_security_governance(
         test_agent = f"agent-gov-{case_id.lower()}"
         
         if cat == "success":
-            trace(f"Registering agent {test_agent} with autonomy L2_COLLABORATIVE...")
-            agents.register_agent(test_agent, "CodeRefactorAgent", "Engineer", AgentAutonomyLevel.L2_COLLABORATIVE)
+            trace(f"Registering agent {test_agent} with autonomy L2_SUPERVISED...")
+            agents.register_agent(test_agent, "CodeRefactorAgent", "Engineer", AgentAutonomyLevel.L2_SUPERVISED)
             authz_ok, authz_msg = agents.authorize_tool_call(test_agent, "read_file", "tenant-alpha")
             trace(f"Tool Authorization: tool='read_file' -> {authz_msg}")
             assertions.append(ScenarioAssertion("Authorized Tool Execution", authz_ok, authz_msg))
@@ -244,7 +244,7 @@ def execute_cross_cutting_security_governance(
             metrics["spend_percentage"] = spend_pct
         elif cat == "boundary":
             trace("Testing exact 100% budget spend threshold...")
-            finops.set_budget("tenant-edge-case", 100.0)
+            finops.set_budget("tenant-edge-case", 50.0)
             finops.record_usage("tenant-edge-case", "cpu_hours", 2000.0)
             ok_edge, msg_edge, pct_edge = finops.check_budget_guardrail("tenant-edge-case")
             trace(f"Budget Hard Cap: {msg_edge}")

@@ -24,79 +24,103 @@ Component({
   lifetimes: {
     attached() {
       // Lifecycle effect effect_0
-      try {
-        const skipLink = document.querySelector<HTMLAnchorElement>(".skip-link");
+      (async () => {
+        try {
+          const skipLink = document.querySelector(".skip-link");
     if (skipLink) {
-      skipLink.textContent = english ? "Skip to main content" : "跳到主要内容";
+        skipLink.textContent = english ? "Skip to main content" : "跳到主要内容";
     }
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_1
-      try {
-        function handleShortcut(event: KeyboardEvent) {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLocaleLowerCase() === "k") {
-        event.preventDefault();
-        if (commandOpen) closeCommand();
-        else openCommand();
-      }
-      if (event.key === "Escape" && commandOpen) closeCommand();
+      (async () => {
+        try {
+          function handleShortcut(event) {
+        if ((event.metaKey || event.ctrlKey) && event.key.toLocaleLowerCase() === "k") {
+            event.preventDefault();
+            if (commandOpen)
+                closeCommand();
+            else
+                openCommand();
+        }
+        if (event.key === "Escape" && commandOpen)
+            closeCommand();
     }
     window.addEventListener("keydown", handleShortcut);
     return () => window.removeEventListener("keydown", handleShortcut);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_2
-      try {
-        if (!commandOpen) return;
+      (async () => {
+        try {
+          if (!commandOpen)
+        return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     requestAnimationFrame(() => commandInput.current?.focus());
     return () => { document.body.style.overflow = previousOverflow; };
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_3
-      try {
-        function updateBackToTop() {
-      setShowBackToTop(window.scrollY > 640);
+      (async () => {
+        try {
+          function updateBackToTop() {
+        setShowBackToTop(window.scrollY > 640);
     }
     updateBackToTop();
     window.addEventListener("scroll", updateBackToTop, { passive: true });
     return () => window.removeEventListener("scroll", updateBackToTop);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_4
-      try {
+      (async () => {
         try {
-      setTelemetryEnabled(localStorage.getItem("elmos:telemetry-enabled:v1") !== "off");
-    } catch {
-      setTelemetryEnabled(true);
+          try {
+        setTelemetryEnabled(localStorage.getItem("elmos:telemetry-enabled:v1") !== "off");
     }
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+    catch {
+        setTelemetryEnabled(true);
+    }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },
   },
   methods: {
     openCommand(trigger) {
-      returnFocus.current = trigger
+      try {
+        returnFocus.current = trigger
         ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     setCommandActive(0);
     setCommandOpen(true);
+      } catch (err) {
+        console.warn("openCommand execution warning:", err);
+      }
     },
     closeCommand() {
-      setCommandOpen(false);
+      try {
+        setCommandOpen(false);
     setCommandQuery("");
     setCommandActive(0);
     requestAnimationFrame(() => returnFocus.current?.focus());
+      } catch (err) {
+        console.warn("closeCommand execution warning:", err);
+      }
     },
     handleCommandKey(event) {
-      if (event.key === "ArrowDown") {
+      try {
+        if (event.key === "ArrowDown") {
         event.preventDefault();
         if (visibleCommands.length === 0)
             return;
@@ -114,9 +138,13 @@ Component({
         closeCommand();
         router.push(target);
     }
+      } catch (err) {
+        console.warn("handleCommandKey execution warning:", err);
+      }
     },
     containDialogFocus(event) {
-      if (event.key !== "Tab" || !commandPanel.current)
+      try {
+        if (event.key !== "Tab" || !commandPanel.current)
         return;
     const focusable = Array.from(commandPanel.current.querySelectorAll("a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex='-1'])")).filter((element) => element.getClientRects().length > 0);
     if (focusable.length === 0)
@@ -131,35 +159,62 @@ Component({
         event.preventDefault();
         first.focus();
     }
+      } catch (err) {
+        console.warn("containDialogFocus execution warning:", err);
+      }
     },
     reloadPage() {
-      if (window.confirm("重新载入会清除本页尚未保存的输入。是否继续？")) {
+      try {
+        if (window.confirm("重新载入会清除本页尚未保存的输入。是否继续？")) {
         window.location.reload();
     }
+      } catch (err) {
+        console.warn("reloadPage execution warning:", err);
+      }
     },
     scrollToTop() {
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      try {
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+      } catch (err) {
+        console.warn("scrollToTop execution warning:", err);
+      }
     },
     toggleTelemetry() {
-      const enabled = !telemetryEnabled;
+      try {
+        const enabled = !telemetryEnabled;
     setTelemetryEnabled(enabled);
     window.dispatchEvent(new CustomEvent("elmos:telemetry-preference", { detail: { enabled } }));
+      } catch (err) {
+        console.warn("toggleTelemetry execution warning:", err);
+      }
     },
     closeSidebar() {
-      setMobileOpen(false);
+      try {
+        setMobileOpen(false);
     setProfileOpen(false);
+      } catch (err) {
+        console.warn("closeSidebar execution warning:", err);
+      }
     },
     toggleTopProfileMenu() {
-      const nextOpen = !profileOpen;
+      try {
+        const nextOpen = !profileOpen;
     setProfileOpen(nextOpen);
     if (nextOpen && window.matchMedia("(max-width: 900px)").matches) {
         setMobileOpen(true);
     }
+      } catch (err) {
+        console.warn("toggleTopProfileMenu execution warning:", err);
+      }
     },
-    logout() {
-      await account.logout();
+    async logout() {
+      try {
+        await account.logout();
     closeSidebar();
+      } catch (err) {
+        console.warn("logout execution warning:", err);
+      }
     },
   },
 });

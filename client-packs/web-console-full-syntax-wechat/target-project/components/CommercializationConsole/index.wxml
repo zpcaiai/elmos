@@ -41,10 +41,7 @@
   <view class="source-notice" role="status">
     <Icon name="{{payload.source === &quot;LIVE_API&quot; ? &quot;check&quot; : &quot;clock&quot;}}" size="{{16}}" />
     <text>{{payload.note}}</text>
-    <text class="source-freshness">
-      <text>最近刷新</text>
-      <text>{{fetchedAt}}</text>
-    </text>
+    <text class="source-freshness">最近刷新 {{fetchedAt}}</text>
     <StatusChip status="{{payload.source}}" compact="true" />
   </view>
   <view class="surface-card" aria-labelledby="kernels-title">
@@ -59,23 +56,13 @@
       <view wx:for="{{commercialKernels}}" wx:for-item="k" wx:key="k.id" key="{{k.id}}" class="p-3 rounded-lg border border-border bg-card/60 flex flex-col justify-between">
         <view>
           <view class="flex items-center justify-between mb-1">
-            <text class="text-sm font-semibold text-primary">
-              <text>{{k.id}}</text>
-              <text>·</text>
-              <text>{{k.name}}</text>
-            </text>
-            <text class="text-xs px-2 py-0.5 rounded bg-primary/10 text-primary font-mono">
-              <text>{{k.skills}}</text>
-              <text>skills</text>
-            </text>
+            <text class="text-sm font-semibold text-primary">{{k.id}} · {{k.name}}</text>
+            <text class="text-xs px-2 py-0.5 rounded bg-primary/10 text-primary font-mono">{{k.skills}} skills</text>
           </view>
           <view class="text-xs text-muted-foreground">{{k.desc}}</view>
         </view>
         <view class="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-          <text>
-            <text>状态:</text>
-            <text>{{k.status}}</text>
-          </text>
+          <text>状态: {{k.status}}</text>
           <Icon name="check" size="{{13}}" class="text-emerald-500" />
         </view>
       </view>
@@ -92,14 +79,8 @@
     <view class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
       <view wx:for="{{foundryHighlights}}" wx:for-item="f" wx:key="f.id" key="{{f.pack}}" class="p-3 rounded-lg border border-border bg-card/40">
         <view class="flex items-center justify-between mb-1">
-          <text class="text-xs font-mono text-muted-foreground">
-            <text>Pack</text>
-            <text>{{f.pack}}</text>
-          </text>
-          <text class="text-xs text-emerald-400">
-            <text>{{f.skills}}</text>
-            <text>项功能</text>
-          </text>
+          <text class="text-xs font-mono text-muted-foreground">Pack {{f.pack}}</text>
+          <text class="text-xs text-emerald-400">{{f.skills}} 项功能</text>
         </view>
         <text class="text-sm font-medium block">{{f.name}}</text>
         <view class="text-xs text-muted-foreground mt-1">{{f.desc}}</view>
@@ -139,11 +120,7 @@
           <Icon name="{{selectedStage.icon}}" size="{{23}}" />
         </text>
         <view>
-          <text class="overline">
-            <text>{{selectedStage.batch}}</text>
-            <text>·</text>
-            <text>{{selectedStage.subtitle}}</text>
-          </text>
+          <text class="overline">{{selectedStage.batch}} · {{selectedStage.subtitle}}</text>
           <view>{{selectedStage.title}}</view>
         </view>
         <StatusChip status="{{selectedStage.status}}" />

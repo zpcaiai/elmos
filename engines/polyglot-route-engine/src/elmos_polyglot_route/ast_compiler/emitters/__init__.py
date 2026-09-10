@@ -1,4 +1,4 @@
-"""Emitter registry and factory for all 8 supported languages."""
+"""Emitter registry and factory for all 15 supported enterprise and system languages (210 routes)."""
 
 from __future__ import annotations
 
@@ -12,6 +12,13 @@ from .go_emitter import GoEmitter
 from .rust_emitter import RustEmitter
 from .kotlin_emitter import KotlinEmitter
 from .php_emitter import PhpEmitter
+from .cpp_emitter import CppEmitter
+from .swift_emitter import SwiftEmitter
+from .objc_emitter import ObjCEmitter
+from .react_emitter import ReactEmitter
+from .flutter_emitter import FlutterEmitter
+from .vb6_emitter import Vb6Emitter
+from .vcpp6_emitter import Vcpp6Emitter
 
 EMITTER_REGISTRY: Dict[str, Type[BaseEmitter]] = {
     "java": JavaEmitter,
@@ -28,6 +35,18 @@ EMITTER_REGISTRY: Dict[str, Type[BaseEmitter]] = {
     "kotlin": KotlinEmitter,
     "kt": KotlinEmitter,
     "php": PhpEmitter,
+    "cpp": CppEmitter,
+    "c++": CppEmitter,
+    "cc": CppEmitter,
+    "swift": SwiftEmitter,
+    "objc": ObjCEmitter,
+    "objective-c": ObjCEmitter,
+    "objectivec": ObjCEmitter,
+    "react": ReactEmitter,
+    "flutter": FlutterEmitter,
+    "dart": FlutterEmitter,
+    "vb6": Vb6Emitter,
+    "vcpp6": Vcpp6Emitter,
 }
 
 
@@ -48,6 +67,14 @@ __all__ = [
     "RustEmitter",
     "KotlinEmitter",
     "PhpEmitter",
+    "CppEmitter",
+    "SwiftEmitter",
+    "ObjCEmitter",
+    "ReactEmitter",
+    "FlutterEmitter",
+    "Vb6Emitter",
+    "Vcpp6Emitter",
     "get_emitter",
     "EMITTER_REGISTRY",
 ]
+

@@ -5,14 +5,11 @@
     <text wx:if="{{message}}" role="status">{{message}}</text>
   </view>
   <view class="{{styles.subscriptionActions}}">
-    <button wx:if="{{state === "UNAVAILABLE"}}" class="button button-secondary" type="button" bindtap="onTap">重试</button>
-    <button wx:if="{{state === "READY" && subscription?.canCancel && !confirming}}" class="button button-secondary" type="button" bindtap="onTap">到期取消</button>
-    <block wx:if="{{state === "READY" && subscription?.canCancel && confirming}}">
+    <button wx:if="{{state === 'UNAVAILABLE'}}" class="button button-secondary" type="button" bindtap="onTap">重试</button>
+    <button wx:if="{{state === 'READY' && subscription?.canCancel && !confirming}}" class="button button-secondary" type="button" bindtap="onTap">到期取消</button>
+    <block wx:if="{{state === 'READY' && subscription?.canCancel && confirming}}">
       <button class="button button-secondary" type="button" disabled="{{pending}}" bindtap="onTap">保留订阅</button>
-      <button class="button button-primary" type="button" disabled="{{pending}}" bindtap="cancel">
-        <text wx:if="{{pending}}">{{"正在提交…"}}</text>
-        <text wx:else>{{"确认到期取消"}}</text>
-      </button>
+      <button class="button button-primary" type="button" disabled="{{pending}}" bindtap="cancel">{{pending ? "正在提交…" : "确认到期取消"}}</button>
     </block>
   </view>
 </view>

@@ -1,32 +1,12 @@
-<view class="{{styles.tableWrap}}">
+<view class="{{styles.controlCard}}">
   <view>
-    <view>
-      <view>
-        <view>时间</view>
-        <view>业务线</view>
-        <view>动作</view>
-        <view>目标</view>
-        <view>结果</view>
-        <view>耗时</view>
-      </view>
-    </view>
-    <view>
-      <view wx:for="{{events}}" wx:key="item.id" key="{{item.eventId}}">
-        <view>{{formatTime(item.occurredAt)}}</view>
-        <view>{{lineLabels[item.businessLine] ?? item.businessLine}}</view>
-        <view>
-          <code>{{item.action}}</code>
-        </view>
-        <view title="{{item.target}}">{{displayTarget(item.target)}}</view>
-        <view>
-          <text class="{{item.result === &quot;FAILURE&quot; ? styles.resultBad : styles.resultGood}}">{{item.result}}</text>
-          <text wx:if="{{item.errorCode}}">{{item.errorCode}}</text>
-        </view>
-        <view>
-          <text wx:if="{{item.durationMs === null}}">{{"—"}}</text>
-          <text wx:else>{{`${item.durationMs} ms`}}</text>
-        </view>
-      </view>
-    </view>
+    <text class="{{styles.severity}}">{{incident.severity}}</text>
+    <text>{{incident.summaryCode}}</text>
+  </view>
+  <view>{{businessLineLabel}} · {{incident.status}}</view>
+  <text>负责人： {{incident.ownerActorId}}</text>
+  <view wx:if="{{incident.status !== 'RESOLVED'}}" class="{{styles.inlineActions}}">
+    <button class="secondary-button" type="button" disabled="{{disabled}}" bindtap="onTap">接手</button>
+    <button class="secondary-button" type="button" disabled="{{disabled}}" bindtap="onTap">标记已解决</button>
   </view>
 </view>

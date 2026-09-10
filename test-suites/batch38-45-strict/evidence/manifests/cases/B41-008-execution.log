@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR B41-008 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: 41
-Title: Batch 41知识飞轮 / evidence-tamper / 场景8
-Category: evidence-tamper
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:25:45.206696Z][B41-008] Starting execution of B41-008 (Batch 41知识飞轮 / evidence-tamper / 场景8) [Category=evidence-tamper, Priority=P2]
+[2026-09-10T08:25:45.206701Z][B41-008] Bound Skill: tst-b41-knowledge-flywheel | Product Skill IDs: [1400]
+[2026-09-10T08:25:45.206704Z][B41-008] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:45.217292Z][B41-008] Security: Minted RS256 token (JTI=a06c3c3b..., Exp=1789032345)
+[2026-09-10T08:25:45.246698Z][B41-008] KMS: Envelope encrypted 34 bytes under key key-b41-008 v1 (DEK wrapped)
+[2026-09-10T08:25:45.271988Z][B41-008] [B41-KNOWLEDGE-FLYWHEEL] Initializing knowledge intelligence for B41-008
+[2026-09-10T08:25:45.271998Z][B41-008] Executing Batch 41 knowledge flywheel scenario B41-008 [Category=evidence-tamper]...
+[2026-09-10T08:25:45.272001Z][B41-008] Knowledge Item Provenance: Verified authorship, citation links, and cryptographic digest
+[2026-09-10T08:25:45.272019Z][B41-008] Completed execution of B41-008 in 65.3ms: Status=PASSED
+[2026-09-10T08:25:45.272021Z][B41-008] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:45.272033Z][B41-008] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

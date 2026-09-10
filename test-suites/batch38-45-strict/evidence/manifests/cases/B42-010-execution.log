@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR B42-010 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: 42
-Title: Batch 42成熟Agent / performance / 场景10
-Category: performance
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:25:47.636013Z][B42-010] Starting execution of B42-010 (Batch 42成熟Agent / performance / 场景10) [Category=performance, Priority=P0]
+[2026-09-10T08:25:47.636017Z][B42-010] Bound Skill: tst-b42-agent-factory | Product Skill IDs: [1414, 1422]
+[2026-09-10T08:25:47.636021Z][B42-010] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:47.648415Z][B42-010] Security: Minted RS256 token (JTI=8f59177f..., Exp=1789032347)
+[2026-09-10T08:25:47.677499Z][B42-010] KMS: Envelope encrypted 34 bytes under key key-b42-010 v1 (DEK wrapped)
+[2026-09-10T08:25:47.696774Z][B42-010] [B42-AGENT-FACTORY] Initializing agent governance runtime for B42-010
+[2026-09-10T08:25:47.696784Z][B42-010] Executing Autonomy Level & Tool Permission Boundary Enforcement...
+[2026-09-10T08:25:47.696834Z][B42-010] Boundary Evaluation: L1 agent invoking file_write returned authorized=False (E_AUTONOMY_INSUFFICIENT: Tool file_write requires higher autonomy than L1_SUGGESTION)
+[2026-09-10T08:25:47.696851Z][B42-010] Completed execution of B42-010 in 60.8ms: Status=PASSED
+[2026-09-10T08:25:47.696854Z][B42-010] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:47.696867Z][B42-010] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

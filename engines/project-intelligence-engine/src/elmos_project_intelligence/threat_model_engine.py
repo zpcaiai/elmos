@@ -77,7 +77,7 @@ INFO_DISCLOSURE_PATTERNS = [
 ]
 
 DOS_PATTERNS = [
-    (re.compile(r"""while\s+True\s*:\s*(?:pass|continue)"""), "CWE-835", "Unbounded infinite loop without exit condition or sleep"),
+    (re.compile(r"""while\s+(?:True|1)\s*:"""), "CWE-835", "Unbounded infinite loop without exit condition or sleep"),
     (re.compile(r"""re\.compile\([^)]*(\.\*|\.\+){2,}[^)]*\)"""), "CWE-1333", "Exponential backtracking ReDoS regex pattern"),
 ]
 

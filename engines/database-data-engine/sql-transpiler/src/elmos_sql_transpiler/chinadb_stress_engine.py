@@ -53,18 +53,20 @@ class ChinaDbStressEngine:
         """Run multi-threaded financial transfer benchmark against target."""
         # 1. Setup schema and accounts
         self.orchestrator.execute_query(target_id, "DROP TABLE IF EXISTS accounts;")
-        self.orchestrator.execute_query(
-            target_id,
-            "CREATE TABLE accounts (acc_id VARCHAR(32) PRIMARY KEY, balance NUMERIC(14, 2) NOT NULL);",
+        create_sql = (
+            "CREATE TABLE accounts (acc_id VARCHAR(32) PRIMARY KEY, "
+            "balance NUMERIC(14, 2) NOT NULL);"
         )
+        self.orchestrator.execute_query(target_id, create_sql)
 
         initial_total = num_accounts * initial_balance_per_acc
         for i in range(num_accounts):
             acc_id = f"ACC_{i:04d}"
-            self.orchestrator.execute_query(
-                target_id,
-                f"INSERT INTO accounts (acc_id, balance) VALUES ('{acc_id}', {initial_balance_per_acc});",
+            insert_sql = (
+                f"INSERT INTO accounts (acc_id, balance) "
+                f"VALUES ('{acc_id}', {initial_balance_per_acc});"
             )
+            self.orchestrator.execute_query(target_id, insert_sql)
 
         total_tx = concurrency * transactions_per_worker
         latencies: list[float] = []
@@ -88,14 +90,16 @@ class ChinaDbStressEngine:
                 t_start = time.perf_counter()
                 try:
                     # Execute atomic transfer
-                    self.orchestrator.execute_query(
-                        target_id,
-                        f"UPDATE accounts SET balance = balance - {amount} WHERE acc_id = '{from_acc}';",
+                    debit_sql = (
+                        f"UPDATE accounts SET balance = balance - {amount} "
+                        f"WHERE acc_id = '{from_acc}';"
                     )
-                    self.orchestrator.execute_query(
-                        target_id,
-                        f"UPDATE accounts SET balance = balance + {amount} WHERE acc_id = '{to_acc}';",
+                    self.orchestrator.execute_query(target_id, debit_sql)
+                    credit_sql = (
+                        f"UPDATE accounts SET balance = balance + {amount} "
+                        f"WHERE acc_id = '{to_acc}';"
                     )
+                    self.orchestrator.execute_query(target_id, credit_sql)
                     t_elapsed_ms = (time.perf_counter() - t_start) * 1000.0
                     local_latencies.append(t_elapsed_ms)
                     with lock:

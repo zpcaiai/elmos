@@ -1,4 +1,7 @@
-"""Tests for ChinaDB Container Orchestrator, Protocol Lab, and DDL Executor across 13 domestic targets."""
+"""Tests for ChinaDB Container Orchestrator, Protocol Lab, and DDL Executor.
+
+Validates across 13 domestic targets.
+"""
 
 from __future__ import annotations
 
@@ -81,10 +84,19 @@ def test_ddl_executor_and_reverse_introspection():
     target = "oceanbase-oracle"
 
     ddl_statements = [
-        "CREATE TABLE departments (dept_id VARCHAR(16) PRIMARY KEY, dept_name VARCHAR(100) NOT NULL);",
-        "CREATE TABLE employees (emp_id VARCHAR(16) PRIMARY KEY, emp_name VARCHAR(100), dept_id VARCHAR(16), salary NUMERIC(12, 2));",
+        (
+            "CREATE TABLE departments (dept_id VARCHAR(16) PRIMARY KEY, "
+            "dept_name VARCHAR(100) NOT NULL);"
+        ),
+        (
+            "CREATE TABLE employees (emp_id VARCHAR(16) PRIMARY KEY, "
+            "emp_name VARCHAR(100), dept_id VARCHAR(16), salary NUMERIC(12, 2));"
+        ),
         "CREATE INDEX idx_emp_dept ON employees (dept_id);",
-        "CREATE OR REPLACE PROCEDURE recalc_salaries(p_ratio NUMERIC) IS BEGIN UPDATE employees SET salary = salary * p_ratio; END;",
+        (
+            "CREATE OR REPLACE PROCEDURE recalc_salaries(p_ratio NUMERIC) IS "
+            "BEGIN UPDATE employees SET salary = salary * p_ratio; END;"
+        ),
     ]
 
     receipt = executor.execute_ddl(target, ddl_statements)

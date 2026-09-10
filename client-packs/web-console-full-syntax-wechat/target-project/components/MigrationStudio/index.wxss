@@ -1,4 +1,4 @@
-/* Component styles for Marketplace */
+/* Component styles for MigrationStudio */
 .table { display: flex; flex-direction: column; width: 100%; border: 1rpx solid #e2e8f0; border-radius: 8rpx; }
 .thead { display: flex; flex-direction: column; background: #f8fafc; font-weight: bold; border-bottom: 2rpx solid #cbd5e1; }
 .tbody { display: flex; flex-direction: column; }

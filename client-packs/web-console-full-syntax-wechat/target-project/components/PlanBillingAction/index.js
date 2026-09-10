@@ -4,26 +4,24 @@ Component({
     styleIsolation: "apply-shared",
   },
   properties: {
+    plan: {
+      type: null,
+      value: null,
+    },
+    orderable: {
+      type: null,
+      value: null,
+    },
   },
   data: {
-    cancelKey: null,
-    subscription: null,
-    state: "LOADING",
-    confirming: false,
+    key: null,
     pending: false,
     message: "",
+    failed: false,
+    qrCode: null,
   },
   lifetimes: {
     attached() {
-      // Lifecycle effect effect_0
-      try {
-        void load();
-    const refresh = () => void load();
-    window.addEventListener("elmos:billing-changed", refresh);
-    return () => window.removeEventListener("elmos:billing-changed", refresh);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
     },
     detached() {
     },

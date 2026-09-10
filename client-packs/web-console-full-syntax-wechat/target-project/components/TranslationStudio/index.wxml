@@ -3,12 +3,7 @@
     <view>
       <text class="overline">DIRECTED LANGUAGE ROUTES · BATCH 29</text>
       <view>全库跨语言转换</view>
-      <view>
-        <text>{{languages.length}}</text>
-        <text>种活动语言形成</text>
-        <text>{{capability?.routePackageCount ?? routeCounts.total}}</text>
-        <text>条方向独立的转换路线；每条路线分别绑定语义风险、精确工具链、语料和认证证据。</text>
-      </view>
+      <view>{{languages.length}} 种活动语言形成 {{capability?.routePackageCount ?? routeCounts.total}} 条方向独立的转换路线；每条路线分别绑定语义风险、精确工具链、语料和认证证据。</view>
     </view>
     <view class="header-actions">
       <StatusChip status="{{capability
@@ -38,10 +33,7 @@
     <view class="metric-card">
       <text>独立验证待办</text>
       <text class="warning-text">{{routeCounts.externallyPending}}</text>
-      <text>
-        <text>外部证据</text>
-        <text>{{capability?.externalExecutionEvidence ?? "UNREAD"}}</text>
-      </text>
+      <text>外部证据 {{capability?.externalExecutionEvidence ?? "UNREAD"}}</text>
     </view>
   </view>
   <view class="source-notice" role="{{capabilityError ? &quot;alert&quot; : &quot;status&quot;}}">
@@ -109,11 +101,7 @@
       <view class="business-section-heading">
         <view>
           <text class="overline">{{selectedRoute.id}}</text>
-          <view>
-            <text>{{sourceProfile?.label}}</text>
-            <text>→</text>
-            <text>{{targetProfile?.label}}</text>
-          </view>
+          <view>{{sourceProfile?.label}} → {{targetProfile?.label}}</view>
         </view>
         <StatusChip status="{{selectedRoute.status}}" compact="true" />
       </view>
@@ -128,10 +116,7 @@
         </view>
         <view>
           <view>方向功能标识</view>
-          <view>
-            <text>$</text>
-            <text>{{selectedRoute.skill}}</text>
-          </view>
+          <view>$ {{selectedRoute.skill}}</view>
         </view>
         <view>
           <view>本地执行</view>
@@ -165,11 +150,7 @@
       <view class="business-section-heading">
         <view>
           <text class="overline">NO ROUTE</text>
-          <view>
-            <text>{{sourceProfile?.label}}</text>
-            <text>→</text>
-            <text>{{targetProfile?.label}}</text>
-          </view>
+          <view>{{sourceProfile?.label}} → {{targetProfile?.label}}</view>
         </view>
         <StatusChip status="BLOCKED" compact="true" />
       </view>
@@ -198,26 +179,20 @@
           <view value="portfolio">多仓组合（发现与拆分计划）</view>
         </view>
       </text>
-      <view wx:if="{{scope === "repository"}}" class="repository-plan-import">
+      <view wx:if="{{scope === 'repository'}}" class="repository-plan-import">
         <view>
           <text>整库只读清单</text>
           <StatusChip status="{{repositoryPlan ? &quot;READY&quot; : &quot;NOT_RUN&quot;}}" compact="true" />
         </view>
         <text class="{{`button button-secondary ${!selectedRouteExecutable || importing ? &quot;button-disabled&quot; : &quot;&quot;}`}}">
           <Icon name="file" size="{{15}}" />
-          <text>
-            <text wx:if="{{importing}}">{{"服务端校验中…"}}</text>
-            <text wx:else>{{"导入仓库清单 JSON"}}</text>
-          </text>
+          <text>{{importing ? "服务端校验中…" : "导入仓库清单 JSON"}}</text>
           <input type="file" accept="application/json,.json" disabled="{{!selectedRouteExecutable || importing}}" bindchange="onChange" />
         </text>
         <view wx:if="{{repositoryPlan}}">
           <view>
             <view>Snapshot</view>
-            <view>
-              <text>{{repositoryPlan.snapshot_sha256.slice(0, 12)}}</text>
-              <text>…</text>
-            </view>
+            <view>{{repositoryPlan.snapshot_sha256.slice(0, 12)}} …</view>
           </view>
           <view>
             <view>源文件</view>
@@ -232,24 +207,14 @@
             <view>{{repositoryPlan.execution_status}}</view>
           </view>
         </view>
-        <text wx:else>
-          <text wx:if="{{selectedRouteExecutable}}">{{"先在只读仓库目录执行清单命令；符号链接、构建目录、超大或变化中的文件会被忽略或失败关闭。清单由服务端按仓库路线契约重新校验。"}}</text>
-          <text wx:else>{{"当前路线的本地受限 Profile 未通过，导入入口保持关闭。"}}</text>
-        </text>
+        <text wx:else>{{selectedRouteExecutable
+                    ? "先在只读仓库目录执行清单命令；符号链接、构建目录、超大或变化中的文件会被忽略或失败关闭。清单由服务端按仓库路线契约重新校验。"
+                    : "当前路线的本地受限 Profile 未通过，导入入口保持关闭。"}}</text>
       </view>
       <view class="route-command-stack">
-        <text>
-          <text wx:if="{{scope === "repository"}}">{{"整库三段式命令：清单 → 发现 → 批量执行"}}</text>
-          <text wx:else>{{"精确 Profile 执行模板"}}</text>
-        </text>
-        <code>
-          <text wx:if="{{scope === "repository"}}">{{repositoryCommands.join("\n\n")}}</text>
-          <text wx:else>{{routeCommand}}</text>
-        </code>
-        <text>
-          <text wx:if="{{scope === "single-module"}}">{{"命令只接受 typed-pure-function-v1；任何越界语义都会失败关闭。"}}</text>
-          <text wx:else>{{scope === "repository" ? "清单只读取受支持源文件；discover 用真实编译器分析器逐单元判定；batch 只执行 READY 且有独立行为语料的单元，可断点续跑，任何跳过或失败都让批次保持 PARTIAL。" : "多仓组合必须先逐仓生成清单并形成显式依赖图；当前不会把单函数证据扩张成组合成功。"}}</text>
-        </text>
+        <text>{{scope === "repository" ? "整库三段式命令：清单 → 发现 → 批量执行" : "精确 Profile 执行模板"}}</text>
+        <code>{{scope === "repository" ? repositoryCommands.join("\n\n") : routeCommand}}</code>
+        <text>{{scope === "single-module" ? "命令只接受 typed-pure-function-v1；任何越界语义都会失败关闭。" : scope === "repository" ? "清单只读取受支持源文件；discover 用真实编译器分析器逐单元判定；batch 只执行 READY 且有独立行为语料的单元，可断点续跑，任何跳过或失败都让批次保持 PARTIAL。" : "多仓组合必须先逐仓生成清单并形成显式依赖图；当前不会把单函数证据扩张成组合成功。"}}</text>
       </view>
       <view class="route-handoff-actions">
         <button type="button" class="button button-primary" disabled="{{!selectedRouteExecutable}}" bindtap="saveHandoff">
@@ -301,10 +266,7 @@
         <input aria-label="受控源码工作区 ID" value="{{workspaceId}}" pattern="[a-z0-9][a-z0-9._-]{2,80}" placeholder="customer-repository" bindchange="onChange" />
       </text>
       <text>
-        <text>
-          <text wx:if="{{accountRunner}}">{{"已授权仓库工作区 UUID（必填）"}}</text>
-          <text wx:else>{{"仓库工作区 UUID"}}</text>
-        </text>
+        <text>{{accountRunner ? "已授权仓库工作区 UUID（必填）" : "仓库工作区 UUID"}}</text>
         <input value="{{repositoryWorkspaceId}}" pattern="[0-9a-f-]{36}" placeholder="从代码仓库工作区自动带入" bindchange="onChange" />
       </text>
       <text>
@@ -313,20 +275,8 @@
       </text>
       <view class="locked-target spring-field-wide">
         <text>执行边界</text>
-        <text>
-          <text>{{runnerHealth?.status ?? "CHECKING"}}</text>
-          <text>·</text>
-          <text>{{runnerHealth?.isolation ?? "NOT_CONFIGURED"}}</text>
-        </text>
-        <text>
-          <text>源存储</text>
-          <text>{{runnerHealth?.sourceStorage ?? "NOT_RUN"}}</text>
-          <text>· 活跃任务</text>
-          <text>{{runnerHealth?.activeJobs ?? 0}}</text>
-          <text>。</text>
-          <text wx:if="{{runnerHealth?.reason}}">{{` ${runnerHealth.reason}`}}</text>
-          <text wx:else>{{" 生产模式只允许不可变镜像的 Rootless Container。"}}</text>
-        </text>
+        <text>{{runnerHealth?.status ?? "CHECKING"}} · {{runnerHealth?.isolation ?? "NOT_CONFIGURED"}}</text>
+        <text>源存储 {{runnerHealth?.sourceStorage ?? "NOT_RUN"}} · 活跃任务 {{runnerHealth?.activeJobs ?? 0}} 。 {{runnerHealth?.reason ? ` ${runnerHealth.reason}` : " 生产模式只允许不可变镜像的 Rootless Container。"}}</text>
       </view>
       <text class="spring-field-wide">
         <text>恢复任务 UUID</text>
@@ -354,8 +304,9 @@
               ? !job.reportBundle
               : !job.reportMarkdown)}}" bindtap="onTap">
         <Icon name="external" size="{{15}}" />
-        <text wx:if="{{job?.conversionSummary?.storageMode === "SHARDED"}}">{{"下载完整转换报告包"}}</text>
-        <text wx:else>{{"下载转换报告"}}</text>
+        <text>{{job?.conversionSummary?.storageMode === "SHARDED"
+              ? "下载完整转换报告包"
+              : "下载转换报告"}}</text>
       </button>
     </view>
     <view wx:if="{{job}}" class="spring-run-summary">
@@ -366,67 +317,49 @@
         </view>
         <view>
           <view>阶段 / 进度</view>
-          <view>
-            <text>{{job.stage}}</text>
-            <text>·</text>
-            <text>{{job.progress}}</text>
-            <text>%</text>
-          </view>
+          <view>{{job.stage}} · {{job.progress}} %</view>
         </view>
         <view>
           <view>路线</view>
-          <view>
-            <text>{{job.sourceLanguage}}</text>
-            <text>→</text>
-            <text>{{job.targetLanguage}}</text>
-          </view>
+          <view>{{job.sourceLanguage}} → {{job.targetLanguage}}</view>
         </view>
         <view>
           <view>工作单元</view>
-          <view>
-            <text>{{job.includedUnitCount ?? 0}}</text>
-            <text>/</text>
-            <text>{{job.workUnitCount ?? "NOT_RUN"}}</text>
-          </view>
+          <view>{{job.includedUnitCount ?? 0}} / {{job.workUnitCount ?? "NOT_RUN"}}</view>
         </view>
         <view class="translation-rate-fact">
           <view>项目功能转换成功率</view>
-          <view>
-            <text wx:if="{{job.conversionSummary}}">{{job.conversionSummary.denominatorComplete
+          <view>{{job.conversionSummary
+                ? job.conversionSummary.denominatorComplete
                   ? `${job.conversionSummary.exactFraction} = ${job.conversionSummary.displayPercent}`
-                  : `${job.conversionSummary.projectSuccessRateDisplay} · 项目功能转换成功率不可确定`}}</text>
-            <text wx:else>{{"NOT_MEASURED"}}</text>
-          </view>
+                  : `${job.conversionSummary.projectSuccessRateDisplay} · 项目功能转换成功率不可确定`
+                : "NOT_MEASURED"}}</view>
         </view>
         <view wx:if="{{job.conversionSummary && !job.conversionSummary.denominatorComplete}}">
           <view>已报告 CALLABLE 义务验证率</view>
-          <view>
-            <text wx:if="{{job.conversionSummary.denominator > 0}}">{{`${job.conversionSummary.exactFraction} = ${job.conversionSummary.displayPercent}（仅诊断）`}}</text>
-            <text wx:else>{{"N/A · 无已报告 CALLABLE 分母"}}</text>
-          </view>
+          <view>{{job.conversionSummary.denominator > 0
+                    ? `${job.conversionSummary.exactFraction} = ${job.conversionSummary.displayPercent}（仅诊断）`
+                    : "N/A · 无已报告 CALLABLE 分母"}}</view>
         </view>
         <view>
           <view>计量口径</view>
-          <view>
-            <text wx:if="{{job.conversionSummary}}">{{`${job.conversionSummary.measurementUnit} · ${job.conversionSummary.comparisonBasis}`}}</text>
-            <text wx:else>{{"NOT_RUN"}}</text>
-          </view>
+          <view>{{job.conversionSummary
+                ? `${job.conversionSummary.measurementUnit} · ${job.conversionSummary.comparisonBasis}`
+                : "NOT_RUN"}}</view>
         </view>
         <view>
           <view>分母完整性</view>
-          <view>
-            <text wx:if="{{job.conversionSummary}}">{{`${job.conversionSummary.denominatorComplete ? "完整" : "不完整"} · ${job.conversionSummary.measurementStatus}`}}</text>
-            <text wx:else>{{"NOT_RUN"}}</text>
-          </view>
+          <view>{{job.conversionSummary
+                ? `${job.conversionSummary.denominatorComplete ? "完整" : "不完整"} · ${job.conversionSummary.measurementStatus}`
+                : "NOT_RUN"}}</view>
         </view>
         <view>
           <view>Inventory 未知范围</view>
-          <view>
-            <text wx:if="{{job.conversionSummary}}">{{job.conversionSummary.denominatorComplete
+          <view>{{job.conversionSummary
+                ? job.conversionSummary.denominatorComplete
                   ? "未发现"
-                  : `${job.conversionSummary.unknownScopeCount} 个文件级 inventory 哨兵 · 不等于漏检功能数`}}</text>
-            <text wx:else>{{"NOT_RUN"}}</text>
-          </view>
+                  : `${job.conversionSummary.unknownScopeCount} 个文件级 inventory 哨兵 · 不等于漏检功能数`
+                : "NOT_RUN"}}</view>
         </view>
         <view>
           <view>未验证 / 未知报告行</view>
@@ -438,70 +371,47 @@
         </view>
         <view>
           <view>代码归档</view>
-          <view>
-            <text wx:if="{{job.artifactReady}}">{{"READY"}}</text>
-            <text wx:else>{{"NOT_READY"}}</text>
-          </view>
+          <view>{{job.artifactReady ? "READY" : "NOT_READY"}}</view>
         </view>
         <view>
           <view>外部证据</view>
-          <view>
-            <text>{{job.externalVerificationStatus}}</text>
-            <text>·</text>
-            <text>{{job.certificationStatus}}</text>
-          </view>
+          <view>{{job.externalVerificationStatus}} · {{job.certificationStatus}}</view>
         </view>
       </view>
       <view wx:if="{{job.conversionSummary}}" class="translation-conversion-report" aria-labelledby="translation-conversion-report-title">
         <view class="translation-report-heading">
           <view>
             <view id="translation-conversion-report-title">功能转换计量</view>
-            <view>
-              <text wx:if="{{job.conversionSummary.denominatorComplete}}">{{"分子只计入逐功能通过目标行为 Oracle 与源/目标声明用例的功能义务；PASSED_PER_VERIFIED_FUNCTION 不代表全项目运行时等价。源/目标代码对比与省略依据仅存在于内容寻址报告，不会进入轮询任务 JSON。代码摘录受安全预算限制，省略项仍保留路径、完整逻辑范围与摘要。"}}</text>
-              <text wx:else>{{`项目级功能报告范围不完整，成功率为 ${job.conversionSummary.projectSuccessRateDisplay}，结论不可确定。${job.conversionSummary.denominator > 0 ? "以下 N/D、百分比和基点只描述已报告 CALLABLE 义务；" : "当前没有已报告 CALLABLE 分母，因此不计算已报告义务百分比或基点；"}${job.conversionSummary.unknownScopeCount} 个文件级 inventory 未知范围哨兵不等于漏检功能数。`}}</text>
-            </view>
+            <view>{{job.conversionSummary.denominatorComplete
+                      ? "分子只计入逐功能通过目标行为 Oracle 与源/目标声明用例的功能义务；PASSED_PER_VERIFIED_FUNCTION 不代表全项目运行时等价。源/目标代码对比与省略依据仅存在于内容寻址报告，不会进入轮询任务 JSON。代码摘录受安全预算限制，省略项仍保留路径、完整逻辑范围与摘要。"
+                      : `项目级功能报告范围不完整，成功率为 ${job.conversionSummary.projectSuccessRateDisplay}，结论不可确定。${job.conversionSummary.denominator > 0 ? "以下 N/D、百分比和基点只描述已报告 CALLABLE 义务；" : "当前没有已报告 CALLABLE 分母，因此不计算已报告义务百分比或基点；"}${job.conversionSummary.unknownScopeCount} 个文件级 inventory 未知范围哨兵不等于漏检功能数。`}}</view>
           </view>
           <StatusChip status="{{job.conversionSummary.measurementStatus}}" compact="true" />
         </view>
         <view class="translation-rate-metrics">
           <view>
-            <view>
-              <text wx:if="{{job.conversionSummary.denominatorComplete}}">{{"已验证"}}</text>
-              <text wx:else>{{"已验证（已报告）"}}</text>
-            </view>
+            <view>{{job.conversionSummary.denominatorComplete ? "已验证" : "已验证（已报告）"}}</view>
             <view>{{job.conversionSummary.verifiedCount}}</view>
           </view>
           <view>
-            <view>
-              <text wx:if="{{job.conversionSummary.denominatorComplete}}">{{"未成功"}}</text>
-              <text wx:else>{{"已报告义务 / 范围"}}</text>
-            </view>
-            <view>
-              <text wx:if="{{job.conversionSummary.denominatorComplete}}">{{job.conversionSummary.failedCount}}</text>
-              <text wx:else>{{job.conversionSummary.reportedObligationCount}}</text>
-            </view>
+            <view>{{job.conversionSummary.denominatorComplete ? "未成功" : "已报告义务 / 范围"}}</view>
+            <view>{{job.conversionSummary.denominatorComplete
+                    ? job.conversionSummary.failedCount
+                    : job.conversionSummary.reportedObligationCount}}</view>
           </view>
           <view>
-            <view>
-              <text wx:if="{{job.conversionSummary.denominatorComplete}}">{{"精确比例"}}</text>
-              <text wx:else>{{"已报告 CALLABLE 义务验证率"}}</text>
-            </view>
-            <view>
-              <text wx:if="{{job.conversionSummary.denominatorComplete}}">{{job.conversionSummary.exactFraction}}</text>
-              <text wx:else>{{job.conversionSummary.denominator > 0
+            <view>{{job.conversionSummary.denominatorComplete ? "精确比例" : "已报告 CALLABLE 义务验证率"}}</view>
+            <view>{{job.conversionSummary.denominatorComplete
+                      ? job.conversionSummary.exactFraction
+                      : job.conversionSummary.denominator > 0
                         ? `${job.conversionSummary.exactFraction} = ${job.conversionSummary.displayPercent}（仅诊断）`
-                        : "N/A · 无已报告 CALLABLE 分母"}}</text>
-            </view>
+                        : "N/A · 无已报告 CALLABLE 分母"}}</view>
           </view>
           <view>
-            <view>
-              <text wx:if="{{job.conversionSummary.denominatorComplete}}">{{"基点"}}</text>
-              <text wx:else>{{"项目保守区间"}}</text>
-            </view>
-            <view>
-              <text wx:if="{{job.conversionSummary.denominatorComplete}}">{{`${job.conversionSummary.successRateBasisPoints} / 10000`}}</text>
-              <text wx:else>{{job.conversionSummary.projectSuccessRateDisplay}}</text>
-            </view>
+            <view>{{job.conversionSummary.denominatorComplete ? "基点" : "项目保守区间"}}</view>
+            <view>{{job.conversionSummary.denominatorComplete
+                    ? `${job.conversionSummary.successRateBasisPoints} / 10000`
+                    : job.conversionSummary.projectSuccessRateDisplay}}</view>
           </view>
         </view>
         <view wx:if="{{job.conversionSummary.failureSummaries.length > 0}}" class="translation-failure-list">
@@ -560,16 +470,9 @@
       </view>
       <StatusChip status="NOT_RUN" compact="true" />
     </view>
-    <view class="work-unit-summary">
-      <text>{{repositoryPlan.work_units.length}}</text>
-      <text>个工作单元来自 Snapshot</text>
-      <text>{{repositoryPlan.snapshot_sha256.slice(0, 12)}}</text>
-      <text>…，
-            忽略符号链接</text>
-      <text>{{repositoryPlan.ignored_symlink_count}}</text>
-      <text>个。每个单元都必须补齐函数名与独立行为语料后才能逐个执行，
-            当前全部保持 DISCOVERY_REQUIRED / NOT_RUN。</text>
-    </view>
+    <view class="work-unit-summary">{{repositoryPlan.work_units.length}} 个工作单元来自 Snapshot {{repositoryPlan.snapshot_sha256.slice(0, 12)}} …，
+            忽略符号链接 {{repositoryPlan.ignored_symlink_count}} 个。每个单元都必须补齐函数名与独立行为语料后才能逐个执行，
+            当前全部保持 DISCOVERY_REQUIRED / NOT_RUN。</view>
     <view class="discovery-import">
       <view>
         <text>发现报告</text>
@@ -577,10 +480,7 @@
       </view>
       <text class="{{`button button-secondary ${importing ? &quot;button-disabled&quot; : &quot;&quot;}`}}">
         <Icon name="file" size="{{15}}" />
-        <text>
-          <text wx:if="{{importing}}">{{"服务端校验中…"}}</text>
-          <text wx:else>{{"导入发现报告 JSON"}}</text>
-        </text>
+        <text>{{importing ? "服务端校验中…" : "导入发现报告 JSON"}}</text>
         <input type="file" accept="application/json,.json" disabled="{{importing}}" bindchange="onChange" />
       </text>
       <view wx:if="{{discovery}}">
@@ -612,21 +512,14 @@
       </view>
       <view wx:for="{{visibleWorkUnits}}" wx:for-item="unit" wx:key="unit.id" class="work-unit-row" role="row" key="{{unit.id}}">
         <text role="cell" title="{{unit.source_path}}">{{unit.source_path}}</text>
-        <text role="cell">
-          <text>{{unit.source_sha256.slice(0, 10)}}</text>
-          <text>…</text>
-        </text>
+        <text role="cell">{{unit.source_sha256.slice(0, 10)}} …</text>
         <text role="cell">{{unit.source_bytes}}</text>
-        <text role="cell">
-          <text wx:if="{{result}}">{{`${result.verdict} · ${result.execution_status}`}}</text>
-          <text wx:else>{{`${unit.status} · ${unit.execution_status}`}}</text>
-        </text>
-        <text role="cell" title="{{result?.rejected_candidates.map((entry) =&gt; `${entry.candidate}: ${entry.reason}`).join(&quot;\n&quot;)}}">
-          <text wx:if="{{result?.verdict === "READY"}}">{{`${result.function_name}(${result.parameter_count}) · ${result.analyzer ?? ""}`}}</text>
-          <text wx:else>{{result?.reason
+        <text role="cell">{{result ? `${result.verdict} · ${result.execution_status}` : `${unit.status} · ${unit.execution_status}`}}</text>
+        <text role="cell" title="{{result?.rejected_candidates.map((entry) =&gt; `${entry.candidate}: ${entry.reason}`).join(&quot;\n&quot;)}}">{{result?.verdict === "READY"
+                      ? `${result.function_name}(${result.parameter_count}) · ${result.analyzer ?? ""}`
+                      : result?.reason
                         ?? unit.unsupported_until_discovered.join("、")
                         ?? "待发现"}}</text>
-        </text>
       </view>
       <view wx:if="{{visibleWorkUnits.length === 0}}" class="work-unit-row" role="row">
         <text role="cell">没有匹配当前筛选的工作单元。</text>
@@ -634,14 +527,7 @@
     </view>
     <view class="work-unit-pager">
       <button type="button" class="button button-ghost" disabled="{{workUnitPage === 0}}" bindtap="onTap">上一页</button>
-      <text>
-        <text>{{filteredWorkUnits.length}}</text>
-        <text>个匹配 · 第</text>
-        <text>{{workUnitPage + 1}}</text>
-        <text>/</text>
-        <text>{{workUnitPageCount}}</text>
-        <text>页</text>
-      </text>
+      <text>{{filteredWorkUnits.length}} 个匹配 · 第 {{workUnitPage + 1}} / {{workUnitPageCount}} 页</text>
       <button type="button" class="button button-ghost" disabled="{{workUnitPage + 1 &gt;= workUnitPageCount}}" bindtap="onTap">下一页</button>
     </view>
   </view>

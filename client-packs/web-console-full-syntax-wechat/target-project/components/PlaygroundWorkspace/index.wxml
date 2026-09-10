@@ -12,8 +12,7 @@
       <view class="flex items-center gap-3">
         <button type="button" disabled="{{isProcessing}}" class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:opacity-50" bindtap="handleModernize">
           <Icon name="spark" class="{{`h-4 w-4 ${isProcessing ? &quot;animate-spin&quot; : &quot;&quot;}`}}" />
-          <text wx:if="{{isProcessing}}">{{"检查 Runner 绑定中..."}}</text>
-          <text wx:else>{{"检查真实执行条件"}}</text>
+          <text>{{isProcessing ? "检查 Runner 绑定中..." : "检查真实执行条件"}}</text>
         </button>
       </view>
     </view>
@@ -33,7 +32,7 @@
     <text>·</text>
     <text>{{executionMessage}}</text>
   </view>
-  <view wx:if="{{activeTab === "code"}}" class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+  <view wx:if="{{activeTab === 'code'}}" class="grid grid-cols-1 gap-6 lg:grid-cols-2">
     <view class="flex flex-col rounded-2xl border border-border bg-card p-5 shadow-xs">
       <view class="mb-3 flex items-center justify-between">
         <view class="flex items-center gap-2">
@@ -48,10 +47,7 @@
       </view>
       <textarea id="playground-source-code" aria-label="源代码输入" value="{{sourceCode}}" rows="{{16}}" class="w-full resize-y rounded-xl border border-border bg-muted/20 p-4 font-mono text-xs text-foreground focus:border-primary focus:outline-hidden" spellCheck="{{false}}" bindchange="onChange" />
       <view class="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-        <text>
-          <text>Lines:</text>
-          <text>{{sourceCode.split("\n").length}}</text>
-        </text>
+        <text>Lines: {{sourceCode.split("\n").length}}</text>
         <text>Parser: NOT_RUN</text>
       </view>
     </view>
@@ -75,7 +71,7 @@
       </view>
     </view>
   </view>
-  <view wx:if="{{activeTab === "ast"}}" class="rounded-2xl border border-border bg-card p-6 shadow-xs">
+  <view wx:if="{{activeTab === 'ast'}}" class="rounded-2xl border border-border bg-card p-6 shadow-xs">
     <view class="mb-4 flex items-center justify-between">
       <view class="text-base font-semibold text-foreground">多阶段语法语义拓扑与不变式传递链</view>
       <text class="text-xs text-muted-foreground">Graph: Acyclic Transformation DAG</text>
@@ -83,10 +79,7 @@
     <view class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       <view wx:for="{{astNodes}}" wx:for-item="node" wx:for-index="idx" wx:key="node.id" key="{{node.id}}" class="relative flex flex-col rounded-xl border border-border/80 bg-muted/20 p-4 transition hover:border-primary/50">
         <view class="flex items-center justify-between">
-          <text class="text-xs font-mono text-muted-foreground">
-            <text>Step 0</text>
-            <text>{{idx + 1}}</text>
-          </text>
+          <text class="text-xs font-mono text-muted-foreground">Step 0 {{idx + 1}}</text>
           <text class="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
             <Icon name="test" class="h-3 w-3" />
             <text>NOT_RUN</text>
@@ -97,7 +90,7 @@
       </view>
     </view>
   </view>
-  <view wx:if="{{activeTab === "lean4"}}" class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+  <view wx:if="{{activeTab === 'lean4'}}" class="grid grid-cols-1 gap-6 lg:grid-cols-2">
     <view class="rounded-2xl border border-border bg-card p-5 shadow-xs">
       <view class="mb-3 flex items-center justify-between">
         <text class="font-semibold text-foreground">Lean 4 形式化定理规格 (.lean)</text>
@@ -136,7 +129,7 @@ method {:verify true} Withdraw(balance: int, amount: int) returns (newBal: int, 
 }`}}</pre>
     </view>
   </view>
-  <view wx:if="{{activeTab === "pr_daemon"}}" class="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+  <view wx:if="{{activeTab === 'pr_daemon'}}" class="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
     <view class="flex items-center justify-between">
       <view>
         <view class="text-base font-semibold text-foreground">Git PR 自愈流程静态示例</view>

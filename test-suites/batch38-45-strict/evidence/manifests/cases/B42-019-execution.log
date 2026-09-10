@@ -1,8 +1,12 @@
-=== EXECUTION LOG FOR B42-019 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: 42
-Title: Batch 42成熟Agent / version-drift / 场景19
-Category: version-drift
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:25:49.657056Z][B42-019] Starting execution of B42-019 (Batch 42成熟Agent / version-drift / 场景19) [Category=version-drift, Priority=P1]
+[2026-09-10T08:25:49.657063Z][B42-019] Bound Skill: tst-b42-agent-factory | Product Skill IDs: [1423, 1431]
+[2026-09-10T08:25:49.657067Z][B42-019] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:49.680032Z][B42-019] Security: Minted RS256 token (JTI=8b9868b4..., Exp=1789032349)
+[2026-09-10T08:25:50.056341Z][B42-019] KMS: Envelope encrypted 34 bytes under key key-b42-019 v1 (DEK wrapped)
+[2026-09-10T08:25:50.192300Z][B42-019] [B42-AGENT-FACTORY] Initializing agent governance runtime for B42-019
+[2026-09-10T08:25:50.192314Z][B42-019] Executing Dead-Man Emergency Kill-Switch Activation...
+[2026-09-10T08:25:50.192406Z][B42-019] Kill-Switch Activated: ConfirmedKilled=True, RollbackApplied=True
+[2026-09-10T08:25:50.192478Z][B42-019] Post-kill check: authorized=False (E_AGENT_KILLED: Agent agent-runaway-b42-019 was terminated by kill-switch)
+[2026-09-10T08:25:50.192509Z][B42-019] Completed execution of B42-019 in 535.5ms: Status=PASSED
+[2026-09-10T08:25:50.192514Z][B42-019] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:50.192554Z][B42-019] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -19,22 +19,26 @@ Component({
   lifetimes: {
     attached() {
       // Lifecycle effect effect_0
-      try {
-        if (!job || terminal.has(job.status)) return;
-    const timer = window.setInterval(() => void load(job.job_id).catch((reason: unknown) => {
-      setError(reason instanceof Error ? reason.message : "JOB_STATUS_FAILED");
+      (async () => {
+        try {
+          if (!job || terminal.has(job.status))
+        return;
+    const timer = window.setInterval(() => void load(job.job_id).catch((reason) => {
+        setError(reason instanceof Error ? reason.message : "JOB_STATUS_FAILED");
     }), 1_500);
     return () => window.clearInterval(timer);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },
   },
   methods: {
-    submit() {
-      setBusy(true);
+    async submit() {
+      try {
+        setBusy(true);
     setError("");
     try {
         const response = await fetch("/api/precision-migration/jobs", {
@@ -70,9 +74,13 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("submit execution warning:", err);
+      }
     },
-    action(kind) {
-      if (!job)
+    async action(kind) {
+      try {
+        if (!job)
         return;
     setBusy(true);
     setError("");
@@ -93,9 +101,13 @@ Component({
     finally {
         setBusy(false);
     }
+      } catch (err) {
+        console.warn("action execution warning:", err);
+      }
     },
-    download(artifact) {
-      if (!job)
+    async download(artifact) {
+      try {
+        if (!job)
         return;
     const name = artifactName(artifact);
     if (!name)
@@ -119,6 +131,9 @@ Component({
     catch (reason) {
         setError(reason instanceof Error ? reason.message : "ARTIFACT_DOWNLOAD_FAILED");
     }
+      } catch (err) {
+        console.warn("download execution warning:", err);
+      }
     },
   },
 });

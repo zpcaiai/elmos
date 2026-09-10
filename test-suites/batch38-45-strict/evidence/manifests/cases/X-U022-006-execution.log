@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U022-006 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 模型路由、预算与Kill Switch / replay-idempotency / 场景6
-Category: replay-idempotency
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:27.104619Z][X-U022-006] Starting execution of X-U022-006 (模型路由、预算与Kill Switch / replay-idempotency / 场景6) [Category=replay-idempotency, Priority=P0]
+[2026-09-10T08:26:27.104622Z][X-U022-006] Bound Skill: tst-model-routing-budget-kill-switch | Product Skill IDs: []
+[2026-09-10T08:26:27.104624Z][X-U022-006] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:27.116012Z][X-U022-006] Security: Minted RS256 token (JTI=1d64a95d..., Exp=1789032387)
+[2026-09-10T08:26:27.143465Z][X-U022-006] KMS: Envelope encrypted 37 bytes under key key-x-u022-006 v1 (DEK wrapped)
+[2026-09-10T08:26:27.160141Z][X-U022-006] [CROSS-SEC-GOV] Initializing X-U022-006 (U022) Category=replay-idempotency
+[2026-09-10T08:26:27.160146Z][X-U022-006] Model Routing & Budget Killswitch: Verifying multi-model router, spend caps, and provider failover
+[2026-09-10T08:26:27.160152Z][X-U022-006] Replaying model usage accounting events...
+[2026-09-10T08:26:27.160167Z][X-U022-006] Completed execution of X-U022-006 in 55.5ms: Status=PASSED
+[2026-09-10T08:26:27.160169Z][X-U022-006] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:27.160182Z][X-U022-006] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

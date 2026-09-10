@@ -893,9 +893,11 @@ class ProceduralAstLowerer:
         when_str = f"WHEN ({t.when_condition}) " if t.when_condition else ""
         if t.or_replace:
             lines.append(f"DROP TRIGGER IF EXISTS {t.name} ON {t.table_name};")
-        lines.append(
-            f"CREATE TRIGGER {t.name} {t.timing} {events_str} ON {t.table_name} {row_str} {when_str}EXECUTE FUNCTION {func_name}();"
+        trigger_sql = (
+            f"CREATE TRIGGER {t.name} {t.timing} {events_str} ON {t.table_name} "
+            f"{row_str} {when_str}EXECUTE FUNCTION {func_name}();"
         )
+        lines.append(trigger_sql)
         return "\n".join(lines)
 
 
@@ -909,7 +911,7 @@ class ProceduralAstLowerer:
             exprs = ", ".join(s.select_expressions)
             vars_ = ", ".join(s.into_variables)
             where_ = f" WHERE {s.where_clause}" if s.where_clause else ""
-            return f"{sp}SELECT {exprs} INTO {vars_} FROM {s.from_clause}{where_};"
+            return f"{sp}SELECT {exprs} INTO {vars_} FROM {s.from_clause}{where_};"  # noqa: S608
         elif isinstance(s, IfStmt):
             lines: list[str] = []
             for i, b in enumerate(s.branches):
@@ -1069,7 +1071,7 @@ class ProceduralAstLowerer:
             exprs = ", ".join(s.select_expressions)
             vars_ = ", ".join(s.into_variables)
             where_ = f" WHERE {s.where_clause}" if s.where_clause else ""
-            return f"{sp}SELECT {exprs} INTO {vars_} FROM {s.from_clause}{where_};"
+            return f"{sp}SELECT {exprs} INTO {vars_} FROM {s.from_clause}{where_};"  # noqa: S608
         elif isinstance(s, IfStmt):
             lines: list[str] = []
             for i, b in enumerate(s.branches):
@@ -1220,9 +1222,9 @@ class ProceduralAstLowerer:
             return f"{sp}SET {target} = {s.expression};"
         elif isinstance(s, SelectIntoStmt):
             vars_ = ", ".join(v if v.startswith("@") else f"@{v}" for v in s.into_variables)
-            exprs = ", ".join(f"{v} = {e}" for v, e in zip(vars_.split(", "), s.select_expressions))
+            exprs = ", ".join(f"{v} = {e}" for v, e in zip(vars_.split(", "), s.select_expressions, strict=False))
             where_ = f" WHERE {s.where_clause}" if s.where_clause else ""
-            return f"{sp}SELECT {exprs} FROM {s.from_clause}{where_};"
+            return f"{sp}SELECT {exprs} FROM {s.from_clause}{where_};"  # noqa: S608
         elif isinstance(s, IfStmt):
             lines: list[str] = []
             for i, b in enumerate(s.branches):
@@ -1371,7 +1373,7 @@ class ProceduralAstLowerer:
             exprs = ", ".join(s.select_expressions)
             vars_ = ", ".join(f"`{v}`" for v in s.into_variables)
             where_ = f" WHERE {s.where_clause}" if s.where_clause else ""
-            return f"{sp}SELECT {exprs} INTO {vars_} FROM {s.from_clause}{where_};"
+            return f"{sp}SELECT {exprs} INTO {vars_} FROM {s.from_clause}{where_};"  # noqa: S608
         elif isinstance(s, IfStmt):
             lines: list[str] = []
             for i, b in enumerate(s.branches):
@@ -1450,15 +1452,60 @@ class ProceduralAstLowerer:
             return "VARCHAR(255)"
 
         mapping: dict[str, dict[Dialect, str]] = {
-            "INT": {Dialect.POSTGRES: "INTEGER", Dialect.ORACLE: "NUMBER(10)", Dialect.TSQL: "INT", Dialect.MYSQL: "INT"},
-            "INTEGER": {Dialect.POSTGRES: "INTEGER", Dialect.ORACLE: "NUMBER(10)", Dialect.TSQL: "INT", Dialect.MYSQL: "INT"},
-            "BIGINT": {Dialect.POSTGRES: "BIGINT", Dialect.ORACLE: "NUMBER(19)", Dialect.TSQL: "BIGINT", Dialect.MYSQL: "BIGINT"},
-            "VARCHAR": {Dialect.POSTGRES: "VARCHAR(255)", Dialect.ORACLE: "VARCHAR2(255)", Dialect.TSQL: "NVARCHAR(255)", Dialect.MYSQL: "VARCHAR(255)"},
-            "TEXT": {Dialect.POSTGRES: "TEXT", Dialect.ORACLE: "CLOB", Dialect.TSQL: "NVARCHAR(MAX)", Dialect.MYSQL: "LONGTEXT"},
-            "DECIMAL": {Dialect.POSTGRES: "NUMERIC", Dialect.ORACLE: "NUMBER", Dialect.TSQL: "DECIMAL", Dialect.MYSQL: "DECIMAL"},
-            "NUMBER": {Dialect.POSTGRES: "NUMERIC", Dialect.ORACLE: "NUMBER", Dialect.TSQL: "NUMERIC", Dialect.MYSQL: "DECIMAL"},
-            "BOOLEAN": {Dialect.POSTGRES: "BOOLEAN", Dialect.ORACLE: "NUMBER(1)", Dialect.TSQL: "BIT", Dialect.MYSQL: "TINYINT(1)"},
-            "TIMESTAMP": {Dialect.POSTGRES: "TIMESTAMP", Dialect.ORACLE: "TIMESTAMP", Dialect.TSQL: "DATETIME2", Dialect.MYSQL: "DATETIME"},
+            "INT": {
+                Dialect.POSTGRES: "INTEGER",
+                Dialect.ORACLE: "NUMBER(10)",
+                Dialect.TSQL: "INT",
+                Dialect.MYSQL: "INT",
+            },
+            "INTEGER": {
+                Dialect.POSTGRES: "INTEGER",
+                Dialect.ORACLE: "NUMBER(10)",
+                Dialect.TSQL: "INT",
+                Dialect.MYSQL: "INT",
+            },
+            "BIGINT": {
+                Dialect.POSTGRES: "BIGINT",
+                Dialect.ORACLE: "NUMBER(19)",
+                Dialect.TSQL: "BIGINT",
+                Dialect.MYSQL: "BIGINT",
+            },
+            "VARCHAR": {
+                Dialect.POSTGRES: "VARCHAR(255)",
+                Dialect.ORACLE: "VARCHAR2(255)",
+                Dialect.TSQL: "NVARCHAR(255)",
+                Dialect.MYSQL: "VARCHAR(255)",
+            },
+            "TEXT": {
+                Dialect.POSTGRES: "TEXT",
+                Dialect.ORACLE: "CLOB",
+                Dialect.TSQL: "NVARCHAR(MAX)",
+                Dialect.MYSQL: "LONGTEXT",
+            },
+            "DECIMAL": {
+                Dialect.POSTGRES: "NUMERIC",
+                Dialect.ORACLE: "NUMBER",
+                Dialect.TSQL: "DECIMAL",
+                Dialect.MYSQL: "DECIMAL",
+            },
+            "NUMBER": {
+                Dialect.POSTGRES: "NUMERIC",
+                Dialect.ORACLE: "NUMBER",
+                Dialect.TSQL: "NUMERIC",
+                Dialect.MYSQL: "DECIMAL",
+            },
+            "BOOLEAN": {
+                Dialect.POSTGRES: "BOOLEAN",
+                Dialect.ORACLE: "NUMBER(1)",
+                Dialect.TSQL: "BIT",
+                Dialect.MYSQL: "TINYINT(1)",
+            },
+            "TIMESTAMP": {
+                Dialect.POSTGRES: "TIMESTAMP",
+                Dialect.ORACLE: "TIMESTAMP",
+                Dialect.TSQL: "DATETIME2",
+                Dialect.MYSQL: "DATETIME",
+            },
         }
         for k, v in mapping.items():
             if t_up.startswith(k):

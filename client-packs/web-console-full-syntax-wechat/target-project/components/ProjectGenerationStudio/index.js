@@ -51,186 +51,233 @@ Component({
   lifetimes: {
     attached() {
       // Lifecycle effect effect_0
-      try {
-        if (!accountRunner || !account.principal) return;
+      (async () => {
+        try {
+          if (!accountRunner || !account.principal)
+        return;
     setTenantId(account.principal.organizationId);
     setReviewer(account.principal.actorId);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_1
-      try {
-        const controller = new AbortController();
+      (async () => {
+        try {
+          const controller = new AbortController();
     fetch("/api/capabilities/generation", { cache: "no-store", signal: controller.signal })
-      .then((response) => response.ok ? response.json() : Promise.reject(new Error("capability unavailable")))
-      .then((payload: GenerationCapabilityResponse) => {
+        .then((response) => response.ok ? response.json() : Promise.reject(new Error("capability unavailable")))
+        .then((payload) => {
         setCapability(payload);
         setCapabilityError("");
-      })
-      .catch((error: unknown) => {
+    })
+        .catch((error) => {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
-          setCapability(null);
-          setCapabilityError("无法读取项目生成能力契约；执行入口保持关闭，请检查 Web Console 服务端日志。");
+            setCapability(null);
+            setCapabilityError("无法读取项目生成能力契约；执行入口保持关闭，请检查 Web Console 服务端日志。");
         }
-      });
+    });
     return () => controller.abort();
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_2
-      try {
-        const fromRepository = new URLSearchParams(window.location.search)
-      .get("repositoryWorkspaceId")?.trim() ?? "";
-    if (repositoryWorkspaceIdPattern.test(fromRepository)) {
-      setRepositoryWorkspaceId(fromRepository);
-      setDescription("");
-      setFeedback("已接收代码仓库工作区；输入同一身份绑定的 Runner 令牌后即可导入快照。");
-    }
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
-      // Lifecycle effect effect_3
-      try {
-        const controller = new AbortController();
-    fetch("/api/health?probe=readiness", { cache: "no-store", signal: controller.signal })
-      .then(async (response) => {
-        const payload = await response.json() as { localRunner?: RunnerReadiness };
-        if (!payload.localRunner) throw new Error("runner readiness unavailable");
-        return payload.localRunner;
-      })
-      .then(setRunnerReadiness)
-      .catch((error: unknown) => {
-        if (!(error instanceof DOMException && error.name === "AbortError")) {
-          setRunnerReadiness({
-            status: "BLOCKED",
-            isolation: "NOT_CONFIGURED",
-            storage: "BLOCKED",
-            reason: "LOCAL_RUNNER_READINESS_UNAVAILABLE",
-          });
-        }
-      });
-    return () => controller.abort();
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
-      // Lifecycle effect effect_4
-      try {
+      (async () => {
         try {
-      const stored = JSON.parse(window.localStorage.getItem(DRAFT_STORAGE_KEY) ?? "[]") as unknown;
-      if (Array.isArray(stored)) {
-        setSavedDrafts(
-          stored
-            .filter(isStoredGenerationDraft)
-            .map((item) => ({
-              ...item,
-              persistence: item.persistence ?? "in-memory",
-              authMode: item.authMode ?? "none",
+          const fromRepository = new URLSearchParams(window.location.search)
+        .get("repositoryWorkspaceId")?.trim() ?? "";
+    if (repositoryWorkspaceIdPattern.test(fromRepository)) {
+        setRepositoryWorkspaceId(fromRepository);
+        setDescription("");
+        setFeedback("已接收代码仓库工作区；输入同一身份绑定的 Runner 令牌后即可导入快照。");
+    }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
+      // Lifecycle effect effect_3
+      (async () => {
+        try {
+          const controller = new AbortController();
+    fetch("/api/health?probe=readiness", { cache: "no-store", signal: controller.signal })
+        .then(async (response) => {
+        const payload = await response.json();
+        if (!payload.localRunner)
+            throw new Error("runner readiness unavailable");
+        return payload.localRunner;
+    })
+        .then(setRunnerReadiness)
+        .catch((error) => {
+        if (!(error instanceof DOMException && error.name === "AbortError")) {
+            setRunnerReadiness({
+                status: "BLOCKED",
+                isolation: "NOT_CONFIGURED",
+                storage: "BLOCKED",
+                reason: "LOCAL_RUNNER_READINESS_UNAVAILABLE",
+            });
+        }
+    });
+    return () => controller.abort();
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
+      // Lifecycle effect effect_4
+      (async () => {
+        try {
+          try {
+        const stored = JSON.parse(window.localStorage.getItem(DRAFT_STORAGE_KEY) ?? "[]");
+        if (Array.isArray(stored)) {
+            setSavedDrafts(stored
+                .filter(isStoredGenerationDraft)
+                .map((item) => ({
+                ...item,
+                persistence: item.persistence ?? "in-memory",
+                authMode: item.authMode ?? "none",
             }))
-            .slice(0, 50),
-        );
-      }
-    } catch {
-      try { window.localStorage.removeItem(DRAFT_STORAGE_KEY); } catch { /* Storage may be disabled by policy. */ }
-      setFeedback("本地草稿存储不可用；当前页面仍可准备一次性交接，但刷新后不会恢复。");
-    } finally {
-      setDraftsReady(true);
+                .slice(0, 50));
+        }
     }
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+    catch {
+        try {
+            window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+        }
+        catch { /* Storage may be disabled by policy. */ }
+        setFeedback("本地草稿存储不可用；当前页面仍可准备一次性交接，但刷新后不会恢复。");
+    }
+    finally {
+        setDraftsReady(true);
+    }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_5
-      try {
-        if (!draftsReady) return;
+      (async () => {
+        try {
+          if (!draftsReady)
+        return;
     try {
-      window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(savedDrafts));
-    } catch {
-      announce("浏览器未允许保存本地草稿；请在离开页面前复制已锁定的交接命令。");
+        window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(savedDrafts));
     }
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+    catch {
+        announce("浏览器未允许保存本地草稿；请在离开页面前复制已锁定的交接命令。");
+    }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_6
-      try {
-        if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+      (async () => {
+        try {
+          if (feedbackTimer.current !== null)
+    window.clearTimeout(feedbackTimer.current);
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_7
-      try {
-        if (!job?.artifactSha256) return;
+      (async () => {
+        try {
+          if (!job?.artifactSha256)
+        return;
     setGithubRepositoryName(draft?.name ?? name);
     setGithubToken("");
     setGithubConfirmed(false);
     setGithubIdempotencyKey(crypto.randomUUID());
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_8
-      try {
-        if (!job || !runnerCredentialReady) return;
+      (async () => {
+        try {
+          if (!job || !runnerCredentialReady)
+        return;
     const active = !["COMPLETED", "PARTIAL", "BLOCKED", "CANCELLED"].includes(job.status)
-      || ["STARTING", "RUNNING"].includes(job.runtime.status);
-    if (!active) return;
+        || ["STARTING", "RUNNING"].includes(job.runtime.status);
+    if (!active)
+        return;
     let cancelled = false;
-    let timer: number | undefined;
+    let timer;
     const controller = new AbortController();
     const poll = async () => {
-      const requestEpoch = jobRequestEpoch.current;
-      try {
-        const next = await runnerRequest<GenerationJob>(
-          `/api/generation/jobs/${job.id}`,
-          { signal: controller.signal },
-        );
-        if (!cancelled && jobRequestEpoch.current === requestEpoch) setJob(next);
-      } catch {
-        // Polling is best-effort; the next serialized attempt reconciles state.
-      } finally {
-        if (!cancelled) timer = window.setTimeout(() => void poll(), 1_200);
-      }
+        const requestEpoch = jobRequestEpoch.current;
+        try {
+            const next = await runnerRequest(`/api/generation/jobs/${job.id}`, { signal: controller.signal });
+            if (!cancelled && jobRequestEpoch.current === requestEpoch)
+                setJob(next);
+        }
+        catch {
+            // Polling is best-effort; the next serialized attempt reconciles state.
+        }
+        finally {
+            if (!cancelled)
+                timer = window.setTimeout(() => void poll(), 1_200);
+        }
     };
     timer = window.setTimeout(() => void poll(), 1_200);
     return () => {
-      cancelled = true;
-      controller.abort();
-      if (timer !== undefined) window.clearTimeout(timer);
+        cancelled = true;
+        controller.abort();
+        if (timer !== undefined)
+            window.clearTimeout(timer);
     };
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
       // Lifecycle effect effect_9
-      try {
-        if (job?.runtime.status !== "RUNNING") setRuntimePreviewPayload(null);
-      } catch (err) {
-        console.error("Effect execution error:", err);
-      }
+      (async () => {
+        try {
+          if (job?.runtime.status !== "RUNNING")
+    setRuntimePreviewPayload(null);
+        } catch (err) {
+          // Handled mount effect
+        }
+      })();
     },
     detached() {
     },
   },
   methods: {
     announce(message) {
-      if (feedbackTimer.current !== null)
+      try {
+        if (feedbackTimer.current !== null)
         window.clearTimeout(feedbackTimer.current);
     setFeedback(message);
     feedbackTimer.current = window.setTimeout(() => {
         setFeedback("");
         feedbackTimer.current = null;
     }, 4800);
+      } catch (err) {
+        console.warn("announce execution warning:", err);
+      }
     },
     invalidateDraft() {
-      setDraft(null);
+      try {
+        setDraft(null);
     setAnalysis(null);
     setApproved(false);
+      } catch (err) {
+        console.warn("invalidateDraft execution warning:", err);
+      }
     },
     updateDescription(value) {
-      setDescription(value);
+      try {
+        setDescription(value);
     if (sourceBundle && value !== sourceBundle.combinedText) {
         setSourceBundle(null);
     }
     invalidateDraft();
+      } catch (err) {
+        console.warn("updateDescription execution warning:", err);
+      }
     },
-    ingestSources() {
-      if (!runnerCredentialReady) {
+    async ingestSources() {
+      try {
+        if (!runnerCredentialReady) {
         announce("解析文件、能力模块或在线 HTML 前，请先登录具备生成权限的账户或输入本地短期令牌。");
         return;
     }
@@ -287,13 +334,21 @@ Component({
     finally {
         setSourceBusy(false);
     }
+      } catch (err) {
+        console.warn("ingestSources execution warning:", err);
+      }
     },
     productionCapable(id) {
-      // targets with PostgreSQL-backed integration evidence declare profiles.
+      try {
+        // targets with PostgreSQL-backed integration evidence declare profiles.
     return (availableTargets.find((profile) => profile.id === id)?.productionProfiles.length ?? 0) > 0;
+      } catch (err) {
+        console.warn("productionCapable execution warning:", err);
+      }
     },
     toggleTarget(id) {
-      if (persistence === "postgresql") {
+      try {
+        if (persistence === "postgresql") {
         if (!productionCapable(id)) {
             setTargetError("该目标尚未产出 PostgreSQL + JWT/OIDC 集成证据，生产配置保持阻断。");
             return;
@@ -308,9 +363,13 @@ Component({
     setTargets((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
     setTargetError("");
     invalidateDraft();
+      } catch (err) {
+        console.warn("toggleTarget execution warning:", err);
+      }
     },
     createDraft(event) {
-      event.preventDefault();
+      try {
+        event.preventDefault();
     if (targets.length === 0) {
         setTargetError("请至少选择一个目标技术栈。");
         return;
@@ -345,9 +404,13 @@ Component({
     setApproved(false);
     setSavedDrafts((current) => [nextDraft, ...current].slice(0, 50));
     announce(`“${nextDraft.name}”的五阶段生成交接已保存到此浏览器；仍未执行任何代码生成。`);
+      } catch (err) {
+        console.warn("createDraft execution warning:", err);
+      }
     },
     restoreDraft(saved) {
-      setName(saved.name);
+      try {
+        setName(saved.name);
     setNamespace(saved.namespace);
     setDescription(saved.description);
     setEntity(saved.entity);
@@ -372,9 +435,13 @@ Component({
     setAnalysis(null);
     setApproved(false);
     announce(`已恢复“${saved.name}”并重新锁定其受控命令。`);
+      } catch (err) {
+        console.warn("restoreDraft execution warning:", err);
+      }
     },
     removeDraft(id) {
-      const removed = savedDrafts.find((item) => item.id === id);
+      try {
+        const removed = savedDrafts.find((item) => item.id === id);
     setSavedDrafts((current) => current.filter((item) => item.id !== id));
     if (draft?.id === id) {
         setDraft(null);
@@ -383,9 +450,13 @@ Component({
     }
     if (removed)
         announce(`“${removed.name}”已从此浏览器删除。`);
+      } catch (err) {
+        console.warn("removeDraft execution warning:", err);
+      }
     },
-    copyText(value, successMessage) {
-      if (!draft) {
+    async copyText(value, successMessage) {
+      try {
+        if (!draft) {
         announce("请先提交并锁定当前计划预览，再复制受控命令。");
         return;
     }
@@ -396,9 +467,13 @@ Component({
     catch {
         announce("浏览器未允许访问剪贴板，请手动选择并复制命令。");
     }
+      } catch (err) {
+        console.warn("copyText execution warning:", err);
+      }
     },
-    runnerRequest(url, init, identityOverride) {
-      const isExistingJobRequest = Boolean(job && url.includes(`/jobs/${job.id}`));
+    async runnerRequest(url, init, identityOverride) {
+      try {
+        const isExistingJobRequest = Boolean(job && url.includes(`/jobs/${job.id}`));
     const actor = identityOverride?.actor
         ?? (isExistingJobRequest ? job.actor : draft?.reviewer ?? reviewer);
     const requestTenantId = identityOverride?.tenantId
@@ -420,9 +495,13 @@ Component({
     if (!response.ok)
         throw new Error(payload.reason ?? `HTTP_${response.status}`);
     return payload;
+      } catch (err) {
+        console.warn("runnerRequest execution warning:", err);
+      }
     },
-    recoverJob() {
-      const exactJobId = recoveryJobId.trim().toLowerCase();
+    async recoverJob() {
+      try {
+        const exactJobId = recoveryJobId.trim().toLowerCase();
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(exactJobId)) {
         announce("请输入完整、有效的任务 UUID。");
         return;
@@ -445,9 +524,13 @@ Component({
     finally {
         setRunnerBusy(false);
     }
+      } catch (err) {
+        console.warn("recoverJob execution warning:", err);
+      }
     },
-    analyzeDraft() {
-      if (!draft) {
+    async analyzeDraft() {
+      try {
+        if (!draft) {
         announce("请先锁定当前项目意图。");
         return;
     }
@@ -486,9 +569,13 @@ Component({
     finally {
         setRunnerBusy(false);
     }
+      } catch (err) {
+        console.warn("analyzeDraft execution warning:", err);
+      }
     },
-    executeJob() {
-      if (!draft || !analysis || analysis.request.open_questions.length > 0 || !approved) {
+    async executeJob() {
+      try {
+        if (!draft || !analysis || analysis.request.open_questions.length > 0 || !approved) {
         announce("请先完成需求分析、处理开放问题并批准当前锁定计划。");
         return;
     }
@@ -532,9 +619,13 @@ Component({
     finally {
         setRunnerBusy(false);
     }
+      } catch (err) {
+        console.warn("executeJob execution warning:", err);
+      }
     },
-    postJobAction(action) {
-      if (!job)
+    async postJobAction(action) {
+      try {
+        if (!job)
         return;
     if (!runnerCredentialReady) {
         announce("任务操作需要企业账户会话或本地短期 Runner 令牌。");
@@ -562,9 +653,13 @@ Component({
         jobRequestEpoch.current += 1;
         setRunnerBusy(false);
     }
+      } catch (err) {
+        console.warn("postJobAction execution warning:", err);
+      }
     },
-    downloadArtifact() {
-      if (!job?.artifactReady || !job.artifactSize || !job.artifactSha256)
+    async downloadArtifact() {
+      try {
+        if (!job?.artifactReady || !job.artifactSize || !job.artifactSha256)
         return;
     if (!runnerCredentialReady) {
         announce("归档下载需要企业账户会话或本地短期 Runner 令牌。");
@@ -614,9 +709,13 @@ Component({
     catch (error) {
         announce(`归档下载失败：${error instanceof Error ? error.message : "UNKNOWN_ERROR"}`);
     }
+      } catch (err) {
+        console.warn("downloadArtifact execution warning:", err);
+      }
     },
-    openRuntimePreview() {
-      if (!job || job.runtime.status !== "RUNNING")
+    async openRuntimePreview() {
+      try {
+        if (!job || job.runtime.status !== "RUNNING")
         return;
     setRunnerBusy(true);
     try {
@@ -631,9 +730,13 @@ Component({
     finally {
         setRunnerBusy(false);
     }
+      } catch (err) {
+        console.warn("openRuntimePreview execution warning:", err);
+      }
     },
-    publishGitHub() {
-      if (!job?.artifactReady || !job.artifactSha256)
+    async publishGitHub() {
+      try {
+        if (!job?.artifactReady || !job.artifactSha256)
         return;
     if (accountRunner && !accountCanPublish) {
         announce("当前企业账户缺少 repository:push 权限；未创建 GitHub 仓库。");
@@ -683,9 +786,13 @@ Component({
     finally {
         setGithubBusy(false);
     }
+      } catch (err) {
+        console.warn("publishGitHub execution warning:", err);
+      }
     },
     downloadIntent() {
-      if (!draft) {
+      try {
+        if (!draft) {
         announce("请先提交并锁定项目意图，再导出结构化 Intent。");
         return;
     }
@@ -714,6 +821,9 @@ Component({
     };
     triggerBrowserDownload(new Blob([JSON.stringify(intent, null, 2)], { type: "application/json" }), "project-intent.json");
     announce("project-intent.json 已导出；请在受控终端从 Analyze 阶段开始。");
+      } catch (err) {
+        console.warn("downloadIntent execution warning:", err);
+      }
     },
   },
 });

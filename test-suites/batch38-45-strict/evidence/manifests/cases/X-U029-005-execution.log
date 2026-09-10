@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U029-005 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: Evidence重放与认证防伪 / security / 场景5
-Category: security
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:34.184901Z][X-U029-005] Starting execution of X-U029-005 (Evidence重放与认证防伪 / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:26:34.184903Z][X-U029-005] Bound Skill: tst-evidence-replay-certification-anti-forgery | Product Skill IDs: []
+[2026-09-10T08:26:34.184907Z][X-U029-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:34.195449Z][X-U029-005] Security: Minted RS256 token (JTI=c67667d8..., Exp=1789032394)
+[2026-09-10T08:26:34.220544Z][X-U029-005] KMS: Envelope encrypted 37 bytes under key key-x-u029-005 v1 (DEK wrapped)
+[2026-09-10T08:26:34.235924Z][X-U029-005] [CROSS-DELIVERY] Initializing X-U029-005 (U029) Category=security
+[2026-09-10T08:26:34.235930Z][X-U029-005] Evidence Replay & Anti-Forgery: Validating counterexample replay, zero-tolerance counters, and cryptographic seals
+[2026-09-10T08:26:34.235935Z][X-U029-005] Verifying protection of private signing key in HSM / secure store...
+[2026-09-10T08:26:34.235953Z][X-U029-005] Completed execution of X-U029-005 in 51.1ms: Status=PASSED
+[2026-09-10T08:26:34.235955Z][X-U029-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:34.235967Z][X-U029-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

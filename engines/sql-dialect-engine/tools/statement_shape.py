@@ -6,6 +6,7 @@ parsed statement object, and reports CREATE/DROP by their `kind` argument.
 """
 
 from __future__ import annotations
+
 import argparse
 import contextlib
 import io

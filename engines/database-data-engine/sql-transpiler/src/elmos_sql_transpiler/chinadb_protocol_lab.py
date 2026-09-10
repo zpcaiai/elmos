@@ -718,7 +718,7 @@ class ChinaDbProtocolLab:
             inst.server_socket = sock
             inst.is_running = True
 
-            def _serve(instance=inst, s=sock):
+            def _serve(instance: ChinaDbInstance = inst, s: socket.socket = sock) -> None:
                 handler = (
                     PostgresWireProtocolHandler(instance.db)
                     if instance.wire_protocol == "POSTGRES"

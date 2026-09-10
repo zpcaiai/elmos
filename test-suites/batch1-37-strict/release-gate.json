@@ -5,7 +5,7 @@
   "decision": "BLOCKED",
   "certification_requested": false,
   "field_evidence_status": "NOT_RUN",
-  "evaluated_at": "2026-09-04T00:53:52.276796Z",
+  "evaluated_at": "2026-09-10T08:25:23.253577Z",
   "control_digests": {
     "catalog": "sha256:1b73b935f8ef2c15c1e0c2fcf2416a45eb076bca910ac8ee1d8363907312d6e5",
     "coverage_matrix": "sha256:4a9d8d4893d6e5ae8f0807d359bf47f2113c262cfc267eb759f490e22f5e682b",
@@ -288,6 +288,7 @@
     "P0 B28-006 is not-run",
     "P1 B28-007 is not-run",
     "P0 B28-008 is not-run",
+    "B29-001: stale evidence",
     "P1 B29-002 is blocked",
     "P0 B29-003 is blocked",
     "P1 B29-004 is blocked",
@@ -449,6 +450,6 @@
     "P0 X52-008 is not-run",
     "passed results lack an externally trusted signed certification request"
   ],
-  "evidence_digest": "sha256:9e93767f0dae8e8e0d4eba757d86dc0226d8e1e11cf62beb1a61968fe5fd622d",
+  "evidence_digest": "sha256:81c1879f0af4dd69894f74ba614ced6d49be3e3e278ddd3e21ed02e33dbb0fe9",
   "gate_code_digest": "sha256:b96a403dbbbe9cf6e5457428500718830ed4202c125dd23fa257d1f273dd51c2"
 }

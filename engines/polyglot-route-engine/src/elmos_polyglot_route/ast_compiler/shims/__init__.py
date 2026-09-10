@@ -42,6 +42,10 @@ class ShimRegistry:
         return math_abs(target_lang, expr)
 
 
+from .ui_shim import UIShimRegistry
+from .system_shim import SystemShimRegistry
+
+
 __all__ = [
     "get_collection_type",
     "string_length",
@@ -51,4 +55,7 @@ __all__ = [
     "log_info",
     "now_iso",
     "ShimRegistry",
+    "UIShimRegistry",
+    "SystemShimRegistry",
 ]
+

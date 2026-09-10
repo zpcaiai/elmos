@@ -4,11 +4,7 @@ Component({
     styleIsolation: "apply-shared",
   },
   properties: {
-    events: {
-      type: null,
-      value: null,
-    },
-    empty: {
+    label: {
       type: null,
       value: null,
     },

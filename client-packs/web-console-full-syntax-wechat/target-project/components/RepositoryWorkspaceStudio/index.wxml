@@ -14,11 +14,11 @@
     </view>
   </view>
   <form class="{{styles.connect}}" bindsubmit="createWorkspace">
-    <text wx:if="{{account.status !== "authenticated"}}" class="{{styles.tokenField}}">
+    <text wx:if="{{account.status !== 'authenticated'}}" class="{{styles.tokenField}}">
       <text>开发访问令牌</text>
       <input type="password" autoComplete="off" value="{{accessToken}}" placeholder="仅保存在当前页面内存中" required="true" minLength="{{24}}" bindchange="onChange" />
     </text>
-    <view wx:if="{{account.status === "authenticated"}}" class="{{styles.accountIdentity}}">
+    <view wx:if="{{account.status === 'authenticated'}}" class="{{styles.accountIdentity}}">
       <text>当前企业身份</text>
       <text>{{account.principal?.displayName}}</text>
       <text>{{account.principal?.organizationId}}</text>
@@ -64,12 +64,7 @@
       <view>
         <text>当前 HEAD</text>
         <text>{{workspace.currentHeadCommit.slice(0, 12)}}</text>
-        <text>
-          <text>来源</text>
-          <text>{{workspace.sourceCommit.slice(0, 12)}}</text>
-          <text>·</text>
-          <text>{{workspace.requestedRef}}</text>
-        </text>
+        <text>来源 {{workspace.sourceCommit.slice(0, 12)}} · {{workspace.requestedRef}}</text>
       </view>
       <view>
         <text>文件总数</text>
@@ -78,29 +73,19 @@
       </view>
       <view>
         <text>完整性</text>
-        <text>
-          <text wx:if="{{workspace.completeness === "COMPLETE"}}">{{"完整"}}</text>
-          <text wx:else>{{"只读"}}</text>
-        </text>
+        <text>{{workspace.completeness === "COMPLETE" ? "完整" : "只读"}}</text>
         <text>{{workspace.blockers.join(" · ") || "无阻断项"}}</text>
       </view>
       <view>
         <text>交付状态</text>
         <text>{{workspace.status}}</text>
-        <text>
-          <text wx:if="{{workspace.pullRequestId}}">{{`PR ${workspace.pullRequestId}`}}</text>
-          <text wx:else>{{workspace.pushedCommit ? "远端分支已校验" : "远端未变更"}}</text>
-        </text>
+        <text>{{workspace.pullRequestId ? `PR ${workspace.pullRequestId}` : workspace.pushedCommit ? "远端分支已校验" : "远端未变更"}}</text>
       </view>
     </view>
     <view class="{{styles.toolbar}}">
       <view>
         <text>{{workspace.nativeRepositoryId}}</text>
-        <text>
-          <text>{{workspace.workspaceId}}</text>
-          <text>·</text>
-          <text>{{workspace.branch}}</text>
-        </text>
+        <text>{{workspace.workspaceId}} · {{workspace.branch}}</text>
       </view>
       <text>
         <text>新文件路径</text>
@@ -126,26 +111,15 @@
       <view class="{{styles.filePanel}}">
         <view>
           <view>仓库文件</view>
-          <text>
-            <text>{{files.length}}</text>
-            <text>项</text>
-          </text>
+          <text>{{files.length}} 项</text>
         </view>
         <view class="{{styles.fileList}}">
           <button wx:for="{{files}}" wx:for-item="file" wx:key="file.id" type="button" key="{{file.path}}" class="{{selected?.path === file.path ? styles.activeFile : &quot;&quot;}}" disabled="{{busy || !file.readable}}" bindtap="onTap">
             <text>
               <text>{{file.path}}</text>
-              <text>
-                <text>{{categoryLabels[file.category]}}</text>
-                <text>·</text>
-                <text>{{file.bytes}}</text>
-                <text>B</text>
-              </text>
+              <text>{{categoryLabels[file.category]}} · {{file.bytes}} B</text>
             </text>
-            <text>
-              <text wx:if="{{!file.readable}}">{{"受保护"}}</text>
-              <text wx:else>{{file.writable ? "可修改" : "只读"}}</text>
-            </text>
+            <text>{{!file.readable ? "受保护" : file.writable ? "可修改" : "只读"}}</text>
           </button>
         </view>
       </view>
@@ -154,11 +128,7 @@
           <view>
             <view>
               <view>{{selected.path}}</view>
-              <text>
-                <text>UTF-8 ·</text>
-                <text>{{selected.sha256.slice(0, 16)}}</text>
-                <text>…</text>
-              </text>
+              <text>UTF-8 · {{selected.sha256.slice(0, 16)}} …</text>
             </view>
             <text>{{categoryLabels[selected.category]}}</text>
           </view>
@@ -205,10 +175,9 @@
             <text>提交说明</text>
             <input value="{{commitMessage}}" maxLength="{{4000}}" bindchange="onChange" />
           </text>
-          <text>
-            <text wx:if="{{workspace.pendingPaths.length > 0}}">{{`${workspace.pendingPaths.length} 个待提交路径：${workspace.pendingPaths.join("、")}`}}</text>
-            <text wx:else>{{"没有待提交文件。"}}</text>
-          </text>
+          <text>{{workspace.pendingPaths.length > 0
+                ? `${workspace.pendingPaths.length} 个待提交路径：${workspace.pendingPaths.join("、")}`
+                : "没有待提交文件。"}}</text>
           <button class="{{styles.primary}}" type="button" data-operation-id="repository.commit" disabled="{{busy || workspace.pendingPaths.length === 0 || commitMessage.trim().length === 0}}" bindtap="commitWorkspace">提交已批准路径</button>
         </view>
         <view>
@@ -217,11 +186,7 @@
             <text>短期凭据引用</text>
             <input value="{{deliveryCredentialRef}}" placeholder="最长 1 小时的服务端 Lease" bindchange="onChange" />
           </text>
-          <text>
-            <text>仅推送</text>
-            <text>{{workspace.branch}}</text>
-            <text>；禁止 force push，并回读远端 SHA。</text>
-          </text>
+          <text>仅推送 {{workspace.branch}} ；禁止 force push，并回读远端 SHA。</text>
           <button class="{{styles.primary}}" type="button" data-operation-id="repository.push" disabled="{{busy || workspace.pendingPaths.length &gt; 0
                   || workspace.currentHeadCommit === workspace.sourceCommit
                   || workspace.pushedCommit === workspace.currentHeadCommit}}" bindtap="pushWorkspace">推送并校验远端</button>

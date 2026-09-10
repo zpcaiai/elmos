@@ -65,16 +65,20 @@ class ChinaDbCdcEngine:
 
         elif event.op_type == CdcOpType.UPDATE and event.after_state:
             set_clauses = [f"{k} = {self._sql_format_val(v)}" for k, v in event.after_state.items()]
-            where_clause = self._build_where_pk(event.before_state or event.after_state)
-            sql = f"UPDATE {table} SET {', '.join(set_clauses)} WHERE {where_clause};"
-            self.orchestrator.execute_query(target_id, sql)
-            return True
+            update_state = event.before_state or event.after_state
+            if update_state:
+                where_clause = self._build_where_pk(update_state)
+                sql = f"UPDATE {table} SET {', '.join(set_clauses)} WHERE {where_clause};"
+                self.orchestrator.execute_query(target_id, sql)
+                return True
 
-        elif event.op_type == CdcOpType.DELETE and (event.before_state or event.after_state):
-            where_clause = self._build_where_pk(event.before_state or event.after_state)
-            sql = f"DELETE FROM {table} WHERE {where_clause};"
-            self.orchestrator.execute_query(target_id, sql)
-            return True
+        elif event.op_type == CdcOpType.DELETE:
+            delete_state = event.before_state or event.after_state
+            if delete_state:
+                where_clause = self._build_where_pk(delete_state)
+                sql = f"DELETE FROM {table} WHERE {where_clause};"
+                self.orchestrator.execute_query(target_id, sql)
+                return True
 
         return False
 
@@ -149,7 +153,7 @@ class ChinaDbCdcEngine:
         )
 
     def _hash_row(self, row: dict[str, Any]) -> str:
-        norm = {}
+        norm: dict[str, Any] = {}
         for k, v in row.items():
             if v is not None:
                 try:

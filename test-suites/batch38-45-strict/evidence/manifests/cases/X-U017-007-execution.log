@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U017-007 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 备份恢复与数据完整性 / version-drift / 场景7
-Category: version-drift
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:19.984268Z][X-U017-007] Starting execution of X-U017-007 (备份恢复与数据完整性 / version-drift / 场景7) [Category=version-drift, Priority=P1]
+[2026-09-10T08:26:19.984380Z][X-U017-007] Bound Skill: tst-backup-restore-data-integrity | Product Skill IDs: []
+[2026-09-10T08:26:19.984384Z][X-U017-007] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:19.995326Z][X-U017-007] Security: Minted RS256 token (JTI=510607a0..., Exp=1789032379)
+[2026-09-10T08:26:20.024879Z][X-U017-007] KMS: Envelope encrypted 37 bytes under key key-x-u017-007 v1 (DEK wrapped)
+[2026-09-10T08:26:20.048837Z][X-U017-007] [CROSS-RESILIENCE] Starting X-U017-007 (U017) Category=version-drift
+[2026-09-10T08:26:20.048847Z][X-U017-007] Backup & Restore Data Integrity: Validating Merkle tree dataset reconciliation and PITR
+[2026-09-10T08:26:20.048851Z][X-U017-007] Restoring backup created with PostgreSQL 15 into PostgreSQL 16...
+[2026-09-10T08:26:20.048871Z][X-U017-007] Completed execution of X-U017-007 in 64.6ms: Status=PASSED
+[2026-09-10T08:26:20.048874Z][X-U017-007] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:20.048887Z][X-U017-007] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

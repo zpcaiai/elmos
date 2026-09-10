@@ -1,15 +1,15 @@
-[2026-09-10T08:18:24.077547Z][B38-012] Starting execution of B38-012 (Batch 38部署与升级 / governance / 场景12) [Category=governance, Priority=P2]
-[2026-09-10T08:18:24.077556Z][B38-012] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1328, 1336]
-[2026-09-10T08:18:24.077559Z][B38-012] Provisioning isolated multi-region simulation environment and security services...
-[2026-09-10T08:18:24.117294Z][B38-012] Security: Minted RS256 token (JTI=4432ad8b..., Exp=1789031904)
-[2026-09-10T08:18:24.154173Z][B38-012] KMS: Envelope encrypted 34 bytes under key key-b38-012 v1 (DEK wrapped)
-[2026-09-10T08:18:24.173772Z][B38-012] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-012
-[2026-09-10T08:18:24.173778Z][B38-012] Executing Canary Rolling Upgrade with Progressive Traffic Steering...
-[2026-09-10T08:18:24.173780Z][B38-012] Wave 1 (5% traffic): Deploying v2.1.0 to canary pods in zone us-east-1a
-[2026-09-10T08:18:24.173782Z][B38-012] Telemetry Observation: Monitoring P99 latency and error rates for 30s
-[2026-09-10T08:18:24.173783Z][B38-012] Canary Health: Error rate 0.000%, P95=28.4ms, P99=41.2ms
-[2026-09-10T08:18:24.173785Z][B38-012] Wave 2 (25% traffic): Expanding rollout to us-east-1b and eu-west-1a
-[2026-09-10T08:18:24.173787Z][B38-012] Wave 3 (100% traffic): Full promotion completed across all availability zones
-[2026-09-10T08:18:24.173802Z][B38-012] Completed execution of B38-012 in 96.3ms: Status=PASSED
-[2026-09-10T08:18:24.173804Z][B38-012] Assertion Summary: 3/3 assertions passed
-[2026-09-10T08:18:24.173813Z][B38-012] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}
+[2026-09-10T08:25:38.532207Z][B38-012] Starting execution of B38-012 (Batch 38部署与升级 / governance / 场景12) [Category=governance, Priority=P2]
+[2026-09-10T08:25:38.532210Z][B38-012] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1328, 1336]
+[2026-09-10T08:25:38.532211Z][B38-012] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:38.540908Z][B38-012] Security: Minted RS256 token (JTI=d717bb52..., Exp=1789032338)
+[2026-09-10T08:25:38.564356Z][B38-012] KMS: Envelope encrypted 34 bytes under key key-b38-012 v1 (DEK wrapped)
+[2026-09-10T08:25:38.578703Z][B38-012] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-012
+[2026-09-10T08:25:38.578708Z][B38-012] Executing Canary Rolling Upgrade with Progressive Traffic Steering...
+[2026-09-10T08:25:38.578709Z][B38-012] Wave 1 (5% traffic): Deploying v2.1.0 to canary pods in zone us-east-1a
+[2026-09-10T08:25:38.578711Z][B38-012] Telemetry Observation: Monitoring P99 latency and error rates for 30s
+[2026-09-10T08:25:38.578712Z][B38-012] Canary Health: Error rate 0.000%, P95=28.4ms, P99=41.2ms
+[2026-09-10T08:25:38.578714Z][B38-012] Wave 2 (25% traffic): Expanding rollout to us-east-1b and eu-west-1a
+[2026-09-10T08:25:38.578716Z][B38-012] Wave 3 (100% traffic): Full promotion completed across all availability zones
+[2026-09-10T08:25:38.578730Z][B38-012] Completed execution of B38-012 in 46.5ms: Status=PASSED
+[2026-09-10T08:25:38.578732Z][B38-012] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:38.578743Z][B38-012] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

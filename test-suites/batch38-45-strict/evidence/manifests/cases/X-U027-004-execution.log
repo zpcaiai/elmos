@@ -1,8 +1,12 @@
-=== EXECUTION LOG FOR X-U027-004 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 隐私、驻留、保留与删除 / dependency-failure / 场景4
-Category: dependency-failure
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:31.932420Z][X-U027-004] Starting execution of X-U027-004 (隐私、驻留、保留与删除 / dependency-failure / 场景4) [Category=dependency-failure, Priority=P2]
+[2026-09-10T08:26:31.932423Z][X-U027-004] Bound Skill: tst-privacy-residency-retention-deletion | Product Skill IDs: []
+[2026-09-10T08:26:31.932426Z][X-U027-004] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:31.943554Z][X-U027-004] Security: Minted RS256 token (JTI=e9e887ab..., Exp=1789032391)
+[2026-09-10T08:26:31.973980Z][X-U027-004] KMS: Envelope encrypted 37 bytes under key key-x-u027-004 v1 (DEK wrapped)
+[2026-09-10T08:26:31.994350Z][X-U027-004] [CROSS-DELIVERY] Initializing X-U027-004 (U027) Category=dependency-failure
+[2026-09-10T08:26:31.994357Z][X-U027-004] Privacy, Data Residency & Erasure: Enforcing GDPR Right-to-be-Forgotten and data boundaries
+[2026-09-10T08:26:31.994363Z][X-U027-004] Simulating KMS unavailability during deletion request...
+[2026-09-10T08:26:31.994364Z][X-U027-004] Resilience: Deletion tombstone written locally; cryptographic deletion completed on recovery
+[2026-09-10T08:26:31.994382Z][X-U027-004] Completed execution of X-U027-004 in 62.0ms: Status=PASSED
+[2026-09-10T08:26:31.994385Z][X-U027-004] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:31.994399Z][X-U027-004] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

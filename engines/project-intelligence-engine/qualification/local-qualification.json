@@ -202,10 +202,10 @@
       "sha256": "sha256:97ab25153f0ba9e046f151fd57b29c3347c09371ee53abb3f364a668373f36a9"
     },
     {
-      "bytes": 8543,
+      "bytes": 8529,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/threat_model_engine.py",
-      "sha256": "sha256:1358dfbbcde2238f8424d92427f787df75ad352d73910c97a0fcc3a024eb831a"
+      "sha256": "sha256:8fee5a40ce40528eb320906c0d2cffcff5e9517001e8f55d9a0ff2377274b7e7"
     },
     {
       "bytes": 2326,
@@ -304,7 +304,7 @@
       "sha256": "sha256:aed6f14d43e0bfcb00874300f598dd0bee3767acc8fcd5fcfc60d2b74fb66217"
     }
   ],
-  "engine_tree_sha256": "sha256:de0d4e260951bf163fefaac8f32e3efb2955a172174e9780bee3e3fd03cacf4f",
+  "engine_tree_sha256": "sha256:1b7fafb30d66173efee1eac00ae469c44f16c5895d316fcd37d175049662d6bc",
   "executor": "repository-local-self-attested",
   "external_evidence": "NOT_RUN",
   "fixture_path": "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -315,7 +315,7 @@
   "qualification_status": "PASSED",
   "qualifier_path": "tooling/qualify_project_intelligence_runtime.py",
   "qualifier_sha256": "sha256:eaa5c2daa613d48b8a5a213418a6ef8f0843fc27c0d3f9231f3724fec8c2591c",
-  "receipt_digest": "sha256:a530ae827aa085abe8326cca5cd548e61b71b04564ef3d4d596f430579a697d8",
+  "receipt_digest": "sha256:88c64b8031498adeefa7fbc29b9d8584da774287c5eb88a348728e41ab31fe9b",
   "replay_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 tooling/qualify_project_intelligence_runtime.py --check",
   "results": [
     {

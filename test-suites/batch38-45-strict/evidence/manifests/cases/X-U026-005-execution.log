@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U026-005 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 跨Batch成熟产品集成 / security / 场景5
-Category: security
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:30.885125Z][X-U026-005] Starting execution of X-U026-005 (跨Batch成熟产品集成 / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:26:30.885130Z][X-U026-005] Bound Skill: tst-cross-batch-maturity-integration | Product Skill IDs: []
+[2026-09-10T08:26:30.885133Z][X-U026-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:30.898166Z][X-U026-005] Security: Minted RS256 token (JTI=4372e38c..., Exp=1789032390)
+[2026-09-10T08:26:30.933790Z][X-U026-005] KMS: Envelope encrypted 37 bytes under key key-x-u026-005 v1 (DEK wrapped)
+[2026-09-10T08:26:30.961146Z][X-U026-005] [CROSS-DELIVERY] Initializing X-U026-005 (U026) Category=security
+[2026-09-10T08:26:30.961154Z][X-U026-005] Cross-Batch Maturity Integration: End-to-end pipeline execution across Batches 38 through 45
+[2026-09-10T08:26:30.961162Z][X-U026-005] Verifying scoped capability leases as request travels between batches...
+[2026-09-10T08:26:30.961181Z][X-U026-005] Completed execution of X-U026-005 in 76.1ms: Status=PASSED
+[2026-09-10T08:26:30.961184Z][X-U026-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:30.961198Z][X-U026-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

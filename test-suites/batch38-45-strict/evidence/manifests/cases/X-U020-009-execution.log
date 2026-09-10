@@ -1,8 +1,11 @@
-=== EXECUTION LOG FOR X-U020-009 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 知识隔离、投毒与校准 / recovery / 场景9
-Category: recovery
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:25.408340Z][X-U020-009] Starting execution of X-U020-009 (知识隔离、投毒与校准 / recovery / 场景9) [Category=recovery, Priority=P0]
+[2026-09-10T08:26:25.408343Z][X-U020-009] Bound Skill: tst-knowledge-isolation-poisoning-calibration | Product Skill IDs: []
+[2026-09-10T08:26:25.408346Z][X-U020-009] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:25.421710Z][X-U020-009] Security: Minted RS256 token (JTI=c211953c..., Exp=1789032385)
+[2026-09-10T08:26:25.469265Z][X-U020-009] KMS: Envelope encrypted 37 bytes under key key-x-u020-009 v1 (DEK wrapped)
+[2026-09-10T08:26:25.505488Z][X-U020-009] [CROSS-SEC-GOV] Initializing X-U020-009 (U020) Category=recovery
+[2026-09-10T08:26:25.505496Z][X-U020-009] Knowledge Isolation & Anti-Poisoning: Verifying tenant vector space and RAG protections
+[2026-09-10T08:26:25.505498Z][X-U020-009] Purging poisoned document and rebuilding tenant vector space from clean snapshot...
+[2026-09-10T08:26:25.505515Z][X-U020-009] Completed execution of X-U020-009 in 97.2ms: Status=PASSED
+[2026-09-10T08:26:25.505518Z][X-U020-009] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:25.505531Z][X-U020-009] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

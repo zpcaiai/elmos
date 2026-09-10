@@ -118,17 +118,12 @@
       </view>
       <view class="namespace-footer">
         <text>当前命名空间</text>
-        <text>
-          <text wx:if="{{namespace === "foundry"}}">{{"Knowledge-Skill-Model Foundry v3.0.0 (41 Packs)"}}</text>
-          <text wx:else>{{namespace === "polyglot" ? "Polyglot Semantic Compiler (18 Batches)"
+        <text>{{namespace === "foundry" ? "Knowledge-Skill-Model Foundry v3.0.0 (41 Packs)"
+                : namespace === "polyglot" ? "Polyglot Semantic Compiler (18 Batches)"
                 : namespace === "migration" ? "Migration M1–M45"
                 : namespace === "precision" ? "Precision Migration B01–B44"
                 : "Product Commercialization B34–B55"}}</text>
-        </text>
-        <text>
-          <text>{{total.toLocaleString("en-US")}}</text>
-          <text>Skills</text>
-        </text>
+        <text>{{total.toLocaleString("en-US")}} Skills</text>
       </view>
     </view>
     <view class="surface-card strict-gate-card">

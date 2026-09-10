@@ -1,8 +1,12 @@
-=== EXECUTION LOG FOR X-U022-001 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: cross
-Title: 模型路由、预算与Kill Switch / success / 场景1
-Category: success
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:26:26.700167Z][X-U022-001] Starting execution of X-U022-001 (模型路由、预算与Kill Switch / success / 场景1) [Category=success, Priority=P0]
+[2026-09-10T08:26:26.700170Z][X-U022-001] Bound Skill: tst-model-routing-budget-kill-switch | Product Skill IDs: []
+[2026-09-10T08:26:26.700172Z][X-U022-001] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:26.717950Z][X-U022-001] Security: Minted RS256 token (JTI=a36f9ad7..., Exp=1789032386)
+[2026-09-10T08:26:26.753447Z][X-U022-001] KMS: Envelope encrypted 37 bytes under key key-x-u022-001 v1 (DEK wrapped)
+[2026-09-10T08:26:26.785197Z][X-U022-001] [CROSS-SEC-GOV] Initializing X-U022-001 (U022) Category=success
+[2026-09-10T08:26:26.785204Z][X-U022-001] Model Routing & Budget Killswitch: Verifying multi-model router, spend caps, and provider failover
+[2026-09-10T08:26:26.785208Z][X-U022-001] Setting monthly budget cap = $1,000.00 for tenant...
+[2026-09-10T08:26:26.785248Z][X-U022-001] Budget Check: OK: Spend $0.96 (0.1%) within budget (Spend=0.10%)
+[2026-09-10T08:26:26.785258Z][X-U022-001] Completed execution of X-U022-001 in 85.1ms: Status=PASSED
+[2026-09-10T08:26:26.785260Z][X-U022-001] Assertion Summary: 5/5 assertions passed
+[2026-09-10T08:26:26.785271Z][X-U022-001] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}
