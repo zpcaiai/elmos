@@ -18,8 +18,9 @@ cd "${REPO_ROOT}/engines/component-dialect-engine" && npm run build && npx jest 
 echo "[3/5] Validating web-console WeChat dual-track delivery pack (71/71 components)..."
 cd "${REPO_ROOT}/engines/component-dialect-engine" && npm run validate:web-console-wechat
 
-echo "[4/5] Verifying Enterprise Frontend Transpiler coverage (100% automated coverage)..."
+echo "[4/5] Verifying Enterprise Frontend Transpiler coverage & 90%+ real enterprise suite..."
 cd "${REPO_ROOT}" && uv run python -m unittest tests.batch32.test_enterprise_frontend_transpiler
+cd "${REPO_ROOT}" && uv run python -m unittest tests.batch32.test_enterprise_web_console_90plus
 
 echo "[5/5] Running client gate on web-console client pack & verifying certifier signature..."
 python3 "${REPO_ROOT}/scripts/batch32/run_client_gate.py" "${REPO_ROOT}/client-packs/web-console-next16-react19-wechat-v1"
