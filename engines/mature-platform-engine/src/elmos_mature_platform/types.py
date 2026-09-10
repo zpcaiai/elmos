@@ -2222,3 +2222,282 @@ class SchemaValidation:
     breaking_changes: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
     estimated_downtime_seconds: int = 0
+
+# ─── Design Partner Validation Models ─────────────────────────────────
+
+class PartnerEngagementStatus(str, Enum):
+    PROSPECT = "prospect"
+    ONBOARDING = "onboarding"
+    ACTIVE = "active"
+    FEEDBACK = "feedback"
+    GRADUATED = "graduated"
+    CHURNED = "churned"
+
+class ValidationOutcome(str, Enum):
+    PASSED = "passed"
+    FAILED = "failed"
+    PARTIAL = "partial"
+    DEFERRED = "deferred"
+
+@dataclass
+class DesignPartner:
+    partner_id: str
+    company_name: str
+    contact_name: str
+    industry: str
+    engagement_status: PartnerEngagementStatus = PartnerEngagementStatus.PROSPECT
+    use_case: str = ""
+    repository_url: str = ""
+    started_at: str = ""
+    nps_score: int = 0  # -100 to 100
+    features_requested: List[str] = field(default_factory=list)
+    features_validated: List[str] = field(default_factory=list)
+    blockers: List[str] = field(default_factory=list)
+
+@dataclass
+class ValidationScenario:
+    scenario_id: str
+    partner_id: str
+    feature: str
+    description: str
+    outcome: ValidationOutcome = ValidationOutcome.DEFERRED
+    feedback: str = ""
+    time_to_complete_hours: float = 0.0
+    validated_at: str = ""
+
+@dataclass
+class PartnerReport:
+    total_partners: int = 0
+    active_count: int = 0
+    graduated_count: int = 0
+    average_nps: float = 0.0
+    top_requested_features: List[Dict[str, int]] = field(default_factory=list)
+    validation_pass_rate: float = 0.0
+    blockers: List[str] = field(default_factory=list)
+
+# ─── Air-Gap Bundle Models ────────────────────────────────────────────
+
+class BundleStatus(str, Enum):
+    BUILDING = "building"
+    READY = "ready"
+    SIGNED = "signed"
+    DEPLOYED = "deployed"
+    EXPIRED = "expired"
+    REVOKED = "revoked"
+
+class BundleComponentType(str, Enum):
+    CONTAINER_IMAGE = "container_image"
+    HELM_CHART = "helm_chart"
+    CONFIG_MAP = "config_map"
+    DATABASE_MIGRATION = "database_migration"
+    BINARY = "binary"
+    CERTIFICATE = "certificate"
+    LICENSE = "license"
+
+@dataclass
+class BundleComponent:
+    component_id: str
+    component_type: BundleComponentType
+    name: str
+    version: str
+    size_bytes: int = 0
+    checksum_sha256: str = ""
+    signed: bool = False
+    signature: str = ""
+
+@dataclass
+class AirgapBundle:
+    bundle_id: str
+    target_version: str
+    target_edition: str
+    status: BundleStatus = BundleStatus.BUILDING
+    components: List[BundleComponent] = field(default_factory=list)
+    total_size_bytes: int = 0
+    created_at: str = ""
+    signed_at: str = ""
+    deployed_at: str = ""
+    manifest_digest: str = ""
+    signing_key_id: str = ""
+    expiry_date: str = ""
+    upgrade_from_version: str = ""
+
+@dataclass
+class BundleVerification:
+    bundle_id: str
+    all_components_present: bool = False
+    all_checksums_valid: bool = False
+    signature_valid: bool = False
+    not_expired: bool = False
+    overall_valid: bool = False
+    errors: List[str] = field(default_factory=list)
+
+
+# ─── Service Catalog SLO Models ───────────────────────────────────────
+
+class ServiceTier(str, Enum):
+    TIER_0 = "tier_0"  # Business critical
+    TIER_1 = "tier_1"  # Customer facing
+    TIER_2 = "tier_2"  # Internal
+    TIER_3 = "tier_3"  # Best effort
+
+class SliType(str, Enum):
+    AVAILABILITY = "availability"
+    LATENCY = "latency"
+    ERROR_RATE = "error_rate"
+    THROUGHPUT = "throughput"
+    SATURATION = "saturation"
+
+@dataclass
+class ServiceEntry:
+    service_id: str
+    name: str
+    tier: ServiceTier
+    owner_team: str
+    description: str = ""
+    repository: str = ""
+    dependencies: List[str] = field(default_factory=list)  # service_ids
+    oncall_schedule_id: str = ""
+    runbook_url: str = ""
+    created_at: str = ""
+
+@dataclass
+class SliDefinition:
+    sli_id: str
+    service_id: str
+    sli_type: SliType
+    measurement_query: str = ""  # how to measure
+    good_event_query: str = ""
+    total_event_query: str = ""
+
+@dataclass
+class SloTarget:
+    slo_id: str
+    sli_id: str
+    service_id: str
+    target_percentage: float  # 99.9, 99.95, etc.
+    window_days: int = 30
+    burn_rate_threshold: float = 1.0
+    alerting_enabled: bool = True
+
+@dataclass
+class SloMeasurement:
+    slo_id: str
+    good_events: int
+    total_events: int
+    measured_at: str
+    measured_percentage: float = 0.0
+    budget_remaining_pct: float = 100.0
+
+# ─── Residual Risk Register Models ────────────────────────────────────
+
+class RiskSeverity(str, Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    INFORMATIONAL = "informational"
+
+class RiskTreatment(str, Enum):
+    MITIGATE = "mitigate"
+    ACCEPT = "accept"
+    TRANSFER = "transfer"
+    AVOID = "avoid"
+
+class RiskStatus(str, Enum):
+    OPEN = "open"
+    MITIGATING = "mitigating"
+    ACCEPTED = "accepted"
+    CLOSED = "closed"
+    ESCALATED = "escalated"
+
+@dataclass
+class ResidualRiskEntry:
+    risk_id: str
+    title: str
+    description: str
+    category: str  # security, reliability, performance, compliance, data
+    severity: RiskSeverity
+    likelihood: float  # 0.0-1.0
+    impact_score: float  # 0.0-10.0
+    risk_score: float = 0.0  # likelihood * impact
+    treatment: RiskTreatment = RiskTreatment.MITIGATE
+    status: RiskStatus = RiskStatus.OPEN
+    owner: str = ""
+    mitigation_plan: str = ""
+    acceptance_justification: str = ""
+    accepted_by: str = ""
+    review_date: str = ""
+    created_at: str = ""
+    related_findings: List[str] = field(default_factory=list)
+
+@dataclass
+class RiskAssessment:
+    assessment_id: str
+    assessed_at: str
+    total_risks: int = 0
+    critical_count: int = 0
+    high_count: int = 0
+    accepted_count: int = 0
+    overall_risk_score: float = 0.0
+    release_recommended: bool = False
+    blockers: List[str] = field(default_factory=list)
+
+@dataclass
+class RiskWaiver:
+    waiver_id: str
+    risk_id: str
+    approved_by: str
+    reason: str
+    expires_at: str
+    conditions: List[str] = field(default_factory=list)
+
+# ─── On-Call Rotation Models ──────────────────────────────────────────
+
+class OncallShiftType(str, Enum):
+    PRIMARY = "primary"
+    SECONDARY = "secondary"
+    ESCALATION = "escalation"
+    SHADOW = "shadow"  # training
+
+@dataclass
+class OncallEngineer:
+    engineer_id: str
+    name: str
+    timezone: str  # e.g. "UTC+8", "UTC-5"
+    region: str
+    skills: List[str] = field(default_factory=list)
+    max_consecutive_shifts: int = 7
+    current_consecutive: int = 0
+    total_shifts: int = 0
+    available: bool = True
+
+@dataclass
+class OncallShift:
+    shift_id: str
+    engineer_id: str
+    shift_type: OncallShiftType
+    service_name: str
+    starts_at: str
+    ends_at: str
+    handoff_notes: str = ""
+    incidents_handled: int = 0
+    acknowledged: bool = False
+
+@dataclass
+class OncallSchedule:
+    schedule_id: str
+    service_name: str
+    rotation_period_hours: int = 12  # follow-the-sun
+    shifts: List[OncallShift] = field(default_factory=list)
+    regions: List[str] = field(default_factory=list)
+    created_at: str = ""
+
+@dataclass
+class OncallOverride:
+    override_id: str
+    original_engineer_id: str
+    replacement_engineer_id: str
+    service_name: str
+    starts_at: str
+    ends_at: str
+    reason: str = ""
