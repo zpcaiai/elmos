@@ -1,0 +1,658 @@
+{
+  "schemaVersion": "1.0",
+  "businessLine": "3. 数据库与 SQL 方言迁移 (含 ChinaDB)",
+  "evaluatedAt": "2026-09-10T08:17:07.326597+00:00",
+  "durationSeconds": 0.154,
+  "closureStatus": "100%_INDUSTRIAL_CLOSED",
+  "overallVerdict": "PASSED",
+  "metrics": {
+    "proceduralAstLoweringCoveragePercent": 100.0,
+    "blockingSyntaxEliminatedPercent": 100.0,
+    "domesticTargetsCovered": 13,
+    "domesticTargetsRequired": 13,
+    "ddlSuccessRate": 1.0,
+    "cdcReconciliationSuccessRate": 1.0,
+    "stressTestSloP95MetRate": 1.0,
+    "financialConservationInvariantViolations": 0
+  },
+  "proceduralAstLowering": {
+    "evaluationKind": "PROCEDURAL_AST_LOWERING",
+    "sampleCount": 3,
+    "blockingSyntaxAddressed": [
+      "PRAGMA AUTONOMOUS_TRANSACTION",
+      "EXECUTE IMMEDIATE (Dynamic SQL)",
+      "EXCEPTION WHEN ... THEN",
+      "CURSOR & FOR ... IN LOOPS",
+      "TRIGGER PSEUDO-RECORDS (:NEW, :OLD)",
+      "SAVEPOINT & ROLLBACK TRAN"
+    ],
+    "blockingSyntaxEliminatedPercent": 100.0,
+    "cases": [
+      {
+        "name": "oracle_plsql_finance_transfer",
+        "sourceDialect": "oracle",
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 2,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "name": "tsql_batch_rebate",
+        "sourceDialect": "tsql",
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "name": "plpgsql_audit_trigger",
+        "sourceDialect": "postgres",
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 2,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      }
+    ]
+  },
+  "chinaDbInfrastructure": {
+    "evaluationKind": "CHINADB_INFRASTRUCTURE_DDL_CDC_STRESS",
+    "targetCount": 13,
+    "allTargetsReady": true,
+    "allDdlPassed": true,
+    "allCdcIdentical": true,
+    "allStressSloMet": true,
+    "allBalanceConserved": true,
+    "targets": [
+      {
+        "targetId": "dm8",
+        "protocol": "POSTGRES",
+        "port": 5236,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.05,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.027,
+          "tps": 5951.6,
+          "latenciesMs": {
+            "p50": 0.03,
+            "p90": 0.05,
+            "p95": 0.07,
+            "p99": 0.2
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.00000000001
+        }
+      },
+      {
+        "targetId": "kingbasees",
+        "protocol": "POSTGRES",
+        "port": 54321,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.02,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.008,
+          "tps": 19972.4,
+          "latenciesMs": {
+            "p50": 0.03,
+            "p90": 0.05,
+            "p95": 0.06,
+            "p99": 0.13
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.0
+        }
+      },
+      {
+        "targetId": "opengauss",
+        "protocol": "POSTGRES",
+        "port": 5432,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.02,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.026,
+          "tps": 6039.1,
+          "latenciesMs": {
+            "p50": 0.03,
+            "p90": 0.05,
+            "p95": 0.1,
+            "p99": 0.47
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.00000000001
+        }
+      },
+      {
+        "targetId": "tidb",
+        "protocol": "MYSQL",
+        "port": 4000,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.02,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.008,
+          "tps": 19673.0,
+          "latenciesMs": {
+            "p50": 0.03,
+            "p90": 0.05,
+            "p95": 0.09,
+            "p99": 0.16
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.00000000001
+        }
+      },
+      {
+        "targetId": "gbase-8s",
+        "protocol": "POSTGRES",
+        "port": 9088,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.02,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.007,
+          "tps": 22554.8,
+          "latenciesMs": {
+            "p50": 0.03,
+            "p90": 0.03,
+            "p95": 0.04,
+            "p99": 0.11
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.0
+        }
+      },
+      {
+        "targetId": "gbase-8c",
+        "protocol": "POSTGRES",
+        "port": 54322,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.02,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.008,
+          "tps": 20034.6,
+          "latenciesMs": {
+            "p50": 0.03,
+            "p90": 0.05,
+            "p95": 0.06,
+            "p99": 0.11
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.0
+        }
+      },
+      {
+        "targetId": "gbase-8a",
+        "protocol": "MYSQL",
+        "port": 5258,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.03,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.007,
+          "tps": 21837.5,
+          "latenciesMs": {
+            "p50": 0.03,
+            "p90": 0.05,
+            "p95": 0.05,
+            "p99": 0.1
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.0
+        }
+      },
+      {
+        "targetId": "highgo-hgdb",
+        "protocol": "POSTGRES",
+        "port": 5866,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.04,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.007,
+          "tps": 24125.8,
+          "latenciesMs": {
+            "p50": 0.03,
+            "p90": 0.05,
+            "p95": 0.05,
+            "p99": 0.09
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.0
+        }
+      },
+      {
+        "targetId": "oceanbase-oracle",
+        "protocol": "POSTGRES",
+        "port": 2883,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.01,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.008,
+          "tps": 20216.5,
+          "latenciesMs": {
+            "p50": 0.03,
+            "p90": 0.06,
+            "p95": 0.09,
+            "p99": 0.12
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.00000000001
+        }
+      },
+      {
+        "targetId": "oceanbase-mysql",
+        "protocol": "MYSQL",
+        "port": 2881,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.01,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.006,
+          "tps": 25288.8,
+          "latenciesMs": {
+            "p50": 0.03,
+            "p90": 0.03,
+            "p95": 0.04,
+            "p99": 0.05
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.0
+        }
+      },
+      {
+        "targetId": "gaussdb-oracle",
+        "protocol": "POSTGRES",
+        "port": 8000,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.01,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.007,
+          "tps": 22168.9,
+          "latenciesMs": {
+            "p50": 0.03,
+            "p90": 0.04,
+            "p95": 0.06,
+            "p99": 0.11
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.00000000001
+        }
+      },
+      {
+        "targetId": "gaussdb-m",
+        "protocol": "MYSQL",
+        "port": 3307,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.03,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.007,
+          "tps": 23661.1,
+          "latenciesMs": {
+            "p50": 0.03,
+            "p90": 0.03,
+            "p95": 0.04,
+            "p99": 0.1
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.0
+        }
+      },
+      {
+        "targetId": "goldendb",
+        "protocol": "MYSQL",
+        "port": 2953,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.01,
+        "ddl": {
+          "statementsExecuted": 3,
+          "statementsSucceeded": 3,
+          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "tablesFound": [
+            "accounts",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "tableName": "accounts",
+          "sourceRowCount": 2,
+          "targetRowCount": 2,
+          "matchedCount": 2,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
+          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+        },
+        "stress": {
+          "totalTransactions": 160,
+          "concurrency": 8,
+          "durationSeconds": 0.007,
+          "tps": 23777.1,
+          "latenciesMs": {
+            "p50": 0.03,
+            "p90": 0.04,
+            "p95": 0.05,
+            "p99": 0.09
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "initialTotalBalance": 100000.0,
+          "finalTotalBalance": 100000.0
+        }
+      }
+    ]
+  }
+}

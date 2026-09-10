@@ -227,97 +227,100 @@ def evaluate_chinadb_infrastructure(
         # 3. CDC Sync & Cascade Row-Hash Reconciliation
         initial_events = [
             ChangeEvent(
+                table_name="accounts",
                 op_type=CdcOpType.INSERT,
-                table="accounts",
-                pk={"acc_no": "ACC_001"},
-                after={
+                after_state={
                     "acc_no": "ACC_001",
                     "owner_name": "Treasury",
                     "balance": 100000.0,
                     "status": "ACTIVE",
                 },
+                lsn=1,
             ),
             ChangeEvent(
+                table_name="accounts",
                 op_type=CdcOpType.INSERT,
-                table="accounts",
-                pk={"acc_no": "ACC_002"},
-                after={
+                after_state={
                     "acc_no": "ACC_002",
                     "owner_name": "Merchant",
                     "balance": 50000.0,
                     "status": "ACTIVE",
                 },
+                lsn=2,
             ),
             ChangeEvent(
+                table_name="accounts",
                 op_type=CdcOpType.INSERT,
-                table="accounts",
-                pk={"acc_no": "ACC_TEMP"},
-                after={
+                after_state={
                     "acc_no": "ACC_TEMP",
                     "owner_name": "Temporary",
                     "balance": 500.0,
                     "status": "PENDING",
                 },
+                lsn=3,
             ),
             ChangeEvent(
+                table_name="accounts",
                 op_type=CdcOpType.UPDATE,
-                table="accounts",
-                pk={"acc_no": "ACC_001"},
-                before={
-                    "acc_no": "ACC_001",
-                    "owner_name": "Treasury",
-                    "balance": 100000.0,
-                    "status": "ACTIVE",
-                },
-                after={
+                before_state={"acc_no": "ACC_001"},
+                after_state={
                     "acc_no": "ACC_001",
                     "owner_name": "Treasury",
                     "balance": 90000.0,
                     "status": "ACTIVE",
                 },
+                lsn=4,
             ),
             ChangeEvent(
+                table_name="accounts",
                 op_type=CdcOpType.UPDATE,
-                table="accounts",
-                pk={"acc_no": "ACC_002"},
-                before={
-                    "acc_no": "ACC_002",
-                    "owner_name": "Merchant",
-                    "balance": 50000.0,
-                    "status": "ACTIVE",
-                },
-                after={
+                before_state={"acc_no": "ACC_002"},
+                after_state={
                     "acc_no": "ACC_002",
                     "owner_name": "Merchant",
                     "balance": 60000.0,
                     "status": "ACTIVE",
                 },
+                lsn=5,
             ),
             ChangeEvent(
+                table_name="accounts",
                 op_type=CdcOpType.DELETE,
-                table="accounts",
-                pk={"acc_no": "ACC_TEMP"},
-                before={
-                    "acc_no": "ACC_TEMP",
-                    "owner_name": "Temporary",
-                    "balance": 500.0,
-                    "status": "PENDING",
-                },
+                before_state={"acc_no": "ACC_TEMP"},
+                lsn=6,
             ),
         ]
-        cdc_engine.apply_changes(target_id, initial_events)
-        reconciliation_receipt = cdc_engine.reconcile(
-            target_id, target_id, ["accounts"]
+        cdc_engine.apply_batch(target_id, initial_events)
+
+        expected_records = [
+            {
+                "acc_no": "ACC_001",
+                "owner_name": "Treasury",
+                "balance": 90000.0,
+                "status": "ACTIVE",
+            },
+            {
+                "acc_no": "ACC_002",
+                "owner_name": "Merchant",
+                "balance": 60000.0,
+                "status": "ACTIVE",
+            },
+        ]
+        reconciliation_receipt = cdc_engine.reconcile_table_data(
+            expected_records,
+            target_id,
+            "accounts",
+            pk_columns=["acc_no"],
         )
 
         # 4. High-Concurrency Stress Workload
-        stress_result = stress_engine.run_stress_benchmark(
+        stress_receipt = stress_engine.run_benchmark(
             target_id=target_id,
             concurrency=8,
-            total_operations=100,
-            account_count=5,
-            initial_balance=10000.0,
-            transfer_amount=50.0,
+            transactions_per_worker=20,
+            num_accounts=10,
+            initial_balance_per_acc=10000.0,
+            max_p95_latency_ms=75.0,
         )
 
         target_results.append(
@@ -333,33 +336,37 @@ def evaluate_chinadb_infrastructure(
                     "statementsSucceeded": ddl_receipt.successful_statements,
                     "schemaDigest": ddl_receipt.schema_digest,
                     "tablesFound": ddl_receipt.verified_tables,
-                    "accountPrimaryKeyVerified": inspect_acc.columns[
-                        "acc_no"
-                    ].is_primary_key
-                    if inspect_acc
-                    else False,
+                    "accountPrimaryKeyVerified": (
+                        inspect_acc.columns["acc_no"].is_primary_key
+                        if inspect_acc
+                        else False
+                    ),
                 },
                 "cdc": {
-                    "tablesReconciled": reconciliation_receipt.tables_reconciled,
-                    "totalRows": reconciliation_receipt.total_rows,
-                    "divergenceCount": reconciliation_receipt.divergence_count,
-                    "identical": reconciliation_receipt.identical,
-                    "tableDigests": reconciliation_receipt.table_digests,
+                    "tableName": reconciliation_receipt.table_name,
+                    "sourceRowCount": reconciliation_receipt.source_row_count,
+                    "targetRowCount": reconciliation_receipt.target_row_count,
+                    "matchedCount": reconciliation_receipt.matched_count,
+                    "mismatchedCount": reconciliation_receipt.mismatched_count,
+                    "isConsistent": reconciliation_receipt.is_consistent,
+                    "sourceTableDigest": reconciliation_receipt.source_table_digest,
+                    "targetTableDigest": reconciliation_receipt.target_table_digest,
                 },
                 "stress": {
-                    "operations": stress_result.operations,
-                    "concurrency": stress_result.concurrency,
-                    "durationSeconds": round(stress_result.duration_seconds, 3),
-                    "qps": round(stress_result.qps, 1),
+                    "totalTransactions": stress_receipt.total_transactions,
+                    "concurrency": stress_receipt.concurrency,
+                    "durationSeconds": stress_receipt.duration_seconds,
+                    "tps": stress_receipt.tps,
                     "latenciesMs": {
-                        "p50": round(stress_result.p50_ms, 2),
-                        "p90": round(stress_result.p90_ms, 2),
-                        "p95": round(stress_result.p95_ms, 2),
-                        "p99": round(stress_result.p99_ms, 2),
+                        "p50": stress_receipt.latency_p50_ms,
+                        "p90": stress_receipt.latency_p90_ms,
+                        "p95": stress_receipt.latency_p95_ms,
+                        "p99": stress_receipt.latency_p99_ms,
                     },
-                    "sloP95Met": stress_result.slo_p95_met,
-                    "balanceConserved": stress_result.balance_conserved,
-                    "balanceDiscrepancy": stress_result.balance_discrepancy,
+                    "sloPassed": stress_receipt.slo_passed,
+                    "conservationInvariantHolds": stress_receipt.conservation_invariant_holds,
+                    "initialTotalBalance": stress_receipt.initial_total_balance,
+                    "finalTotalBalance": stress_receipt.final_total_balance,
                 },
             }
         )
@@ -369,10 +376,10 @@ def evaluate_chinadb_infrastructure(
         "targetCount": len(target_results),
         "allTargetsReady": all(t["isReady"] for t in target_results),
         "allDdlPassed": all(t["ddl"]["statementsExecuted"] > 0 for t in target_results),
-        "allCdcIdentical": all(t["cdc"]["identical"] for t in target_results),
-        "allStressSloMet": all(t["stress"]["sloP95Met"] for t in target_results),
+        "allCdcIdentical": all(t["cdc"]["isConsistent"] for t in target_results),
+        "allStressSloMet": all(t["stress"]["sloPassed"] for t in target_results),
         "allBalanceConserved": all(
-            t["stress"]["balanceConserved"] for t in target_results
+            t["stress"]["conservationInvariantHolds"] for t in target_results
         ),
         "targets": target_results,
     }
@@ -418,10 +425,10 @@ def main() -> int:
 
         for t in infra_eval["targets"]:
             p95 = t["stress"]["latenciesMs"]["p95"]
-            qps = t["stress"]["qps"]
+            tps = t["stress"]["tps"]
             print(
                 f"     * [{t['targetId']:<16}] Proto: {t['protocol']:<8} "
-                f"P95: {p95:>5.2f}ms (SLO<=75ms: OK) | QPS: {qps:>6.1f} | CDC Divergence: 0"
+                f"P95: {p95:>5.2f}ms (SLO<=75ms: OK) | TPS: {tps:>6.1f} | CDC Divergence: 0"
             )
 
         duration = time.time() - start_time
