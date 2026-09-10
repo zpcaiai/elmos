@@ -15,7 +15,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
-from .models import EntitySpec, SynthesisRequest
+from .models import EntitySpec, RelationSpec, SynthesisRequest
 
 # SRE & Observability constants
 HEALTH_LIVE_PATH = "/health/live"
@@ -24,9 +24,67 @@ METRICS_PATH = "/metrics"
 TRACE_HEADER = "X-Trace-Id"
 CORRELATION_HEADER = "X-Correlation-Id"
 TENANT_HEADER = "X-Tenant-Id"
+NULL_SENTINEL = "__ELMOS_NULL_SENTINEL__"
 
 # Outbox Status
 OutboxStatus = Literal["PENDING", "IN_FLIGHT", "PUBLISHED", "FAILED", "DEAD_LETTER"]
+
+
+@dataclass(frozen=True)
+class EnterpriseMiddlewareConfig:
+    """Production Redis and Kafka/RabbitMQ middleware configurations."""
+
+    redis_url_env: str = "REDIS_URL"
+    redis_default_host: str = "localhost"
+    redis_default_port: int = 6379
+    redis_pool_size: int = 50
+    redis_socket_timeout_seconds: float = 2.0
+    null_sentinel: str = NULL_SENTINEL
+
+    broker_type: Literal["kafka", "rabbitmq"] = "kafka"
+    kafka_brokers_env: str = "KAFKA_BROKERS"
+    kafka_default_brokers: str = "localhost:9092"
+    rabbitmq_url_env: str = "RABBITMQ_URL"
+    rabbitmq_default_url: str = "amqp://guest:guest@localhost:5672/"
+
+    enable_w3c_trace_context: bool = True
+    outbox_poll_interval_ms: int = 1000
+    outbox_batch_size: int = 50
+
+
+@dataclass(frozen=True)
+class SagaStep:
+    """A discrete forward action paired with an idempotent compensation action."""
+
+    step_id: str
+    name: str
+    action_endpoint: str
+    compensation_endpoint: str
+    timeout_seconds: int = 30
+
+
+@dataclass(frozen=True)
+class SagaDefinition:
+    """Specification of a multi-microservice distributed Saga workflow."""
+
+    saga_id: str
+    name: str
+    steps: tuple[SagaStep, ...]
+
+
+@dataclass(frozen=True)
+class SagaExecutionRecord:
+    """State record of an executing Saga instance with compensations."""
+
+    execution_id: str
+    saga_id: str
+    tenant_id: str
+    current_step: int
+    status: Literal["PENDING", "RUNNING", "COMPLETED", "COMPENSATING", "COMPENSATED", "FAILED"]
+    payload: dict[str, Any]
+    error: str | None = None
+    created_at: str = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc).isoformat())
+    updated_at: str = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc).isoformat())
 
 
 @dataclass(frozen=True)
@@ -88,7 +146,7 @@ class PaginationSpec:
 
 @dataclass(frozen=True)
 class EnterpriseEntitySql:
-    """Generated enterprise SQL supporting outbox, audit columns, and optimistic locking."""
+    """Generated enterprise SQL supporting outbox, audit columns, 1:N relations, and optimistic locking."""
 
     entity: str
     plural: str
@@ -101,6 +159,9 @@ class EnterpriseEntitySql:
     paginated_list_sql: str
     count_sql: str
     optimistic_update_sql: str
+    foreign_key_ddls: tuple[str, ...] = ()
+    foreign_key_indexes: tuple[str, ...] = ()
+    cascade_delete_sqls: tuple[str, ...] = ()
 
 
 def enterprise_entity_sql(
@@ -109,8 +170,9 @@ def enterprise_entity_sql(
     placeholder: str = "%s",
     is_sqlite: bool = False,
     is_mysql: bool = False,
+    relations: tuple[RelationSpec, ...] = (),
 ) -> EnterpriseEntitySql:
-    """Generate SQL expressions for Outbox, Pagination, and Optimistic Locking."""
+    """Generate SQL expressions for Outbox, Pagination, Optimistic Locking, and 1:N Relations."""
     if is_mysql:
         table_name = f"`{entity.plural}`"
         outbox_table = "`outbox_events`"
@@ -219,6 +281,30 @@ def enterprise_entity_sql(
         f"WHERE {quote}tenant_id{quote} = {p} AND {quote}id{quote} = {p} AND {quote}version{quote} = {p}"
     )
 
+    # 1:N Foreign key DDLs and cascading statements
+    fk_ddls: list[str] = []
+    fk_indexes: list[str] = []
+    cascade_deletes: list[str] = []
+
+    for rel in relations:
+        # If this entity is the child in many-to-one or one-to-many
+        if rel.target == entity.singular and rel.kind == "one-to-many":
+            fk_col = rel.target_field or f"{rel.source}_id"
+            parent_table = f"`{rel.source}s`" if is_mysql else (f'"{rel.source}s"' if is_sqlite else f'"app"."{rel.source}s"')
+            fk_ddl = (
+                f"ALTER TABLE {table_name} ADD CONSTRAINT {quote}fk_{entity.singular}_{rel.source}{quote} "
+                f"FOREIGN KEY ({quote}{fk_col}{quote}) REFERENCES {parent_table}({quote}id{quote}) ON DELETE CASCADE;"
+            )
+            fk_idx = f"CREATE INDEX IF NOT EXISTS {quote}idx_{entity.singular}_{fk_col}{quote} ON {table_name} ({quote}tenant_id{quote}, {quote}{fk_col}{quote});"
+            fk_ddls.append(fk_ddl)
+            fk_indexes.append(fk_idx)
+        elif rel.source == entity.singular and rel.kind == "one-to-many":
+            # This entity is the parent, cascade delete on children
+            child_table = f"`{rel.target}s`" if is_mysql else (f'"{rel.target}s"' if is_sqlite else f'"app"."{rel.target}s"')
+            fk_col = rel.target_field or f"{entity.singular}_id"
+            cascade_sql = f"DELETE FROM {child_table} WHERE {quote}tenant_id{quote} = {p} AND {quote}{fk_col}{quote} = {p}"
+            cascade_deletes.append(cascade_sql)
+
     return EnterpriseEntitySql(
         entity=entity.singular,
         plural=entity.plural,
@@ -231,4 +317,8 @@ def enterprise_entity_sql(
         paginated_list_sql=paginated_list_sql,
         count_sql=count_sql,
         optimistic_update_sql=optimistic_update_sql,
+        foreign_key_ddls=tuple(fk_ddls),
+        foreign_key_indexes=tuple(fk_indexes),
+        cascade_delete_sqls=tuple(cascade_deletes),
     )
+
