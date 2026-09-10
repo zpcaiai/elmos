@@ -1,0 +1,35 @@
+apiVersion: elmos.ai/v1
+kind: AdapterConformance
+metadata:
+  adapterId: git-provider-adapter
+  version: 5.2.0
+spec:
+  providers: GitHub/GitLab/Gitea/Azure Repos
+  scope: repository source, pull requests, reviews, webhooks
+  cases:
+  - id: C01
+    name: capability negotiation and exact version
+  - id: C02
+    name: valid invocation-scoped lease
+  - id: C03
+    name: denied operation produces no side effect
+  - id: C04
+    name: tenant isolation
+  - id: C05
+    name: timeout and retry with idempotency
+  - id: C06
+    name: stale executor generation fenced
+  - id: C07
+    name: cancellation and compensation
+  - id: C08
+    name: typed result and artifact hashes
+  - id: C09
+    name: secret never model-visible
+  - id: C10
+    name: adapter cannot assert completion
+  requiredEvidence:
+  - request/response trace
+  - policy decisions
+  - effect ledger
+  - artifact hashes
+  - negative-control results

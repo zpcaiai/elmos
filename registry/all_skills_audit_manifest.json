@@ -1,33 +1,18 @@
 {
   "metadata": {
-    "total_skills": 4353,
-    "audited_at": "2026-09-10T15:58:24Z",
-    "scan_duration_seconds": 8.38,
+    "total_skills": 4489,
+    "audited_at": "2026-09-10T16:36:48Z",
+    "scan_duration_seconds": 2.8,
     "status_summary": {
-      "DECLARED": 2170,
+      "DECLARED": 2272,
       "SPECIFICATION_IMPORTED": 196,
-      "is": 5,
-      "downgrade": 1,
-      "requires": 2,
-      "changes": 1,
-      "VERIFIED": 823,
-      "supported": 196,
-      "field": 1,
-      "checks": 2,
-      "and": 3,
-      "cannot": 1,
-      "transaction": 1,
-      "transitions": 1,
-      "communication": 1,
-      "history": 1,
-      "list": 1,
-      "available": 1,
-      "fields": 1,
-      "turns": 1,
+      "VERIFIED": 900,
+      "supported": 172,
       "codes": 1,
       "LOCAL_IMPLEMENTED_BOUNDED": 1,
       "BLUEPRINT_IMPORTED": 100,
       "production-contract": 473,
+      "and": 2,
       "only": 24,
       "IMPLEMENTED": 72,
       "LOCAL_IMPLEMENTED_UNQUALIFIED": 12,
@@ -41,6 +26,8 @@
       "in": 1,
       "matches": 1,
       "APIs": 1,
+      "is": 2,
+      "checks": 1,
       "STATIC_VALIDATED": 1,
       "vocabulary": 44,
       "experimental": 1,
@@ -49,12 +36,15 @@
       "-": 1
     },
     "category_summary": {
+      "adoption": 1,
       "affected": 1,
       "agent": 9,
+      "ai": 5,
       "alipay": 2,
       "api": 15,
-      "architecture": 11,
+      "architecture": 12,
       "artifact": 6,
+      "asset": 1,
       "automatic": 5,
       "autonomous": 41,
       "b29": 20,
@@ -80,8 +70,11 @@
       "binary": 2,
       "browser": 1,
       "build": 5,
+      "business": 4,
       "cdc": 4,
       "change": 5,
+      "changeset": 1,
+      "characterization": 1,
       "chinadb": 47,
       "coding": 1,
       "command": 1,
@@ -93,12 +86,13 @@
       "continuous": 2,
       "contract": 2,
       "conv": 42,
-      "cost": 5,
-      "cross": 17,
+      "correctness": 1,
+      "cost": 6,
+      "cross": 18,
       "cursor": 2,
       "cutover": 1,
-      "data": 25,
-      "database": 15,
+      "data": 27,
+      "database": 16,
       "dependency": 9,
       "deterministic": 5,
       "differential": 4,
@@ -106,7 +100,8 @@
       "douyin": 2,
       "durable": 5,
       "dynamic": 2,
-      "elmos": 1325,
+      "e0": 3,
+      "elmos": 1416,
       "a2a": 1,
       "abap": 1,
       "acceptance": 1,
@@ -118,7 +113,6 @@
       "admission": 1,
       "agentic": 1,
       "agui": 1,
-      "ai": 4,
       "airflow": 2,
       "airgapped": 1,
       "alibaba": 1,
@@ -164,7 +158,6 @@
       "bulk": 1,
       "bulkhead": 1,
       "bundler": 1,
-      "business": 1,
       "c": 1,
       "cache": 3,
       "call": 2,
@@ -262,7 +255,6 @@
       "dual": 3,
       "duplicate": 1,
       "dynamodb": 1,
-      "e0": 2,
       "edge": 2,
       "edi": 1,
       "ejb": 1,
@@ -295,7 +287,7 @@
       "explainability": 1,
       "express": 1,
       "extension": 1,
-      "external": 2,
+      "external": 3,
       "failed": 1,
       "failure": 6,
       "fallback": 1,
@@ -314,7 +306,7 @@
       "flink": 1,
       "flutter": 4,
       "form": 1,
-      "formal": 2,
+      "formal": 3,
       "foxpro": 1,
       "framework": 2,
       "fraud": 1,
@@ -329,7 +321,7 @@
       "genai": 1,
       "generated": 2,
       "generic": 1,
-      "git": 2,
+      "git": 3,
       "gitops": 1,
       "go": 3,
       "god": 1,
@@ -365,7 +357,7 @@
       "identity": 4,
       "immutable": 2,
       "ims": 1,
-      "incident": 5,
+      "incident": 6,
       "incremental": 5,
       "independent": 1,
       "index": 1,
@@ -381,7 +373,7 @@
       "io": 1,
       "ios": 3,
       "iso42001": 1,
-      "issue": 2,
+      "issue": 3,
       "jakartaee": 1,
       "java": 7,
       "javaee": 1,
@@ -503,13 +495,13 @@
       "pause": 2,
       "payment": 1,
       "pdb": 1,
-      "performance": 10,
+      "performance": 11,
       "periodic": 1,
       "personal": 1,
       "php": 2,
       "pi": 1,
       "pii": 2,
-      "pilot": 1,
+      "pilot": 2,
       "planner": 1,
       "platform": 3,
       "plc": 1,
@@ -533,7 +525,7 @@
       "progressive": 2,
       "project": 5,
       "prompt": 6,
-      "proof": 3,
+      "proof": 4,
       "property": 3,
       "proprietary": 1,
       "protobuf": 1,
@@ -573,8 +565,8 @@
       "remote": 3,
       "repair": 1,
       "repo": 9,
-      "repository": 17,
-      "reproducible": 2,
+      "repository": 18,
+      "reproducible": 3,
       "requirement": 4,
       "resource": 4,
       "responsive": 1,
@@ -584,7 +576,7 @@
       "retrieval": 5,
       "retriever": 1,
       "retry": 1,
-      "reusable": 1,
+      "reusable": 2,
       "reviewable": 1,
       "reviewer": 1,
       "reward": 2,
@@ -606,7 +598,7 @@
       "rubric": 1,
       "ruby": 2,
       "runbook": 2,
-      "runtime": 3,
+      "runtime": 4,
       "rust": 2,
       "safety": 4,
       "saga": 1,
@@ -622,7 +614,7 @@
       "sdk": 1,
       "secret": 4,
       "secure": 2,
-      "security": 12,
+      "security": 13,
       "segregation": 1,
       "selective": 1,
       "self": 3,
@@ -637,7 +629,7 @@
       "servlet": 4,
       "session": 4,
       "sft": 1,
-      "shadow": 5,
+      "shadow": 6,
       "silver": 1,
       "simulation": 1,
       "skew": 1,
@@ -661,7 +653,7 @@
       "ssrf": 1,
       "stale": 1,
       "state": 1,
-      "static": 2,
+      "static": 3,
       "strangler": 2,
       "streaming": 3,
       "string": 1,
@@ -673,14 +665,14 @@
       "subscription": 1,
       "supervised": 1,
       "supplier": 1,
-      "support": 1,
+      "support": 2,
       "supportability": 1,
       "swift": 1,
       "swiftpm": 1,
       "sybase": 2,
       "symbol": 4,
       "tamper": 2,
-      "target": 1,
+      "target": 2,
       "task": 8,
       "telemetry": 2,
       "temp": 1,
@@ -691,7 +683,7 @@
       "teradata": 2,
       "terminal": 2,
       "terraform": 2,
-      "test": 7,
+      "test": 8,
       "testability": 1,
       "theorem": 1,
       "thread": 2,
@@ -751,7 +743,7 @@
       "xss": 1,
       "zero": 2,
       "etgb": 50,
-      "final": 1,
+      "final": 2,
       "fine": 1,
       "generation": 1,
       "gr": 29,
@@ -765,6 +757,7 @@
       "method": 1,
       "minimal": 1,
       "mirrored": 1,
+      "modernization": 1,
       "numeric": 1,
       "otel": 1,
       "parent": 1,
@@ -773,31 +766,37 @@
       "per": 1,
       "plan": 1,
       "pm": 632,
-      "polyglot": 1,
+      "polyglot": 2,
       "portable": 1,
+      "portfolio": 1,
       "post": 2,
       "primary": 1,
-      "product": 1,
+      "procurement": 1,
+      "product": 2,
       "provider": 2,
       "queue": 1,
       "recipe": 11,
       "reconnect": 1,
       "rewrite": 1,
       "rich": 1,
+      "root": 1,
       "rpc": 1,
       "safe": 1,
       "scan": 1,
       "scanning": 1,
       "side": 2,
       "slsa": 1,
+      "stakeholder": 1,
+      "status": 1,
       "stored": 1,
       "stream": 1,
       "successful": 1,
       "toolchain": 1,
-      "transformation": 3,
+      "transformation": 4,
       "tst": 117,
       "universal": 1,
       "untrusted": 1,
+      "ux": 1,
       "variadic": 1,
       "verification": 1,
       "wake": 1,
@@ -805,6 +804,16 @@
     }
   },
   "skills": [
+    {
+      "name": "adoption-change-management",
+      "path": ".agents/skills/adoption-change-management/SKILL.md",
+      "category": "adoption",
+      "description": "Repository-owned bounded FDE capability handler for adoption-change-management; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 966
+    },
     {
       "name": "affected-test-selection",
       "path": ".agents/skills/affected-test-selection/SKILL.md",
@@ -868,6 +877,16 @@
       "size_bytes": 3465
     },
     {
+      "name": "ai-agent-system-audit",
+      "path": ".agents/skills/ai-agent-system-audit/SKILL.md",
+      "category": "ai",
+      "description": "Repository-owned bounded FDE capability handler for ai-agent-system-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1029
+    },
+    {
       "name": "alipay-miniapp-codegen",
       "path": ".agents/skills/alipay-miniapp-codegen/SKILL.md",
       "category": "alipay",
@@ -922,6 +941,16 @@
       "size_bytes": 3534
     },
     {
+      "name": "architecture-maintainability-audit",
+      "path": ".agents/skills/architecture-maintainability-audit/SKILL.md",
+      "category": "architecture",
+      "description": "Repository-owned bounded FDE capability handler for architecture-maintainability-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1123
+    },
+    {
       "name": "artifact-signing-verification",
       "path": ".agents/skills/artifact-signing-verification/SKILL.md",
       "category": "artifact",
@@ -933,6 +962,16 @@
       ],
       "status": "DECLARED",
       "size_bytes": 2238
+    },
+    {
+      "name": "asset-inventory-and-classification",
+      "path": ".agents/skills/asset-inventory-and-classification/SKILL.md",
+      "category": "asset",
+      "description": "Repository-owned bounded FDE capability handler for asset-inventory-and-classification; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1048
     },
     {
       "name": "automatic-task-corpus-generation",
@@ -1440,8 +1479,8 @@
         "../../../docs/batch29/QUALITY_GATES.md",
         "../../../docs/batch29/REPOSITORY_LAYOUT.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3503
+      "status": "VERIFIED",
+      "size_bytes": 3621
     },
     {
       "name": "b29-certify-csharp-to-java",
@@ -1459,8 +1498,8 @@
         "routes/csharp-to-java/route.json",
         "routes/csharp-to-java/support-matrix.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5052
+      "status": "VERIFIED",
+      "size_bytes": 5170
     },
     {
       "name": "b29-certify-csharp-to-python",
@@ -1478,8 +1517,8 @@
         "routes/csharp-to-python/route.json",
         "routes/csharp-to-python/support-matrix.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5076
+      "status": "VERIFIED",
+      "size_bytes": 5194
     },
     {
       "name": "b29-certify-csharp-to-typescript",
@@ -1497,8 +1536,8 @@
         "routes/csharp-to-typescript/route.json",
         "routes/csharp-to-typescript/support-matrix.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5143
+      "status": "VERIFIED",
+      "size_bytes": 5261
     },
     {
       "name": "b29-certify-java-to-csharp",
@@ -1516,8 +1555,8 @@
         "routes/java-to-csharp/route.json",
         "routes/java-to-csharp/support-matrix.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 4928
+      "status": "VERIFIED",
+      "size_bytes": 5046
     },
     {
       "name": "b29-certify-java-to-python",
@@ -1535,8 +1574,8 @@
         "routes/java-to-python/route.json",
         "routes/java-to-python/support-matrix.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5038
+      "status": "VERIFIED",
+      "size_bytes": 5156
     },
     {
       "name": "b29-certify-java-to-typescript",
@@ -1554,8 +1593,8 @@
         "routes/java-to-typescript/route.json",
         "routes/java-to-typescript/support-matrix.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5065
+      "status": "VERIFIED",
+      "size_bytes": 5183
     },
     {
       "name": "b29-certify-python-to-csharp",
@@ -1573,8 +1612,8 @@
         "routes/python-to-csharp/route.json",
         "routes/python-to-csharp/support-matrix.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5101
+      "status": "VERIFIED",
+      "size_bytes": 5219
     },
     {
       "name": "b29-certify-python-to-java",
@@ -1592,8 +1631,8 @@
         "routes/python-to-java/route.json",
         "routes/python-to-java/support-matrix.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5025
+      "status": "VERIFIED",
+      "size_bytes": 5143
     },
     {
       "name": "b29-certify-python-to-typescript",
@@ -1611,8 +1650,8 @@
         "routes/python-to-typescript/route.json",
         "routes/python-to-typescript/support-matrix.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5202
+      "status": "VERIFIED",
+      "size_bytes": 5320
     },
     {
       "name": "b29-certify-typescript-to-csharp",
@@ -1630,8 +1669,8 @@
         "routes/typescript-to-csharp/route.json",
         "routes/typescript-to-csharp/support-matrix.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5171
+      "status": "VERIFIED",
+      "size_bytes": 5289
     },
     {
       "name": "b29-certify-typescript-to-java",
@@ -1649,8 +1688,8 @@
         "routes/typescript-to-java/route.json",
         "routes/typescript-to-java/support-matrix.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5167
+      "status": "VERIFIED",
+      "size_bytes": 5285
     },
     {
       "name": "b29-certify-typescript-to-python",
@@ -1668,8 +1707,8 @@
         "routes/typescript-to-python/route.json",
         "routes/typescript-to-python/support-matrix.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5170
+      "status": "VERIFIED",
+      "size_bytes": 5288
     },
     {
       "name": "b29-compatibility-runtime-governor",
@@ -1686,8 +1725,8 @@
         "routes/<route>/compat-runtime/manifest.json",
         "routes/<route>/certification/compatibility-budget.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3401
+      "status": "VERIFIED",
+      "size_bytes": 3519
     },
     {
       "name": "b29-language-support-matrix",
@@ -1705,8 +1744,8 @@
         "routes/<route>/support-matrix.json",
         "routes/<route>/certification/support-matrix.md"
       ],
-      "status": "is",
-      "size_bytes": 3461
+      "status": "VERIFIED",
+      "size_bytes": 3579
     },
     {
       "name": "b29-route-certification-gate",
@@ -1724,8 +1763,8 @@
         "routes/<route>/certification/certification.json",
         "routes/<route>/certification/customer-support-profile.md"
       ],
-      "status": "downgrade",
-      "size_bytes": 3670
+      "status": "VERIFIED",
+      "size_bytes": 3788
     },
     {
       "name": "b29-route-corpus-certifier",
@@ -1743,8 +1782,8 @@
         "routes/<route>/certification/evidence.json",
         "routes/<route>/certification/benchmark-report.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3468
+      "status": "VERIFIED",
+      "size_bytes": 3586
     },
     {
       "name": "b29-route-economics-certifier",
@@ -1761,8 +1800,8 @@
         "routes/<route>/certification/economics.json",
         "routes/<route>/certification/economics-report.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3263
+      "status": "VERIFIED",
+      "size_bytes": 3381
     },
     {
       "name": "b29-route-factory",
@@ -1780,8 +1819,8 @@
         "scaffold_route.py",
         "routes/<source>-to-<target>/route.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 4462
+      "status": "VERIFIED",
+      "size_bytes": 4580
     },
     {
       "name": "b29-route-prioritizer",
@@ -1799,8 +1838,8 @@
         "score_routes.py",
         "docs/batch29/route-priority-report.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3421
+      "status": "VERIFIED",
+      "size_bytes": 3539
     },
     {
       "name": "b30-aspnet-to-spring",
@@ -1816,8 +1855,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5926
+      "status": "VERIFIED",
+      "size_bytes": 6044
     },
     {
       "name": "b30-django-migration",
@@ -1833,8 +1872,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5695
+      "status": "VERIFIED",
+      "size_bytes": 5813
     },
     {
       "name": "b30-dotnet-framework-modernization",
@@ -1850,8 +1889,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6035
+      "status": "VERIFIED",
+      "size_bytes": 6153
     },
     {
       "name": "b30-express-node-migration",
@@ -1867,8 +1906,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5605
+      "status": "VERIFIED",
+      "size_bytes": 5723
     },
     {
       "name": "b30-fastapi-migration",
@@ -1884,8 +1923,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5748
+      "status": "VERIFIED",
+      "size_bytes": 5866
     },
     {
       "name": "b30-flask-migration",
@@ -1901,8 +1940,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5436
+      "status": "VERIFIED",
+      "size_bytes": 5554
     },
     {
       "name": "b30-framework-certification-gate",
@@ -1920,8 +1959,8 @@
         "validate_framework_pack.py",
         "framework-packs/<pack>/certification/certification.json"
       ],
-      "status": "is",
-      "size_bytes": 5375
+      "status": "VERIFIED",
+      "size_bytes": 5493
     },
     {
       "name": "b30-framework-coexistence-strangler",
@@ -1938,8 +1977,8 @@
         "../../../docs/batch30/VERSION_POLICY.md",
         "framework-packs/<source>-to-<target>/coexistence/manifest.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5597
+      "status": "VERIFIED",
+      "size_bytes": 5715
     },
     {
       "name": "b30-framework-contract-meta-model",
@@ -1955,8 +1994,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5719
+      "status": "VERIFIED",
+      "size_bytes": 5837
     },
     {
       "name": "b30-framework-factory",
@@ -1974,8 +2013,8 @@
         "framework-packs/<pack>/certification/gap-inventory.md",
         "framework-packs/<pack-key>/pack.json"
       ],
-      "status": "requires",
-      "size_bytes": 6463
+      "status": "VERIFIED",
+      "size_bytes": 6581
     },
     {
       "name": "b30-framework-version-lifecycle",
@@ -1992,8 +2031,8 @@
         "../../../docs/batch30/VERSION_POLICY.md",
         "framework-packs/<pack>/version-matrix.json"
       ],
-      "status": "changes",
-      "size_bytes": 5476
+      "status": "VERIFIED",
+      "size_bytes": 5594
     },
     {
       "name": "b30-jakarta-ee-modernization",
@@ -2009,8 +2048,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6045
+      "status": "VERIFIED",
+      "size_bytes": 6163
     },
     {
       "name": "b30-micronaut-migration",
@@ -2026,8 +2065,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5525
+      "status": "VERIFIED",
+      "size_bytes": 5643
     },
     {
       "name": "b30-nestjs-migration",
@@ -2043,8 +2082,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5606
+      "status": "VERIFIED",
+      "size_bytes": 5724
     },
     {
       "name": "b30-python-background-jobs",
@@ -2060,8 +2099,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5683
+      "status": "VERIFIED",
+      "size_bytes": 5801
     },
     {
       "name": "b30-quarkus-migration",
@@ -2077,8 +2116,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5623
+      "status": "VERIFIED",
+      "size_bytes": 5741
     },
     {
       "name": "b30-source-framework-fingerprint",
@@ -2094,8 +2133,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5648
+      "status": "VERIFIED",
+      "size_bytes": 5766
     },
     {
       "name": "b30-spring-boot-upgrade",
@@ -2111,8 +2150,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "requires",
-      "size_bytes": 6172
+      "status": "VERIFIED",
+      "size_bytes": 6290
     },
     {
       "name": "b30-sqlalchemy-persistence",
@@ -2128,8 +2167,8 @@
         "../../../docs/batch30/REPOSITORY_LAYOUT.md",
         "../../../docs/batch30/VERSION_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5651
+      "status": "VERIFIED",
+      "size_bytes": 5769
     },
     {
       "name": "b30-target-framework-profile",
@@ -2146,8 +2185,8 @@
         "../../../docs/batch30/VERSION_POLICY.md",
         "framework-packs/<pack>/target-profile/profile.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5592
+      "status": "VERIFIED",
+      "size_bytes": 5710
     },
     {
       "name": "b31-canonical-database-ir",
@@ -3745,8 +3784,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6747
+      "status": "VERIFIED",
+      "size_bytes": 6865
     },
     {
       "name": "b35-assurance-case-residual-risk",
@@ -3764,8 +3803,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6776
+      "status": "VERIFIED",
+      "size_bytes": 6894
     },
     {
       "name": "b35-concurrency-schedule-exploration",
@@ -3783,8 +3822,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6813
+      "status": "VERIFIED",
+      "size_bytes": 6931
     },
     {
       "name": "b35-counterexample-shrinking-replay",
@@ -3802,8 +3841,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6759
+      "status": "VERIFIED",
+      "size_bytes": 6877
     },
     {
       "name": "b35-coverage-guided-fuzzing",
@@ -3821,8 +3860,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6941
+      "status": "VERIFIED",
+      "size_bytes": 7059
     },
     {
       "name": "b35-data-money-conservation-invariants",
@@ -3840,8 +3879,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6766
+      "status": "VERIFIED",
+      "size_bytes": 6884
     },
     {
       "name": "b35-formal-spec-smt-solver",
@@ -3859,8 +3898,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6736
+      "status": "VERIFIED",
+      "size_bytes": 6854
     },
     {
       "name": "b35-metamorphic-testing",
@@ -3878,8 +3917,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6737
+      "status": "VERIFIED",
+      "size_bytes": 6855
     },
     {
       "name": "b35-model-based-testing",
@@ -3897,8 +3936,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6715
+      "status": "VERIFIED",
+      "size_bytes": 6833
     },
     {
       "name": "b35-mutation-testing",
@@ -3916,8 +3955,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6844
+      "status": "VERIFIED",
+      "size_bytes": 6962
     },
     {
       "name": "b35-numeric-decimal-float-verification",
@@ -3935,8 +3974,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6784
+      "status": "VERIFIED",
+      "size_bytes": 6902
     },
     {
       "name": "b35-oracle-governance-conflict-resolution",
@@ -3954,8 +3993,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6765
+      "status": "VERIFIED",
+      "size_bytes": 6883
     },
     {
       "name": "b35-property-based-testing",
@@ -3973,8 +4012,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6818
+      "status": "VERIFIED",
+      "size_bytes": 6936
     },
     {
       "name": "b35-query-data-equivalence",
@@ -3992,8 +4031,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6752
+      "status": "VERIFIED",
+      "size_bytes": 6870
     },
     {
       "name": "b35-race-deadlock-liveness-verification",
@@ -4011,8 +4050,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6745
+      "status": "VERIFIED",
+      "size_bytes": 6863
     },
     {
       "name": "b35-security-authorization-properties",
@@ -4030,8 +4069,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6839
+      "status": "VERIFIED",
+      "size_bytes": 6957
     },
     {
       "name": "b35-state-machine-protocol-verification",
@@ -4049,8 +4088,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6815
+      "status": "VERIFIED",
+      "size_bytes": 6933
     },
     {
       "name": "b35-symbolic-execution",
@@ -4068,8 +4107,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6768
+      "status": "VERIFIED",
+      "size_bytes": 6886
     },
     {
       "name": "b35-validation-profile-oracle-composition",
@@ -4087,8 +4126,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6999
+      "status": "VERIFIED",
+      "size_bytes": 7117
     },
     {
       "name": "b35-verification-certification-gate",
@@ -4106,8 +4145,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 7035
+      "status": "VERIFIED",
+      "size_bytes": 7153
     },
     {
       "name": "b35-verification-coverage-confidence",
@@ -4125,8 +4164,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 6811
+      "status": "VERIFIED",
+      "size_bytes": 6929
     },
     {
       "name": "b35-verification-factory",
@@ -4144,8 +4183,8 @@
         "../../../docs/batch35/ORACLE_GOVERNANCE.md",
         "../../../docs/batch35/SOLVER_AND_SYMBOLIC_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 7582
+      "status": "VERIFIED",
+      "size_bytes": 7700
     },
     {
       "name": "b36-code-ownership-protected-regions",
@@ -4158,8 +4197,8 @@
       "dependencies": [
         "ownership/policy.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2379
+      "status": "VERIFIED",
+      "size_bytes": 2497
     },
     {
       "name": "b36-developer-experience-certification-gate",
@@ -4173,8 +4212,8 @@
         "certification/gate-result.json",
         "certification/gate-report.md"
       ],
-      "status": "field",
-      "size_bytes": 2724
+      "status": "VERIFIED",
+      "size_bytes": 2842
     },
     {
       "name": "b36-developer-telemetry-privacy",
@@ -4187,8 +4226,8 @@
       "dependencies": [
         "telemetry/policy.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2644
+      "status": "VERIFIED",
+      "size_bytes": 2762
     },
     {
       "name": "b36-developer-workflow-factory",
@@ -4202,8 +4241,8 @@
         "developer-experience-packs/<pack-key>/pack.json",
         "support-matrix.json"
       ],
-      "status": "supported",
-      "size_bytes": 3624
+      "status": "VERIFIED",
+      "size_bytes": 3742
     },
     {
       "name": "b36-diagnostic-quick-fix",
@@ -4216,8 +4255,8 @@
       "dependencies": [
         "quick-fix/profile.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2344
+      "status": "VERIFIED",
+      "size_bytes": 2462
     },
     {
       "name": "b36-enterprise-cli",
@@ -4230,8 +4269,8 @@
       "dependencies": [
         "cli/contract.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2597
+      "status": "VERIFIED",
+      "size_bytes": 2715
     },
     {
       "name": "b36-generated-code-explainability",
@@ -4244,8 +4283,8 @@
       "dependencies": [
         "explainability/profile.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2405
+      "status": "VERIFIED",
+      "size_bytes": 2523
     },
     {
       "name": "b36-ide-protocol-lsp-agent-bridge",
@@ -4258,8 +4297,8 @@
       "dependencies": [
         "protocol/ide-protocol.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2699
+      "status": "VERIFIED",
+      "size_bytes": 2817
     },
     {
       "name": "b36-intellij-plugin",
@@ -4270,8 +4309,8 @@
         "Skill 1289"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 2590
+      "status": "VERIFIED",
+      "size_bytes": 2708
     },
     {
       "name": "b36-local-eval-affected-tests",
@@ -4284,8 +4323,8 @@
       "dependencies": [
         "local-eval/profile.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2468
+      "status": "VERIFIED",
+      "size_bytes": 2586
     },
     {
       "name": "b36-local-migration-preview",
@@ -4298,8 +4337,8 @@
       "dependencies": [
         "preview/profile.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2563
+      "status": "VERIFIED",
+      "size_bytes": 2681
     },
     {
       "name": "b36-offline-private-developer-workflow",
@@ -4312,8 +4351,8 @@
       "dependencies": [
         "offline/profile.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2604
+      "status": "VERIFIED",
+      "size_bytes": 2722
     },
     {
       "name": "b36-pr-bot",
@@ -4326,8 +4365,8 @@
       "dependencies": [
         "pr-bot/policy.json"
       ],
-      "status": "checks",
-      "size_bytes": 2612
+      "status": "VERIFIED",
+      "size_bytes": 2730
     },
     {
       "name": "b36-recipe-mapping-authoring",
@@ -4340,8 +4379,8 @@
       "dependencies": [
         "authoring/profile.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2501
+      "status": "VERIFIED",
+      "size_bytes": 2619
     },
     {
       "name": "b36-review-collaboration-approvals",
@@ -4354,8 +4393,8 @@
       "dependencies": [
         "review/policy.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2538
+      "status": "VERIFIED",
+      "size_bytes": 2656
     },
     {
       "name": "b36-semantic-conflict-resolution",
@@ -4368,8 +4407,8 @@
       "dependencies": [
         "conflicts/profile.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2483
+      "status": "VERIFIED",
+      "size_bytes": 2601
     },
     {
       "name": "b36-source-target-navigation",
@@ -4382,8 +4421,8 @@
       "dependencies": [
         "navigation/map.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2349
+      "status": "VERIFIED",
+      "size_bytes": 2467
     },
     {
       "name": "b36-visual-studio-vscode-extensions",
@@ -4394,8 +4433,8 @@
         "Skill 1290"
       ],
       "dependencies": [],
-      "status": "and",
-      "size_bytes": 2664
+      "status": "VERIFIED",
+      "size_bytes": 2782
     },
     {
       "name": "b37-airgapped-mirror-offline-revocation-license",
@@ -4407,8 +4446,8 @@
         "offline-mirror/policy.json",
         "validate_offline_mirror.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2143
+      "status": "VERIFIED",
+      "size_bytes": 2261
     },
     {
       "name": "b37-commercial-license-billing-revenue-share",
@@ -4419,8 +4458,8 @@
         "Skill 1323"
       ],
       "dependencies": [],
-      "status": "cannot",
-      "size_bytes": 1820
+      "status": "VERIFIED",
+      "size_bytes": 1938
     },
     {
       "name": "b37-commercial-settlement-refund-tax-fraud",
@@ -4432,8 +4471,8 @@
         "commercial/settlement.json",
         "validate_commercial_settlement.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2043
+      "status": "VERIFIED",
+      "size_bytes": 2161
     },
     {
       "name": "b37-comparator-normalizer-sdk",
@@ -4444,8 +4483,8 @@
         "Skill 1311"
       ],
       "dependencies": [],
-      "status": "transaction",
-      "size_bytes": 1654
+      "status": "VERIFIED",
+      "size_bytes": 1772
     },
     {
       "name": "b37-continuous-certification-recertification",
@@ -4457,8 +4496,8 @@
         "certification/recertification-policy.json",
         "validate_continuous_certification.py"
       ],
-      "status": "transitions",
-      "size_bytes": 2046
+      "status": "VERIFIED",
+      "size_bytes": 2164
     },
     {
       "name": "b37-dependency-mapping-sdk",
@@ -4469,8 +4508,8 @@
         "Skill 1310"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1748
+      "status": "VERIFIED",
+      "size_bytes": 1866
     },
     {
       "name": "b37-enterprise-private-marketplace-allowlist-promotion",
@@ -4482,8 +4521,8 @@
         "private-marketplace/policy.json",
         "validate_private_marketplace.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2088
+      "status": "VERIFIED",
+      "size_bytes": 2206
     },
     {
       "name": "b37-evidence-collector-sdk",
@@ -4494,8 +4533,8 @@
         "Skill 1312"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1638
+      "status": "VERIFIED",
+      "size_bytes": 1756
     },
     {
       "name": "b37-extension-certification-security-review",
@@ -4506,8 +4545,8 @@
         "Skill 1321"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1721
+      "status": "VERIFIED",
+      "size_bytes": 1839
     },
     {
       "name": "b37-extension-configuration-state-data-migration",
@@ -4519,8 +4558,8 @@
         "migrations/extension-migration.json",
         "validate_extension_migration.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2079
+      "status": "VERIFIED",
+      "size_bytes": 2197
     },
     {
       "name": "b37-extension-dependency-lock-composition",
@@ -4532,8 +4571,8 @@
         "marketplace-packs/<pack-key>/dependencies/lock.json",
         "validate_dependency_lock.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2288
+      "status": "VERIFIED",
+      "size_bytes": 2406
     },
     {
       "name": "b37-extension-eol-data-portability-exit",
@@ -4545,8 +4584,8 @@
         "lifecycle/eol-policy.json",
         "validate_eol_policy.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2215
+      "status": "VERIFIED",
+      "size_bytes": 2333
     },
     {
       "name": "b37-extension-local-development-toolkit",
@@ -4557,8 +4596,8 @@
         "Skill 1316"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1622
+      "status": "VERIFIED",
+      "size_bytes": 1740
     },
     {
       "name": "b37-extension-manifest-abi-lifecycle",
@@ -4569,8 +4608,8 @@
         "Skill 1306"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1979
+      "status": "VERIFIED",
+      "size_bytes": 2097
     },
     {
       "name": "b37-extension-marketplace-factory",
@@ -4583,8 +4622,8 @@
       "dependencies": [
         "marketplace-packs/<pack-key>/pack.json and support-matrix.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3441
+      "status": "VERIFIED",
+      "size_bytes": 3559
     },
     {
       "name": "b37-extension-runtime-health-reconciliation",
@@ -4596,8 +4635,8 @@
         "runtime/health.json",
         "validate_runtime_health.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2154
+      "status": "VERIFIED",
+      "size_bytes": 2272
     },
     {
       "name": "b37-extension-sandbox-test-harness",
@@ -4608,8 +4647,8 @@
         "Skill 1317"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1769
+      "status": "VERIFIED",
+      "size_bytes": 1887
     },
     {
       "name": "b37-extension-signing-sbom-provenance",
@@ -4620,8 +4659,8 @@
         "Skill 1318"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1711
+      "status": "VERIFIED",
+      "size_bytes": 1829
     },
     {
       "name": "b37-framework-adapter-sdk",
@@ -4632,8 +4671,8 @@
         "Skill 1308"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1765
+      "status": "VERIFIED",
+      "size_bytes": 1883
     },
     {
       "name": "b37-language-adapter-sdk",
@@ -4644,8 +4683,8 @@
         "Skill 1307"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1943
+      "status": "VERIFIED",
+      "size_bytes": 2061
     },
     {
       "name": "b37-marketplace-catalog-search-compatibility-discovery",
@@ -4657,8 +4696,8 @@
         "catalog/catalog-entry.json",
         "validate_catalog_governance.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2188
+      "status": "VERIFIED",
+      "size_bytes": 2306
     },
     {
       "name": "b37-marketplace-certification-gate",
@@ -4672,8 +4711,8 @@
         "certification/gate-result.json",
         "certification/gate-report.md"
       ],
-      "status": "is",
-      "size_bytes": 2288
+      "status": "VERIFIED",
+      "size_bytes": 2406
     },
     {
       "name": "b37-marketplace-closure-certification-gate",
@@ -4685,8 +4724,8 @@
         "certification/closure-gate-result.json",
         "run_marketplace_closure_gate.py"
       ],
-      "status": "supported",
-      "size_bytes": 2189
+      "status": "VERIFIED",
+      "size_bytes": 2307
     },
     {
       "name": "b37-marketplace-legal-takedown-export-appeal",
@@ -4698,8 +4737,8 @@
         "legal/legal-policy.json",
         "validate_legal_support.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2068
+      "status": "VERIFIED",
+      "size_bytes": 2186
     },
     {
       "name": "b37-marketplace-ranking-review-abuse-governance",
@@ -4711,8 +4750,8 @@
         "catalog/ranking-policy.json",
         "validate_catalog_governance.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2001
+      "status": "VERIFIED",
+      "size_bytes": 2119
     },
     {
       "name": "b37-marketplace-sre-incident-dr-operations",
@@ -4724,8 +4763,8 @@
         "operations/operations-policy.json",
         "validate_marketplace_operations.py"
       ],
-      "status": "communication",
-      "size_bytes": 2079
+      "status": "VERIFIED",
+      "size_bytes": 2197
     },
     {
       "name": "b37-marketplace-support-incident-dispute-sla",
@@ -4737,8 +4776,8 @@
         "support/support-policy.json",
         "validate_legal_support.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2048
+      "status": "VERIFIED",
+      "size_bytes": 2166
     },
     {
       "name": "b37-policy-extension-sdk",
@@ -4749,8 +4788,8 @@
         "Skill 1315"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1617
+      "status": "VERIFIED",
+      "size_bytes": 1735
     },
     {
       "name": "b37-publish-install-upgrade-rollback-revoke",
@@ -4761,8 +4800,8 @@
         "Skill 1322"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1812
+      "status": "VERIFIED",
+      "size_bytes": 1930
     },
     {
       "name": "b37-publisher-lifecycle-key-rotation-offboarding",
@@ -4774,8 +4813,8 @@
         "publishers/lifecycle.json",
         "validate_publisher_lifecycle.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2126
+      "status": "VERIFIED",
+      "size_bytes": 2244
     },
     {
       "name": "b37-publisher-onboarding-identity",
@@ -4786,8 +4825,8 @@
         "Skill 1320"
       ],
       "dependencies": [],
-      "status": "history",
-      "size_bytes": 1806
+      "status": "VERIFIED",
+      "size_bytes": 1924
     },
     {
       "name": "b37-revocation-customer-continuity-replacement",
@@ -4799,8 +4838,8 @@
         "continuity/revocation-plan.json",
         "validate_continuity_plan.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2059
+      "status": "VERIFIED",
+      "size_bytes": 2177
     },
     {
       "name": "b37-runner-job-sdk",
@@ -4811,8 +4850,8 @@
         "Skill 1313"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1667
+      "status": "VERIFIED",
+      "size_bytes": 1785
     },
     {
       "name": "b37-sdk-compatibility-versioning",
@@ -4823,8 +4862,8 @@
         "Skill 1319"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1566
+      "status": "VERIFIED",
+      "size_bytes": 1684
     },
     {
       "name": "b37-transformation-recipe-sdk",
@@ -4835,8 +4874,8 @@
         "Skill 1309"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1849
+      "status": "VERIFIED",
+      "size_bytes": 1967
     },
     {
       "name": "b37-vertical-pack-sdk",
@@ -4847,8 +4886,8 @@
         "Skill 1314"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 1756
+      "status": "VERIFIED",
+      "size_bytes": 1874
     },
     {
       "name": "b38-air-gapped-edition",
@@ -8133,8 +8172,8 @@
         "../../../docs/batch46/RUNTIME_LEASE_POLICY.md",
         "../../../docs/batch46/STACK_MATRIX.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3373
+      "status": "VERIFIED",
+      "size_bytes": 3491
     },
     {
       "name": "b46-b30-framework-smoke",
@@ -8151,8 +8190,8 @@
         "../../../docs/batch46/RUNTIME_LEASE_POLICY.md",
         "../../../docs/batch46/STACK_MATRIX.md"
       ],
-      "status": "list",
-      "size_bytes": 3381
+      "status": "VERIFIED",
+      "size_bytes": 3499
     },
     {
       "name": "b46-b31-database-seed-smoke",
@@ -8169,8 +8208,8 @@
         "../../../docs/batch46/RUNTIME_LEASE_POLICY.md",
         "../../../docs/batch46/STACK_MATRIX.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3468
+      "status": "VERIFIED",
+      "size_bytes": 3586
     },
     {
       "name": "b46-b32-client-smoke",
@@ -8188,8 +8227,8 @@
         "../../../docs/batch46/STACK_MATRIX.md",
         "smoke/seed/api-fixtures.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3402
+      "status": "VERIFIED",
+      "size_bytes": 3520
     },
     {
       "name": "b46-console-run-button",
@@ -8207,8 +8246,8 @@
         "smoke/runtime/status.json",
         "result.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 4780
+      "status": "VERIFIED",
+      "size_bytes": 4898
     },
     {
       "name": "b46-ephemeral-data-isolation-teardown",
@@ -8226,8 +8265,8 @@
         "../../../docs/batch46/STACK_MATRIX.md",
         "smoke/README.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3908
+      "status": "VERIFIED",
+      "size_bytes": 4026
     },
     {
       "name": "b46-minimal-runtime-data-analyzer",
@@ -8245,8 +8284,8 @@
         "../../../docs/batch46/STACK_MATRIX.md",
         "smoke/minimal-data-requirements.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3956
+      "status": "VERIFIED",
+      "size_bytes": 4074
     },
     {
       "name": "b46-one-click-entry-emitter",
@@ -8264,8 +8303,8 @@
         "../../../docs/batch46/STACK_MATRIX.md",
         "run_smoke.py"
       ],
-      "status": "available",
-      "size_bytes": 4031
+      "status": "VERIFIED",
+      "size_bytes": 4149
     },
     {
       "name": "b46-polyglot-topology-smoke",
@@ -8282,8 +8321,8 @@
         "../../../docs/batch46/RUNTIME_LEASE_POLICY.md",
         "../../../docs/batch46/STACK_MATRIX.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3333
+      "status": "VERIFIED",
+      "size_bytes": 3451
     },
     {
       "name": "b46-runnable-smoke-factory",
@@ -8301,8 +8340,8 @@
         "../../../docs/batch46/STACK_MATRIX.md",
         "smoke/profile.json"
       ],
-      "status": "and",
-      "size_bytes": 4123
+      "status": "VERIFIED",
+      "size_bytes": 4241
     },
     {
       "name": "b46-runnable-smoke-gate",
@@ -8320,8 +8359,8 @@
         "../../../docs/batch46/STACK_MATRIX.md",
         "gate-result.json"
       ],
-      "status": "fields",
-      "size_bytes": 3926
+      "status": "VERIFIED",
+      "size_bytes": 4044
     },
     {
       "name": "b46-runtime-lease-quota-reclaim",
@@ -8339,8 +8378,8 @@
         "../../../docs/batch46/STACK_MATRIX.md",
         "lease-result.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3960
+      "status": "VERIFIED",
+      "size_bytes": 4078
     },
     {
       "name": "b46-seed-data-provenance-policy",
@@ -8358,8 +8397,8 @@
         "../../../docs/batch46/STACK_MATRIX.md",
         "smoke/seed-manifest.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3860
+      "status": "VERIFIED",
+      "size_bytes": 3978
     },
     {
       "name": "b46-seed-data-synthesizer",
@@ -8377,8 +8416,8 @@
         "../../../docs/batch46/STACK_MATRIX.md",
         "api-fixtures.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3909
+      "status": "VERIFIED",
+      "size_bytes": 4027
     },
     {
       "name": "b46-smoke-assertion-design",
@@ -8396,8 +8435,8 @@
         "../../../docs/batch46/STACK_MATRIX.md",
         "smoke/assertions.json"
       ],
-      "status": "turns",
-      "size_bytes": 3750
+      "status": "VERIFIED",
+      "size_bytes": 3868
     },
     {
       "name": "b46-smoke-evidence-recorder",
@@ -8415,8 +8454,8 @@
         "../../../docs/batch46/STACK_MATRIX.md",
         "smoke/runtime/result.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3348
+      "status": "VERIFIED",
+      "size_bytes": 3466
     },
     {
       "name": "batch-81-cobol-mainframe-slightly-strict-certification",
@@ -8635,6 +8674,36 @@
       "size_bytes": 2272
     },
     {
+      "name": "business-baseline-roi",
+      "path": ".agents/skills/business-baseline-roi/SKILL.md",
+      "category": "business",
+      "description": "Repository-owned bounded FDE capability handler for business-baseline-roi; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 935
+    },
+    {
+      "name": "business-capability-code-mapping",
+      "path": ".agents/skills/business-capability-code-mapping/SKILL.md",
+      "category": "business",
+      "description": "Repository-owned bounded FDE capability handler for business-capability-code-mapping; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1059
+    },
+    {
+      "name": "business-invariant-recovery",
+      "path": ".agents/skills/business-invariant-recovery/SKILL.md",
+      "category": "business",
+      "description": "Repository-owned bounded FDE capability handler for business-invariant-recovery; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1036
+    },
+    {
       "name": "cdc-shadow-compare",
       "path": ".agents/skills/cdc-shadow-compare/SKILL.md",
       "category": "cdc",
@@ -8659,6 +8728,26 @@
       ],
       "status": "DECLARED",
       "size_bytes": 2274
+    },
+    {
+      "name": "changeset-commit-and-provenance-governance",
+      "path": ".agents/skills/changeset-commit-and-provenance-governance/SKILL.md",
+      "category": "changeset",
+      "description": "Repository-owned bounded FDE capability handler for changeset-commit-and-provenance-governance; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1103
+    },
+    {
+      "name": "characterization-differential-mutation-verification",
+      "path": ".agents/skills/characterization-differential-mutation-verification/SKILL.md",
+      "category": "characterization",
+      "description": "Repository-owned bounded FDE capability handler for characterization-differential-mutation-verification; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1219
     },
     {
       "name": "chinadb-00-migration-program-orchestrator",
@@ -9807,6 +9896,26 @@
       "size_bytes": 1602
     },
     {
+      "name": "correctness-concurrency-consistency-audit",
+      "path": ".agents/skills/correctness-concurrency-consistency-audit/SKILL.md",
+      "category": "correctness",
+      "description": "Repository-owned bounded FDE capability handler for correctness-concurrency-consistency-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1127
+    },
+    {
+      "name": "cost-finops-sustainability-audit",
+      "path": ".agents/skills/cost-finops-sustainability-audit/SKILL.md",
+      "category": "cost",
+      "description": "Repository-owned bounded FDE capability handler for cost-finops-sustainability-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1073
+    },
+    {
       "name": "cost-latency-quality-optimizer",
       "path": ".agents/skills/cost-latency-quality-optimizer/SKILL.md",
       "category": "cost",
@@ -9818,6 +9927,16 @@
       ],
       "status": "DECLARED",
       "size_bytes": 2295
+    },
+    {
+      "name": "cross-language-framework-transformation",
+      "path": ".agents/skills/cross-language-framework-transformation/SKILL.md",
+      "category": "cross",
+      "description": "Repository-owned bounded FDE capability handler for cross-language-framework-transformation; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1123
     },
     {
       "name": "cross-language-interop-gate",
@@ -9884,6 +10003,26 @@
       "size_bytes": 7055
     },
     {
+      "name": "data-database-migration-audit",
+      "path": ".agents/skills/data-database-migration-audit/SKILL.md",
+      "category": "data",
+      "description": "Repository-owned bounded FDE capability handler for data-database-migration-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1043
+    },
+    {
+      "name": "data-event-permission-lineage",
+      "path": ".agents/skills/data-event-permission-lineage/SKILL.md",
+      "category": "data",
+      "description": "Repository-owned bounded FDE capability handler for data-event-permission-lineage; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1003
+    },
+    {
       "name": "data-lineage-impact-analysis",
       "path": ".agents/skills/data-lineage-impact-analysis/SKILL.md",
       "category": "data",
@@ -9920,6 +10059,16 @@
       ],
       "status": "DECLARED",
       "size_bytes": 2283
+    },
+    {
+      "name": "database-schema-routine-data-transformation",
+      "path": ".agents/skills/database-schema-routine-data-transformation/SKILL.md",
+      "category": "database",
+      "description": "Repository-owned bounded FDE capability handler for database-schema-routine-data-transformation; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1185
     },
     {
       "name": "database-security-policy-migration",
@@ -10117,6 +10266,16 @@
       ],
       "status": "SPECIFICATION_IMPORTED",
       "size_bytes": 3573
+    },
+    {
+      "name": "e0-e3-readiness-and-evidence-bundle",
+      "path": ".agents/skills/e0-e3-readiness-and-evidence-bundle/SKILL.md",
+      "category": "e0",
+      "description": "Repository-owned bounded FDE capability handler for e0-e3-readiness-and-evidence-bundle; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1218
     },
     {
       "name": "elmos-00-foundation-contracts",
@@ -14292,6 +14451,45 @@
       "size_bytes": 4433
     },
     {
+      "name": "elmos-assurance-bootstrap",
+      "path": ".agents/skills/elmos-assurance-bootstrap/SKILL.md",
+      "category": "elmos",
+      "description": "仓库盘点与增量集成。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-bootstrap/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-bootstrap/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1461
+    },
+    {
+      "name": "elmos-assurance-bounded-repair",
+      "path": ".agents/skills/elmos-assurance-bounded-repair/SKILL.md",
+      "category": "elmos",
+      "description": "有界修复与证据重新建立。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-bounded-repair/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-bounded-repair/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1498
+    },
+    {
+      "name": "elmos-assurance-calibration-holdout",
+      "path": ".agents/skills/elmos-assurance-calibration-holdout/SKILL.md",
+      "category": "elmos",
+      "description": "正确率校准与隐藏基准治理。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-calibration-holdout/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-calibration-holdout/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1534
+    },
+    {
       "name": "elmos-assurance-case-confidence-quantifier",
       "path": ".agents/skills/elmos-assurance-case-confidence-quantifier/SKILL.md",
       "category": "elmos",
@@ -14307,6 +14505,409 @@
       ],
       "status": "production-contract",
       "size_bytes": 12549
+    },
+    {
+      "name": "elmos-assurance-commercial-control",
+      "path": ".agents/skills/elmos-assurance-commercial-control/SKILL.md",
+      "category": "elmos",
+      "description": "多租户商业控制与交付产品化。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-commercial-control/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-commercial-control/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1528
+    },
+    {
+      "name": "elmos-assurance-contract-ir",
+      "path": ".agents/skills/elmos-assurance-contract-ir/SKILL.md",
+      "category": "elmos",
+      "description": "可执行接口与语义契约。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-contract-ir/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-contract-ir/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1476
+    },
+    {
+      "name": "elmos-assurance-coverage-planner",
+      "path": ".agents/skills/elmos-assurance-coverage-planner/SKILL.md",
+      "category": "elmos",
+      "description": "覆盖义务与风险计划编译。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-coverage-planner/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-coverage-planner/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1512
+    },
+    {
+      "name": "elmos-assurance-differential-runtime",
+      "path": ".agents/skills/elmos-assurance-differential-runtime/SKILL.md",
+      "category": "elmos",
+      "description": "类型化差分与行为回放。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-differential-runtime/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-differential-runtime/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1539
+    },
+    {
+      "name": "elmos-assurance-durable-execution",
+      "path": ".agents/skills/elmos-assurance-durable-execution/SKILL.md",
+      "category": "elmos",
+      "description": "恢复、取消、fencing与结果提交。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-durable-execution/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-durable-execution/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1526
+    },
+    {
+      "name": "elmos-assurance-ethen-audit",
+      "path": ".agents/skills/elmos-assurance-ethen-audit/SKILL.md",
+      "category": "elmos",
+      "description": "Ethen外部独立审计适配器。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-ethen-audit/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-ethen-audit/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1480
+    },
+    {
+      "name": "elmos-assurance-evidence-graph",
+      "path": ".agents/skills/elmos-assurance-evidence-graph/SKILL.md",
+      "category": "elmos",
+      "description": "证据DAG、封存与失效传播。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-evidence-graph/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-evidence-graph/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1500
+    },
+    {
+      "name": "elmos-assurance-fixtures-environments",
+      "path": ".agents/skills/elmos-assurance-fixtures-environments/SKILL.md",
+      "category": "elmos",
+      "description": "测试数据与原生环境工厂。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-fixtures-environments/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-fixtures-environments/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1547
+    },
+    {
+      "name": "elmos-assurance-full-regression",
+      "path": ".agents/skills/elmos-assurance-full-regression/SKILL.md",
+      "category": "elmos",
+      "description": "全功能回归与测试资产管理。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-full-regression/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-full-regression/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1506
+    },
+    {
+      "name": "elmos-assurance-gate-engine",
+      "path": ".agents/skills/elmos-assurance-gate-engine/SKILL.md",
+      "category": "elmos",
+      "description": "确定性三态认证门禁。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-gate-engine/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-gate-engine/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1475
+    },
+    {
+      "name": "elmos-assurance-generation-domain",
+      "path": ".agents/skills/elmos-assurance-generation-domain/SKILL.md",
+      "category": "elmos",
+      "description": "项目生成业务线集成。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-generation-domain/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-generation-domain/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1517
+    },
+    {
+      "name": "elmos-assurance-interface-discovery",
+      "path": ".agents/skills/elmos-assurance-interface-discovery/SKILL.md",
+      "category": "elmos",
+      "description": "多协议接口独立发现。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-interface-discovery/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-interface-discovery/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1531
+    },
+    {
+      "name": "elmos-assurance-lean",
+      "path": ".agents/skills/elmos-assurance-lean/SKILL.md",
+      "category": "elmos",
+      "description": "Lean命题、证明与源码绑定。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-lean/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-lean/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1431
+    },
+    {
+      "name": "elmos-assurance-model-checking",
+      "path": ".agents/skills/elmos-assurance-model-checking/SKILL.md",
+      "category": "elmos",
+      "description": "SMT与有限状态协议校验。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-model-checking/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-model-checking/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1499
+    },
+    {
+      "name": "elmos-assurance-mutation-auditor",
+      "path": ".agents/skills/elmos-assurance-mutation-auditor/SKILL.md",
+      "category": "elmos",
+      "description": "领域变异与测试有效性审计。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-mutation-auditor/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-mutation-auditor/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1513
+    },
+    {
+      "name": "elmos-assurance-orchestrator",
+      "path": ".agents/skills/elmos-assurance-orchestrator/SKILL.md",
+      "category": "elmos",
+      "description": "总编排：四业务线验证与Ethen独立审计。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-orchestrator/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-orchestrator/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1493
+    },
+    {
+      "name": "elmos-assurance-property-fuzz",
+      "path": ".agents/skills/elmos-assurance-property-fuzz/SKILL.md",
+      "category": "elmos",
+      "description": "性质、变形与模糊测试。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-property-fuzz/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-property-fuzz/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1490
+    },
+    {
+      "name": "elmos-assurance-release-recertification",
+      "path": ".agents/skills/elmos-assurance-release-recertification/SKILL.md",
+      "category": "elmos",
+      "description": "发布、持续验证与撤销链。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-release-recertification/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-release-recertification/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1561
+    },
+    {
+      "name": "elmos-assurance-repository-domain",
+      "path": ".agents/skills/elmos-assurance-repository-domain/SKILL.md",
+      "category": "elmos",
+      "description": "全仓库语言转换集成。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-repository-domain/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-repository-domain/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1517
+    },
+    {
+      "name": "elmos-assurance-requirement-oracles",
+      "path": ".agents/skills/elmos-assurance-requirement-oracles/SKILL.md",
+      "category": "elmos",
+      "description": "需求解析与独立判定基准。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-requirement-oracles/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-requirement-oracles/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1533
+    },
+    {
+      "name": "elmos-assurance-router-budget",
+      "path": ".agents/skills/elmos-assurance-router-budget/SKILL.md",
+      "category": "elmos",
+      "description": "模型路由与验证成本治理。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-router-budget/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-router-budget/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1491
+    },
+    {
+      "name": "elmos-assurance-scope",
+      "path": ".agents/skills/elmos-assurance-scope/SKILL.md",
+      "category": "elmos",
+      "description": "范围与风险保证配置。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-scope/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-scope/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1433
+    },
+    {
+      "name": "elmos-assurance-security-isolation",
+      "path": ".agents/skills/elmos-assurance-security-isolation/SKILL.md",
+      "category": "elmos",
+      "description": "租户、供应链与不可信执行隔离。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-security-isolation/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-security-isolation/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1529
+    },
+    {
+      "name": "elmos-assurance-signed-attestations",
+      "path": ".agents/skills/elmos-assurance-signed-attestations/SKILL.md",
+      "category": "elmos",
+      "description": "K8签署、发布与撤销。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-signed-attestations/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-signed-attestations/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1532
+    },
+    {
+      "name": "elmos-assurance-smoke-gate",
+      "path": ".agents/skills/elmos-assurance-smoke-gate/SKILL.md",
+      "category": "elmos",
+      "description": "关键路径冒烟门禁。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-smoke-gate/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-smoke-gate/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1467
+    },
+    {
+      "name": "elmos-assurance-spring-domain",
+      "path": ".agents/skills/elmos-assurance-spring-domain/SKILL.md",
+      "category": "elmos",
+      "description": "Spring旧项目原生翻新集成。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-spring-domain/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-spring-domain/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1495
+    },
+    {
+      "name": "elmos-assurance-sql-domain",
+      "path": ".agents/skills/elmos-assurance-sql-domain/SKILL.md",
+      "category": "elmos",
+      "description": "SQL/例程语义转换集成。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-sql-domain/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-sql-domain/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1471
+    },
+    {
+      "name": "elmos-assurance-state-effects",
+      "path": ".agents/skills/elmos-assurance-state-effects/SKILL.md",
+      "category": "elmos",
+      "description": "状态机、副作用与时序模型。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-state-effects/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-state-effects/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1492
+    },
+    {
+      "name": "elmos-assurance-test-generation",
+      "path": ".agents/skills/elmos-assurance-test-generation/SKILL.md",
+      "category": "elmos",
+      "description": "独立可执行用例生成。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-test-generation/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-test-generation/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1503
+    },
+    {
+      "name": "elmos-assurance-verified-rules",
+      "path": ".agents/skills/elmos-assurance-verified-rules/SKILL.md",
+      "category": "elmos",
+      "description": "带证据变换规则注册中心。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-verified-rules/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-verified-rules/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1498
+    },
+    {
+      "name": "elmos-assurance-workbench-ui",
+      "path": ".agents/skills/elmos-assurance-workbench-ui/SKILL.md",
+      "category": "elmos",
+      "description": "接口覆盖、审计和证据工作台。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。",
+      "tasks": [],
+      "dependencies": [
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-workbench-ui/implementation.yaml",
+        ".elmos/assurance-package-v4.0.0/skills/elmos-assurance-workbench-ui/acceptance.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 1486
     },
     {
       "name": "elmos-ast-symbol-indexer",
@@ -22998,6 +23599,660 @@
       ],
       "status": "production-contract",
       "size_bytes": 11610
+    },
+    {
+      "name": "elmos-fde-adoption-change-management",
+      "path": ".agents/skills/elmos-fde-adoption-change-management/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for adoption-change-management; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 996
+    },
+    {
+      "name": "elmos-fde-ai-agent-system-audit",
+      "path": ".agents/skills/elmos-fde-ai-agent-system-audit/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for ai-agent-system-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1059
+    },
+    {
+      "name": "elmos-fde-architecture-maintainability-audit",
+      "path": ".agents/skills/elmos-fde-architecture-maintainability-audit/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for architecture-maintainability-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1153
+    },
+    {
+      "name": "elmos-fde-asset-inventory-and-classification",
+      "path": ".agents/skills/elmos-fde-asset-inventory-and-classification/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for asset-inventory-and-classification; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1078
+    },
+    {
+      "name": "elmos-fde-audit-existing-repository",
+      "path": ".agents/skills/elmos-fde-audit-existing-repository/SKILL.md",
+      "category": "elmos",
+      "description": "Assess an existing Elmos or customer repository against this package and produce an evidence-backed gap, risk, and implementation report.",
+      "tasks": [],
+      "dependencies": [
+        "${PACKAGE_ROOT}/docs/04_REQUIREMENTS_AND_SCENARIOS.md",
+        "${PACKAGE_ROOT}/catalog/requirements.json",
+        "${PACKAGE_ROOT}/catalog/issue-ontology.json",
+        "${PACKAGE_ROOT}/templates/repository-assessment-report.md",
+        "catalog/package.yaml",
+        ".elmos/extensions/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/catalog/package.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 3082
+    },
+    {
+      "name": "elmos-fde-build-fde-workflow",
+      "path": ".agents/skills/elmos-fde-build-fde-workflow/SKILL.md",
+      "category": "elmos",
+      "description": "Implement customer discovery, scope, SOW, status, adoption, procurement, and handoff workflows as evidence-backed Elmos product features.",
+      "tasks": [],
+      "dependencies": [
+        "${PACKAGE_ROOT}/docs/01_FDE_JOB_TO_PRODUCT_CAPABILITY_MAP.md",
+        "${PACKAGE_ROOT}/docs/10_UI_UX_AND_WORKSPACES.md",
+        "catalog/package.yaml",
+        ".elmos/extensions/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/catalog/package.yaml",
+        "AGENTS.md",
+        "PLANS.md"
+      ],
+      "status": "and",
+      "size_bytes": 2963
+    },
+    {
+      "name": "elmos-fde-build-repository-intelligence",
+      "path": ".agents/skills/elmos-fde-build-repository-intelligence/SKILL.md",
+      "category": "elmos",
+      "description": "Implement repository intake, runtime reproduction, support profiling, semantic graph, lineage, and evidence fusion capabilities.",
+      "tasks": [],
+      "dependencies": [
+        "${PACKAGE_ROOT}/docs/06_REPOSITORY_SEMANTIC_SYSTEM_GRAPH.md",
+        "catalog/package.yaml",
+        ".elmos/extensions/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/catalog/package.yaml",
+        "AGENTS.md",
+        "PLANS.md",
+        "catalog/implementation-batches.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 2913
+    },
+    {
+      "name": "elmos-fde-business-baseline-roi",
+      "path": ".agents/skills/elmos-fde-business-baseline-roi/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for business-baseline-roi; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 965
+    },
+    {
+      "name": "elmos-fde-business-capability-code-mapping",
+      "path": ".agents/skills/elmos-fde-business-capability-code-mapping/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for business-capability-code-mapping; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1089
+    },
+    {
+      "name": "elmos-fde-business-invariant-recovery",
+      "path": ".agents/skills/elmos-fde-business-invariant-recovery/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for business-invariant-recovery; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1066
+    },
+    {
+      "name": "elmos-fde-changeset-commit-and-provenance-governance",
+      "path": ".agents/skills/elmos-fde-changeset-commit-and-provenance-governance/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for changeset-commit-and-provenance-governance; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1133
+    },
+    {
+      "name": "elmos-fde-characterization-differential-mutation-verification",
+      "path": ".agents/skills/elmos-fde-characterization-differential-mutation-verification/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for characterization-differential-mutation-verification; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1249
+    },
+    {
+      "name": "elmos-fde-correctness-concurrency-consistency-audit",
+      "path": ".agents/skills/elmos-fde-correctness-concurrency-consistency-audit/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for correctness-concurrency-consistency-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1157
+    },
+    {
+      "name": "elmos-fde-cost-finops-sustainability-audit",
+      "path": ".agents/skills/elmos-fde-cost-finops-sustainability-audit/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for cost-finops-sustainability-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1103
+    },
+    {
+      "name": "elmos-fde-create-adapter",
+      "path": ".agents/skills/elmos-fde-create-adapter/SKILL.md",
+      "category": "elmos",
+      "description": "Implement or update a replaceable Elmos Adapter with typed capabilities, trust boundaries, conformance tests, failure semantics, and no completion authority.",
+      "tasks": [],
+      "dependencies": [
+        "${PACKAGE_ROOT}/docs/11_MCP_CONNECTOR_AND_ADAPTER_MODEL.md",
+        "${PACKAGE_ROOT}/contracts/schemas/adapter-descriptor.schema.json",
+        "catalog/package.yaml",
+        ".elmos/extensions/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/catalog/package.yaml",
+        "AGENTS.md",
+        "PLANS.md"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 3011
+    },
+    {
+      "name": "elmos-fde-cross-language-framework-transformation",
+      "path": ".agents/skills/elmos-fde-cross-language-framework-transformation/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for cross-language-framework-transformation; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1153
+    },
+    {
+      "name": "elmos-fde-data-database-migration-audit",
+      "path": ".agents/skills/elmos-fde-data-database-migration-audit/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for data-database-migration-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1073
+    },
+    {
+      "name": "elmos-fde-data-event-permission-lineage",
+      "path": ".agents/skills/elmos-fde-data-event-permission-lineage/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for data-event-permission-lineage; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1033
+    },
+    {
+      "name": "elmos-fde-database-schema-routine-data-transformation",
+      "path": ".agents/skills/elmos-fde-database-schema-routine-data-transformation/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for database-schema-routine-data-transformation; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1215
+    },
+    {
+      "name": "elmos-fde-e0-e3-readiness-and-evidence-bundle",
+      "path": ".agents/skills/elmos-fde-e0-e3-readiness-and-evidence-bundle/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for e0-e3-readiness-and-evidence-bundle; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1248
+    },
+    {
+      "name": "elmos-fde-execute-refactor",
+      "path": ".agents/skills/elmos-fde-execute-refactor/SKILL.md",
+      "category": "elmos",
+      "description": "Plan and execute proof-guided atomic repository refactoring with isolated writes, ChangeSets, checkpoints, verification, and rollback.",
+      "tasks": [],
+      "dependencies": [
+        "${PACKAGE_ROOT}/docs/07_TRANSFORMATION_ENGINE.md",
+        "${PACKAGE_ROOT}/policies/approval-gates.yaml",
+        "catalog/package.yaml",
+        ".elmos/extensions/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/catalog/package.yaml",
+        "AGENTS.md",
+        "PLANS.md"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 2947
+    },
+    {
+      "name": "elmos-fde-external-dependency-stub-and-service-virtualization",
+      "path": ".agents/skills/elmos-fde-external-dependency-stub-and-service-virtualization/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for external-dependency-stub-and-service-virtualization; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1193
+    },
+    {
+      "name": "elmos-fde-final-handoff-training-support",
+      "path": ".agents/skills/elmos-fde-final-handoff-training-support/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for final-handoff-training-support; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1098
+    },
+    {
+      "name": "elmos-fde-formal-assurance-routing",
+      "path": ".agents/skills/elmos-fde-formal-assurance-routing/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for formal-assurance-routing; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1063
+    },
+    {
+      "name": "elmos-fde-git-history-ownership-change-coupling",
+      "path": ".agents/skills/elmos-fde-git-history-ownership-change-coupling/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for git-history-ownership-change-coupling; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1132
+    },
+    {
+      "name": "elmos-fde-implement-component-skill",
+      "path": ".agents/skills/elmos-fde-implement-component-skill/SKILL.md",
+      "category": "elmos",
+      "description": "Implement one atomic Elmos FDE component Skill and all required contracts, ports, workflows, tests, telemetry, and evidence hooks.",
+      "tasks": [],
+      "dependencies": [
+        "${PACKAGE_ROOT}/docs/03_DOMAIN_MODEL_AND_LEDGERS.md",
+        "catalog/package.yaml",
+        ".elmos/extensions/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/catalog/package.yaml",
+        "AGENTS.md",
+        "PLANS.md",
+        "catalog/implementation-batches.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 2939
+    },
+    {
+      "name": "elmos-fde-implement-vertical-slice",
+      "path": ".agents/skills/elmos-fde-implement-vertical-slice/SKILL.md",
+      "category": "elmos",
+      "description": "Implement an end-to-end FDE or repository-refactoring vertical slice across UI, API, workflow, workers, ledgers, policies, and tests.",
+      "tasks": [],
+      "dependencies": [
+        "${PACKAGE_ROOT}/docs/02_REFERENCE_ARCHITECTURE.md",
+        "${PACKAGE_ROOT}/docs/10_UI_UX_AND_WORKSPACES.md",
+        "${PACKAGE_ROOT}/docs/14_GOLDEN_ROUTES.md",
+        "${PACKAGE_ROOT}/catalog/implementation-backlog.json",
+        "catalog/package.yaml",
+        ".elmos/extensions/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/catalog/package.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 2972
+    },
+    {
+      "name": "elmos-fde-incident-triage-remediation-and-postmortem",
+      "path": ".agents/skills/elmos-fde-incident-triage-remediation-and-postmortem/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for incident-triage-remediation-and-postmortem; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1203
+    },
+    {
+      "name": "elmos-fde-issue-ontology-and-finding-normalization",
+      "path": ".agents/skills/elmos-fde-issue-ontology-and-finding-normalization/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for issue-ontology-and-finding-normalization; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1147
+    },
+    {
+      "name": "elmos-fde-modernization-strangler-and-rearchitecture",
+      "path": ".agents/skills/elmos-fde-modernization-strangler-and-rearchitecture/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for modernization-strangler-and-rearchitecture; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1187
+    },
+    {
+      "name": "elmos-fde-package-navigator",
+      "path": ".agents/skills/elmos-fde-package-navigator/SKILL.md",
+      "category": "elmos",
+      "description": "Navigate this Elmos FDE package, select the right specifications, and explain boundaries before implementation.",
+      "tasks": [],
+      "dependencies": [
+        "${PACKAGE_ROOT}/README.md",
+        "${PACKAGE_ROOT}/AGENTS.md",
+        "${PACKAGE_ROOT}/catalog/skill-catalog.yaml",
+        "${PACKAGE_ROOT}/docs/00_PACKAGE_SCOPE_AND_BOUNDARIES.md",
+        "${PACKAGE_ROOT}/docs/17_NON_DUPLICATION_AND_CANONICAL_OWNERSHIP.md",
+        "catalog/package.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 2960
+    },
+    {
+      "name": "elmos-fde-performance-reliability-observability-audit",
+      "path": ".agents/skills/elmos-fde-performance-reliability-observability-audit/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for performance-reliability-observability-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1181
+    },
+    {
+      "name": "elmos-fde-pilot-scope-sow-acceptance",
+      "path": ".agents/skills/elmos-fde-pilot-scope-sow-acceptance/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for pilot-scope-sow-acceptance; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1026
+    },
+    {
+      "name": "elmos-fde-plan-implementation-wave",
+      "path": ".agents/skills/elmos-fde-plan-implementation-wave/SKILL.md",
+      "category": "elmos",
+      "description": "Plan a bounded Elmos implementation wave from package backlog, dependencies, risks, contracts, and acceptance gates.",
+      "tasks": [],
+      "dependencies": [
+        "${PACKAGE_ROOT}/catalog/implementation-backlog.json",
+        "${PACKAGE_ROOT}/docs/15_IMPLEMENTATION_ROADMAP.md",
+        "${PACKAGE_ROOT}/PLANS.md",
+        "${PACKAGE_ROOT}/catalog/dependency-graph.json",
+        "catalog/package.yaml",
+        ".elmos/extensions/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/catalog/package.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 2943
+    },
+    {
+      "name": "elmos-fde-polyglot-semantic-system-graph",
+      "path": ".agents/skills/elmos-fde-polyglot-semantic-system-graph/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for polyglot-semantic-system-graph; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1081
+    },
+    {
+      "name": "elmos-fde-portfolio-multi-repository-governance",
+      "path": ".agents/skills/elmos-fde-portfolio-multi-repository-governance/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for portfolio-multi-repository-governance; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1152
+    },
+    {
+      "name": "elmos-fde-procurement-security-questionnaire",
+      "path": ".agents/skills/elmos-fde-procurement-security-questionnaire/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for procurement-security-questionnaire; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1061
+    },
+    {
+      "name": "elmos-fde-product-feedback-roadmap-loop",
+      "path": ".agents/skills/elmos-fde-product-feedback-roadmap-loop/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for product-feedback-roadmap-loop; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1126
+    },
+    {
+      "name": "elmos-fde-proof-guided-atomic-refactor-execution",
+      "path": ".agents/skills/elmos-fde-proof-guided-atomic-refactor-execution/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for proof-guided-atomic-refactor-execution; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1118
+    },
+    {
+      "name": "elmos-fde-repository-custody-and-revisionset",
+      "path": ".agents/skills/elmos-fde-repository-custody-and-revisionset/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for repository-custody-and-revisionset; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1044
+    },
+    {
+      "name": "elmos-fde-reproducible-build-environment",
+      "path": ".agents/skills/elmos-fde-reproducible-build-environment/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for reproducible-build-environment; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1050
+    },
+    {
+      "name": "elmos-fde-retrospective-and-learn",
+      "path": ".agents/skills/elmos-fde-retrospective-and-learn/SKILL.md",
+      "category": "elmos",
+      "description": "Run a materiality-based retrospective and place each improvement in the correct Elmos or Codex ownership layer.",
+      "tasks": [],
+      "dependencies": [
+        "${PACKAGE_ROOT}/docs/17_NON_DUPLICATION_AND_CANONICAL_OWNERSHIP.md",
+        "${PACKAGE_ROOT}/templates/retrospective.md",
+        "catalog/package.yaml",
+        ".elmos/extensions/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/catalog/package.yaml",
+        "AGENTS.md",
+        "PLANS.md"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 3002
+    },
+    {
+      "name": "elmos-fde-reusable-recipe-skill-learning",
+      "path": ".agents/skills/elmos-fde-reusable-recipe-skill-learning/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for reusable-recipe-skill-learning; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1114
+    },
+    {
+      "name": "elmos-fde-root-cause-risk-prioritization",
+      "path": ".agents/skills/elmos-fde-root-cause-risk-prioritization/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for root-cause-risk-prioritization; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1222
+    },
+    {
+      "name": "elmos-fde-run-package-evals",
+      "path": ".agents/skills/elmos-fde-run-package-evals/SKILL.md",
+      "category": "elmos",
+      "description": "Validate this skills package, Codex trigger behavior, schemas, dependency DAG, examples, installers, reference kernel, and negative controls.",
+      "tasks": [],
+      "dependencies": [
+        "${PACKAGE_ROOT}/docs/16_CODEX_USAGE_GUIDE.md",
+        "catalog/package.yaml",
+        ".elmos/extensions/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/catalog/package.yaml",
+        "AGENTS.md",
+        "PLANS.md",
+        "catalog/implementation-batches.yaml"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 2961
+    },
+    {
+      "name": "elmos-fde-runtime-observation-and-traffic-capture",
+      "path": ".agents/skills/elmos-fde-runtime-observation-and-traffic-capture/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for runtime-observation-and-traffic-capture; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1109
+    },
+    {
+      "name": "elmos-fde-security-privacy-supply-chain-audit",
+      "path": ".agents/skills/elmos-fde-security-privacy-supply-chain-audit/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for security-privacy-supply-chain-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1150
+    },
+    {
+      "name": "elmos-fde-shadow-dual-run-canary-rollback-preparation",
+      "path": ".agents/skills/elmos-fde-shadow-dual-run-canary-rollback-preparation/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for shadow-dual-run-canary-rollback-preparation; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1205
+    },
+    {
+      "name": "elmos-fde-stakeholder-workflow-discovery",
+      "path": ".agents/skills/elmos-fde-stakeholder-workflow-discovery/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for stakeholder-workflow-discovery; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 998
+    },
+    {
+      "name": "elmos-fde-static-dynamic-evidence-fusion",
+      "path": ".agents/skills/elmos-fde-static-dynamic-evidence-fusion/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for static-dynamic-evidence-fusion; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1126
+    },
+    {
+      "name": "elmos-fde-status-risk-decision-communications",
+      "path": ".agents/skills/elmos-fde-status-risk-decision-communications/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for status-risk-decision-communications; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1059
+    },
+    {
+      "name": "elmos-fde-support-profile-and-unknown-register",
+      "path": ".agents/skills/elmos-fde-support-profile-and-unknown-register/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for support-profile-and-unknown-register; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1092
+    },
+    {
+      "name": "elmos-fde-target-architecture-alternatives-and-adr",
+      "path": ".agents/skills/elmos-fde-target-architecture-alternatives-and-adr/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for target-architecture-alternatives-and-adr; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1152
+    },
+    {
+      "name": "elmos-fde-test-ci-cd-developer-experience-audit",
+      "path": ".agents/skills/elmos-fde-test-ci-cd-developer-experience-audit/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for test-ci-cd-developer-experience-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1167
+    },
+    {
+      "name": "elmos-fde-transformation-dag-estimation",
+      "path": ".agents/skills/elmos-fde-transformation-dag-estimation/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for transformation-dag-estimation; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1053
+    },
+    {
+      "name": "elmos-fde-ux-accessibility-i18n-audit",
+      "path": ".agents/skills/elmos-fde-ux-accessibility-i18n-audit/SKILL.md",
+      "category": "elmos",
+      "description": "Repository-owned bounded FDE capability handler for ux-accessibility-i18n-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1062
+    },
+    {
+      "name": "elmos-fde-verify-change",
+      "path": ".agents/skills/elmos-fde-verify-change/SKILL.md",
+      "category": "elmos",
+      "description": "Independently verify an Elmos or customer code change using contracts, differential tests, mutation, risk-based non-functional checks, and evidence gates.",
+      "tasks": [],
+      "dependencies": [
+        "${PACKAGE_ROOT}/docs/08_VERIFICATION_AND_E0_E3.md",
+        "${PACKAGE_ROOT}/templates/evidence-bundle.md",
+        "catalog/package.yaml",
+        ".elmos/extensions/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/catalog/package.yaml",
+        "AGENTS.md",
+        "PLANS.md"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 2982
     },
     {
       "name": "feature-entitlement-and-license",
@@ -42912,6 +44167,16 @@
       "size_bytes": 7044
     },
     {
+      "name": "external-dependency-stub-and-service-virtualization",
+      "path": ".agents/skills/external-dependency-stub-and-service-virtualization/SKILL.md",
+      "category": "external",
+      "description": "Repository-owned bounded FDE capability handler for external-dependency-stub-and-service-virtualization; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1163
+    },
+    {
       "name": "failure-attribution-learning",
       "path": ".agents/skills/failure-attribution-learning/SKILL.md",
       "category": "failure",
@@ -42963,6 +44228,16 @@
       "size_bytes": 2307
     },
     {
+      "name": "final-handoff-training-support",
+      "path": ".agents/skills/final-handoff-training-support/SKILL.md",
+      "category": "final",
+      "description": "Repository-owned bounded FDE capability handler for final-handoff-training-support; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1068
+    },
+    {
       "name": "final-release-certification",
       "path": ".agents/skills/final-release-certification/SKILL.md",
       "category": "final",
@@ -43001,6 +44276,16 @@
       ],
       "status": "DECLARED",
       "size_bytes": 5301
+    },
+    {
+      "name": "formal-assurance-routing",
+      "path": ".agents/skills/formal-assurance-routing/SKILL.md",
+      "category": "formal",
+      "description": "Repository-owned bounded FDE capability handler for formal-assurance-routing; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1033
     },
     {
       "name": "formal-proof-router",
@@ -43054,6 +44339,16 @@
       ],
       "status": "DECLARED",
       "size_bytes": 7083
+    },
+    {
+      "name": "git-history-ownership-change-coupling",
+      "path": ".agents/skills/git-history-ownership-change-coupling/SKILL.md",
+      "category": "git",
+      "description": "Repository-owned bounded FDE capability handler for git-history-ownership-change-coupling; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1102
     },
     {
       "name": "git-snapshot-revert",
@@ -43531,6 +44826,26 @@
       "size_bytes": 2295
     },
     {
+      "name": "incident-triage-remediation-and-postmortem",
+      "path": ".agents/skills/incident-triage-remediation-and-postmortem/SKILL.md",
+      "category": "incident",
+      "description": "Repository-owned bounded FDE capability handler for incident-triage-remediation-and-postmortem; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1173
+    },
+    {
+      "name": "issue-ontology-and-finding-normalization",
+      "path": ".agents/skills/issue-ontology-and-finding-normalization/SKILL.md",
+      "category": "issue",
+      "description": "Repository-owned bounded FDE capability handler for issue-ontology-and-finding-normalization; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1117
+    },
+    {
       "name": "kubernetes-policy-certification",
       "path": ".agents/skills/kubernetes-policy-certification/SKILL.md",
       "category": "kubernetes",
@@ -43592,8 +44907,8 @@
       "description": "Repository-owned exact runtime interface for 仓库级现代化总编排器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4441
+      "status": "DECLARED",
+      "size_bytes": 4199
     },
     {
       "name": "legacy-web-01-job-contract-and-policy-resolver",
@@ -43602,8 +44917,8 @@
       "description": "Repository-owned exact runtime interface for 任务契约与策略解析; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4420
+      "status": "DECLARED",
+      "size_bytes": 4178
     },
     {
       "name": "legacy-web-02-reproducible-repository-snapshot",
@@ -43612,8 +44927,8 @@
       "description": "Repository-owned exact runtime interface for 可复现仓库快照; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4443
+      "status": "DECLARED",
+      "size_bytes": 4201
     },
     {
       "name": "legacy-web-03-checkpoint-resume-cancel",
@@ -43622,8 +44937,8 @@
       "description": "Repository-owned exact runtime interface for 检查点、恢复与取消; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4455
+      "status": "DECLARED",
+      "size_bytes": 4213
     },
     {
       "name": "legacy-web-04-wall-clock-eta-and-cost-model",
@@ -43632,8 +44947,8 @@
       "description": "Repository-owned exact runtime interface for 机器运行时 ETA 与成本模型; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4455
+      "status": "DECLARED",
+      "size_bytes": 4213
     },
     {
       "name": "legacy-web-05-tool-authority-and-sandbox",
@@ -43642,8 +44957,8 @@
       "description": "Repository-owned exact runtime interface for 工具权限与执行沙箱; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4419
+      "status": "DECLARED",
+      "size_bytes": 4177
     },
     {
       "name": "legacy-web-10-build-and-module-topology",
@@ -43652,8 +44967,8 @@
       "description": "Repository-owned exact runtime interface for 构建与模块拓扑恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4463
+      "status": "DECLARED",
+      "size_bytes": 4221
     },
     {
       "name": "legacy-web-11-framework-and-version-fingerprinting",
@@ -43662,8 +44977,8 @@
       "description": "Repository-owned exact runtime interface for 框架与版本指纹; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4397
+      "status": "DECLARED",
+      "size_bytes": 4155
     },
     {
       "name": "legacy-web-12-runtime-deployment-topology",
@@ -43672,8 +44987,8 @@
       "description": "Repository-owned exact runtime interface for 运行时与部署拓扑恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4516
+      "status": "DECLARED",
+      "size_bytes": 4274
     },
     {
       "name": "legacy-web-13-route-ownership-and-conflict-analysis",
@@ -43682,8 +44997,8 @@
       "description": "Repository-owned exact runtime interface for 路由所有权与冲突分析; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4593
+      "status": "DECLARED",
+      "size_bytes": 4351
     },
     {
       "name": "legacy-web-14-environment-config-overlay-analysis",
@@ -43692,8 +45007,8 @@
       "description": "Repository-owned exact runtime interface for 环境配置叠加分析; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4489
+      "status": "DECLARED",
+      "size_bytes": 4247
     },
     {
       "name": "legacy-web-15-dependency-compatibility-and-jakarta-readiness",
@@ -43702,8 +45017,8 @@
       "description": "Repository-owned exact runtime interface for 依赖兼容性与 Jakarta 就绪度; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4722
+      "status": "DECLARED",
+      "size_bytes": 4480
     },
     {
       "name": "legacy-web-20-struts1-lifecycle-recovery",
@@ -43712,8 +45027,8 @@
       "description": "Repository-owned exact runtime interface for Struts 1 请求生命周期恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4707
+      "status": "DECLARED",
+      "size_bytes": 4465
     },
     {
       "name": "legacy-web-21-struts2-interceptor-pipeline-recovery",
@@ -43722,8 +45037,8 @@
       "description": "Repository-owned exact runtime interface for Struts 2 拦截器流水线恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4699
+      "status": "DECLARED",
+      "size_bytes": 4457
     },
     {
       "name": "legacy-web-22-servlet-container-semantics-recovery",
@@ -43732,8 +45047,8 @@
       "description": "Repository-owned exact runtime interface for Servlet 容器语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4710
+      "status": "DECLARED",
+      "size_bytes": 4468
     },
     {
       "name": "legacy-web-23-jsp-taglib-and-view-semantics",
@@ -43742,8 +45057,8 @@
       "description": "Repository-owned exact runtime interface for JSP、Taglib 与视图语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4614
+      "status": "DECLARED",
+      "size_bytes": 4372
     },
     {
       "name": "legacy-web-24-request-binding-and-type-conversion",
@@ -43752,8 +45067,8 @@
       "description": "Repository-owned exact runtime interface for 请求绑定与类型转换恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4693
+      "status": "DECLARED",
+      "size_bytes": 4451
     },
     {
       "name": "legacy-web-25-navigation-dispatch-and-error-semantics",
@@ -43762,8 +45077,8 @@
       "description": "Repository-owned exact runtime interface for 导航、分派与错误语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4764
+      "status": "DECLARED",
+      "size_bytes": 4522
     },
     {
       "name": "legacy-web-26-session-state-and-scope-semantics",
@@ -43772,8 +45087,8 @@
       "description": "Repository-owned exact runtime interface for Session、状态与作用域语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4838
+      "status": "DECLARED",
+      "size_bytes": 4596
     },
     {
       "name": "legacy-web-27-security-authn-authz-csrf-semantics",
@@ -43782,8 +45097,8 @@
       "description": "Repository-owned exact runtime interface for 认证、授权与 CSRF 语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4761
+      "status": "DECLARED",
+      "size_bytes": 4519
     },
     {
       "name": "legacy-web-28-transaction-and-side-effect-topology",
@@ -43792,8 +45107,8 @@
       "description": "Repository-owned exact runtime interface for 事务与副作用拓扑恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4584
+      "status": "DECLARED",
+      "size_bytes": 4342
     },
     {
       "name": "legacy-web-29-concurrency-lifecycle-and-threadlocal",
@@ -43802,8 +45117,8 @@
       "description": "Repository-owned exact runtime interface for 并发、实例生命周期与 ThreadLocal 恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4740
+      "status": "DECLARED",
+      "size_bytes": 4498
     },
     {
       "name": "legacy-web-30-repository-evidence-graph",
@@ -43812,8 +45127,8 @@
       "description": "Repository-owned exact runtime interface for Repository Evidence Graph; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5395
+      "status": "DECLARED",
+      "size_bytes": 5153
     },
     {
       "name": "legacy-web-31-legacy-web-semantic-ir",
@@ -43822,8 +45137,8 @@
       "description": "Repository-owned exact runtime interface for Legacy Web Semantic IR; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4424
+      "status": "DECLARED",
+      "size_bytes": 4182
     },
     {
       "name": "legacy-web-32-behavioral-contract-and-sequence-mining",
@@ -43832,8 +45147,8 @@
       "description": "Repository-owned exact runtime interface for 行为契约与请求序列挖掘; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4447
+      "status": "DECLARED",
+      "size_bytes": 4205
     },
     {
       "name": "legacy-web-33-unknown-semantics-ledger",
@@ -43842,8 +45157,8 @@
       "description": "Repository-owned exact runtime interface for 未知语义债务账本; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4323
+      "status": "DECLARED",
+      "size_bytes": 4081
     },
     {
       "name": "legacy-web-34-semantic-risk-scoring",
@@ -43852,8 +45167,8 @@
       "description": "Repository-owned exact runtime interface for 语义风险评分; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4360
+      "status": "DECLARED",
+      "size_bytes": 4118
     },
     {
       "name": "legacy-web-40-preserve-first-migration-strategy",
@@ -43862,8 +45177,8 @@
       "description": "Repository-owned exact runtime interface for Preserve-first 迁移策略; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4421
+      "status": "DECLARED",
+      "size_bytes": 4179
     },
     {
       "name": "legacy-web-41-springboot4-target-architecture",
@@ -43872,8 +45187,8 @@
       "description": "Repository-owned exact runtime interface for Spring Boot 4 目标架构合成; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4652
+      "status": "DECLARED",
+      "size_bytes": 4410
     },
     {
       "name": "legacy-web-42-multi-module-conversion-wave-planner",
@@ -43882,8 +45197,8 @@
       "description": "Repository-owned exact runtime interface for 多模块转换波次规划; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4515
+      "status": "DECLARED",
+      "size_bytes": 4273
     },
     {
       "name": "legacy-web-43-compatibility-shim-synthesis",
@@ -43892,8 +45207,8 @@
       "description": "Repository-owned exact runtime interface for 兼容层合成规划; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4447
+      "status": "DECLARED",
+      "size_bytes": 4205
     },
     {
       "name": "legacy-web-44-packaging-view-and-container-decision",
@@ -43902,8 +45217,8 @@
       "description": "Repository-owned exact runtime interface for 打包、视图与容器决策; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4567
+      "status": "DECLARED",
+      "size_bytes": 4325
     },
     {
       "name": "legacy-web-45-cutover-strangler-and-dual-run-plan",
@@ -43912,8 +45227,8 @@
       "description": "Repository-owned exact runtime interface for 切流、Strangler 与双运行规划; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4502
+      "status": "DECLARED",
+      "size_bytes": 4260
     },
     {
       "name": "legacy-web-50-deterministic-ast-and-config-rewrite",
@@ -43922,8 +45237,8 @@
       "description": "Repository-owned exact runtime interface for 确定性 AST 与配置改写; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4576
+      "status": "DECLARED",
+      "size_bytes": 4334
     },
     {
       "name": "legacy-web-51-struts1-to-springmvc-generator",
@@ -43932,8 +45247,8 @@
       "description": "Repository-owned exact runtime interface for Struts 1→Spring MVC 生成器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4879
+      "status": "DECLARED",
+      "size_bytes": 4637
     },
     {
       "name": "legacy-web-52-struts2-to-springmvc-generator",
@@ -43942,8 +45257,8 @@
       "description": "Repository-owned exact runtime interface for Struts 2→Spring MVC 生成器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4835
+      "status": "DECLARED",
+      "size_bytes": 4593
     },
     {
       "name": "legacy-web-53-servlet-to-springmvc-generator",
@@ -43952,8 +45267,8 @@
       "description": "Repository-owned exact runtime interface for Servlet→Spring MVC 生成器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4859
+      "status": "DECLARED",
+      "size_bytes": 4617
     },
     {
       "name": "legacy-web-54-jakarta-and-dependency-migration",
@@ -43962,8 +45277,8 @@
       "description": "Repository-owned exact runtime interface for Jakarta 与依赖迁移; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4632
+      "status": "DECLARED",
+      "size_bytes": 4390
     },
     {
       "name": "legacy-web-55-spring-security-validation-transaction-generator",
@@ -43972,8 +45287,8 @@
       "description": "Repository-owned exact runtime interface for Security、Validation 与 Transaction 生成器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4970
+      "status": "DECLARED",
+      "size_bytes": 4728
     },
     {
       "name": "legacy-web-56-jsp-preserve-or-modernize",
@@ -43982,8 +45297,8 @@
       "description": "Repository-owned exact runtime interface for JSP 保留或现代化; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4545
+      "status": "DECLARED",
+      "size_bytes": 4303
     },
     {
       "name": "legacy-web-57-source-map-change-provenance",
@@ -43992,8 +45307,8 @@
       "description": "Repository-owned exact runtime interface for 语义 Source Map 与变更溯源; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5039
+      "status": "DECLARED",
+      "size_bytes": 4797
     },
     {
       "name": "legacy-web-58-idempotent-change-set-commit",
@@ -44002,8 +45317,8 @@
       "description": "Repository-owned exact runtime interface for 幂等 Change Set 提交; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4488
+      "status": "DECLARED",
+      "size_bytes": 4246
     },
     {
       "name": "legacy-web-60-static-semantic-coverage",
@@ -44012,8 +45327,8 @@
       "description": "Repository-owned exact runtime interface for 静态语义覆盖验证; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4444
+      "status": "DECLARED",
+      "size_bytes": 4202
     },
     {
       "name": "legacy-web-61-test-and-scenario-generation",
@@ -44022,8 +45337,8 @@
       "description": "Repository-owned exact runtime interface for 测试与场景生成; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4415
+      "status": "DECLARED",
+      "size_bytes": 4173
     },
     {
       "name": "legacy-web-62-differential-http-and-view-oracle",
@@ -44032,8 +45347,8 @@
       "description": "Repository-owned exact runtime interface for HTTP 与视图差分 Oracle; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4623
+      "status": "DECLARED",
+      "size_bytes": 4381
     },
     {
       "name": "legacy-web-63-session-db-and-side-effect-diff",
@@ -44042,8 +45357,8 @@
       "description": "Repository-owned exact runtime interface for Session、数据库与副作用差分; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4665
+      "status": "DECLARED",
+      "size_bytes": 4423
     },
     {
       "name": "legacy-web-64-security-equivalence-and-hardening",
@@ -44052,8 +45367,8 @@
       "description": "Repository-owned exact runtime interface for 安全等价与可选硬化验证; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4695
+      "status": "DECLARED",
+      "size_bytes": 4453
     },
     {
       "name": "legacy-web-65-concurrency-performance-and-fault-verification",
@@ -44062,8 +45377,8 @@
       "description": "Repository-owned exact runtime interface for 并发、性能与故障验证; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4651
+      "status": "DECLARED",
+      "size_bytes": 4409
     },
     {
       "name": "legacy-web-66-observability-and-trace-correlation",
@@ -44072,8 +45387,8 @@
       "description": "Repository-owned exact runtime interface for 可观测性与 Trace 关联; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4523
+      "status": "DECLARED",
+      "size_bytes": 4281
     },
     {
       "name": "legacy-web-70-mismatch-classification",
@@ -44082,8 +45397,8 @@
       "description": "Repository-owned exact runtime interface for 差异分类与根因定位; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4629
+      "status": "DECLARED",
+      "size_bytes": 4387
     },
     {
       "name": "legacy-web-71-bounded-semantic-auto-repair",
@@ -44092,8 +45407,8 @@
       "description": "Repository-owned exact runtime interface for 有界语义自动修复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4358
+      "status": "DECLARED",
+      "size_bytes": 4116
     },
     {
       "name": "legacy-web-72-impact-based-regression-selection",
@@ -44102,8 +45417,8 @@
       "description": "Repository-owned exact runtime interface for 影响面回归选择; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4463
+      "status": "DECLARED",
+      "size_bytes": 4221
     },
     {
       "name": "legacy-web-73-production-cutover-rollback",
@@ -44112,8 +45427,8 @@
       "description": "Repository-owned exact runtime interface for 生产切流与回滚执行; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4578
+      "status": "DECLARED",
+      "size_bytes": 4336
     },
     {
       "name": "legacy-web-74-evidence-bundle-and-e0-e5-certification",
@@ -44122,8 +45437,8 @@
       "description": "Repository-owned exact runtime interface for 证据包与 E0–E5 生产认证; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 5181
+      "status": "DECLARED",
+      "size_bytes": 4939
     },
     {
       "name": "legacy-web-75-golden-route-benchmark-and-learning-cache",
@@ -44132,8 +45447,8 @@
       "description": "Repository-owned exact runtime interface for Golden Route 基准与学习缓存; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "size_bytes": 4628
+      "status": "DECLARED",
+      "size_bytes": 4386
     },
     {
       "name": "lenient-semantic-comparator",
@@ -44532,6 +45847,16 @@
       "size_bytes": 2281
     },
     {
+      "name": "modernization-strangler-and-rearchitecture",
+      "path": ".agents/skills/modernization-strangler-and-rearchitecture/SKILL.md",
+      "category": "modernization",
+      "description": "Repository-owned bounded FDE capability handler for modernization-strangler-and-rearchitecture; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1157
+    },
+    {
       "name": "multi-cycle-fixpoint",
       "path": ".agents/skills/multi-cycle-fixpoint/SKILL.md",
       "category": "multi",
@@ -44796,6 +46121,26 @@
       ],
       "status": "DECLARED",
       "size_bytes": 2316
+    },
+    {
+      "name": "performance-reliability-observability-audit",
+      "path": ".agents/skills/performance-reliability-observability-audit/SKILL.md",
+      "category": "performance",
+      "description": "Repository-owned bounded FDE capability handler for performance-reliability-observability-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1151
+    },
+    {
+      "name": "pilot-scope-sow-acceptance",
+      "path": ".agents/skills/pilot-scope-sow-acceptance/SKILL.md",
+      "category": "pilot",
+      "description": "Repository-owned bounded FDE capability handler for pilot-scope-sow-acceptance; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 996
     },
     {
       "name": "plan-explore-scout-agents",
@@ -51846,6 +53191,16 @@
       "size_bytes": 2289
     },
     {
+      "name": "polyglot-semantic-system-graph",
+      "path": ".agents/skills/polyglot-semantic-system-graph/SKILL.md",
+      "category": "polyglot",
+      "description": "Repository-owned bounded FDE capability handler for polyglot-semantic-system-graph; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1051
+    },
+    {
       "name": "polyglot-syntax-front-end",
       "path": ".agents/skills/polyglot-syntax-front-end/SKILL.md",
       "category": "polyglot",
@@ -51870,6 +53225,16 @@
       ],
       "status": "SPECIFICATION_IMPORTED",
       "size_bytes": 4068
+    },
+    {
+      "name": "portfolio-multi-repository-governance",
+      "path": ".agents/skills/portfolio-multi-repository-governance/SKILL.md",
+      "category": "portfolio",
+      "description": "Repository-owned bounded FDE capability handler for portfolio-multi-repository-governance; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1122
     },
     {
       "name": "post-crash-continuation-recovery",
@@ -51909,6 +53274,26 @@
       "size_bytes": 3504
     },
     {
+      "name": "procurement-security-questionnaire",
+      "path": ".agents/skills/procurement-security-questionnaire/SKILL.md",
+      "category": "procurement",
+      "description": "Repository-owned bounded FDE capability handler for procurement-security-questionnaire; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1031
+    },
+    {
+      "name": "product-feedback-roadmap-loop",
+      "path": ".agents/skills/product-feedback-roadmap-loop/SKILL.md",
+      "category": "product",
+      "description": "Repository-owned bounded FDE capability handler for product-feedback-roadmap-loop; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1096
+    },
+    {
       "name": "product-handoff-gate",
       "path": ".agents/skills/product-handoff-gate/SKILL.md",
       "category": "product",
@@ -51945,6 +53330,16 @@
       ],
       "status": "DECLARED",
       "size_bytes": 2293
+    },
+    {
+      "name": "proof-guided-atomic-refactor-execution",
+      "path": ".agents/skills/proof-guided-atomic-refactor-execution/SKILL.md",
+      "category": "proof",
+      "description": "Repository-owned bounded FDE capability handler for proof-guided-atomic-refactor-execution; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1088
     },
     {
       "name": "property-based-test-generation",
@@ -52289,6 +53684,16 @@
       "size_bytes": 4662
     },
     {
+      "name": "repository-custody-and-revisionset",
+      "path": ".agents/skills/repository-custody-and-revisionset/SKILL.md",
+      "category": "repository",
+      "description": "Repository-owned bounded FDE capability handler for repository-custody-and-revisionset; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1014
+    },
+    {
       "name": "repository-knowledge-precompute",
       "path": ".agents/skills/repository-knowledge-precompute/SKILL.md",
       "category": "repository",
@@ -52328,6 +53733,16 @@
       "size_bytes": 2302
     },
     {
+      "name": "reproducible-build-environment",
+      "path": ".agents/skills/reproducible-build-environment/SKILL.md",
+      "category": "reproducible",
+      "description": "Repository-owned bounded FDE capability handler for reproducible-build-environment; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1020
+    },
+    {
       "name": "reproducible-build-verifier",
       "path": ".agents/skills/reproducible-build-verifier/SKILL.md",
       "category": "reproducible",
@@ -52352,6 +53767,16 @@
       ],
       "status": "DECLARED",
       "size_bytes": 2287
+    },
+    {
+      "name": "reusable-recipe-skill-learning",
+      "path": ".agents/skills/reusable-recipe-skill-learning/SKILL.md",
+      "category": "reusable",
+      "description": "Repository-owned bounded FDE capability handler for reusable-recipe-skill-learning; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1084
     },
     {
       "name": "rewrite-rpc-runtime",
@@ -52379,6 +53804,16 @@
       ],
       "status": "SPECIFICATION_IMPORTED",
       "size_bytes": 3685
+    },
+    {
+      "name": "root-cause-risk-prioritization",
+      "path": ".agents/skills/root-cause-risk-prioritization/SKILL.md",
+      "category": "root",
+      "description": "Repository-owned bounded FDE capability handler for root-cause-risk-prioritization; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1192
     },
     {
       "name": "router-industrial-00-master-orchestrator",
@@ -52590,6 +54025,16 @@
       "size_bytes": 2270
     },
     {
+      "name": "runtime-observation-and-traffic-capture",
+      "path": ".agents/skills/runtime-observation-and-traffic-capture/SKILL.md",
+      "category": "runtime",
+      "description": "Repository-owned bounded FDE capability handler for runtime-observation-and-traffic-capture; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1079
+    },
+    {
       "name": "safe-agent-role-switching",
       "path": ".agents/skills/safe-agent-role-switching/SKILL.md",
       "category": "safe",
@@ -52687,6 +54132,16 @@
       ],
       "status": "DECLARED",
       "size_bytes": 2249
+    },
+    {
+      "name": "security-privacy-supply-chain-audit",
+      "path": ".agents/skills/security-privacy-supply-chain-audit/SKILL.md",
+      "category": "security",
+      "description": "Repository-owned bounded FDE capability handler for security-privacy-supply-chain-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1120
     },
     {
       "name": "self-evolving-skill-factory",
@@ -52855,6 +54310,16 @@
       ],
       "status": "SPECIFICATION_IMPORTED",
       "size_bytes": 3431
+    },
+    {
+      "name": "shadow-dual-run-canary-rollback-preparation",
+      "path": ".agents/skills/shadow-dual-run-canary-rollback-preparation/SKILL.md",
+      "category": "shadow",
+      "description": "Repository-owned bounded FDE capability handler for shadow-dual-run-canary-rollback-preparation; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1175
     },
     {
       "name": "side-effect-interruption-fencing",
@@ -53634,6 +55099,16 @@
       "size_bytes": 2242
     },
     {
+      "name": "stakeholder-workflow-discovery",
+      "path": ".agents/skills/stakeholder-workflow-discovery/SKILL.md",
+      "category": "stakeholder",
+      "description": "Repository-owned bounded FDE capability handler for stakeholder-workflow-discovery; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 968
+    },
+    {
       "name": "static-dataflow-assurance",
       "path": ".agents/skills/static-dataflow-assurance/SKILL.md",
       "category": "static",
@@ -53645,6 +55120,26 @@
       ],
       "status": "DECLARED",
       "size_bytes": 2269
+    },
+    {
+      "name": "static-dynamic-evidence-fusion",
+      "path": ".agents/skills/static-dynamic-evidence-fusion/SKILL.md",
+      "category": "static",
+      "description": "Repository-owned bounded FDE capability handler for static-dynamic-evidence-fusion; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1096
+    },
+    {
+      "name": "status-risk-decision-communications",
+      "path": ".agents/skills/status-risk-decision-communications/SKILL.md",
+      "category": "status",
+      "description": "Repository-owned bounded FDE capability handler for status-risk-decision-communications; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1029
     },
     {
       "name": "stored-routine-migration",
@@ -53697,6 +55192,26 @@
       "size_bytes": 3716
     },
     {
+      "name": "support-profile-and-unknown-register",
+      "path": ".agents/skills/support-profile-and-unknown-register/SKILL.md",
+      "category": "support",
+      "description": "Repository-owned bounded FDE capability handler for support-profile-and-unknown-register; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1062
+    },
+    {
+      "name": "target-architecture-alternatives-and-adr",
+      "path": ".agents/skills/target-architecture-alternatives-and-adr/SKILL.md",
+      "category": "target",
+      "description": "Repository-owned bounded FDE capability handler for target-architecture-alternatives-and-adr; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1122
+    },
+    {
       "name": "task-checkpoint-time-travel",
       "path": ".agents/skills/task-checkpoint-time-travel/SKILL.md",
       "category": "task",
@@ -53720,6 +55235,16 @@
       ],
       "status": "DECLARED",
       "size_bytes": 7048
+    },
+    {
+      "name": "test-ci-cd-developer-experience-audit",
+      "path": ".agents/skills/test-ci-cd-developer-experience-audit/SKILL.md",
+      "category": "test",
+      "description": "Repository-owned bounded FDE capability handler for test-ci-cd-developer-experience-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1137
     },
     {
       "name": "toolchain-provenance-license-gate",
@@ -53800,6 +55325,16 @@
       ],
       "status": "SPECIFICATION_IMPORTED",
       "size_bytes": 3778
+    },
+    {
+      "name": "transformation-dag-estimation",
+      "path": ".agents/skills/transformation-dag-estimation/SKILL.md",
+      "category": "transformation",
+      "description": "Repository-owned bounded FDE capability handler for transformation-dag-estimation; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1023
     },
     {
       "name": "transformation-explainability-ledger",
@@ -56148,6 +57683,16 @@
       ],
       "status": "DECLARED",
       "size_bytes": 2269
+    },
+    {
+      "name": "ux-accessibility-i18n-audit",
+      "path": ".agents/skills/ux-accessibility-i18n-audit/SKILL.md",
+      "category": "ux",
+      "description": "Repository-owned bounded FDE capability handler for ux-accessibility-i18n-audit; external evidence remains NOT_RUN.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "size_bytes": 1032
     },
     {
       "name": "variadic-pattern-matching",

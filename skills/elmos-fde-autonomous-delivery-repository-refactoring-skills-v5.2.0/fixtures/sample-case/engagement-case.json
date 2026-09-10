@@ -1,0 +1,27 @@
+{
+  "engagementId": "eng-demo",
+  "tenantId": "tenant-demo",
+  "phase": "pilot",
+  "stakeholders": [
+    {
+      "id": "sponsor-1",
+      "role": "business-owner",
+      "decisionRights": [
+        "scope",
+        "acceptance"
+      ]
+    }
+  ],
+  "outcomes": [
+    "Reduce incident diagnosis time"
+  ],
+  "unknowns": [
+    "Production traffic profile not yet available"
+  ],
+  "repositories": [
+    "repo-demo"
+  ],
+  "dataClasses": [
+    "internal-source"
+  ]
+}

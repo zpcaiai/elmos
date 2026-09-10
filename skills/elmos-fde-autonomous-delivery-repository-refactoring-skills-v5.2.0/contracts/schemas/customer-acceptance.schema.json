@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/fde/5.2.0/CustomerAcceptance.schema.json",
+  "title": "CustomerAcceptance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "acceptanceId",
+    "engagementId",
+    "criteria",
+    "status",
+    "approvers"
+  ],
+  "properties": {
+    "acceptanceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "engagementId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "statement",
+          "status",
+          "evidenceRefs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "pending",
+              "pass",
+              "fail",
+              "waived",
+              "unknown"
+            ]
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 0
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "draft",
+        "in-review",
+        "accepted",
+        "rejected",
+        "conditional"
+      ]
+    },
+    "approvers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    }
+  }
+}

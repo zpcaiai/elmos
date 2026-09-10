@@ -1,0 +1,729 @@
+{
+  "batch": {
+    "id": "B17",
+    "title": "Reusable recipe learning, portfolio and roadmap feedback",
+    "dependsOn": [
+      "B13",
+      "B16"
+    ],
+    "skills": [
+      "reusable-recipe-skill-learning",
+      "portfolio-multi-repository-governance",
+      "product-feedback-roadmap-loop"
+    ],
+    "tasks": [
+      "B17-T001",
+      "B17-T002",
+      "B17-T003",
+      "B17-T004",
+      "B17-T005",
+      "B17-T006",
+      "B17-T007",
+      "B17-T008",
+      "B17-T009",
+      "B17-T010",
+      "B17-T011",
+      "B17-T012",
+      "B17-T013",
+      "B17-T014",
+      "B17-T015",
+      "B17-T016",
+      "B17-T017",
+      "B17-T018",
+      "B17-T019",
+      "B17-T020",
+      "B17-T021",
+      "B17-T022",
+      "B17-T023",
+      "B17-T024",
+      "B17-T025",
+      "B17-T026",
+      "B17-T027",
+      "B17-T028",
+      "B17-T029",
+      "B17-T030"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B17-T001",
+      "batch": "B17",
+      "title": "reusable-recipe-skill-learning: Bind canonical ownership and model domain contracts",
+      "skillId": "reusable-recipe-skill-learning",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B13-T020",
+        "B12-T030"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for reusable-recipe-skill-learning are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T002",
+      "batch": "B17",
+      "title": "reusable-recipe-skill-learning: Implement persistence projections and append-only ledger events",
+      "skillId": "reusable-recipe-skill-learning",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T001"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for reusable-recipe-skill-learning are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T003",
+      "batch": "B17",
+      "title": "reusable-recipe-skill-learning: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "reusable-recipe-skill-learning",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T002"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for reusable-recipe-skill-learning are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T004",
+      "batch": "B17",
+      "title": "reusable-recipe-skill-learning: Implement service and durable workflow",
+      "skillId": "reusable-recipe-skill-learning",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T003"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for reusable-recipe-skill-learning are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T005",
+      "batch": "B17",
+      "title": "reusable-recipe-skill-learning: Implement replaceable ports and first reference Adapter",
+      "skillId": "reusable-recipe-skill-learning",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T004"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for reusable-recipe-skill-learning are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T006",
+      "batch": "B17",
+      "title": "reusable-recipe-skill-learning: Implement APIs, events and query projections",
+      "skillId": "reusable-recipe-skill-learning",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T005"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for reusable-recipe-skill-learning are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T007",
+      "batch": "B17",
+      "title": "reusable-recipe-skill-learning: Implement product UI or operator surface",
+      "skillId": "reusable-recipe-skill-learning",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T006"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for reusable-recipe-skill-learning are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T008",
+      "batch": "B17",
+      "title": "reusable-recipe-skill-learning: Add deterministic tests, negative controls and failure injection",
+      "skillId": "reusable-recipe-skill-learning",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T007"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for reusable-recipe-skill-learning are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T009",
+      "batch": "B17",
+      "title": "reusable-recipe-skill-learning: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "reusable-recipe-skill-learning",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T008"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for reusable-recipe-skill-learning are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T010",
+      "batch": "B17",
+      "title": "reusable-recipe-skill-learning: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "reusable-recipe-skill-learning",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T009"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for reusable-recipe-skill-learning are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T011",
+      "batch": "B17",
+      "title": "portfolio-multi-repository-governance: Bind canonical ownership and model domain contracts",
+      "skillId": "portfolio-multi-repository-governance",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B17-T010",
+        "B03-T030"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for portfolio-multi-repository-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T012",
+      "batch": "B17",
+      "title": "portfolio-multi-repository-governance: Implement persistence projections and append-only ledger events",
+      "skillId": "portfolio-multi-repository-governance",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T011"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for portfolio-multi-repository-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T013",
+      "batch": "B17",
+      "title": "portfolio-multi-repository-governance: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "portfolio-multi-repository-governance",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T012"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for portfolio-multi-repository-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T014",
+      "batch": "B17",
+      "title": "portfolio-multi-repository-governance: Implement service and durable workflow",
+      "skillId": "portfolio-multi-repository-governance",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T013"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for portfolio-multi-repository-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T015",
+      "batch": "B17",
+      "title": "portfolio-multi-repository-governance: Implement replaceable ports and first reference Adapter",
+      "skillId": "portfolio-multi-repository-governance",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T014"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for portfolio-multi-repository-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T016",
+      "batch": "B17",
+      "title": "portfolio-multi-repository-governance: Implement APIs, events and query projections",
+      "skillId": "portfolio-multi-repository-governance",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T015"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for portfolio-multi-repository-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T017",
+      "batch": "B17",
+      "title": "portfolio-multi-repository-governance: Implement product UI or operator surface",
+      "skillId": "portfolio-multi-repository-governance",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T016"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for portfolio-multi-repository-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T018",
+      "batch": "B17",
+      "title": "portfolio-multi-repository-governance: Add deterministic tests, negative controls and failure injection",
+      "skillId": "portfolio-multi-repository-governance",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T017"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for portfolio-multi-repository-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T019",
+      "batch": "B17",
+      "title": "portfolio-multi-repository-governance: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "portfolio-multi-repository-governance",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T018"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for portfolio-multi-repository-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T020",
+      "batch": "B17",
+      "title": "portfolio-multi-repository-governance: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "portfolio-multi-repository-governance",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B17-T019"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for portfolio-multi-repository-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T021",
+      "batch": "B17",
+      "title": "product-feedback-roadmap-loop: Bind canonical ownership and model domain contracts",
+      "skillId": "product-feedback-roadmap-loop",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B02-T040",
+        "B02-T060",
+        "B17-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for product-feedback-roadmap-loop are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T022",
+      "batch": "B17",
+      "title": "product-feedback-roadmap-loop: Implement persistence projections and append-only ledger events",
+      "skillId": "product-feedback-roadmap-loop",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B17-T021"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for product-feedback-roadmap-loop are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T023",
+      "batch": "B17",
+      "title": "product-feedback-roadmap-loop: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "product-feedback-roadmap-loop",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B17-T022"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for product-feedback-roadmap-loop are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T024",
+      "batch": "B17",
+      "title": "product-feedback-roadmap-loop: Implement service and durable workflow",
+      "skillId": "product-feedback-roadmap-loop",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B17-T023"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for product-feedback-roadmap-loop are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T025",
+      "batch": "B17",
+      "title": "product-feedback-roadmap-loop: Implement replaceable ports and first reference Adapter",
+      "skillId": "product-feedback-roadmap-loop",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B17-T024"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for product-feedback-roadmap-loop are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T026",
+      "batch": "B17",
+      "title": "product-feedback-roadmap-loop: Implement APIs, events and query projections",
+      "skillId": "product-feedback-roadmap-loop",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B17-T025"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for product-feedback-roadmap-loop are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T027",
+      "batch": "B17",
+      "title": "product-feedback-roadmap-loop: Implement product UI or operator surface",
+      "skillId": "product-feedback-roadmap-loop",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B17-T026"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for product-feedback-roadmap-loop are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T028",
+      "batch": "B17",
+      "title": "product-feedback-roadmap-loop: Add deterministic tests, negative controls and failure injection",
+      "skillId": "product-feedback-roadmap-loop",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B17-T027"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for product-feedback-roadmap-loop are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T029",
+      "batch": "B17",
+      "title": "product-feedback-roadmap-loop: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "product-feedback-roadmap-loop",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B17-T028"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for product-feedback-roadmap-loop are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B17-T030",
+      "batch": "B17",
+      "title": "product-feedback-roadmap-loop: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "product-feedback-roadmap-loop",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B17-T029"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for product-feedback-roadmap-loop are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

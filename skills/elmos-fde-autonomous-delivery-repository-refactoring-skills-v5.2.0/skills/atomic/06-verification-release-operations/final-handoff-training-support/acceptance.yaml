@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: final-handoff-training-support
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Operations cannot execute rollback runbook
+  - Support owner lacks required access
+  - Customer needs separate executive and engineering training
+  negativeControls:
+  - declare handoff complete without owner acceptance
+  - transfer secrets in documents
+  checks:
+  - id: final-handoff-training-support-AC-01
+    requirement: Package architecture, operation, recovery, security, data, deployment, verification, and known-risk knowledge.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: final-handoff-training-support-AC-02
+    requirement: Assign named owners, escalation paths, SLO responsibilities, access, and support windows.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: final-handoff-training-support-AC-03
+    requirement: Provide role-specific training and exercises, including failure and rollback scenarios.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: final-handoff-training-support-AC-04
+    requirement: Verify runbooks through walkthrough or game-day evidence rather than document existence alone.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: final-handoff-training-support-AC-05
+    requirement: Preserve customer-specific confidentiality and data-use restrictions.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

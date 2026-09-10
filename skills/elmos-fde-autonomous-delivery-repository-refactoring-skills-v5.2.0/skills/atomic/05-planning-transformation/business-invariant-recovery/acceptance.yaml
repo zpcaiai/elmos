@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: business-invariant-recovery
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Legacy behavior includes known pricing bug
+  - Authorization semantics are undocumented
+  - Database trigger enforces hidden inventory invariant
+  negativeControls:
+  - assume existing behavior is correct
+  - approve business rule without owner
+  checks:
+  - id: business-invariant-recovery-AC-01
+    requirement: Derive candidate invariants from requirements, code, tests, data, traces, incidents, policies, and domain
+      experts.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: business-invariant-recovery-AC-02
+    requirement: Distinguish required behavior, accidental behavior, known defect, tolerated deviation, and desired change.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: business-invariant-recovery-AC-03
+    requirement: Express invariants as executable contracts, test oracles, temporal properties, schemas, or formal properties
+      where possible.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: business-invariant-recovery-AC-04
+    requirement: Attach scope, assumptions, owner, evidence, confidence, and change-approval rules.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: business-invariant-recovery-AC-05
+    requirement: Block transformation of critical behavior without an approved invariant or explicit risk acceptance.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

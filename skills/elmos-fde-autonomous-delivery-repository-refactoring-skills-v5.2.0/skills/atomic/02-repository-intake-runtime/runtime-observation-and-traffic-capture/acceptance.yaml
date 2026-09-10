@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: runtime-observation-and-traffic-capture
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Production-only race condition
+  - Legacy application has no tracing
+  - Traffic contains sensitive identifiers
+  negativeControls:
+  - capture without authorization
+  - store raw secrets or personal data
+  - treat sampled traffic as exhaustive
+  checks:
+  - id: runtime-observation-and-traffic-capture-AC-01
+    requirement: Require explicit environment, data, user, duration, and purpose authorization before capture.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: runtime-observation-and-traffic-capture-AC-02
+    requirement: Correlate telemetry to exact build, configuration, RevisionSet, request, user role, and workflow.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: runtime-observation-and-traffic-capture-AC-03
+    requirement: Redact secrets and regulated data before model-visible processing.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: runtime-observation-and-traffic-capture-AC-04
+    requirement: Preserve sampling, loss, clock, and instrumentation limitations.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: runtime-observation-and-traffic-capture-AC-05
+    requirement: Generate replayable, normalized behavioral evidence without duplicating production side effects.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

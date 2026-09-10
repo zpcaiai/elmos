@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: repository-custody-and-revisionset
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Multi-repository product with inconsistent branches
+  - Submodule commit is unavailable
+  - Customer supplies source archive without Git history
+  negativeControls:
+  - scan an unapproved repository
+  - reuse a stale checkout
+  - modify source during intake
+  checks:
+  - id: repository-custody-and-revisionset-AC-01
+    requirement: Verify tenant, repository, branch, commit, submodule, LFS, and artifact authorization before access.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: repository-custody-and-revisionset-AC-02
+    requirement: Create an immutable RevisionSet covering every repository and external artifact used by the task.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: repository-custody-and-revisionset-AC-03
+    requirement: Preserve source integrity and separate read-only intake from writable transformation workspaces.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: repository-custody-and-revisionset-AC-04
+    requirement: Hash imported files, manifests, archives, and generated inventories.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: repository-custody-and-revisionset-AC-05
+    requirement: Block analysis when repository identity or custody is ambiguous.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

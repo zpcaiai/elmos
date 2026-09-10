@@ -1,0 +1,157 @@
+apiVersion: elmos.ai/v1
+kind: Skill
+metadata:
+  id: e0-e3-readiness-and-evidence-bundle
+  name: E0 E3 Readiness And Evidence Bundle
+  version: 5.2.0
+  package: elmos-fde-autonomous-delivery-repository-refactoring-skills
+  pack: 06-verification-release-operations
+spec:
+  packageRole: capability-extension
+  routable: false
+  routeOwnerRef: binding://domain/repository-autonomy
+  canonicalKernels:
+  - K6
+  - K8
+  businessLines:
+  - all-four-lines
+  - repository-autonomy
+  - functional-assurance-interface
+  owner: independent-assurance-team
+  priority: P0
+  riskClass: critical
+  maturity: specification-ready
+  description: Assemble and independently judge E0-E3 capability readiness from exact revisions, environments, tools, claims,
+    counterexamples, waivers, and evidence.
+  triggers:
+  - E0 E3 readiness
+  - evidence bundle
+  - production readiness packet
+  - certification preparation
+  negativeTriggers:
+  - issue E4 or E5 certificate
+  - approve stale evidence
+  - let adapter certify itself
+  inputs:
+  - name: taskContract
+    type: TaskContract
+    required: true
+  - name: tenantRepositoryIdentity
+    type: TenantRepositoryIdentity
+    required: true
+  - name: revisionSet
+    type: RevisionSet
+    required: true
+  - name: policyProfile
+    type: PolicyProfile
+    required: true
+  - name: acceptanceAndEvidenceObligations
+    type: ObligationSet
+    required: true
+  outputs:
+  - name: E0_E3_evidence_bundle
+    type: Artifact
+  - name: gate_matrix
+    type: Artifact
+  - name: independent_readiness_decision
+    type: Artifact
+  - name: blocker_list
+    type: Artifact
+  - name: companion_package_handoff
+    type: Artifact
+  tools:
+  - evidence.collect
+  - provenance.verify
+  - gate.evaluate
+  - waiver.verify
+  - bundle.seal
+  - decision.record
+  dependencies:
+  - characterization-differential-mutation-verification
+  - security-privacy-supply-chain-audit
+  - performance-reliability-observability-audit
+  - test-ci-cd-developer-experience-audit
+  externalDependencies:
+  - typed-skill-contract
+  - artifact-identity-and-hashing
+  - evidence-contract
+  - policy-contract
+  - capability-dependency-graph
+  - compatibility-matrix-manager
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  - repository-incremental-ingestion
+  - build-and-dependency-graph
+  - durable-task-checkpoint-memory
+  - environment-owned-tool-authority
+  - invocation-scoped-capability-lease
+  - verified-security-context
+  - result-interception-and-commit
+  - remote-executor-fencing
+  - independent-k8-decision
+  invariants:
+  - no claim without evidence
+  - no authority escalation
+  - all unknowns are explicit
+  - outputs bind to exact RevisionSet
+  failureModes:
+  - insufficient evidence
+  - unsupported technology
+  - stale RevisionSet
+  - authority denied
+  - validation failure
+  authority:
+    default: deny
+    read: explicit-capability-lease
+    workspaceWrite: approved-plan-step-only
+    externalWrite: human-approval-and-side-effect-ledger
+    productionWrite: prohibited-in-capability-package
+    completionDecision: independent-K8-only
+  idempotency:
+    key: tenantId+engagementId+revisionSetId+planStepId+skillVersion
+    replayPolicy: return-previous-artifacts-if-input-hashes-match
+  checkpointing:
+    beforeExternalEffect: true
+    afterAcceptedChangeSet: true
+    resumeRequiresAuthorityReplay: true
+  evidence:
+    minimumLevel: E3
+    freshnessRequired: true
+    exactVersionPins: true
+    counterexamplesRetained: true
+    unknownsBlockWhenMaterial: true
+  rollback:
+    required: true
+    code: atomic-revert-or-workspace-discard
+    data: route-specific-compensation-and-reconciliation
+    externalEffects: side-effect-ledger-compensation
+  telemetry:
+    required:
+    - trace
+    - metric
+    - structured-log
+    - artifact-hash
+    - policy-decision
+    costDimensions:
+    - model
+    - compute
+    - storage
+    - network
+    - license
+    - human-review
+    timeDimensions:
+    - machine-wall-clock
+    - queue
+    - human-review
+  dataUsePolicy:
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+    secretInModelContext: false
+    retention: tenant-policy
+  compatibility:
+    requiresElmos: '>=5.1.0'
+    preservesCanonicalK1K8: true
+    addsRoutableEntryPoints: 0
+    standaloneCompletionBoundary: E3
+    e4e5Companion: elmos-functional-assurance-certification-skills
+  specificationStatus: specification-ready-not-runtime-certified

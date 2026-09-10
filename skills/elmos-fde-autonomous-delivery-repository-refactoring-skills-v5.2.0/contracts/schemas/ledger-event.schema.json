@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/fde/5.2.0/LedgerEvent.schema.json",
+  "title": "LedgerEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "ledger",
+    "sequence",
+    "timestamp",
+    "payload",
+    "previousHash",
+    "hash"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ledger": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "evidence",
+        "claim",
+        "change",
+        "effect",
+        "decision"
+      ]
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "previousHash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "hash": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

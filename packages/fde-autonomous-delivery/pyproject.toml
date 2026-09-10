@@ -1,0 +1,28 @@
+[project]
+name = "elmos-fde-autonomous-delivery"
+version = "5.2.0"
+description = "Repository-owned runtime engine for Elmos FDE Autonomous Delivery and Repository Refactoring"
+requires-python = ">=3.10"
+dependencies = [
+    "pyyaml>=6.0.2",
+    "jsonschema>=4.25.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/elmos_fde_delivery"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501", "B008", "UP042"]

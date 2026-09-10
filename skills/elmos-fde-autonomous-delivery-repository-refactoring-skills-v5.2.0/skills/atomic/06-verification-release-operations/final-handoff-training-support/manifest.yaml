@@ -1,0 +1,154 @@
+apiVersion: elmos.ai/v1
+kind: Skill
+metadata:
+  id: final-handoff-training-support
+  name: Final Handoff Training Support
+  version: 5.2.0
+  package: elmos-fde-autonomous-delivery-repository-refactoring-skills
+  pack: 06-verification-release-operations
+spec:
+  packageRole: capability-extension
+  routable: false
+  routeOwnerRef: binding://cross-cutting/delivery-governance
+  canonicalKernels:
+  - K1
+  - K7
+  - K8
+  businessLines:
+  - fde-delivery
+  - all-four-lines
+  owner: customer-adoption-team
+  priority: P1
+  riskClass: high
+  maturity: specification-ready
+  description: Create technical and operational handoff, training, support ownership, runbooks, knowledge transfer, and exit
+    criteria for delivered work.
+  triggers:
+  - handoff
+  - runbook
+  - training
+  - support transition
+  - knowledge transfer
+  negativeTriggers:
+  - declare handoff complete without owner acceptance
+  - transfer secrets in documents
+  inputs:
+  - name: taskContract
+    type: TaskContract
+    required: true
+  - name: tenantRepositoryIdentity
+    type: TenantRepositoryIdentity
+    required: true
+  - name: revisionSet
+    type: RevisionSet
+    required: true
+  - name: policyProfile
+    type: PolicyProfile
+    required: true
+  - name: acceptanceAndEvidenceObligations
+    type: ObligationSet
+    required: true
+  outputs:
+  - name: handoff_packet
+    type: Artifact
+  - name: role_specific_runbooks
+    type: Artifact
+  - name: training_assets
+    type: Artifact
+  - name: exercise_evidence
+    type: Artifact
+  - name: ownership_acceptance
+    type: Artifact
+  tools:
+  - runbook.generate
+  - training.generate
+  - exercise.execute
+  - acceptance.record
+  - bundle.seal
+  dependencies:
+  - adoption-change-management
+  - e0-e3-readiness-and-evidence-bundle
+  externalDependencies:
+  - typed-skill-contract
+  - artifact-identity-and-hashing
+  - evidence-contract
+  - policy-contract
+  - capability-dependency-graph
+  - compatibility-matrix-manager
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  - repository-incremental-ingestion
+  - build-and-dependency-graph
+  - durable-task-checkpoint-memory
+  - environment-owned-tool-authority
+  - invocation-scoped-capability-lease
+  - verified-security-context
+  - result-interception-and-commit
+  - remote-executor-fencing
+  - independent-k8-decision
+  invariants:
+  - no claim without evidence
+  - no authority escalation
+  - all unknowns are explicit
+  - outputs bind to exact RevisionSet
+  failureModes:
+  - insufficient evidence
+  - unsupported technology
+  - stale RevisionSet
+  - authority denied
+  - validation failure
+  authority:
+    default: deny
+    read: explicit-capability-lease
+    workspaceWrite: approved-plan-step-only
+    externalWrite: human-approval-and-side-effect-ledger
+    productionWrite: prohibited-in-capability-package
+    completionDecision: independent-K8-only
+  idempotency:
+    key: tenantId+engagementId+revisionSetId+planStepId+skillVersion
+    replayPolicy: return-previous-artifacts-if-input-hashes-match
+  checkpointing:
+    beforeExternalEffect: true
+    afterAcceptedChangeSet: true
+    resumeRequiresAuthorityReplay: true
+  evidence:
+    minimumLevel: E3
+    freshnessRequired: true
+    exactVersionPins: true
+    counterexamplesRetained: true
+    unknownsBlockWhenMaterial: true
+  rollback:
+    required: true
+    code: atomic-revert-or-workspace-discard
+    data: route-specific-compensation-and-reconciliation
+    externalEffects: side-effect-ledger-compensation
+  telemetry:
+    required:
+    - trace
+    - metric
+    - structured-log
+    - artifact-hash
+    - policy-decision
+    costDimensions:
+    - model
+    - compute
+    - storage
+    - network
+    - license
+    - human-review
+    timeDimensions:
+    - machine-wall-clock
+    - queue
+    - human-review
+  dataUsePolicy:
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+    secretInModelContext: false
+    retention: tenant-policy
+  compatibility:
+    requiresElmos: '>=5.1.0'
+    preservesCanonicalK1K8: true
+    addsRoutableEntryPoints: 0
+    standaloneCompletionBoundary: E3
+    e4e5Companion: elmos-functional-assurance-certification-skills
+  specificationStatus: specification-ready-not-runtime-certified

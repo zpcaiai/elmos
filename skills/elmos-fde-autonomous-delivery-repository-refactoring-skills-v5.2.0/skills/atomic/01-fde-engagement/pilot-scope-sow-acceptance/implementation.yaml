@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: pilot-scope-sow-acceptance
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: PilotScopeSowAcceptanceService
+    workflow: PilotScopeSowAcceptanceWorkflow
+    policyGate: PilotScopeSowAcceptancePolicyGate
+    evidenceProducer: PilotScopeSowAcceptanceEvidenceProducer
+    repositoryPort: PilotScopeSowAcceptanceRepositoryPort
+  requiredPorts:
+  - id: repository.read
+    direction: outbound
+  - id: artifact.write
+    direction: outbound
+  - id: schema.validate
+    direction: inbound
+  - id: policy.evaluate
+    direction: outbound
+  - id: evidence.append
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/pilot-scope-sow-acceptance/runs
+  - GET /api/v1/skills/pilot-scope-sow-acceptance/runs/{runId}
+  - POST /api/v1/skills/pilot-scope-sow-acceptance/runs/{runId}/cancel
+  - POST /api/v1/skills/pilot-scope-sow-acceptance/runs/{runId}/resume
+  events:
+  - elmos.skill.pilot-scope-sow-acceptance.requested.v1
+  - elmos.skill.pilot-scope-sow-acceptance.checkpointed.v1
+  - elmos.skill.pilot-scope-sow-acceptance.completed.v1
+  - elmos.skill.pilot-scope-sow-acceptance.failed.v1
+  workflowSteps:
+  - Choose the smallest end-to-end workflow that can prove value safely.
+  - Declare repositories, environments, users, data, integrations, and side effects in scope.
+  - Write functional, non-functional, security, adoption, and evidence acceptance criteria.
+  - Map customer and Elmos responsibilities and access prerequisites.
+  - Define milestones, review gates, change-control policy, and stop conditions.
+  - Obtain explicit approval before implementation starts.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

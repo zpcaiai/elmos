@@ -1,0 +1,20 @@
+{
+  "registerId": "unknowns-demo",
+  "revisionSetId": "revset-001",
+  "items": [
+    {
+      "id": "U-001",
+      "question": "Does production rely on an undocumented callback?",
+      "materiality": "high",
+      "owner": "customer-system-owner",
+      "resolutionPlan": [
+        "Capture production-safe traces",
+        "Review gateway logs"
+      ],
+      "status": "open",
+      "blocks": [
+        "production-readiness"
+      ]
+    }
+  ]
+}

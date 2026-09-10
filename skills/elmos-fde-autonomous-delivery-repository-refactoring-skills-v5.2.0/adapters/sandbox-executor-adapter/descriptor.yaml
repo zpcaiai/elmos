@@ -1,0 +1,47 @@
+apiVersion: elmos.ai/v1
+kind: AdapterDescriptor
+metadata:
+  id: sandbox-executor-adapter
+  version: 5.2.0
+spec:
+  providers:
+  - container
+  - microVM
+  - WASI
+  - remote runner
+  scope: isolated build, analysis, tests and transformations
+  replaceable: true
+  completionAuthority: false
+  routeAuthority: false
+  semanticTruthAuthority: false
+  riskClass: critical
+  requiredCapabilities:
+  - capability-negotiation
+  - invocation-scoped-lease
+  - verified-security-context
+  - typed-result
+  - version-pinning
+  - fencing
+  sideEffects:
+    default: none
+    writesRequire:
+    - explicit plan step
+    - policy approval
+    - idempotency key
+    - effect ledger
+  dataHandling:
+    tenantIsolation: true
+    secretsModelVisible: false
+    retention: tenant-policy
+  conformance:
+  - happy path
+  - auth denial
+  - tenant denial
+  - timeout
+  - retry
+  - idempotency
+  - stale generation
+  - version mismatch
+  - partial result
+  - cancellation
+  - audit completeness

@@ -90,6 +90,7 @@ class TestRoutingEngine(unittest.TestCase):
         diff = self.shadow_router.evaluate_shadow(
             request=self.request,
             baseline_deployment_id="strategic-coding-high-openai-native",
+            now=self.fixed_time,
         )
         self.assertIsNotNone(diff.routeDecisionId)
         self.assertEqual(diff.baselineDeploymentId, "strategic-coding-high-openai-native")

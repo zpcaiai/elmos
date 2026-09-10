@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/fde/5.2.0/EvidenceArtifact.schema.json",
+  "title": "EvidenceArtifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evidenceId",
+    "kind",
+    "revisionSetId",
+    "environmentId",
+    "contentHash",
+    "producer",
+    "capturedAt",
+    "freshness"
+  ],
+  "properties": {
+    "evidenceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revisionSetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environmentId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contentHash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "producer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capturedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sourceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "freshness": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "fresh",
+        "stale",
+        "invalidated"
+      ]
+    },
+    "counterexample": {
+      "type": "boolean"
+    },
+    "confidentiality": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "public",
+        "internal",
+        "confidential",
+        "restricted"
+      ]
+    }
+  }
+}

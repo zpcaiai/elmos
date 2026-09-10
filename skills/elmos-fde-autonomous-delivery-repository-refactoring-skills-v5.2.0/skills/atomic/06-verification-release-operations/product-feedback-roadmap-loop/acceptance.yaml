@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: product-feedback-roadmap-loop
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Three customers request similar audit workflow
+  - Feature request is actually missing training
+  - High-value request conflicts with platform trust model
+  negativeControls:
+  - promise roadmap date
+  - rank by loudest customer only
+  - mix tenant secrets into shared roadmap
+  checks:
+  - id: product-feedback-roadmap-loop-AC-01
+    requirement: Normalize requests by user, workflow, problem, business impact, frequency, strategic fit, implementation
+      leverage, and evidence quality.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: product-feedback-roadmap-loop-AC-02
+    requirement: Separate one-off custom work from reusable product opportunity.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: product-feedback-roadmap-loop-AC-03
+    requirement: Link requests to findings, adoption data, incidents, lost deals, and existing capabilities.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: product-feedback-roadmap-loop-AC-04
+    requirement: Preserve tenant confidentiality and aggregate only under permitted policies.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: product-feedback-roadmap-loop-AC-05
+    requirement: Return decisions and workarounds to delivery teams without implying commitment.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

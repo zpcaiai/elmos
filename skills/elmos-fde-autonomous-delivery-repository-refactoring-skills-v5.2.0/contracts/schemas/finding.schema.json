@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/fde/5.2.0/IssueFinding.schema.json",
+  "title": "IssueFinding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "findingId",
+    "domain",
+    "title",
+    "locations",
+    "evidence",
+    "severity",
+    "likelihood",
+    "businessImpact",
+    "confidence",
+    "rootCause",
+    "verificationPlan",
+    "status"
+  ],
+  "properties": {
+    "findingId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "business-correctness",
+        "functional-correctness",
+        "architecture",
+        "maintainability",
+        "concurrency-distributed",
+        "transaction-consistency",
+        "security",
+        "privacy-compliance",
+        "dependency-supply-chain",
+        "api-integration",
+        "database-data",
+        "performance-capacity",
+        "reliability-resilience",
+        "observability-operations",
+        "testing-quality",
+        "ci-cd-developer-experience",
+        "frontend-ux-accessibility",
+        "i18n-mobile-platform",
+        "ai-agent",
+        "cost-finops-sustainability",
+        "documentation-knowledge-governance"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "affectedCapabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "reproductionSteps": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "severity": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "likelihood": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "rare",
+        "unlikely",
+        "possible",
+        "likely",
+        "almost-certain"
+      ]
+    },
+    "businessImpact": {
+      "type": "string",
+      "minLength": 1
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "falsePositiveRisk": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "rootCause": {
+      "type": "string",
+      "minLength": 1
+    },
+    "relatedFindings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "remediationOptions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "recommendedFix": {
+      "type": "string",
+      "minLength": 1
+    },
+    "verificationPlan": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "rollbackPlan": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "automationLevel": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "report-only",
+        "proposed",
+        "supervised",
+        "deterministic-auto"
+      ]
+    },
+    "requiredApprovals": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "open",
+        "accepted",
+        "in-progress",
+        "fixed",
+        "verified",
+        "suppressed",
+        "waived",
+        "unknown",
+        "unsupported"
+      ]
+    }
+  }
+}

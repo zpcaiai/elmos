@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: architecture-maintainability-audit
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Spring monolith with package cycles
+  - Microservices share one database and release train
+  - God service blocks framework upgrade
+  negativeControls:
+  - style-only review
+  - recommend microservices by default
+  - rewrite without business value
+  checks:
+  - id: architecture-maintainability-audit-AC-01
+    requirement: Detect cyclic dependencies, layer violations, unstable boundaries, shared data coupling, distributed monoliths,
+      and change hotspots.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: architecture-maintainability-audit-AC-02
+    requirement: Assess cohesion, coupling, complexity, duplication, dead code, wrong abstraction, and framework leakage.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: architecture-maintainability-audit-AC-03
+    requirement: Compare implemented structure with documented architecture and repository rules.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: architecture-maintainability-audit-AC-04
+    requirement: Prioritize debt by change frequency, criticality, defect history, and transformation leverage.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: architecture-maintainability-audit-AC-05
+    requirement: Propose executable architecture fitness functions for consequential rules.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

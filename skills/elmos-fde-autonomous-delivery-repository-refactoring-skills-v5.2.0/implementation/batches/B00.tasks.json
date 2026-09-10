@@ -1,0 +1,44 @@
+{
+  "batch": {
+    "id": "B00",
+    "title": "Package contracts and canonical bindings",
+    "dependsOn": [],
+    "skills": [
+      "repository-custody-and-revisionset",
+      "support-profile-and-unknown-register",
+      "issue-ontology-and-finding-normalization"
+    ],
+    "tasks": [
+      "B00-T001"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B00-T001",
+      "batch": "B00",
+      "title": "Integrate typed cross-kernel contracts and package registry",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [],
+      "outputs": [
+        "schema registry",
+        "package descriptor",
+        "canonical binding validator"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

@@ -1,0 +1,816 @@
+apiVersion: elmos.ai/v1
+kind: SkillCatalog
+metadata:
+  package: elmos-fde-autonomous-delivery-repository-refactoring-skills
+  version: 5.2.0
+  count: 45
+spec:
+  discovery:
+    startup: meta-only
+    atomic: registry-search-on-activation
+    maxCandidates: 16
+    maxActivated: 8
+    filters:
+    - tenant
+    - business-line
+    - technology
+    - version
+    - risk
+    - signature
+    - maturity
+    - evidence
+  skills:
+  - id: stakeholder-workflow-discovery
+    pack: 01-fde-engagement
+    kernels:
+    - K1
+    priority: P0
+    riskClass: medium
+    owner: fde-engagement-team
+    description: Discover stakeholders, current workflows, decisions, pain points, constraints, and measurable outcomes before
+      proposing implementation.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies: []
+    minimumEvidence: E2
+    path: skills/atomic/01-fde-engagement/stakeholder-workflow-discovery/SKILL.md
+  - id: business-baseline-roi
+    pack: 01-fde-engagement
+    kernels:
+    - K1
+    - K4
+    priority: P1
+    riskClass: medium
+    owner: fde-value-engineering-team
+    description: Establish evidence-backed baselines, value hypotheses, benefit ranges, cost drivers, and ROI measurement
+      plans.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies:
+    - stakeholder-workflow-discovery
+    minimumEvidence: E2
+    path: skills/atomic/01-fde-engagement/business-baseline-roi/SKILL.md
+  - id: pilot-scope-sow-acceptance
+    pack: 01-fde-engagement
+    kernels:
+    - K1
+    - K4
+    - K8
+    priority: P0
+    riskClass: high
+    owner: fde-delivery-governance-team
+    description: Convert ambiguous opportunities into bounded PoC, pilot, or production scopes with SOW, acceptance criteria,
+      dependencies, and stop conditions.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies:
+    - stakeholder-workflow-discovery
+    - business-baseline-roi
+    minimumEvidence: E3
+    path: skills/atomic/01-fde-engagement/pilot-scope-sow-acceptance/SKILL.md
+  - id: status-risk-decision-communications
+    pack: 01-fde-engagement
+    kernels:
+    - K1
+    - K7
+    priority: P1
+    riskClass: medium
+    owner: fde-program-operations-team
+    description: Generate evidence-backed status, decision, risk, dependency, and executive communications without hiding
+      uncertainty.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies:
+    - pilot-scope-sow-acceptance
+    minimumEvidence: E2
+    path: skills/atomic/01-fde-engagement/status-risk-decision-communications/SKILL.md
+  - id: procurement-security-questionnaire
+    pack: 01-fde-engagement
+    kernels:
+    - K1
+    - K8
+    priority: P2
+    riskClass: high
+    owner: trust-commercial-readiness-team
+    description: Prepare traceable RFP, procurement, privacy, architecture, and security questionnaire responses from approved
+      product evidence.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies:
+    - status-risk-decision-communications
+    minimumEvidence: E3
+    path: skills/atomic/01-fde-engagement/procurement-security-questionnaire/SKILL.md
+  - id: adoption-change-management
+    pack: 01-fde-engagement
+    kernels:
+    - K1
+    - K7
+    priority: P1
+    riskClass: medium
+    owner: customer-adoption-team
+    description: Plan and measure user adoption, training, workflow change, feedback, support, and handoff for delivered capabilities.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies:
+    - pilot-scope-sow-acceptance
+    minimumEvidence: E2
+    path: skills/atomic/01-fde-engagement/adoption-change-management/SKILL.md
+  - id: repository-custody-and-revisionset
+    pack: 02-repository-intake-runtime
+    kernels:
+    - K2
+    - K7
+    priority: P0
+    riskClass: critical
+    owner: repository-runtime-team
+    description: Acquire repositories and related artifacts with chain of custody, immutable RevisionSet identity, authorization,
+      and reproducible provenance.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies: []
+    minimumEvidence: E3
+    path: skills/atomic/02-repository-intake-runtime/repository-custody-and-revisionset/SKILL.md
+  - id: asset-inventory-and-classification
+    pack: 02-repository-intake-runtime
+    kernels:
+    - K2
+    - K3
+    priority: P0
+    riskClass: high
+    owner: repository-intelligence-team
+    description: Inventory and classify all source, generated, vendored, binary, data, test, build, deployment, and documentation
+      assets in a RevisionSet.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - repository-custody-and-revisionset
+    minimumEvidence: E1
+    path: skills/atomic/02-repository-intake-runtime/asset-inventory-and-classification/SKILL.md
+  - id: reproducible-build-environment
+    pack: 02-repository-intake-runtime
+    kernels:
+    - K2
+    - K7
+    priority: P0
+    riskClass: critical
+    owner: native-runtime-lab-team
+    description: Infer, pin, reproduce, and diagnose native build and test environments in isolated execution sandboxes.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - asset-inventory-and-classification
+    minimumEvidence: E3
+    path: skills/atomic/02-repository-intake-runtime/reproducible-build-environment/SKILL.md
+  - id: external-dependency-stub-and-service-virtualization
+    pack: 02-repository-intake-runtime
+    kernels:
+    - K2
+    - K7
+    priority: P1
+    riskClass: high
+    owner: native-runtime-lab-team
+    description: Virtualize unavailable databases, queues, identity providers, APIs, devices, and third-party services for
+      safe reproducible tests.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - reproducible-build-environment
+    minimumEvidence: E2
+    path: skills/atomic/02-repository-intake-runtime/external-dependency-stub-and-service-virtualization/SKILL.md
+  - id: support-profile-and-unknown-register
+    pack: 02-repository-intake-runtime
+    kernels:
+    - K2
+    - K3
+    - K8
+    priority: P0
+    riskClass: critical
+    owner: repository-intelligence-team
+    description: Declare technology support depth, analysis coverage, evidence freshness, unsupported areas, and unknowns
+      without overstating completeness.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - asset-inventory-and-classification
+    minimumEvidence: E3
+    path: skills/atomic/02-repository-intake-runtime/support-profile-and-unknown-register/SKILL.md
+  - id: runtime-observation-and-traffic-capture
+    pack: 02-repository-intake-runtime
+    kernels:
+    - K2
+    - K3
+    - K7
+    priority: P1
+    riskClass: critical
+    owner: runtime-observability-team
+    description: Capture authorized traces, metrics, logs, profiles, traffic, state transitions, and side effects for repository
+      understanding and verification.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - reproducible-build-environment
+    minimumEvidence: E3
+    path: skills/atomic/02-repository-intake-runtime/runtime-observation-and-traffic-capture/SKILL.md
+  - id: polyglot-semantic-system-graph
+    pack: 03-semantic-intelligence
+    kernels:
+    - K2
+    - K3
+    priority: P0
+    riskClass: critical
+    owner: semantic-repository-team
+    description: Build a versioned cross-language system graph spanning syntax, types, calls, data flow, events, configuration,
+      deployment, and tests.
+    routeOwnerRef: binding://domain/polyglot-conversion
+    routable: false
+    dependencies:
+    - reproducible-build-environment
+    - support-profile-and-unknown-register
+    minimumEvidence: E3
+    path: skills/atomic/03-semantic-intelligence/polyglot-semantic-system-graph/SKILL.md
+  - id: business-capability-code-mapping
+    pack: 03-semantic-intelligence
+    kernels:
+    - K1
+    - K3
+    - K4
+    priority: P0
+    riskClass: high
+    owner: business-semantics-team
+    description: Map business capabilities, workflows, rules, decisions, and critical user journeys to code, data, APIs, events,
+      tests, and owners.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies:
+    - stakeholder-workflow-discovery
+    - polyglot-semantic-system-graph
+    minimumEvidence: E3
+    path: skills/atomic/03-semantic-intelligence/business-capability-code-mapping/SKILL.md
+  - id: data-event-permission-lineage
+    pack: 03-semantic-intelligence
+    kernels:
+    - K3
+    - K8
+    priority: P0
+    riskClass: critical
+    owner: data-security-semantics-team
+    description: Trace data, events, identity, tenant context, authorization decisions, and side effects across application
+      and infrastructure boundaries.
+    routeOwnerRef: binding://domain/database-conversion
+    routable: false
+    dependencies:
+    - polyglot-semantic-system-graph
+    minimumEvidence: E3
+    path: skills/atomic/03-semantic-intelligence/data-event-permission-lineage/SKILL.md
+  - id: git-history-ownership-change-coupling
+    pack: 03-semantic-intelligence
+    kernels:
+    - K2
+    - K3
+    - K4
+    priority: P1
+    riskClass: medium
+    owner: repository-intelligence-team
+    description: Use version history to recover ownership, hotspots, hidden coupling, migration intent, regressions, and knowledge
+      concentration.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - repository-custody-and-revisionset
+    - asset-inventory-and-classification
+    minimumEvidence: E2
+    path: skills/atomic/03-semantic-intelligence/git-history-ownership-change-coupling/SKILL.md
+  - id: static-dynamic-evidence-fusion
+    pack: 03-semantic-intelligence
+    kernels:
+    - K3
+    - K4
+    priority: P0
+    riskClass: critical
+    owner: semantic-evidence-team
+    description: Fuse compiler, static-analysis, test, runtime, trace, history, document, and human evidence into confidence-aware
+      system facts.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - polyglot-semantic-system-graph
+    - runtime-observation-and-traffic-capture
+    - git-history-ownership-change-coupling
+    minimumEvidence: E3
+    path: skills/atomic/03-semantic-intelligence/static-dynamic-evidence-fusion/SKILL.md
+  - id: issue-ontology-and-finding-normalization
+    pack: 04-unified-assessment
+    kernels:
+    - K3
+    - K4
+    - K8
+    priority: P0
+    riskClass: critical
+    owner: repository-assessment-team
+    description: Normalize deterministic and model-generated observations into evidence-backed findings, root causes, relationships,
+      and explicit false-positive risk.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - static-dynamic-evidence-fusion
+    - support-profile-and-unknown-register
+    minimumEvidence: E3
+    path: skills/atomic/04-unified-assessment/issue-ontology-and-finding-normalization/SKILL.md
+  - id: architecture-maintainability-audit
+    pack: 04-unified-assessment
+    kernels:
+    - K3
+    - K4
+    priority: P0
+    riskClass: high
+    owner: architecture-assurance-team
+    description: Audit boundaries, dependencies, modularity, maintainability, evolvability, code smells, ownership, and architecture
+      drift across the repository.
+    routeOwnerRef: binding://domain/spring-modernization
+    routable: false
+    dependencies:
+    - issue-ontology-and-finding-normalization
+    - business-capability-code-mapping
+    - git-history-ownership-change-coupling
+    minimumEvidence: E3
+    path: skills/atomic/04-unified-assessment/architecture-maintainability-audit/SKILL.md
+  - id: correctness-concurrency-consistency-audit
+    pack: 04-unified-assessment
+    kernels:
+    - K3
+    - K4
+    - K6
+    priority: P0
+    riskClass: critical
+    owner: software-correctness-team
+    description: Audit functional correctness, state machines, error semantics, concurrency, distributed consistency, transactions,
+      retries, and resource lifetimes.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - issue-ontology-and-finding-normalization
+    - data-event-permission-lineage
+    minimumEvidence: E3
+    path: skills/atomic/04-unified-assessment/correctness-concurrency-consistency-audit/SKILL.md
+  - id: security-privacy-supply-chain-audit
+    pack: 04-unified-assessment
+    kernels:
+    - K3
+    - K4
+    - K8
+    priority: P0
+    riskClass: critical
+    owner: product-security-team
+    description: Audit authentication, authorization, tenant isolation, injection, secrets, cryptography, privacy, dependencies,
+      build provenance, and deployment trust boundaries.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies:
+    - issue-ontology-and-finding-normalization
+    - data-event-permission-lineage
+    - reproducible-build-environment
+    minimumEvidence: E3
+    path: skills/atomic/04-unified-assessment/security-privacy-supply-chain-audit/SKILL.md
+  - id: data-database-migration-audit
+    pack: 04-unified-assessment
+    kernels:
+    - K3
+    - K4
+    - K6
+    priority: P0
+    riskClass: critical
+    owner: data-platform-assurance-team
+    description: Audit schemas, queries, routines, ORM behavior, lineage, quality, retention, migrations, reconciliation,
+      and database portability.
+    routeOwnerRef: binding://domain/spring-modernization
+    routable: false
+    dependencies:
+    - issue-ontology-and-finding-normalization
+    - data-event-permission-lineage
+    minimumEvidence: E3
+    path: skills/atomic/04-unified-assessment/data-database-migration-audit/SKILL.md
+  - id: performance-reliability-observability-audit
+    pack: 04-unified-assessment
+    kernels:
+    - K3
+    - K4
+    - K6
+    - K7
+    priority: P0
+    riskClass: critical
+    owner: performance-sre-assurance-team
+    description: Audit latency, throughput, capacity, algorithms, resources, resilience, recovery, observability, SLOs, and
+      operational failure behavior.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies:
+    - issue-ontology-and-finding-normalization
+    - runtime-observation-and-traffic-capture
+    minimumEvidence: E3
+    path: skills/atomic/04-unified-assessment/performance-reliability-observability-audit/SKILL.md
+  - id: test-ci-cd-developer-experience-audit
+    pack: 04-unified-assessment
+    kernels:
+    - K3
+    - K4
+    - K6
+    - K7
+    priority: P1
+    riskClass: high
+    owner: quality-engineering-team
+    description: Audit test strategy, oracle quality, flakiness, fixtures, coverage, mutation resistance, build pipelines,
+      release controls, and developer feedback loops.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - issue-ontology-and-finding-normalization
+    - reproducible-build-environment
+    - business-capability-code-mapping
+    minimumEvidence: E3
+    path: skills/atomic/04-unified-assessment/test-ci-cd-developer-experience-audit/SKILL.md
+  - id: ux-accessibility-i18n-audit
+    pack: 04-unified-assessment
+    kernels:
+    - K3
+    - K4
+    - K6
+    priority: P2
+    riskClass: medium
+    owner: product-experience-assurance-team
+    description: Audit user journeys, interface consistency, accessibility, internationalization, localization, responsiveness,
+      and front-end performance.
+    routeOwnerRef: binding://domain/spring-modernization
+    routable: false
+    dependencies:
+    - issue-ontology-and-finding-normalization
+    - business-capability-code-mapping
+    minimumEvidence: E2
+    path: skills/atomic/04-unified-assessment/ux-accessibility-i18n-audit/SKILL.md
+  - id: ai-agent-system-audit
+    pack: 04-unified-assessment
+    kernels:
+    - K3
+    - K4
+    - K6
+    - K8
+    priority: P1
+    riskClass: critical
+    owner: ai-systems-assurance-team
+    description: Audit model, prompt, retrieval, memory, tool, agent, eval, safety, cost, and recovery behavior in AI-enabled
+      repositories.
+    routeOwnerRef: binding://domain/project-generation
+    routable: false
+    dependencies:
+    - issue-ontology-and-finding-normalization
+    - data-event-permission-lineage
+    - test-ci-cd-developer-experience-audit
+    minimumEvidence: E3
+    path: skills/atomic/04-unified-assessment/ai-agent-system-audit/SKILL.md
+  - id: cost-finops-sustainability-audit
+    pack: 04-unified-assessment
+    kernels:
+    - K4
+    - K7
+    priority: P2
+    riskClass: medium
+    owner: finops-platform-team
+    description: Audit unit economics, token and compute usage, cloud resources, storage, network, licenses, idle capacity,
+      and sustainability signals.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies:
+    - status-risk-decision-communications
+    - performance-reliability-observability-audit
+    minimumEvidence: E2
+    path: skills/atomic/04-unified-assessment/cost-finops-sustainability-audit/SKILL.md
+  - id: root-cause-risk-prioritization
+    pack: 05-planning-transformation
+    kernels:
+    - K4
+    - K8
+    priority: P0
+    riskClass: critical
+    owner: transformation-planning-team
+    description: Cluster findings into root causes and prioritize remediation by business impact, risk reduction, dependency,
+      effort, and evidence confidence.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - architecture-maintainability-audit
+    - correctness-concurrency-consistency-audit
+    - security-privacy-supply-chain-audit
+    - data-database-migration-audit
+    - performance-reliability-observability-audit
+    minimumEvidence: E3
+    path: skills/atomic/05-planning-transformation/root-cause-risk-prioritization/SKILL.md
+  - id: business-invariant-recovery
+    pack: 05-planning-transformation
+    kernels:
+    - K3
+    - K4
+    - K6
+    priority: P0
+    riskClass: critical
+    owner: business-semantics-team
+    description: Recover and approve behavioral, data, security, compatibility, performance, and operational invariants that
+      transformations must preserve or intentionally change.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - business-capability-code-mapping
+    - root-cause-risk-prioritization
+    minimumEvidence: E3
+    path: skills/atomic/05-planning-transformation/business-invariant-recovery/SKILL.md
+  - id: target-architecture-alternatives-and-adr
+    pack: 05-planning-transformation
+    kernels:
+    - K4
+    - K5
+    priority: P0
+    riskClass: high
+    owner: architecture-transformation-team
+    description: Design conservative, balanced, and strategic target architectures with tradeoffs, migration boundaries, ADRs,
+      and exit conditions.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - root-cause-risk-prioritization
+    - business-invariant-recovery
+    minimumEvidence: E3
+    path: skills/atomic/05-planning-transformation/target-architecture-alternatives-and-adr/SKILL.md
+  - id: transformation-dag-estimation
+    pack: 05-planning-transformation
+    kernels:
+    - K4
+    - K5
+    - K7
+    priority: P0
+    riskClass: critical
+    owner: transformation-planning-team
+    description: Convert approved target architecture into a dependency-aware executable Transformation DAG with gates, rollback,
+      machine wall-clock, and cost estimates.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - target-architecture-alternatives-and-adr
+    minimumEvidence: E3
+    path: skills/atomic/05-planning-transformation/transformation-dag-estimation/SKILL.md
+  - id: changeset-commit-and-provenance-governance
+    pack: 05-planning-transformation
+    kernels:
+    - K5
+    - K7
+    - K8
+    priority: P0
+    riskClass: critical
+    owner: change-governance-team
+    description: Govern atomic ChangeSets, commits, patches, provenance, review boundaries, side effects, and reversible integration.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - transformation-dag-estimation
+    minimumEvidence: E3
+    path: skills/atomic/05-planning-transformation/changeset-commit-and-provenance-governance/SKILL.md
+  - id: proof-guided-atomic-refactor-execution
+    pack: 05-planning-transformation
+    kernels:
+    - K5
+    - K6
+    - K7
+    priority: P0
+    riskClass: critical
+    owner: transformation-execution-team
+    description: Execute approved repository refactors using deterministic transformations first, bounded synthesis second,
+      and proof obligations at every step.
+    routeOwnerRef: binding://domain/spring-modernization
+    routable: false
+    dependencies:
+    - changeset-commit-and-provenance-governance
+    minimumEvidence: E3
+    path: skills/atomic/05-planning-transformation/proof-guided-atomic-refactor-execution/SKILL.md
+  - id: modernization-strangler-and-rearchitecture
+    pack: 05-planning-transformation
+    kernels:
+    - K4
+    - K5
+    - K6
+    - K7
+    priority: P1
+    riskClass: critical
+    owner: modernization-team
+    description: Execute phased framework, platform, architecture, and monolith modernization through compatibility layers,
+      strangler patterns, and reversible cutovers.
+    routeOwnerRef: binding://domain/spring-modernization
+    routable: false
+    dependencies:
+    - proof-guided-atomic-refactor-execution
+    - target-architecture-alternatives-and-adr
+    minimumEvidence: E3
+    path: skills/atomic/05-planning-transformation/modernization-strangler-and-rearchitecture/SKILL.md
+  - id: cross-language-framework-transformation
+    pack: 05-planning-transformation
+    kernels:
+    - K3
+    - K5
+    - K6
+    priority: P1
+    riskClass: critical
+    owner: polyglot-transformation-team
+    description: Transform complete repositories across languages or frameworks through Semantic IR, explicit semantic gaps,
+      native runtimes, and differential verification.
+    routeOwnerRef: binding://domain/spring-modernization
+    routable: false
+    dependencies:
+    - proof-guided-atomic-refactor-execution
+    - business-invariant-recovery
+    minimumEvidence: E3
+    path: skills/atomic/05-planning-transformation/cross-language-framework-transformation/SKILL.md
+  - id: database-schema-routine-data-transformation
+    pack: 05-planning-transformation
+    kernels:
+    - K3
+    - K5
+    - K6
+    - K7
+    priority: P1
+    riskClass: critical
+    owner: database-transformation-team
+    description: Transform database schemas, SQL dialects, routines, ORM mappings, data, permissions, CDC, and cutover behavior
+      with reconciliation and rollback.
+    routeOwnerRef: binding://domain/spring-modernization
+    routable: false
+    dependencies:
+    - proof-guided-atomic-refactor-execution
+    - data-database-migration-audit
+    - business-invariant-recovery
+    minimumEvidence: E3
+    path: skills/atomic/05-planning-transformation/database-schema-routine-data-transformation/SKILL.md
+  - id: characterization-differential-mutation-verification
+    pack: 06-verification-release-operations
+    kernels:
+    - K6
+    - K8
+    priority: P0
+    riskClass: critical
+    owner: verification-engineering-team
+    description: Build characterization, contract, differential, property, metamorphic, fuzz, mutation, and regression evidence
+      for repository transformations.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - proof-guided-atomic-refactor-execution
+    - business-invariant-recovery
+    minimumEvidence: E3
+    path: skills/atomic/06-verification-release-operations/characterization-differential-mutation-verification/SKILL.md
+  - id: formal-assurance-routing
+    pack: 06-verification-release-operations
+    kernels:
+    - K4
+    - K6
+    - K8
+    priority: P1
+    riskClass: critical
+    owner: formal-assurance-team
+    description: Route high-risk properties to appropriate formal, symbolic, model-checking, contract, or translation-validation
+      methods with explicit trusted computing base.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - business-invariant-recovery
+    - correctness-concurrency-consistency-audit
+    minimumEvidence: E3
+    path: skills/atomic/06-verification-release-operations/formal-assurance-routing/SKILL.md
+  - id: e0-e3-readiness-and-evidence-bundle
+    pack: 06-verification-release-operations
+    kernels:
+    - K6
+    - K8
+    priority: P0
+    riskClass: critical
+    owner: independent-assurance-team
+    description: Assemble and independently judge E0-E3 capability readiness from exact revisions, environments, tools, claims,
+      counterexamples, waivers, and evidence.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - characterization-differential-mutation-verification
+    - security-privacy-supply-chain-audit
+    - performance-reliability-observability-audit
+    - test-ci-cd-developer-experience-audit
+    minimumEvidence: E3
+    path: skills/atomic/06-verification-release-operations/e0-e3-readiness-and-evidence-bundle/SKILL.md
+  - id: shadow-dual-run-canary-rollback-preparation
+    pack: 06-verification-release-operations
+    kernels:
+    - K6
+    - K7
+    - K8
+    priority: P1
+    riskClass: critical
+    owner: release-engineering-team
+    description: Prepare shadow, dual-run, canary, feature-flag, reconciliation, rollback, and incident controls for later
+      E4/E5 execution by authorized environments.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - e0-e3-readiness-and-evidence-bundle
+    - changeset-commit-and-provenance-governance
+    minimumEvidence: E3
+    path: skills/atomic/06-verification-release-operations/shadow-dual-run-canary-rollback-preparation/SKILL.md
+  - id: incident-triage-remediation-and-postmortem
+    pack: 06-verification-release-operations
+    kernels:
+    - K1
+    - K4
+    - K5
+    - K7
+    - K8
+    priority: P1
+    riskClass: critical
+    owner: incident-response-team
+    description: Triage incidents, contain harm, reconstruct timelines, diagnose root causes, implement bounded remediation,
+      and feed durable improvements back into Elmos.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies:
+    - runtime-observation-and-traffic-capture
+    - shadow-dual-run-canary-rollback-preparation
+    minimumEvidence: E3
+    path: skills/atomic/06-verification-release-operations/incident-triage-remediation-and-postmortem/SKILL.md
+  - id: final-handoff-training-support
+    pack: 06-verification-release-operations
+    kernels:
+    - K1
+    - K7
+    - K8
+    priority: P1
+    riskClass: high
+    owner: customer-adoption-team
+    description: Create technical and operational handoff, training, support ownership, runbooks, knowledge transfer, and
+      exit criteria for delivered work.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies:
+    - adoption-change-management
+    - e0-e3-readiness-and-evidence-bundle
+    minimumEvidence: E3
+    path: skills/atomic/06-verification-release-operations/final-handoff-training-support/SKILL.md
+  - id: reusable-recipe-skill-learning
+    pack: 06-verification-release-operations
+    kernels:
+    - K3
+    - K4
+    - K5
+    - K6
+    - K8
+    priority: P2
+    riskClass: high
+    owner: capability-learning-team
+    description: Extract proven project patterns into reusable recipes, skills, fixtures, rules, and adapters without leaking
+      tenant data or duplicating canonical capabilities.
+    routeOwnerRef: binding://domain/repository-autonomy
+    routable: false
+    dependencies:
+    - incident-triage-remediation-and-postmortem
+    - e0-e3-readiness-and-evidence-bundle
+    minimumEvidence: E3
+    path: skills/atomic/06-verification-release-operations/reusable-recipe-skill-learning/SKILL.md
+  - id: portfolio-multi-repository-governance
+    pack: 06-verification-release-operations
+    kernels:
+    - K2
+    - K3
+    - K4
+    - K7
+    - K8
+    priority: P2
+    riskClass: high
+    owner: portfolio-modernization-team
+    description: Govern architecture, risk, dependencies, transformation waves, evidence, and investment across large multi-repository
+      portfolios.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies:
+    - reusable-recipe-skill-learning
+    - support-profile-and-unknown-register
+    minimumEvidence: E3
+    path: skills/atomic/06-verification-release-operations/portfolio-multi-repository-governance/SKILL.md
+  - id: product-feedback-roadmap-loop
+    pack: 06-verification-release-operations
+    kernels:
+    - K1
+    - K4
+    - K8
+    priority: P2
+    riskClass: medium
+    owner: product-strategy-team
+    description: Convert delivery evidence, adoption, failures, customer requests, and recurring gaps into evidence-ranked
+      product roadmap inputs.
+    routeOwnerRef: binding://cross-cutting/delivery-governance
+    routable: false
+    dependencies:
+    - status-risk-decision-communications
+    - adoption-change-management
+    - reusable-recipe-skill-learning
+    minimumEvidence: E2
+    path: skills/atomic/06-verification-release-operations/product-feedback-roadmap-loop/SKILL.md

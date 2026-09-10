@@ -5,7 +5,7 @@ import uuid
 from elmos_mature_platform.types import (
     ChannelStability,
     PromotionVerdict,
-    ReleaseCandidate,
+    ChannelReleaseCandidate as ReleaseCandidate,
     ChannelPolicy,
     PromotionRecord
 )

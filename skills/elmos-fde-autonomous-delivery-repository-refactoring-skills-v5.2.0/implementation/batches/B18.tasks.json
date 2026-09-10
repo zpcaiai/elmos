@@ -1,0 +1,307 @@
+{
+  "batch": {
+    "id": "B18",
+    "title": "Scale certification fixtures and release hardening",
+    "dependsOn": [
+      "B17"
+    ],
+    "skills": [],
+    "tasks": [
+      "B18-T001",
+      "B18-T002",
+      "B18-T003",
+      "B18-T004",
+      "B18-T005",
+      "B18-T006",
+      "B18-T007",
+      "B18-T008",
+      "B18-T009",
+      "B18-T010",
+      "B18-T011",
+      "B18-T012"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B18-T001",
+      "batch": "B18",
+      "title": "Build 500k and 1M+ LOC benchmark harness with incremental invalidation and cost accounting",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B16-T001"
+      ],
+      "outputs": [
+        "benchmark corpus contract",
+        "load harness",
+        "scale report"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B18-T002",
+      "batch": "B18",
+      "title": "Execute fixture certification for Customer discovery to approved pilot",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B18-T001"
+      ],
+      "outputs": [
+        "fixture corpus",
+        "native execution evidence",
+        "coverage matrix",
+        "failure report"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B18-T003",
+      "batch": "B18",
+      "title": "Execute fixture certification for Repository intake to trustworthy X-Ray",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B18-T001"
+      ],
+      "outputs": [
+        "fixture corpus",
+        "native execution evidence",
+        "coverage matrix",
+        "failure report"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B18-T004",
+      "batch": "B18",
+      "title": "Execute fixture certification for Evidence-backed whole-repository assessment",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B18-T001"
+      ],
+      "outputs": [
+        "fixture corpus",
+        "native execution evidence",
+        "coverage matrix",
+        "failure report"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B18-T005",
+      "batch": "B18",
+      "title": "Execute fixture certification for Plan and execute a behavior-preserving refactor",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B18-T001"
+      ],
+      "outputs": [
+        "fixture corpus",
+        "native execution evidence",
+        "coverage matrix",
+        "failure report"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B18-T006",
+      "batch": "B18",
+      "title": "Execute fixture certification for Legacy Java/Spring modernization",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B18-T001"
+      ],
+      "outputs": [
+        "fixture corpus",
+        "native execution evidence",
+        "coverage matrix",
+        "failure report"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B18-T007",
+      "batch": "B18",
+      "title": "Execute fixture certification for Repository-level cross-language/framework conversion",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B18-T001"
+      ],
+      "outputs": [
+        "fixture corpus",
+        "native execution evidence",
+        "coverage matrix",
+        "failure report"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B18-T008",
+      "batch": "B18",
+      "title": "Execute fixture certification for Schema, routine and data transformation",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B18-T001"
+      ],
+      "outputs": [
+        "fixture corpus",
+        "native execution evidence",
+        "coverage matrix",
+        "failure report"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B18-T009",
+      "batch": "B18",
+      "title": "Execute fixture certification for Incident to verified remediation",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B18-T001"
+      ],
+      "outputs": [
+        "fixture corpus",
+        "native execution evidence",
+        "coverage matrix",
+        "failure report"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B18-T010",
+      "batch": "B18",
+      "title": "Execute fixture certification for Readiness to customer handoff",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B18-T001"
+      ],
+      "outputs": [
+        "fixture corpus",
+        "native execution evidence",
+        "coverage matrix",
+        "failure report"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B18-T011",
+      "batch": "B18",
+      "title": "Execute fixture certification for Multi-repository modernization portfolio",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B18-T001"
+      ],
+      "outputs": [
+        "fixture corpus",
+        "native execution evidence",
+        "coverage matrix",
+        "failure report"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B18-T012",
+      "batch": "B18",
+      "title": "Execute clean-room install, deterministic archive, security and disaster-recovery release gates",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B18-T001"
+      ],
+      "outputs": [
+        "release candidate",
+        "SBOM/provenance placeholders resolved",
+        "release report"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

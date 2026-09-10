@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: cross-language-framework-transformation
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Java service to C#
+  - Python component to Rust
+  - Vue application to React with state and routing parity
+  negativeControls:
+  - line-by-line translation
+  - claim equivalence without native runtime
+  - erase unsupported semantics
+  checks:
+  - id: cross-language-framework-transformation-AC-01
+    requirement: Extract source behavior, type, concurrency, error, resource, serialization, build, and framework semantics
+      into versioned IR.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: cross-language-framework-transformation-AC-02
+    requirement: Map constructs through route-specific semantic rules and explicitly register non-isomorphic gaps.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: cross-language-framework-transformation-AC-03
+    requirement: Generate idiomatic target architecture and code without weakening required behavior.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: cross-language-framework-transformation-AC-04
+    requirement: Compile and run source and target in native toolchains with normalized traces.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: cross-language-framework-transformation-AC-05
+    requirement: Require route-specific fixtures, holdouts, and rollback before replacing source systems.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

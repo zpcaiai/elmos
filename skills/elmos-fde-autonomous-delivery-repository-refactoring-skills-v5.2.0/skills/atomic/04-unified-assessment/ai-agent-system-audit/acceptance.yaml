@@ -1,0 +1,81 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: ai-agent-system-audit
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Indirect prompt injection reaches MCP write tool
+  - RAG citations do not support answer
+  - Agent cannot resume after tool failure
+  negativeControls:
+  - judge quality from demo
+  - allow model to certify itself
+  - expose private evaluation data
+  checks:
+  - id: ai-agent-system-audit-AC-01
+    requirement: Inventory models, prompts, policies, retrieval, memory, tools, agents, workflows, datasets, and evaluators
+      with versions.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: ai-agent-system-audit-AC-02
+    requirement: Test task success, grounding, citation, tool choice, recovery, latency, cost, and human intervention.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: ai-agent-system-audit-AC-03
+    requirement: Assess prompt injection, indirect injection, tool escalation, data exfiltration, memory poisoning, and tenant
+      leakage.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: ai-agent-system-audit-AC-04
+    requirement: Detect evaluator leakage, weak or circular judges, missing holdouts, and non-reproducible model changes.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: ai-agent-system-audit-AC-05
+    requirement: Require independent evidence and explicit model/provider/version pins for reusable results.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

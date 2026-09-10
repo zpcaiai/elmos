@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: e0-e3-readiness-and-evidence-bundle
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: E0E3ReadinessAndEvidenceBundleService
+    workflow: E0E3ReadinessAndEvidenceBundleWorkflow
+    policyGate: E0E3ReadinessAndEvidenceBundlePolicyGate
+    evidenceProducer: E0E3ReadinessAndEvidenceBundleEvidenceProducer
+    repositoryPort: E0E3ReadinessAndEvidenceBundleRepositoryPort
+  requiredPorts:
+  - id: evidence.collect
+    direction: outbound
+  - id: provenance.verify
+    direction: outbound
+  - id: gate.evaluate
+    direction: outbound
+  - id: waiver.verify
+    direction: outbound
+  - id: bundle.seal
+    direction: outbound
+  - id: decision.record
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/e0-e3-readiness-and-evidence-bundle/runs
+  - GET /api/v1/skills/e0-e3-readiness-and-evidence-bundle/runs/{runId}
+  - POST /api/v1/skills/e0-e3-readiness-and-evidence-bundle/runs/{runId}/cancel
+  - POST /api/v1/skills/e0-e3-readiness-and-evidence-bundle/runs/{runId}/resume
+  events:
+  - elmos.skill.e0-e3-readiness-and-evidence-bundle.requested.v1
+  - elmos.skill.e0-e3-readiness-and-evidence-bundle.checkpointed.v1
+  - elmos.skill.e0-e3-readiness-and-evidence-bundle.completed.v1
+  - elmos.skill.e0-e3-readiness-and-evidence-bundle.failed.v1
+  workflowSteps:
+  - Freeze the candidate RevisionSet and acceptance scope.
+  - Collect claims, evidence, counterexamples, waivers, unknowns, and provenance.
+  - Check coverage, freshness, independence, tool pins, environment identity, and side effects.
+  - Evaluate E0, E1, E2, and E3 gates separately.
+  - Route missing or contradictory evidence to remediation rather than averaging it away.
+  - Seal the evidence bundle and record the independent readiness decision.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

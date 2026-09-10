@@ -1,0 +1,28 @@
+apiVersion: elmos.ai/v1
+kind: KernelOwnership
+metadata:
+  version: 5.2.0
+spec:
+  kernels:
+  - id: K1
+    authority: Intent, Engagement and Goal Authority
+  - id: K2
+    authority: Repository Facts and Native Runtime Authority
+  - id: K3
+    authority: Semantic Truth and System Graph Authority
+  - id: K4
+    authority: Reasoning, Planning and Decision Support
+  - id: K5
+    authority: Transformation and Artifact Production
+  - id: K6
+    authority: Verification and Evidence Production
+  - id: K7
+    authority: Durable Execution, Effects and Lifecycle
+  - id: K8
+    authority: Independent Completion and Certification Authority
+  packageRole: non-authoritative capability extension
+  forbiddenDuplicateOwners:
+  - Goal
+  - AI-SIR
+  - runtime authority
+  - completion/certification authority

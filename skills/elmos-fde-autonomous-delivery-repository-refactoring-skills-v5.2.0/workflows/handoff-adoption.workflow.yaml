@@ -1,0 +1,32 @@
+apiVersion: elmos.ai/v1
+kind: DurableWorkflow
+metadata:
+  id: handoff-adoption
+  version: 5.2.0
+spec:
+  engine: canonical-K7-adapter
+  steps:
+  - id: readiness-packet
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: training
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: ownership-transfer
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: support
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: adoption-measurement
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: value-review
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: feedback
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  authority: environment-owned
+  cancellation: bounded
+  completionAuthority: K8

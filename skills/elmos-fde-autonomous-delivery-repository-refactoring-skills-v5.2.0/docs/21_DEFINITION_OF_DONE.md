@@ -1,0 +1,3 @@
+# 21 — Definition of Done
+
+A repository assessment/refactor is not complete merely because code compiles. At the applicable scope: assets are classified; support and coverage are explicit; critical journeys map to code and tests; findings have evidence/root cause/business impact; unknowns are owned; invariants are approved; plan steps are atomic; changes are reversible; static/test/differential/nonfunctional obligations pass; security/supply-chain and data migration are checked; residual risks/waivers are visible; independent K8 records at most E3; customer production, E4/E5/P05 and legal acceptance remain external.

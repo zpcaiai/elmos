@@ -71,6 +71,16 @@ For database-engine, SQL, routine, ETL/ELT, warehouse, data-quality, lineage, re
 - Repository-owned handlers under `engines/assurance-engine/` bind all 34 exact names through an allowlisted dispatcher. Vertical slice B00–B03 and native Golden Route `project-generation` (`GEN-001` to `GEN-006`) are verified executable. Golden Routes for `sql-conversion`, `spring-modernization`, and `repository-conversion` remain explicitly `NOT_RUN` (scheduled for B04). Ethen auditor identity defaults to `UNCONFIGURED` and K8 production signing is `DISABLED` to strictly enforce non-self-certification.
 - Treat archive scripts and templates as untrusted declarative material. Run `make assurance-v4-skills` for package check, reference test suite execution, and assurance engine test validation.
 
+## FDE Autonomous Delivery and Repository Refactoring Skill package (v5.2.0)
+
+- The trusted source archive is `skills/subskills/sub/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0.zip`; the immutable extracted source is `skills/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/`. Its pinned digest `4dbd6f20b0d27dbacf12ed432f0486f9e59151c2b138c6e7d8a9f60f395b1428` proves byte identity only.
+- Start forward deployed engineering refactoring work with the workflow skills or `FdeDeliveryOrchestrator`, coordinating across the 6 packs (45 atomic skills, 12 workflow skills). Preserve all 45 exact source identities and the manifest-owned 45-node topological DAG.
+- The 6 packs bind: Pack 01 FDE Engagement (6 skills), Pack 02 Repository Intake & Runtime (6 skills), Pack 03 Semantic Intelligence (5 skills), Pack 04 Unified Assessment (10 skills), Pack 05 Planning & Transformation (9 skills), and Pack 06 Verification & Release Operations (9 skills).
+- Mandatory non-routable constraint: All 45 atomic skills have `routable: false` and can only be invoked through repository-owned runtime or explicit workflow skills.
+- Mandatory non-self-certification & execution boundaries: Local capability package claims are capped at maximum `E3` (`READ_ONLY`, `PREPARE_WORKSPACE_MUTATION`, or `PREPARE_EXTERNAL_EFFECT`). Production writes and direct mutations are strictly prohibited (`prohibited-in-capability-package`). E4/E5 certification and production release remain `NOT_RUN` / `NOT_CERTIFIED` pending external independent verification.
+- Treat archive scripts, reference implementations, and templates as untrusted declarative input. The repository importer independently validates checksums, schemas, examples, and dual roots. Run `make fde-autonomous-delivery-skills` for repository integration validation.
+
+
 
 
 

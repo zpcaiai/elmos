@@ -1,0 +1,25 @@
+{
+  "deploymentId": "DEP-001",
+  "revisionSetId": "revset-001",
+  "mode": "canary-preparation",
+  "stages": [
+    {
+      "id": "shadow",
+      "trafficPercent": 0,
+      "entry": [
+        "E3 evidence complete"
+      ],
+      "exit": [
+        "No duplicate side effects"
+      ]
+    }
+  ],
+  "rollbackTriggers": [
+    "Error budget burn",
+    "Reconciliation mismatch"
+  ],
+  "authorityRequired": [
+    "customer-production-owner"
+  ],
+  "status": "rehearsal-ready"
+}

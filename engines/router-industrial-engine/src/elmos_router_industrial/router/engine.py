@@ -353,8 +353,9 @@ class ShadowRouter:
         baseline_deployment_id: str,
         security_context: VerifiedSecurityContext | None = None,
         lease: CapabilityLease | None = None,
+        now: datetime | None = None,
     ) -> ShadowRouteDiff:
-        plan, decision = self.router.route(request, security_context, lease)
+        plan, decision = self.router.route(request, security_context, lease, now=now)
         shadow_id = decision.selectedDeploymentId
 
         diff_found = shadow_id != baseline_deployment_id

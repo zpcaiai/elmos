@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v1
+kind: UISurfaceCatalog
+metadata:
+  version: 5.2.0
+  count: 12
+spec:
+  surfaces:
+  - id: fde-command-center
+    name: FDE Command Center
+    purpose: Engagement portfolio, milestones, risks, decisions, access, value and customer status.
+  - id: engagement-workspace
+    name: Engagement Workspace
+    purpose: Discovery notes, workflow map, stakeholders, scope, SOW, acceptance and action tracking.
+  - id: repository-xray
+    name: Repository X-Ray
+    purpose: Asset inventory, support depth, build status, topology, ownership, hotspots and unknown coverage.
+  - id: system-graph-explorer
+    name: System Graph Explorer
+    purpose: Business-to-code, call/data/event/permission/deployment graphs with evidence and confidence.
+  - id: finding-workbench
+    name: Finding Workbench
+    purpose: Normalized findings, deduplication, root cause, impact, suppression, waiver and remediation decisions.
+  - id: architecture-studio
+    name: Architecture & Transformation Studio
+    purpose: Alternatives, ADRs, invariants, Transformation DAG, cost, wall-clock and change windows.
+  - id: changeset-console
+    name: ChangeSet Console
+    purpose: Atomic patches, tool results, unexpected deltas, review, commit, rollback and provenance.
+  - id: proof-center
+    name: Proof & Readiness Center
+    purpose: Claims, obligations, evidence, counterexamples, unknowns, freshness, E0-E3 gates and independent decisions.
+  - id: runtime-lab
+    name: Native Runtime Lab
+    purpose: Reproducible builds, service virtualization, profiles, fault injection, replay and benchmark control.
+  - id: release-operations
+    name: Release & Operations
+    purpose: Shadow/dual-run/canary preparation, SLOs, reconciliation, rollback rehearsal and incident workflow.
+  - id: adoption-value
+    name: Adoption & Value
+    purpose: Training, usage funnels, user feedback, value realization, support and handoff readiness.
+  - id: admin-trust
+    name: Admin & Trust Center
+    purpose: Tenants, roles, policies, connectors, data use, residency, retention, audit exports, quotas and billing.

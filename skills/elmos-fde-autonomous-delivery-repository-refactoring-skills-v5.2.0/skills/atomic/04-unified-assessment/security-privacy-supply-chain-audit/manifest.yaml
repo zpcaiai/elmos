@@ -1,0 +1,159 @@
+apiVersion: elmos.ai/v1
+kind: Skill
+metadata:
+  id: security-privacy-supply-chain-audit
+  name: Security Privacy Supply Chain Audit
+  version: 5.2.0
+  package: elmos-fde-autonomous-delivery-repository-refactoring-skills
+  pack: 04-unified-assessment
+spec:
+  packageRole: capability-extension
+  routable: false
+  routeOwnerRef: binding://cross-cutting/delivery-governance
+  canonicalKernels:
+  - K3
+  - K4
+  - K8
+  businessLines:
+  - repository-autonomy
+  - all-four-lines
+  - commercial-platform
+  owner: product-security-team
+  priority: P0
+  riskClass: critical
+  maturity: specification-ready
+  description: Audit authentication, authorization, tenant isolation, injection, secrets, cryptography, privacy, dependencies,
+    build provenance, and deployment trust boundaries.
+  triggers:
+  - security audit
+  - privacy audit
+  - dependency vulnerability
+  - SBOM
+  - tenant isolation
+  negativeTriggers:
+  - penetrate production without authorization
+  - declare compliance
+  - expose secrets to model
+  inputs:
+  - name: taskContract
+    type: TaskContract
+    required: true
+  - name: tenantRepositoryIdentity
+    type: TenantRepositoryIdentity
+    required: true
+  - name: revisionSet
+    type: RevisionSet
+    required: true
+  - name: policyProfile
+    type: PolicyProfile
+    required: true
+  - name: acceptanceAndEvidenceObligations
+    type: ObligationSet
+    required: true
+  outputs:
+  - name: threat_model
+    type: Artifact
+  - name: security_and_privacy_findings
+    type: Artifact
+  - name: SBOM_obligations
+    type: Artifact
+  - name: control_ownership_matrix
+    type: Artifact
+  - name: residual_risk_register
+    type: Artifact
+  tools:
+  - sast.execute
+  - sca.execute
+  - secret.scan
+  - iac.scan
+  - policy.test
+  - sbom.generate
+  - finding.append
+  dependencies:
+  - issue-ontology-and-finding-normalization
+  - data-event-permission-lineage
+  - reproducible-build-environment
+  externalDependencies:
+  - typed-skill-contract
+  - artifact-identity-and-hashing
+  - evidence-contract
+  - policy-contract
+  - capability-dependency-graph
+  - compatibility-matrix-manager
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  - repository-incremental-ingestion
+  - build-and-dependency-graph
+  - durable-task-checkpoint-memory
+  - environment-owned-tool-authority
+  - invocation-scoped-capability-lease
+  - verified-security-context
+  - result-interception-and-commit
+  - remote-executor-fencing
+  - independent-k8-decision
+  invariants:
+  - no claim without evidence
+  - no authority escalation
+  - all unknowns are explicit
+  - outputs bind to exact RevisionSet
+  failureModes:
+  - insufficient evidence
+  - unsupported technology
+  - stale RevisionSet
+  - authority denied
+  - validation failure
+  authority:
+    default: deny
+    read: explicit-capability-lease
+    workspaceWrite: approved-plan-step-only
+    externalWrite: human-approval-and-side-effect-ledger
+    productionWrite: prohibited-in-capability-package
+    completionDecision: independent-K8-only
+  idempotency:
+    key: tenantId+engagementId+revisionSetId+planStepId+skillVersion
+    replayPolicy: return-previous-artifacts-if-input-hashes-match
+  checkpointing:
+    beforeExternalEffect: true
+    afterAcceptedChangeSet: true
+    resumeRequiresAuthorityReplay: true
+  evidence:
+    minimumLevel: E3
+    freshnessRequired: true
+    exactVersionPins: true
+    counterexamplesRetained: true
+    unknownsBlockWhenMaterial: true
+  rollback:
+    required: true
+    code: atomic-revert-or-workspace-discard
+    data: route-specific-compensation-and-reconciliation
+    externalEffects: side-effect-ledger-compensation
+  telemetry:
+    required:
+    - trace
+    - metric
+    - structured-log
+    - artifact-hash
+    - policy-decision
+    costDimensions:
+    - model
+    - compute
+    - storage
+    - network
+    - license
+    - human-review
+    timeDimensions:
+    - machine-wall-clock
+    - queue
+    - human-review
+  dataUsePolicy:
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+    secretInModelContext: false
+    retention: tenant-policy
+  compatibility:
+    requiresElmos: '>=5.1.0'
+    preservesCanonicalK1K8: true
+    addsRoutableEntryPoints: 0
+    standaloneCompletionBoundary: E3
+    e4e5Companion: elmos-functional-assurance-certification-skills
+  specificationStatus: specification-ready-not-runtime-certified

@@ -44,6 +44,21 @@
         }
       ]
     },
+    "assurance-engine": {
+      "description": "Elmos assurance engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/assurance-engine",
+          "tests": ["engines/assurance-engine/tests"],
+          "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1", "--with", "cryptography>=42.0,<47.0"],
+          "pythonpath": ["engines/assurance-engine/src"],
+          "environment": {}
+        }
+      ]
+    },
     "autonomous-qa-engine": {
       "description": "Autonomous QA engine tests",
       "steps": [
@@ -345,6 +360,21 @@
         }
       ]
     },
+    "mature-platform-engine": {
+      "description": "Mature platform engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 7200,
+          "project": "engines/mature-platform-engine",
+          "tests": ["engines/mature-platform-engine/tests"],
+          "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1", "--with", "cryptography>=42.0,<47.0"],
+          "pythonpath": ["engines/mature-platform-engine/src"],
+          "environment": {}
+        }
+      ]
+    },
     "multimodal-intake-engine": {
       "description": "Multimodal intake engine tests",
       "steps": [
@@ -505,6 +535,21 @@
           "tests": ["engines/python-engine/tests"],
           "uv_args": ["--locked", "--group", "dev"],
           "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "router-industrial-engine": {
+      "description": "Industrial model router engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/router-industrial-engine",
+          "tests": ["engines/router-industrial-engine/tests"],
+          "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
+          "pythonpath": ["engines/router-industrial-engine/src"],
           "environment": {}
         }
       ]

@@ -1,0 +1,670 @@
+{
+  "batch": {
+    "id": "B15",
+    "title": "Connector and Adapter ecosystem",
+    "dependsOn": [
+      "B01",
+      "B03"
+    ],
+    "skills": [],
+    "tasks": [
+      "B15-T001",
+      "B15-T002",
+      "B15-T003",
+      "B15-T004",
+      "B15-T005",
+      "B15-T006",
+      "B15-T007",
+      "B15-T008",
+      "B15-T009",
+      "B15-T010",
+      "B15-T011",
+      "B15-T012",
+      "B15-T013",
+      "B15-T014",
+      "B15-T015",
+      "B15-T016",
+      "B15-T017",
+      "B15-T018",
+      "B15-T019",
+      "B15-T020",
+      "B15-T021",
+      "B15-T022",
+      "B15-T023",
+      "B15-T024",
+      "B15-T025",
+      "B15-T026",
+      "B15-T027"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B15-T001",
+      "batch": "B15",
+      "title": "Implement Adapter SDK and conformance harness",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B01-T002",
+        "B00-T001"
+      ],
+      "outputs": [
+        "adapter SDK",
+        "capability negotiation",
+        "conformance suite"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T002",
+      "batch": "B15",
+      "title": "Implement and certify git-provider-adapter for GitHub/GitLab/Gitea/Azure Repos",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T003",
+      "batch": "B15",
+      "title": "Implement and certify artifact-storage-adapter for S3/GCS/Azure Blob/MinIO",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T004",
+      "batch": "B15",
+      "title": "Implement and certify issue-tracker-adapter for Jira/Linear/Azure Boards/GitHub Issues",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T005",
+      "batch": "B15",
+      "title": "Implement and certify documentation-adapter for Confluence/Notion/SharePoint/Google Drive",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T006",
+      "batch": "B15",
+      "title": "Implement and certify communication-adapter for Slack/Teams/Email",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T007",
+      "batch": "B15",
+      "title": "Implement and certify calendar-meeting-adapter for Google Calendar/Microsoft 365/meeting systems",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T008",
+      "batch": "B15",
+      "title": "Implement and certify crm-commercial-adapter for Salesforce/HubSpot",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T009",
+      "batch": "B15",
+      "title": "Implement and certify identity-directory-adapter for OIDC/SAML/SCIM/LDAP",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T010",
+      "batch": "B15",
+      "title": "Implement and certify secrets-kms-adapter for Vault/KMS/Secrets Manager",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T011",
+      "batch": "B15",
+      "title": "Implement and certify policy-engine-adapter for OPA/Cedar/custom PDP",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T012",
+      "batch": "B15",
+      "title": "Implement and certify workflow-engine-adapter for Temporal/Cadence/Durable Functions",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T013",
+      "batch": "B15",
+      "title": "Implement and certify sandbox-executor-adapter for container/microVM/WASI/remote runner",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T014",
+      "batch": "B15",
+      "title": "Implement and certify model-provider-adapter for OpenAI/compatible/private model endpoints",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T015",
+      "batch": "B15",
+      "title": "Implement and certify compiler-lsp-adapter for compiler/LSP/tree-sitter/native parser",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T016",
+      "batch": "B15",
+      "title": "Implement and certify static-analysis-adapter for CodeQL/Semgrep/Sonar/native analyzers",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T017",
+      "batch": "B15",
+      "title": "Implement and certify dependency-sbom-adapter for Syft/Trivy/OSV/Dependency-Track",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T018",
+      "batch": "B15",
+      "title": "Implement and certify test-runner-adapter for JUnit/pytest/dotnet test/go test/cargo test",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T019",
+      "batch": "B15",
+      "title": "Implement and certify fuzz-mutation-adapter for property/fuzz/mutation engines",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T020",
+      "batch": "B15",
+      "title": "Implement and certify database-adapter for PostgreSQL/MySQL/Oracle/SQL Server/NoSQL",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T021",
+      "batch": "B15",
+      "title": "Implement and certify messaging-stream-adapter for Kafka/Pulsar/RabbitMQ/cloud queues",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T022",
+      "batch": "B15",
+      "title": "Implement and certify observability-adapter for OpenTelemetry/Prometheus/Grafana/APM",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T023",
+      "batch": "B15",
+      "title": "Implement and certify cloud-kubernetes-adapter for AWS/Azure/GCP/Kubernetes",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T024",
+      "batch": "B15",
+      "title": "Implement and certify iac-gitops-adapter for Terraform/Pulumi/Helm/ArgoCD/Flux",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T025",
+      "batch": "B15",
+      "title": "Implement and certify security-scanner-adapter for SAST/DAST/IaC/container/secret scanners",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T026",
+      "batch": "B15",
+      "title": "Implement and certify service-virtualization-adapter for WireMock/MockServer/Testcontainers/custom",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B15-T027",
+      "batch": "B15",
+      "title": "Implement and certify billing-metering-adapter for usage ledger/invoice/credits",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B15-T001"
+      ],
+      "outputs": [
+        "adapter",
+        "descriptor",
+        "conformance tests",
+        "failure runbook"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

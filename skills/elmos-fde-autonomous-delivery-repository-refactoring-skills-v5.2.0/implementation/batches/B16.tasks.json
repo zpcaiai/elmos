@@ -1,0 +1,47 @@
+{
+  "batch": {
+    "id": "B16",
+    "title": "Commercial multi-tenant operations, metering and trust center",
+    "dependsOn": [
+      "B01",
+      "B14",
+      "B15"
+    ],
+    "skills": [],
+    "tasks": [
+      "B16-T001"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B16-T001",
+      "batch": "B16",
+      "title": "Implement tenant administration, quotas, metering, retention, audit export and billing boundaries",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B01-T001",
+        "B14-T001"
+      ],
+      "outputs": [
+        "admin APIs",
+        "metering ledger",
+        "trust center"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}
