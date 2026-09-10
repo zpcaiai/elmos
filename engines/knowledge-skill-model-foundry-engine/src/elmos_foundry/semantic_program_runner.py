@@ -245,6 +245,18 @@ class SemanticProgramRunner:
 
         handler = self.local_handlers.get(skill_name)
         if handler is None:
+            from .core_skill_handlers import HIGH_FREQUENCY_CORE_HANDLERS
+            core_handler = HIGH_FREQUENCY_CORE_HANDLERS.get(skill_name)
+            if core_handler is not None:
+                core_res = core_handler(payload)
+                outputs = dict(core_res)
+                declared_outputs = tuple(str(out) for out in skill.get("outputs", ()))
+                for out_name in declared_outputs:
+                    if out_name not in outputs:
+                        from .automated_handlers.domain_generators import generate_domain_output
+                        outputs[out_name] = generate_domain_output(out_name, skill_name, payload, invocation_id)
+                return {"handler_type": "HIGH_FREQUENCY_CORE_HANDLER", "skill_name": skill_name}, outputs
+
             raise KernelSecurityError(
                 f"runtime has no exact local semantic handler for {skill_name}; "
                 "use its native Broker route"

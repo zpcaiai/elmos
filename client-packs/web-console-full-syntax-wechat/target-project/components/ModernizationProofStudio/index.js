@@ -38,7 +38,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_3
+      // Lifecycle effect effect_1
       try {
         if (!job || terminal.has(job.status)) return;
     const controller = new AbortController();

@@ -29,14 +29,14 @@ Component({
   },
   lifetimes: {
     attached() {
-      // Lifecycle effect effect_1
+      // Lifecycle effect effect_0
       try {
         setInputJson(initialContractInput(selectedSkill));
     setOperationError("");
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_5
+      // Lifecycle effect effect_1
       try {
         if (!run || !["QUEUED", "RUNNING"].includes(run.state)) return;
     const timer = window.setInterval(() => void refreshRun(run.runId), 1_500);

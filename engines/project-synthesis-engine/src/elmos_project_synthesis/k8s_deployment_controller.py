@@ -376,3 +376,20 @@ class K8sDeploymentController:
             diagnostics=diagnostics,
             duration_ms=round(duration, 2),
         )
+
+    def run_autonomic_deployment_with_healing(
+        self,
+        app_name: str,
+        namespace: str = "elmos-test",
+        port: int = 8080,
+        mock_probe_responses: Optional[List[Tuple[str, str, int]]] = None,
+    ) -> Tuple[str, Any, List[K8sProbeResult]]:
+        """Deploys application, monitors 3-tier probes, and executes self-healing rollback if degraded."""
+        from .autonomic_healing_pipeline import AutonomicHealingPipeline
+
+        pipeline = AutonomicHealingPipeline(app_name=app_name, namespace=namespace, port=port)
+        v1_manifest = generate_enterprise_k8s_manifests(app_name, namespace=namespace, port=port)
+        pipeline.register_revision("v1-stable", v1_manifest, is_stable=True)
+
+        v2_manifest = generate_enterprise_k8s_manifests(app_name, namespace=namespace, port=port)
+        return pipeline.deploy_and_supervise("v2-candidate", v2_manifest, mock_probe_responses=mock_probe_responses)

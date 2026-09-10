@@ -49,17 +49,9 @@ export class MiniAppSSREvaluator {
     root.setAttribute('class', 'miniapp-root');
 
     // 4. Evaluate directives and expressions
-    for (const node of rawNodes) {
-      const evaluated = this.evaluateNode(node, componentData);
-      if (evaluated) {
-        if (Array.isArray(evaluated)) {
-          for (const child of evaluated) {
-            root.appendChild(child);
-          }
-        } else {
-          root.appendChild(evaluated);
-        }
-      }
+    const evaluatedNodes = this.evaluateNodeList(rawNodes, componentData, context);
+    for (const evaluated of evaluatedNodes) {
+      root.appendChild(evaluated);
     }
 
     // 5. Compute layout
@@ -118,22 +110,112 @@ export class MiniAppSSREvaluator {
     return rawVal;
   }
 
-  private static evaluateNode(node: DOMNode, scope: Record<string, any>): DOMNode | DOMNode[] | null {
+  private static evaluateNodeList(
+    nodes: DOMNode[],
+    scope: Record<string, any>,
+    context: ComponentRenderContext = {}
+  ): DOMNode[] {
+    const results: DOMNode[] = [];
+    let ifMatched = false;
+    let inIfChain = false;
+
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
+      if (!node || node.nodeType === 'comment') continue;
+
+      if (node.nodeType === 'element' && node.hasAttribute('wx:if')) {
+        inIfChain = true;
+        const conditionExpr = (node.getAttribute('wx:if') || '').replace(/^\{\{|\}\}$/g, '').trim();
+        const condVal = this.evaluateExpression(conditionExpr, scope);
+        ifMatched = Boolean(condVal);
+        if (ifMatched) {
+          const evaluated = this.evaluateNode(node, scope, context, true);
+          if (evaluated) {
+            if (Array.isArray(evaluated)) results.push(...evaluated);
+            else results.push(evaluated);
+          }
+        }
+        continue;
+      }
+
+      if (node.nodeType === 'element' && node.hasAttribute('wx:elif')) {
+        if (!inIfChain) {
+          const conditionExpr = (node.getAttribute('wx:elif') || '').replace(/^\{\{|\}\}$/g, '').trim();
+          const condVal = this.evaluateExpression(conditionExpr, scope);
+          if (condVal) {
+            const evaluated = this.evaluateNode(node, scope, context, true);
+            if (evaluated) {
+              if (Array.isArray(evaluated)) results.push(...evaluated);
+              else results.push(evaluated);
+            }
+          }
+          continue;
+        }
+        if (!ifMatched) {
+          const conditionExpr = (node.getAttribute('wx:elif') || '').replace(/^\{\{|\}\}$/g, '').trim();
+          const condVal = this.evaluateExpression(conditionExpr, scope);
+          if (condVal) {
+            ifMatched = true;
+            const evaluated = this.evaluateNode(node, scope, context, true);
+            if (evaluated) {
+              if (Array.isArray(evaluated)) results.push(...evaluated);
+              else results.push(evaluated);
+            }
+          }
+        }
+        continue;
+      }
+
+      if (node.nodeType === 'element' && node.hasAttribute('wx:else')) {
+        if (inIfChain && !ifMatched) {
+          ifMatched = true;
+          const evaluated = this.evaluateNode(node, scope, context, true);
+          if (evaluated) {
+            if (Array.isArray(evaluated)) results.push(...evaluated);
+            else results.push(evaluated);
+          }
+        }
+        inIfChain = false;
+        continue;
+      }
+
+      if (node.nodeType === 'text' && !(node.nodeValue || '').trim()) {
+        continue;
+      }
+
+      inIfChain = false;
+      const evaluated = this.evaluateNode(node, scope, context, false);
+      if (evaluated) {
+        if (Array.isArray(evaluated)) results.push(...evaluated);
+        else results.push(evaluated);
+      }
+    }
+
+    return results;
+  }
+
+  private static evaluateNode(
+    node: DOMNode,
+    scope: Record<string, any>,
+    context: ComponentRenderContext = {},
+    conditionAlreadyChecked = false
+  ): DOMNode | DOMNode[] | null {
     if (node.nodeType === 'comment') {
       return null;
     }
 
     if (node.nodeType === 'text') {
-      const interpolated = this.interpolate(node.nodeValue || '', scope);
+      const interpolated = this.interpolate(node.nodeValue || '', scope).trim();
       if (!interpolated) return null;
       return new DOMNode('text', undefined, interpolated);
     }
 
-    // Handle wx:if, wx:elif, wx:else
-    if (node.hasAttribute('wx:if')) {
-      const conditionExpr = (node.getAttribute('wx:if') || '').replace(/^\{\{|\}\}$/g, '').trim();
-      const passes = this.evaluateExpression(conditionExpr, scope);
-      if (!passes) {
+    if (!conditionAlreadyChecked) {
+      if (node.hasAttribute('wx:if')) {
+        const conditionExpr = (node.getAttribute('wx:if') || '').replace(/^\{\{|\}\}$/g, '').trim();
+        const passes = this.evaluateExpression(conditionExpr, scope);
+        if (!passes) return null;
+      } else if (node.hasAttribute('wx:elif') || node.hasAttribute('wx:else')) {
         return null;
       }
     }
@@ -163,8 +245,10 @@ export class MiniAppSSREvaluator {
         cloned.removeAttribute('wx:for-index');
         cloned.removeAttribute('wx:key');
         cloned.removeAttribute('wx:if');
+        cloned.removeAttribute('wx:elif');
+        cloned.removeAttribute('wx:else');
 
-        const evaluatedItem = this.evaluateElement(cloned, childScope);
+        const evaluatedItem = this.evaluateElement(cloned, childScope, context);
         if (evaluatedItem) {
           if (Array.isArray(evaluatedItem)) {
             results.push(...evaluatedItem);
@@ -177,24 +261,30 @@ export class MiniAppSSREvaluator {
       return results;
     }
 
-    return this.evaluateElement(node, scope);
+    return this.evaluateElement(node, scope, context);
   }
 
-  private static evaluateElement(node: DOMNode, scope: Record<string, any>): DOMNode | DOMNode[] | null {
+  private static evaluateElement(
+    node: DOMNode,
+    scope: Record<string, any>,
+    context: ComponentRenderContext = {}
+  ): DOMNode | DOMNode[] | null {
     // If it's a virtual block element <block>, unwrap its children
     if (node.tagName === 'block') {
-      const unwrapped: DOMNode[] = [];
-      for (const child of node.children) {
-        const evaluatedChild = this.evaluateNode(child, scope);
-        if (evaluatedChild) {
-          if (Array.isArray(evaluatedChild)) {
-            unwrapped.push(...evaluatedChild);
-          } else {
-            unwrapped.push(evaluatedChild);
-          }
+      return this.evaluateNodeList(node.children, scope, context);
+    }
+
+    // If it's a slot, handle slot replacement or fallback
+    if (node.tagName === 'slot') {
+      const slotName = node.getAttribute('name') || 'default';
+      if (context.slots && context.slots[slotName]) {
+        const slotContent = context.slots[slotName];
+        if (typeof slotContent === 'string') {
+          return HTMLParser.parse(slotContent);
         }
+        return (slotContent as DOMNode).clone(true);
       }
-      return unwrapped;
+      return this.evaluateNodeList(node.children, scope, context);
     }
 
     const element = new DOMNode('element', node.tagName);
@@ -207,17 +297,9 @@ export class MiniAppSSREvaluator {
     }
 
     // Evaluate children
-    for (const child of node.children) {
-      const evaluatedChild = this.evaluateNode(child, scope);
-      if (evaluatedChild) {
-        if (Array.isArray(evaluatedChild)) {
-          for (const c of evaluatedChild) {
-            element.appendChild(c);
-          }
-        } else {
-          element.appendChild(evaluatedChild);
-        }
-      }
+    const childNodes = this.evaluateNodeList(node.children, scope, context);
+    for (const child of childNodes) {
+      element.appendChild(child);
     }
 
     return element;

@@ -1,287 +1,153 @@
 <view class="{{styles.container}}">
-  <text></text>
   <view class="{{styles.header}}">
-    <text></text>
     <view class="{{styles.titleRow}}">
-      <text></text>
-      <text class="{{styles.badge}}">
-        <text>ELMOS Governance &amp; Assurance OS</text>
-      </text>
-      <text></text>
-      <view class="{{styles.title}}">
-        <text>契约治理、变异测试与多级缓存中心</text>
-      </view>
-      <text></text>
+      <text class="{{styles.badge}}">ELMOS Governance &amp; Assurance OS</text>
+      <view class="{{styles.title}}">契约治理、变异测试与多级缓存中心</view>
     </view>
-    <text></text>
-    <view class="{{styles.subtitle}}">
-      <text>展示变异、API 差分和缓存治理的交互形态；本页面未连接真实 Runner，所有示例均不构成执行证据。</text>
-    </view>
-    <text></text>
-    <view class="{{styles.notice}}" role="status">
-      <text>SAMPLE_ONLY · Runner execution NOT_RUN · Independent verification NOT_RUN · Certification NOT_CERTIFIED</text>
-    </view>
-    <text></text>
+    <view class="{{styles.subtitle}}">展示变异、API 差分和缓存治理的交互形态；本页面未连接真实 Runner，所有示例均不构成执行证据。</view>
+    <view class="{{styles.notice}}" role="status">SAMPLE_ONLY · Runner execution NOT_RUN · Independent verification NOT_RUN · Certification NOT_CERTIFIED</view>
     <view class="{{styles.tabBar}}">
-      <text></text>
-      <button type="button" class="{{`${styles.tabBtn} ${activeTab === "mutation" ? styles.activeTab : ""}`}}" aria-pressed="{{activeTab === "mutation"}}" bindtap="() => setActiveTab("mutation")">
-        <text></text>
+      <button type="button" class="{{`${styles.tabBtn} ${activeTab === &quot;mutation&quot; ? styles.activeTab : &quot;&quot;}`}}" aria-pressed="{{activeTab === &quot;mutation&quot;}}" bindtap="onTap">
         <Icon name="test" size="{{16}}" />
         <text>变异测试充分性分析 (Mutation Testing)</text>
       </button>
-      <text></text>
-      <button type="button" class="{{`${styles.tabBtn} ${activeTab === "api-diff" ? styles.activeTab : ""}`}}" aria-pressed="{{activeTab === "api-diff"}}" bindtap="() => setActiveTab("api-diff")">
-        <text></text>
+      <button type="button" class="{{`${styles.tabBtn} ${activeTab === &quot;api-diff&quot; ? styles.activeTab : &quot;&quot;}`}}" aria-pressed="{{activeTab === &quot;api-diff&quot;}}" bindtap="onTap">
         <Icon name="route" size="{{16}}" />
         <text>API 契约向后兼容漂移差分 (API Diff)</text>
       </button>
-      <text></text>
-      <button type="button" class="{{`${styles.tabBtn} ${activeTab === "cas-cache" ? styles.activeTab : ""}`}}" aria-pressed="{{activeTab === "cas-cache"}}" bindtap="() => setActiveTab("cas-cache")">
-        <text></text>
+      <button type="button" class="{{`${styles.tabBtn} ${activeTab === &quot;cas-cache&quot; ? styles.activeTab : &quot;&quot;}`}}" aria-pressed="{{activeTab === &quot;cas-cache&quot;}}" bindtap="onTap">
         <Icon name="database" size="{{16}}" />
         <text>多级 CAS 缓存网络 (CAS Cache &amp; Bloom)</text>
       </button>
-      <text></text>
     </view>
-    <text></text>
   </view>
-  <text></text>
   <view wx:if="{{activeTab === "mutation"}}" class="{{styles.mainGrid}}">
-    <text></text>
     <view class="{{styles.panel}}">
-      <text></text>
       <view class="{{styles.panelHeader}}">
-        <text></text>
-        <view>
-          <text>待测业务逻辑 (Source Code)</text>
-        </view>
-        <text></text>
+        <view>待测业务逻辑 (Source Code)</view>
         <button type="button" class="{{styles.runBtn}}" disabled="{{isAnalyzing}}" bindtap="handleRunMutation">
-          <text></text>
           <Icon name="play" size="{{14}}" />
-          <text></text>
-          <view wx:if="{{isAnalyzing}}" />
-          <view wx:else />
-          <text></text>
+          <text wx:if="{{isAnalyzing}}">{{"生成示例中..."}}</text>
+          <text wx:else>{{"生成变异结果示例（不执行 Runner）"}}</text>
         </button>
-        <text></text>
       </view>
-      <text></text>
-      <textarea aria-label="待测业务逻辑示例" class="{{styles.editor}}" value="{{codeSnippet}}" rows="{{8}}" bindchange="(e) => setCodeSnippet(e.target.value)" />
-      <text></text>
+      <textarea aria-label="待测业务逻辑示例" class="{{styles.editor}}" value="{{codeSnippet}}" rows="{{8}}" bindchange="onChange" />
       <view class="{{styles.scoreBoard}}" aria-label="变异测试示例状态">
-        <text></text>
         <view class="{{styles.scoreItem}}">
-          <text></text>
           <text class="{{styles.scoreVal}}">
-            <view wx:if="{{mutationResults}}" />
-            <view wx:else />
+            <text wx:if="{{mutationResults}}">{{"75.0%"}}</text>
+            <text wx:else>{{"NOT_RUN"}}</text>
           </text>
-          <text></text>
-          <text class="{{styles.scoreLbl}}">
-            <text>变异杀伤率 (Kill Score)</text>
-          </text>
-          <text></text>
+          <text class="{{styles.scoreLbl}}">变异杀伤率 (Kill Score)</text>
         </view>
-        <text></text>
         <view class="{{styles.scoreItem}}">
-          <text></text>
           <text class="{{styles.scoreVal}}">
-            <view wx:if="{{mutationResults}}" />
-            <view wx:else />
+            <text wx:if="{{mutationResults}}">{{"3 / 4"}}</text>
+            <text wx:else>{{"—"}}</text>
           </text>
-          <text></text>
-          <text class="{{styles.scoreLbl}}">
-            <text>已击杀变异体 (Killed Mutants)</text>
-          </text>
-          <text></text>
+          <text class="{{styles.scoreLbl}}">已击杀变异体 (Killed Mutants)</text>
         </view>
-        <text></text>
         <view class="{{styles.scoreItem}}">
-          <text></text>
           <text class="{{styles.scoreVal}}">
-            <view wx:if="{{mutationResults}}" />
-            <view wx:else />
+            <text wx:if="{{mutationResults}}">{{"1"}}</text>
+            <text wx:else>{{"—"}}</text>
           </text>
-          <text></text>
-          <text class="{{styles.scoreLbl}}">
-            <text>存活变异体 (Survived)</text>
-          </text>
-          <text></text>
+          <text class="{{styles.scoreLbl}}">存活变异体 (Survived)</text>
         </view>
-        <text></text>
       </view>
-      <text></text>
     </view>
-    <text></text>
     <view class="{{styles.panel}}">
-      <text></text>
       <view class="{{styles.panelHeader}}">
-        <text></text>
-        <view>
-          <text>变异体示例 (Illustrative Mutants)</text>
-        </view>
-        <text></text>
+        <view>变异体示例 (Illustrative Mutants)</view>
         <text class="{{styles.metaTag}}">
-          <view wx:if="{{mutationResults}}" />
-          <view wx:else />
+          <text wx:if="{{mutationResults}}">{{"SAMPLE_ONLY"}}</text>
+          <text wx:else>{{"NOT_RUN"}}</text>
         </text>
-        <text></text>
       </view>
-      <text></text>
       <view class="{{styles.mutantList}}">
-        <text></text>
-        <view wx:if="{{!mutationResults}}" class="{{styles.emptyState}}">
-          <text>尚未生成示例；真实变异测试、编译与测试回放均为 NOT_RUN。</text>
-        </view>
-        <view wx:else />
-        <text></text>
+        <view wx:if="{{!mutationResults}}" class="{{styles.emptyState}}">尚未生成示例；真实变异测试、编译与测试回放均为 NOT_RUN。</view>
+        <text wx:else>{{mutationResults.map((m) => (
+                <div key={m.id} className={styles.mutantCard}>
+                  <div className={styles.mutantHeader}>
+                    <span className={styles.mutantId}>{m.id}</span>
+                    <span className={styles.mutantOp}>{m.operator}</span>
+                    <span
+                      className={`${styles.statusBadge} ${
+                        m.status === "KILLED" ? styles.statusKilled : styles.statusSurvived
+                      }`}
+                    >
+                      {m.status === "KILLED" ? "✓ KILLED" : "⚠ SURVIVED"}
+                    </span>
+                  </div>
+                  <div className={styles.diffSnippet}>
+                    <div className={styles.diffOrig}>- Line {m.line}: {m.original}</div>
+                    <div className={styles.diffMut}>+ Line {m.line}: {m.mutated}</div>
+                  </div>
+                </div>
+              ))}}</text>
       </view>
-      <text></text>
     </view>
-    <text></text>
   </view>
-  <text></text>
   <view wx:if="{{activeTab === "api-diff"}}" class="{{styles.fullPanel}}">
-    <text></text>
     <view class="{{styles.panelHeader}}">
-      <text></text>
-      <view>
-        <text>API 契约差分静态示例</text>
-      </view>
-      <text></text>
-      <text class="{{styles.dangerTag}}">
-        <text>SAMPLE_ONLY · NOT_RUN</text>
-      </text>
-      <text></text>
+      <view>API 契约差分静态示例</view>
+      <text class="{{styles.dangerTag}}">SAMPLE_ONLY · NOT_RUN</text>
     </view>
-    <text></text>
     <view class="{{styles.diffList}}">
-      <text></text>
       <view wx:for="{{sampleDiffs}}" wx:for-item="d" wx:for-index="i" wx:key="d.id" key="{{i}}" class="{{styles.diffCard}}">
-        <text></text>
         <view class="{{styles.diffCardHeader}}">
-          <text></text>
-          <text class="{{styles.endpointName}}">
-            <text>{{d.endpoint}}</text>
-          </text>
-          <text></text>
+          <text class="{{styles.endpointName}}">{{d.endpoint}}</text>
           <text class="{{`${styles.sevBadge} ${
-                      d.severity === "BREAKING"
+                      d.severity === &quot;BREAKING&quot;
                         ? styles.sevBreaking
-                        : d.severity === "WARNING"
+                        : d.severity === &quot;WARNING&quot;
                         ? styles.sevWarning
                         : styles.sevNonBreaking
-                    }`}}">
-            <text></text>
-            <text>{{d.severity}}</text>
-            <text></text>
-          </text>
-          <text></text>
+                    }`}}">{{d.severity}}</text>
         </view>
-        <text></text>
         <view class="{{styles.diffCardBody}}">
-          <text></text>
-          <text class="{{styles.catLabel}}">
-            <text>{{d.category}}</text>
-          </text>
+          <text class="{{styles.catLabel}}">{{d.category}}</text>
           <text>:</text>
           <text>{{d.description}}</text>
-          <text></text>
         </view>
-        <text></text>
       </view>
-      <text></text>
     </view>
-    <text></text>
   </view>
-  <text></text>
   <view wx:if="{{activeTab === "cas-cache"}}" class="{{styles.fullPanel}}">
-    <text></text>
     <view class="{{styles.panelHeader}}">
-      <text></text>
-      <view>
-        <text>浏览器内缓存状态示例</text>
-      </view>
-      <text></text>
+      <view>浏览器内缓存状态示例</view>
       <button type="button" class="{{styles.purgeBtn}}" bindtap="handlePurgeL1">
-        <text></text>
         <Icon name="refresh" size="{{14}}" />
         <text>清空页面示例 L1 状态</text>
       </button>
-      <text></text>
     </view>
-    <text></text>
     <view class="{{styles.metricsGrid}}">
-      <text></text>
       <view class="{{styles.metricCard}}">
-        <text></text>
-        <text class="{{styles.mValue}}">
-          <text>{{cacheStats.l1Items}}</text>
-        </text>
-        <text></text>
-        <text class="{{styles.mLabel}}">
-          <text>L1 Memory Items</text>
-        </text>
-        <text></text>
-        <text class="{{styles.mDesc}}">
-          <text>高速内存 LRU 缓存条目数</text>
-        </text>
-        <text></text>
+        <text class="{{styles.mValue}}">{{cacheStats.l1Items}}</text>
+        <text class="{{styles.mLabel}}">L1 Memory Items</text>
+        <text class="{{styles.mDesc}}">高速内存 LRU 缓存条目数</text>
       </view>
-      <text></text>
       <view class="{{styles.metricCard}}">
-        <text></text>
-        <text class="{{styles.mValue}}">
-          <text>{{cacheStats.totalEntries}}</text>
-        </text>
-        <text></text>
-        <text class="{{styles.mLabel}}">
-          <text>Total Cached DAG Units</text>
-        </text>
-        <text></text>
-        <text class="{{styles.mDesc}}">
-          <text>多级缓存持久化总单元</text>
-        </text>
-        <text></text>
+        <text class="{{styles.mValue}}">{{cacheStats.totalEntries}}</text>
+        <text class="{{styles.mLabel}}">Total Cached DAG Units</text>
+        <text class="{{styles.mDesc}}">多级缓存持久化总单元</text>
       </view>
-      <text></text>
       <view class="{{styles.metricCard}}">
-        <text></text>
         <text class="{{styles.mValue}}">
           <text>{{(cacheStats.hitRatio * 100).toFixed(1)}}</text>
           <text>%</text>
         </text>
-        <text></text>
-        <text class="{{styles.mLabel}}">
-          <text>Cache Hit Ratio</text>
-        </text>
-        <text></text>
-        <text class="{{styles.mDesc}}">
-          <text>CAS 命中加速比</text>
-        </text>
-        <text></text>
+        <text class="{{styles.mLabel}}">Cache Hit Ratio</text>
+        <text class="{{styles.mDesc}}">CAS 命中加速比</text>
       </view>
-      <text></text>
       <view class="{{styles.metricCard}}">
-        <text></text>
         <text class="{{styles.mValue}}">
           <text>{{cacheStats.bloomFilterBits}}</text>
           <text>bits</text>
         </text>
-        <text></text>
-        <text class="{{styles.mLabel}}">
-          <text>Bloom Filter Active</text>
-        </text>
-        <text></text>
-        <text class="{{styles.mDesc}}">
-          <text>布隆过滤器极速预检</text>
-        </text>
-        <text></text>
+        <text class="{{styles.mLabel}}">Bloom Filter Active</text>
+        <text class="{{styles.mDesc}}">布隆过滤器极速预检</text>
       </view>
-      <text></text>
     </view>
-    <text></text>
   </view>
-  <text></text>
 </view>

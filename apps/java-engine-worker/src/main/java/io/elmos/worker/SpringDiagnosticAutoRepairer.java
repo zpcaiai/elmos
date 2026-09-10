@@ -99,6 +99,38 @@ public final class SpringDiagnosticAutoRepairer {
             }
         }
 
+        // 4. Spring Security 5/6 FilterChain Modernizer
+        var secRes = io.elmos.worker.security.SpringSecurityFilterChainModernizer.modernize(projectRoot);
+        if (secRes.modified()) {
+            changesCount += secRes.changesCount();
+            modifiedFiles.addAll(secRes.modifiedFiles());
+            rulesApplied.addAll(secRes.rulesApplied());
+        }
+
+        // 5. JPA / Hibernate 6 SQM & Composite Query Modernizer
+        var jpaRes = io.elmos.worker.jpa.SpringJpaHibernateQueryModernizer.modernize(projectRoot);
+        if (jpaRes.modified()) {
+            changesCount += jpaRes.changesCount();
+            modifiedFiles.addAll(jpaRes.modifiedFiles());
+            rulesApplied.addAll(jpaRes.rulesApplied());
+        }
+
+        // 6. Spring Cloud Microservices Modernizer
+        var cloudRes = io.elmos.worker.cloud.SpringCloudMicroservicesModernizer.modernize(projectRoot);
+        if (cloudRes.modified()) {
+            changesCount += cloudRes.changesCount();
+            modifiedFiles.addAll(cloudRes.modifiedFiles());
+            rulesApplied.addAll(cloudRes.rulesApplied());
+        }
+
+        // 7. XML Hybrid Configuration Converter
+        var xmlRes = io.elmos.worker.xml.SpringXmlToJavaConfigConverter.convertProject(projectRoot, "io.elmos.config");
+        if (xmlRes.converted()) {
+            changesCount += xmlRes.totalBeansConverted();
+            modifiedFiles.addAll(xmlRes.generatedJavaFiles());
+            rulesApplied.add("CONVERT_SPRING_XML_TO_JAVACONFIG");
+        }
+
         return new RepairResult(changesCount > 0, changesCount, Collections.unmodifiableSet(modifiedFiles), Collections.unmodifiableList(rulesApplied));
     }
 

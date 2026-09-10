@@ -1,398 +1,188 @@
 <view class="{{`page-stack ${styles.page}`}}">
-  <text></text>
   <view class="{{styles.hero}}">
-    <text></text>
     <view>
-      <text></text>
-      <text class="overline">
-        <text>ELMOS SELF-SERVE · CNY</text>
-      </text>
-      <text></text>
-      <view>
-        <text>先验证价值，再为持续交付付费。</text>
-      </view>
-      <text></text>
-      <view>
-        <text>参考主流 AI 开发工具的免费与专业版结构，以人民币提供清晰的 token、
-            credits 和项目额度。没有“无限使用”的模糊承诺，也不会自动产生超额费用。</text>
-      </view>
-      <text></text>
+      <text class="overline">ELMOS SELF-SERVE · CNY</text>
+      <view>先验证价值，再为持续交付付费。</view>
+      <view>参考主流 AI 开发工具的免费与专业版结构，以人民币提供清晰的 token、
+            credits 和项目额度。没有“无限使用”的模糊承诺，也不会自动产生超额费用。</view>
     </view>
-    <text></text>
     <view class="{{styles.heroFacts}}" aria-label="套餐摘要">
-      <text></text>
       <view>
-        <text>
-          <text>14 天</text>
-        </text>
-        <text>
-          <text>免费体验</text>
-        </text>
+        <text>14 天</text>
+        <text>免费体验</text>
       </view>
-      <text></text>
       <view>
-        <text>
-          <text>¥129</text>
-        </text>
-        <text>
-          <text>专业月付</text>
-        </text>
+        <text>¥129</text>
+        <text>专业月付</text>
       </view>
-      <text></text>
       <view>
-        <text>
-          <text>省 ¥258</text>
-        </text>
-        <text>
-          <text>专业年付</text>
-        </text>
+        <text>省 ¥258</text>
+        <text>专业年付</text>
       </view>
-      <text></text>
     </view>
-    <text></text>
   </view>
-  <text></text>
   <view class="{{styles.statusNotice}}" role="status">
-    <text></text>
     <Icon name="clock" size="{{17}}" />
-    <text></text>
     <view>
-      <text></text>
-      <text>
-        <text>套餐目录已实现，收款尚未开放</text>
-      </text>
-      <text></text>
+      <text>套餐目录已实现，收款尚未开放</text>
       <text>
         <text>当前目录版本</text>
         <text>{{pricingCatalog.catalogVersion}}</text>
         <text>为 DRAFT；支付、税务与开票均为
             NOT_CONFIGURED。</text>
       </text>
-      <text></text>
     </view>
-    <text></text>
-    <Link href="/commercialization">
+    <navigator href="/commercialization">
       <text>查看控制面</text>
       <Icon name="arrow" size="{{14}}" />
-    </Link>
-    <text></text>
+    </navigator>
   </view>
-  <text></text>
   <SubscriptionManager />
-  <text></text>
-  <UsageDashboard allowLocalCredentials="{{process.env.ELMOS_LOCAL_RUNNER_ENABLED === "true"}}" emailAlertsEnabled="{{process.env.ELMOS_USAGE_EMAIL_ALERTS_ENABLED === "true"}}" />
-  <text></text>
+  <UsageDashboard allowLocalCredentials="{{process.env.ELMOS_LOCAL_RUNNER_ENABLED === &quot;true&quot;}}" emailAlertsEnabled="{{process.env.ELMOS_USAGE_EMAIL_ALERTS_ENABLED === &quot;true&quot;}}" />
   <CreditWalletPanel />
-  <text></text>
   <view aria-labelledby="pricing-plans-title">
-    <text></text>
     <view class="section-heading">
-      <text></text>
       <view>
-        <text></text>
-        <text class="overline">
-          <text>PLANS</text>
-        </text>
-        <text></text>
-        <view id="pricing-plans-title">
-          <text>选择适合当前阶段的计划</text>
-        </view>
-        <text></text>
+        <text class="overline">PLANS</text>
+        <view id="pricing-plans-title">选择适合当前阶段的计划</view>
       </view>
-      <text></text>
-      <text class="quiet-label">
-        <text>全部以人民币结算 · 税费口径待配置</text>
-      </text>
-      <text></text>
+      <text class="quiet-label">全部以人民币结算 · 税费口径待配置</text>
     </view>
-    <text></text>
     <view class="{{styles.planGrid}}">
-      <text></text>
-      <view wx:for="{{pricingCatalog.plans}}" wx:for-item="plan" wx:key="plan.id" class="{{`${styles.planCard} ${plan.featured ? styles.featured : ""}`}}" key="{{plan.planId}}">
-        <text></text>
-        <text wx:if="{{plan.featured}}" class="{{styles.recommended}}">
-          <text>推荐</text>
-        </text>
-        <text></text>
-        <text class="overline">
-          <text>{{plan.eyebrow}}</text>
-        </text>
-        <text></text>
-        <view>
-          <text>{{plan.name}}</text>
-        </view>
-        <text></text>
-        <view class="{{styles.planDescription}}">
-          <text>{{plan.description}}</text>
-        </view>
-        <text></text>
+      <view wx:for="{{pricingCatalog.plans}}" wx:for-item="plan" wx:key="plan.id" class="{{`${styles.planCard} ${plan.featured ? styles.featured : &quot;&quot;}`}}" key="{{plan.planId}}">
+        <text wx:if="{{plan.featured}}" class="{{styles.recommended}}">推荐</text>
+        <text class="overline">{{plan.eyebrow}}</text>
+        <view>{{plan.name}}</view>
+        <view class="{{styles.planDescription}}">{{plan.description}}</view>
         <view class="{{styles.priceLine}}">
-          <text></text>
-          <text>
-            <text>{{formatCny(plan.priceFen)}}</text>
-          </text>
-          <text></text>
+          <text>{{formatCny(plan.priceFen)}}</text>
           <text>
             <text>/</text>
             <text>{{plan.billingLabel}}</text>
           </text>
-          <text></text>
         </view>
-        <text></text>
         <view wx:if="{{plan.planId === "elmos-pro-annual"}}" class="{{styles.savings}}">
           <text>折合</text>
           <text>{{formatCny(plan.effectiveMonthlyFen)}}</text>
           <text>/月，比连续月付节省 ¥258.00</text>
         </view>
-        <text></text>
-        <view wx:if="{{plan.planId === "elmos-free-trial"}}" class="{{styles.savings}}">
-          <text>一次性额度 · 到期不自动扣费</text>
-        </view>
-        <text></text>
-        <view wx:if="{{plan.planId === "elmos-pro-monthly"}}" class="{{styles.savings}}">
-          <text>随时按月评估 · 不自动超额计费</text>
-        </view>
-        <text></text>
+        <view wx:if="{{plan.planId === "elmos-free-trial"}}" class="{{styles.savings}}">一次性额度 · 到期不自动扣费</view>
+        <view wx:if="{{plan.planId === "elmos-pro-monthly"}}" class="{{styles.savings}}">随时按月评估 · 不自动超额计费</view>
         <view class="{{styles.quotaPanel}}" aria-label="{{`${plan.name}用量额度`}}">
-          <text></text>
           <view>
-            <text></text>
+            <text>模型 Token</text>
+            <text>{{formatQuota(plan.tokens)}}</text>
             <text>
-              <text>模型 Token</text>
+              <text wx:if="{{plan.allowanceWindow === "MONTHLY"}}">{{"每月重置"}}</text>
+              <text wx:else>{{"14 天总额"}}</text>
             </text>
-            <text></text>
-            <text>
-              <text>{{formatQuota(plan.tokens)}}</text>
-            </text>
-            <text></text>
-            <text>
-              <view wx:if="{{plan.allowanceWindow === "MONTHLY"}}" />
-              <view wx:else />
-            </text>
-            <text></text>
           </view>
-          <text></text>
           <view>
-            <text></text>
+            <text>平台 Credits</text>
+            <text>{{formatQuota(plan.credits)}}</text>
             <text>
-              <text>平台 Credits</text>
+              <text wx:if="{{plan.allowanceWindow === "MONTHLY"}}">{{"每月重置"}}</text>
+              <text wx:else>{{"14 天总额"}}</text>
             </text>
-            <text></text>
-            <text>
-              <text>{{formatQuota(plan.credits)}}</text>
-            </text>
-            <text></text>
-            <text>
-              <view wx:if="{{plan.allowanceWindow === "MONTHLY"}}" />
-              <view wx:else />
-            </text>
-            <text></text>
           </view>
-          <text></text>
         </view>
-        <text></text>
         <view wx:if="{{plan.allowanceWindow === "MONTHLY"}}" class="{{styles.annualCeiling}}">
-          <text></text>
-          <view wx:if="{{plan.planId === "elmos-pro-annual"}}" />
-          <view wx:else />
+          <text wx:if="{{plan.planId === "elmos-pro-annual"}}">{{"年度合同上限"}}</text>
+          <text wx:else>{{"连续使用 12 个月"}}</text>
           <text>：</text>
           <text>{{formatQuota(plan.annualTokens)}}</text>
           <text>token ·</text>
           <text>{{formatQuota(plan.annualCredits)}}</text>
           <text>credits</text>
         </view>
-        <text></text>
         <view class="{{styles.featureList}}">
-          <text></text>
           <view wx:for="{{plan.features}}" wx:for-item="feature" wx:key="feature.id" key="{{feature}}">
             <Icon name="check" size="{{15}}" />
             <text>{{feature}}</text>
           </view>
-          <text></text>
         </view>
-        <text></text>
         <view class="{{styles.planAction}}">
-          <text></text>
           <PlanBillingAction plan="{{plan}}" orderable="{{catalogOrderable}}" />
-          <text></text>
         </view>
-        <text></text>
       </view>
-      <text></text>
     </view>
-    <text></text>
   </view>
-  <text></text>
   <view aria-labelledby="one-time-products-title">
-    <text></text>
     <view class="section-heading">
-      <text></text>
       <view>
-        <text></text>
-        <text class="overline">
-          <text>ONE-TIME PURCHASES</text>
-        </text>
-        <text></text>
-        <view id="one-time-products-title">
-          <text>按需购买，不必先订阅</text>
-        </view>
-        <text></text>
+        <text class="overline">ONE-TIME PURCHASES</text>
+        <view id="one-time-products-title">按需购买，不必先订阅</view>
       </view>
-      <text></text>
-      <text class="quiet-label">
-        <text>订单、履约与消耗记录均可追溯</text>
-      </text>
-      <text></text>
+      <text class="quiet-label">订单、履约与消耗记录均可追溯</text>
     </view>
-    <text></text>
     <view class="{{styles.planGrid}}">
-      <text></text>
       <view wx:for="{{pricingCatalog.creditPacks}}" wx:for-item="product" wx:key="product.id" class="{{styles.planCard}}" key="{{product.sku}}">
-        <text></text>
-        <text class="overline">
-          <text>CREDIT PACK</text>
-        </text>
-        <text></text>
-        <view>
-          <text>{{product.name}}</text>
-        </view>
-        <text></text>
-        <view class="{{styles.planDescription}}">
-          <text>{{product.description}}</text>
-        </view>
-        <text></text>
+        <text class="overline">CREDIT PACK</text>
+        <view>{{product.name}}</view>
+        <view class="{{styles.planDescription}}">{{product.description}}</view>
         <view class="{{styles.priceLine}}">
-          <text>
-            <text>{{formatCny(product.priceFen)}}</text>
-          </text>
+          <text>{{formatCny(product.priceFen)}}</text>
         </view>
-        <text></text>
         <view class="{{styles.savings}}">
-          <text></text>
           <text>{{formatQuota(product.credits)}}</text>
           <text>Credits ·</text>
           <text>{{product.expiryDays}}</text>
           <text>天有效</text>
         </view>
-        <text></text>
         <ProductBillingAction product="{{product}}" orderable="{{catalogOrderable}}" />
-        <text></text>
       </view>
-      <text></text>
       <view wx:for="{{pricingCatalog.oneTimeProducts}}" wx:for-item="product" wx:key="product.id" class="{{styles.planCard}}" key="{{product.sku}}">
-        <text></text>
-        <text class="overline">
-          <text>PROJECT PASS</text>
-        </text>
-        <text></text>
-        <view>
-          <text>{{product.name}}</text>
-        </view>
-        <text></text>
-        <view class="{{styles.planDescription}}">
-          <text>{{product.description}}</text>
-        </view>
-        <text></text>
+        <text class="overline">PROJECT PASS</text>
+        <view>{{product.name}}</view>
+        <view class="{{styles.planDescription}}">{{product.description}}</view>
         <view class="{{styles.priceLine}}">
-          <text>
-            <text>{{formatCny(product.priceFen)}}</text>
-          </text>
+          <text>{{formatCny(product.priceFen)}}</text>
         </view>
-        <text></text>
         <view class="{{styles.savings}}">
           <text>绑定一个项目 · 最多</text>
           <text>{{product.maxRunnerMinutes}}</text>
           <text>分钟 Runner</text>
         </view>
-        <text></text>
         <ProductBillingAction product="{{product}}" orderable="{{catalogOrderable}}" />
-        <text></text>
       </view>
-      <text></text>
     </view>
-    <text></text>
   </view>
-  <text></text>
   <view class="{{styles.meterSection}}" aria-labelledby="credit-meter-title">
-    <text></text>
     <view class="{{styles.meterIntro}}">
-      <text></text>
-      <text class="overline">
-        <text>USAGE METER</text>
-      </text>
-      <text></text>
-      <view id="credit-meter-title">
-        <text>Token 与 Credit 如何扣减</text>
-      </view>
-      <text></text>
-      <view>
-        <text>Token 衡量模型实际推理量；Credit 衡量 ELMOS 的分析、隔离执行和验证资源。
-            使用模型的工作会同时扣减已确认 token 与对应操作 credits。</text>
-      </view>
-      <text></text>
+      <text class="overline">USAGE METER</text>
+      <view id="credit-meter-title">Token 与 Credit 如何扣减</view>
+      <view>Token 衡量模型实际推理量；Credit 衡量 ELMOS 的分析、隔离执行和验证资源。
+            使用模型的工作会同时扣减已确认 token 与对应操作 credits。</view>
     </view>
-    <text></text>
     <view class="{{styles.rateTable}}" role="table" aria-label="Credit 扣减表">
-      <text></text>
       <view class="{{styles.rateHead}}" role="row">
-        <text></text>
-        <text role="columnheader">
-          <text>操作</text>
-        </text>
-        <text></text>
-        <text role="columnheader">
-          <text>单价</text>
-        </text>
-        <text></text>
+        <text role="columnheader">操作</text>
+        <text role="columnheader">单价</text>
       </view>
-      <text></text>
       <view wx:for="{{pricingCatalog.creditRates}}" wx:for-item="rate" wx:key="rate.id" class="{{styles.rateRow}}" role="row" key="{{rate.operationKey}}">
-        <text></text>
-        <text role="cell">
-          <text>{{rate.label}}</text>
-        </text>
-        <text></text>
+        <text role="cell">{{rate.label}}</text>
         <text role="cell">
           <text>{{rate.credits}}</text>
           <text>credits /</text>
           <text>{{rate.unit}}</text>
         </text>
-        <text></text>
       </view>
-      <text></text>
     </view>
-    <text></text>
   </view>
-  <text></text>
   <view class="{{styles.rules}}" aria-labelledby="usage-rules-title">
-    <text></text>
     <view>
-      <text></text>
-      <text class="overline">
-        <text>BILLING GUARDRAILS</text>
-      </text>
-      <text></text>
-      <view id="usage-rules-title">
-        <text>用量规则</text>
-      </view>
-      <text></text>
+      <text class="overline">BILLING GUARDRAILS</text>
+      <view id="usage-rules-title">用量规则</view>
     </view>
-    <text></text>
     <view>
-      <text></text>
       <view wx:for="{{pricingCatalog.limitations}}" wx:for-item="limitation" wx:key="limitation.id" key="{{limitation}}">
         <Icon name="shield" size="{{16}}" />
         <text>{{limitation}}</text>
       </view>
-      <text></text>
     </view>
-    <text></text>
     <navigator class="text-link" href="/api/pricing" target="_blank" rel="noreferrer">
       <text>查看套餐 API</text>
       <Icon name="external" size="{{14}}" />
-      <text></text>
     </navigator>
-    <text></text>
   </view>
-  <text></text>
 </view>

@@ -43,7 +43,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_3
+      // Lifecycle effect effect_1
       try {
         api<Capability>("/api/spring-upgrades/capabilities")
       .then((value) => {
@@ -60,7 +60,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_4
+      // Lifecycle effect effect_2
       try {
         refreshGithubCatalog()
       .catch(() => {
@@ -70,7 +70,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_5
+      // Lifecycle effect effect_3
       try {
         const runId = window.sessionStorage.getItem(latestRunStorageKey);
     if (runId && /^[0-9a-f-]{36}$/i.test(runId)) setRecoveryRunId(runId);
@@ -87,7 +87,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_6
+      // Lifecycle effect effect_4
       try {
         if (!run || !["QUEUED", "RUNNING"].includes(run.status) && run.runtimeStatus !== "STARTING") return;
     const timer = window.setInterval(() => {
@@ -97,7 +97,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_8
+      // Lifecycle effect effect_5
       try {
         if (!feedback || feedbackKind === "error") return;
     const timer = window.setTimeout(() => setFeedback(""), 6_000);

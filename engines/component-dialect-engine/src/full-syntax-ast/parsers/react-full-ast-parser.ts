@@ -198,8 +198,14 @@ export class ReactFullAstParser {
               bodyCode: node.body ? node.body.getText(sourceFile) : "",
               isAsync: !!(node.modifiers && node.modifiers.some((m) => m.kind === ts.SyntaxKind.AsyncKeyword)),
             });
+            return;
+          } else if (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) {
+            return;
           } else if (ts.isReturnStatement(node) && node.expression) {
-            templateRoot = parseJsxNode(node.expression, sourceFile, generateId, containerApis, thirdPartyComponents);
+            const parsed = parseJsxNode(node.expression, sourceFile, generateId, containerApis, thirdPartyComponents);
+            if (parsed) {
+              templateRoot = parsed;
+            }
           }
 
           ts.forEachChild(node, visitComponentBody);
@@ -264,7 +270,7 @@ function parseJsxNode(
   generateId: (prefix?: string) => string,
   containerApis: Set<string>,
   thirdPartyComponents: Set<string>
-): FullSyntaxNode {
+): FullSyntaxNode | null {
   if (ts.isParenthesizedExpression(node)) {
     return parseJsxNode(node.expression, sourceFile, generateId, containerApis, thirdPartyComponents);
   }
@@ -272,14 +278,24 @@ function parseJsxNode(
   if (ts.isJsxElement(node)) {
     const opening = node.openingElement;
     const tag = opening.tagName.getText(sourceFile);
+    if (tag.endsWith('.Provider') || tag.endsWith('.Consumer')) {
+      const children = node.children
+        .map((c) => parseJsxNode(c, sourceFile, generateId, containerApis, thirdPartyComponents))
+        .filter((c): c is FullSyntaxNode => c !== null);
+      return {
+        id: generateId("frag"),
+        kind: "fragment",
+        children,
+      };
+    }
     if (/^[A-Z]/.test(tag)) {
       thirdPartyComponents.add(tag);
     }
     const attrs = parseJsxAttributes(opening.attributes, sourceFile);
     const events = extractJsxEvents(opening.attributes, sourceFile);
-    const children = node.children.map((c) =>
-      parseJsxNode(c, sourceFile, generateId, containerApis, thirdPartyComponents)
-    );
+    const children = node.children
+      .map((c) => parseJsxNode(c, sourceFile, generateId, containerApis, thirdPartyComponents))
+      .filter((c): c is FullSyntaxNode => c !== null);
 
     return {
       id: generateId("elem"),
@@ -293,6 +309,13 @@ function parseJsxNode(
 
   if (ts.isJsxSelfClosingElement(node)) {
     const tag = node.tagName.getText(sourceFile);
+    if (tag.endsWith('.Provider') || tag.endsWith('.Consumer')) {
+      return {
+        id: generateId("frag"),
+        kind: "fragment",
+        children: [],
+      };
+    }
     if (/^[A-Z]/.test(tag)) {
       thirdPartyComponents.add(tag);
     }
@@ -310,9 +333,9 @@ function parseJsxNode(
   }
 
   if (ts.isJsxFragment(node)) {
-    const children = node.children.map((c) =>
-      parseJsxNode(c, sourceFile, generateId, containerApis, thirdPartyComponents)
-    );
+    const children = node.children
+      .map((c) => parseJsxNode(c, sourceFile, generateId, containerApis, thirdPartyComponents))
+      .filter((c): c is FullSyntaxNode => c !== null);
     return {
       id: generateId("frag"),
       kind: "fragment",
@@ -322,6 +345,9 @@ function parseJsxNode(
 
   if (ts.isJsxText(node)) {
     const text = node.getText(sourceFile).trim();
+    if (!text) {
+      return null;
+    }
     return {
       id: generateId("text"),
       kind: "text",
@@ -332,14 +358,27 @@ function parseJsxNode(
   if (ts.isJsxExpression(node)) {
     const expr = node.expression;
     if (!expr) {
-      return { id: generateId("empty"), kind: "text", text: "" };
+      return null;
+    }
+
+    const exprText = expr.getText(sourceFile).trim();
+    if (exprText === 'children' || exprText === 'props.children') {
+      return {
+        id: generateId("slot"),
+        kind: "slot_outlet",
+        slotName: "default",
+      };
     }
 
     // Check for conditional ternary: condition ? <A/> : <B/>
     if (ts.isConditionalExpression(expr)) {
       const conditionStr = expr.condition.getText(sourceFile);
-      const thenNode = parseJsxNode(expr.whenTrue, sourceFile, generateId, containerApis, thirdPartyComponents);
-      const elseNode = parseJsxNode(expr.whenFalse, sourceFile, generateId, containerApis, thirdPartyComponents);
+      const thenNode = parseJsxNode(expr.whenTrue, sourceFile, generateId, containerApis, thirdPartyComponents) || {
+        id: generateId("empty"),
+        kind: "fragment",
+        children: [],
+      };
+      const elseNode = parseJsxNode(expr.whenFalse, sourceFile, generateId, containerApis, thirdPartyComponents) || undefined;
       return {
         id: generateId("cond"),
         kind: "conditional",
@@ -354,7 +393,11 @@ function parseJsxNode(
     // Check for logical && conditional: condition && <Node/>
     if (ts.isBinaryExpression(expr) && expr.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) {
       const conditionStr = expr.left.getText(sourceFile);
-      const thenNode = parseJsxNode(expr.right, sourceFile, generateId, containerApis, thirdPartyComponents);
+      const thenNode = parseJsxNode(expr.right, sourceFile, generateId, containerApis, thirdPartyComponents) || {
+        id: generateId("empty"),
+        kind: "fragment",
+        children: [],
+      };
       return {
         id: generateId("cond"),
         kind: "conditional",
@@ -379,11 +422,16 @@ function parseJsxNode(
             const retStmt = mapCallback.body.statements.find((s) => ts.isReturnStatement(s)) as
               | ts.ReturnStatement
               | undefined;
-            bodyNode = retStmt?.expression
+            bodyNode = (retStmt?.expression
               ? parseJsxNode(retStmt.expression, sourceFile, generateId, containerApis, thirdPartyComponents)
-              : { id: generateId("empty"), kind: "text", text: "" };
+              : null) || { id: generateId("empty"), kind: "fragment", children: [] };
           } else {
-            bodyNode = parseJsxNode(mapCallback.body, sourceFile, generateId, containerApis, thirdPartyComponents);
+            bodyNode =
+              parseJsxNode(mapCallback.body, sourceFile, generateId, containerApis, thirdPartyComponents) || {
+                id: generateId("empty"),
+                kind: "fragment",
+                children: [],
+              };
           }
 
           return {

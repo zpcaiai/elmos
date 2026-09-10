@@ -18,7 +18,7 @@ Component({
   },
   lifetimes: {
     attached() {
-      // Lifecycle effect effect_3
+      // Lifecycle effect effect_0
       try {
         if (!job || terminal.has(job.status)) return;
     const timer = window.setInterval(() => void load(job.job_id).catch((reason: unknown) => {

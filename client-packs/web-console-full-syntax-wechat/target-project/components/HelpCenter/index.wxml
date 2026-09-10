@@ -1,231 +1,140 @@
 <view class="page-stack help-center">
-  <text></text>
   <view class="page-header">
-    <text></text>
     <view>
-      <text></text>
       <text class="overline">
-        <view wx:if="{{english}}" />
-        <view wx:else />
+        <text wx:if="{{english}}">{{"Guidance · Evidence boundaries"}}</text>
+        <text wx:else>{{"操作指南 · 证据边界"}}</text>
       </text>
-      <text></text>
       <view>
-        <view wx:if="{{english}}" />
-        <view wx:else />
+        <text wx:if="{{english}}">{{"Help and readiness"}}</text>
+        <text wx:else>{{"帮助与就绪状态"}}</text>
       </view>
-      <text></text>
       <view>
-        <text></text>
-        <view wx:if="{{english}}" />
-        <view wx:else />
-        <text></text>
+        <text wx:if="{{english}}">{{"Use the four business lines and controlled repository workflow safely. Local engineering evidence is shown separately from external execution."}}</text>
+        <text wx:else>{{"安全使用四条业务线与受控仓库流程。本地工程证据与外部执行证据严格分开显示。"}}</text>
       </view>
-      <text></text>
     </view>
-    <text></text>
   </view>
-  <text></text>
   <view class="help-section" aria-labelledby="help-lines-title">
-    <text></text>
     <view class="section-heading">
-      <text></text>
       <view>
-        <text></text>
-        <text class="overline">
-          <text>01</text>
-        </text>
-        <text></text>
+        <text class="overline">01</text>
         <view id="help-lines-title">
-          <view wx:if="{{english}}" />
-          <view wx:else />
+          <text wx:if="{{english}}">{{"Choose a business line"}}</text>
+          <text wx:else>{{"选择业务线"}}</text>
         </view>
-        <text></text>
       </view>
-      <text></text>
     </view>
-    <text></text>
     <view class="help-line-grid">
-      <text></text>
       <view wx:for="{{businessLines}}" wx:for-item="line" wx:key="line.id" key="{{line.href}}">
-        <text></text>
         <view>
-          <view wx:if="{{english}}" />
-          <view wx:else />
+          <text wx:if="{{english}}">{{line.en}}</text>
+          <text wx:else>{{line.zh}}</text>
         </view>
-        <text></text>
         <view>
-          <view wx:if="{{english}}" />
-          <view wx:else />
+          <text wx:if="{{english}}">{{line.enDescription}}</text>
+          <text wx:else>{{line.zhDescription}}</text>
         </view>
-        <text></text>
-        <Link class="text-link" href="{{line.href}}">
-          <text></text>
-          <view wx:if="{{english}}" />
-          <view wx:else />
+        <navigator class="text-link" href="{{line.href}}">
+          <text wx:if="{{english}}">{{"Open workspace"}}</text>
+          <text wx:else>{{"打开工作区"}}</text>
           <text>→</text>
-        </Link>
-        <text></text>
+        </navigator>
       </view>
-      <text></text>
     </view>
-    <text></text>
   </view>
-  <text></text>
   <view class="help-section" aria-labelledby="help-delivery-title">
-    <text></text>
     <view class="section-heading">
-      <text></text>
       <view>
-        <text></text>
-        <text class="overline">
-          <text>02</text>
-        </text>
-        <text></text>
+        <text class="overline">02</text>
         <view id="help-delivery-title">
-          <view wx:if="{{english}}" />
-          <view wx:else />
+          <text wx:if="{{english}}">{{"Controlled repository delivery"}}</text>
+          <text wx:else>{{"受控仓库交付"}}</text>
         </view>
-        <text></text>
       </view>
-      <text></text>
-      <Link wx:if="{{hasAdminAccess}}" class="text-link" href="/repositories">
-        <text></text>
-        <view wx:if="{{english}}" />
-        <view wx:else />
-        <text></text>
-      </Link>
-      <text></text>
+      <navigator wx:if="{{hasAdminAccess}}" class="text-link" href="/repositories">
+        <text wx:if="{{english}}">{{"Open repository workspace"}}</text>
+        <text wx:else>{{"打开仓库工作区"}}</text>
+      </navigator>
     </view>
-    <text></text>
     <view class="help-steps">
-      <text></text>
       <view wx:for="{{deliverySteps}}" wx:for-item="[number, zh, en]" wx:key="[number, zh, en].id" key="{{number}}">
+        <text>{{number}}</text>
         <text>
-          <text>{{number}}</text>
-        </text>
-        <text>
-          <view wx:if="{{english}}" />
-          <view wx:else />
+          <text wx:if="{{english}}">{{en}}</text>
+          <text wx:else>{{zh}}</text>
         </text>
       </view>
-      <text></text>
     </view>
-    <text></text>
     <view class="help-boundary">
-      <text></text>
-      <view wx:if="{{english}}" />
-      <view wx:else />
-      <text></text>
+      <text wx:if="{{english}}">{{"Merge, deployment, infrastructure apply, and production database migration are not automatic effects of this workflow."}}</text>
+      <text wx:else>{{"合并、部署、基础设施应用和生产数据库迁移都不是该流程的自动副作用。"}}</text>
     </view>
-    <text></text>
   </view>
-  <text></text>
   <view class="help-section" aria-labelledby="help-readiness-title">
-    <text></text>
     <view class="section-heading">
-      <text></text>
       <view>
-        <text></text>
-        <text class="overline">
-          <text>03</text>
-        </text>
-        <text></text>
+        <text class="overline">03</text>
         <view id="help-readiness-title">
-          <view wx:if="{{english}}" />
-          <view wx:else />
+          <text wx:if="{{english}}">{{"Evidence and remaining external gates"}}</text>
+          <text wx:else>{{"证据与剩余外部门禁"}}</text>
         </view>
-        <text></text>
       </view>
-      <text></text>
     </view>
-    <text></text>
-    <view class="help-table-wrap" tabIndex="{{0}}" role="region" aria-label="{{english ? "Readiness evidence table" : "就绪证据表"}}">
-      <text></text>
+    <view class="help-table-wrap" tabIndex="{{0}}" role="region" aria-label="{{english ? &quot;Readiness evidence table&quot; : &quot;就绪证据表&quot;}}">
       <view class="help-readiness-table">
-        <text></text>
         <view>
-          <text></text>
           <view>
-            <text></text>
             <view scope="col">
-              <view wx:if="{{english}}" />
-              <view wx:else />
+              <text wx:if="{{english}}">{{"Area"}}</text>
+              <text wx:else>{{"环节"}}</text>
             </view>
-            <text></text>
             <view scope="col">
-              <view wx:if="{{english}}" />
-              <view wx:else />
+              <text wx:if="{{english}}">{{"Current local evidence"}}</text>
+              <text wx:else>{{"当前本地证据"}}</text>
             </view>
-            <text></text>
             <view scope="col">
-              <view wx:if="{{english}}" />
-              <view wx:else />
+              <text wx:if="{{english}}">{{"External boundary"}}</text>
+              <text wx:else>{{"外部边界"}}</text>
             </view>
-            <text></text>
           </view>
-          <text></text>
         </view>
-        <text></text>
         <view>
-          <text></text>
           <view wx:for="{{readiness}}" wx:for-item="row" wx:key="row.id" key="{{row[0]}}">
-            <text></text>
             <view scope="row">
-              <view wx:if="{{english}}" />
-              <view wx:else />
+              <text wx:if="{{english}}">{{row[3]}}</text>
+              <text wx:else>{{row[0]}}</text>
             </view>
-            <text></text>
             <view>
-              <view wx:if="{{english}}" />
-              <view wx:else />
+              <text wx:if="{{english}}">{{row[4]}}</text>
+              <text wx:else>{{row[1]}}</text>
             </view>
-            <text></text>
             <view>
               <code>
-                <view wx:if="{{english}}" />
-                <view wx:else />
+                <text wx:if="{{english}}">{{row[5]}}</text>
+                <text wx:else>{{row[2]}}</text>
               </code>
             </view>
-            <text></text>
           </view>
-          <text></text>
         </view>
-        <text></text>
       </view>
-      <text></text>
     </view>
-    <text></text>
   </view>
-  <text></text>
   <view class="help-section help-admin" aria-labelledby="help-admin-title">
-    <text></text>
     <view>
-      <text></text>
-      <text class="overline">
-        <text>04</text>
-      </text>
-      <text></text>
+      <text class="overline">04</text>
       <view id="help-admin-title">
-        <view wx:if="{{english}}" />
-        <view wx:else />
+        <text wx:if="{{english}}">{{"Operate and diagnose"}}</text>
+        <text wx:else>{{"运营与诊断"}}</text>
       </view>
-      <text></text>
       <view>
-        <text></text>
-        <view wx:if="{{english}}" />
-        <view wx:else />
-        <text></text>
+        <text wx:if="{{english}}">{{"The admin console exposes tenant-scoped users/session context, tasks, repositories, audit, alerts, usage, and sanitized configuration."}}</text>
+        <text wx:else>{{"管理端按租户展示用户/会话上下文、任务、仓库、审计、告警、用量与脱敏配置。"}}</text>
       </view>
-      <text></text>
     </view>
-    <text></text>
-    <Link class="{{`button ${hasAdminAccess ? "button-primary" : "admin-entry-button"}`}}" href="{{hasAdminAccess ? "/admin" : "/admin/login"}}">
-      <text></text>
-      <view wx:if="{{hasAdminAccess}}" />
-      <view wx:else />
-      <text></text>
-    </Link>
-    <text></text>
+    <navigator class="{{`button ${hasAdminAccess ? &quot;button-primary&quot; : &quot;admin-entry-button&quot;}`}}" href="{{hasAdminAccess ? &quot;/admin&quot; : &quot;/admin/login&quot;}}">
+      <text wx:if="{{hasAdminAccess}}">{{english ? "Open operations admin" : "打开运营管理端"}}</text>
+      <text wx:else>{{english ? "Administrator sign in" : "前往管理员登录"}}</text>
+    </navigator>
   </view>
-  <text></text>
 </view>

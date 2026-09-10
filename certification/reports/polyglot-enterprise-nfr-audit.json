@@ -90,42 +90,42 @@
       "source_language": "java",
       "target_transpilations": {
         "csharp": {
-          "code_length": 1895,
+          "code_length": 2317,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "go": {
-          "code_length": 1119,
+          "code_length": 1220,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "java": {
-          "code_length": 1962,
+          "code_length": 2869,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "kotlin": {
-          "code_length": 1016,
+          "code_length": 1086,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "php": {
-          "code_length": 998,
+          "code_length": 1220,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "python": {
-          "code_length": 1087,
+          "code_length": 1253,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "rust": {
-          "code_length": 1026,
+          "code_length": 1095,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "typescript": {
-          "code_length": 1201,
+          "code_length": 1444,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         }
@@ -143,42 +143,42 @@
       "source_language": "csharp",
       "target_transpilations": {
         "csharp": {
-          "code_length": 1895,
+          "code_length": 2060,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "go": {
-          "code_length": 1119,
+          "code_length": 1117,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "java": {
-          "code_length": 1962,
+          "code_length": 2315,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "kotlin": {
-          "code_length": 1016,
+          "code_length": 1015,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "php": {
-          "code_length": 998,
+          "code_length": 996,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "python": {
-          "code_length": 1087,
+          "code_length": 1197,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "rust": {
-          "code_length": 1026,
+          "code_length": 1024,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "typescript": {
-          "code_length": 1201,
+          "code_length": 1364,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         }
@@ -196,42 +196,42 @@
       "source_language": "python",
       "target_transpilations": {
         "csharp": {
-          "code_length": 1895,
+          "code_length": 2060,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "go": {
-          "code_length": 1119,
+          "code_length": 1117,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "java": {
-          "code_length": 1962,
+          "code_length": 2319,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "kotlin": {
-          "code_length": 1016,
+          "code_length": 1015,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "php": {
-          "code_length": 998,
+          "code_length": 996,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "python": {
-          "code_length": 1087,
+          "code_length": 1197,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "rust": {
-          "code_length": 1026,
+          "code_length": 1024,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "typescript": {
-          "code_length": 1201,
+          "code_length": 1364,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         }
@@ -249,42 +249,42 @@
       "source_language": "typescript",
       "target_transpilations": {
         "csharp": {
-          "code_length": 1895,
+          "code_length": 1400,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "go": {
-          "code_length": 1119,
+          "code_length": 1117,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "java": {
-          "code_length": 1962,
+          "code_length": 1689,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "kotlin": {
-          "code_length": 1016,
+          "code_length": 1015,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "php": {
-          "code_length": 998,
+          "code_length": 996,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "python": {
-          "code_length": 1087,
+          "code_length": 766,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "rust": {
-          "code_length": 1026,
+          "code_length": 1024,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "typescript": {
-          "code_length": 1201,
+          "code_length": 825,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         }
@@ -302,42 +302,42 @@
       "source_language": "go",
       "target_transpilations": {
         "csharp": {
-          "code_length": 1895,
+          "code_length": 877,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "go": {
-          "code_length": 1119,
+          "code_length": 868,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "java": {
-          "code_length": 1962,
+          "code_length": 1244,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "kotlin": {
-          "code_length": 1016,
+          "code_length": 408,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "php": {
-          "code_length": 998,
+          "code_length": 643,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "python": {
-          "code_length": 1087,
+          "code_length": 347,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "rust": {
-          "code_length": 1026,
+          "code_length": 945,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "typescript": {
-          "code_length": 1201,
+          "code_length": 412,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         }
@@ -355,42 +355,42 @@
       "source_language": "rust",
       "target_transpilations": {
         "csharp": {
-          "code_length": 1895,
+          "code_length": 911,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "go": {
-          "code_length": 1119,
+          "code_length": 885,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "java": {
-          "code_length": 1962,
+          "code_length": 1318,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "kotlin": {
-          "code_length": 1016,
+          "code_length": 422,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "php": {
-          "code_length": 998,
+          "code_length": 677,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "python": {
-          "code_length": 1087,
+          "code_length": 361,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "rust": {
-          "code_length": 1026,
+          "code_length": 959,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "typescript": {
-          "code_length": 1201,
+          "code_length": 426,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         }
@@ -408,42 +408,42 @@
       "source_language": "kotlin",
       "target_transpilations": {
         "csharp": {
-          "code_length": 1895,
+          "code_length": 629,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "go": {
-          "code_length": 1119,
+          "code_length": 468,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "java": {
-          "code_length": 1962,
+          "code_length": 939,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "kotlin": {
-          "code_length": 1016,
+          "code_length": 295,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "php": {
-          "code_length": 998,
+          "code_length": 447,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "python": {
-          "code_length": 1087,
+          "code_length": 235,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "rust": {
-          "code_length": 1026,
+          "code_length": 499,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "typescript": {
-          "code_length": 1201,
+          "code_length": 271,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         }
@@ -461,42 +461,42 @@
       "source_language": "php",
       "target_transpilations": {
         "csharp": {
-          "code_length": 1895,
+          "code_length": 1521,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "go": {
-          "code_length": 1119,
+          "code_length": 1117,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "java": {
-          "code_length": 1962,
+          "code_length": 1783,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "kotlin": {
-          "code_length": 1016,
+          "code_length": 1015,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "php": {
-          "code_length": 998,
+          "code_length": 996,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "python": {
-          "code_length": 1087,
+          "code_length": 818,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "rust": {
-          "code_length": 1026,
+          "code_length": 1024,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         },
         "typescript": {
-          "code_length": 1201,
+          "code_length": 933,
           "enterprise_profile": "enterprise-production-v1",
           "status": "PASSED"
         }

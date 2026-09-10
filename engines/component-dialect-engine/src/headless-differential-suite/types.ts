@@ -97,6 +97,7 @@ export interface DifferentialGateVerdict {
   lowCount: number;
   totalMismatches: number;
   reasons: string[];
+  mismatches?: DOMMismatchRecord[];
 }
 
 export interface DifferentialComparisonOptions {

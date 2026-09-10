@@ -743,3 +743,14 @@ def approve_request(mapping: dict[str, Any], *, actor: str, approved_at: str | N
     }
     SynthesisRequest.from_mapping(approved)
     return approved
+
+
+def autonomous_resolve_and_approve(
+    draft: dict[str, Any],
+    actor: str = "elmos-autonomous-intent-governor@elmos.internal",
+    approved_at: str | None = None,
+) -> dict[str, Any]:
+    """Autonomously resolve open questions and approve draft without human intervention."""
+    from .autonomous_intent_resolver import autonomous_resolve_and_approve as _auto_approve
+
+    return _auto_approve(draft, actor=actor, approved_at=approved_at)

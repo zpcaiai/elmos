@@ -58,35 +58,6 @@ Component({
     },
   },
   methods: {
-    loadCatalog() {
-      setLoading(true);
-    setCatalogError(null);
-    try {
-        const response = await fetch("/api/repository-orchestrator/models", {
-            method: "GET",
-            headers: { Accept: "application/json" },
-            cache: "no-store",
-            signal: controller.signal,
-        });
-        const raw = await responseJson(response);
-        if (!response.ok)
-            throw new Error(failureMessage(raw, "模型目录当前不可用。"));
-        const parsed = parseRepositoryModelCatalog(raw);
-        setCatalog(parsed);
-        setMode(parsed.defaultMode);
-        setOptimizationProfile(parsed.optimizationProfiles[0]);
-        setVerificationPolicy(parsed.verificationPolicies[0]);
-    }
-    catch (error) {
-        if (controller.signal.aborted)
-            return;
-        setCatalogError(error instanceof Error ? error.message : "模型目录当前不可用。");
-    }
-    finally {
-        if (!controller.signal.aborted)
-            setLoading(false);
-    }
-    },
     updateRisk(field, value) {
       setRisk((current) => ({ ...current, [field]: value }));
     setResult(null);

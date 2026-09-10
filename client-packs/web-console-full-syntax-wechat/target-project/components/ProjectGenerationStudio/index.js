@@ -58,7 +58,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_4
+      // Lifecycle effect effect_1
       try {
         const controller = new AbortController();
     fetch("/api/capabilities/generation", { cache: "no-store", signal: controller.signal })
@@ -77,7 +77,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_6
+      // Lifecycle effect effect_2
       try {
         const fromRepository = new URLSearchParams(window.location.search)
       .get("repositoryWorkspaceId")?.trim() ?? "";
@@ -89,7 +89,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_7
+      // Lifecycle effect effect_3
       try {
         const controller = new AbortController();
     fetch("/api/health?probe=readiness", { cache: "no-store", signal: controller.signal })
@@ -113,7 +113,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_10
+      // Lifecycle effect effect_4
       try {
         try {
       const stored = JSON.parse(window.localStorage.getItem(DRAFT_STORAGE_KEY) ?? "[]") as unknown;
@@ -138,7 +138,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_11
+      // Lifecycle effect effect_5
       try {
         if (!draftsReady) return;
     try {
@@ -149,13 +149,13 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_12
+      // Lifecycle effect effect_6
       try {
         if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_13
+      // Lifecycle effect effect_7
       try {
         if (!job?.artifactSha256) return;
     setGithubRepositoryName(draft?.name ?? name);
@@ -165,7 +165,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_14
+      // Lifecycle effect effect_8
       try {
         if (!job || !runnerCredentialReady) return;
     const active = !["COMPLETED", "PARTIAL", "BLOCKED", "CANCELLED"].includes(job.status)
@@ -197,7 +197,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_16
+      // Lifecycle effect effect_9
       try {
         if (job?.runtime.status !== "RUNNING") setRuntimePreviewPayload(null);
       } catch (err) {

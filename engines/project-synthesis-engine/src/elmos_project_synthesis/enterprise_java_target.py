@@ -577,4 +577,9 @@ public class Application {{
     }}
 }}
 """
+    from .java_domain_workflow_emitter import generate_java_domain_workflow_files
+
+    for path, content in generate_java_domain_workflow_files(request).items():
+        files[path] = content
+
     return files

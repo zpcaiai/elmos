@@ -930,6 +930,7 @@ def _classify(
     catalog: SourceSchemaCatalog | None = None,
     type_policy: TypeMigrationPolicy | None = None,
     allow_alter_column: bool = False,
+    enable_procedural_lowering: bool = False,
 ) -> tuple[FindingStatus, str | None, str | None]:
     """Parse one statement through the real certified parser.
 
@@ -937,6 +938,7 @@ def _classify(
     boundary; anything else is an engine defect and is reported as such
     rather than being folded into the blocked count.
     """
+
     # The parsed node goes straight through. Serialising it back to SQL so the
     # parser could parse it a second time was two thirds of the work here, and
     # the round trip could only lose fidelity relative to the node the splitter
@@ -1038,6 +1040,31 @@ def _classify(
         elif isinstance(statement, exp.TruncateTable):
             parse_truncate_table(raw_sql or statement, dialect, namespace_map)
         else:
+            if (enable_procedural_lowering or os.environ.get("ELMOS_ENABLE_PROCEDURAL_LOWERING") == "1") and raw_sql:
+                from .procedural_ast_lowerer import ProceduralAstLowerer
+                lowerer = ProceduralAstLowerer()
+                upper_raw = raw_sql.strip().upper()
+                if "TRIGGER" in upper_raw and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
+                    try:
+                        trig = lowerer.parse_trigger(raw_sql, source_dialect=dialect)
+                        _ = lowerer.lower_trigger(trig)
+                        return "IN_SUBSET", None, None
+                    except Exception:
+                        pass
+                if any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE")) and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
+                    try:
+                        rtn = lowerer.parse_routine(raw_sql, source_dialect=dialect)
+                        _ = lowerer.lower_routine(rtn)
+                        return "IN_SUBSET", None, None
+                    except Exception:
+                        pass
+                if upper_raw.startswith("BEGIN") or upper_raw.startswith("DECLARE"):
+                    try:
+                        body = lowerer.parse_body_block(raw_sql, source_dialect=dialect)
+                        _ = lowerer.lower_block(body)
+                        return "IN_SUBSET", None, None
+                    except Exception:
+                        pass
             # Not covered by any certified DDL profile. This is the single
             # most important number in the report, so it is produced by the
             # same fail-closed path as everything else rather than by a
@@ -1045,6 +1072,31 @@ def _classify(
             parse_create_table(statement, dialect, namespace_map, type_policy=type_policy)
         return "IN_SUBSET", None, None
     except DialectError as exc:
+        if (enable_procedural_lowering or os.environ.get("ELMOS_ENABLE_PROCEDURAL_LOWERING") == "1") and raw_sql:
+            from .procedural_ast_lowerer import ProceduralAstLowerer
+            lowerer = ProceduralAstLowerer()
+            upper_raw = raw_sql.strip().upper()
+            if "TRIGGER" in upper_raw and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
+                try:
+                    trig = lowerer.parse_trigger(raw_sql, source_dialect=dialect)
+                    _ = lowerer.lower_trigger(trig)
+                    return "IN_SUBSET", None, None
+                except Exception:
+                    pass
+            if any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE")) and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
+                try:
+                    rtn = lowerer.parse_routine(raw_sql, source_dialect=dialect)
+                    _ = lowerer.lower_routine(rtn)
+                    return "IN_SUBSET", None, None
+                except Exception:
+                    pass
+            if upper_raw.startswith("BEGIN") or upper_raw.startswith("DECLARE"):
+                try:
+                    body = lowerer.parse_body_block(raw_sql, source_dialect=dialect)
+                    _ = lowerer.lower_block(body)
+                    return "IN_SUBSET", None, None
+                except Exception:
+                    pass
         return "OUT_OF_SUBSET", exc.code, exc.message
     except Exception as exc:  # noqa: BLE001 - deliberately broad; see below
         # NOT a subset boundary -- a defect in this engine. Kept separate so
@@ -1060,6 +1112,7 @@ def _recover_statements(
     catalog: SourceSchemaCatalog | None = None,
     type_policy: TypeMigrationPolicy | None = None,
     allow_alter_column: bool = False,
+    enable_procedural_lowering: bool = False,
 ) -> list[ScanFinding]:
     """Classify a file the parser refused as a whole, statement by statement.
 
@@ -1076,8 +1129,48 @@ def _recover_statements(
     """
 
     findings: list[ScanFinding] = []
-    for index, raw in enumerate(split_statements(text, dialect=source_dialect), start=1):
+    raw_statements = split_statements(text, dialect=source_dialect)
+    if enable_procedural_lowering or os.environ.get("ELMOS_ENABLE_PROCEDURAL_LOWERING") == "1":
+        def _is_end_of_routine(upper_stmt: str) -> bool:
+            clean = upper_stmt.rstrip(";").strip()
+            m = re.search(r"\bEND(?:\s+([A-Za-z0-9_]+))?$", clean)
+            if not m:
+                return False
+            suffix = m.group(1)
+            if suffix and suffix in ("IF", "LOOP", "CASE"):
+                return False
+            return True
+
+        from .statement_splitter import RawStatement
+
+        merged_statements: list[RawStatement] = []
+        accumulating: list[str] = []
+        acc_start = 1
+        for raw in raw_statements:
+            txt = raw.text.strip()
+            upper = txt.upper()
+            if not accumulating:
+                if (any(k in upper for k in ("PROCEDURE", "FUNCTION", "TRIGGER", "PACKAGE")) and ("CREATE" in upper or "REPLACE" in upper)) or upper.startswith("DECLARE") or upper.startswith("BEGIN"):
+                    if _is_end_of_routine(upper):
+                        merged_statements.append(raw)
+                    else:
+                        accumulating.append(txt)
+                        acc_start = raw.start_line
+                else:
+                    merged_statements.append(raw)
+            else:
+                accumulating.append(txt)
+                if _is_end_of_routine(upper):
+                    merged_statements.append(RawStatement(text=";\n".join(accumulating) + ";", start_line=acc_start))
+                    accumulating = []
+        if accumulating:
+            merged_statements.append(RawStatement(text=";\n".join(accumulating) + ";", start_line=acc_start))
+        raw_statements = merged_statements
+
+
+    for index, raw in enumerate(raw_statements, start=1):
         excerpt = raw.text.strip().replace("\n", " ")[:110]
+
         if looks_like_client_directive(raw.text, source_dialect):
             findings.append(
                 ScanFinding(
@@ -1096,6 +1189,70 @@ def _recover_statements(
         try:
             parsed = _parse_source_statements(strip_leading_comments(raw.text), source_dialect)
         except Exception as exc:  # noqa: BLE001 - sqlglot raises several types
+            if (enable_procedural_lowering or os.environ.get("ELMOS_ENABLE_PROCEDURAL_LOWERING") == "1"):
+                from .procedural_ast_lowerer import ProceduralAstLowerer
+                lowerer = ProceduralAstLowerer()
+                upper_raw = raw.text.strip().upper()
+                if "TRIGGER" in upper_raw and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
+                    try:
+                        trig = lowerer.parse_trigger(raw.text, source_dialect=source_dialect)
+                        _ = lowerer.lower_trigger(trig)
+                        findings.append(
+                            ScanFinding(
+                                relative,
+                                index,
+                                "IN_SUBSET",
+                                "TriggerDefinition",
+                                None,
+                                None,
+                                None,
+                                excerpt,
+                                "AUTOMATED_TRANSLATION_CANDIDATE",
+                            )
+                        )
+                        continue
+                    except Exception:
+                        pass
+                elif any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE")) and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
+                    try:
+                        rtn = lowerer.parse_routine(raw.text, source_dialect=source_dialect)
+                        _ = lowerer.lower_routine(rtn)
+                        findings.append(
+                            ScanFinding(
+                                relative,
+                                index,
+                                "IN_SUBSET",
+                                "RoutineDefinition",
+                                None,
+                                None,
+                                None,
+                                excerpt,
+                                "AUTOMATED_TRANSLATION_CANDIDATE",
+                            )
+                        )
+                        continue
+                    except Exception:
+                        pass
+                elif upper_raw.startswith("BEGIN") or upper_raw.startswith("DECLARE"):
+                    try:
+                        body = lowerer.parse_body_block(raw.text, source_dialect=source_dialect)
+                        _ = lowerer.lower_block(body)
+                        findings.append(
+                            ScanFinding(
+                                relative,
+                                index,
+                                "IN_SUBSET",
+                                "ProcedureBlock",
+                                None,
+                                None,
+                                None,
+                                excerpt,
+                                "AUTOMATED_TRANSLATION_CANDIDATE",
+                            )
+                        )
+                        continue
+                    except Exception:
+                        pass
             findings.append(
                 ScanFinding(
                     relative,
@@ -1134,6 +1291,7 @@ def _recover_statements(
             catalog,
             type_policy=type_policy,
             allow_alter_column=allow_alter_column,
+            enable_procedural_lowering=enable_procedural_lowering,
         )
         family = BLOCKER_CATALOG.get(code or "", (None, ""))[0] if code else None
         findings.append(
@@ -1170,9 +1328,11 @@ def scan_repository(
     namespace_profile: NamespaceProfile | None = None,
     type_policy: TypeMigrationPolicy | None = None,
     allow_alter_column: bool = False,
+    enable_procedural_lowering: bool = False,
 ) -> FeasibilityReport:
     """Parse every statement in every `.sql` file and report subset membership."""
     root = Path(repository)
+
     if not root.exists():
         raise DialectError("REPOSITORY_NOT_FOUND", str(root))
 
@@ -1221,6 +1381,7 @@ def scan_repository(
                     catalog,
                     type_policy=type_policy,
                     allow_alter_column=allow_alter_column,
+                    enable_procedural_lowering=enable_procedural_lowering,
                 )
             )
             continue
@@ -1241,7 +1402,9 @@ def scan_repository(
                 catalog,
                 type_policy=type_policy,
                 allow_alter_column=allow_alter_column,
+                enable_procedural_lowering=enable_procedural_lowering,
             )
+
             family = BLOCKER_CATALOG.get(code or "", (None, ""))[0] if code else None
             findings.append(
                 ScanFinding(

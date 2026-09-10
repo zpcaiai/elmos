@@ -666,5 +666,9 @@ app.MapControllers();
 
 app.Run();
 """
+    from .dotnet_domain_workflow_emitter import generate_dotnet_domain_workflow_files
+
+    for path, content in generate_dotnet_domain_workflow_files(request).items():
+        files[path] = content
 
     return files

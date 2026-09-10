@@ -1,0 +1,276 @@
+version: "3.8"
+
+networks:
+  chinadb-network:
+    driver: bridge
+
+volumes:
+  dm8_data:
+  kingbase_data:
+  opengauss_data:
+  tidb_data:
+  gbase8s_data:
+  gbase8c_data:
+  gbase8a_data:
+  highgo_data:
+  ob_oracle_data:
+  ob_mysql_data:
+  gauss_oracle_data:
+  gauss_m_data:
+  goldendb_data:
+
+services:
+  # 1. Dameng 8 (DM8) - Oracle compatible procedural SQL
+  chinadb-dm8:
+    image: dameng/dm8:v8.1.2.128
+    container_name: elmos-chinadb-dm8
+    environment:
+      - PAGE_SIZE=16
+      - EXTENT_SIZE=16
+      - CHAR_SET=1 # UTF-8
+      - SYSDBA_PWD=Dameng@123456
+    ports:
+      - "5236:5236"
+    volumes:
+      - dm8_data:/opt/dmdbms/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/dmdbms/bin/disql SYSDBA/Dameng@123456@localhost:5236 -e 'SELECT 1;' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chinadb-network
+
+  # 2. KingbaseES V8/V9 - PostgreSQL Wire v3 & Oracle PL/SQL dialect
+  chinadb-kingbasees:
+    image: kingbase/kingbase:v8r6
+    container_name: elmos-chinadb-kingbasees
+    environment:
+      - SYSTEM_PASSWORD=Kingbase@123456
+      - KINGBASE_DATABASE=elmos_test
+    ports:
+      - "54321:54321"
+    volumes:
+      - kingbase_data:/home/kingbase/userdata
+    healthcheck:
+      test: ["CMD-SHELL", "ksql -U SYSTEM -d elmos_test -c 'SELECT 1;' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chinadb-network
+
+  # 3. openGauss 5.0+ - PostgreSQL Wire v3 with industrial enhancements
+  chinadb-opengauss:
+    image: enmotech/opengauss:5.0.0
+    container_name: elmos-chinadb-opengauss
+    environment:
+      - GS_PASSWORD=GaussDB@123
+      - GS_PORT=5432
+    ports:
+      - "5432:5432"
+    volumes:
+      - opengauss_data:/var/lib/opengauss/data
+    healthcheck:
+      test: ["CMD-SHELL", "gsql -d postgres -U oggs -W GaussDB@123 -c 'SELECT 1;' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chinadb-network
+
+  # 4. TiDB 7.5+ - Distributed NewSQL, MySQL Wire v10 compatible
+  chinadb-tidb:
+    image: pingcap/tidb:v7.5.0
+    container_name: elmos-chinadb-tidb
+    command:
+      - -P=4000
+      - --status=10080
+      - --store=mocktikv
+    ports:
+      - "4000:4000"
+      - "10080:10080"
+    volumes:
+      - tidb_data:/tmp/tidb
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "4000"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - chinadb-network
+
+  # 5. GBase 8s - Transactional OLTP (Informix architecture)
+  chinadb-gbase8s:
+    image: gbase/gbase8s:v8.8
+    container_name: elmos-chinadb-gbase8s
+    environment:
+      - GBASE_ROOT_PASSWORD=GBase@123456
+      - GBASE_DATABASE=elmos_test
+    ports:
+      - "9088:9088"
+    volumes:
+      - gbase8s_data:/opt/gbase/data
+    healthcheck:
+      test: ["CMD-SHELL", "dbaccess elmos_test - <<< 'select 1 from dual;' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chinadb-network
+
+  # 6. GBase 8c - Distributed Cloud-Native (openGauss/PG heritage)
+  chinadb-gbase8c:
+    image: gbase/gbase8c:v5.0
+    container_name: elmos-chinadb-gbase8c
+    environment:
+      - POSTGRES_PASSWORD=GBase8c@123
+      - POSTGRES_DB=elmos_test
+    ports:
+      - "54322:5432"
+    volumes:
+      - gbase8c_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "elmos_test"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - chinadb-network
+
+  # 7. GBase 8a - Analytical Columnar MPP (MySQL Wire compatible)
+  chinadb-gbase8a:
+    image: gbase/gbase8a:v9.5
+    container_name: elmos-chinadb-gbase8a
+    environment:
+      - MYSQL_ROOT_PASSWORD=GBase8a@123
+      - MYSQL_DATABASE=elmos_mpp
+    ports:
+      - "5258:5258"
+    volumes:
+      - gbase8a_data:/opt/gcluster/data
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pGBase8a@123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chinadb-network
+
+  # 8. HighGo DB - Highly Secure PostgreSQL-compatible
+  chinadb-highgo:
+    image: highgo/hgdb:v6.0
+    container_name: elmos-chinadb-highgo
+    environment:
+      - POSTGRES_PASSWORD=HighGo@123456
+      - POSTGRES_DB=elmos_test
+    ports:
+      - "5866:5432"
+    volumes:
+      - highgo_data:/var/lib/highgo/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "highgo", "-d", "elmos_test"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - chinadb-network
+
+  # 9. OceanBase (Oracle Mode)
+  chinadb-oceanbase-oracle:
+    image: oceanbase/oceanbase-ce:4.2.1
+    container_name: elmos-chinadb-oceanbase-oracle
+    environment:
+      - OB_CLUSTER_NAME=oboracle
+      - OB_TENANT_NAME=oracle_tenant
+      - OB_MODE=ORACLE
+      - ROOT_PASSWORD=OceanBase@123
+    ports:
+      - "2883:2881"
+    volumes:
+      - ob_oracle_data:/root/ob
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "2881"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chinadb-network
+
+  # 10. OceanBase (MySQL Mode)
+  chinadb-oceanbase-mysql:
+    image: oceanbase/oceanbase-ce:4.2.1
+    container_name: elmos-chinadb-oceanbase-mysql
+    environment:
+      - OB_CLUSTER_NAME=obmysql
+      - OB_TENANT_NAME=test
+      - OB_MODE=MYSQL
+      - ROOT_PASSWORD=OceanBase@123
+    ports:
+      - "2881:2881"
+    volumes:
+      - ob_mysql_data:/root/ob
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "2881"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chinadb-network
+
+  # 11. GaussDB (Oracle Mode)
+  chinadb-gaussdb-oracle:
+    image: huaweicloud/gaussdb:v2.0
+    container_name: elmos-chinadb-gaussdb-oracle
+    environment:
+      - GS_PASSWORD=HuaweiGauss@123
+      - DB_COMPATIBILITY=A # Oracle mode
+    ports:
+      - "8000:8000"
+    volumes:
+      - gauss_oracle_data:/gaussdb/data
+    healthcheck:
+      test: ["CMD-SHELL", "zsql SYS/HuaweiGauss@123@127.0.0.1:8000 -c 'SELECT 1;' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chinadb-network
+
+  # 12. GaussDB (MySQL Mode)
+  chinadb-gaussdb-m:
+    image: huaweicloud/gaussdb-for-mysql:v2.0
+    container_name: elmos-chinadb-gaussdb-m
+    environment:
+      - MYSQL_ROOT_PASSWORD=HuaweiGauss@123
+      - MYSQL_DATABASE=elmos_test
+    ports:
+      - "3307:3306"
+    volumes:
+      - gauss_m_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-P", "3306", "-u", "root", "-pHuaweiGauss@123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chinadb-network
+
+  # 13. GoldenDB - ZTE Distributed Financial Database (MySQL compatible)
+  chinadb-goldendb:
+    image: goldendb/node:v7.1
+    container_name: elmos-chinadb-goldendb
+    environment:
+      - GDB_ROOT_PASSWORD=GoldenDB@123456
+      - GDB_CLUSTER_ID=100
+    ports:
+      - "2953:2953"
+    volumes:
+      - goldendb_data:/opt/goldendb/data
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "2953"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chinadb-network

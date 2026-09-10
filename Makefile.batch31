@@ -1,5 +1,5 @@
 UV ?= uv
-BATCH31_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
+BATCH31_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml --with cryptography --with sqlglot python
 .PHONY: b31-skills-test b31-pack-validate b31-pack-gate b31-ir-validate b31-all-packs-check b31-release-gate b31-manual-review-backlog b31-sql-route-closure-check
 b31-skills-test:
 	$(BATCH31_PYTHON) scripts/batch31/validate_skill_bundle.py

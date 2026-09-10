@@ -1,218 +1,94 @@
 <view class="{{styles.page}}">
-  <text></text>
   <view wx:if="{{!embedded}}" class="page-header">
-    <text></text>
     <view>
-      <text class="eyebrow">
-        <text>IDENTITY &amp; TENANCY</text>
-      </text>
-      <view>
-        <text>账户与组织</text>
-      </view>
-      <text></text>
-      <view>
-        <text>创建组织、邀请成员、切换租户和管理最小权限角色。租户选择只是选择器，授权以控制面数据库为准。</text>
-      </view>
+      <text class="eyebrow">IDENTITY &amp; TENANCY</text>
+      <view>账户与组织</view>
+      <view>创建组织、邀请成员、切换租户和管理最小权限角色。租户选择只是选择器，授权以控制面数据库为准。</view>
     </view>
-    <text></text>
   </view>
-  <text></text>
-  <view wx:if="{{feedback}}" class="{{styles.feedback}}" role="status">
-    <text>{{feedback}}</text>
-  </view>
-  <text></text>
+  <view wx:if="{{feedback}}" class="{{styles.feedback}}" role="status">{{feedback}}</view>
   <view class="{{styles.grid}}">
-    <text></text>
     <view class="{{styles.panel}}">
-      <text></text>
-      <view>
-        <text>我的组织</text>
-      </view>
-      <text></text>
+      <view>我的组织</view>
       <text>
-        <text>
-          <text>组织</text>
-        </text>
-        <text></text>
-        <select value="{{selectedId}}" bindchange="(event) => setSelectedId(event.target.value)">
-          <text></text>
-          <option wx:for="{{organizations}}" wx:for-item="organization" wx:key="organization.id" value="{{organization.organizationId}}" key="{{organization.organizationId}}">
-            <text></text>
+        <text>组织</text>
+        <view value="{{selectedId}}" bindchange="onChange">
+          <view wx:for="{{organizations}}" wx:for-item="organization" wx:key="organization.id" value="{{organization.organizationId}}" key="{{organization.organizationId}}">
             <text>{{organization.displayName}}</text>
             <text>·</text>
             <text>{{organization.role}}</text>
-            <text></text>
-          </option>
-          <text></text>
-        </select>
-        <text></text>
+          </view>
+        </view>
       </text>
-      <text></text>
-      <button class="button primary" type="button" disabled="{{!selectedId || busy}}" bindtap="switchOrganization">
-        <text>设为当前组织</text>
-      </button>
-      <text></text>
+      <button class="button primary" type="button" disabled="{{!selectedId || busy}}" bindtap="switchOrganization">设为当前组织</button>
       <form bindsubmit="createOrganization">
-        <text></text>
-        <view>
-          <text>创建组织</text>
-        </view>
-        <text></text>
+        <view>创建组织</view>
         <text>
-          <text>
-            <text>名称</text>
-          </text>
-          <input required="true" minLength="{{2}}" maxLength="{{128}}" value="{{name}}" bindchange="(event) => setName(event.target.value)" />
+          <text>名称</text>
+          <input required="true" minLength="{{2}}" maxLength="{{128}}" value="{{name}}" bindchange="onChange" />
         </text>
-        <text></text>
         <text>
-          <text>
-            <text>数据区域</text>
-          </text>
-          <select value="{{region}}" bindchange="(event) => setRegion(event.target.value)">
-            <text></text>
-            <option value="cn-north">
-              <text>中国北区</text>
-            </option>
-            <text></text>
-            <option value="ap-southeast">
-              <text>亚太东南</text>
-            </option>
-            <text></text>
-            <option value="eu-central">
-              <text>欧洲中部</text>
-            </option>
-            <text></text>
-          </select>
+          <text>数据区域</text>
+          <view value="{{region}}" bindchange="onChange">
+            <view value="cn-north">中国北区</view>
+            <view value="ap-southeast">亚太东南</view>
+            <view value="eu-central">欧洲中部</view>
+          </view>
         </text>
-        <text></text>
-        <button class="button" disabled="{{busy}}">
-          <text>创建</text>
-        </button>
-        <text></text>
+        <button class="button" disabled="{{busy}}">创建</button>
       </form>
-      <text></text>
     </view>
-    <text></text>
     <view class="{{styles.panel}}">
-      <text></text>
-      <view>
-        <text>接受邀请</text>
-      </view>
-      <text></text>
+      <view>接受邀请</view>
       <form bindsubmit="acceptInvitation">
-        <text></text>
         <text>
-          <text>
-            <text>一次性邀请令牌</text>
-          </text>
-          <textarea required="true" rows="{{4}}" value="{{acceptToken}}" bindchange="(event) => setAcceptToken(event.target.value)" />
+          <text>一次性邀请令牌</text>
+          <textarea required="true" rows="{{4}}" value="{{acceptToken}}" bindchange="onChange" />
         </text>
-        <text></text>
-        <button class="button" disabled="{{busy}}">
-          <text>验证并加入</text>
-        </button>
-        <text></text>
+        <button class="button" disabled="{{busy}}">验证并加入</button>
       </form>
-      <text></text>
       <form wx:if="{{canAdmin}}" bindsubmit="invite">
-        <text></text>
-        <view>
-          <text>邀请成员</text>
-        </view>
-        <text></text>
+        <view>邀请成员</view>
         <text>
-          <text>
-            <text>已验证邮箱</text>
-          </text>
-          <input type="email" required="true" value="{{inviteEmail}}" bindchange="(event) => setInviteEmail(event.target.value)" />
+          <text>已验证邮箱</text>
+          <input type="email" required="true" value="{{inviteEmail}}" bindchange="onChange" />
         </text>
-        <text></text>
         <text>
-          <text>
-            <text>角色</text>
-          </text>
-          <select value="{{inviteRole}}" bindchange="(event) => setInviteRole(event.target.value)">
-            <text></text>
-            <option wx:for="{{["ADMIN", "MAINTAINER", "MEMBER", "BILLING", "VIEWER"]}}" wx:for-item="role" wx:key="role.id" value="{{role}}" key="{{role}}">
-              <text>{{role}}</text>
-            </option>
-            <text></text>
-          </select>
+          <text>角色</text>
+          <view value="{{inviteRole}}" bindchange="onChange">
+            <view wx:for="{{["ADMIN", "MAINTAINER", "MEMBER", "BILLING", "VIEWER"]}}" wx:for-item="role" wx:key="role.id" value="{{role}}" key="{{role}}">{{role}}</view>
+          </view>
         </text>
-        <text></text>
-        <button class="button" disabled="{{busy || !selectedId}}">
-          <text>创建邀请</text>
-        </button>
-        <text></text>
+        <button class="button" disabled="{{busy || !selectedId}}">创建邀请</button>
       </form>
-      <text></text>
       <view wx:if="{{invitationToken}}" class="{{styles.token}}">
-        <text></text>
-        <text>
-          <text>仅显示一次</text>
-        </text>
-        <code>
-          <text>{{invitationToken}}</text>
-        </code>
-        <text></text>
-        <text>
-          <text>邮件/SMS 提供商未配置前，不会自动发送；外部投递证据保持 NOT_RUN。</text>
-        </text>
-        <text></text>
+        <text>仅显示一次</text>
+        <code>{{invitationToken}}</code>
+        <text>邮件/SMS 提供商未配置前，不会自动发送；外部投递证据保持 NOT_RUN。</text>
       </view>
-      <text></text>
     </view>
-    <text></text>
   </view>
-  <text></text>
   <view class="{{styles.members}}">
-    <text></text>
     <view>
-      <view>
-        <text>成员</text>
-      </view>
-      <text>
-        <text>{{selected?.displayName ?? "未选择组织"}}</text>
-      </text>
+      <view>成员</view>
+      <text>{{selected?.displayName ?? "未选择组织"}}</text>
     </view>
-    <text></text>
     <view class="{{styles.memberList}}">
-      <text></text>
       <view wx:for="{{members}}" wx:for-item="member" wx:key="member.id" class="{{styles.member}}" key="{{member.accountId}}">
-        <text></text>
         <view>
-          <text>
-            <text>{{member.displayName}}</text>
-          </text>
-          <text></text>
+          <text>{{member.displayName}}</text>
           <text>
             <text>{{member.accountId}}</text>
             <text>·</text>
             <text>{{member.state}}</text>
           </text>
         </view>
-        <text></text>
-        <select value="{{member.role}}" disabled="{{!canAdmin || busy}}" bindchange="(event) => updateMember(member, event.target.value)">
-          <text></text>
-          <option wx:for="{{["OWNER", "ADMIN", "MAINTAINER", "MEMBER", "BILLING", "VIEWER"]}}" wx:for-item="role" wx:key="role.id" value="{{role}}" key="{{role}}">
-            <text>{{role}}</text>
-          </option>
-          <text></text>
-        </select>
-        <text></text>
-        <button class="button ghost" type="button" disabled="{{!canAdmin || busy}}" bindtap="() => removeMember(member)">
-          <text>移除</text>
-        </button>
-        <text></text>
+        <view value="{{member.role}}" disabled="{{!canAdmin || busy}}" bindchange="onChange">
+          <view wx:for="{{["OWNER", "ADMIN", "MAINTAINER", "MEMBER", "BILLING", "VIEWER"]}}" wx:for-item="role" wx:key="role.id" value="{{role}}" key="{{role}}">{{role}}</view>
+        </view>
+        <button class="button ghost" type="button" disabled="{{!canAdmin || busy}}" bindtap="onTap">移除</button>
       </view>
-      <text></text>
-      <view wx:if="{{members.length === 0}}">
-        <text>暂无可见成员。</text>
-      </view>
-      <text></text>
+      <view wx:if="{{members.length === 0}}">暂无可见成员。</view>
     </view>
-    <text></text>
   </view>
-  <text></text>
 </view>

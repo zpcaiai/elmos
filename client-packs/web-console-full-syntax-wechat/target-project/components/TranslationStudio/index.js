@@ -48,7 +48,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_3
+      // Lifecycle effect effect_2
       try {
         const controller = new AbortController();
     fetch("/api/capabilities/translation", { cache: "no-store", signal: controller.signal })
@@ -84,7 +84,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_5
+      // Lifecycle effect effect_3
       try {
         fetch("/api/translation/health", { cache: "no-store" })
       .then(async (response) => {
@@ -103,7 +103,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_6
+      // Lifecycle effect effect_4
       try {
         if (!job || !["QUEUED", "PRECHECK", "RUNNING"].includes(job.status)) return;
     const timer = window.setInterval(() => {
@@ -115,7 +115,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_8
+      // Lifecycle effect effect_5
       try {
         if (!feedback) return;
     const timer = window.setTimeout(() => setFeedback(""), 5_200);

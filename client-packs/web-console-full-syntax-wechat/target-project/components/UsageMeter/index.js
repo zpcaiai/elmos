@@ -123,7 +123,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_2
+      // Lifecycle effect effect_1
       try {
         if (!session || session.kind !== "account") return;
     let disposed = false;

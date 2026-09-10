@@ -1,5 +1,5 @@
 import * as ts from "typescript";
-import { FullSyntaxComponentIR, FullSyntaxNode } from "../types";
+import { FullSyntaxComponentIR, FullSyntaxNode, FullSyntaxEvent } from "../types";
 
 export class MiniAppFullAstEmitter {
   public emit(ir: FullSyntaxComponentIR): Record<string, string> {
@@ -143,11 +143,15 @@ export class MiniAppFullAstEmitter {
     if (!node) return "";
 
     if (node.kind === "text") {
-      return `${indent}<text>${escapeXml(node.text || "")}</text>`;
+      const text = (node.text || "").trim();
+      if (!text) return "";
+      return `${indent}<text>${escapeXml(text)}</text>`;
     }
 
     if (node.kind === "expression") {
-      return `${indent}<text>{{${node.expression || ""}}}</text>`;
+      const expr = (node.expression || "").trim();
+      if (!expr) return "";
+      return `${indent}<text>{{${expr}}}</text>`;
     }
 
     if (node.kind === "slot_outlet") {
@@ -182,59 +186,125 @@ export class MiniAppFullAstEmitter {
 
     for (const a of node.attrs || []) {
       if (a.isDynamic) {
-        attrsList.push(`${a.name}="{{${a.value}}}"`);
+        attrsList.push(`${a.name}="{{${escapeXml(a.value)}}}"`);
       } else {
-        attrsList.push(`${a.name}="${a.value}"`);
+        attrsList.push(`${a.name}="${escapeXml(a.value)}"`);
       }
     }
 
     for (const ev of node.events || []) {
       const wxEvent = ev.name === "click" ? "tap" : ev.name;
-      attrsList.push(`bind${wxEvent}="${ev.handlerNameOrExpr}"`);
+      const handler = this.formatEventHandler(ev, wxEvent);
+      attrsList.push(`bind${wxEvent}="${handler}"`);
     }
 
     const attrStr = attrsList.length ? " " + attrsList.join(" ") : "";
 
-    if (!node.children || node.children.length === 0) {
+    const validChildren = (node.children || []).filter((c) => {
+      if (!c) return false;
+      if (c.kind === "text" && !(c.text || "").trim()) return false;
+      return true;
+    });
+
+    if (validChildren.length === 0) {
       return `${indent}<${tag}${attrStr} />`;
     }
 
-    const childContent = node.children.map((c) => this.emitWxmlNode(c, indentLevel + 2)).join("\n");
+    const firstChild = validChildren[0];
+    if (validChildren.length === 1 && firstChild && firstChild.kind === "text") {
+      const textVal = escapeXml((firstChild.text || "").trim());
+      return `${indent}<${tag}${attrStr}>${textVal}</${tag}>`;
+    }
+
+    if (validChildren.length === 1 && firstChild && firstChild.kind === "expression") {
+      const exprVal = (firstChild.expression || "").trim();
+      return `${indent}<${tag}${attrStr}>{{${exprVal}}}</${tag}>`;
+    }
+
+    const childStrs = validChildren.map((c) => this.emitWxmlNode(c, indentLevel + 2)).filter(Boolean);
+    if (childStrs.length === 0) {
+      return `${indent}<${tag}${attrStr} />`;
+    }
+    const childContent = childStrs.join("\n");
     return `${indent}<${tag}${attrStr}>\n${childContent}\n${indent}</${tag}>`;
   }
 
   private emitWxmlNodeWithDirective(node: FullSyntaxNode, directive: string, indentLevel: number): string {
     const indent = " ".repeat(indentLevel);
+    if (!node) return "";
+
+    if (node.kind === "text") {
+      const text = escapeXml((node.text || "").trim());
+      return `${indent}<text ${directive}>${text}</text>`;
+    }
+
+    if (node.kind === "expression") {
+      const expr = (node.expression || "").trim();
+      return `${indent}<text ${directive}>{{${expr}}}</text>`;
+    }
+
+    if (node.kind === "slot_outlet") {
+      const nameAttr = node.slotName && node.slotName !== "default" ? ` name="${node.slotName}"` : "";
+      return `${indent}<slot ${directive}${nameAttr} />`;
+    }
+
+    if (node.kind === "fragment" || node.kind === "conditional" || node.kind === "loop") {
+      const innerContent = this.emitWxmlNode(node, indentLevel + 2);
+      return `${indent}<block ${directive}>\n${innerContent}\n${indent}</block>`;
+    }
+
     const tag = this.toWxTag(node.tag);
     const attrsList: string[] = [directive];
 
     for (const a of node.attrs || []) {
       if (a.isDynamic) {
-        attrsList.push(`${a.name}="{{${a.value}}}"`);
+        attrsList.push(`${a.name}="{{${escapeXml(a.value)}}}"`);
       } else {
-        attrsList.push(`${a.name}="${a.value}"`);
+        attrsList.push(`${a.name}="${escapeXml(a.value)}"`);
       }
     }
 
     for (const ev of node.events || []) {
       const wxEvent = ev.name === "click" ? "tap" : ev.name;
-      attrsList.push(`bind${wxEvent}="${ev.handlerNameOrExpr}"`);
+      const handler = this.formatEventHandler(ev, wxEvent);
+      attrsList.push(`bind${wxEvent}="${handler}"`);
     }
 
     const attrStr = " " + attrsList.join(" ");
 
-    if (!node.children || node.children.length === 0) {
+    const validChildren = (node.children || []).filter((c) => {
+      if (!c) return false;
+      if (c.kind === "text" && !(c.text || "").trim()) return false;
+      return true;
+    });
+
+    if (validChildren.length === 0) {
       return `${indent}<${tag}${attrStr} />`;
     }
 
-    const childContent = node.children.map((c) => this.emitWxmlNode(c, indentLevel + 2)).join("\n");
+    const firstChildDirective = validChildren[0];
+    if (validChildren.length === 1 && firstChildDirective && firstChildDirective.kind === "text") {
+      const textVal = escapeXml((firstChildDirective.text || "").trim());
+      return `${indent}<${tag}${attrStr}>${textVal}</${tag}>`;
+    }
+
+    if (validChildren.length === 1 && firstChildDirective && firstChildDirective.kind === "expression") {
+      const exprVal = (firstChildDirective.expression || "").trim();
+      return `${indent}<${tag}${attrStr}>{{${exprVal}}}</${tag}>`;
+    }
+
+    const childStrs = validChildren.map((c) => this.emitWxmlNode(c, indentLevel + 2)).filter(Boolean);
+    if (childStrs.length === 0) {
+      return `${indent}<${tag}${attrStr} />`;
+    }
+    const childContent = childStrs.join("\n");
     return `${indent}<${tag}${attrStr}>\n${childContent}\n${indent}</${tag}>`;
   }
 
   private toWxTag(tag?: string): string {
     if (!tag) return "view";
     const lower = tag.toLowerCase();
-    if (["div", "section", "article", "header", "footer", "main", "nav", "aside", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "p", "table", "thead", "tbody", "tr", "td", "th"].includes(lower)) {
+    if (["div", "section", "article", "header", "footer", "main", "nav", "aside", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "p", "table", "thead", "tbody", "tr", "td", "th", "select", "option", "dialog", "details", "summary", "dl", "dt", "dd"].includes(lower)) {
       return "view";
     }
     if (["span", "b", "i", "strong", "em", "small", "label", "text"].includes(lower)) {
@@ -243,13 +313,25 @@ export class MiniAppFullAstEmitter {
     if (["img", "svg"].includes(lower)) {
       return "image";
     }
-    if (["a"].includes(lower)) {
+    if (["a", "link"].includes(lower)) {
       return "navigator";
     }
     if (["button", "input", "textarea", "form", "scroll-view", "swiper", "view", "text", "image", "navigator"].includes(lower)) {
       return lower;
     }
     return tag;
+  }
+
+  private formatEventHandler(ev: FullSyntaxEvent, wxEvent: string): string {
+    let handler = (ev.handlerNameOrExpr || "").trim();
+    if (!handler || handler.includes("=>") || handler.includes("function") || handler.includes(">") || handler.includes("<") || handler.includes('"') || handler.includes("'") || handler.includes("(") || handler.includes(")")) {
+      handler = "on" + this.capitalize(wxEvent);
+    }
+    return escapeXml(handler);
+  }
+
+  private capitalize(s: string): string {
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
   }
 
   private cleanBodyCode(code: string): string {

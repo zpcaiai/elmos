@@ -62,7 +62,7 @@ Component({
   },
   lifetimes: {
     attached() {
-      // Lifecycle effect effect_8
+      // Lifecycle effect effect_4
       try {
         let active = true;
     setReviewIdentityScope("");
@@ -106,7 +106,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_12
+      // Lifecycle effect effect_5
       try {
         if (!reviewIdentityScope) return;
     try {
@@ -129,7 +129,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_13
+      // Lifecycle effect effect_6
       try {
         const now = Date.now();
     const boundaries = [
@@ -161,13 +161,13 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_26
+      // Lifecycle effect effect_7
       try {
         if (reviewIdentityScope) void ensureRecoveryStore();
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_27
+      // Lifecycle effect effect_8
       try {
         if (typeof EventSource === "undefined" || !safeProject(projectId)) return undefined;
     const jobIds = parseStrictJson(activeProgressJobKey, {
@@ -248,7 +248,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_31
+      // Lifecycle effect effect_9
       try {
         let identityGuard: IntakeIdentityGuard;
     try {
@@ -332,7 +332,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_45
+      // Lifecycle effect effect_10
       try {
         estimateRequestOwner.current += 1;
     setEstimate(null);

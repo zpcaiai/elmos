@@ -1,21 +1,12 @@
 <html lang="zh-CN">
-  <text></text>
   <body>
-    <text></text>
     <UiPreferencesProvider>
-      <text></text>
       <AccountSessionProvider>
-        <text></text>
         <UserActivityCollector />
-        <text></text>
         <AppShell>
           <slot />
         </AppShell>
-        <text></text>
       </AccountSessionProvider>
-      <text></text>
     </UiPreferencesProvider>
-    <text></text>
   </body>
-  <text></text>
 </html>

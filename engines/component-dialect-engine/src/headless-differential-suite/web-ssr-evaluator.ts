@@ -8,6 +8,7 @@
 import { HeadlessDOMNode, ComponentRenderContext } from './types';
 import { DOMNode, HTMLParser, HeadlessBoxLayoutEngine } from './headless-browser-dom';
 import { FullSyntaxComponentIR, FullSyntaxNode } from '../full-syntax-ast/types';
+import { MiniAppSSREvaluator } from './miniapp-ssr-evaluator';
 
 export class WebSSREvaluator {
   /**
@@ -34,8 +35,8 @@ export class WebSSREvaluator {
     context: ComponentRenderContext = {}
   ): DOMNode {
     const scope: Record<string, any> = {
-      ...(ir.props.reduce((acc: Record<string, any>, p) => ({ ...acc, [p.name]: p.defaultValue }), {})),
-      ...(ir.states.reduce((acc: Record<string, any>, s) => ({ ...acc, [s.name]: s.initialValueExpr }), {})),
+      ...(ir.props.reduce((acc: Record<string, any>, p) => ({ ...acc, [p.name]: this.parseLiteral(p.defaultValue) }), {})),
+      ...(ir.states.reduce((acc: Record<string, any>, s) => ({ ...acc, [s.name]: this.parseLiteral(s.initialValueExpr) }), {})),
       ...(typeof context.props === 'object' ? context.props : {}),
       ...(typeof context.state === 'object' ? context.state : {})
     };
@@ -66,12 +67,17 @@ export class WebSSREvaluator {
     context: ComponentRenderContext
   ): DOMNode | DOMNode[] | null {
     switch (astNode.kind) {
-      case 'text':
-        return new DOMNode('text', undefined, astNode.text || '');
+      case 'text': {
+        const textVal = (astNode.text || '').trim();
+        if (!textVal) return null;
+        return new DOMNode('text', undefined, textVal);
+      }
 
       case 'expression': {
         const val = this.evalExpression(astNode.expression || '', scope);
-        return new DOMNode('text', undefined, val !== undefined && val !== null ? String(val) : '');
+        const textVal = val !== undefined && val !== null ? String(val).trim() : '';
+        if (!textVal) return null;
+        return new DOMNode('text', undefined, textVal);
       }
 
       case 'conditional':
@@ -193,30 +199,24 @@ export class WebSSREvaluator {
     }
   }
 
-  private static evalExpression(expr: string, scope: Record<string, any>): any {
-    const trimmed = expr.trim();
-    if (!trimmed) return undefined;
-
+  private static parseLiteral(rawVal?: any): any {
+    if (rawVal === undefined || rawVal === null) return undefined;
+    if (typeof rawVal !== 'string') return rawVal;
+    const trimmed = rawVal.trim();
     if (trimmed === 'true') return true;
     if (trimmed === 'false') return false;
     if (trimmed === 'null') return null;
     if (trimmed === 'undefined') return undefined;
+    if (trimmed === '[]') return [];
+    if (trimmed === '{}') return {};
     if (/^-?\d+(\.\d+)?$/.test(trimmed)) return Number(trimmed);
     if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
       return trimmed.slice(1, -1);
     }
+    return trimmed;
+  }
 
-    if (trimmed.startsWith('!')) {
-      return !this.evalExpression(trimmed.slice(1), scope);
-    }
-
-    // Property path
-    const parts = trimmed.split('.');
-    let cur: any = scope;
-    for (const p of parts) {
-      if (cur === undefined || cur === null) return undefined;
-      cur = cur[p];
-    }
-    return cur;
+  private static evalExpression(expr: string, scope: Record<string, any>): any {
+    return MiniAppSSREvaluator.evaluateExpression(expr, scope);
   }
 }

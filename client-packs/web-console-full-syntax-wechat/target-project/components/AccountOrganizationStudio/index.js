@@ -24,7 +24,7 @@ Component({
   },
   lifetimes: {
     attached() {
-      // Lifecycle effect effect_1
+      // Lifecycle effect effect_0
       try {
         if (account.status !== "authenticated") return;
     void loadOrganizations().catch((error: unknown) =>
@@ -32,7 +32,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_2
+      // Lifecycle effect effect_1
       try {
         void loadMembers(selectedId).catch((error: unknown) =>
       setFeedback(error instanceof Error ? error.message : "MEMBER_LOAD_FAILED"));

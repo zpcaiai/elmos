@@ -49,7 +49,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_2
+      // Lifecycle effect effect_1
       try {
         if (!session || !LIVE_STATES.has(session.state)) return;
     const timer = window.setInterval(async () => {
@@ -66,7 +66,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_4
+      // Lifecycle effect effect_2
       try {
         if (!session || !LIVE_STATES.has(session.state)) return;
     const timer = window.setInterval(() => {

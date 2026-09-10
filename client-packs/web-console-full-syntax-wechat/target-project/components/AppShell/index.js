@@ -32,7 +32,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_2
+      // Lifecycle effect effect_1
       try {
         function handleShortcut(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLocaleLowerCase() === "k") {
@@ -47,7 +47,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_4
+      // Lifecycle effect effect_2
       try {
         if (!commandOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -57,7 +57,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_6
+      // Lifecycle effect effect_3
       try {
         function updateBackToTop() {
       setShowBackToTop(window.scrollY > 640);
@@ -68,7 +68,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_8
+      // Lifecycle effect effect_4
       try {
         try {
       setTelemetryEnabled(localStorage.getItem("elmos:telemetry-enabled:v1") !== "off");
@@ -83,20 +83,6 @@ Component({
     },
   },
   methods: {
-    handleShortcut(event) {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLocaleLowerCase() === "k") {
-        event.preventDefault();
-        if (commandOpen)
-            closeCommand();
-        else
-            openCommand();
-    }
-    if (event.key === "Escape" && commandOpen)
-        closeCommand();
-    },
-    updateBackToTop() {
-      setShowBackToTop(window.scrollY > 640);
-    },
     openCommand(trigger) {
       returnFocus.current = trigger
         ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);

@@ -7,7 +7,6 @@ import unittest
 from elmos_project_intelligence.domain import _imports, _symbols
 from elmos_project_intelligence.java_structure import (
     ORIGIN_PARSED,
-    ORIGIN_REGEX,
     is_java_path,
     java_structure,
 )

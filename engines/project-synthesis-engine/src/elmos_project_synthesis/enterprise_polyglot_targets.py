@@ -405,6 +405,10 @@ async fn delete_entity(
     }}
 }}
 """
+    from .rust_domain_workflow_emitter import generate_rust_domain_workflow_files
+
+    for path, content in generate_rust_domain_workflow_files(request).items():
+        files[path] = content
 
     return files
 
@@ -451,6 +455,11 @@ dependencies {{
     runtimeOnly("org.postgresql:postgresql")
 }}
 """
+    from .polyglot_domain_workflow_emitter import generate_kotlin_domain_workflow_files
+
+    for path, content in generate_kotlin_domain_workflow_files(request).items():
+        files[path] = content
+
     return files
 
 
@@ -542,5 +551,9 @@ Route::prefix('v1/{entity_plural}')->group(function () {{
     }});
 }});
 """
+    from .polyglot_domain_workflow_emitter import generate_php_domain_workflow_files
+
+    for path, content in generate_php_domain_workflow_files(request).items():
+        files[path] = content
 
     return files

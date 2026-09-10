@@ -1,295 +1,119 @@
 <view class="{{styles.workbench}}" aria-labelledby="orchestrator-title">
-  <text></text>
   <view class="{{styles.hero}}">
-    <text></text>
     <view>
-      <text></text>
-      <text class="{{styles.eyebrow}}">
-        <text>Repository task decomposition · cost router</text>
-      </text>
-      <text></text>
-      <view id="orchestrator-title">
-        <text>仓库任务编排预检</text>
-      </view>
-      <text></text>
-      <view>
-        <text>在创建任何运行之前，锁定模型选择、检查风险下限，并说明 DAG、成本与证据的真实就绪度。</text>
-      </view>
-      <text></text>
+      <text class="{{styles.eyebrow}}">Repository task decomposition · cost router</text>
+      <view id="orchestrator-title">仓库任务编排预检</view>
+      <view>在创建任何运行之前，锁定模型选择、检查风险下限，并说明 DAG、成本与证据的真实就绪度。</view>
     </view>
-    <text></text>
     <view class="{{styles.boundary}}" aria-label="执行边界">
-      <text></text>
-      <text>
-        <text>Planning only</text>
-      </text>
-      <text></text>
-      <text>
-        <text>无 Provider 调用 · 无 Run · 无 SCM 副作用</text>
-      </text>
-      <text></text>
-      <text>
-        <text>外部执行 NOT_RUN · 认证 NOT_CERTIFIED</text>
-      </text>
-      <text></text>
+      <text>Planning only</text>
+      <text>无 Provider 调用 · 无 Run · 无 SCM 副作用</text>
+      <text>外部执行 NOT_RUN · 认证 NOT_CERTIFIED</text>
     </view>
-    <text></text>
   </view>
-  <text></text>
-  <view wx:if="{{loading}}" class="{{styles.notice}}" role="status">
-    <text>正在从后端加载唯一模型目录…</text>
-  </view>
-  <view wx:else />
-  <text></text>
-  <view wx:if="{{catalogError}}" class="{{styles.error}}" role="alert">
-    <text>{{catalogError}}</text>
-  </view>
-  <view wx:else />
-  <text></text>
-  <view wx:if="{{catalog}}">
-    <text></text>
+  <view wx:if="{{loading}}" class="{{styles.notice}}" role="status">正在从后端加载唯一模型目录…</view>
+  <text wx:else>{{null}}</text>
+  <view wx:if="{{catalogError}}" class="{{styles.error}}" role="alert">{{catalogError}}</view>
+  <text wx:else>{{null}}</text>
+  <block wx:if="{{catalog}}">
     <view class="{{styles.catalogSection}}" aria-labelledby="execution-model-heading">
-      <text></text>
       <view class="{{styles.sectionHeader}}">
-        <text></text>
         <view>
-          <text></text>
           <text class="{{styles.eyebrow}}">
             <text>Immutable selection ·</text>
             <text>{{catalog.catalogVersion}}</text>
           </text>
-          <text></text>
-          <view id="execution-model-heading">
-            <text>执行模型</text>
-          </view>
-          <text></text>
+          <view id="execution-model-heading">执行模型</view>
         </view>
-        <text></text>
-        <text class="{{styles.status}}" data-tone="{{statusTone(catalog.status)}}">
-          <text>{{catalog.status}}</text>
-        </text>
-        <text></text>
+        <text class="{{styles.status}}" data-tone="{{statusTone(catalog.status)}}">{{catalog.status}}</text>
       </view>
-      <text></text>
       <view wx:if="{{catalog.reasons.length > 0}}" class="{{styles.catalogReasons}}" role="status">
-        <text></text>
-        <text>
-          <text>目录尚未就绪</text>
-        </text>
-        <text></text>
+        <text>目录尚未就绪</text>
         <view>
-          <view wx:for="{{catalog.reasons}}" wx:for-item="reason" wx:key="reason.id" key="{{reason}}">
-            <text>{{readableReason(reason)}}</text>
-          </view>
+          <view wx:for="{{catalog.reasons}}" wx:for-item="reason" wx:key="reason.id" key="{{reason}}">{{readableReason(reason)}}</view>
         </view>
-        <text></text>
       </view>
-      <view wx:else />
-      <text></text>
+      <text wx:else>{{null}}</text>
       <fieldset class="{{styles.modeFieldset}}">
-        <text></text>
-        <legend class="sr-only">
-          <text>选择 Smart 或手动模型模式</text>
-        </legend>
-        <text></text>
-        <text class="{{`${styles.modeCard} ${mode === "smart" ? styles.selected : ""}`}}">
-          <text></text>
-          <input type="radio" name="execution-mode" value="smart" checked="{{mode === "smart"}}" bindchange="() => {
-                    setMode("smart");
-                    setSelectedModel(null);
-                    setResult(null);
-                  }" />
-          <text></text>
+        <legend class="sr-only">选择 Smart 或手动模型模式</legend>
+        <text class="{{`${styles.modeCard} ${mode === &quot;smart&quot; ? styles.selected : &quot;&quot;}`}}">
+          <input type="radio" name="execution-mode" value="smart" checked="{{mode === &quot;smart&quot;}}" bindchange="onChange" />
           <text class="{{styles.modeCopy}}">
-            <text></text>
             <text>
-              <text>
-                <text>Smart — 每个任务的最佳价值</text>
-              </text>
-              <text>
-                <text>推荐</text>
-              </text>
+              <text>Smart — 每个任务的最佳价值</text>
+              <text>推荐</text>
             </text>
-            <text></text>
-            <text>
-              <text>后端在固定目录内按原子任务、风险下限与成本性能独立路由。</text>
-            </text>
-            <text></text>
+            <text>后端在固定目录内按原子任务、风险下限与成本性能独立路由。</text>
           </text>
-          <text></text>
         </text>
-        <text></text>
-        <text class="{{`${styles.modeCard} ${mode === "manual" ? styles.selected : ""}`}}">
-          <text></text>
-          <input type="radio" name="execution-mode" value="manual" checked="{{mode === "manual"}}" bindchange="() => {
-                    setMode("manual");
-                    setResult(null);
-                  }" />
-          <text></text>
+        <text class="{{`${styles.modeCard} ${mode === &quot;manual&quot; ? styles.selected : &quot;&quot;}`}}">
+          <input type="radio" name="execution-mode" value="manual" checked="{{mode === &quot;manual&quot;}}" bindchange="onChange" />
           <text class="{{styles.modeCopy}}">
-            <text></text>
             <text>
-              <text>
-                <text>手动选择主实现模型</text>
-              </text>
-              <text>
-                <text>严格锁定</text>
-              </text>
+              <text>手动选择主实现模型</text>
+              <text>严格锁定</text>
             </text>
-            <text></text>
-            <text>
-              <text>默认不会静默切换；必需的独立验证仍可由系统策略指定。</text>
-            </text>
-            <text></text>
+            <text>默认不会静默切换；必需的独立验证仍可由系统策略指定。</text>
           </text>
-          <text></text>
         </text>
-        <text></text>
       </fieldset>
-      <text></text>
       <view class="{{styles.modelGrid}}" aria-label="后端模型目录">
-        <text></text>
-        <text wx:for="{{catalog.models}}" wx:for-item="model" wx:key="model.id" class="{{`${styles.modelCard} ${selectedModel === model.alias ? styles.selectedModel : ""}`}}" key="{{model.alias}}" title="{{model.reasons.map(readableReason).join("; ")}}">
-          <text></text>
+        <text wx:for="{{catalog.models}}" wx:for-item="model" wx:key="model.id" class="{{`${styles.modelCard} ${selectedModel === model.alias ? styles.selectedModel : &quot;&quot;}`}}" key="{{model.alias}}" title="{{model.reasons.map(readableReason).join(&quot;; &quot;)}}">
           <text class="{{styles.modelTitle}}">
-            <text></text>
-            <input type="radio" name="manual-model" value="{{model.alias}}" disabled="{{mode !== "manual" || !model.selectable}}" checked="{{selectedModel === model.alias}}" bindchange="() => {
-                        setSelectedModel(model.alias);
-                        setResult(null);
-                      }" />
-            <text></text>
+            <input type="radio" name="manual-model" value="{{model.alias}}" disabled="{{mode !== &quot;manual&quot; || !model.selectable}}" checked="{{selectedModel === model.alias}}" bindchange="onChange" />
             <text>
-              <text>
-                <text>{{model.displayName}}</text>
-              </text>
-              <code>
-                <text>{{model.alias}}</text>
-              </code>
+              <text>{{model.displayName}}</text>
+              <code>{{model.alias}}</code>
             </text>
-            <text></text>
           </text>
-          <text></text>
           <text class="{{styles.modelMeta}}">
-            <text></text>
-            <text>
-              <text>{{model.provider}}</text>
-            </text>
-            <text></text>
+            <text>{{model.provider}}</text>
             <text>
               <text>Cost</text>
               <text>{{model.relativeCostTier}}</text>
               <text>/5</text>
             </text>
-            <text></text>
-            <text>
-              <text>{{model.highestRoutingTier}}</text>
-            </text>
-            <text></text>
+            <text>{{model.highestRoutingTier}}</text>
           </text>
-          <text></text>
-          <text>
-            <text>{{model.roleHint.replaceAll("_", " ")}}</text>
-          </text>
-          <text></text>
-          <text class="{{styles.unavailable}}">
-            <text>{{model.status}}</text>
-          </text>
-          <text></text>
+          <text>{{model.roleHint.replaceAll("_", " ")}}</text>
+          <text class="{{styles.unavailable}}">{{model.status}}</text>
           <view>
-            <text></text>
-            <view wx:for="{{model.reasons.slice(0, 3)}}" wx:for-item="reason" wx:key="reason.id" key="{{reason}}">
-              <text>{{readableReason(reason)}}</text>
-            </view>
-            <text></text>
+            <view wx:for="{{model.reasons.slice(0, 3)}}" wx:for-item="reason" wx:key="reason.id" key="{{reason}}">{{readableReason(reason)}}</view>
           </view>
-          <text></text>
         </text>
-        <text></text>
       </view>
-      <text></text>
       <view class="{{styles.policyRow}}">
-        <text></text>
         <text wx:if="{{mode === "manual"}}" class="{{styles.toggle}}">
-          <text></text>
-          <input type="checkbox" checked="{{fallbackEnabled}}" bindchange="(event) => {
-                      setFallbackEnabled(event.target.checked);
-                      setResult(null);
-                    }" />
-          <text></text>
-          <text>
-            <text>模型失败时允许 allowlist 内智能 fallback</text>
-          </text>
-          <text></text>
+          <input type="checkbox" checked="{{fallbackEnabled}}" bindchange="onChange" />
+          <text>模型失败时允许 allowlist 内智能 fallback</text>
         </text>
         <view wx:else class="{{styles.routerPolicy}}">
-          <text></text>
-          <text>
-            <text>Smart 使用服务端 router policy</text>
-          </text>
-          <text></text>
-          <text>
-            <text>调用方不能关闭强制风险门、预算硬停止或有界升级策略。</text>
-          </text>
-          <text></text>
+          <text>Smart 使用服务端 router policy</text>
+          <text>调用方不能关闭强制风险门、预算硬停止或有界升级策略。</text>
         </view>
-        <text></text>
         <text>
-          <text></text>
-          <text>
-            <text>优化策略</text>
-          </text>
-          <text></text>
-          <select value="{{optimizationProfile}}" bindchange="(event) => setOptimizationProfile(event.target.value as RepositoryPreflightRequest["optimizationProfile"])">
-            <text></text>
-            <option wx:for="{{catalog.optimizationProfiles}}" wx:for-item="profile" wx:key="profile.id" key="{{profile}}">
-              <text>{{profile}}</text>
-            </option>
-            <text></text>
-          </select>
-          <text></text>
-        </text>
-        <text></text>
-        <text>
-          <text></text>
-          <text>
-            <text>验证策略</text>
-          </text>
-          <text></text>
-          <select value="{{verificationPolicy}}" bindchange="(event) => setVerificationPolicy(event.target.value as RepositoryPreflightRequest["verificationPolicy"])">
-            <text></text>
-            <option wx:for="{{catalog.verificationPolicies}}" wx:for-item="policy" wx:key="policy.id" key="{{policy}}">
-              <text>{{policy}}</text>
-            </option>
-            <text></text>
-          </select>
-          <text></text>
-        </text>
-        <text></text>
-      </view>
-      <text></text>
-    </view>
-    <text></text>
-    <view class="{{styles.riskSection}}" aria-labelledby="risk-heading">
-      <text></text>
-      <view class="{{styles.sectionHeader}}">
-        <text></text>
-        <view>
-          <text class="{{styles.eyebrow}}">
-            <text>Risk gates before ranking</text>
-          </text>
-          <view id="risk-heading">
-            <text>风险下限</text>
+          <text>优化策略</text>
+          <view value="{{optimizationProfile}}" bindchange="onChange">
+            <view wx:for="{{catalog.optimizationProfiles}}" wx:for-item="profile" wx:key="profile.id" key="{{profile}}">{{profile}}</view>
           </view>
-        </view>
-        <text></text>
-        <text>
-          <text>高风险至少 L3；长周期任务至少 L4。</text>
         </text>
-        <text></text>
+        <text>
+          <text>验证策略</text>
+          <view value="{{verificationPolicy}}" bindchange="onChange">
+            <view wx:for="{{catalog.verificationPolicies}}" wx:for-item="policy" wx:key="policy.id" key="{{policy}}">{{policy}}</view>
+          </view>
+        </text>
       </view>
-      <text></text>
+    </view>
+    <view class="{{styles.riskSection}}" aria-labelledby="risk-heading">
+      <view class="{{styles.sectionHeader}}">
+        <view>
+          <text class="{{styles.eyebrow}}">Risk gates before ranking</text>
+          <view id="risk-heading">风险下限</view>
+        </view>
+        <text>高风险至少 L3；长周期任务至少 L4。</text>
+      </view>
       <view class="{{styles.riskGrid}}">
-        <text></text>
         <text wx:for="{{([
                 ["security", "安全"],
                 ["dataMigration", "数据迁移"],
@@ -297,281 +121,131 @@
                 ["publicContract", "公共契约"],
                 ["blastRadius", "爆炸半径"],
               ] as const)}}" wx:for-item="[field, label]" wx:key="[field, label].id" key="{{field}}">
-          <text></text>
-          <text>
-            <text>{{label}}</text>
-          </text>
-          <text></text>
-          <select value="{{risk[field]}}" bindchange="(event) => updateRisk(field, event.target.value as RepositoryRiskLevel)">
-            <text></text>
-            <option wx:for="{{riskOptions}}" wx:for-item="level" wx:key="level.id" key="{{level}}">
-              <text>{{level}}</text>
-            </option>
-            <text></text>
-          </select>
-          <text></text>
-        </text>
-        <text></text>
-        <text class="{{styles.longHorizon}}">
-          <text></text>
-          <input type="checkbox" checked="{{risk.longHorizon}}" bindchange="(event) => {
-                    setRisk((current) => ({ ...current, longHorizon: event.target.checked }));
-                    setResult(null);
-                  }" />
-          <text></text>
-          <text>
-            <text>长周期迁移 / long horizon</text>
-          </text>
-          <text></text>
-        </text>
-        <text></text>
-      </view>
-      <text></text>
-      <view class="{{styles.preflightAction}}">
-        <text></text>
-        <view>
-          <text></text>
-          <view wx:if="{{mode === "manual" && !selectedDescriptor?.selectable}}" />
-          <view wx:else />
-          <text></text>
-        </view>
-        <text></text>
-        <button type="button" disabled="{{!canPreflight}}" bindtap="() => void submitPreflight()">
-          <text></text>
-          <view wx:if="{{submitting}}" />
-          <view wx:else />
-          <text></text>
-        </button>
-        <text></text>
-      </view>
-      <text></text>
-      <view wx:if="{{preflightError}}" class="{{styles.error}}" role="alert">
-        <text>{{preflightError}}</text>
-      </view>
-      <view wx:else />
-      <text></text>
-    </view>
-    <text></text>
-    <view wx:if="{{result}}" class="{{styles.resultSection}}" aria-labelledby="preflight-result-heading" aria-live="polite">
-      <text></text>
-      <view class="{{styles.sectionHeader}}">
-        <text></text>
-        <view>
-          <text class="{{styles.eyebrow}}">
-            <text>Preflight decision</text>
-          </text>
-          <view id="preflight-result-heading">
-            <text>预检结果</text>
+          <text>{{label}}</text>
+          <view value="{{risk[field]}}" bindchange="onChange">
+            <view wx:for="{{riskOptions}}" wx:for-item="level" wx:key="level.id" key="{{level}}">{{level}}</view>
           </view>
-        </view>
-        <text></text>
-        <text class="{{styles.status}}" data-tone="{{statusTone(result.status)}}">
-          <text>{{result.status}}</text>
         </text>
-        <text></text>
+        <text class="{{styles.longHorizon}}">
+          <input type="checkbox" checked="{{risk.longHorizon}}" bindchange="onChange" />
+          <text>长周期迁移 / long horizon</text>
+        </text>
       </view>
-      <text></text>
-      <view class="{{styles.readinessGrid}}">
-        <text></text>
+      <view class="{{styles.preflightAction}}">
         <view>
-          <text></text>
-          <text>
-            <text>模型配置</text>
-          </text>
-          <text>
-            <text>{{result.configurationStatus}}</text>
-          </text>
-          <text></text>
+          <text wx:if="{{mode === "manual" && !selectedDescriptor?.selectable}}">{{"所有目录项当前均未配置，无法锁定手动模型；可使用 Smart 验证阻断原因。"}}</text>
+          <text wx:else>{{"预检仅验证选择、风险与配置，不会创建任务或调用模型。"}}</text>
+        </view>
+        <button type="button" disabled="{{!canPreflight}}" bindtap="onTap">
+          <text wx:if="{{submitting}}">{{"预检中…"}}</text>
+          <text wx:else>{{"运行保守预检"}}</text>
+        </button>
+      </view>
+      <view wx:if="{{preflightError}}" class="{{styles.error}}" role="alert">{{preflightError}}</view>
+      <text wx:else>{{null}}</text>
+    </view>
+    <view wx:if="{{result}}" class="{{styles.resultSection}}" aria-labelledby="preflight-result-heading" aria-live="polite">
+      <view class="{{styles.sectionHeader}}">
+        <view>
+          <text class="{{styles.eyebrow}}">Preflight decision</text>
+          <view id="preflight-result-heading">预检结果</view>
+        </view>
+        <text class="{{styles.status}}" data-tone="{{statusTone(result.status)}}">{{result.status}}</text>
+      </view>
+      <view class="{{styles.readinessGrid}}">
+        <view>
+          <text>模型配置</text>
+          <text>{{result.configurationStatus}}</text>
           <text>
             <text>风险下限</text>
             <text>{{result.minimumRoutingTier}}</text>
             <text>· resolved</text>
             <text>{{result.resolvedModel ?? "none"}}</text>
           </text>
-          <text></text>
         </view>
-        <text></text>
         <view>
-          <text></text>
-          <text>
-            <text>任务 DAG</text>
-          </text>
-          <text>
-            <text>{{result.dag.status}}</text>
-          </text>
-          <text></text>
+          <text>任务 DAG</text>
+          <text>{{result.dag.status}}</text>
           <text>
             <text>{{result.dag.tasks.length}}</text>
             <text>tasks ·</text>
             <text>{{result.dag.waves.length}}</text>
             <text>waves</text>
           </text>
-          <text></text>
         </view>
-        <text></text>
         <view>
-          <text></text>
+          <text>成本估算</text>
+          <text>{{result.cost.status}}</text>
           <text>
-            <text>成本估算</text>
+            <text wx:if="{{result.cost.estimatedRunCost === null}}">{{"未产生估算"}}</text>
+            <text wx:else>{{`${result.cost.currency} ${result.cost.estimatedRunCost}`}}</text>
           </text>
-          <text>
-            <text>{{result.cost.status}}</text>
-          </text>
-          <text></text>
-          <text>
-            <view wx:if="{{result.cost.estimatedRunCost === null}}" />
-            <view wx:else />
-          </text>
-          <text></text>
         </view>
-        <text></text>
         <view>
-          <text></text>
-          <text>
-            <text>认证</text>
-          </text>
-          <text>
-            <text>{{result.evidence.certification}}</text>
-          </text>
-          <text></text>
+          <text>认证</text>
+          <text>{{result.evidence.certification}}</text>
           <text>
             <text>external</text>
             <text>{{result.evidence.externalVerification}}</text>
           </text>
-          <text></text>
         </view>
-        <text></text>
       </view>
-      <text></text>
       <view class="{{styles.resultColumns}}">
-        <text></text>
         <view>
-          <text></text>
+          <view>阻断与配置原因</view>
           <view>
-            <text>阻断与配置原因</text>
+            <view wx:for="{{result.reasons}}" wx:for-item="reason" wx:key="reason.id" key="{{reason}}">{{readableReason(reason)}}</view>
           </view>
-          <text></text>
-          <view>
-            <view wx:for="{{result.reasons}}" wx:for-item="reason" wx:key="reason.id" key="{{reason}}">
-              <text>{{readableReason(reason)}}</text>
-            </view>
-          </view>
-          <text></text>
-          <view>
-            <text>{{result.cost.reason}}</text>
-          </view>
-          <text></text>
+          <view>{{result.cost.reason}}</view>
         </view>
-        <text></text>
         <view>
-          <text></text>
+          <view>DAG 就绪度</view>
           <view>
-            <text>DAG 就绪度</text>
+            <view wx:for="{{result.dag.requiredStages}}" wx:for-item="stage" wx:key="stage.id" key="{{stage}}">{{readableReason(stage)}}</view>
           </view>
-          <text></text>
-          <view>
-            <view wx:for="{{result.dag.requiredStages}}" wx:for-item="stage" wx:key="stage.id" key="{{stage}}">
-              <text>{{readableReason(stage)}}</text>
-            </view>
-          </view>
-          <text></text>
-          <view>
-            <text>{{result.dag.reason}}</text>
-          </view>
-          <text></text>
+          <view>{{result.dag.reason}}</view>
         </view>
-        <text></text>
         <view>
-          <text></text>
+          <view>不可变选择与审计解释</view>
+          <code wx:if="{{result.selection}}" class="{{styles.digest}}">{{result.selection.digest}}</code>
+          <text wx:else>{{null}}</text>
           <view>
-            <text>不可变选择与审计解释</text>
+            <view wx:for="{{result.auditExplanation}}" wx:key="item.id" key="{{item}}">{{item}}</view>
           </view>
-          <text></text>
-          <code wx:if="{{result.selection}}" class="{{styles.digest}}">
-            <text>{{result.selection.digest}}</text>
-          </code>
-          <view wx:else />
-          <text></text>
-          <view>
-            <view wx:for="{{result.auditExplanation}}" wx:key="item.id" key="{{item}}">
-              <text>{{item}}</text>
-            </view>
-          </view>
-          <text></text>
         </view>
-        <text></text>
       </view>
-      <text></text>
       <view class="{{styles.evidenceStrip}}" aria-label="副作用与证据状态">
-        <text></text>
         <text wx:for="{{Object.entries(result.evidence)}}" wx:for-item="[key, value]" wx:key="[key, value].id" key="{{key}}">
-          <text>
-            <text>{{key}}</text>
-          </text>
-          <text>
-            <text>{{value}}</text>
-          </text>
+          <text>{{key}}</text>
+          <text>{{value}}</text>
         </text>
-        <text></text>
       </view>
-      <text></text>
     </view>
-    <view wx:else />
-    <text></text>
-    <text></text>
-    <text></text>
+    <text wx:else>{{null}}</text>
     <view class="mt-8 p-5 rounded-xl border border-border bg-card/60 shadow-lg" aria-labelledby="pipeline-sandbox-heading">
-      <text></text>
       <view class="flex items-center justify-between mb-4">
-        <text></text>
         <view>
-          <text></text>
-          <text class="text-xs uppercase tracking-wider text-primary font-mono font-semibold">
-            <text>INTERACTIVE PIPELINE SANDBOX</text>
-          </text>
-          <text></text>
-          <view id="pipeline-sandbox-heading" class="text-xl font-bold text-foreground">
-            <text>跨引擎全自动现代化流水线沙箱</text>
-          </view>
-          <text></text>
+          <text class="text-xs uppercase tracking-wider text-primary font-mono font-semibold">INTERACTIVE PIPELINE SANDBOX</text>
+          <view id="pipeline-sandbox-heading" class="text-xl font-bold text-foreground">跨引擎全自动现代化流水线沙箱</view>
         </view>
-        <text></text>
-        <text class="px-2 py-0.5 text-xs rounded bg-emerald-500/10 text-emerald-400 font-mono border border-emerald-500/30">
-          <text>ELMOS v3.0.0</text>
-        </text>
-        <text></text>
+        <text class="px-2 py-0.5 text-xs rounded bg-emerald-500/10 text-emerald-400 font-mono border border-emerald-500/30">ELMOS v3.0.0</text>
       </view>
-      <text></text>
       <view class="text-xs text-muted-foreground mb-4">
         <text>在 Web 控制台中实时体验从</text>
-        <text>
-          <text>源码摄取</text>
-        </text>
+        <text>源码摄取</text>
         <text>、</text>
-        <text>
-          <text>多语言 AST 语义降级</text>
-        </text>
+        <text>多语言 AST 语义降级</text>
         <text>、</text>
-        <text>
-          <text>SMT 形式化证明</text>
-        </text>
+        <text>SMT 形式化证明</text>
         <text>、</text>
-        <text>
-          <text>差分 Fuzzing</text>
-        </text>
+        <text>差分 Fuzzing</text>
         <text>到</text>
-        <text>
-          <text>FinOps 计量</text>
-        </text>
+        <text>FinOps 计量</text>
         <text>和</text>
-        <text>
-          <text>SLSA Level 3 数字回执</text>
-        </text>
+        <text>SLSA Level 3 数字回执</text>
         <text>的全生命周期流转。</text>
       </view>
-      <text></text>
       <view class="grid grid-cols-1 md:grid-cols-6 gap-2 mb-4">
-        <text></text>
         <view wx:for="{{[
                 { step: "1", title: "源码摄取与解析", status: "INGESTED", desc: "AST 抽象树提取与依赖图" },
                 { step: "2", title: "Polyglot 语义转换", status: "TRANSFORMED", desc: "784 路线精确语义重写" },
@@ -580,58 +254,24 @@
                 { step: "5", title: "FinOps 计量", status: "METERED", desc: "Token与实时成本核算" },
                 { step: "6", title: "SLSA 证据回执", status: "CERTIFIED", desc: "Merkle 防篡改数字防伪" },
               ]}}" wx:for-item="s" wx:key="s.id" key="{{s.step}}" class="p-3 rounded-lg border border-border/80 bg-background/50 flex flex-col justify-between">
-          <text></text>
           <view>
-            <text></text>
             <view class="flex items-center justify-between mb-1">
-              <text></text>
-              <text class="w-5 h-5 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold">
-                <text>{{s.step}}</text>
-              </text>
-              <text></text>
-              <text class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono font-semibold">
-                <text>{{s.status}}</text>
-              </text>
-              <text></text>
+              <text class="w-5 h-5 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold">{{s.step}}</text>
+              <text class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono font-semibold">{{s.status}}</text>
             </view>
-            <text></text>
-            <text class="text-xs text-foreground block">
-              <text>{{s.title}}</text>
-            </text>
-            <text></text>
+            <text class="text-xs text-foreground block">{{s.title}}</text>
           </view>
-          <text></text>
-          <text class="text-[11px] text-muted-foreground mt-1">
-            <text>{{s.desc}}</text>
-          </text>
-          <text></text>
+          <text class="text-[11px] text-muted-foreground mt-1">{{s.desc}}</text>
         </view>
-        <text></text>
       </view>
-      <text></text>
       <view class="p-4 rounded-lg bg-background border border-border flex flex-col gap-2">
-        <text></text>
         <view class="flex items-center justify-between text-xs text-muted-foreground font-mono">
-          <text></text>
-          <text>
-            <text>CLI 一键触发命令：</text>
-          </text>
-          <text></text>
-          <text class="text-emerald-400">
-            <text>Action Cache: ENABLED (SHA-256 CAS)</text>
-          </text>
-          <text></text>
+          <text>CLI 一键触发命令：</text>
+          <text class="text-emerald-400">Action Cache: ENABLED (SHA-256 CAS)</text>
         </view>
-        <text></text>
-        <code class="text-xs text-primary font-mono bg-muted/30 p-2 rounded block overflow-x-auto">
-          <text>elmos pipeline --src-lang java --tgt-lang csharp --code &quot;public class AccountLedger &amp;#123; public double balance; &amp;#125;&quot; --export-html report.html</text>
-        </code>
-        <text></text>
+        <code class="text-xs text-primary font-mono bg-muted/30 p-2 rounded block overflow-x-auto">elmos pipeline --src-lang java --tgt-lang csharp --code &quot;public class AccountLedger &amp;#123; public double balance; &amp;#125;&quot; --export-html report.html</code>
       </view>
-      <text></text>
     </view>
-    <text></text>
-  </view>
-  <view wx:else />
-  <text></text>
+  </block>
+  <text wx:else>{{null}}</text>
 </view>

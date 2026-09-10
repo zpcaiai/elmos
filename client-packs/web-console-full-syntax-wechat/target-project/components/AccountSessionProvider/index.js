@@ -33,7 +33,7 @@ Component({
       } catch (err) {
         console.error("Effect execution error:", err);
       }
-      // Lifecycle effect effect_2
+      // Lifecycle effect effect_1
       try {
         if (!expiresAt || status !== "authenticated") return;
     const expiry = Date.parse(expiresAt);

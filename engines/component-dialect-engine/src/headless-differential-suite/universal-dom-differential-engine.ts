@@ -117,7 +117,8 @@ export class UniversalDOMDifferentialEngine {
       mediumCount,
       lowCount,
       totalMismatches: mismatches.length,
-      reasons
+      reasons,
+      mismatches
     };
   }
 
@@ -170,7 +171,7 @@ export class UniversalDOMDifferentialEngine {
       const sTag = this.normalizeSemanticTag(sNode!.tagName, sNode!.nodeType);
       const tTag = this.normalizeSemanticTag(tNode!.tagName, tNode!.nodeType);
 
-      if (sTag === tTag) {
+      if (sTag === tTag || this.isSemanticTagMatch(sTag, tTag, sNode!, tNode!)) {
         matchPoints++;
       } else {
         const severity: MismatchSeverity = (sTag === 'button' || sTag === 'input') ? 'high' : 'medium';
@@ -189,8 +190,25 @@ export class UniversalDOMDifferentialEngine {
       }
 
       // Filter meaningful children (exclude empty text nodes)
-      const sChildren = sNode!.children.filter(c => !this.isEmptyTextNode(c, opts));
-      const tChildren = tNode!.children.filter(c => !this.isEmptyTextNode(c, opts));
+      const sChildrenRaw = sNode!.children.filter(c => !this.isEmptyTextNode(c, opts));
+      const tChildrenRaw = tNode!.children.filter(c => !this.isEmptyTextNode(c, opts));
+
+      const unwrapSingleTextWrapper = (children: DOMNode[]): DOMNode[] => {
+        if (
+          children.length === 1 &&
+          children[0] &&
+          children[0].nodeType === 'element' &&
+          (children[0].tagName === 'text' || children[0].tagName === 'span') &&
+          children[0].children.filter(c => !this.isEmptyTextNode(c, opts)).length === 1 &&
+          children[0].children.filter(c => !this.isEmptyTextNode(c, opts))[0]?.nodeType === 'text'
+        ) {
+          return children[0].children.filter(c => !this.isEmptyTextNode(c, opts));
+        }
+        return children;
+      };
+
+      const sChildren = unwrapSingleTextWrapper(sChildrenRaw);
+      const tChildren = unwrapSingleTextWrapper(tChildrenRaw);
 
       const maxLen = Math.max(sChildren.length, tChildren.length);
       for (let i = 0; i < maxLen; i++) {
@@ -271,6 +289,31 @@ export class UniversalDOMDifferentialEngine {
       for (const attr of criticalAttrs) {
         const sVal = sNode.getAttribute(attr);
         const tVal = tNode.getAttribute(attr);
+
+        const isBoolAttr = ['disabled', 'checked', 'readonly', 'required'].includes(attr);
+        if (isBoolAttr) {
+          const sBool = sVal !== undefined && sVal !== 'false';
+          const tBool = tVal !== undefined && tVal !== 'false';
+          if (sBool || tBool) {
+            totalAttrs++;
+            if (sBool === tBool) {
+              matchCount++;
+            } else {
+              mismatches.push({
+                id: `diff_${mismatches.length + 1}`,
+                category: 'attribute_divergence',
+                severity: 'low',
+                sourcePath: `${path}[@${attr}]`,
+                targetPath: `${path}[@${attr}]`,
+                sourceValue: String(sBool),
+                targetValue: String(tBool),
+                description: `Boolean attribute divergence on @${attr}: source="${sBool}" vs target="${tBool}"`,
+                semanticImpact: 0.1
+              });
+            }
+          }
+          continue;
+        }
 
         if (sVal !== undefined || tVal !== undefined) {
           totalAttrs++;
@@ -360,7 +403,9 @@ export class UniversalDOMDifferentialEngine {
     if ([
       'div', 'section', 'article', 'main', 'header', 'footer', 'nav', 'aside',
       'view', 'block', 'form', 'fieldset', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-      'p', 'ul', 'ol', 'li', 'table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th'
+      'p', 'ul', 'ol', 'li', 'table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th',
+      'select', 'option', 'picker', 'picker-view', 'picker-view-column',
+      'dialog', 'details', 'summary', 'dl', 'dt', 'dd', 'scroll-view'
     ].includes(t)) {
       return 'container';
     }
@@ -389,11 +434,17 @@ export class UniversalDOMDifferentialEngine {
   }
 
   private static isEmptyTextNode(node: DOMNode, opts: Required<DifferentialComparisonOptions>): boolean {
-    if (node.nodeType !== 'text') return false;
-    if (opts.ignoreWhitespace) {
-      return (node.nodeValue || '').trim().length === 0;
+    if (node.nodeType === 'comment') return true;
+    if (node.nodeType === 'text') {
+      if (opts.ignoreWhitespace) {
+        return (node.nodeValue || '').trim().length === 0;
+      }
+      return (node.nodeValue || '').length === 0;
     }
-    return (node.nodeValue || '').length === 0;
+    if (node.nodeType === 'element' && this.normalizeSemanticTag(node.tagName, node.nodeType) === 'text') {
+      return (node.textContent || '').trim().length === 0;
+    }
+    return false;
   }
 
   private static normalizeText(text: string, opts: Required<DifferentialComparisonOptions>): string {
@@ -410,5 +461,35 @@ export class UniversalDOMDifferentialEngine {
       .toLowerCase()
       .split(/[\s,.;:!?()[\]{}"'\\/<>+=_-]+|(?=[\u4e00-\u9fa5])|(?<=[\u4e00-\u9fa5])/)
       .filter(t => t.trim().length > 0);
+  }
+
+  private static isSemanticTagMatch(
+    sTag: string,
+    tTag: string,
+    sNode: DOMNode,
+    tNode: DOMNode
+  ): boolean {
+    if (sTag === tTag) return true;
+
+    const isTextLike = (tag: string, node: DOMNode): boolean => {
+      if (tag === 'text') return true;
+      if (tag === 'container') {
+        const rawTag = (node.tagName || '').toLowerCase();
+        if (['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'small', 'label', 'b', 'strong', 'em', 'i'].includes(rawTag)) {
+          return true;
+        }
+        const nonTextChildren = node.children.filter(c => c.nodeType === 'element');
+        if (nonTextChildren.length === 0 && (node.textContent || '').trim().length > 0) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    if (isTextLike(sTag, sNode) && isTextLike(tTag, tNode)) {
+      return true;
+    }
+
+    return false;
   }
 }

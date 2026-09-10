@@ -143,7 +143,10 @@ export class DOMNode implements HeadlessDOMNode {
     if (this.nodeType === 'text') {
       return this.nodeValue || '';
     }
-    return this.children.map(c => c.textContent).join('');
+    return this.children
+      .map(c => c.textContent.trim())
+      .filter(Boolean)
+      .join(' ');
   }
 
   public set textContent(val: string) {
@@ -178,7 +181,7 @@ export class DOMNode implements HeadlessDOMNode {
       .map(([k, v]) => ` ${k}="${escapeAttr(v)}"`)
       .join('');
 
-    const selfClosing = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+    const selfClosing = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'meta', 'param', 'source', 'track', 'wbr'];
     if (selfClosing.includes(tag) && this.children.length === 0) {
       return `<${tag}${attrs} />`;
     }
@@ -319,7 +322,7 @@ export class HTMLParser {
         if (tagMatch && tagMatch[1]) {
           const tagName = tagMatch[1].toLowerCase();
           const rawAttrs = tagMatch[2] || '';
-          const isSelfClosing = tagMatch[3] === '/' || ['input', 'img', 'br', 'hr', 'link', 'meta'].includes(tagName);
+          const isSelfClosing = tagMatch[3] === '/' || ['input', 'img', 'br', 'hr', 'meta'].includes(tagName);
 
           const elementNode = new DOMNode('element', tagName);
           parseAttributes(rawAttrs, elementNode);
@@ -337,13 +340,13 @@ export class HTMLParser {
         }
       } else {
         // Plain text
-        const trimmed = text;
-        if (trimmed.length > 0) {
-          const textNode = new DOMNode('text', undefined, decodeHTMLEntities(trimmed));
+        const content = decodeHTMLEntities(text).trim();
+        if (content.length > 0) {
+          const textNode = new DOMNode('text', undefined, content);
           const top = stack[stack.length - 1];
           if (top) {
             top.appendChild(textNode);
-          } else if (trimmed.trim().length > 0) {
+          } else {
             roots.push(textNode);
           }
         }

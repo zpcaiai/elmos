@@ -1,41 +1,18 @@
 <view class="content-shell">
-  <text></text>
   <view class="business-hero">
-    <text></text>
-    <view>
-      <text>一键冒烟运行</text>
-    </view>
-    <text></text>
-    <view>
-      <text>生成或转换完成的项目会自带 Batch 46 冒烟包。在这里选中项目即可一键跑起来：
-          自动灌入一次性种子数据、探活、跑冒烟断言，免费额度到期后自动停止服务并清空临时数据。</text>
-    </view>
-    <text></text>
+    <view>一键冒烟运行</view>
+    <view>生成或转换完成的项目会自带 Batch 46 冒烟包。在这里选中项目即可一键跑起来：
+          自动灌入一次性种子数据、探活、跑冒烟断言，免费额度到期后自动停止服务并清空临时数据。</view>
   </view>
-  <text></text>
   <view class="business-form">
-    <text></text>
     <text class="business-form-grid">
-      <text></text>
-      <text>
-        <text>项目引用（相对 ELMOS_SMOKE_PROJECTS_ROOT 的路径）</text>
-      </text>
-      <text></text>
-      <input value="{{draft}}" placeholder="例如 java-to-python/orders-service" maxLength="{{180}}" bindchange="(event) => setDraft(event.target.value)" />
-      <text></text>
+      <text>项目引用（相对 ELMOS_SMOKE_PROJECTS_ROOT 的路径）</text>
+      <input value="{{draft}}" placeholder="例如 java-to-python/orders-service" maxLength="{{180}}" bindchange="onChange" />
     </text>
-    <text></text>
     <view class="business-actions">
-      <text></text>
-      <button type="button" class="button button-primary" disabled="{{!valid}}" bindtap="() => setProjectRef(draft.trim())">
-        <text>载入冒烟包</text>
-      </button>
-      <text></text>
+      <button type="button" class="button button-primary" disabled="{{!valid}}" bindtap="onTap">载入冒烟包</button>
     </view>
-    <text></text>
   </view>
-  <text></text>
   <SmokeRunButton wx:if="{{projectRef}}" key="{{projectRef}}" projectRef="{{projectRef}}" />
-  <view wx:else />
-  <text></text>
+  <text wx:else>{{null}}</text>
 </view>

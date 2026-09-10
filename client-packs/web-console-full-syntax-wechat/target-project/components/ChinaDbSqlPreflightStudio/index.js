@@ -56,35 +56,6 @@ Component({
     },
   },
   methods: {
-    loadCapabilities() {
-      try {
-        const response = await fetch("/api/capabilities/database-sql", {
-            cache: "no-store",
-            signal: controller.signal,
-        });
-        const payload = await responseJson(response);
-        if (!response.ok)
-            throw apiError(payload, "CHINADB_SQL_CAPABILITIES_UNAVAILABLE");
-        const parsed = parseChinaDbSqlCapabilities(payload);
-        setCapabilities(parsed);
-        setFields((current) => ({
-            ...current,
-            targetId: parsed.targets.some((target) => target.id === current.targetId)
-                ? current.targetId
-                : parsed.targets[0].id,
-        }));
-    }
-    catch (loadError) {
-        if (controller.signal.aborted)
-            return;
-        setError(errorMessage(loadError));
-        requestAnimationFrame(() => errorSummary.current?.focus());
-    }
-    finally {
-        if (!controller.signal.aborted)
-            setLoadingCapabilities(false);
-    }
-    },
     updateField(key, value) {
       if (key === "targetId" && typeof value === "string" && targetPresets[value]) {
         setFields((current) => ({
