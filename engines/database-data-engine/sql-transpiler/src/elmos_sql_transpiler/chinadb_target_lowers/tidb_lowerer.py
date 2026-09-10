@@ -112,7 +112,79 @@ class TidbTargetLowerer(ChinaDbTargetLowerer):
                 flags=re.IGNORECASE,
                 applies_to_dialects=["all"],
             ),
+            DialectLoweringRule(
+                rule_id="tidb_shard_row_id",
+                description="Inject SHARD_ROW_ID_BITS for hot table scatter",
+                pattern=r"\bENGINE\s*=\s*InnoDB\b",
+                replacement="ENGINE=InnoDB SHARD_ROW_ID_BITS=4 PRE_SPLIT_REGIONS=2",
+                is_regex=True,
+                flags=re.IGNORECASE,
+                applies_to_dialects=["mysql"],
+            ),
+            DialectLoweringRule(
+                rule_id="tidb_auto_random",
+                description="Convert AUTO_INCREMENT on BigInt PK to AUTO_RANDOM in TiDB",
+                pattern=r"\bBIGINT\s+AUTO_INCREMENT\s+PRIMARY\s+KEY\b",
+                replacement="BIGINT AUTO_RANDOM PRIMARY KEY",
+                is_regex=True,
+                flags=re.IGNORECASE,
+                applies_to_dialects=["mysql"],
+            ),
+            DialectLoweringRule(
+                rule_id="tidb_partition_by_range",
+                description="Support TiDB partition by range columns",
+                pattern=r"\bPARTITION\s+BY\s+RANGE\s*\(([^\)]+)\)",
+                replacement=r"PARTITION BY RANGE (\1)",
+                is_regex=True,
+                flags=re.IGNORECASE,
+                applies_to_dialects=["all"],
+            ),
         ]
+
+    def _build_error_code_mappings(self) -> dict[str, str]:
+        """Translate legacy DBMS error codes to TiDB MySQL wire error codes."""
+        return {
+            "ORA-00001": "1062",   # ER_DUP_ENTRY
+            "ORA-00942": "1146",   # ER_NO_SUCH_TABLE
+            "ORA-00904": "1054",   # ER_BAD_FIELD_ERROR
+            "ORA-01400": "1048",   # ER_BAD_NULL_ERROR
+            "ORA-02291": "1452",   # Cannot add or update child row (FK)
+            "ORA-02292": "1451",   # Cannot delete or update parent row (FK)
+            "23505": "1062",       # PG unique_violation
+            "42P01": "1146",       # PG undefined_table
+            "42703": "1054",       # PG undefined_column
+            "2627": "1062",        # T-SQL PK violation
+            "208": "1146",         # T-SQL invalid object
+        }
+
+    def _build_catalog_queries(self) -> dict[str, str]:
+        """TiDB INFORMATION_SCHEMA views."""
+        return {
+            "tables": (
+                "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES "
+                "WHERE TABLE_SCHEMA = DATABASE() ORDER BY TABLE_NAME"
+            ),
+            "columns": (
+                "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, "
+                "NUMERIC_PRECISION, NUMERIC_SCALE, IS_NULLABLE "
+                "FROM INFORMATION_SCHEMA.COLUMNS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tab_name "
+                "ORDER BY ORDINAL_POSITION"
+            ),
+            "indexes": (
+                "SELECT INDEX_NAME, TABLE_NAME, NON_UNIQUE FROM INFORMATION_SCHEMA.STATISTICS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tab_name"
+            ),
+            "constraints": (
+                "SELECT CONSTRAINT_NAME, CONSTRAINT_TYPE FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tab_name"
+            ),
+            "partitions": (
+                "SELECT PARTITION_NAME, PARTITION_EXPRESSION, TABLE_ROWS "
+                "FROM INFORMATION_SCHEMA.PARTITIONS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tab_name"
+            ),
+        }
 
     def lower_procedure(self, source_sql: str, source_dialect: str) -> str:
         """Lower procedural block to TiDB client-side script or compound statement."""
@@ -157,3 +229,22 @@ class TidbTargetLowerer(ChinaDbTargetLowerer):
             flags=re.IGNORECASE,
         )
         return res
+
+    def lower_package(self, source_sql: str, source_dialect: str) -> str:
+        """TiDB procedural package lowering."""
+        res = self.lower_data_types(source_sql, source_dialect)
+        res = self.lower_builtin_functions(res, source_dialect)
+        res = self.apply_custom_rules(res, source_dialect)
+        return res
+
+    def lower_partition_clause(self, source_sql: str, source_dialect: str) -> str:
+        """Ensure TiDB valid partition clause."""
+        res = source_sql
+        return res
+
+    def lower_index_definition(self, source_sql: str, source_dialect: str) -> str:
+        """Lower index definition to TiDB syntax."""
+        res = self.lower_data_types(source_sql, source_dialect)
+        res = self.apply_custom_rules(res, source_dialect)
+        return res
+

@@ -100,7 +100,62 @@ class GBase8cTargetLowerer(ChinaDbTargetLowerer):
                 is_regex=True,
                 applies_to_dialects=["tsql", "sqlserver"],
             ),
+            DialectLoweringRule(
+                rule_id="gb8c_replication_table",
+                description="Small lookup tables can be marked DISTRIBUTE BY REPLICATION",
+                pattern=r"/\*\s*DISTRIBUTE_REPLICATION\s*\*/",
+                replacement="DISTRIBUTE BY REPLICATION",
+                is_regex=True,
+                flags=re.IGNORECASE,
+                applies_to_dialects=["all"],
+            ),
         ]
+
+    def _build_error_code_mappings(self) -> dict[str, str]:
+        """Translate legacy DBMS error codes to GBase 8c / PG SQLSTATE."""
+        return {
+            "ORA-00001": "23505",
+            "ORA-00942": "42P01",
+            "ORA-00904": "42703",
+            "ORA-01400": "23502",
+            "ORA-01403": "P0002",
+            "ORA-02291": "23503",
+            "ORA-02292": "23503",
+            "1062": "23505",
+            "1146": "42P01",
+            "2627": "23505",
+        }
+
+    def _build_catalog_queries(self) -> dict[str, str]:
+        """GBase 8c distributed catalog queries."""
+        return {
+            "tables": (
+                "SELECT tablename AS table_name FROM pg_tables "
+                "WHERE schemaname = current_schema() ORDER BY tablename"
+            ),
+            "columns": (
+                "SELECT column_name, data_type, character_maximum_length, "
+                "is_nullable FROM information_schema.columns "
+                "WHERE table_schema = current_schema() AND table_name = :tab_name "
+                "ORDER BY ordinal_position"
+            ),
+            "indexes": (
+                "SELECT indexname AS index_name, tablename AS table_name "
+                "FROM pg_indexes WHERE schemaname = current_schema() "
+                "AND tablename = :tab_name"
+            ),
+            "constraints": (
+                "SELECT conname AS constraint_name, contype AS constraint_type "
+                "FROM pg_constraint "
+                "WHERE connamespace = "
+                "(SELECT oid FROM pg_namespace WHERE nspname = current_schema())"
+            ),
+            "procedures": (
+                "SELECT proname AS routine_name FROM pg_proc "
+                "WHERE pronamespace = "
+                "(SELECT oid FROM pg_namespace WHERE nspname = current_schema())"
+            ),
+        }
 
     def lower_table_ddl(self, source_sql: str, source_dialect: str) -> str:
         """Lower table DDL adding GBase 8c distributed sharding key if appropriate."""
@@ -145,3 +200,22 @@ class GBase8cTargetLowerer(ChinaDbTargetLowerer):
             flags=re.IGNORECASE,
         )
         return res
+
+    def lower_package(self, source_sql: str, source_dialect: str) -> str:
+        """Lower package for GBase 8c."""
+        res = self.lower_data_types(source_sql, source_dialect)
+        res = self.lower_builtin_functions(res, source_dialect)
+        res = self.apply_custom_rules(res, source_dialect)
+        return res
+
+    def lower_partition_clause(self, source_sql: str, source_dialect: str) -> str:
+        """Lower table partitioning clause for GBase 8c."""
+        res = source_sql
+        return res
+
+    def lower_index_definition(self, source_sql: str, source_dialect: str) -> str:
+        """Lower CREATE INDEX for GBase 8c."""
+        res = self.lower_data_types(source_sql, source_dialect)
+        res = self.apply_custom_rules(res, source_dialect)
+        return res
+

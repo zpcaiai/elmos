@@ -100,7 +100,68 @@ class GBase8sTargetLowerer(ChinaDbTargetLowerer):
                 flags=re.IGNORECASE,
                 applies_to_dialects=["all"],
             ),
+            DialectLoweringRule(
+                rule_id="gbase8s_on_exception",
+                description="Map EXCEPTION block to ON EXCEPTION statement in GBase 8s",
+                pattern=r"\bEXCEPTION\s+WHEN\s+OTHERS\s+THEN\b",
+                replacement="ON EXCEPTION",
+                is_regex=True,
+                flags=re.IGNORECASE,
+                applies_to_dialects=["oracle", "plsql"],
+            ),
+            DialectLoweringRule(
+                rule_id="gbase8s_define_var",
+                description="Prefix variable declarations with DEFINE in SPL",
+                pattern=r"^\s*v_([a-zA-Z0-9_]+)\s+([a-zA-Z0-9_\(\)]+)\s*;",
+                replacement=r"DEFINE v_\1 \2;",
+                is_regex=True,
+                flags=re.MULTILINE,
+                applies_to_dialects=["oracle", "plsql"],
+            ),
         ]
+
+    def _build_error_code_mappings(self) -> dict[str, str]:
+        """Translate legacy DBMS error codes to GBase 8s / Informix error numbers."""
+        return {
+            "ORA-00001": "-239",   # Duplicate key in index
+            "ORA-00942": "-206",   # Specified table is not in database
+            "ORA-00904": "-217",   # Column not found in any table
+            "ORA-01400": "-391",   # Cannot insert a null into column
+            "ORA-01403": "100",    # No records found
+            "23505": "-239",
+            "42P01": "-206",
+            "42703": "-217",
+            "1062": "-239",
+            "1146": "-206",
+            "2627": "-239",
+        }
+
+    def _build_catalog_queries(self) -> dict[str, str]:
+        """GBase 8s / Informix systables catalog queries."""
+        return {
+            "tables": (
+                "SELECT tabname AS table_name FROM 'informix'.systables "
+                "WHERE tabtype = 'T' AND tabid >= 100 ORDER BY tabname"
+            ),
+            "columns": (
+                "SELECT c.colname, c.coltype, c.collength "
+                "FROM 'informix'.syscolumns c JOIN 'informix'.systables t "
+                "ON c.tabid = t.tabid WHERE t.tabname = :tab_name ORDER BY c.colno"
+            ),
+            "indexes": (
+                "SELECT idxname AS index_name FROM 'informix'.sysindexes "
+                "WHERE tabid = (SELECT tabid FROM 'informix'.systables WHERE tabname = :tab_name)"
+            ),
+            "procedures": (
+                "SELECT procname AS routine_name FROM 'informix'.sysprocedures "
+                "WHERE procid >= 1"
+            ),
+            "constraints": (
+                "SELECT constrname AS constraint_name, constrtype AS constraint_type "
+                "FROM 'informix'.sysconstraints "
+                "WHERE tabid = (SELECT tabid FROM 'informix'.systables WHERE tabname = :tab_name)"
+            ),
+        }
 
     def lower_procedure(self, source_sql: str, source_dialect: str) -> str:
         """Lower procedure to GBase 8s SPL syntax."""
@@ -132,3 +193,28 @@ class GBase8sTargetLowerer(ChinaDbTargetLowerer):
     def lower_sequence(self, source_sql: str, source_dialect: str) -> str:
         """Lower sequence creation and nextval."""
         return source_sql
+
+    def lower_package(self, source_sql: str, source_dialect: str) -> str:
+        """GBase 8s splits packages into standalone SPL procedures."""
+        res = self.lower_data_types(source_sql, source_dialect)
+        res = self.lower_builtin_functions(res, source_dialect)
+        res = self.apply_custom_rules(res, source_dialect)
+        return res
+
+    def lower_partition_clause(self, source_sql: str, source_dialect: str) -> str:
+        """Lower table partitioning to GBase 8s FRAGMENT BY expression."""
+        res = source_sql
+        res = re.sub(
+            r"\bPARTITION\s+BY\s+RANGE\b",
+            "FRAGMENT BY EXPRESSION",
+            res,
+            flags=re.IGNORECASE,
+        )
+        return res
+
+    def lower_index_definition(self, source_sql: str, source_dialect: str) -> str:
+        """Lower index creation to GBase 8s syntax."""
+        res = self.lower_data_types(source_sql, source_dialect)
+        res = self.apply_custom_rules(res, source_dialect)
+        return res
+

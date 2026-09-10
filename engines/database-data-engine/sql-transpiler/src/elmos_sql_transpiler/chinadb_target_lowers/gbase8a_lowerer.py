@@ -85,7 +85,53 @@ class GBase8aTargetLowerer(ChinaDbTargetLowerer):
                 is_regex=True,
                 applies_to_dialects=["all"],
             ),
+            DialectLoweringRule(
+                rule_id="gbase8a_compress_hint",
+                description="Inject columnar compression options for warehouse tables",
+                pattern=r"/\*\s*COLUMNAR_COMPRESS\s*\*/",
+                replacement="/*+ COMPRESS(HIGH) */",
+                is_regex=True,
+                applies_to_dialects=["all"],
+            ),
         ]
+
+    def _build_error_code_mappings(self) -> dict[str, str]:
+        """Translate legacy DBMS error codes to GBase 8a error codes."""
+        return {
+            "ORA-00001": "1062",
+            "ORA-00942": "1146",
+            "ORA-00904": "1054",
+            "ORA-01400": "1048",
+            "23505": "1062",
+            "42P01": "1146",
+            "42703": "1054",
+            "2627": "1062",
+            "208": "1146",
+        }
+
+    def _build_catalog_queries(self) -> dict[str, str]:
+        """GBase 8a information schema catalog queries."""
+        return {
+            "tables": (
+                "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES "
+                "WHERE TABLE_SCHEMA = DATABASE() ORDER BY TABLE_NAME"
+            ),
+            "columns": (
+                "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, "
+                "IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tab_name "
+                "ORDER BY ORDINAL_POSITION"
+            ),
+            "indexes": (
+                "SELECT INDEX_NAME, TABLE_NAME FROM INFORMATION_SCHEMA.STATISTICS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tab_name"
+            ),
+            "partitions": (
+                "SELECT PARTITION_NAME, TABLE_ROWS "
+                "FROM INFORMATION_SCHEMA.PARTITIONS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tab_name"
+            ),
+        }
 
     def lower_table_ddl(self, source_sql: str, source_dialect: str) -> str:
         """Lower table DDL adding GBase 8a MPP DISTRIBUTED BY clause."""
@@ -121,3 +167,22 @@ class GBase8aTargetLowerer(ChinaDbTargetLowerer):
     def lower_sequence(self, source_sql: str, source_dialect: str) -> str:
         """Lower sequence creation."""
         return source_sql
+
+    def lower_package(self, source_sql: str, source_dialect: str) -> str:
+        """GBase 8a analytical package lowering."""
+        res = self.lower_data_types(source_sql, source_dialect)
+        res = self.lower_builtin_functions(res, source_dialect)
+        res = self.apply_custom_rules(res, source_dialect)
+        return res
+
+    def lower_partition_clause(self, source_sql: str, source_dialect: str) -> str:
+        """Lower table partitioning for GBase 8a."""
+        res = source_sql
+        return res
+
+    def lower_index_definition(self, source_sql: str, source_dialect: str) -> str:
+        """Lower index definition for GBase 8a."""
+        res = self.lower_data_types(source_sql, source_dialect)
+        res = self.apply_custom_rules(res, source_dialect)
+        return res
+
