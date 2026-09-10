@@ -1,6 +1,7 @@
 ---
 name: "elmos-assurance-evidence-graph"
 description: "证据DAG、封存与失效传播。用于在现有Elmos中实现本模块及其自动测试；不用于跳过原生验证、改变认证范围或直接生产签发。"
+implementation_state: "VERIFIED"
 metadata:
   source_package: "elmos-assurance-skills"
   source_package_id: "elmos-assurance-skills-v4.0.0"
