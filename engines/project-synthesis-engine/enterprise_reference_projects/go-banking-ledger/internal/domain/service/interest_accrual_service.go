@@ -30,7 +30,7 @@ const (
 	CompoundingMonthly   CompoundingFrequency = "MONTHLY"
 	CompoundingQuarterly CompoundingFrequency = "QUARTERLY"
 	CompoundingAnnual    CompoundingFrequency = "ANNUAL"
-	CompoundingSimple    CompoundingFrequency = "SIMPLE" // No compounding
+	CompoundingSimple    CompoundingFrequency = "SIMPLE"
 )
 
 // InterestTier represents a balance tranche with its corresponding interest rate.
@@ -48,13 +48,14 @@ type InterestProductConfig struct {
 	Tiers                []InterestTier
 	OverdraftRatePct     float64
 	InterestExpenseAcct  string // General Ledger Account for Interest Expense
-	InterestPayableAcct  string // General Ledger Account for Accrued Payable
+	InterestIncomeAcct   string // General Ledger Account for Interest Income (overdraft)
 }
 
 // AccrualResult holds calculated interest for an accrual cycle.
 type AccrualResult struct {
+	TenantID             string
 	AccountID            string
-	Currency             model.Currency
+	Currency             string
 	OpeningBalanceCents  int64
 	AccruedInterestCents int64
 	PeriodStartDate      time.Time
@@ -124,7 +125,6 @@ func (c *DayCountCalculator) YearFraction(start, end time.Time, convention DayCo
 	case DayCountActualActual:
 		fallthrough
 	default:
-		// Actual/Actual ISDA formula
 		days := end.Sub(start).Hours() / 24.0
 		daysInYear := 365.0
 		if c.isLeapYear(start.Year()) || c.isLeapYear(end.Year()) {
@@ -141,14 +141,14 @@ func (c *DayCountCalculator) isLeapYear(year int) bool {
 // InterestAccrualService handles interest calculations and journal postings.
 type InterestAccrualService struct {
 	accountRepo repository.AccountRepository
-	journalRepo repository.JournalEntryRepository
+	journalRepo repository.JournalRepository
 	postingEng  *PostingEngine
 	calculator  *DayCountCalculator
 }
 
 func NewInterestAccrualService(
 	accountRepo repository.AccountRepository,
-	journalRepo repository.JournalEntryRepository,
+	journalRepo repository.JournalRepository,
 	postingEng *PostingEngine,
 ) *InterestAccrualService {
 	return &InterestAccrualService{
@@ -161,7 +161,7 @@ func NewInterestAccrualService(
 
 // CalculateAccrual computes accrued interest for a given period without persisting entries.
 func (s *InterestAccrualService) CalculateAccrual(
-	account *model.Account,
+	account *model.AccountAggregate,
 	config *InterestProductConfig,
 	start, end time.Time,
 ) (*AccrualResult, error) {
@@ -170,7 +170,7 @@ func (s *InterestAccrualService) CalculateAccrual(
 	}
 
 	dayFraction := s.calculator.YearFraction(start, end, config.DayCount)
-	balanceCents := account.AvailableBalance.AmountMinor()
+	balanceCents := account.AvailableBalance()
 
 	// 1. Negative Balance -> Overdraft interest charge
 	if balanceCents < 0 {
@@ -180,7 +180,8 @@ func (s *InterestAccrualService) CalculateAccrual(
 		interestCents := int64(math.Round(interest))
 
 		return &AccrualResult{
-			AccountID:            account.ID,
+			TenantID:             account.TenantID,
+			AccountID:            account.AccountID,
 			Currency:             account.Currency,
 			OpeningBalanceCents:  balanceCents,
 			AccruedInterestCents: interestCents,
@@ -212,7 +213,6 @@ func (s *InterestAccrualService) CalculateAccrual(
 				trancheCents = remainingBalance
 			}
 		} else {
-			// Unlimited top tier
 			trancheCents = remainingBalance
 		}
 
@@ -225,7 +225,8 @@ func (s *InterestAccrualService) CalculateAccrual(
 	accruedCents := int64(math.Round(totalInterest))
 
 	return &AccrualResult{
-		AccountID:            account.ID,
+		TenantID:             account.TenantID,
+		AccountID:            account.AccountID,
 		Currency:             account.Currency,
 		OpeningBalanceCents:  balanceCents,
 		AccruedInterestCents: accruedCents,
@@ -241,69 +242,42 @@ func (s *InterestAccrualService) CapitalizeInterest(
 	ctx context.Context,
 	result *AccrualResult,
 	config *InterestProductConfig,
-) (*model.JournalEntry, error) {
+) (*model.JournalEntryAggregate, error) {
 	if result.AccruedInterestCents <= 0 {
 		return nil, nil // No interest to post
 	}
 
-	interestMoney, err := model.NewMoney(result.AccruedInterestCents, result.Currency)
-	if err != nil {
-		return nil, fmt.Errorf("invalid interest money amount: %w", err)
-	}
-
-	journalID := uuid.New().String()
-	now := time.Now().UTC()
-
-	var debitAcct, creditAcct string
+	var sourceAcct, targetAcct string
 	var desc string
+	txType := model.TxTypeInterest
 
 	if result.IsOverdraftCharge {
-		// Overdraft: Debit Customer Deposit (deduct funds), Credit Bank Fee/Interest Income
-		debitAcct = result.AccountID
-		creditAcct = config.InterestExpenseAcct
+		// Overdraft: Transfer from Customer Deposit to Bank Fee/Income
+		sourceAcct = result.AccountID
+		targetAcct = config.InterestIncomeAcct
 		desc = fmt.Sprintf("Overdraft interest charge for period %s to %s",
 			result.PeriodStartDate.Format("2006-01-02"), result.PeriodEndDate.Format("2006-01-02"))
 	} else {
-		// Deposit Interest: Debit Bank Interest Expense, Credit Customer Deposit (add funds)
-		debitAcct = config.InterestExpenseAcct
-		creditAcct = result.AccountID
+		// Deposit Interest: Transfer from Bank Expense to Customer Deposit
+		sourceAcct = config.InterestExpenseAcct
+		targetAcct = result.AccountID
 		desc = fmt.Sprintf("Interest capitalization for period %s to %s",
 			result.PeriodStartDate.Format("2006-01-02"), result.PeriodEndDate.Format("2006-01-02"))
 	}
 
-	lines := []model.PostingLine{
-		{
-			ID:          uuid.New().String(),
-			AccountID:   debitAcct,
-			Direction:   model.DirectionDebit,
-			Amount:      interestMoney,
-			Description: desc,
-		},
-		{
-			ID:          uuid.New().String(),
-			AccountID:   creditAcct,
-			Direction:   model.DirectionCredit,
-			Amount:      interestMoney,
-			Description: desc,
-		},
+	req := model.PostingRequest{
+		RequestID:      uuid.New().String(),
+		TenantID:       result.TenantID,
+		IdempotencyKey: fmt.Sprintf("INT-%s-%s", result.AccountID, result.PeriodEndDate.Format("2006-01-02")),
+		Type:           txType,
+		ReferenceID:    fmt.Sprintf("REF-INT-%s", result.AccountID),
+		SourceAccount:  sourceAcct,
+		TargetAccount:  targetAcct,
+		Amount:         result.AccruedInterestCents,
+		Currency:       result.Currency,
+		Description:    desc,
+		ValueDate:      result.PeriodEndDate,
 	}
 
-	entry, err := model.NewJournalEntry(
-		journalID,
-		result.PeriodEndDate,
-		now,
-		desc,
-		"INTEREST_CAPITALIZATION",
-		lines,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to build interest journal entry: %w", err)
-	}
-
-	postedEntry, err := s.postingEng.Post(ctx, entry)
-	if err != nil {
-		return nil, fmt.Errorf("failed to post interest capitalization: %w", err)
-	}
-
-	return postedEntry, nil
+	return s.postingEng.ProcessTransfer(ctx, req)
 }

@@ -41,9 +41,11 @@ const (
 // StandingOrder defines an automated recurring payment mandate.
 type StandingOrder struct {
 	ID                    string
+	TenantID              string
 	DebtorAccountID       string
 	CreditorAccountID     string
-	Amount                model.Money
+	AmountCents           int64
+	Currency              string
 	Frequency             ScheduleFrequency
 	BusinessDayConv       BusinessDayConvention
 	StartDate             time.Time
@@ -75,8 +77,9 @@ func NewStandingOrderService(
 }
 
 func (s *StandingOrderService) CreateStandingOrder(
-	debtorID, creditorID string,
-	amount model.Money,
+	tenantID, debtorID, creditorID string,
+	amountCents int64,
+	currency string,
 	frequency ScheduleFrequency,
 	convention BusinessDayConvention,
 	startDate time.Time,
@@ -86,7 +89,7 @@ func (s *StandingOrderService) CreateStandingOrder(
 	if debtorID == creditorID {
 		return nil, fmt.Errorf("debtor and creditor accounts must differ")
 	}
-	if amount.AmountMinor() <= 0 {
+	if amountCents <= 0 {
 		return nil, fmt.Errorf("standing order amount must be positive")
 	}
 
@@ -95,9 +98,11 @@ func (s *StandingOrderService) CreateStandingOrder(
 
 	order := &StandingOrder{
 		ID:                  orderID,
+		TenantID:            tenantID,
 		DebtorAccountID:     debtorID,
 		CreditorAccountID:   creditorID,
-		Amount:              amount,
+		AmountCents:         amountCents,
+		Currency:            currency,
 		Frequency:           frequency,
 		BusinessDayConv:     convention,
 		StartDate:           startDate,
@@ -115,8 +120,8 @@ func (s *StandingOrderService) CreateStandingOrder(
 }
 
 // ExecuteDueOrders sweeps all orders whose NextExecutionDate <= asOfDate and executes them.
-func (s *StandingOrderService) ExecuteDueOrders(ctx context.Context, asOfDate time.Time) ([]*model.JournalEntry, []error) {
-	var executedEntries []*model.JournalEntry
+func (s *StandingOrderService) ExecuteDueOrders(ctx context.Context, asOfDate time.Time) ([]*model.JournalEntryAggregate, []error) {
+	var executedEntries []*model.JournalEntryAggregate
 	var executionErrors []error
 
 	for _, order := range s.orders {
@@ -149,40 +154,22 @@ func (s *StandingOrderService) ExecuteDueOrders(ctx context.Context, asOfDate ti
 	return executedEntries, executionErrors
 }
 
-func (s *StandingOrderService) executeSingleOrder(ctx context.Context, order *StandingOrder) (*model.JournalEntry, error) {
-	journalID := uuid.New().String()
-	now := time.Now().UTC()
-
-	lines := []model.PostingLine{
-		{
-			ID:          uuid.New().String(),
-			AccountID:   order.DebtorAccountID,
-			Direction:   model.DirectionDebit,
-			Amount:      order.Amount,
-			Description: fmt.Sprintf("Standing order: %s", order.Description),
-		},
-		{
-			ID:          uuid.New().String(),
-			AccountID:   order.CreditorAccountID,
-			Direction:   model.DirectionCredit,
-			Amount:      order.Amount,
-			Description: fmt.Sprintf("Standing order credit: %s", order.Description),
-		},
+func (s *StandingOrderService) executeSingleOrder(ctx context.Context, order *StandingOrder) (*model.JournalEntryAggregate, error) {
+	req := model.PostingRequest{
+		RequestID:      uuid.New().String(),
+		TenantID:       order.TenantID,
+		IdempotencyKey: fmt.Sprintf("SO-%s-%d", order.ID, order.TotalExecutedCount+1),
+		Type:           model.TxTypeTransfer,
+		ReferenceID:    fmt.Sprintf("REF-SO-%s", order.ID),
+		SourceAccount:  order.DebtorAccountID,
+		TargetAccount:  order.CreditorAccountID,
+		Amount:         order.AmountCents,
+		Currency:       order.Currency,
+		Description:    fmt.Sprintf("Standing order execution: %s", order.Description),
+		ValueDate:      order.NextExecutionDate,
 	}
 
-	entry, err := model.NewJournalEntry(
-		journalID,
-		order.NextExecutionDate,
-		now,
-		fmt.Sprintf("Standing order execution: %s", order.Description),
-		"STANDING_ORDER",
-		lines,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.postingEng.Post(ctx, entry)
+	return s.postingEng.ProcessTransfer(ctx, req)
 }
 
 func (s *StandingOrderService) calculateNextDate(current time.Time, freq ScheduleFrequency, conv BusinessDayConvention) time.Time {
@@ -235,7 +222,6 @@ func (s *StandingOrderService) adjustBusinessDay(t time.Time, conv BusinessDayCo
 		} else if weekday == time.Sunday {
 			adjusted = t.AddDate(0, 0, 1)
 		}
-		// If following pushed us into next month, switch to preceding
 		if adjusted.Month() != originalMonth {
 			if weekday == time.Saturday {
 				return t.AddDate(0, 0, -1)
