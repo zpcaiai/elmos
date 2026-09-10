@@ -8493,7 +8493,7 @@
   "implementation_state": "BOUNDED_LOCAL_WITH_PARTIAL_AND_PLANNING_CAPABILITIES",
   "installed_tree_digest_schema": "sha256-v2:name-path-mode-bytes",
   "integration_readme_path": "docs/project-intelligence-skills/README.md",
-  "integration_readme_sha256": "sha256:1f9b7875bd0bcd026a7a74e5a3b1d29c0c58291b242da7a4bb97b332b813e9fd",
+  "integration_readme_sha256": "sha256:a0d25f98a665a64c6170905dec03d333456a22012bb71969176b75bb08f4863b",
   "known_source_contract_findings": [
     "only the full source profile is dependency-closed",
     "docs/26-installation-profiles.md contains stale conversion, enterprise, and full counts and omits debug",
@@ -8523,7 +8523,7 @@
   "local_qualification_effect_guard": "PYTHON_AUDIT_BEST_EFFORT_EFFECT_GUARD_DURING_DISPATCH",
   "local_qualification_effect_guard_limitations": "Python audit events are fail-closed when observed but are not an OS sandbox and cannot account for effects through inherited descriptors, native extensions, or events the interpreter does not emit.",
   "local_qualification_independent_verifier": null,
-  "local_qualification_receipt_digest": "sha256:b8eff3ce83924d9981cd730196a974846f1c1e825a8bb9ffb89c1ebd35e29c2e",
+  "local_qualification_receipt_digest": "sha256:a530ae827aa085abe8326cca5cd548e61b71b04564ef3d4d596f430579a697d8",
   "local_qualification_receipt_path": "engines/project-intelligence-engine/qualification/local-qualification.json",
   "local_qualification_runtime_environment": {
     "byteorder": "little",
@@ -9202,7 +9202,7 @@
     "PLAN": 5
   },
   "runtime_engine_path": "engines/project-intelligence-engine",
-  "runtime_engine_tree_sha256": "sha256:02361db98381f65ddb86c6b3ecb5e4d9cc9fb12a4cabf0604c7451aee3081a57",
+  "runtime_engine_tree_sha256": "sha256:de0d4e260951bf163fefaac8f32e3efb2955a172174e9780bee3e3fd03cacf4f",
   "runtime_root": "agent-skills/runtime",
   "runtime_tree_sha256": "sha256:d6ad92b6a7350a6cc652b62cbc2b727d6edda474f1a4d9a497fc05dedac08bf2",
   "schema_version": "1.0",

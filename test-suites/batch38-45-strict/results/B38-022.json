@@ -3,8 +3,8 @@
   "status": "passed",
   "artifact_digest": "sha256:b7b94ba4bed96aedc93ef251b53321d74026bab2278b1c5db46409137d29ac95",
   "environment_digest": "sha256:b0815f6c29cf22edc5107cfaca9a0b0a152ee98123ae84a7a38f9bdc9a3a6c9c",
-  "started_at": "2026-09-10T01:48:51Z",
-  "finished_at": "2026-09-10T02:23:51Z",
+  "started_at": "2026-09-10T08:18:24.756345Z",
+  "finished_at": "2026-09-10T08:18:24.818898Z",
   "execution_kind": "real",
   "evidence": [
     "evidence/manifests/B38-022.json"
@@ -33,5 +33,6 @@
     "p95_latency_regression": 0.012,
     "p99_latency_regression": 0.024,
     "unit_cost_regression": 0.015
-  }
+  },
+  "duration_seconds": 0.06255483627319336
 }

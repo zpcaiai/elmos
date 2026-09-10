@@ -10,6 +10,7 @@ real DDL, DML, transaction boundaries, and row-level queries.
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import re
 import socket
@@ -661,10 +662,8 @@ class ChinaDbInstance:
     def stop(self) -> None:
         self.is_running = False
         if self.server_socket:
-            try:
+            with contextlib.suppress(Exception):
                 self.server_socket.close()
-            except Exception:
-                pass
 
 
 class ChinaDbProtocolLab:
@@ -711,7 +710,7 @@ class ChinaDbProtocolLab:
                 inst.is_running = True
             return
 
-        for target_id, inst in self.instances.items():
+        for _target_id, inst in self.instances.items():
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             sock.bind(("127.0.0.1", inst.port))

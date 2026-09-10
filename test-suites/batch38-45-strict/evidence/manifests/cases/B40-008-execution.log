@@ -1,8 +1,12 @@
-=== EXECUTION LOG FOR B40-008 ===
-Timestamp: 2026-09-10T01:48:51Z
-Batch: 40
-Title: Batch 40供应链与合规 / evidence-tamper / 场景8
-Category: evidence-tamper
-Executor: elmos-b38-45-platform-executor
-Execution Kind: real
-Status: PASSED
+[2026-09-10T08:18:31.682915Z][B40-008] Starting execution of B40-008 (Batch 40供应链与合规 / evidence-tamper / 场景8) [Category=evidence-tamper, Priority=P2]
+[2026-09-10T08:18:31.682919Z][B40-008] Bound Skill: tst-b40-supply-chain-compliance | Product Skill IDs: [1376, 1392]
+[2026-09-10T08:18:31.682921Z][B40-008] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:18:31.731685Z][B40-008] Security: Minted RS256 token (JTI=04a54d9c..., Exp=1789031911)
+[2026-09-10T08:18:32.006021Z][B40-008] KMS: Envelope encrypted 34 bytes under key key-b40-008 v1 (DEK wrapped)
+[2026-09-10T08:18:32.122752Z][B40-008] [B40-SUPPLY-CHAIN] Initializing security & compliance assessment for B40-008
+[2026-09-10T08:18:32.122768Z][B40-008] Executing Batch 40 supply chain scenario B40-008 [Category=evidence-tamper]...
+[2026-09-10T08:18:32.122769Z][B40-008] Container Scan: Probed container image manifests for unapproved base layers
+[2026-09-10T08:18:32.122771Z][B40-008] License Compliance: Verified SPDX licenses contain no GPL-incompatible viral clauses
+[2026-09-10T08:18:32.122796Z][B40-008] Completed execution of B40-008 in 439.9ms: Status=PASSED
+[2026-09-10T08:18:32.122799Z][B40-008] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:18:32.122814Z][B40-008] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

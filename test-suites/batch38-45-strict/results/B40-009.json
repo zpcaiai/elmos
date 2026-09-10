@@ -3,8 +3,8 @@
   "status": "passed",
   "artifact_digest": "sha256:b7b94ba4bed96aedc93ef251b53321d74026bab2278b1c5db46409137d29ac95",
   "environment_digest": "sha256:b0815f6c29cf22edc5107cfaca9a0b0a152ee98123ae84a7a38f9bdc9a3a6c9c",
-  "started_at": "2026-09-10T01:48:51Z",
-  "finished_at": "2026-09-10T02:23:51Z",
+  "started_at": "2026-09-10T08:18:32.126271Z",
+  "finished_at": "2026-09-10T08:18:32.591686Z",
   "execution_kind": "real",
   "evidence": [
     "evidence/manifests/B40-009.json"
@@ -28,5 +28,6 @@
     "stale_mandatory_evidence": 0,
     "unreplayed_critical_failure": 0
   },
-  "findings": []
+  "findings": [],
+  "duration_seconds": 0.46541810035705566
 }

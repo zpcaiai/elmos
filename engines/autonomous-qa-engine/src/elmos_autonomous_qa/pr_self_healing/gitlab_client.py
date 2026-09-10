@@ -346,6 +346,23 @@ class GitLabClient:
             labels=res.get("labels", list(labels)),
         )
 
+    def get_merge_request(self, project_id: str | int, mr_iid: int) -> MergeRequestInfo:
+        """Fetch details of an existing Merge Request."""
+        pid = urllib.parse.quote(str(project_id), safe="")
+        path = f"/projects/{pid}/merge_requests/{mr_iid}"
+        res = self._send("GET", path)
+        return MergeRequestInfo(
+            iid=res.get("iid", mr_iid),
+            id=res.get("id", mr_iid),
+            title=res.get("title", ""),
+            description=res.get("description", ""),
+            web_url=res.get("web_url", ""),
+            source_branch=res.get("source_branch", ""),
+            target_branch=res.get("target_branch", ""),
+            state=res.get("state", "opened"),
+            labels=res.get("labels", []),
+        )
+
     def post_mr_note(self, project_id: str | int, mr_iid: int, body: str) -> dict[str, Any]:
         """Post a comment/note to GitLab MR timeline."""
         pid = urllib.parse.quote(str(project_id), safe="")
