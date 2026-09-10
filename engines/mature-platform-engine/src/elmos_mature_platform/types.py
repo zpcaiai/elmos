@@ -4797,3 +4797,214 @@ class RolloutStep:
     executed_at: str = ""
     success: bool = True
     error_rate_at_execution: float = 0.0
+
+# ─── Security Fix Backport Models ────────────────────────────────────
+
+class BackportPriority(str, Enum):
+    EMERGENCY = "emergency"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+class BackportStatus(str, Enum):
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    APPLIED = "applied"
+    VERIFIED = "verified"
+    SKIPPED = "skipped"
+    FAILED = "failed"
+
+@dataclass
+class SecurityFix:
+    fix_id: str
+    cve_id: str
+    title: str
+    priority: BackportPriority
+    original_version: str  # version where fix was first applied
+    patch_hash: str = ""
+    created_at: str = ""
+    affects_versions: List[str] = field(default_factory=list)
+
+@dataclass
+class BackportRecord:
+    backport_id: str
+    fix_id: str
+    target_version: str
+    status: BackportStatus = BackportStatus.PENDING
+    applied_at: str = ""
+    verified_at: str = ""
+    verified_by: str = ""
+    skip_reason: str = ""
+    failure_reason: str = ""
+    test_passed: bool = False
+
+# ─── Scheduled Restore DR Exercise Models ────────────────────────────
+
+class DrExerciseType(str, Enum):
+    FULL_RESTORE = "full_restore"
+    PARTIAL_RESTORE = "partial_restore"
+    FAILOVER = "failover"
+    TABLETOP = "tabletop"
+    COMMUNICATION = "communication"
+
+class DrExerciseStatus(str, Enum):
+    SCHEDULED = "scheduled"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+
+@dataclass
+class DrExercise:
+    exercise_id: str
+    name: str
+    exercise_type: DrExerciseType
+    status: DrExerciseStatus = DrExerciseStatus.SCHEDULED
+    scheduled_at: str = ""
+    started_at: str = ""
+    completed_at: str = ""
+    target_rto_minutes: int = 60
+    target_rpo_minutes: int = 15
+    actual_rto_minutes: int = 0
+    actual_rpo_minutes: int = 0
+    participants: List[str] = field(default_factory=list)
+    services_tested: List[str] = field(default_factory=list)
+    findings: List[str] = field(default_factory=list)
+    passed: bool = False
+    lead: str = ""
+
+@dataclass
+class DrSchedule:
+    schedule_id: str
+    exercise_type: DrExerciseType
+    frequency_days: int = 90  # how often to run
+    last_executed: str = ""
+    next_scheduled: str = ""
+    mandatory: bool = True
+
+
+# ─── Artifact Retention Economics Models ─────────────────────────────
+
+class ArtifactTier(str, Enum):
+    HOT = 'hot'
+    WARM = 'warm'
+    COLD = 'cold'
+    ARCHIVE = 'archive'
+    DELETED = 'deleted'
+
+class RetentionPolicyAction(str, Enum):
+    KEEP = 'keep'
+    TIER_DOWN = 'tier_down'
+    DELETE = 'delete'
+    COMPRESS = 'compress'
+
+@dataclass
+class StoredArtifact:
+    artifact_id: str
+    name: str
+    size_bytes: int
+    tier: ArtifactTier = ArtifactTier.HOT
+    created_at: str = ''
+    last_accessed: str = ''
+    access_count: int = 0
+    cost_per_gb_month: float = 0.023
+    owner: str = ''
+    tags: Dict[str, str] = field(default_factory=dict)
+    legal_hold: bool = False
+
+@dataclass
+class RetentionRule:
+    rule_id: str
+    name: str
+    max_age_days: int = 90
+    min_access_count: int = 0
+    action: RetentionPolicyAction = RetentionPolicyAction.TIER_DOWN
+    target_tier: ArtifactTier = ArtifactTier.COLD
+    applies_to_tags: Dict[str, str] = field(default_factory=dict)
+
+# ─── Agent Incident Killswitch Models ────────────────────────────────
+
+class KillswitchAction(str, Enum):
+    PAUSE = "pause"
+    TERMINATE = "terminate"
+    ROLLBACK = "rollback"
+    ISOLATE = "isolate"
+    THROTTLE = "throttle"
+
+class KillswitchTrigger(str, Enum):
+    MANUAL = "manual"
+    ERROR_RATE = "error_rate"
+    COST_LIMIT = "cost_limit"
+    SAFETY_VIOLATION = "safety_violation"
+    TIMEOUT = "timeout"
+    ANOMALY = "anomaly"
+
+@dataclass
+class KillswitchRule:
+    rule_id: str
+    agent_id: str
+    trigger: KillswitchTrigger
+    action: KillswitchAction
+    threshold: float = 0.0  # trigger-specific threshold
+    cooldown_seconds: int = 300
+    enabled: bool = True
+    last_triggered: str = ""
+    trigger_count: int = 0
+
+@dataclass
+class KillswitchEvent:
+    event_id: str
+    rule_id: str
+    agent_id: str
+    trigger: KillswitchTrigger
+    action: KillswitchAction
+    triggered_at: str = ""
+    resolved_at: str = ""
+    resolved: bool = False
+    resolution_notes: str = ""
+    metric_value: float = 0.0  # the value that triggered killswitch
+
+# ─── Vulnerability Patch SLA Models ──────────────────────────────────
+
+class VulnPatchSeverity(str, Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    INFORMATIONAL = "informational"
+
+class VulnPatchStatus(str, Enum):
+    OPEN = "open"
+    ACKNOWLEDGED = "acknowledged"
+    PATCH_AVAILABLE = "patch_available"
+    PATCH_APPLIED = "patch_applied"
+    MITIGATED = "mitigated"
+    ACCEPTED_RISK = "accepted_risk"
+    CLOSED = "closed"
+
+@dataclass
+class VulnerabilityPatch:
+    vuln_id: str
+    title: str
+    severity: VulnPatchSeverity
+    status: VulnPatchStatus = VulnPatchStatus.OPEN
+    cve_id: str = ""
+    cvss_score: float = 0.0
+    discovered_at: str = ""
+    sla_hours: int = 0  # auto-set based on severity
+    patched_at: str = ""
+    affected_systems: List[str] = field(default_factory=list)
+    assignee: str = ""
+    patch_version: str = ""
+    risk_acceptance_reason: str = ""
+    exploitable: bool = False
+
+@dataclass
+class PatchSlaPolicy:
+    policy_id: str
+    name: str
+    critical_sla_hours: int = 24
+    high_sla_hours: int = 72
+    medium_sla_hours: int = 168  # 7 days
+    low_sla_hours: int = 720  # 30 days
+    informational_sla_hours: int = 2160  # 90 days
