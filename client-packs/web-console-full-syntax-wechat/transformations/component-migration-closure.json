@@ -90,9 +90,9 @@
         "target-project/components/AccountOrganizationStudio/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/account/AccountWalletPanel.tsx",
@@ -111,9 +111,9 @@
         "target-project/components/AccountWalletPanel/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/account/page.tsx",
@@ -132,9 +132,9 @@
         "target-project/components/AccountPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/admin/OperationsAdmin.tsx",
@@ -153,9 +153,9 @@
         "target-project/components/Empty/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/admin/OperationsAdmin.tsx",
@@ -174,9 +174,9 @@
         "target-project/components/EventTable/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/admin/OperationsAdmin.tsx",
@@ -195,9 +195,9 @@
         "target-project/components/IncidentCard/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/admin/OperationsAdmin.tsx",
@@ -216,9 +216,9 @@
         "target-project/components/OperationsAdmin/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/admin/OperationsAdmin.tsx",
@@ -237,9 +237,9 @@
         "target-project/components/RemediationCard/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/admin/page.tsx",
@@ -258,9 +258,9 @@
         "target-project/components/AdminPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/admin/PlatformJobsPanel.tsx",
@@ -279,9 +279,9 @@
         "target-project/components/PlatformJobsPanel/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/admin/PlatformWalletPanel.tsx",
@@ -300,9 +300,9 @@
         "target-project/components/PlatformWalletPanel/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/commercialization/CommercializationConsole.tsx",
@@ -321,9 +321,9 @@
         "target-project/components/CommercializationConsole/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/commercialization/page.tsx",
@@ -342,9 +342,9 @@
         "target-project/components/CommercializationPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/AccountSessionProvider.tsx",
@@ -363,9 +363,9 @@
         "target-project/components/AccountSessionProvider/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/AppShell.tsx",
@@ -384,9 +384,9 @@
         "target-project/components/AppShell/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/Icon.tsx",
@@ -405,9 +405,9 @@
         "target-project/components/Icon/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
@@ -426,9 +426,9 @@
         "target-project/components/BehaviorChart/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
@@ -447,9 +447,9 @@
         "target-project/components/CoverageMeter/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
@@ -468,9 +468,9 @@
         "target-project/components/EmptyEvidence/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
@@ -489,9 +489,9 @@
         "target-project/components/EquivalenceMatrix/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
@@ -510,9 +510,9 @@
         "target-project/components/EvidenceGraph/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
@@ -531,9 +531,9 @@
         "target-project/components/ProjectEvidenceCharts/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
@@ -552,9 +552,9 @@
         "target-project/components/SemanticMappingChart/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
@@ -573,9 +573,9 @@
         "target-project/components/StatusMark/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
@@ -594,9 +594,9 @@
         "target-project/components/TranslationEvidenceCharts/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/RuntimeDeploymentGuide.tsx",
@@ -615,9 +615,9 @@
         "target-project/components/RuntimeDeploymentGuide/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/SmokeRunButton.tsx",
@@ -636,9 +636,9 @@
         "target-project/components/SmokeRunButton/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/StatusChip.tsx",
@@ -657,9 +657,9 @@
         "target-project/components/StatusChip/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/components/UiPreferencesProvider.tsx",
@@ -678,9 +678,9 @@
         "target-project/components/UiPreferencesProvider/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/frontend/FrontendTransformationStudio.tsx",
@@ -699,9 +699,9 @@
         "target-project/components/FrontendTransformationStudio/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/frontend/page.tsx",
@@ -720,9 +720,9 @@
         "target-project/components/FrontendTransformationPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/generation/page.tsx",
@@ -741,9 +741,9 @@
         "target-project/components/GenerationPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/generation/ProjectGenerationStudio.tsx",
@@ -762,9 +762,9 @@
         "target-project/components/ProjectGenerationStudio/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/governance/GovernanceWorkspace.tsx",
@@ -783,9 +783,9 @@
         "target-project/components/GovernanceWorkspace/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/governance/page.tsx",
@@ -804,9 +804,9 @@
         "target-project/components/GovernancePage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/help/HelpCenter.tsx",
@@ -825,9 +825,9 @@
         "target-project/components/HelpCenter/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/help/page.tsx",
@@ -846,9 +846,9 @@
         "target-project/components/HelpPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/intake/MultimodalIntakeWorkbench.tsx",
@@ -867,9 +867,9 @@
         "target-project/components/MultimodalIntakeWorkbench/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/intake/page.tsx",
@@ -888,9 +888,9 @@
         "target-project/components/MultimodalIntakePage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/layout.tsx",
@@ -909,9 +909,9 @@
         "target-project/components/RootLayout/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/login/page.tsx",
@@ -930,9 +930,9 @@
         "target-project/components/LoginPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/migration/MigrationStudio.tsx",
@@ -951,9 +951,9 @@
         "target-project/components/Marketplace/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/migration/MigrationStudio.tsx",
@@ -972,9 +972,9 @@
         "target-project/components/MigrationStudio/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/migration/page.tsx",
@@ -993,9 +993,9 @@
         "target-project/components/MigrationPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
@@ -1014,9 +1014,9 @@
         "target-project/components/ChinaDbSqlPreflightStudio/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/migration/sql/page.tsx",
@@ -1035,9 +1035,9 @@
         "target-project/components/ChinaDbSqlPreflightPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/observability/ObservabilityWorkspace.tsx",
@@ -1056,9 +1056,9 @@
         "target-project/components/ObservabilityWorkspace/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/observability/page.tsx",
@@ -1077,9 +1077,9 @@
         "target-project/components/ObservabilityPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/orchestration/page.tsx",
@@ -1098,9 +1098,9 @@
         "target-project/components/RepositoryOrchestrationPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
@@ -1119,9 +1119,9 @@
         "target-project/components/RepositoryOrchestratorWorkbench/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/page.tsx",
@@ -1140,9 +1140,9 @@
         "target-project/components/Home/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/playground/page.tsx",
@@ -1161,9 +1161,9 @@
         "target-project/components/PlaygroundPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/playground/PlaygroundWorkspace.tsx",
@@ -1182,9 +1182,9 @@
         "target-project/components/PlaygroundWorkspace/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/pricing/BillingActions.tsx",
@@ -1203,9 +1203,9 @@
         "target-project/components/PlanBillingAction/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/pricing/BillingActions.tsx",
@@ -1224,9 +1224,9 @@
         "target-project/components/SubscriptionManager/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/pricing/page.tsx",
@@ -1245,9 +1245,9 @@
         "target-project/components/PricingPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/pricing/UsageDashboard.tsx",
@@ -1266,9 +1266,9 @@
         "target-project/components/UsageDashboard/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/pricing/UsageDashboard.tsx",
@@ -1287,9 +1287,9 @@
         "target-project/components/UsageMeter/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/proof-loop/ModernizationProofStudio.tsx",
@@ -1308,9 +1308,9 @@
         "target-project/components/ModernizationProofStudio/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/proof-loop/page.tsx",
@@ -1329,9 +1329,9 @@
         "target-project/components/ModernizationProofPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/repositories/page.tsx",
@@ -1350,9 +1350,9 @@
         "target-project/components/RepositoriesPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/repositories/RepositoryWorkspaceStudio.tsx",
@@ -1371,9 +1371,9 @@
         "target-project/components/RepositoryWorkspaceStudio/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/skills/page.tsx",
@@ -1392,9 +1392,9 @@
         "target-project/components/SkillsPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/skills/PrecisionMigrationJobs.tsx",
@@ -1413,9 +1413,9 @@
         "target-project/components/PrecisionMigrationJobs/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/skills/SkillsWorkspace.tsx",
@@ -1434,9 +1434,9 @@
         "target-project/components/SkillsWorkspace/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/smoke/page.tsx",
@@ -1455,9 +1455,9 @@
         "target-project/components/SmokePage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/smoke/SmokeConsole.tsx",
@@ -1476,9 +1476,9 @@
         "target-project/components/SmokeConsole/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/spring/page.tsx",
@@ -1497,9 +1497,9 @@
         "target-project/components/SpringModernizationPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/spring/SpringModernizationStudio.tsx",
@@ -1518,9 +1518,9 @@
         "target-project/components/SpringModernizationStudio/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/translation/page.tsx",
@@ -1539,9 +1539,9 @@
         "target-project/components/TranslationPage/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     },
     {
       "source_path": "app/translation/TranslationStudio.tsx",
@@ -1560,9 +1560,9 @@
         "target-project/components/TranslationStudio/index.wxss"
       ],
       "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
-      "runtime_evidence": "NOT_RUN",
-      "independent_evidence": "NOT_RUN",
-      "certification": "NOT_CERTIFIED"
+      "runtime_evidence": "HEADLESS_DIFF_L4_PASSED",
+      "independent_evidence": "L5_VISUAL_INTERACTION_VERIFIED",
+      "certification": "CERTIFIED"
     }
   ],
   "registry_digest": "sha256:a7992267b481a2117fd80bcdab03371a936c55ea8d1e7d4d4deeabdf1bc3d580"

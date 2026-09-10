@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/33-app-nodejs-adapter/SKILL.md"
   source_sha256: "sha256:ebd5584515e191a59c789e75fdfba9860dc871244dd3d54c448485a5fd9a1aea"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Node.js / TypeScript Database Refactor Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `33-app-nodejs-adapter`
 - **Version:** `1.0.0`
 - **Category:** application-adapter
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 - **Depends on:** `08-application-code-auto-refactor`
 
 ## Objective

@@ -1,0 +1,13 @@
+{
+  "schema_version": "4.0",
+  "event_id": "demo-event-1",
+  "event_type": "assurance.run.created",
+  "tenant_id": "demo-tenant",
+  "project_id": "demo-project",
+  "run_id": "demo-run",
+  "sequence": 1,
+  "fencing_epoch": 1,
+  "occurred_at": 1,
+  "causation_id": "demo-command-1",
+  "payload_digest": "0cabb75b35707555075792e6a9fd64ac5e26007dfee8004a8e8f280bec6e70f1"
+}

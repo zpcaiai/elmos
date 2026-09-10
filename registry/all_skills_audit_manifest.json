@@ -1,18 +1,16 @@
 {
   "metadata": {
-    "total_skills": 4352,
-    "audited_at": "2026-09-10T14:57:13Z",
-    "scan_duration_seconds": 4.09,
+    "total_skills": 4353,
+    "audited_at": "2026-09-10T15:24:19Z",
+    "scan_duration_seconds": 7.3,
     "status_summary": {
-      "DECLARED": 2320,
+      "DECLARED": 2248,
       "SPECIFICATION_IMPORTED": 196,
       "is": 6,
       "downgrade": 1,
-      "requires": 5,
+      "requires": 4,
       "changes": 1,
-      "depends": 1,
-      "change": 1,
-      "with": 1,
+      "VERIFIED": 711,
       "checks": 4,
       "or": 1,
       "supported": 198,
@@ -31,7 +29,6 @@
       "fields": 1,
       "turns": 1,
       "codes": 1,
-      "SPEC_ONLY": 47,
       "LOCAL_IMPLEMENTED_BOUNDED": 1,
       "BLUEPRINT_IMPORTED": 100,
       "production-contract": 473,
@@ -50,7 +47,6 @@
       "APIs": 1,
       "alone": 23,
       "STATIC_VALIDATED": 1,
-      "VERIFIED": 587,
       "vocabulary": 44,
       "experimental": 1,
       "directly": 51,
@@ -114,7 +110,7 @@
       "douyin": 2,
       "durable": 5,
       "dynamic": 2,
-      "elmos": 1324,
+      "elmos": 1325,
       "a2a": 1,
       "abap": 1,
       "acceptance": 1,
@@ -2173,8 +2169,8 @@
         "../../../docs/batch31/DATA_SAFETY_POLICY.md",
         "canonical-ir/model.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6201
+      "status": "VERIFIED",
+      "size_bytes": 6523
     },
     {
       "name": "b31-constraint-index-partition-migration",
@@ -2191,8 +2187,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6038
+      "status": "VERIFIED",
+      "size_bytes": 6360
     },
     {
       "name": "b31-data-contract-catalog-lineage",
@@ -2209,8 +2205,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5781
+      "status": "VERIFIED",
+      "size_bytes": 6103
     },
     {
       "name": "b31-data-correctness-performance-cutover",
@@ -2228,8 +2224,8 @@
         "../../../docs/batch31/DATA_SAFETY_POLICY.md",
         "run_database_gate.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6111
+      "status": "VERIFIED",
+      "size_bytes": 6433
     },
     {
       "name": "b31-data-pipeline-migration",
@@ -2246,8 +2242,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "depends",
-      "size_bytes": 5968
+      "status": "VERIFIED",
+      "size_bytes": 6290
     },
     {
       "name": "b31-data-quality-repair",
@@ -2264,8 +2260,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5879
+      "status": "VERIFIED",
+      "size_bytes": 6201
     },
     {
       "name": "b31-database-certification-gate",
@@ -2283,8 +2279,8 @@
         "../../../docs/batch31/DATA_SAFETY_POLICY.md",
         "certification/gate-result.json"
       ],
-      "status": "change",
-      "size_bytes": 6216
+      "status": "VERIFIED",
+      "size_bytes": 6538
     },
     {
       "name": "b31-database-estate-discovery",
@@ -2302,8 +2298,8 @@
         "../../../docs/batch31/DATA_SAFETY_POLICY.md",
         "source-fingerprint/manifest.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6295
+      "status": "VERIFIED",
+      "size_bytes": 6617
     },
     {
       "name": "b31-database-modernization-factory",
@@ -2321,8 +2317,8 @@
         "../../../docs/batch31/DATA_SAFETY_POLICY.md",
         "database-packs/<pack>/certification/gap-inventory.md"
       ],
-      "status": "requires",
-      "size_bytes": 7507
+      "status": "VERIFIED",
+      "size_bytes": 7829
     },
     {
       "name": "b31-dialect-provider-capability-matrix",
@@ -2340,8 +2336,8 @@
         "../../../docs/batch31/DATA_SAFETY_POLICY.md",
         "support-matrix.json"
       ],
-      "status": "with",
-      "size_bytes": 6116
+      "status": "VERIFIED",
+      "size_bytes": 6438
     },
     {
       "name": "b31-etl-elt-discovery",
@@ -2358,8 +2354,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5808
+      "status": "VERIFIED",
+      "size_bytes": 6130
     },
     {
       "name": "b31-orm-database-contract",
@@ -2376,8 +2372,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5928
+      "status": "VERIFIED",
+      "size_bytes": 6250
     },
     {
       "name": "b31-query-plan-performance",
@@ -2394,8 +2390,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5934
+      "status": "VERIFIED",
+      "size_bytes": 6256
     },
     {
       "name": "b31-query-semantic-migration",
@@ -2412,8 +2408,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6034
+      "status": "VERIFIED",
+      "size_bytes": 6356
     },
     {
       "name": "b31-relational-route-pack-certifier",
@@ -2430,8 +2426,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6242
+      "status": "VERIFIED",
+      "size_bytes": 6564
     },
     {
       "name": "b31-routine-trigger-migration",
@@ -2448,8 +2444,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6192
+      "status": "VERIFIED",
+      "size_bytes": 6514
     },
     {
       "name": "b31-schema-table-column-migration",
@@ -2466,8 +2462,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5948
+      "status": "VERIFIED",
+      "size_bytes": 6270
     },
     {
       "name": "b31-sequence-identity-generated-columns",
@@ -2484,8 +2480,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5931
+      "status": "VERIFIED",
+      "size_bytes": 6253
     },
     {
       "name": "b31-transaction-isolation-locking",
@@ -2502,8 +2498,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6024
+      "status": "VERIFIED",
+      "size_bytes": 6346
     },
     {
       "name": "b31-type-precision-null-collation",
@@ -2520,8 +2516,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6040
+      "status": "VERIFIED",
+      "size_bytes": 6362
     },
     {
       "name": "b31-view-materialized-view-migration",
@@ -2538,8 +2534,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5795
+      "status": "VERIFIED",
+      "size_bytes": 6117
     },
     {
       "name": "b31-warehouse-lakehouse-analytics",
@@ -2556,8 +2552,8 @@
         "../../../docs/batch31/VERSION_POLICY.md",
         "../../../docs/batch31/DATA_SAFETY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5959
+      "status": "VERIFIED",
+      "size_bytes": 6281
     },
     {
       "name": "b32-accessibility-i18n-seo-visual-e2e",
@@ -8682,8 +8678,8 @@
         "orchestrator/approvals.py",
         "orchestrator/evidence_index.py"
       ],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5007
+      "status": "VERIFIED",
+      "size_bytes": 5041
     },
     {
       "name": "chinadb-01-estate-inventory-assessment",
@@ -8692,8 +8688,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Estate Inventory & Migration Assessment. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5006
+      "status": "VERIFIED",
+      "size_bytes": 5040
     },
     {
       "name": "chinadb-02-semantic-db-ir",
@@ -8702,8 +8698,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Semantic Database IR. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4781
+      "status": "VERIFIED",
+      "size_bytes": 4815
     },
     {
       "name": "chinadb-03-rule-mutation-dsl",
@@ -8714,8 +8710,8 @@
       "dependencies": [
         "config/rule-dsl-example.yaml"
       ],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4448
+      "status": "VERIFIED",
+      "size_bytes": 4482
     },
     {
       "name": "chinadb-04-data-movement-cdc",
@@ -8724,8 +8720,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial Data Movement & CDC. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4964
+      "status": "VERIFIED",
+      "size_bytes": 4998
     },
     {
       "name": "chinadb-05-ddl-auto-conversion",
@@ -8736,8 +8732,8 @@
       "dependencies": [
         "conversion-result.schema.json"
       ],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4628
+      "status": "VERIFIED",
+      "size_bytes": 4662
     },
     {
       "name": "chinadb-06-sql-auto-conversion",
@@ -8746,8 +8742,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL Automatic Conversion. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4791
+      "status": "VERIFIED",
+      "size_bytes": 4825
     },
     {
       "name": "chinadb-07-plsql-tsql-conversion",
@@ -8756,8 +8752,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for PL/SQL & T-SQL Conversion / Logic Decomposition. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5198
+      "status": "VERIFIED",
+      "size_bytes": 5232
     },
     {
       "name": "chinadb-08-application-code-auto-refactor",
@@ -8766,8 +8762,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Application Code Automatic Refactoring. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5023
+      "status": "VERIFIED",
+      "size_bytes": 5057
     },
     {
       "name": "chinadb-09-behavior-equivalence-verification",
@@ -8776,8 +8772,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Behavioral Equivalence Verification. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4876
+      "status": "VERIFIED",
+      "size_bytes": 4910
     },
     {
       "name": "chinadb-10-performance-equivalence-verification",
@@ -8786,8 +8782,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Performance Equivalence Verification. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4806
+      "status": "VERIFIED",
+      "size_bytes": 4840
     },
     {
       "name": "chinadb-11-guarded-auto-repair",
@@ -8798,8 +8794,8 @@
       "dependencies": [
         "schemas/repair-plan.schema.json"
       ],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4506
+      "status": "VERIFIED",
+      "size_bytes": 4540
     },
     {
       "name": "chinadb-12-cutover-rollback",
@@ -8808,8 +8804,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Cutover, Rehearsal & Rollback. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4483
+      "status": "VERIFIED",
+      "size_bytes": 4517
     },
     {
       "name": "chinadb-13-production-migration-certification",
@@ -8820,8 +8816,8 @@
       "dependencies": [
         "schemas/certification.schema.json"
       ],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4606
+      "status": "VERIFIED",
+      "size_bytes": 4640
     },
     {
       "name": "chinadb-14-security-governance",
@@ -8830,8 +8826,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Security, Secrets & Governance. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4338
+      "status": "VERIFIED",
+      "size_bytes": 4372
     },
     {
       "name": "chinadb-15-evidence-ledger-reproducibility",
@@ -8842,8 +8838,8 @@
       "dependencies": [
         "schemas/evidence.schema.json"
       ],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4366
+      "status": "VERIFIED",
+      "size_bytes": 4400
     },
     {
       "name": "chinadb-16-release-ci-quality-gates",
@@ -8852,8 +8848,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Release CI & Quality Gates. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4094
+      "status": "VERIFIED",
+      "size_bytes": 4128
     },
     {
       "name": "chinadb-20-source-oracle-adapter",
@@ -8862,8 +8858,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Oracle Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4731
+      "status": "VERIFIED",
+      "size_bytes": 4765
     },
     {
       "name": "chinadb-21-source-sqlserver-adapter",
@@ -8872,8 +8868,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL Server / T-SQL Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4773
+      "status": "VERIFIED",
+      "size_bytes": 4807
     },
     {
       "name": "chinadb-22-source-postgresql-adapter",
@@ -8882,8 +8878,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for PostgreSQL Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4615
+      "status": "VERIFIED",
+      "size_bytes": 4649
     },
     {
       "name": "chinadb-23-source-mysql-adapter",
@@ -8892,8 +8888,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for MySQL / MariaDB Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4571
+      "status": "VERIFIED",
+      "size_bytes": 4605
     },
     {
       "name": "chinadb-24-source-db2-adapter",
@@ -8902,8 +8898,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for DB2 LUW Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4496
+      "status": "VERIFIED",
+      "size_bytes": 4530
     },
     {
       "name": "chinadb-25-source-sybase-adapter",
@@ -8912,8 +8908,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Sybase ASE Source Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4517
+      "status": "VERIFIED",
+      "size_bytes": 4551
     },
     {
       "name": "chinadb-30-app-java-spring-adapter",
@@ -8922,8 +8918,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Java / Spring Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4697
+      "status": "VERIFIED",
+      "size_bytes": 4731
     },
     {
       "name": "chinadb-31-app-dotnet-adapter",
@@ -8932,8 +8928,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for .NET Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4577
+      "status": "VERIFIED",
+      "size_bytes": 4611
     },
     {
       "name": "chinadb-32-app-python-adapter",
@@ -8942,8 +8938,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Python Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4532
+      "status": "VERIFIED",
+      "size_bytes": 4566
     },
     {
       "name": "chinadb-33-app-nodejs-adapter",
@@ -8952,8 +8948,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Node.js / TypeScript Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4593
+      "status": "VERIFIED",
+      "size_bytes": 4627
     },
     {
       "name": "chinadb-34-app-go-adapter",
@@ -8962,8 +8958,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Go Database Refactor Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4460
+      "status": "VERIFIED",
+      "size_bytes": 4494
     },
     {
       "name": "chinadb-40-target-dm8",
@@ -8972,8 +8968,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for DM8 Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5737
+      "status": "VERIFIED",
+      "size_bytes": 5771
     },
     {
       "name": "chinadb-41-target-kingbasees",
@@ -8982,8 +8978,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for KingbaseES Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5811
+      "status": "VERIFIED",
+      "size_bytes": 5845
     },
     {
       "name": "chinadb-42-target-opengauss",
@@ -8992,8 +8988,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for openGauss Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5760
+      "status": "VERIFIED",
+      "size_bytes": 5794
     },
     {
       "name": "chinadb-43-target-tidb",
@@ -9002,8 +8998,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for TiDB Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5775
+      "status": "VERIFIED",
+      "size_bytes": 5809
     },
     {
       "name": "chinadb-44-target-gbase8s",
@@ -9012,8 +9008,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8s Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5641
+      "status": "VERIFIED",
+      "size_bytes": 5675
     },
     {
       "name": "chinadb-45-target-gbase8c",
@@ -9022,8 +9018,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8c Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5668
+      "status": "VERIFIED",
+      "size_bytes": 5702
     },
     {
       "name": "chinadb-46-target-gbase8a",
@@ -9032,8 +9028,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8a Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5622
+      "status": "VERIFIED",
+      "size_bytes": 5656
     },
     {
       "name": "chinadb-47-target-highgo",
@@ -9042,8 +9038,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for HighGo / HGDB Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5704
+      "status": "VERIFIED",
+      "size_bytes": 5738
     },
     {
       "name": "chinadb-48-target-oceanbase-oracle",
@@ -9052,8 +9048,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for OceanBase Oracle-Compatible Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5921
+      "status": "VERIFIED",
+      "size_bytes": 5955
     },
     {
       "name": "chinadb-49-target-oceanbase-mysql",
@@ -9062,8 +9058,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for OceanBase MySQL-Compatible Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5641
+      "status": "VERIFIED",
+      "size_bytes": 5675
     },
     {
       "name": "chinadb-50-target-gaussdb-oracle",
@@ -9072,8 +9068,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GaussDB Oracle-Compatible Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5964
+      "status": "VERIFIED",
+      "size_bytes": 5998
     },
     {
       "name": "chinadb-51-target-gaussdb-m",
@@ -9082,8 +9078,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GaussDB M-Compatible Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5589
+      "status": "VERIFIED",
+      "size_bytes": 5623
     },
     {
       "name": "chinadb-52-target-goldendb",
@@ -9092,8 +9088,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for GoldenDB Target Adapter. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 5958
+      "status": "VERIFIED",
+      "size_bytes": 5992
     },
     {
       "name": "chinadb-60-route-support-matrix",
@@ -9102,8 +9098,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Route Support Matrix & Compatibility Governance. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 3967
+      "status": "VERIFIED",
+      "size_bytes": 4001
     },
     {
       "name": "chinadb-61-fixture-corpus-and-mutation-tests",
@@ -9112,8 +9108,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial Fixture Corpus & Mutation Tests. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4131
+      "status": "VERIFIED",
+      "size_bytes": 4165
     },
     {
       "name": "chinadb-62-benchmark-lab",
@@ -9122,8 +9118,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Database Migration Benchmark Lab. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 3799
+      "status": "VERIFIED",
+      "size_bytes": 3833
     },
     {
       "name": "chinadb-63-migration-estimation-commercial-report",
@@ -9132,8 +9128,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial Assessment, Estimation & Delivery Report. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4038
+      "status": "VERIFIED",
+      "size_bytes": 4072
     },
     {
       "name": "chinadb-64-vendor-native-tool-bridge",
@@ -9142,8 +9138,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Vendor-Native Migration Tool Bridge. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 4021
+      "status": "VERIFIED",
+      "size_bytes": 4055
     },
     {
       "name": "chinadb-65-observability-migration-control-plane",
@@ -9152,8 +9148,8 @@
       "description": "Use when ELMOS must follow the ChinaDB commercial database-migration specification for Migration Observability & Control Plane. Keep exact directed route and version semantics, require real evidence, and fail closed on unsupported behavior.",
       "tasks": [],
       "dependencies": [],
-      "status": "SPEC_ONLY",
-      "size_bytes": 3973
+      "status": "VERIFIED",
+      "size_bytes": 4007
     },
     {
       "name": "coding-and-error-pattern-miner",
@@ -14597,6 +14593,23 @@
       "dependencies": [],
       "status": "DECLARED",
       "size_bytes": 2669
+    },
+    {
+      "name": "elmos-auto-skill-router",
+      "path": ".agents/skills/elmos-auto-skill-router/SKILL.md",
+      "category": "elmos",
+      "description": "Automatically discover, route, and compose all materially relevant Antigravity skills for engineering tasks in the current project. Use when selecting skills, continuing prior work, coordinating multiple skills, refreshing the skill index, or when the user expects skills to be selected automatica...",
+      "tasks": [],
+      "dependencies": [
+        ".agents/skills-index.json",
+        ".elmos/skill-router.json",
+        "scripts/refresh_skill_index.py",
+        "scripts/route_skills.py",
+        "scripts/continue-with-skills.sh",
+        "scripts/check_install.sh"
+      ],
+      "status": "DECLARED",
+      "size_bytes": 2744
     },
     {
       "name": "autogen-crewai-project-generation",
@@ -43583,8 +43596,8 @@
       "description": "Repository-owned exact runtime interface for 仓库级现代化总编排器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4199
+      "status": "VERIFIED",
+      "size_bytes": 4441
     },
     {
       "name": "legacy-web-01-job-contract-and-policy-resolver",
@@ -43593,8 +43606,8 @@
       "description": "Repository-owned exact runtime interface for 任务契约与策略解析; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4178
+      "status": "VERIFIED",
+      "size_bytes": 4420
     },
     {
       "name": "legacy-web-02-reproducible-repository-snapshot",
@@ -43603,8 +43616,8 @@
       "description": "Repository-owned exact runtime interface for 可复现仓库快照; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4201
+      "status": "VERIFIED",
+      "size_bytes": 4443
     },
     {
       "name": "legacy-web-03-checkpoint-resume-cancel",
@@ -43613,8 +43626,8 @@
       "description": "Repository-owned exact runtime interface for 检查点、恢复与取消; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4213
+      "status": "VERIFIED",
+      "size_bytes": 4455
     },
     {
       "name": "legacy-web-04-wall-clock-eta-and-cost-model",
@@ -43623,8 +43636,8 @@
       "description": "Repository-owned exact runtime interface for 机器运行时 ETA 与成本模型; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4213
+      "status": "VERIFIED",
+      "size_bytes": 4455
     },
     {
       "name": "legacy-web-05-tool-authority-and-sandbox",
@@ -43633,8 +43646,8 @@
       "description": "Repository-owned exact runtime interface for 工具权限与执行沙箱; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4177
+      "status": "VERIFIED",
+      "size_bytes": 4419
     },
     {
       "name": "legacy-web-10-build-and-module-topology",
@@ -43643,8 +43656,8 @@
       "description": "Repository-owned exact runtime interface for 构建与模块拓扑恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4221
+      "status": "VERIFIED",
+      "size_bytes": 4463
     },
     {
       "name": "legacy-web-11-framework-and-version-fingerprinting",
@@ -43653,8 +43666,8 @@
       "description": "Repository-owned exact runtime interface for 框架与版本指纹; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4155
+      "status": "VERIFIED",
+      "size_bytes": 4397
     },
     {
       "name": "legacy-web-12-runtime-deployment-topology",
@@ -43663,8 +43676,8 @@
       "description": "Repository-owned exact runtime interface for 运行时与部署拓扑恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4274
+      "status": "VERIFIED",
+      "size_bytes": 4516
     },
     {
       "name": "legacy-web-13-route-ownership-and-conflict-analysis",
@@ -43673,8 +43686,8 @@
       "description": "Repository-owned exact runtime interface for 路由所有权与冲突分析; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4351
+      "status": "VERIFIED",
+      "size_bytes": 4593
     },
     {
       "name": "legacy-web-14-environment-config-overlay-analysis",
@@ -43683,8 +43696,8 @@
       "description": "Repository-owned exact runtime interface for 环境配置叠加分析; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4247
+      "status": "VERIFIED",
+      "size_bytes": 4489
     },
     {
       "name": "legacy-web-15-dependency-compatibility-and-jakarta-readiness",
@@ -43693,8 +43706,8 @@
       "description": "Repository-owned exact runtime interface for 依赖兼容性与 Jakarta 就绪度; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4480
+      "status": "VERIFIED",
+      "size_bytes": 4722
     },
     {
       "name": "legacy-web-20-struts1-lifecycle-recovery",
@@ -43703,8 +43716,8 @@
       "description": "Repository-owned exact runtime interface for Struts 1 请求生命周期恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4465
+      "status": "VERIFIED",
+      "size_bytes": 4707
     },
     {
       "name": "legacy-web-21-struts2-interceptor-pipeline-recovery",
@@ -43713,8 +43726,8 @@
       "description": "Repository-owned exact runtime interface for Struts 2 拦截器流水线恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4457
+      "status": "VERIFIED",
+      "size_bytes": 4699
     },
     {
       "name": "legacy-web-22-servlet-container-semantics-recovery",
@@ -43723,8 +43736,8 @@
       "description": "Repository-owned exact runtime interface for Servlet 容器语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4468
+      "status": "VERIFIED",
+      "size_bytes": 4710
     },
     {
       "name": "legacy-web-23-jsp-taglib-and-view-semantics",
@@ -43733,8 +43746,8 @@
       "description": "Repository-owned exact runtime interface for JSP、Taglib 与视图语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4372
+      "status": "VERIFIED",
+      "size_bytes": 4614
     },
     {
       "name": "legacy-web-24-request-binding-and-type-conversion",
@@ -43743,8 +43756,8 @@
       "description": "Repository-owned exact runtime interface for 请求绑定与类型转换恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4451
+      "status": "VERIFIED",
+      "size_bytes": 4693
     },
     {
       "name": "legacy-web-25-navigation-dispatch-and-error-semantics",
@@ -43753,8 +43766,8 @@
       "description": "Repository-owned exact runtime interface for 导航、分派与错误语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4522
+      "status": "VERIFIED",
+      "size_bytes": 4764
     },
     {
       "name": "legacy-web-26-session-state-and-scope-semantics",
@@ -43763,8 +43776,8 @@
       "description": "Repository-owned exact runtime interface for Session、状态与作用域语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4596
+      "status": "VERIFIED",
+      "size_bytes": 4838
     },
     {
       "name": "legacy-web-27-security-authn-authz-csrf-semantics",
@@ -43773,8 +43786,8 @@
       "description": "Repository-owned exact runtime interface for 认证、授权与 CSRF 语义恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4519
+      "status": "VERIFIED",
+      "size_bytes": 4761
     },
     {
       "name": "legacy-web-28-transaction-and-side-effect-topology",
@@ -43783,8 +43796,8 @@
       "description": "Repository-owned exact runtime interface for 事务与副作用拓扑恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4342
+      "status": "VERIFIED",
+      "size_bytes": 4584
     },
     {
       "name": "legacy-web-29-concurrency-lifecycle-and-threadlocal",
@@ -43793,8 +43806,8 @@
       "description": "Repository-owned exact runtime interface for 并发、实例生命周期与 ThreadLocal 恢复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4498
+      "status": "VERIFIED",
+      "size_bytes": 4740
     },
     {
       "name": "legacy-web-30-repository-evidence-graph",
@@ -43803,8 +43816,8 @@
       "description": "Repository-owned exact runtime interface for Repository Evidence Graph; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 5153
+      "status": "VERIFIED",
+      "size_bytes": 5395
     },
     {
       "name": "legacy-web-31-legacy-web-semantic-ir",
@@ -43813,8 +43826,8 @@
       "description": "Repository-owned exact runtime interface for Legacy Web Semantic IR; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4182
+      "status": "VERIFIED",
+      "size_bytes": 4424
     },
     {
       "name": "legacy-web-32-behavioral-contract-and-sequence-mining",
@@ -43823,8 +43836,8 @@
       "description": "Repository-owned exact runtime interface for 行为契约与请求序列挖掘; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4205
+      "status": "VERIFIED",
+      "size_bytes": 4447
     },
     {
       "name": "legacy-web-33-unknown-semantics-ledger",
@@ -43833,8 +43846,8 @@
       "description": "Repository-owned exact runtime interface for 未知语义债务账本; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4081
+      "status": "VERIFIED",
+      "size_bytes": 4323
     },
     {
       "name": "legacy-web-34-semantic-risk-scoring",
@@ -43843,8 +43856,8 @@
       "description": "Repository-owned exact runtime interface for 语义风险评分; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4118
+      "status": "VERIFIED",
+      "size_bytes": 4360
     },
     {
       "name": "legacy-web-40-preserve-first-migration-strategy",
@@ -43853,8 +43866,8 @@
       "description": "Repository-owned exact runtime interface for Preserve-first 迁移策略; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4179
+      "status": "VERIFIED",
+      "size_bytes": 4421
     },
     {
       "name": "legacy-web-41-springboot4-target-architecture",
@@ -43863,8 +43876,8 @@
       "description": "Repository-owned exact runtime interface for Spring Boot 4 目标架构合成; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4410
+      "status": "VERIFIED",
+      "size_bytes": 4652
     },
     {
       "name": "legacy-web-42-multi-module-conversion-wave-planner",
@@ -43873,8 +43886,8 @@
       "description": "Repository-owned exact runtime interface for 多模块转换波次规划; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4273
+      "status": "VERIFIED",
+      "size_bytes": 4515
     },
     {
       "name": "legacy-web-43-compatibility-shim-synthesis",
@@ -43883,8 +43896,8 @@
       "description": "Repository-owned exact runtime interface for 兼容层合成规划; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4205
+      "status": "VERIFIED",
+      "size_bytes": 4447
     },
     {
       "name": "legacy-web-44-packaging-view-and-container-decision",
@@ -43893,8 +43906,8 @@
       "description": "Repository-owned exact runtime interface for 打包、视图与容器决策; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4325
+      "status": "VERIFIED",
+      "size_bytes": 4567
     },
     {
       "name": "legacy-web-45-cutover-strangler-and-dual-run-plan",
@@ -43903,8 +43916,8 @@
       "description": "Repository-owned exact runtime interface for 切流、Strangler 与双运行规划; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4260
+      "status": "VERIFIED",
+      "size_bytes": 4502
     },
     {
       "name": "legacy-web-50-deterministic-ast-and-config-rewrite",
@@ -43913,8 +43926,8 @@
       "description": "Repository-owned exact runtime interface for 确定性 AST 与配置改写; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4334
+      "status": "VERIFIED",
+      "size_bytes": 4576
     },
     {
       "name": "legacy-web-51-struts1-to-springmvc-generator",
@@ -43923,8 +43936,8 @@
       "description": "Repository-owned exact runtime interface for Struts 1→Spring MVC 生成器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4637
+      "status": "VERIFIED",
+      "size_bytes": 4879
     },
     {
       "name": "legacy-web-52-struts2-to-springmvc-generator",
@@ -43933,8 +43946,8 @@
       "description": "Repository-owned exact runtime interface for Struts 2→Spring MVC 生成器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4593
+      "status": "VERIFIED",
+      "size_bytes": 4835
     },
     {
       "name": "legacy-web-53-servlet-to-springmvc-generator",
@@ -43943,8 +43956,8 @@
       "description": "Repository-owned exact runtime interface for Servlet→Spring MVC 生成器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4617
+      "status": "VERIFIED",
+      "size_bytes": 4859
     },
     {
       "name": "legacy-web-54-jakarta-and-dependency-migration",
@@ -43953,8 +43966,8 @@
       "description": "Repository-owned exact runtime interface for Jakarta 与依赖迁移; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4390
+      "status": "VERIFIED",
+      "size_bytes": 4632
     },
     {
       "name": "legacy-web-55-spring-security-validation-transaction-generator",
@@ -43963,8 +43976,8 @@
       "description": "Repository-owned exact runtime interface for Security、Validation 与 Transaction 生成器; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4728
+      "status": "VERIFIED",
+      "size_bytes": 4970
     },
     {
       "name": "legacy-web-56-jsp-preserve-or-modernize",
@@ -43973,8 +43986,8 @@
       "description": "Repository-owned exact runtime interface for JSP 保留或现代化; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4303
+      "status": "VERIFIED",
+      "size_bytes": 4545
     },
     {
       "name": "legacy-web-57-source-map-change-provenance",
@@ -43983,8 +43996,8 @@
       "description": "Repository-owned exact runtime interface for 语义 Source Map 与变更溯源; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4797
+      "status": "VERIFIED",
+      "size_bytes": 5039
     },
     {
       "name": "legacy-web-58-idempotent-change-set-commit",
@@ -43993,8 +44006,8 @@
       "description": "Repository-owned exact runtime interface for 幂等 Change Set 提交; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4246
+      "status": "VERIFIED",
+      "size_bytes": 4488
     },
     {
       "name": "legacy-web-60-static-semantic-coverage",
@@ -44003,8 +44016,8 @@
       "description": "Repository-owned exact runtime interface for 静态语义覆盖验证; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4202
+      "status": "VERIFIED",
+      "size_bytes": 4444
     },
     {
       "name": "legacy-web-61-test-and-scenario-generation",
@@ -44013,8 +44026,8 @@
       "description": "Repository-owned exact runtime interface for 测试与场景生成; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4173
+      "status": "VERIFIED",
+      "size_bytes": 4415
     },
     {
       "name": "legacy-web-62-differential-http-and-view-oracle",
@@ -44023,8 +44036,8 @@
       "description": "Repository-owned exact runtime interface for HTTP 与视图差分 Oracle; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4381
+      "status": "VERIFIED",
+      "size_bytes": 4623
     },
     {
       "name": "legacy-web-63-session-db-and-side-effect-diff",
@@ -44033,8 +44046,8 @@
       "description": "Repository-owned exact runtime interface for Session、数据库与副作用差分; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4423
+      "status": "VERIFIED",
+      "size_bytes": 4665
     },
     {
       "name": "legacy-web-64-security-equivalence-and-hardening",
@@ -44043,8 +44056,8 @@
       "description": "Repository-owned exact runtime interface for 安全等价与可选硬化验证; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4453
+      "status": "VERIFIED",
+      "size_bytes": 4695
     },
     {
       "name": "legacy-web-65-concurrency-performance-and-fault-verification",
@@ -44053,8 +44066,8 @@
       "description": "Repository-owned exact runtime interface for 并发、性能与故障验证; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4409
+      "status": "VERIFIED",
+      "size_bytes": 4651
     },
     {
       "name": "legacy-web-66-observability-and-trace-correlation",
@@ -44063,8 +44076,8 @@
       "description": "Repository-owned exact runtime interface for 可观测性与 Trace 关联; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4281
+      "status": "VERIFIED",
+      "size_bytes": 4523
     },
     {
       "name": "legacy-web-70-mismatch-classification",
@@ -44073,8 +44086,8 @@
       "description": "Repository-owned exact runtime interface for 差异分类与根因定位; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4387
+      "status": "VERIFIED",
+      "size_bytes": 4629
     },
     {
       "name": "legacy-web-71-bounded-semantic-auto-repair",
@@ -44083,8 +44096,8 @@
       "description": "Repository-owned exact runtime interface for 有界语义自动修复; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4116
+      "status": "VERIFIED",
+      "size_bytes": 4358
     },
     {
       "name": "legacy-web-72-impact-based-regression-selection",
@@ -44093,8 +44106,8 @@
       "description": "Repository-owned exact runtime interface for 影响面回归选择; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4221
+      "status": "VERIFIED",
+      "size_bytes": 4463
     },
     {
       "name": "legacy-web-73-production-cutover-rollback",
@@ -44103,8 +44116,8 @@
       "description": "Repository-owned exact runtime interface for 生产切流与回滚执行; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4336
+      "status": "VERIFIED",
+      "size_bytes": 4578
     },
     {
       "name": "legacy-web-74-evidence-bundle-and-e0-e5-certification",
@@ -44113,8 +44126,8 @@
       "description": "Repository-owned exact runtime interface for 证据包与 E0–E5 生产认证; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4939
+      "status": "VERIFIED",
+      "size_bytes": 5181
     },
     {
       "name": "legacy-web-75-golden-route-benchmark-and-learning-cache",
@@ -44123,8 +44136,8 @@
       "description": "Repository-owned exact runtime interface for Golden Route 基准与学习缓存; bounded semantic analysis and evidence generation for Java legacy web modernization.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4386
+      "status": "VERIFIED",
+      "size_bytes": 4628
     },
     {
       "name": "lenient-semantic-comparator",

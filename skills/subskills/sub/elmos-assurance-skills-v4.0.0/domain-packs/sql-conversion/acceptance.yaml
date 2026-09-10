@@ -1,0 +1,63 @@
+domain: sql-conversion
+native_execution_status: NOT_RUN
+cases:
+- id: SQL-001
+  given: 空表/重复行/全NULL/混合NULL
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 比较bag multiplicity和typed NULL，不转空字符串
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: SQL-002
+  given: 外层x=NULL、内层非NULL非空的NOT IN改写
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 检测与NOT EXISTS不等价
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: SQL-003
+  given: DECIMAL边界/舍入/负数/overflow
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 精确比较或contract批准的舍入，不用通用epsilon
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: SQL-004
+  given: LEFT JOIN谓词移位
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 捕获WHERE与ON选择语义差异
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: SQL-005
+  given: ORDER BY含并列值与分页
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 要求批准的tie-breaker或声明非确定性，不随意排序掩盖
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: SQL-006
+  given: routine失败、savepoint、sequence副作用
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 按真实引擎语义观察；不假设sequence回滚
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version

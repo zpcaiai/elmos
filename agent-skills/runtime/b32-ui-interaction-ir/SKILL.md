@@ -1,6 +1,9 @@
 ---
 name: b32-ui-interaction-ir
-description: "Implement or extend a typed UI Interaction IR for routes views components state events effects forms bindings permissions resources design tokens accessibility and source mapping before client transformation."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement or extend a typed UI Interaction IR for routes views components state events effects forms bindings permissions resources design tokens accessibility and source mapping before client transformation.
 ---
 
 ## Operating mode

@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/11-guarded-auto-repair/SKILL.md"
   source_sha256: "sha256:ce7f6b5f437462b6a4168693a52eb1ea9d53603f9fde41a2190451f2d4a31ab7"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Guarded Automatic Repair
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `11-guarded-auto-repair`
 - **Version:** `1.0.0`
 - **Category:** core/repair
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

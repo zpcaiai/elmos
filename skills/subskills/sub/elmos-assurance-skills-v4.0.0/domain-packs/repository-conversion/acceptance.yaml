@@ -1,0 +1,63 @@
+domain: repository-conversion
+native_execution_status: NOT_RUN
+cases:
+- id: REP-001
+  given: 整数min/max/overflow与除法
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 按照源目标精确语义判定，必要时引入compat shim
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: REP-002
+  given: Unicode代理对/组合字符
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 按声明length/encoding语义比较，不能默认所有string等价
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: REP-003
+  given: 异常/资源释放/取消
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 观察异常类型映射、finally/dispose和残余effect
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: REP-004
+  given: equals/hash集合与序列化
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 不因排序normalizer掩盖业务依赖顺序
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: REP-005
+  given: 并发更新/锁/异步重试
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 有限调度和原生stress共同发现状态/幂等错误
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: REP-006
+  given: 模块正确但repo装配错误
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 原生build、contract、端到端workflow失败必须阻断
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version

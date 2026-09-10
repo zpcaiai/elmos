@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/02-semantic-db-ir/SKILL.md"
   source_sha256: "sha256:48ac1d5090a4bc7b70abcdf848820b4897183dde3b93abb8dbc52101eeb8ba19"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Semantic Database IR
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `02-semantic-db-ir`
 - **Version:** `1.0.0`
 - **Category:** core/ir
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

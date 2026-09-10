@@ -1,0 +1,29 @@
+{
+  "schema_version": "elmos.chinadb.compiled-skill-contract.v1",
+  "package_id": "chinadb-commercial-migration-skills",
+  "package_version": "1.0.0",
+  "installed_alias": "chinadb-44-target-gbase8s",
+  "namespace": "chinadb-commercial-migration-v1",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "02-semantic-db-ir",
+    "03-rule-mutation-dsl"
+  ],
+  "declared_external_effects": [
+    "target-read",
+    "target-write",
+    "provider-call"
+  ],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute_skill",
+    "handler_id": "target:gbase-8s",
+    "category": "target-adapter",
+    "module_path": "engines/database-data-engine/sql-transpiler/src/elmos_sql_transpiler/skill_runtime.py",
+    "skill_key": "44-target-gbase8s",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

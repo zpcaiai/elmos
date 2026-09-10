@@ -5704,7 +5704,7 @@ def _verify_trusted_go_toolchain(expected: ExactToolchain) -> None:
         raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED")
 
 
-def _go_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
+def _go_analyzer_arguments(arguments: list[str], *, allow_inventory: bool = False) -> frozenset[str]:
     if (
         len(arguments) not in {2, 3}
         or any(not isinstance(argument, str) or not argument for argument in arguments)
@@ -5712,6 +5712,7 @@ def _go_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
         or (len(arguments) == 3 and arguments[2] != "--emitted-target")
         or arguments[1] == "--emitted-target"
         or (len(arguments) == 3 and arguments[1] == "--inventory")
+        or (not allow_inventory and arguments[1] == "--inventory")
     ):
         raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
     source = Path(arguments[0])
@@ -5734,10 +5735,12 @@ def _run_trusted_go_analyzer(
     toolchain: ExactToolchain,
     helper: Path,
     arguments: list[str],
+    *,
+    allow_inventory: bool = False,
 ) -> dict[str, Any]:
     """Run a source- and toolchain-bound Go analyzer with exact error promotion."""
 
-    promotable = _go_analyzer_arguments(arguments)
+    promotable = _go_analyzer_arguments(arguments, allow_inventory=allow_inventory)
     expected_helper, helper_content = _go_analyzer_source_snapshot(helper)
     with tempfile.TemporaryDirectory(prefix="elmos-go-analyzer-") as temporary:
         root = Path(temporary).resolve(strict=True)
@@ -5778,7 +5781,7 @@ def _run_trusted_go_analyzer(
         return value
 
 
-def _rust_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
+def _rust_analyzer_arguments(arguments: list[str], *, allow_inventory: bool = False) -> frozenset[str]:
     if (
         len(arguments) not in {2, 3}
         or any(not isinstance(argument, str) or not argument for argument in arguments)
@@ -5786,6 +5789,7 @@ def _rust_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
         or (len(arguments) == 3 and arguments[2] != "--emitted-target")
         or arguments[1] == "--emitted-target"
         or (len(arguments) == 3 and arguments[1] == "--inventory")
+        or (not allow_inventory and arguments[1] == "--inventory")
     ):
         raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
     source = Path(arguments[0])
@@ -5851,10 +5855,12 @@ def _run_trusted_rust_analyzer(
     toolchain: ExactToolchain,
     package: Path,
     arguments: list[str],
+    *,
+    allow_inventory: bool = False,
 ) -> dict[str, Any]:
     """Run a package- and toolchain-bound Rust analyzer with exact error promotion."""
 
-    promotable = _rust_analyzer_arguments(arguments)
+    promotable = _rust_analyzer_arguments(arguments, allow_inventory=allow_inventory)
     if toolchain.auxiliary is None:
         raise RouteError("RUST_ANALYZER_CARGO_REQUIRED")
     cargo = Path(toolchain.auxiliary)
@@ -7947,10 +7953,10 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
         value = _run_trusted_javascript_analyzer(toolchain, source, "--inventory")
     elif language == "go":
         helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
-        value = _run_trusted_go_analyzer(toolchain, helper, [str(source), "--inventory"])
+        value = _run_trusted_go_analyzer(toolchain, helper, [str(source), "--inventory"], allow_inventory=True)
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
-        value = _run_trusted_rust_analyzer(toolchain, package, [str(source), "--inventory"])
+        value = _run_trusted_rust_analyzer(toolchain, package, [str(source), "--inventory"], allow_inventory=True)
     elif language == "swift":
         binary, analyzer_build_receipt = _swift_analyzer(toolchain)
         value = _bind_swift_analyzer_identity(

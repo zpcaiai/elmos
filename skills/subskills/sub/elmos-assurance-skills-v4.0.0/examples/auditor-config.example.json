@@ -1,0 +1,19 @@
+{
+  "schema_version": "4.0",
+  "display_name": "Ethen",
+  "auditor_kind": "human",
+  "subject_id": "DEMO-NOT-ENROLLED",
+  "organization_id": "DEMO-UNCONFIGURED",
+  "control_domain": "DEMO-AUDITOR",
+  "independence_level": "separate-agent",
+  "identity_ref": "UNCONFIGURED",
+  "signing_key_ref": "UNCONFIGURED",
+  "authorized_tenant_ids": [
+    "demo-tenant"
+  ],
+  "expires_at": 1,
+  "conflict_disclosures": [
+    "Illustration only, no actual identity or independence attested"
+  ],
+  "status": "PENDING_REVIEW"
+}

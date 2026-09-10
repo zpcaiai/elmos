@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/62-benchmark-lab/SKILL.md"
   source_sha256: "sha256:082cf6c63053050f2f27c4618afa345075323fdb58b38a82dd11b938d7dccd00"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Database Migration Benchmark Lab
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `62-benchmark-lab`
 - **Version:** `1.0.0`
 - **Category:** quality/performance
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

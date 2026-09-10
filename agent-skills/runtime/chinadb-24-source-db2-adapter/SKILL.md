@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/24-source-db2-adapter/SKILL.md"
   source_sha256: "sha256:258b7c618c991aa2a8a4f0dab3cf565a976cffc8635de19971f9035dd2af8674"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # DB2 LUW Source Adapter
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `24-source-db2-adapter`
 - **Version:** `1.0.0`
 - **Category:** source-adapter
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 - **Depends on:** `01-estate-inventory-assessment`, `02-semantic-db-ir`
 
 ## Objective

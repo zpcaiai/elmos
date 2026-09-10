@@ -29,8 +29,7 @@
   </view>
   <view role="status" aria-live="polite" class="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">
     <text>{{executionState}}</text>
-    <text>·</text>
-    <text>{{executionMessage}}</text>
+    <text>· {{executionMessage}}</text>
   </view>
   <view wx:if="{{activeTab === 'code'}}" class="grid grid-cols-1 gap-6 lg_grid-cols-2">
     <view class="flex flex-col rounded-2xl border border-border bg-card p-5 shadow-xs">

@@ -1,5 +1,14 @@
 ---
 name: b31-data-correctness-performance-cutover
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: Validate schema, data, queries, routines, transactions, pipelines, performance, backfill, CDC, dual-run, cutover, rollback, and production readiness for a database modernization pack. Use before customer acceptance or production transition.
 ---
 

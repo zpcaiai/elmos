@@ -1,0 +1,36 @@
+skill: elmos-assurance-model-checking
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-model-checking-A01
+  given: 旧epoch仍可commit的模型
+  when: 在真实集成模块执行对应测试或负例
+  then: 产出反例并转实现回归
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-model-checking-A02
+  given: solver UNKNOWN
+  when: 在真实集成模块执行对应测试或负例
+  then: 禁止PASS
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-model-checking-A03
+  given: 仅验证3个worker
+  when: 在真实集成模块执行对应测试或负例
+  then: 报告bound=3，不能宣称任意规模
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

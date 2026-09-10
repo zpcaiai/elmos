@@ -1,5 +1,8 @@
 ---
 name: b32-javascript-typescript-strengthening
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Strengthen JavaScript into TypeScript with runtime-shape discovery typed boundaries null and undefined semantics module and async analysis generated declarations strictness rollout and behavior-preserving validation.
 ---
 

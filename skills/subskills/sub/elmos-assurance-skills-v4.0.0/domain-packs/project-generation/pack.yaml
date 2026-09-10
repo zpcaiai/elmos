@@ -1,0 +1,29 @@
+schema_version: '4.0'
+id: project-generation
+maturity: SPECIFIED
+route_owner: existing-domain-pack
+routable_entry_delta: 0
+oracle: Approved requirements → contract/state/effect conformance
+proposed_first_route: 批准的订单需求 → 一个真实后端语言+真实数据库+接口回归；再加入第二语言差分
+supported_features_candidate:
+- REST CRUD
+- role/tenant authorization
+- transactional create/update
+- idempotency
+- event outbox
+- UI critical workflow
+risk_families:
+- 需求遗漏
+- 凭据/租户校验缺失
+- 并发超卖
+- 事务部分提交
+- 事件漏发/重复
+- UI显示成功但服务端失败
+formal_obligations_candidate:
+- 金额/库存状态不变量
+- 去重状态机的限定模型
+- 纯领域规则保持
+native_verification: NOT_RUN
+unsupported:
+- 未批准业务假设
+- 没有可执行规范且没有可观测结果的功能

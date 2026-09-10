@@ -150,7 +150,11 @@ export class L5VisualInteractionOracle {
           }
         }
         const hasChildElements = node.children.some((c) => c.nodeType === "element");
-        const text = (!hasChildElements ? (node.textContent || "").trim().replace(/\s+/g, " ") : "").slice(0, 100);
+        let text = (!hasChildElements ? (node.textContent || "").trim().replace(/\s+/g, " ") : "");
+        if (!text && (tagName === "input" || tagName === "textarea")) {
+          text = (node.getAttribute("value") || node.getAttribute("placeholder") || "").trim().replace(/\s+/g, " ");
+        }
+        text = text.slice(0, 100);
         const box: LayoutBox = {
           id: `box-${boxIndex++}`,
           tag: tagName,

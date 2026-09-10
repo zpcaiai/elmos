@@ -83,6 +83,36 @@ export class MiniAppSSREvaluator {
     const properties: Record<string, any> = {};
 
     try {
+      const vm = require('node:vm');
+      let capturedComponent: any = null;
+      const sandbox: Record<string, any> = {
+        Component: (def: any) => { capturedComponent = def; },
+        module: { exports: {} },
+        exports: {},
+        console: { log: () => {}, warn: () => {}, error: () => {} },
+      };
+      vm.runInNewContext(jsCode, sandbox);
+      if (capturedComponent) {
+        if (capturedComponent.data) Object.assign(data, capturedComponent.data);
+        for (const [k, v] of Object.entries(sandbox)) {
+          if (!['Component', 'module', 'exports', 'console'].includes(k) && !(k in data)) {
+            data[k] = v;
+          }
+        }
+        if (capturedComponent.properties) {
+          for (const [k, v] of Object.entries(capturedComponent.properties)) {
+            if (v && typeof v === 'object' && 'value' in (v as any)) {
+              properties[k] = (v as any).value;
+            } else {
+              properties[k] = v;
+            }
+          }
+        }
+        return { data, properties };
+      }
+    } catch {}
+
+    try {
       const dataBlock = this.extractObjectBlock(jsCode, 'data');
       if (dataBlock) {
         try {

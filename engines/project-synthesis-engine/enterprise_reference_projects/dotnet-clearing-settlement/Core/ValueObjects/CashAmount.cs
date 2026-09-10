@@ -35,6 +35,8 @@ public readonly struct CashAmount : IEquatable<CashAmount>, IComparable<CashAmou
         return (decimal)MinorUnits / factor;
     }
 
+    public decimal Amount => ToDecimal();
+
     public CashAmount Abs() => new(Math.Abs(MinorUnits), Currency);
 
     public bool IsPositive => MinorUnits > 0;

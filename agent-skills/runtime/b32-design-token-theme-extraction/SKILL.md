@@ -1,6 +1,9 @@
 ---
 name: b32-design-token-theme-extraction
-description: "Extract normalize migrate and verify design tokens themes typography spacing color responsive rules assets CSS cascade and design-system contracts without flattening them into copied styles."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Extract normalize migrate and verify design tokens themes typography spacing color responsive rules assets CSS cascade and design-system contracts without flattening them into copied styles.
 ---
 
 ## Operating mode

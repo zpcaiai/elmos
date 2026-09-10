@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/64-vendor-native-tool-bridge/SKILL.md"
   source_sha256: "sha256:58df66f1e8315a394c30d6abc0be124f97071ce634be79c4a8fd00cca05d9f6a"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Vendor-Native Migration Tool Bridge
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `64-vendor-native-tool-bridge`
 - **Version:** `1.0.0`
 - **Category:** integration
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

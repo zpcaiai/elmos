@@ -1,6 +1,9 @@
 ---
 name: b32-desktop-web-crossplatform
-description: "Modernize desktop UI and native-bound workflows into web or cross-platform targets with explicit threading command data-binding window file device offline native-integration accessibility and deployment contracts."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Modernize desktop UI and native-bound workflows into web or cross-platform targets with explicit threading command data-binding window file device offline native-integration accessibility and deployment contracts.
 ---
 
 ## Operating mode

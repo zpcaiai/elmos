@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import hashlib
-import time
 from typing import Any, Callable, Dict, List, Mapping, Optional
 
 from ..domain import TenantScope
@@ -28,13 +26,13 @@ PACK_EXECUTION_DISPATCH = {
     '06-dataset-foundry': ModelFoundryPackHandler.execute_dataset_foundry,
     '07-private-model-foundry': ModelFoundryPackHandler.execute_private_model,
     '08-agentic-training-rl': ModelFoundryPackHandler.execute_agentic_rl,
-    '09-evaluation-proof-certification': ModelFoundryPackHandler.execute_evaluation_proof_certification,
+    '09-evaluation-proof-certification': ModelFoundryPackHandler.execute_proof_certification,
     '10-serving-routing-inference': ModelFoundryPackHandler.execute_serving_routing,
     '11-security-privacy-compliance': GovernancePlatformPackHandler.execute_security_privacy,
     '12-observability-lineage-finops': GovernancePlatformPackHandler.execute_observability_finops,
     '13-commercial-multitenant-platform': GovernancePlatformPackHandler.execute_commercial_platform,
     '14-human-governance-operations': GovernancePlatformPackHandler.execute_human_governance,
-    '15-domain-engineering-packs': GovernancePlatformPackHandler.execute_human_governance,
+    '15-domain-engineering-packs': GovernancePlatformPackHandler.execute_domain_engineering_packs,
     '16-self-evolution-release-engineering': GovernancePlatformPackHandler.execute_self_evolution,
     '17-repository-execution-os': ModernizationBackendsPackHandler.execute_repository_execution_os,
     '18-java-spring-enterprise-modernization': ModernizationBackendsPackHandler.execute_java_spring_enterprise,
@@ -108,10 +106,10 @@ class AutomatedPackHandlerRegistry:
                         'status': 'SUCCEEDED',
                         'outputs': output_dict,
                         'execution_status': 'LOCAL_EXECUTED_SELF_ATTESTED',
-                        'pack': p_name,
                         'skill': s_name,
                     }
                     result.update(domain_meta)
+                    result['pack'] = p_name
                     return result
 
                 return _handler

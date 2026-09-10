@@ -1,0 +1,25 @@
+status: CANDIDATES_NOT_PRODUCTION_APPROVED
+openapi_reference_baseline: 3.1.1
+json_schema: 2020-12
+lean_candidate: leanprover/lean4:v4.33.1
+lean_native_verification: NOT_RUN
+other_tools:
+- use-existing-native-compilers-and-runners
+- Schemathesis adapter after version probe
+- PIT adapter after JVM compatibility check
+- SQLGlot fail-on-unsupported adapter
+- SQLancer-inspired oracle pack
+- TLC/SMT adapter with explicit model bounds
+- Sigstore/in-toto/DSSE via existing K8 signing
+must_pin:
+- runtime
+- framework
+- compiler
+- database
+- os-image-digest
+- locale-collation-timezone
+- checker
+- semantic-model
+- schema
+- policy
+- fixture

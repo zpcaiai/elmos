@@ -42,10 +42,13 @@ class JavaAstParser(BaseAstParser):
         super().__init__('java')
 
     def parse(self, source_code: str) -> UniversalModule:
-        # 1. Attempt genuine native javac Tree API compiler first
-        native_mod = NativeBridge.parse_java_with_javac(source_code)
-        if native_mod and (native_mod.classes or native_mod.free_functions):
-            return native_mod
+        class_blocks = self._extract_class_blocks(source_code)
+
+        # 1. Attempt genuine native javac Tree API compiler if single clean class
+        if len(class_blocks) <= 1:
+            native_mod = NativeBridge.parse_java_with_javac(source_code)
+            if native_mod and len(native_mod.classes) >= max(1, len(class_blocks)):
+                return native_mod
 
         module = UniversalModule(name='JavaModule', source_language='java')
 

@@ -79,14 +79,7 @@
     <view wx:if="{{replay}}" class="{{'evidence'}}">
       <view>
         <text>{{replay.migrationRunId}}</text>
-        <text>· 状态</text>
-        <text>{{replay.state}}</text>
-        <text>· 计划</text>
-        <text>{{replay.migrationPlanId}}</text>
-        <text>v</text>
-        <text>{{replay.planVersion}}</text>
-        <text>· 快照</text>
-        <text>{{replay.snapshotId}}</text>
+        <text>· 状态 {{replay.state}} · 计划 {{replay.migrationPlanId}} v {{replay.planVersion}} · 快照 {{replay.snapshotId}}</text>
       </view>
       <view>步骤尝试（ {{replay.steps.rows.length}} ）</view>
       <view wx:if="{{replay.steps.truncated}}" class="{{'bad'}}" role="alert">步骤过多，仅显示前 {{replay.steps.rows.length}} 条——这份回放不完整，不能作为完整凭据。</view>
@@ -120,12 +113,7 @@
       <view wx:else class="{{'lineList'}}">
         <view wx:for="{{replay.evidence.rows}}" wx:key="item.id" key="{{item.evidenceId}}">
           <text class="{{'kind'}}">{{item.evidenceType}}</text>
-          <text>{{item.producerName}}</text>
-          <text>{{item.producerVersion}}</text>
-          <text>·</text>
-          <text>{{item.status}}</text>
-          <text>·</text>
-          <text>{{item.summary}}</text>
+          <text>{{item.producerName}} {{item.producerVersion}} · {{item.status}} · {{item.summary}}</text>
         </view>
       </view>
       <view>审计（ {{replay.audit.rows.length}} ）</view>
@@ -134,13 +122,7 @@
       <view wx:else class="{{'lineList'}}">
         <view wx:for="{{replay.audit.rows}}" wx:for-item="entry" wx:key="entry.id" key="{{entry.auditId}}">
           <text class="{{'kind'}}">{{entry.action}}</text>
-          <text>{{entry.actorType}}</text>
-          <text>{{entry.actorId}}</text>
-          <text>·</text>
-          <text>{{entry.policyDecision}}</text>
-          <text>·</text>
-          <text>{{entry.result}}</text>
-          <text>{{entry.occurredAt ? ` · ${entry.occurredAt}` : ""}}</text>
+          <text>{{entry.actorType}} {{entry.actorId}} · {{entry.policyDecision}} · {{entry.result}} {{entry.occurredAt ? ` · ${entry.occurredAt}` : ""}}</text>
         </view>
       </view>
     </view>
@@ -254,9 +236,7 @@
                   </view>
                   <view>{{job.progress.toFixed(0)}} %</view>
                   <view>
-                    <text>{{job.attempt}}</text>
-                    <text>/</text>
-                    <text>{{job.maxAttempts}}</text>
+                    <text>{{job.attempt}} / {{job.maxAttempts}}</text>
                     <text>state v {{job.stateVersion}}</text>
                   </view>
                   <view>
@@ -494,14 +474,7 @@
       <view wx:if="{{quota}}" class="{{'evidence'}}">
         <view>
           <text>{{quota.planDisplayName}}</text>
-          <text>（</text>
-          <text>{{quota.planId}}</text>
-          <text>） · 版本</text>
-          <text>{{quota.allocationVersion}}</text>
-          <text>· 周期</text>
-          <text>{{formatTime(quota.periodStartsAt)}}</text>
-          <text>—</text>
-          <text>{{formatTime(quota.periodEndsAt)}}</text>
+          <text>（ {{quota.planId}} ） · 版本 {{quota.allocationVersion}} · 周期 {{formatTime(quota.periodStartsAt)}} — {{formatTime(quota.periodEndsAt)}}</text>
         </view>
         <view class="{{'tableWrap'}}">
           <view>

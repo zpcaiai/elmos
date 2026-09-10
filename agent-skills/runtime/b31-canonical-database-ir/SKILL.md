@@ -1,6 +1,15 @@
 ---
 name: b31-canonical-database-ir
-description: "Implement or extend the typed canonical database IR for catalogs, schemas, types, tables, constraints, indexes, partitions, sequences, views, routines, triggers, queries, transactions, and data pipelines. Use before any cross-dialect transformation."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
+description: Implement or extend the typed canonical database IR for catalogs, schemas, types, tables, constraints, indexes, partitions, sequences, views, routines, triggers, queries, transactions, and data pipelines. Use before any cross-dialect transformation.
 ---
 
 ## Operating mode

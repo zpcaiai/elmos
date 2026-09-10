@@ -44,11 +44,12 @@ export class WebSSREvaluator {
       const vm = require('node:vm');
       for (const helper of ir.metadata.topLevelHelpers) {
         try {
-          const hoisted = helper.replace(/\b(const|let)\s+/g, 'var ');
+          const hoisted = helper.replace(/\bexport\s+(default\s+)?/g, '').replace(/\b(const|let)\s+/g, 'var ');
           vm.runInNewContext(hoisted, scope);
         } catch {
           try {
-            const fn = new Function('scope', `with(scope) { ${helper} }`);
+            const cleaned = helper.replace(/\bexport\s+(default\s+)?/g, '').replace(/\b(const|let)\s+/g, 'var ');
+            const fn = new Function('scope', `with(scope) { ${cleaned} }`);
             fn(scope);
           } catch {}
         }

@@ -1,0 +1,31 @@
+{
+  "schema_version": "elmos.legacy-web.compiled-skill-contract.v1",
+  "package_id": "elmos.java-legacy-web.repository-modernization",
+  "package_version": "1.0.0",
+  "installed_alias": "legacy-web-57-source-map-change-provenance",
+  "namespace": "legacy-web-modernization-v1",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "legacy-web-50-deterministic-ast-and-config-rewrite",
+    "legacy-web-51-struts1-to-springmvc-generator",
+    "legacy-web-52-struts2-to-springmvc-generator",
+    "legacy-web-53-servlet-to-springmvc-generator",
+    "legacy-web-54-jakarta-and-dependency-migration",
+    "legacy-web-55-spring-security-validation-transaction-generator",
+    "legacy-web-56-jsp-preserve-or-modernize"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "dispatch",
+    "handler_id": "execute_57_source_map_change_provenance",
+    "phase": "transformation",
+    "priority": "P0",
+    "module_path": "engines/legacy-web-modernization-engine/src/elmos_legacy_web_modernization/runtime.py",
+    "skill_key": "57-source-map-change-provenance",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

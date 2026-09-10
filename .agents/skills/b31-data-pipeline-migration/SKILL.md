@@ -1,5 +1,14 @@
 ---
 name: b31-data-pipeline-migration
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: Migrate ETL, ELT, streaming, batch, and orchestration workflows using typed pipeline IR while preserving state, watermarks, retries, idempotency, schema evolution, schedules, and data contracts. Use for pipeline implementation.
 ---
 

@@ -466,6 +466,15 @@ function unescapeXml(str: string): string {
   return str.replace(/&quot;/g, "\"").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
 }
 
+function escapeAttr(str: string): string {
+  if (typeof str !== "string") return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 function evalExpr(expr: string, scope: Record<string, unknown>): unknown {
   const trimmed = unescapeXml(expr.trim());
   if (trimmed in scope) return scope[trimmed];
@@ -654,7 +663,7 @@ function renderAstElement(name: string, attrs: any[], children: any[], scope: Re
     }
   }
 
-  let renderedAttrs = Object.entries(attrMap).map(([k, v]) => `${k}="${v}"`).join(" ");
+  let renderedAttrs = Object.entries(attrMap).map(([k, v]) => `${k}="${escapeAttr(v)}"`).join(" ");
   if (renderedAttrs) renderedAttrs = " " + renderedAttrs;
 
   if (name === "block") {

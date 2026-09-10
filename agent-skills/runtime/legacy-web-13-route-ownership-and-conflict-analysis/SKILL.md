@@ -1,7 +1,13 @@
 ---
 name: legacy-web-13-route-ownership-and-conflict-analysis
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for 路由所有权与冲突分析; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
   source_package: elmos.java-legacy-web.repository-modernization
   source_version: 1.0.0
   source_id: 13-route-ownership-and-conflict-analysis

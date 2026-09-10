@@ -1,0 +1,9 @@
+PASS tests/miniapp-worker.test.ts (14.105 s)
+PASS tests/platform-miniapps.test.ts
+
+Test Suites: 2 passed, 2 total
+Tests:       63 passed, 63 total
+Snapshots:   0 total
+Time:        18.068 s
+Ran all test suites matching /tests\/platform-miniapps.test.ts|tests\/miniapp-worker.test.ts/i.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?

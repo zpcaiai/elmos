@@ -28,6 +28,10 @@ public static class Program
         SimmAndRegulatoryTests.Run();
         BilateralCreditAndAuditTests.RunAll();
         MacroStressAndConcentrationTests.RunAll();
+        AuctionAndCollateralTests.RunAll();
+        CompressionAndTripartyTests.RunAll();
+        CsdrPenaltyAndBuyInTests.RunAll();
+        InterestRateSwapDiscountingTests.RunAll();
 
         Console.WriteLine("\n[Running Live Multi-Member Clearing Demo]");
         await RunLiveClearingDemoAsync();

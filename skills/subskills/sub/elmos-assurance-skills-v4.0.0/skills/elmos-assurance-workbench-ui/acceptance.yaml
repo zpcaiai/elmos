@@ -1,0 +1,36 @@
+skill: elmos-assurance-workbench-ui
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-workbench-ui-A01
+  given: 回归90%执行但100%已执行case通过
+  when: 在真实集成模块执行对应测试或负例
+  then: UI不能显示全功能100%通过
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-workbench-ui-A02
+  given: 普通用户访问Ethen hidden routes
+  when: 在真实集成模块执行对应测试或负例
+  then: 前后端均拒绝
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-workbench-ui-A03
+  given: 证书撤销后缓存页面
+  when: 在真实集成模块执行对应测试或负例
+  then: 显示撤销/查询时间，不能继续绿徽章
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

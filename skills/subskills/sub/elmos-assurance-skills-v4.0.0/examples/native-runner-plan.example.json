@@ -1,0 +1,22 @@
+{
+  "schema_version": "4.0",
+  "plan_id": "demo-runner",
+  "tenant_id": "demo-tenant",
+  "run_id": "demo-run",
+  "adapter_id": "UNRESOLVED-ADAPTER",
+  "action": "regression",
+  "approved_request_digest": "86c72d5e090632430238edc15169932a35c86e80438d53d65b415296ac88bc5a",
+  "case_manifest_digest": "03a045f8e253441d029f0342c7bdfec508a70244e96573b1b931786906ebbacc",
+  "assertion_program_digest": "ce5d0f4c802eede9a9beebddc23a314dffb543b7a01456fdcc703a8696cba9c6",
+  "image_digest": "sha256:57a985c45a55035fcebed007e19f956a1de7661f6148a1b1df87cb3f57ab944d",
+  "toolchain_digest": "2ec680b706b5065e104162b8752dcc71bf1e93c20572642e289b2d6a86de54de",
+  "verified_security_context_ref": "UNCONFIGURED",
+  "capability_lease_ref": "UNCONFIGURED",
+  "fencing_epoch": 1,
+  "deadline_unix_seconds": 1,
+  "network_policy": "deny",
+  "secret_refs": [],
+  "output_prefix": "evidence/demo/run",
+  "max_output_bytes": 1000000,
+  "requires_human_approval": true
+}

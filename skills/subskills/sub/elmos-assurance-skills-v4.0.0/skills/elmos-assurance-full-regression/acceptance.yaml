@@ -1,0 +1,36 @@
+skill: elmos-assurance-full-regression
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-full-regression-A01
+  given: critical case被skip
+  when: 在真实集成模块执行对应测试或负例
+  then: 回归INCONCLUSIVE/FAIL，不是100%
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-full-regression-A02
+  given: 第一次失败随后偶然通过
+  when: 在真实集成模块执行对应测试或负例
+  then: 保存flake且关键路径阻断
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-full-regression-A03
+  given: 回归结束后目标artifact变了
+  when: 在真实集成模块执行对应测试或负例
+  then: 旧回归证据不能签新目标
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

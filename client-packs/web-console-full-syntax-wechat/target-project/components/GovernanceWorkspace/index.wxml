@@ -90,8 +90,7 @@
         </view>
         <view class="{{'diffCardBody'}}">
           <text class="{{'catLabel'}}">{{d.category}}</text>
-          <text>:</text>
-          <text>{{d.description}}</text>
+          <text>: {{d.description}}</text>
         </view>
       </view>
     </view>

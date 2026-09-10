@@ -1,0 +1,126 @@
+{
+  "generated_on": "2026-09-09",
+  "package": "elmos-assurance-skills-v4.0.0",
+  "status": "REFERENCE_AND_STRUCTURE_CHECKED_NOT_PRODUCT_CERTIFIED",
+  "python_version": "3.13.5",
+  "sqlite_version": "3.46.1",
+  "reference_tests": {
+    "passed": 138,
+    "failures_or_errors": 0
+  },
+  "structural_counts": {
+    "yaml_files": 126,
+    "json_schemas": 15,
+    "skills": 34,
+    "skill_acceptance_cases": 102,
+    "domain_packs": 4,
+    "native_route_acceptance_cases": 24,
+    "api_operations": 14,
+    "schema_examples": 15
+  },
+  "checks": [
+    {
+      "name": "package-structure",
+      "command": "/opt/pyvenv/bin/python scripts/validate_package.py --output validation/package-structure.json",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "check_passed": true,
+      "started_at": "2026-09-09T10:25:04.072054+00:00",
+      "wall_clock_seconds": 1.901,
+      "stdout_tail": "{\n  \"status\": \"PASS\",\n  \"kind\": \"PACKAGE_STRUCTURE_ONLY_NOT_PRODUCT_CERTIFICATION\",\n  \"counts\": {\n    \"yaml_files\": 126,\n    \"json_schemas\": 15,\n    \"skills\": 34,\n    \"skill_acceptance_cases\": 102,\n    \"domain_packs\": 4,\n    \"native_route_acceptance_cases\": 24,\n    \"api_operations\": 14,\n    \"schema_examples\": 15\n  },\n  \"errors\": [],\n  \"native_validation\": \"NOT_RUN\",\n  \"lock_checked\": false\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "reference-pytest",
+      "command": "/opt/pyvenv/bin/python -m pytest -q --junitxml=validation/reference-tests.xml",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "check_passed": true,
+      "started_at": "2026-09-09T10:25:05.973868+00:00",
+      "wall_clock_seconds": 3.774,
+      "stdout_tail": "........................................................................ [ 52%]\n..................................................................       [100%]\n138 passed in 1.69s\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "reference-demo",
+      "command": "/opt/pyvenv/bin/python scripts/demo_reference.py",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "check_passed": true,
+      "started_at": "2026-09-09T10:25:09.747846+00:00",
+      "wall_clock_seconds": 1.484,
+      "stdout_tail": "INVENTORY_MISMATCH\"\n      ],\n      \"verified_evidence_ids\": [\n        \"e-build\",\n        \"e-contract\",\n        \"e-differential\",\n        \"e-mutation\",\n        \"e-proof\",\n        \"e-regression\",\n        \"e-smoke\"\n      ],\n      \"production_signing_allowed\": false\n    },\n    {\n      \"scenario\": \"mutation-unknown\",\n      \"schema_version\": \"4.0\",\n      \"kind\": \"DEMO_ONLY_NOT_A_CERTIFICATE\",\n      \"verdict\": \"INCONCLUSIVE\",\n      \"request_digest\": \"701ed3870c855252f1ef1f5e152cd0b399d9c2f3123ddb220d0666dc2a54c19c\",\n      \"reasons\": [\n        \"REQUIRED_CASE_EVIDENCE_MISSING\",\n        \"e-mutation:EVIDENCE_REJECTED:MUTATION_UNKNOWN\"\n      ],\n      \"verified_evidence_ids\": [\n        \"e-audit\",\n        \"e-build\",\n        \"e-contract\",\n        \"e-differential\",\n        \"e-proof\",\n        \"e-regression\",\n        \"e-smoke\"\n      ],\n      \"production_signing_allowed\": false\n    },\n    {\n      \"scenario\": \"failed-regression\",\n      \"schema_version\": \"4.0\",\n      \"kind\": \"DEMO_ONLY_NOT_A_CERTIFICATE\",\n      \"verdict\": \"FAIL\",\n      \"request_digest\": \"701ed3870c855252f1ef1f5e152cd0b399d9c2f3123ddb220d0666dc2a54c19c\",\n      \"reasons\": [\n        \"REQUIRED_CASE_EVIDENCE_MISSING\",\n        \"e-regression:CASE_FAILED:c-regression\"\n      ],\n      \"verified_evidence_ids\": [\n        \"e-audit\",\n        \"e-build\",\n        \"e-contract\",\n        \"e-differential\",\n        \"e-mutation\",\n        \"e-proof\",\n        \"e-regression\",\n        \"e-smoke\"\n      ],\n      \"production_signing_allowed\": false\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "lean-availability",
+      "command": "/opt/pyvenv/bin/python scripts/check_lean.py",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "check_passed": true,
+      "started_at": "2026-09-09T10:25:11.232227+00:00",
+      "wall_clock_seconds": 0.545,
+      "stdout_tail": "{\"status\": \"NOT_RUN\", \"reason\": \"lean executable is not installed\", \"independent_checker\": \"NOT_RUN\", \"production_claim\": false}\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "python-syntax",
+      "command": "/opt/pyvenv/bin/python -m compileall -q reference scripts tests",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "check_passed": true,
+      "started_at": "2026-09-09T10:25:11.777502+00:00",
+      "wall_clock_seconds": 0.592,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    }
+  ],
+  "installer_checks": [
+    {
+      "agent": "codex",
+      "dry_run_no_writes": true,
+      "actual_temp_install_skill_count": 34,
+      "repeat_install_refused": true,
+      "policy_files_untouched": true,
+      "actual_elmos_repository_changed": false
+    },
+    {
+      "agent": "claude",
+      "dry_run_no_writes": true,
+      "actual_temp_install_skill_count": 34,
+      "repeat_install_refused": true,
+      "policy_files_untouched": true,
+      "actual_elmos_repository_changed": false
+    }
+  ],
+  "tool_availability": {
+    "python": "/opt/pyvenv/bin/python",
+    "java": "/usr/bin/java",
+    "node": "/opt/nvm/versions/node/v22.16.0/bin/node",
+    "docker": "NOT_INSTALLED",
+    "psql": "NOT_INSTALLED",
+    "lean": "NOT_INSTALLED",
+    "lake": "NOT_INSTALLED",
+    "dotnet": "NOT_INSTALLED"
+  },
+  "external_checks": {
+    "native_four_business_routes": "NOT_RUN",
+    "postgresql_migration": "NOT_RUN",
+    "full_openapi_spec_validator": "NOT_RUN (local references/guards/operation structure checked only)",
+    "lean_kernel": "NOT_RUN",
+    "lean_independent_checker": "NOT_RUN",
+    "tla_tlc_model": "NOT_RUN",
+    "real_ethen_identity": "UNCONFIGURED",
+    "real_ethen_signed_audit": "NOT_RUN",
+    "production_k8_signing": "DISABLED",
+    "real_elmos_repo_implementation": "NOT_RUN",
+    "customer_holdout": "NOT_RUN",
+    "deployment_and_rollback": "NOT_RUN"
+  },
+  "non_claims": [
+    "Reference PASS is not project PASS",
+    "No native route, real Lean proof or real Ethen approval is claimed",
+    "No accredited certification is issued",
+    "Synthetic proof-report fields are only gate-test fixtures"
+  ]
+}

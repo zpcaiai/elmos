@@ -1,5 +1,14 @@
 ---
 name: b31-view-materialized-view-migration
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: Migrate views, indexed/materialized views, refresh policies, dependencies, security context, updatability, and consumers through query IR and real result comparison. Use for logical and precomputed database views.
 ---
 

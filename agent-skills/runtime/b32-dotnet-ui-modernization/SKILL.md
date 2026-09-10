@@ -1,6 +1,9 @@
 ---
 name: b32-dotnet-ui-modernization
-description: "Modernize Razor ASP.NET MVC views Web Forms desktop-bound .NET UI server helpers postbacks session and legacy client assets into a certified modern web target with explicit coexistence."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Modernize Razor ASP.NET MVC views Web Forms desktop-bound .NET UI server helpers postbacks session and legacy client assets into a certified modern web target with explicit coexistence.
 ---
 
 ## Operating mode

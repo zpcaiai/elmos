@@ -1,0 +1,113 @@
+schema_version: '4.0'
+domain: spring-modernization
+scope: one approved exact native source/target/environment feature profile
+status: SPECIFIED_NOT_EXECUTED
+formal_rule: formal stage emits APPROVED_NOT_APPLICABLE only when profile and scope explicitly authorize it; UNKNOWN
+  blocks required formal claims
+steps:
+- id: approve-scope
+  depends_on: []
+  adapter: scope-compiler
+  initial_status: PENDING_APPROVAL
+  retry: bounded-infrastructure-only
+  result_commit: verified-context+lease+fencing+idempotency
+  on_failure: preserve-evidence;block-dependent-tasks
+- id: contract
+  depends_on:
+  - approve-scope
+  adapter: contract-compiler
+  initial_status: NOT_RUN
+  retry: bounded-infrastructure-only
+  result_commit: verified-context+lease+fencing+idempotency
+  on_failure: preserve-evidence;block-dependent-tasks
+- id: plan
+  depends_on:
+  - contract
+  adapter: coverage-planner
+  initial_status: NOT_RUN
+  retry: bounded-infrastructure-only
+  result_commit: verified-context+lease+fencing+idempotency
+  on_failure: preserve-evidence;block-dependent-tasks
+- id: build
+  depends_on:
+  - plan
+  adapter: native-build
+  initial_status: NOT_RUN
+  retry: bounded-infrastructure-only
+  result_commit: verified-context+lease+fencing+idempotency
+  on_failure: preserve-evidence;block-dependent-tasks
+- id: smoke
+  depends_on:
+  - build
+  adapter: native-smoke
+  initial_status: NOT_RUN
+  retry: bounded-infrastructure-only
+  result_commit: verified-context+lease+fencing+idempotency
+  on_failure: preserve-evidence;block-dependent-tasks
+- id: regression
+  depends_on:
+  - smoke
+  adapter: native-regression
+  initial_status: NOT_RUN
+  retry: bounded-infrastructure-only
+  result_commit: verified-context+lease+fencing+idempotency
+  on_failure: preserve-evidence;block-dependent-tasks
+- id: semantic
+  depends_on:
+  - regression
+  adapter: domain-differential
+  initial_status: NOT_RUN
+  retry: bounded-infrastructure-only
+  result_commit: verified-context+lease+fencing+idempotency
+  on_failure: preserve-evidence;block-dependent-tasks
+- id: mutation
+  depends_on:
+  - semantic
+  adapter: domain-mutation
+  initial_status: NOT_RUN
+  retry: bounded-infrastructure-only
+  result_commit: verified-context+lease+fencing+idempotency
+  on_failure: preserve-evidence;block-dependent-tasks
+- id: formal
+  depends_on:
+  - contract
+  adapter: formal-broker
+  initial_status: NOT_RUN
+  retry: bounded-infrastructure-only
+  result_commit: verified-context+lease+fencing+idempotency
+  on_failure: preserve-evidence;block-dependent-tasks
+- id: seal
+  depends_on:
+  - regression
+  - semantic
+  - mutation
+  - formal
+  adapter: evidence-service
+  initial_status: NOT_RUN
+  retry: bounded-infrastructure-only
+  result_commit: verified-context+lease+fencing+idempotency
+  on_failure: preserve-evidence;block-dependent-tasks
+- id: audit
+  depends_on:
+  - seal
+  adapter: ethen-port
+  initial_status: UNCONFIGURED
+  retry: bounded-infrastructure-only
+  result_commit: verified-context+lease+fencing+idempotency
+  on_failure: preserve-evidence;block-dependent-tasks
+- id: decision
+  depends_on:
+  - audit
+  adapter: k8-gate
+  initial_status: NOT_RUN
+  retry: bounded-infrastructure-only
+  result_commit: verified-context+lease+fencing+idempotency
+  on_failure: preserve-evidence;block-dependent-tasks
+- id: sign
+  depends_on:
+  - decision
+  adapter: k8-signer
+  initial_status: DISABLED
+  retry: bounded-infrastructure-only
+  result_commit: verified-context+lease+fencing+idempotency
+  on_failure: preserve-evidence;block-dependent-tasks

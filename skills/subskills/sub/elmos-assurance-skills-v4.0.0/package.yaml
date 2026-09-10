@@ -1,0 +1,30 @@
+schema_version: '4.0'
+package_id: elmos-assurance-skills-v4.0.0
+version: 4.0.0
+generated_on: '2026-09-09'
+type: cross-cutting-assurance-extension
+target: Elmos Proof-Driven Agentic Harness / Repository Semantic Compiler v3
+canonical_route_delta: 0
+assurance_profile: elmos.assurance/v4
+skills_count: 34
+master_skill: elmos-assurance-orchestrator
+business_lines:
+- project-generation
+- sql-conversion
+- spring-modernization
+- repository-conversion
+defaults:
+  fail_mode: closed
+  account_top_level_concurrency: 3
+  runtime_network: deny
+  auditor_identity: UNCONFIGURED
+  production_signing: DISABLED
+  native_evidence: NOT_RUN
+claims:
+  implementation_contract: true
+  reference_kernel: true
+  full_product_implemented: false
+  native_route_certified: false
+  lean_checked: false
+  ethen_signed: false
+  accredited_certification: false

@@ -297,7 +297,7 @@ multimodal-intake-skills:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_multimodal_intake_skills.py --write
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_multimodal_intake_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/multimodal-intake-engine/src python3 engines/multimodal-intake-engine/tools/render_operation_input_schema.py --check
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pytest==8.4.1 python -m pytest -q -p no:cacheprovider tests/multimodal-intake/test_integration.py
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. $(UV) run --quiet --with pytest==8.4.1 python -m pytest -q -p no:cacheprovider tests/multimodal-intake/test_integration.py
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/multimodal-intake-engine/src $(UV) run --quiet --with pytest==8.4.1 python -m pytest -q -p no:cacheprovider engines/multimodal-intake-engine/tests
 	PYTHONDONTWRITEBYTECODE=1 python3 engines/multimodal-intake-engine/tools/verify_sdks.py --check
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" node apps/web-console/app/lib/server/multimodalIntakeRunner.verify.mjs

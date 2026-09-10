@@ -1933,3 +1933,292 @@ class TrafficShift:
     reason: str
     started_at: str
     completed: bool = False
+
+
+# ─── Knowledge Marketplace Models ─────────────────────────────────────
+
+class KnowledgeAssetType(str, Enum):
+    PATTERN = "pattern"
+    RECIPE = "recipe"
+    RULE_PACK = "rule_pack"
+    MIGRATION_MAP = "migration_map"
+    BENCHMARK = "benchmark"
+    CORPUS = "corpus"
+
+class AssetQualityTier(str, Enum):
+    DRAFT = "draft"
+    REVIEWED = "reviewed"
+    CERTIFIED = "certified"
+    DEPRECATED = "deprecated"
+
+class SharingScope(str, Enum):
+    PRIVATE = "private"
+    TENANT = "tenant"
+    ORGANIZATION = "organization"
+    PUBLIC = "public"
+
+@dataclass
+class KnowledgeAsset:
+    asset_id: str
+    name: str
+    asset_type: KnowledgeAssetType
+    quality_tier: AssetQualityTier = AssetQualityTier.DRAFT
+    sharing_scope: SharingScope = SharingScope.PRIVATE
+    owner_tenant_id: str = ""
+    version: str = "1.0.0"
+    description: str = ""
+    usage_count: int = 0
+    rating: float = 0.0  # 0-5
+    rating_count: int = 0
+    created_at: str = ""
+    tags: List[str] = field(default_factory=list)
+    content_digest: str = ""
+    license: str = "proprietary"
+
+@dataclass
+class AssetReview:
+    review_id: str
+    asset_id: str
+    reviewer_id: str
+    rating: float  # 1-5
+    comment: str
+    approved: bool = False
+    timestamp: str = ""
+
+@dataclass
+class AssetUsageRecord:
+    asset_id: str
+    tenant_id: str
+    used_at: str
+    success: bool = True
+    feedback: str = ""
+
+# ─── Change Management Models ─────────────────────────────────────────
+
+class ChangeRiskLevel(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+class ChangeStatus(str, Enum):
+    DRAFT = "draft"
+    SUBMITTED = "submitted"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    ROLLED_BACK = "rolled_back"
+
+class FreezeScope(str, Enum):
+    GLOBAL = "global"
+    REGION = "region"
+    SERVICE = "service"
+    TENANT = "tenant"
+
+@dataclass
+class ChangeRequest:
+    change_id: str
+    title: str
+    description: str
+    service_name: str
+    risk_level: ChangeRiskLevel
+    status: ChangeStatus = ChangeStatus.DRAFT
+    requester: str = ""
+    approver: str = ""
+    scheduled_at: str = ""
+    started_at: str = ""
+    completed_at: str = ""
+    rollback_plan: str = ""
+    impact_services: List[str] = field(default_factory=list)
+    region: str = ""
+
+@dataclass
+class ChangeFreezeWindow:
+    freeze_id: str
+    reason: str
+    scope: FreezeScope
+    scope_value: str = ""  # region name, service name, etc.
+    starts_at: str = ""
+    ends_at: str = ""
+    is_active: bool = True
+    exceptions: List[str] = field(default_factory=list)  # change_ids exempt
+    created_by: str = ""
+
+@dataclass
+class ChangeAuditEntry:
+    change_id: str
+    action: str
+    actor: str
+    timestamp: str = ""
+    details: str = ""
+
+# ─── Release Channel Governance Models ────────────────────────────────
+
+class ChannelStability(str, Enum):
+    NIGHTLY = "nightly"
+    ALPHA = "alpha"
+    BETA = "beta"
+    RC = "rc"
+    STABLE = "stable"
+    LTS = "lts"
+
+class PromotionVerdict(str, Enum):
+    APPROVED = "approved"
+    BLOCKED = "blocked"
+    NEEDS_REVIEW = "needs_review"
+    ROLLED_BACK = "rolled_back"
+
+@dataclass
+class ChannelReleaseCandidate:
+    rc_id: str
+    version: str
+    channel: ChannelStability
+    artifact_digest: str
+    created_at: str
+    promoted_at: str = ""
+    promoted_to: str = ""  # target channel
+    test_pass_rate: float = 0.0
+    security_scan_clean: bool = False
+    breaking_changes: List[str] = field(default_factory=list)
+    rollback_version: str = ""
+
+@dataclass
+class ChannelPolicy:
+    channel: ChannelStability
+    min_test_pass_rate: float = 95.0
+    require_security_scan: bool = True
+    require_zero_breaking_changes: bool = False
+    min_soak_hours: int = 0
+    max_rollback_window_hours: int = 72
+    auto_promote: bool = False
+
+@dataclass
+class PromotionRecord:
+    promotion_id: str
+    rc_id: str
+    from_channel: ChannelStability
+    to_channel: ChannelStability
+    verdict: PromotionVerdict
+    reason: str
+    actor: str
+    timestamp: str = ""
+
+# ─── Model/Agent Economics Models ─────────────────────────────────────
+
+class ModelProvider(str, Enum):
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    GOOGLE = "google"
+    AZURE = "azure"
+    SELF_HOSTED = "self_hosted"
+
+class AgentCostType(str, Enum):
+    MODEL_INFERENCE = "model_inference"
+    TOOL_EXECUTION = "tool_execution"
+    HUMAN_REVIEW = "human_review"
+    STORAGE = "storage"
+    COMPUTE = "compute"
+    EGRESS = "egress"
+
+@dataclass
+class ModelPricing:
+    model_id: str
+    provider: ModelProvider
+    input_cost_per_1k_tokens: float
+    output_cost_per_1k_tokens: float
+    context_window: int = 128000
+    max_output_tokens: int = 4096
+    cached_input_discount_pct: float = 0.0
+
+@dataclass
+class AgentInvocation:
+    invocation_id: str
+    agent_id: str
+    model_id: str
+    input_tokens: int
+    output_tokens: int
+    tool_calls: int = 0
+    tool_cost: float = 0.0
+    human_review_cost: float = 0.0
+    duration_seconds: float = 0.0
+    success: bool = True
+    tenant_id: str = ""
+    timestamp: str = ""
+
+@dataclass
+class AgentROI:
+    agent_id: str
+    total_cost: float
+    total_value_generated: float  # estimated value of successful outputs
+    roi_percentage: float = 0.0
+    break_even_invocations: int = 0
+    cost_per_success: float = 0.0
+    invocation_count: int = 0
+    success_count: int = 0
+
+@dataclass
+class CostForecast:
+    agent_id: str
+    period_days: int
+    projected_invocations: int
+    projected_cost: float
+    projected_value: float
+    confidence_level: float = 0.0
+
+# ─── Database Expand-Contract Models ──────────────────────────────────
+
+class DbMigrationPhase(str, Enum):
+    PENDING = "pending"
+    EXPAND = "expand"  # Add new columns/tables (backward compatible)
+    MIGRATE = "migrate"  # Copy data from old to new
+    CONTRACT = "contract"  # Remove old columns/tables
+    COMPLETED = "completed"
+    ROLLED_BACK = "rolled_back"
+
+class SchemaChangeType(str, Enum):
+    ADD_COLUMN = "add_column"
+    DROP_COLUMN = "drop_column"
+    ADD_TABLE = "add_table"
+    DROP_TABLE = "drop_table"
+    RENAME_COLUMN = "rename_column"
+    ALTER_TYPE = "alter_type"
+    ADD_INDEX = "add_index"
+    DROP_INDEX = "drop_index"
+    ADD_CONSTRAINT = "add_constraint"
+    DROP_CONSTRAINT = "drop_constraint"
+
+@dataclass
+class SchemaChange:
+    change_id: str
+    change_type: SchemaChangeType
+    table_name: str
+    column_name: str = ""
+    new_column_name: str = ""  # for renames
+    data_type: str = ""
+    nullable: bool = True
+    default_value: str = ""
+    backward_compatible: bool = True
+
+@dataclass
+class ExpandContractPlan:
+    plan_id: str
+    description: str
+    phase: DbMigrationPhase = DbMigrationPhase.PENDING
+    expand_changes: List[SchemaChange] = field(default_factory=list)
+    contract_changes: List[SchemaChange] = field(default_factory=list)
+    data_migration_queries: List[str] = field(default_factory=list)
+    created_at: str = ""
+    started_at: str = ""
+    completed_at: str = ""
+    rows_migrated: int = 0
+    rollback_plan: List[str] = field(default_factory=list)
+
+@dataclass
+class SchemaValidation:
+    plan_id: str
+    valid: bool
+    breaking_changes: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
+    estimated_downtime_seconds: int = 0

@@ -1,5 +1,8 @@
 ---
 name: b32-client-certification-gate
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Run the conservative Batch 32 certification gate and emit certified limited experimental or blocked status from exact tuples runtime fingerprint UI IR real builds runtime journeys holdout accessibility visual security performance and evidence.
 ---
 

@@ -286,7 +286,8 @@ export class HTMLParser {
     const stack: DOMNode[] = [];
 
     // Regex matching tags, comments, and plain text chunks
-    const tagRegex = /<!--[\s\S]*?-->|<\/?[a-zA-Z0-9_-]+(?:\s+[^>]*)?\/?>|[^<]+/g;
+    // Quoted strings inside tag attributes can contain '>' e.g. wx:if="{{ a > b }}" or value="a > b"
+    const tagRegex = /<!--[\s\S]*?-->|<\/?[a-zA-Z0-9_-]+(?:\s+(?:[^>"']|"[^"]*"|'[^']*')*)*\s*\/?>|[^<]+/g;
     let match: RegExpExecArray | null;
 
     while ((match = tagRegex.exec(html)) !== null) {
@@ -469,6 +470,17 @@ export class HeadlessBoxLayoutEngine {
       }
       contentWidth = maxChildWidth;
       contentHeight = blockCursorY - innerY;
+    }
+
+    if (contentHeight === 0) {
+      const lowerTag = (node.tagName || '').toLowerCase();
+      if (lowerTag === 'textarea') {
+        const rawRows = (node.getAttribute('rows') || '3').replace(/[^0-9]/g, '');
+        const rows = parseInt(rawRows || '3', 10);
+        contentHeight = (isNaN(rows) || rows <= 0 ? 3 : rows) * 20;
+      } else if (lowerTag === 'input') {
+        contentHeight = 28;
+      }
     }
 
     const totalWidth = explicitWidth !== null ? explicitWidth : Math.max(contentWidth, innerWidth > 0 && display === 'block' ? innerWidth : 0) + padding.left + padding.right + margin.left + margin.right;

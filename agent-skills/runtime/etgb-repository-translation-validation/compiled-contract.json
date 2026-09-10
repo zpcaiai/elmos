@@ -1,0 +1,32 @@
+{
+  "schema_version": "elmos.etgb.compiled-skill-contract.v1",
+  "package_id": "elmos.etgb-full-product-assurance-skills-package",
+  "package_version": "2.0.0",
+  "installed_alias": "etgb-repository-translation-validation",
+  "namespace": "etgb-full-product-assurance-v2",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "etgb-production-harness-integration",
+    "etgb-differential-oracle-engine",
+    "etgb-metamorphic-fuzz-mutation",
+    "etgb-corpus-governance",
+    "etgb-performance-scale-certification",
+    "etgb-supply-chain-artifact-security"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "dispatch",
+    "skill_name": "repository-translation-validation",
+    "operations": [
+      "validate_case",
+      "capability"
+    ],
+    "module_path": "engines/etgb-engine/src/elmos_etgb/registry.py",
+    "registry_class": "SkillRegistry",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

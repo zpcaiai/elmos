@@ -3,7 +3,7 @@ from __future__ import annotations
 import concurrent.futures
 import time
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import List
 
 from .lease_manager import DistributedLeaseManager
 from .persistent_queue import PersistentTaskQueue

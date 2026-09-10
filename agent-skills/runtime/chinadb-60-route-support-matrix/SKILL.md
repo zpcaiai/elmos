@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/60-route-support-matrix/SKILL.md"
   source_sha256: "sha256:59a9a0bcf72a285e03358dcbf72d155937c4b0afe978d86bc9f274a805c1b1ab"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Route Support Matrix & Compatibility Governance
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `60-route-support-matrix`
 - **Version:** `1.0.0`
 - **Category:** commercial
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

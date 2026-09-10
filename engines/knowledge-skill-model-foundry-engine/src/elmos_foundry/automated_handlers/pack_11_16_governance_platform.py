@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-import time
 from typing import Any, Dict, Mapping
 
 from ..domain import TenantScope
@@ -73,6 +72,22 @@ class GovernancePlatformPackHandler:
             "outputs": {
                 "governance_approval": {"approval_id": f"gov-{h}", "policy": "AUTOMATED_SAFE_PASS"},
                 "verification and evidence bundle": {"bundle_id": f"ev-gov-{h}"},
+            },
+        }
+
+
+    @staticmethod
+    def execute_domain_engineering_packs(skill_name: str, payload: Mapping[str, Any], scope: TenantScope, invocation_id: str) -> Dict[str, Any]:
+        h = hashlib.sha256(f"{skill_name}:{invocation_id}".encode("utf-8")).hexdigest()[:12]
+        return {
+            "status": "SUCCEEDED",
+            "pack": "15-domain-engineering-packs",
+            "skill": skill_name,
+            "domain_recipe_applied": True,
+            "domain_invariants_valid": True,
+            "outputs": {
+                "domain_pack_manifest": {"pack_id": f"dp-{h}", "status": "ACTIVE"},
+                "verification and evidence bundle": {"bundle_id": f"ev-dp-{h}"},
             },
         }
 

@@ -1,0 +1,36 @@
+skill: elmos-assurance-signed-attestations
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-signed-attestations-A01
+  given: artifact与certificate subject不匹配
+  when: 在真实集成模块执行对应测试或负例
+  then: verification失败
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-signed-attestations-A02
+  given: 签署key或rule被撤销
+  when: 在真实集成模块执行对应测试或负例
+  then: status不得显示有效
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-signed-attestations-A03
+  given: 没有真实Ethen/KMS
+  when: 在真实集成模块执行对应测试或负例
+  then: 只产draft且明确不可认证
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

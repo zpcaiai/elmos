@@ -367,7 +367,8 @@ export class MiniAppFullAstEmitter {
       return `${indent}<${tag}${attrStr}>${inlineContent}</${tag}>`;
     }
 
-    const childStrs = validChildren.map((c) => this.emitWxmlNode(c, indentLevel + 2)).filter(Boolean);
+    const groupedChildren = this.groupTextAndExprChildren(validChildren);
+    const childStrs = groupedChildren.map((c) => this.emitWxmlNode(c, indentLevel + 2)).filter(Boolean);
     if (childStrs.length === 0) {
       return `${indent}<${tag}${attrStr} />`;
     }
@@ -458,12 +459,45 @@ export class MiniAppFullAstEmitter {
       return `${indent}<${tag}${attrStr}>${inlineContent}</${tag}>`;
     }
 
-    const childStrs = validChildren.map((c) => this.emitWxmlNode(c, indentLevel + 2)).filter(Boolean);
+    const groupedChildren = this.groupTextAndExprChildren(validChildren);
+    const childStrs = groupedChildren.map((c) => this.emitWxmlNode(c, indentLevel + 2)).filter(Boolean);
     if (childStrs.length === 0) {
       return `${indent}<${tag}${attrStr} />`;
     }
     const childContent = childStrs.join("\n");
     return `${indent}<${tag}${attrStr}>\n${childContent}\n${indent}</${tag}>`;
+  }
+
+  private groupTextAndExprChildren(children: FullSyntaxNode[]): FullSyntaxNode[] {
+    const grouped: FullSyntaxNode[] = [];
+    let textRun: FullSyntaxNode[] = [];
+
+    const flushRun = () => {
+      if (textRun.length === 1) {
+        grouped.push(textRun[0]!);
+      } else if (textRun.length > 1) {
+        grouped.push({
+          id: `tr_${Math.random().toString(36).slice(2, 8)}`,
+          kind: "element",
+          tag: "text",
+          attrs: [],
+          events: [],
+          children: textRun,
+        });
+      }
+      textRun = [];
+    };
+
+    for (const c of children) {
+      if (c.kind === "text" || c.kind === "expression") {
+        textRun.push(c);
+      } else {
+        flushRun();
+        grouped.push(c);
+      }
+    }
+    flushRun();
+    return grouped;
   }
 
   private toWxTag(tag?: string): string {

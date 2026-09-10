@@ -2,16 +2,16 @@
 
 ## 1. 审计统计概览
 
-- **技能总数**：`4352` 个标准技能规范 (`SKILL.md`)
-- **审计耗时**：`5.13` 秒
+- **技能总数**：`4353` 个标准技能规范 (`SKILL.md`)
+- **审计耗时**：`7.53` 秒
 - **Frontmatter 格式合规率**：`100.0%` (4,352 / 4,352 均合法具备 YAML Frontmatter)
 
 ### 状态分布
 
 | 声明实现状态 | 技能数量 | 占比 |
 | :--- | :---: | :---: |
-| `DECLARED` | 2320 | 53.3% |
-| `VERIFIED` | 587 | 13.5% |
+| `DECLARED` | 2248 | 51.6% |
+| `VERIFIED` | 711 | 16.3% |
 | `production-contract` | 473 | 10.9% |
 | `supported` | 198 | 4.5% |
 | `SPECIFICATION_IMPORTED` | 196 | 4.5% |
@@ -19,18 +19,18 @@
 | `IMPLEMENTED` | 72 | 1.7% |
 | `PRODUCTION_CODE_COMPLETE` | 60 | 1.4% |
 | `directly` | 51 | 1.2% |
-| `SPEC_ONLY` | 47 | 1.1% |
 | `vocabulary` | 44 | 1.0% |
 | `test-ready-not-run` | 35 | 0.8% |
 | `PARTIAL_LOCAL_IMPLEMENTED` | 26 | 0.6% |
 | `only` | 24 | 0.6% |
 | `alone` | 23 | 0.5% |
+| `BOUNDED_LOCAL_IMPLEMENTED` | 19 | 0.4% |
 
 ### 核心批次与类别分布
 
 | 批次 / 类别前缀 | 技能数量 | 核心领域 |
 | :--- | :---: | :--- |
-| `elmos` | 1324 | Foundry v3 原子技能、多语言语义编译器、多模态摄取与工作台 |
+| `elmos` | 1325 | Foundry v3 原子技能、多语言语义编译器、多模态摄取与工作台 |
 | `pm` | 632 | Precision Migration 高精度迁移内核 B01-B44 |
 | `tst` | 117 | 严格测试套件、防作弊验证器与认证门禁 |
 | `spring` | 75 | Spring 老项目向 Boot 3/4 现代化核心路线与场景 |
@@ -73,80 +73,80 @@
 
 | 技能名称 | 核心职责 | 关键任务/验收ID | 状态 |
 | :--- | :--- | :--- | :---: |
-| `b31-canonical-database-ir` | Implement or extend the typed canonical database IR for catalogs, schemas, types, tables, constraint | Skill 1183 | `DECLARED` |
-| `b31-constraint-index-partition-migration` | Migrate primary, unique, foreign, check, exclusion constraints, indexes, clustering, partitioning, s | Skill 1187 | `DECLARED` |
-| `b31-data-contract-catalog-lineage` | Migrate and govern data contracts, catalog metadata, ownership, classifications, SLOs, schema versio | Skill 1198 | `DECLARED` |
-| `b31-data-correctness-performance-cutover` | Validate schema, data, queries, routines, transactions, pipelines, performance, backfill, CDC, dual- | Skill 1201 | `DECLARED` |
-| `b31-data-pipeline-migration` | Migrate ETL, ELT, streaming, batch, and orchestration workflows using typed pipeline IR while preser | Skill 1196 | `depends` |
-| `b31-data-quality-repair` | Implement data profiling, quality rules, anomaly classification, duplicate and referential checks, m | Skill 1197 | `DECLARED` |
-| `b31-database-certification-gate` | Run the conservative Batch 31 certification gate for a database or data-platform pack and emit certi | Skill 1202 | `change` |
-| `b31-database-estate-discovery` | Discover and fingerprint database estates, schemas, runtime workloads, security, storage, dependenci | Skill 1182 | `DECLARED` |
-| `b31-database-modernization-factory` | Implement and certify a directional, version-specific database or data-platform modernization pack w | Skill 1181 | `requires` |
-| `b31-dialect-provider-capability-matrix` | Create and maintain exact database dialect, engine version, edition, extension, driver, and provider | Skill 1184 | `with` |
-| `b31-etl-elt-discovery` | Discover ETL, ELT, batch, streaming, orchestration, schedules, sources, sinks, transformations, chec | Skill 1195 | `DECLARED` |
-| `b31-orm-database-contract` | Coordinate ORM mappings, existing database schema, migration ownership, query generation, converters | Skill 1194 | `DECLARED` |
-| `b31-query-plan-performance` | Compare source and target query plans, cardinality, statistics, indexes, latency, throughput, resour | Skill 1192 | `DECLARED` |
-| `b31-query-semantic-migration` | Parse and migrate SQL, JPQL/HQL, ORM-generated, dynamic, and native queries through typed query IR w | Skill 1191 | `DECLARED` |
-| `b31-relational-route-pack-certifier` | Implement and certify exact directional Oracle, SQL Server, MySQL, and PostgreSQL route packs, inclu | Skill 1200 | `DECLARED` |
-| `b31-routine-trigger-migration` | Migrate database functions, procedures, packages, triggers, dynamic SQL, cursors, exceptions, transa | Skill 1190 | `DECLARED` |
-| `b31-schema-table-column-migration` | Implement schema, namespace, table, column, default, comment, ownership, and object-name migration t | Skill 1185 | `DECLARED` |
-| `b31-sequence-identity-generated-columns` | Migrate sequences, identity/auto-increment keys, generated and computed columns, defaults, allocatio | Skill 1188 | `DECLARED` |
-| `b31-transaction-isolation-locking` | Migrate and verify autocommit, transaction boundaries, isolation, savepoints, locking, MVCC, deadloc | Skill 1193 | `DECLARED` |
-| `b31-type-precision-null-collation` | Implement and certify cross-engine data type, precision, scale, null, charset, collation, time-zone, | Skill 1186 | `DECLARED` |
-| `b31-view-materialized-view-migration` | Migrate views, indexed/materialized views, refresh policies, dependencies, security context, updatab | Skill 1189 | `DECLARED` |
-| `b31-warehouse-lakehouse-analytics` | Migrate warehouses, lakehouses, dimensional models, SCD logic, aggregates, semantic metrics, BI mode | Skill 1199 | `DECLARED` |
+| `b31-canonical-database-ir` | Implement or extend the typed canonical database IR for catalogs, schemas, types, tables, constraint | Skill 1183 | `VERIFIED` |
+| `b31-constraint-index-partition-migration` | Migrate primary, unique, foreign, check, exclusion constraints, indexes, clustering, partitioning, s | Skill 1187 | `VERIFIED` |
+| `b31-data-contract-catalog-lineage` | Migrate and govern data contracts, catalog metadata, ownership, classifications, SLOs, schema versio | Skill 1198 | `VERIFIED` |
+| `b31-data-correctness-performance-cutover` | Validate schema, data, queries, routines, transactions, pipelines, performance, backfill, CDC, dual- | Skill 1201 | `VERIFIED` |
+| `b31-data-pipeline-migration` | Migrate ETL, ELT, streaming, batch, and orchestration workflows using typed pipeline IR while preser | Skill 1196 | `VERIFIED` |
+| `b31-data-quality-repair` | Implement data profiling, quality rules, anomaly classification, duplicate and referential checks, m | Skill 1197 | `VERIFIED` |
+| `b31-database-certification-gate` | Run the conservative Batch 31 certification gate for a database or data-platform pack and emit certi | Skill 1202 | `VERIFIED` |
+| `b31-database-estate-discovery` | Discover and fingerprint database estates, schemas, runtime workloads, security, storage, dependenci | Skill 1182 | `VERIFIED` |
+| `b31-database-modernization-factory` | Implement and certify a directional, version-specific database or data-platform modernization pack w | Skill 1181 | `VERIFIED` |
+| `b31-dialect-provider-capability-matrix` | Create and maintain exact database dialect, engine version, edition, extension, driver, and provider | Skill 1184 | `VERIFIED` |
+| `b31-etl-elt-discovery` | Discover ETL, ELT, batch, streaming, orchestration, schedules, sources, sinks, transformations, chec | Skill 1195 | `VERIFIED` |
+| `b31-orm-database-contract` | Coordinate ORM mappings, existing database schema, migration ownership, query generation, converters | Skill 1194 | `VERIFIED` |
+| `b31-query-plan-performance` | Compare source and target query plans, cardinality, statistics, indexes, latency, throughput, resour | Skill 1192 | `VERIFIED` |
+| `b31-query-semantic-migration` | Parse and migrate SQL, JPQL/HQL, ORM-generated, dynamic, and native queries through typed query IR w | Skill 1191 | `VERIFIED` |
+| `b31-relational-route-pack-certifier` | Implement and certify exact directional Oracle, SQL Server, MySQL, and PostgreSQL route packs, inclu | Skill 1200 | `VERIFIED` |
+| `b31-routine-trigger-migration` | Migrate database functions, procedures, packages, triggers, dynamic SQL, cursors, exceptions, transa | Skill 1190 | `VERIFIED` |
+| `b31-schema-table-column-migration` | Implement schema, namespace, table, column, default, comment, ownership, and object-name migration t | Skill 1185 | `VERIFIED` |
+| `b31-sequence-identity-generated-columns` | Migrate sequences, identity/auto-increment keys, generated and computed columns, defaults, allocatio | Skill 1188 | `VERIFIED` |
+| `b31-transaction-isolation-locking` | Migrate and verify autocommit, transaction boundaries, isolation, savepoints, locking, MVCC, deadloc | Skill 1193 | `VERIFIED` |
+| `b31-type-precision-null-collation` | Implement and certify cross-engine data type, precision, scale, null, charset, collation, time-zone, | Skill 1186 | `VERIFIED` |
+| `b31-view-materialized-view-migration` | Migrate views, indexed/materialized views, refresh policies, dependencies, security context, updatab | Skill 1189 | `VERIFIED` |
+| `b31-warehouse-lakehouse-analytics` | Migrate warehouses, lakehouses, dimensional models, SCD logic, aggregates, semantic metrics, BI mode | Skill 1199 | `VERIFIED` |
 
 ### 批次 `chinadb` (47 个技能)
 
 | 技能名称 | 核心职责 | 关键任务/验收ID | 状态 |
 | :--- | :--- | :--- | :---: |
-| `chinadb-00-migration-program-orchestrator` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Migration Pro | - | `SPEC_ONLY` |
-| `chinadb-01-estate-inventory-assessment` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Estate Invent | - | `SPEC_ONLY` |
-| `chinadb-02-semantic-db-ir` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Semantic Data | - | `SPEC_ONLY` |
-| `chinadb-03-rule-mutation-dsl` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Rule & Mutati | - | `SPEC_ONLY` |
-| `chinadb-04-data-movement-cdc` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial Da | - | `SPEC_ONLY` |
-| `chinadb-05-ddl-auto-conversion` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for DDL Automatic | - | `SPEC_ONLY` |
-| `chinadb-06-sql-auto-conversion` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL Automatic | - | `SPEC_ONLY` |
-| `chinadb-07-plsql-tsql-conversion` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for PL/SQL & T-SQ | - | `SPEC_ONLY` |
-| `chinadb-08-application-code-auto-refactor` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Application C | - | `SPEC_ONLY` |
-| `chinadb-09-behavior-equivalence-verification` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Behavioral Eq | - | `SPEC_ONLY` |
-| `chinadb-10-performance-equivalence-verification` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Performance E | - | `SPEC_ONLY` |
-| `chinadb-11-guarded-auto-repair` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Guarded Autom | - | `SPEC_ONLY` |
-| `chinadb-12-cutover-rollback` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Cutover, Rehe | - | `SPEC_ONLY` |
-| `chinadb-13-production-migration-certification` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for E1-E5 Product | - | `SPEC_ONLY` |
-| `chinadb-14-security-governance` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Security, Sec | - | `SPEC_ONLY` |
-| `chinadb-15-evidence-ledger-reproducibility` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Evidence Ledg | - | `SPEC_ONLY` |
-| `chinadb-16-release-ci-quality-gates` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Release CI &  | - | `SPEC_ONLY` |
-| `chinadb-20-source-oracle-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Oracle Source | - | `SPEC_ONLY` |
-| `chinadb-21-source-sqlserver-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL Server /  | - | `SPEC_ONLY` |
-| `chinadb-22-source-postgresql-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for PostgreSQL So | - | `SPEC_ONLY` |
-| `chinadb-23-source-mysql-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for MySQL / Maria | - | `SPEC_ONLY` |
-| `chinadb-24-source-db2-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for DB2 LUW Sourc | - | `SPEC_ONLY` |
-| `chinadb-25-source-sybase-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Sybase ASE So | - | `SPEC_ONLY` |
-| `chinadb-30-app-java-spring-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Java / Spring | - | `SPEC_ONLY` |
-| `chinadb-31-app-dotnet-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for .NET Database | - | `SPEC_ONLY` |
-| `chinadb-32-app-python-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Python Databa | - | `SPEC_ONLY` |
-| `chinadb-33-app-nodejs-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Node.js / Typ | - | `SPEC_ONLY` |
-| `chinadb-34-app-go-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Go Database R | - | `SPEC_ONLY` |
-| `chinadb-40-target-dm8` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for DM8 Target Ad | - | `SPEC_ONLY` |
-| `chinadb-41-target-kingbasees` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for KingbaseES Ta | - | `SPEC_ONLY` |
-| `chinadb-42-target-opengauss` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for openGauss Tar | - | `SPEC_ONLY` |
-| `chinadb-43-target-tidb` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for TiDB Target A | - | `SPEC_ONLY` |
-| `chinadb-44-target-gbase8s` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8s Targ | - | `SPEC_ONLY` |
-| `chinadb-45-target-gbase8c` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8c Targ | - | `SPEC_ONLY` |
-| `chinadb-46-target-gbase8a` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8a Targ | - | `SPEC_ONLY` |
-| `chinadb-47-target-highgo` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for HighGo / HGDB | - | `SPEC_ONLY` |
-| `chinadb-48-target-oceanbase-oracle` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for OceanBase Ora | - | `SPEC_ONLY` |
-| `chinadb-49-target-oceanbase-mysql` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for OceanBase MyS | - | `SPEC_ONLY` |
-| `chinadb-50-target-gaussdb-oracle` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GaussDB Oracl | - | `SPEC_ONLY` |
-| `chinadb-51-target-gaussdb-m` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GaussDB M-Com | - | `SPEC_ONLY` |
-| `chinadb-52-target-goldendb` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GoldenDB Targ | - | `SPEC_ONLY` |
-| `chinadb-60-route-support-matrix` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Route Support | - | `SPEC_ONLY` |
-| `chinadb-61-fixture-corpus-and-mutation-tests` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial Fi | - | `SPEC_ONLY` |
-| `chinadb-62-benchmark-lab` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Database Migr | - | `SPEC_ONLY` |
-| `chinadb-63-migration-estimation-commercial-report` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial As | - | `SPEC_ONLY` |
-| `chinadb-64-vendor-native-tool-bridge` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Vendor-Native | - | `SPEC_ONLY` |
-| `chinadb-65-observability-migration-control-plane` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Migration Obs | - | `SPEC_ONLY` |
+| `chinadb-00-migration-program-orchestrator` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Migration Pro | - | `VERIFIED` |
+| `chinadb-01-estate-inventory-assessment` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Estate Invent | - | `VERIFIED` |
+| `chinadb-02-semantic-db-ir` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Semantic Data | - | `VERIFIED` |
+| `chinadb-03-rule-mutation-dsl` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Rule & Mutati | - | `VERIFIED` |
+| `chinadb-04-data-movement-cdc` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial Da | - | `VERIFIED` |
+| `chinadb-05-ddl-auto-conversion` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for DDL Automatic | - | `VERIFIED` |
+| `chinadb-06-sql-auto-conversion` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL Automatic | - | `VERIFIED` |
+| `chinadb-07-plsql-tsql-conversion` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for PL/SQL & T-SQ | - | `VERIFIED` |
+| `chinadb-08-application-code-auto-refactor` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Application C | - | `VERIFIED` |
+| `chinadb-09-behavior-equivalence-verification` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Behavioral Eq | - | `VERIFIED` |
+| `chinadb-10-performance-equivalence-verification` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Performance E | - | `VERIFIED` |
+| `chinadb-11-guarded-auto-repair` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Guarded Autom | - | `VERIFIED` |
+| `chinadb-12-cutover-rollback` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Cutover, Rehe | - | `VERIFIED` |
+| `chinadb-13-production-migration-certification` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for E1-E5 Product | - | `VERIFIED` |
+| `chinadb-14-security-governance` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Security, Sec | - | `VERIFIED` |
+| `chinadb-15-evidence-ledger-reproducibility` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Evidence Ledg | - | `VERIFIED` |
+| `chinadb-16-release-ci-quality-gates` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Release CI &  | - | `VERIFIED` |
+| `chinadb-20-source-oracle-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Oracle Source | - | `VERIFIED` |
+| `chinadb-21-source-sqlserver-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL Server /  | - | `VERIFIED` |
+| `chinadb-22-source-postgresql-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for PostgreSQL So | - | `VERIFIED` |
+| `chinadb-23-source-mysql-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for MySQL / Maria | - | `VERIFIED` |
+| `chinadb-24-source-db2-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for DB2 LUW Sourc | - | `VERIFIED` |
+| `chinadb-25-source-sybase-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Sybase ASE So | - | `VERIFIED` |
+| `chinadb-30-app-java-spring-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Java / Spring | - | `VERIFIED` |
+| `chinadb-31-app-dotnet-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for .NET Database | - | `VERIFIED` |
+| `chinadb-32-app-python-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Python Databa | - | `VERIFIED` |
+| `chinadb-33-app-nodejs-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Node.js / Typ | - | `VERIFIED` |
+| `chinadb-34-app-go-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Go Database R | - | `VERIFIED` |
+| `chinadb-40-target-dm8` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for DM8 Target Ad | - | `VERIFIED` |
+| `chinadb-41-target-kingbasees` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for KingbaseES Ta | - | `VERIFIED` |
+| `chinadb-42-target-opengauss` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for openGauss Tar | - | `VERIFIED` |
+| `chinadb-43-target-tidb` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for TiDB Target A | - | `VERIFIED` |
+| `chinadb-44-target-gbase8s` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8s Targ | - | `VERIFIED` |
+| `chinadb-45-target-gbase8c` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8c Targ | - | `VERIFIED` |
+| `chinadb-46-target-gbase8a` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBase 8a Targ | - | `VERIFIED` |
+| `chinadb-47-target-highgo` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for HighGo / HGDB | - | `VERIFIED` |
+| `chinadb-48-target-oceanbase-oracle` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for OceanBase Ora | - | `VERIFIED` |
+| `chinadb-49-target-oceanbase-mysql` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for OceanBase MyS | - | `VERIFIED` |
+| `chinadb-50-target-gaussdb-oracle` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GaussDB Oracl | - | `VERIFIED` |
+| `chinadb-51-target-gaussdb-m` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GaussDB M-Com | - | `VERIFIED` |
+| `chinadb-52-target-goldendb` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GoldenDB Targ | - | `VERIFIED` |
+| `chinadb-60-route-support-matrix` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Route Support | - | `VERIFIED` |
+| `chinadb-61-fixture-corpus-and-mutation-tests` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial Fi | - | `VERIFIED` |
+| `chinadb-62-benchmark-lab` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Database Migr | - | `VERIFIED` |
+| `chinadb-63-migration-estimation-commercial-report` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Commercial As | - | `VERIFIED` |
+| `chinadb-64-vendor-native-tool-bridge` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Vendor-Native | - | `VERIFIED` |
+| `chinadb-65-observability-migration-control-plane` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Migration Obs | - | `VERIFIED` |
 
 ### 批次 `b38` (22 个技能)
 

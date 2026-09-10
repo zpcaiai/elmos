@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/00-migration-program-orchestrator/SKILL.md"
   source_sha256: "sha256:9889ffc5b74c9676ffd24d9301465faf6d22ba2798107de8cba5a4f4e64acdd5"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Migration Program Orchestrator
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `00-migration-program-orchestrator`
 - **Version:** `1.0.0`
 - **Category:** core/orchestration
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

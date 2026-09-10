@@ -1,6 +1,15 @@
 ---
 name: b31-query-semantic-migration
-description: "Parse and migrate SQL, JPQL/HQL, ORM-generated, dynamic, and native queries through typed query IR while preserving null, join, aggregation, ordering, pagination, date, JSON, recursive, locking, and parameter semantics. Use for query translation."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
+description: Parse and migrate SQL, JPQL/HQL, ORM-generated, dynamic, and native queries through typed query IR while preserving null, join, aggregation, ordering, pagination, date, JSON, recursive, locking, and parameter semantics. Use for query translation.
 ---
 
 ## Operating mode

@@ -1,0 +1,36 @@
+skill: elmos-assurance-sql-domain
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-sql-domain-A01
+  given: NOT IN改写忽略外层NULL
+  when: 在真实集成模块执行对应测试或负例
+  then: 原生反例失败
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-sql-domain-A02
+  given: 未支持vendor function被best effort忽略
+  when: 在真实集成模块执行对应测试或负例
+  then: 阻断转换认证
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-sql-domain-A03
+  given: 查询结果相同但DML影响行数不同
+  when: 在真实集成模块执行对应测试或负例
+  then: 副作用差分失败
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

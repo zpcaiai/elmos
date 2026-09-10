@@ -91,6 +91,8 @@ declare function expect(actual: any): {
   toBeNull(): void;
   toBeTruthy(): void;
   toBeFalsy(): void;
+  toContain(expected: any): void;
+  toThrow(expected?: any): void;
   not: {
     toBe(expected: any): void;
     toEqual(expected: any): void;

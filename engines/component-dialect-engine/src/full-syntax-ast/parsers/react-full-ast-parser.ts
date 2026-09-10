@@ -555,7 +555,7 @@ function parseJsxNode(
   }
 
   if (ts.isJsxText(node)) {
-    const raw = node.getText(sourceFile);
+    const raw = (node as any).text !== undefined ? (node as any).text : node.getText(sourceFile);
     if (/^\s*[\r\n]+\s*$/.test(raw)) {
       return null;
     }

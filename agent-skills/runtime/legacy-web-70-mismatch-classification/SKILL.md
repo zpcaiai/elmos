@@ -1,7 +1,13 @@
 ---
 name: legacy-web-70-mismatch-classification
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for 差异分类与根因定位; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
   source_package: elmos.java-legacy-web.repository-modernization
   source_version: 1.0.0
   source_id: 70-mismatch-classification

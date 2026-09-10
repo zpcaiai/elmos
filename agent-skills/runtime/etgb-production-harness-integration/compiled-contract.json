@@ -1,0 +1,34 @@
+{
+  "schema_version": "elmos.etgb.compiled-skill-contract.v1",
+  "package_id": "elmos.etgb-full-product-assurance-skills-package",
+  "package_version": "2.0.0",
+  "installed_alias": "etgb-production-harness-integration",
+  "namespace": "etgb-full-product-assurance-v2",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "etgb-environment-authority-sandbox",
+    "etgb-checkpoint-resume-recovery",
+    "etgb-evidence-provenance-ledger",
+    "etgb-budget-cost-eta-governance",
+    "etgb-multi-tenant-scheduling-isolation",
+    "etgb-release-candidate-integrity"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "dispatch",
+    "skill_name": "production-harness-integration",
+    "operations": [
+      "phase_plan",
+      "contract_report",
+      "harness_preflight",
+      "campaign_preflight"
+    ],
+    "module_path": "engines/etgb-engine/src/elmos_etgb/registry.py",
+    "registry_class": "SkillRegistry",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

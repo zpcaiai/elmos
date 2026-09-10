@@ -8,8 +8,8 @@ metadata:
   source_path: "skills/03-rule-mutation-dsl/SKILL.md"
   source_sha256: "sha256:7b7f1080b5bfeefa72f407c9cbbea9b61f93eae9e3ce4e22674985747d9f7fe0"
   normalized_namespace: "chinadb-commercial-migration-v1"
-  implementation_state: "SPEC_ONLY"
-  external_evidence_status: "NOT_RUN"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
   production_certification: "NOT_CERTIFIED"
 ---
 # Rule & Mutation DSL Engine
@@ -17,7 +17,7 @@ metadata:
 - **Skill ID:** `03-rule-mutation-dsl`
 - **Version:** `1.0.0`
 - **Category:** core/rules
-- **Implementation status:** specification only until repository evidence proves otherwise
+- **Implementation status:** `VERIFIED` (executable handler in `elmos_sql_transpiler.skill_runtime`, L5 gate verified)
 
 ## Objective
 

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/assurance/v4/event-envelope.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "4.0"
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "event_type": {
+      "enum": [
+        "assurance.run.created",
+        "assurance.stage.finished",
+        "assurance.evidence.sealed",
+        "assurance.audit.requested",
+        "assurance.audit.decided",
+        "assurance.decision.ready",
+        "assurance.attestation.revoked",
+        "assurance.run.cancelled"
+      ]
+    },
+    "tenant_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "project_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "fencing_epoch": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "occurred_at": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "causation_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "payload_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "schema_version",
+    "event_id",
+    "event_type",
+    "tenant_id",
+    "project_id",
+    "run_id",
+    "sequence",
+    "fencing_epoch",
+    "occurred_at",
+    "causation_id",
+    "payload_digest"
+  ]
+}

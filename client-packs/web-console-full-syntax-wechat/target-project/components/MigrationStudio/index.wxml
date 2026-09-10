@@ -211,8 +211,7 @@
 </view></text>
         <view class="form-note">
           <Icon name="lock" size="{{16}}" />
-          <text>凭证、生产数据与客户代码不会写入此草稿。</text>
-          <text>{{draftCapability ? ` 当前关联能力：${draftCapability}。` : ""}}</text>
+          <text>凭证、生产数据与客户代码不会写入此草稿。 {{draftCapability ? ` 当前关联能力：${draftCapability}。` : ""}}</text>
         </view>
         <view class="modal-actions">
           <button type="button" class="button button-secondary" bindtap="closeDialog">取消</button>

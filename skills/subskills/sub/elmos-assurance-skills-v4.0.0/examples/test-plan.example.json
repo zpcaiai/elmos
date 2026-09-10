@@ -1,0 +1,214 @@
+{
+  "schema_version": "4.0",
+  "plan_id": "demo-plan",
+  "contract_digest": "24d62268ff310ab4c28c2dc57cd638147bda6565ac0b64fd1461f9ba6d7c5f82",
+  "scope_digest": "f9b870f66fd73d361c2e0de019175fbf443be550c5c80bad9a78cccff0e2e244",
+  "obligations": [
+    {
+      "id": "o-build",
+      "kind": "build",
+      "critical": true,
+      "case_ids": [
+        "c-build"
+      ]
+    },
+    {
+      "id": "o-contract",
+      "kind": "contract",
+      "critical": true,
+      "case_ids": [
+        "c-contract"
+      ]
+    },
+    {
+      "id": "o-smoke",
+      "kind": "smoke",
+      "critical": true,
+      "case_ids": [
+        "c-smoke"
+      ]
+    },
+    {
+      "id": "o-regression",
+      "kind": "regression",
+      "critical": true,
+      "case_ids": [
+        "c-regression"
+      ]
+    },
+    {
+      "id": "o-differential",
+      "kind": "differential",
+      "critical": true,
+      "case_ids": [
+        "c-differential"
+      ]
+    },
+    {
+      "id": "o-mutation",
+      "kind": "mutation",
+      "critical": true,
+      "case_ids": [
+        "c-mutation"
+      ]
+    },
+    {
+      "id": "o-proof",
+      "kind": "proof",
+      "critical": true,
+      "case_ids": [
+        "c-proof"
+      ]
+    },
+    {
+      "id": "o-audit",
+      "kind": "audit",
+      "critical": true,
+      "case_ids": [
+        "c-audit"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "c-build",
+      "obligation_ids": [
+        "o-build"
+      ],
+      "runner_adapter": "demo-build",
+      "fixture_digest": "33d8d528c2d81942b2dbee7f3eccaf83ed96541fb4fd028667fab224aacd78c3",
+      "oracle_id": "demo-oracle-build",
+      "estimated_seconds": 1,
+      "timeout_seconds": 30,
+      "assertions": [
+        "Synthetic schema illustration; replace with actual oracle"
+      ],
+      "cleanup": "destroy disposable isolated fixture",
+      "assertion_program_digest": "b8e77ed8f509f85b56de632a8d134f949b3725a3d56f0505ad0cfd1431aead6f",
+      "runner_plan_digest": "74b1b79da540403fe09780162303ff9ff53a95a61e4706f049f5b6c068a4f7a6"
+    },
+    {
+      "id": "c-contract",
+      "obligation_ids": [
+        "o-contract"
+      ],
+      "runner_adapter": "demo-contract",
+      "fixture_digest": "ff69ee143f8f94d7ed05ae7058736b2aede9bf7a1f693eb667410d7f7ceb136c",
+      "oracle_id": "demo-oracle-contract",
+      "estimated_seconds": 1,
+      "timeout_seconds": 30,
+      "assertions": [
+        "Synthetic schema illustration; replace with actual oracle"
+      ],
+      "cleanup": "destroy disposable isolated fixture",
+      "assertion_program_digest": "764285adb095febbded52364f402cc36184a74230da1bc4d16948fa735dc9579",
+      "runner_plan_digest": "fb7e9bab66b3089ca5cf76c2c778c93c4d79b385906d9c922c122fd638a7146d"
+    },
+    {
+      "id": "c-smoke",
+      "obligation_ids": [
+        "o-smoke"
+      ],
+      "runner_adapter": "demo-smoke",
+      "fixture_digest": "fb01978e6e06454de65de94853d5c3e0488aba90c01fd404b653f50cbd8f606e",
+      "oracle_id": "demo-oracle-smoke",
+      "estimated_seconds": 1,
+      "timeout_seconds": 30,
+      "assertions": [
+        "Synthetic schema illustration; replace with actual oracle"
+      ],
+      "cleanup": "destroy disposable isolated fixture",
+      "assertion_program_digest": "52123a13565a1e62ab335539e966b05b69b8ea7b679d3cc63983b8610c4a1694",
+      "runner_plan_digest": "074e5942461ffe9736c5b20409a4c12ed3f3c539f4b3be4a4a6efcd431aab9db"
+    },
+    {
+      "id": "c-regression",
+      "obligation_ids": [
+        "o-regression"
+      ],
+      "runner_adapter": "demo-regression",
+      "fixture_digest": "e39068385f46e4927b3dfb6bc40e14547f6eba3223d868dcfebe6cd4582f736f",
+      "oracle_id": "demo-oracle-regression",
+      "estimated_seconds": 1,
+      "timeout_seconds": 30,
+      "assertions": [
+        "Synthetic schema illustration; replace with actual oracle"
+      ],
+      "cleanup": "destroy disposable isolated fixture",
+      "assertion_program_digest": "9d8c94d5cf7faeccfd5c57716196c461e5386e54b64049345acfd230f521716a",
+      "runner_plan_digest": "327d036607609b9aafc1720c553b4ac992d96defadc0151033a7261d6b887e05"
+    },
+    {
+      "id": "c-differential",
+      "obligation_ids": [
+        "o-differential"
+      ],
+      "runner_adapter": "demo-differential",
+      "fixture_digest": "ba5e9b871861a10dcfe36df77488484be60e8063ddcfaad77ab8e2173f8bbac7",
+      "oracle_id": "demo-oracle-differential",
+      "estimated_seconds": 1,
+      "timeout_seconds": 30,
+      "assertions": [
+        "Synthetic schema illustration; replace with actual oracle"
+      ],
+      "cleanup": "destroy disposable isolated fixture",
+      "assertion_program_digest": "ac757bf5c54f0fdd1e0f167eae1188b51ea66cb088ed7479187ab16eaec8ec64",
+      "runner_plan_digest": "b52e00b409a74e770e1082d0854b0b03a6f99cae15d2880f6ce6cf132d050b61"
+    },
+    {
+      "id": "c-mutation",
+      "obligation_ids": [
+        "o-mutation"
+      ],
+      "runner_adapter": "demo-mutation",
+      "fixture_digest": "1e417703df3a3dc4698d433108f86b17b869afecb7a3d438bb9d1f9c4e8ea039",
+      "oracle_id": "demo-oracle-mutation",
+      "estimated_seconds": 1,
+      "timeout_seconds": 30,
+      "assertions": [
+        "Synthetic schema illustration; replace with actual oracle"
+      ],
+      "cleanup": "destroy disposable isolated fixture",
+      "assertion_program_digest": "33ae22f787397d57c34203e6366ae445f5dd5987c432a08ac86cb15ab35cfe58",
+      "runner_plan_digest": "24f87148c05c0c446e216a4af96676a2c64db00011ffab14df0c480ec0762fbc"
+    },
+    {
+      "id": "c-proof",
+      "obligation_ids": [
+        "o-proof"
+      ],
+      "runner_adapter": "demo-proof",
+      "fixture_digest": "00af88022d3c2662b6901eba15f266f8367fdb9e85c2a06ecc51b3a7dde3c834",
+      "oracle_id": "demo-oracle-proof",
+      "estimated_seconds": 1,
+      "timeout_seconds": 30,
+      "assertions": [
+        "Synthetic schema illustration; replace with actual oracle"
+      ],
+      "cleanup": "destroy disposable isolated fixture",
+      "assertion_program_digest": "fae6e39d600ff66adc04b44a96194780da3088ac9167d2435f913c487d57a10a",
+      "runner_plan_digest": "6403095a342246622c55782bccd19faf6126bbd46ca0177addfa5faaa33b9689"
+    },
+    {
+      "id": "c-audit",
+      "obligation_ids": [
+        "o-audit"
+      ],
+      "runner_adapter": "demo-audit",
+      "fixture_digest": "5698e0256d7e306e467c0cfd587c8e8998abdf5a85ddf301ba00ac65a28fa27f",
+      "oracle_id": "demo-oracle-audit",
+      "estimated_seconds": 1,
+      "timeout_seconds": 30,
+      "assertions": [
+        "Synthetic schema illustration; replace with actual oracle"
+      ],
+      "cleanup": "destroy disposable isolated fixture",
+      "assertion_program_digest": "fe604a2aae3b5509c0b934cdd7f783f1966d7e3c130254233c147a89e14f849c",
+      "runner_plan_digest": "e5dc32d8fa00bb0a10c566aa6cb66d8cf9ff586db8ac0afed2ab28fe04bc1e4b"
+    }
+  ],
+  "required_regression_case_ids": [
+    "c-regression"
+  ],
+  "combination_strength": "explicit-critical-plus-pairwise"
+}
