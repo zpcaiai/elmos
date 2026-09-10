@@ -1,0 +1,297 @@
+{
+  "campaign_id": "spring-boot-3.0-3.4-to-4.1.0-p0-p11",
+  "corpora": {
+    "customer": {
+      "authoring_allowed": false,
+      "execution_status": "NOT_RUN",
+      "independent": true,
+      "path": "corpus/customer"
+    },
+    "development": {
+      "authoring_allowed": true,
+      "execution_status": "PASSED_LOCAL_EXACT_FIXTURE",
+      "independent": false,
+      "path": "corpus/development"
+    },
+    "holdout": {
+      "authoring_allowed": false,
+      "execution_status": "NOT_RUN",
+      "independent": true,
+      "path": "corpus/holdout"
+    },
+    "representative": {
+      "authoring_allowed": false,
+      "execution_status": "NOT_RUN",
+      "independent": true,
+      "path": "corpus/real-repository"
+    }
+  },
+  "pack_key": "spring-boot-3-0-3-4-to-4-1-0",
+  "phases": [
+    {
+      "execution_status": "PASSED_LOCAL",
+      "id": "P0",
+      "owner_role": "batch30-campaign-controller",
+      "pass_criteria": [
+        "All exact tuple and transformation inputs are content-addressed."
+      ],
+      "required_evidence_types": [],
+      "title": "Freeze exact source target policy profile artifact and recipe identities"
+    },
+    {
+      "execution_status": "PREPARED_NOT_RUN",
+      "id": "P1",
+      "owner_role": "batch30-corpus-custodian",
+      "pass_criteria": [
+        "Independent corpora are physically separate and authoring-denied."
+      ],
+      "required_evidence_types": [],
+      "title": "Prepare separated development holdout representative and customer corpora"
+    },
+    {
+      "execution_status": "PARTIAL_LOCAL",
+      "id": "P2",
+      "owner_role": "batch30-runtime-execution-owner",
+      "pass_criteria": [
+        "Two exact-toolchain builds and startup attempts pass for source and target."
+      ],
+      "required_evidence_types": [
+        "source_build",
+        "target_build",
+        "source_startup",
+        "target_startup"
+      ],
+      "title": "Execute native source and target build startup readiness and shutdown"
+    },
+    {
+      "execution_status": "PARTIAL_LOCAL",
+      "id": "P3",
+      "owner_role": "batch30-equivalence-owner",
+      "pass_criteria": [
+        "All in-scope contracts pass with full traceability and zero silent drops."
+      ],
+      "required_evidence_types": [
+        "behavioral_equivalence"
+      ],
+      "title": "Prove behavioral equivalence on independent governed workloads"
+    },
+    {
+      "execution_status": "PARTIAL_LOCAL",
+      "id": "P4",
+      "owner_role": "batch30-security-owner",
+      "pass_criteria": [
+        "Three independent scanners report zero critical or high findings and zero regressions."
+      ],
+      "required_evidence_types": [
+        "security"
+      ],
+      "title": "Execute independent security and abuse qualification"
+    },
+    {
+      "execution_status": "NOT_RUN",
+      "id": "P5",
+      "owner_role": "batch30-performance-owner",
+      "pass_criteria": [
+        "At least 10000 requests and a 3600 second soak meet latency and throughput SLOs."
+      ],
+      "required_evidence_types": [
+        "performance"
+      ],
+      "title": "Execute SLO-bound capacity and soak qualification"
+    },
+    {
+      "execution_status": "PARTIAL_LOCAL",
+      "id": "P6",
+      "owner_role": "batch30-operability-owner",
+      "pass_criteria": [
+        "All required probes runbooks trace correlation licenses and vulnerabilities pass."
+      ],
+      "required_evidence_types": [
+        "operability",
+        "sbom"
+      ],
+      "title": "Verify operability telemetry runbooks and artifact-bound SBOM"
+    },
+    {
+      "execution_status": "NOT_RUN",
+      "id": "P7",
+      "owner_role": "batch30-recovery-owner",
+      "pass_criteria": [
+        "Three rollback attempts meet RTO with zero data loss and orphan effects."
+      ],
+      "required_evidence_types": [
+        "rollback"
+      ],
+      "title": "Rehearse bounded rollback and recovery"
+    },
+    {
+      "execution_status": "NOT_RUN",
+      "id": "P8",
+      "owner_role": "batch30-customer-acceptance-owner",
+      "pass_criteria": [
+        "Customer-owned scenarios accept the exact artifact and execution profile."
+      ],
+      "required_evidence_types": [
+        "customer_acceptance"
+      ],
+      "title": "Obtain authorized customer acceptance"
+    },
+    {
+      "execution_status": "NOT_RUN",
+      "id": "P9",
+      "owner_role": "batch30-evidence-governance-owner",
+      "pass_criteria": [
+        "Every pre-certification class is authorized independently signed and content-addressed."
+      ],
+      "required_evidence_types": [
+        "source_build",
+        "target_build",
+        "source_startup",
+        "target_startup",
+        "behavioral_equivalence",
+        "security",
+        "performance",
+        "operability",
+        "sbom",
+        "rollback",
+        "independent_review",
+        "customer_acceptance"
+      ],
+      "title": "Verify all pre-certification signatures and organizational separation"
+    },
+    {
+      "execution_status": "NOT_RUN",
+      "id": "P10",
+      "owner_role": "batch30-external-certification-owner",
+      "pass_criteria": [
+        "The current scope-bound certificate reviews all prior evidence digests."
+      ],
+      "required_evidence_types": [
+        "external_certification"
+      ],
+      "title": "Obtain independent external certification"
+    },
+    {
+      "execution_status": "NOT_RUN",
+      "id": "P11",
+      "owner_role": "batch30-release-governance-owner",
+      "pass_criteria": [
+        "P0 through P10 pass and the gate re-verifies every external byte."
+      ],
+      "required_evidence_types": [],
+      "title": "Run the conservative Batch 30 certification gate and full regression"
+    }
+  ],
+  "required_external_evidence_types": [
+    "source_build",
+    "target_build",
+    "source_startup",
+    "target_startup",
+    "behavioral_equivalence",
+    "security",
+    "performance",
+    "operability",
+    "sbom",
+    "rollback",
+    "independent_review",
+    "customer_acceptance",
+    "external_certification"
+  ],
+  "rule_freeze": {
+    "frozen_at": "2026-09-08T02:25:32Z",
+    "holdout_authoring_forbidden": true,
+    "recipe_manifest_digest": "sha256:7454d02c026f5ce12ca36fda2e3ba4cc9369b449b0e185523e6940a2c57d8dbe",
+    "rules": {
+      "digest": "sha256:5df003b433073e66afd0e5184b02a9cceb1ebdce6d8e2f073da67a8ea510e610",
+      "path": "recipes/spring-to-boot-4.1.0.yml"
+    }
+  },
+  "schema_version": "elmos.batch30.certification-campaign.v1",
+  "scope": {
+    "certified_capability_ids": [
+      "web",
+      "configuration",
+      "lifecycle"
+    ],
+    "exact_tuple_only": true,
+    "excluded_capability_ids": [],
+    "support_matrix_subject_digest": "sha256:e5b5ea4bd126bd1d36139612ff20e99b81aab8626cdf0c5489c75b327e30b58f"
+  },
+  "status_boundary": {
+    "external_evidence": "NOT_RUN",
+    "local_runner_may_certify": false,
+    "production_certification": "NOT_CERTIFIED",
+    "promotion_requires_reverification": true
+  },
+  "thresholds": {
+    "build_green_rate": 1.0,
+    "critical_data_regressions": 0,
+    "critical_security_regressions": 0,
+    "critical_transaction_regressions": 0,
+    "critical_unknowns": 0,
+    "duplicate_message_or_job_effects": 0,
+    "flaky_tests": 0,
+    "framework_contract_coverage": 1.0,
+    "minimum_performance_requests": 10000,
+    "minimum_performance_soak_seconds": 3600,
+    "minimum_rollback_attempts": 3,
+    "minimum_security_scanners": 3,
+    "minimum_source_builds": 2,
+    "minimum_startup_attempts": 2,
+    "minimum_target_builds": 2,
+    "p0_contract_pass_rate": 1.0,
+    "performance_slo_p95_ms": 100.0,
+    "performance_slo_throughput_rps": 400.0,
+    "rollback_rto_objective_seconds": 60.0,
+    "route_coverage": 1.0,
+    "silent_framework_drops": 0,
+    "skipped_tests": 0,
+    "source_fingerprint_coverage": 1.0,
+    "source_map_coverage": 1.0,
+    "startup_pass_rate": 1.0,
+    "test_integrity_violations": 0,
+    "waivers": 0
+  },
+  "tuple_binding": {
+    "exact_tuple": {
+      "digest": "sha256:aa2b199f5c9eb8c8396e5c4bb724799cae351b1bd58b0e375e4e27b9cec138a8",
+      "path": "certification/local-execution/2026-09-08/exact-tuple-binding.json"
+    },
+    "policy": {
+      "digest": "sha256:abbcede7e1afc838343a43b2c0b45c90eab9791ea9050dccbaebd81c9e992d04",
+      "path": "certification/local-execution/2026-09-08/qualification-policy.json"
+    },
+    "source_commit": "5f0b5899d40af4ec3325fc5ee3cd77e3539d4263",
+    "source_snapshot_digest": "sha256:3109207b53612874a2d3a3ead38e82eff8df6d2dad9243fe8b6fe9e1d5050dbc",
+    "target_artifact": {
+      "digest": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f",
+      "path": "certification/local-execution/2026-09-08/artifacts/executed-spring-boot-4.1.0.jar",
+      "size_bytes": 29034806
+    },
+    "target_profile": {
+      "digest": "sha256:eced6eaf3ceb8bda82bb82acbdc2951fdfb9d3c9c969e61a3e38f12e14bf6320",
+      "path": "target-profile/profile.json"
+    },
+    "version_tuple": {
+      "source": {
+        "container": "10.1.34",
+        "framework": "spring-boot",
+        "framework_version": "3.4.1",
+        "java": "17",
+        "maven": "3.9.11",
+        "servlet_api": "6.0",
+        "servlet_namespace": "jakarta.servlet"
+      },
+      "target": {
+        "container": "11.0.22",
+        "framework": "spring-boot",
+        "framework_version": "4.1.0",
+        "java": "21.0.11",
+        "maven": "3.9.11",
+        "servlet_api": "6.1",
+        "servlet_namespace": "jakarta.servlet",
+        "spring_framework_version": "7.0.8"
+      }
+    }
+  }
+}

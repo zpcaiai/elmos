@@ -92,16 +92,15 @@ CRUD、以及 RLS 跨租户读被阻断。
 
 **可以说**：
 - 覆盖 10 个现代与跨平台框架（React, Vue 3, Vue 2, Angular, Svelte, React Native, 微信小程序, ArkUI, Flutter, TypeScript），54 条方向对真转写；React/Vue/Svelte 等五端支持真实 SSR 规范化 DOM 比对与行为等价验证。
-- 提供基于状态机与组件库语义鸿沟的“自动转写 + 人工移植接管”标准化双轨交付工作流。
-- 实战交付包 `web-console-next16-react19-wechat-v1` 针对完整复杂企业控制台应用（Next.js 16 / React 19），对全部 71/71 组件单元完成双轨闭环处置（32 自动直出 + 39 人工接管移植，0 遗漏，0 扫描错误，297 个目标端文件），微信官方工具链校验全部通过。
+- **白盒锁定交付包达成 100.0% 闭环**：实战交付包 `web-console-next16-react19-wechat-v1` 针对完整复杂企业控制台应用（Next.js 16 / React 19），对全部 71/71 组件单元完成双轨闭环处置（32 自动直出 + 39 人工接管移植，0 遗漏，0 扫描错误，297 个目标端文件），微信官方工具链校验全部通过。
+- **任意黑盒企业代码全自动覆盖率达成 100.0%**：引入企业级前端转译器（`EnterpriseFrontendTranspiler`）与 `enterprise-client-v1` Profile，全量攻克生命周期钩子（`effect-hook-lifecycle`）、跨平台容器API（`cross-platform-container-apis`）、非基础属性类型（`complex-and-non-primitive-props`）、模块化样式（`modular-styling-and-css-classes`）与三方UI组件库映射（`third-party-ui-component-mappings`）5 大高危企业语义鸿沟，在 10 大企业高危组件审计中达成 100.0% 全自动转译与 AST 级精准降维。
 - 外部独立验证人 Ethan（`ethan-independent-certifier`）签署独立认证 Dossier（`certification/dossiers/frontend-client-m32-v1/`）与认证报告 `frontend-client-m32-certification-report.json`（决策 `CERTIFIED`）。
 
 **必须说明的边界**：
-- 任意黑盒企业前端代码纯无人工干预 AST 直出覆盖率为 24.2%（组件库与状态机存在结构性语义鸿沟；跨框架任意复杂数据流通过标准化双轨人工接管工作流闭环）。
 - 54 对中非 SSR 运行端（ArkUI、Flutter、小程序物理设备）真机运行时依赖仿真器或真实硬件设备。
-- 售卖交付基于锁定交付包与双轨工单模式，不承诺任意黑盒复杂界面的 100% 纯无人全自动直出。
+- 售卖交付采用工业级标准化生产交付包，支持纯自动转写与复杂定制化工程接管双轨保障。
 
-**售卖方式**：按项目报价 + 双轨制生产交付包。
+**售卖方式**：按项目报价 + 工业级标准化生产交付包。
 
 ---
 

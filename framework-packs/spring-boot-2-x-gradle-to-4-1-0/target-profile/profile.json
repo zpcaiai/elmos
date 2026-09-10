@@ -1,0 +1,70 @@
+{
+  "architecture_style": "modular-monolith-compatible-spring-boot-application",
+  "build": {
+    "commands": [
+      "gradle --no-daemon test",
+      "gradle --no-daemon check",
+      "gradle --no-daemon bootJar"
+    ],
+    "toolchain_digests": [
+      "gradle:8.14.3-eclipse-temurin-21@sha256:59ad3b66d7ad1a2beffcbfe38865e92c2069e2b17ec1e9dbb1abceba8395f13d"
+    ]
+  },
+  "framework": "spring-boot",
+  "framework_versions": [
+    "4.1.0"
+  ],
+  "owner": "ELMOS Java Modernization Team",
+  "profile_key": "spring-boot-2-x-gradle-to-4-1-0-target",
+  "providers": {
+    "authentication": {
+      "automatic_support": false,
+      "strategy": "preserve-and-independently-verify"
+    },
+    "authorization": {
+      "automatic_support": false,
+      "strategy": "preserve-and-independently-verify"
+    },
+    "cache": {
+      "strategy": "detect-and-block-without-provider-profile"
+    },
+    "dependency_injection": {
+      "provider": "spring-framework",
+      "version": "7.0.8"
+    },
+    "messaging": {
+      "strategy": "detect-and-block-without-provider-profile"
+    },
+    "observability": {
+      "health_path": "/actuator/health",
+      "provider": "spring-boot-actuator"
+    },
+    "persistence": {
+      "automatic_support": false,
+      "strategy": "preserve-and-independently-verify"
+    },
+    "scheduler": {
+      "strategy": "preserve-and-replay"
+    },
+    "serializer": {
+      "provider": "jackson",
+      "version": "2.19.1"
+    },
+    "validation": {
+      "api_version": "3.0.2",
+      "namespace": "jakarta.validation",
+      "provider": "hibernate-validator",
+      "version": "8.0.2.Final"
+    }
+  },
+  "runtime": "java",
+  "runtime_versions": [
+    "21"
+  ],
+  "schema_version": 1,
+  "startup": {
+    "command": "java -jar target/<verified-boot-artifact>.jar",
+    "health_check": "GET http://127.0.0.1:<ephemeral-port>/actuator/health"
+  },
+  "version": "0.1.0"
+}
