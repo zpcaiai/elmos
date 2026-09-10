@@ -71,7 +71,9 @@ public final class SpringCloudZuulToGatewayRecipe extends Recipe {
                     maybeAddImport("org.springframework.web.server.ServerWebExchange");
                     maybeAddImport("reactor.core.publisher.Mono");
                     md = md.withName(md.getName().withSimpleName("filter"));
-                    md = md.withReturnTypeExpression(TypeTree.build("Mono<Void>"));
+                    md = md.withReturnTypeExpression(TypeTree.build("Mono<Void>").withPrefix(
+                            md.getReturnTypeExpression() != null ? md.getReturnTypeExpression().getPrefix() : org.openrewrite.java.tree.Space.format(" ")
+                    ));
                 }
                 return md;
             }
