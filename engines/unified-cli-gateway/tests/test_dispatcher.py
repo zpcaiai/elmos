@@ -57,7 +57,14 @@ sys.modules['elmos_polyglot_compiler.service'].diff_api_contracts.return_value =
 }
 
 # Mock yaml
-sys.modules['yaml'].dump.return_value = "tenant_id: test-tenant\n"
+def _yaml_dump(data, **kwargs):
+    if isinstance(data, dict):
+        return "\n".join(f"{k}: {v}" for k, v in data.items()) + "\n"
+    if isinstance(data, list):
+        return "\n".join(f"- {item}" for item in data) + "\n"
+    return str(data) + "\n"
+
+sys.modules['yaml'].dump = _yaml_dump
 sys.modules['yaml'].safe_load.return_value = {"tenant_id": "test-tenant"}
 
 # Mock sql transpiler gateway

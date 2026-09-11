@@ -393,12 +393,12 @@ class DataComparator:
         all_src_rows: list[dict[str, Any]] = []
         for chunk in src_reader.iter_chunks():
             for r in chunk.rows:
-                all_src_rows.append(dict(zip(chunk.columns, r)))
+                all_src_rows.append(dict(zip(chunk.columns, r, strict=False)))
 
         all_tgt_rows: list[dict[str, Any]] = []
         for chunk in tgt_reader.iter_chunks():
             for r in chunk.rows:
-                all_tgt_rows.append(dict(zip(chunk.columns, r)))
+                all_tgt_rows.append(dict(zip(chunk.columns, r, strict=False)))
 
         return self.compare_row_sets(
             source_rows=all_src_rows,

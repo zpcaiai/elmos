@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "audit_id": "polyglot-210-route-matrix-l4-v1",
-  "issued_at": "2026-09-10T09:04:17Z",
+  "issued_at": "2026-09-11T10:39:55Z",
   "scope": {
     "total_languages": 15,
     "languages": [
@@ -74,10 +74,10 @@
       {
         "target": "cpp",
         "action": "autonomous_missing_header_fix",
-        "status": "PASSED",
-        "iterations": 1
+        "status": "FAILED",
+        "iterations": 0
       }
     ]
   },
-  "elapsed_seconds": 2.62
+  "elapsed_seconds": 676.16
 }

@@ -209,3 +209,118 @@ class EventComparator:
             mismatched_pks=mismatched_pks,
             status=status,
         )
+
+    @staticmethod
+    def filter_lsn_window(
+        events: list[CdcEvent],
+        min_lsn: int | None = None,
+        max_lsn: int | None = None,
+    ) -> list[CdcEvent]:
+        """Filter events strictly within [min_lsn, max_lsn] window."""
+        filtered = events
+        if min_lsn is not None:
+            filtered = [e for e in filtered if e.lsn >= min_lsn]
+        if max_lsn is not None:
+            filtered = [e for e in filtered if e.lsn <= max_lsn]
+        return filtered
+
+
+def parse_debezium_event(payload: dict[str, Any], default_pk_col: str = "id") -> CdcEvent:
+    """Parse a Debezium CDC JSON record into a canonical CdcEvent."""
+    op_code = payload.get("op", "").lower()
+    source_meta = payload.get("source", {})
+    table = source_meta.get("table", "unknown_table")
+    lsn_raw = source_meta.get("lsn", 0)
+    if isinstance(lsn_raw, str):
+        cleaned_lsn = lsn_raw.replace("/", "")
+        try:
+            lsn = int(cleaned_lsn, 16) if "/" in lsn_raw else int(cleaned_lsn)
+        except ValueError:
+            lsn = abs(hash(lsn_raw)) % (10**9)
+    else:
+        lsn = int(lsn_raw)
+
+    tx_id = source_meta.get("txId", "")
+    ts = str(payload.get("ts_ms", source_meta.get("ts_ms", "")))
+
+    before = payload.get("before")
+    after = payload.get("after")
+
+    if op_code in ("c", "r"):
+        op = CdcOpType.INSERT
+        pk = (after or {}).get(default_pk_col)
+    elif op_code == "u":
+        op = CdcOpType.UPDATE
+        pk = (after or before or {}).get(default_pk_col)
+    elif op_code == "d":
+        op = CdcOpType.DELETE
+        pk = (before or {}).get(default_pk_col)
+    else:
+        op = CdcOpType.INSERT
+        pk = (after or {}).get(default_pk_col)
+
+    event_id = payload.get("eventId") or f"deb-{table}-{lsn}-{tx_id}-{pk}"
+    return CdcEvent(
+        event_id=str(event_id),
+        table=table,
+        op=op,
+        primary_key=pk,
+        lsn=lsn,
+        tx_id=tx_id,
+        timestamp=ts,
+        before=before,
+        after=after,
+    )
+
+
+def parse_canal_events(payload: dict[str, Any]) -> list[CdcEvent]:
+    """Parse a Canal CDC JSON payload into canonical CdcEvents."""
+    table = payload.get("table", "unknown_table")
+    pk_names = payload.get("pkNames", ["id"])
+    pk_col = pk_names[0] if pk_names else "id"
+    event_type = payload.get("type", "INSERT").upper()
+    ts = str(payload.get("ts", payload.get("es", "")))
+    canal_id = payload.get("id", 0)
+
+    data_list = payload.get("data", []) or []
+    old_list = payload.get("old", []) or []
+
+    events: list[CdcEvent] = []
+    for idx, data_item in enumerate(data_list):
+        old_item = old_list[idx] if idx < len(old_list) else None
+
+        if event_type == "INSERT":
+            op = CdcOpType.INSERT
+            pk = data_item.get(pk_col)
+            before = None
+            after = data_item
+        elif event_type == "UPDATE":
+            op = CdcOpType.UPDATE
+            pk = data_item.get(pk_col)
+            before = old_item
+            after = data_item
+        elif event_type == "DELETE":
+            op = CdcOpType.DELETE
+            pk = data_item.get(pk_col)
+            before = data_item
+            after = None
+        else:
+            op = CdcOpType.INSERT
+            pk = data_item.get(pk_col)
+            before = old_item
+            after = data_item
+
+        ev_id = f"canal-{canal_id}-{table}-{idx}-{pk}"
+        events.append(
+            CdcEvent(
+                event_id=ev_id,
+                table=table,
+                op=op,
+                primary_key=pk,
+                lsn=int(canal_id) + idx,
+                timestamp=ts,
+                before=before,
+                after=after,
+            )
+        )
+    return events

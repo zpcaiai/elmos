@@ -17,7 +17,7 @@ from typing import Protocol
 import sqlglot
 from sqlglot import exp
 
-from .dialects import check_operator_sql, render_type
+from .dialects import check_operator_sql, render_type, sqlglot_read_dialect
 from .emitter import CommentColumnCatalogLike, _object_name, _render_check_expression, _render_column
 from .identifiers import quote_identifier
 from .models import (
@@ -310,7 +310,7 @@ def looks_like_role_comment(sql: str, source_dialect: Dialect) -> bool:
     if source_dialect is not Dialect.POSTGRES:
         return False
     try:
-        tokens = list(sqlglot.tokenize(sql, read=source_dialect.value))
+        tokens = list(sqlglot.tokenize(sql, read=sqlglot_read_dialect(source_dialect)))
     except sqlglot.errors.SqlglotError:
         return False
     if len(tokens) != 6:
@@ -334,7 +334,7 @@ def parse_role_comment(sql: str | exp.Expression, source_dialect: Dialect) -> Co
     )
     statement_sql = sql if isinstance(sql, str) else sql.sql()
     try:
-        tokens = list(sqlglot.tokenize(statement_sql, read=source_dialect.value))
+        tokens = list(sqlglot.tokenize(statement_sql, read=sqlglot_read_dialect(source_dialect)))
     except sqlglot.errors.SqlglotError as exc:
         raise DialectError(
             "CERTIFIED_COMMENT_PARSE_FAILED",
@@ -555,7 +555,7 @@ def _body_statements(body: exp.Expression | None, source_dialect: Dialect) -> li
 
     try:
         statements: list[exp.Expression] = []
-        for item in sqlglot.parse(raw, read=source_dialect.value):
+        for item in sqlglot.parse(raw, read=sqlglot_read_dialect(source_dialect)):
             if isinstance(item, exp.Expression):
                 statements.append(item)
         if statements:
@@ -587,7 +587,7 @@ def _body_statements(body: exp.Expression | None, source_dialect: Dialect) -> li
             if chunk:
                 try:
                     parsed_statement = sqlglot.parse_one(
-                        chunk, read=source_dialect.value
+                        chunk, read=sqlglot_read_dialect(source_dialect)
                     )
                     if isinstance(parsed_statement, exp.Expression):
                         statements.append(parsed_statement)
@@ -600,7 +600,7 @@ def _body_statements(body: exp.Expression | None, source_dialect: Dialect) -> li
         if chunk:
             try:
                 parsed_statement = sqlglot.parse_one(
-                    chunk, read=source_dialect.value
+                    chunk, read=sqlglot_read_dialect(source_dialect)
                 )
                 if isinstance(parsed_statement, exp.Expression):
                     statements.append(parsed_statement)
@@ -985,7 +985,7 @@ def parse_table_function(
         query_sql = raw_body
     try:
         statements = [
-            item for item in sqlglot.parse(query_sql, read=source_dialect.value) if isinstance(item, exp.Expression)
+            item for item in sqlglot.parse(query_sql, read=sqlglot_read_dialect(source_dialect)) if isinstance(item, exp.Expression)
         ]
     except sqlglot.errors.SqlglotError as exc:
         raise DialectError(

@@ -196,7 +196,7 @@ class CompilerDiagnosticParser:
                 return 0, [], f"Unsupported language: {lang}"
 
             try:
-                proc = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+                proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
                 raw_out = proc.stdout + proc.stderr
                 diags = cls._parse_raw_output(raw_out, lang, ret_code=proc.returncode)
                 return proc.returncode, diags, raw_out

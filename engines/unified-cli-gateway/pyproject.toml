@@ -24,3 +24,7 @@ where = ["src"]
 [tool.uv.sources]
 elmos-sql-transpiler = { path = "../database-data-engine/sql-transpiler" }
 elmos-sql-dialect = { path = "../sql-dialect-engine" }
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+

@@ -5,7 +5,10 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from psycopg2.extras import execute_values
+try:
+    from psycopg2.extras import execute_values
+except ImportError:
+    execute_values = None
 
 from .chunk_reader import DataChunk
 

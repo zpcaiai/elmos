@@ -32,6 +32,7 @@ from ..ir import (
     VarDeclStmt,
 )
 from .base import BaseAstParser
+from .native_bridge import NativeBridge
 
 
 class TypeScriptAstParser(BaseAstParser):
@@ -41,6 +42,11 @@ class TypeScriptAstParser(BaseAstParser):
         super().__init__('typescript')
 
     def parse(self, source_code: str) -> UniversalModule:
+        # 1. Attempt genuine native TypeScript Compiler API first
+        native_mod = NativeBridge.parse_typescript_with_node(source_code)
+        if native_mod and (any(c.methods for c in native_mod.classes) or native_mod.free_functions):
+            return native_mod
+
         module = UniversalModule(name='TypeScriptModule', source_language='typescript')
 
         # Imports

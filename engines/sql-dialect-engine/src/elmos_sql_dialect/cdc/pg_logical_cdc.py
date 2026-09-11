@@ -11,8 +11,7 @@ from __future__ import annotations
 import logging
 import re
 import time
-from dataclasses import dataclass, field
-from typing import Any, Iterator
+from typing import Any
 
 from .event_comparator import CdcEvent, CdcOpType
 

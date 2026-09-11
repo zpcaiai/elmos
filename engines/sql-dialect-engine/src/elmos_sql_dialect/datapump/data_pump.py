@@ -9,8 +9,9 @@ from __future__ import annotations
 
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
 from ..topological_sorter import TableDependencyGraph
 from .bulk_writer import BulkWriter

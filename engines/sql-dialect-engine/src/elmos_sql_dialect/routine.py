@@ -24,7 +24,7 @@ from collections.abc import Mapping
 import sqlglot
 from sqlglot import exp
 
-from .dialects import render_type
+from .dialects import render_type, sqlglot_read_dialect
 from .identifiers import qualified_name, quote_identifier
 from .models import (
     CanonicalType,
@@ -465,7 +465,7 @@ def _parse_body(
     raw_body = str(body.this).strip()
     try:
         statements = [
-            statement for statement in sqlglot.parse(raw_body, read=source_dialect.value) if statement is not None
+            statement for statement in sqlglot.parse(raw_body, read=sqlglot_read_dialect(source_dialect)) if statement is not None
         ]
     except sqlglot.errors.SqlglotError as exc:
         raise DialectError(
@@ -551,7 +551,7 @@ def _parse_plpgsql_block(
             )
             assert declaration_match is not None
             name_text = declaration_match.group("name")
-            name_node = sqlglot.parse_one(name_text, read=source_dialect.value)
+            name_node = sqlglot.parse_one(name_text, read=sqlglot_read_dialect(source_dialect))
             assert isinstance(name_node, exp.Expression)
             name: str = _plain_identifier(name_node, "PL/pgSQL local variable")
             _require(
@@ -561,7 +561,7 @@ def _parse_plpgsql_block(
             )
             type_node = sqlglot.parse_one(
                 f"CREATE TABLE __routine_local ({name_text} {declaration_match.group('type')})",
-                read=source_dialect.value,
+                read=sqlglot_read_dialect(source_dialect),
             )
             _require(
                 isinstance(type_node, exp.Create)
@@ -580,7 +580,7 @@ def _parse_plpgsql_block(
             default: ColumnDefault | None = None
             default_text = declaration_match.group("default")
             if default_text is not None:
-                default_node = sqlglot.parse_one(default_text, read=source_dialect.value)
+                default_node = sqlglot.parse_one(default_text, read=sqlglot_read_dialect(source_dialect))
                 assert isinstance(default_node, exp.Expression)
                 default = _parse_default(default_node, type_ref, source_dialect)
             variable = RoutineVariable(name, type_ref, default)
@@ -600,7 +600,7 @@ def _parse_plpgsql_block(
                 "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
                 "PL/pgSQL block must have exactly one final RETURN",
             )
-            expression_nodes = sqlglot.parse(return_match.group(1), read=source_dialect.value)
+            expression_nodes = sqlglot.parse(return_match.group(1), read=sqlglot_read_dialect(source_dialect))
             _require(
                 len(expression_nodes) == 1 and isinstance(expression_nodes[0], exp.Expression),
                 "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
@@ -620,7 +620,7 @@ def _parse_plpgsql_block(
             "PL/pgSQL statement must be a simple local assignment or final RETURN",
         )
         assert assignment_match is not None
-        target_node = sqlglot.parse_one(assignment_match.group("target"), read=source_dialect.value)
+        target_node = sqlglot.parse_one(assignment_match.group("target"), read=sqlglot_read_dialect(source_dialect))
         assert isinstance(target_node, exp.Expression)
         target = _plain_identifier(target_node, "PL/pgSQL assignment target")
         target_variable = symbols.get(target.casefold())
@@ -630,7 +630,7 @@ def _parse_plpgsql_block(
             f"assignment target {target!r} must be a declared local variable",
         )
         assert isinstance(target_variable, RoutineVariable)
-        expression_nodes = sqlglot.parse(assignment_match.group("value"), read=source_dialect.value)
+        expression_nodes = sqlglot.parse(assignment_match.group("value"), read=sqlglot_read_dialect(source_dialect))
         _require(
             len(expression_nodes) == 1 and isinstance(expression_nodes[0], exp.Expression),
             "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",

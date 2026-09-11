@@ -9,6 +9,7 @@ from ..ir import (
     UniversalType, UniversalStmt, ReturnStmt, ThrowStmt, RawSnippetStmt, LiteralExpr
 )
 from .base import BaseAstParser
+from .native_bridge import NativeBridge
 
 
 class SwiftAstParser(BaseAstParser):
@@ -18,6 +19,11 @@ class SwiftAstParser(BaseAstParser):
         super().__init__("swift")
 
     def parse(self, source_code: str) -> UniversalModule:
+        # 1. Attempt genuine native SwiftSyntax compiler first
+        native_mod = NativeBridge.parse_swift_with_syntax(source_code)
+        if native_mod and (any(c.methods for c in native_mod.classes) or native_mod.free_functions):
+            return native_mod
+
         module = UniversalModule(name="swift_module", source_language="swift")
 
         # 1. Imports

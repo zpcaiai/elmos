@@ -296,11 +296,11 @@ class NativeBridge:
                 "/": BinaryOperator.DIV,
                 "%": BinaryOperator.MOD,
                 "==": BinaryOperator.EQ,
-                "!=": BinaryOperator.NEQ,
+                "!=": BinaryOperator.NE,
                 "<": BinaryOperator.LT,
-                "<=": BinaryOperator.LTE,
+                "<=": BinaryOperator.LE,
                 ">": BinaryOperator.GT,
-                ">=": BinaryOperator.GTE,
+                ">=": BinaryOperator.GE,
                 "&&": BinaryOperator.AND,
                 "||": BinaryOperator.OR,
             }
@@ -388,43 +388,135 @@ class NativeBridge:
                 os.remove(temp_path)
 
     @classmethod
+    def _convert_type_str(cls, t_str: str) -> UniversalType:
+        if not t_str:
+            return UniversalType.custom("any")
+        t = t_str.strip()
+        if t in ("integer", "int", "Int64", "i64", "long"):
+            return UniversalType.int64()
+        elif t in ("i32", "Int32"):
+            return UniversalType.int32()
+        elif t in ("number", "float", "double", "Float", "Double", "f64"):
+            return UniversalType.float64()
+        elif t in ("f32", "Float32"):
+            return UniversalType.float32()
+        elif t in ("string", "String"):
+            return UniversalType.string_type()
+        elif t in ("boolean", "bool", "Bool"):
+            return UniversalType.bool_type()
+        elif t in ("void", "()"):
+            return UniversalType.void_type()
+        return UniversalType.custom(t)
+
+    @classmethod
     def _convert_syn_function(cls, fn_dict: dict[str, Any]) -> UniversalMethod:
         f_name = fn_dict.get("name", "")
         params = []
         for p in fn_dict.get("parameters", []):
-            pt = UniversalType.int64() if p.get("type") == "integer" else UniversalType.custom(p.get("type", "any"))
+            pt = cls._convert_type_str(p.get("type", "any"))
             params.append(UniversalParam(name=p.get("name", ""), type_info=pt))
-        ret_t = UniversalType.int64() if fn_dict.get("return_type") == "integer" else UniversalType.custom(fn_dict.get("return_type", "void"))
+        ret_t = cls._convert_type_str(fn_dict.get("return_type", "void"))
 
         body = []
         for s in fn_dict.get("body", []):
-            if s.get("kind") == "return":
-                expr = cls._convert_syn_expr(s.get("expression", {}))
-                body.append(ReturnStmt(value=expr))
+            st = cls._convert_syn_stmt(s)
+            if st:
+                body.append(st)
         return UniversalMethod(name=f_name, params=params, return_type=ret_t, body=body)
 
     @classmethod
+    def _convert_syn_stmt(cls, stmt_dict: dict[str, Any]) -> Optional[UniversalStmt]:
+        if not stmt_dict:
+            return None
+        kind = stmt_dict.get("kind")
+        if kind == "return":
+            expr = cls._convert_syn_expr(stmt_dict.get("expression", {}))
+            return ReturnStmt(value=expr)
+        elif kind == "if":
+            cond = cls._convert_syn_expr(stmt_dict.get("condition", {}))
+            then_body = [cls._convert_syn_stmt(s) for s in stmt_dict.get("then", [])]
+            else_body = [cls._convert_syn_stmt(s) for s in stmt_dict.get("else", [])]
+            return IfElseStmt(
+                condition=cond or LiteralExpr(True, "bool"),
+                then_body=[s for s in then_body if s is not None],
+                else_body=[s for s in else_body if s is not None]
+            )
+        elif kind == "while":
+            cond = cls._convert_syn_expr(stmt_dict.get("condition", {}))
+            body = [cls._convert_syn_stmt(s) for s in stmt_dict.get("body", [])]
+            return WhileStmt(
+                condition=cond or LiteralExpr(True, "bool"),
+                body=[s for s in body if s is not None]
+            )
+        elif kind in ("let", "const", "var"):
+            name = stmt_dict.get("name", "v")
+            t_str = stmt_dict.get("type", "any")
+            init_expr = cls._convert_syn_expr(stmt_dict.get("initializer", {}))
+            return VarDeclStmt(
+                name=name,
+                type_info=cls._convert_type_str(t_str),
+                initial_value=init_expr,
+                is_constant=(kind == "const")
+            )
+        elif kind == "assign":
+            target = cls._convert_syn_expr(stmt_dict.get("target", {}))
+            val = cls._convert_syn_expr(stmt_dict.get("value", {}))
+            if target and val:
+                return AssignStmt(target=target, value=val)
+        elif kind == "expression":
+            expr = cls._convert_syn_expr(stmt_dict.get("expression", {}))
+            if expr:
+                return ExprStmt(expr=expr)
+        return None
+
+    @classmethod
     def _convert_syn_expr(cls, expr_dict: dict[str, Any]) -> Optional[UniversalExpr]:
+        if not expr_dict:
+            return None
         kind = expr_dict.get("kind")
         if kind == "name":
             return IdentifierExpr(name=expr_dict.get("value", ""))
         if kind == "literal":
             val = expr_dict.get("value")
-            t_kind = "int" if isinstance(val, int) else ("float" if isinstance(val, float) else "string")
+            t_kind = "int" if isinstance(val, int) else ("float" if isinstance(val, float) else ("bool" if isinstance(val, bool) else "string"))
             return LiteralExpr(value=val, type_kind=t_kind)
         if kind == "binary":
             op_str = expr_dict.get("operator", "+")
             left = cls._convert_syn_expr(expr_dict.get("left", {}))
             right = cls._convert_syn_expr(expr_dict.get("right", {}))
-            op = BinaryOperator.ADD
-            if op_str == "-":
-                op = BinaryOperator.SUB
-            elif op_str == "*":
-                op = BinaryOperator.MUL
-            elif op_str == "/":
-                op = BinaryOperator.DIV
+            op_map = {
+                "+": BinaryOperator.ADD, "-": BinaryOperator.SUB, "*": BinaryOperator.MUL,
+                "/": BinaryOperator.DIV, "%": BinaryOperator.MOD,
+                "==": BinaryOperator.EQ, "===": BinaryOperator.EQ,
+                "!=": BinaryOperator.NE, "!==": BinaryOperator.NE,
+                "<": BinaryOperator.LT, "<=": BinaryOperator.LE,
+                ">": BinaryOperator.GT, ">=": BinaryOperator.GE,
+                "&&": BinaryOperator.AND, "||": BinaryOperator.OR,
+                "&": BinaryOperator.BIT_AND, "|": BinaryOperator.BIT_OR, "^": BinaryOperator.BIT_XOR,
+            }
+            op = op_map.get(op_str, BinaryOperator.ADD)
             if left and right:
                 return BinaryExpr(left=left, op=op, right=right)
+        if kind == "unary":
+            op_str = expr_dict.get("operator", "!")
+            operand = cls._convert_syn_expr(expr_dict.get("operand", {}))
+            op = UnaryOperator.NOT if op_str == "!" else (UnaryOperator.NEG if op_str == "-" else UnaryOperator.BIT_NOT)
+            if operand:
+                return UnaryExpr(op=op, operand=operand)
+        if kind in ("field_access", "property_access", "member"):
+            target = cls._convert_syn_expr(expr_dict.get("target", {}))
+            prop = expr_dict.get("property") or expr_dict.get("name", "")
+            if target:
+                return FieldAccessExpr(target=target, field_name=str(prop))
+        if kind == "call":
+            target = cls._convert_syn_expr(expr_dict.get("target", {}))
+            method_name = expr_dict.get("method") or expr_dict.get("name") or "call"
+            args = [cls._convert_syn_expr(a) for a in expr_dict.get("arguments", [])]
+            return MethodCallExpr(
+                target=target,
+                method_name=str(method_name),
+                args=[a for a in args if a is not None]
+            )
         return None
 
     # --------------------------------------------------------------------------
@@ -606,4 +698,129 @@ class NativeBridge:
         finally:
             if os.path.exists(temp_path):
                 os.remove(temp_path)
+
+    # --------------------------------------------------------------------------
+    # TypeScript via official TypeScript Compiler API (5.9.2)
+    # --------------------------------------------------------------------------
+    @classmethod
+    def parse_typescript_with_node(cls, source_code: str) -> Optional[UniversalModule]:
+        """Parses TypeScript source into UniversalModule using official TypeScript Compiler API."""
+        node_path = shutil.which("node")
+        if not node_path:
+            return None
+
+        analyzer_mjs = NATIVE_DIR / "typescript" / "analyzer.mjs"
+        ts_lib = NATIVE_DIR / "javascript" / "vendor" / "typescript-5.9.2" / "typescript.js"
+        if not analyzer_mjs.exists() or not ts_lib.exists():
+            return None
+
+        with tempfile.NamedTemporaryFile("w", suffix=".ts", delete=False, encoding="utf-8") as f:
+            f.write(source_code)
+            f.flush()
+            temp_path = f.name
+
+        try:
+            inv_res = subprocess.run(
+                [node_path, str(analyzer_mjs), str(ts_lib), temp_path, "--inventory"],
+                capture_output=True, text=True, timeout=30
+            )
+            if inv_res.returncode != 0:
+                logger.debug("TypeScript analyzer inventory failed: %s", inv_res.stderr)
+                return None
+
+            inv_data = json.loads(inv_res.stdout)
+            module = UniversalModule(name="TypeScriptModule", source_language="typescript")
+            main_class = UniversalClass(name="TypeScriptDefaultClass")
+            module.classes.append(main_class)
+
+            for subj in inv_data.get("subjects", []):
+                kind = subj.get("declaration_kind")
+                name = subj.get("name")
+                if kind in ("InterfaceDeclaration", "TypeAliasDeclaration"):
+                    module.classes.insert(0, UniversalClass(name=name, is_struct=True))
+
+            for subj in inv_data.get("subjects", []):
+                name = subj.get("name")
+                if not name or not subj.get("analyzable"):
+                    continue
+                fn_res = subprocess.run(
+                    [node_path, str(analyzer_mjs), str(ts_lib), temp_path, name],
+                    capture_output=True, text=True, timeout=30
+                )
+                if fn_res.returncode == 0:
+                    fn_data = json.loads(fn_res.stdout)
+                    for rec in fn_data.get("records", []):
+                        rec_name = rec.get("name")
+                        rec_cls = next((c for c in module.classes if c.name == rec_name), None)
+                        if not rec_cls:
+                            rec_cls = UniversalClass(name=rec_name, is_struct=True)
+                            module.classes.insert(0, rec_cls)
+                        rec_cls.fields = []
+                        for fld in rec.get("fields", []):
+                            f_type = cls._convert_type_str(fld.get("type", "any"))
+                            rec_cls.fields.append(UniversalField(name=fld.get("name", ""), type_info=f_type))
+
+                    for fn_item in fn_data.get("functions", []):
+                        u_meth = cls._convert_syn_function(fn_item)
+                        main_class.methods.append(u_meth)
+
+            if not main_class.methods and len(module.classes) <= 1:
+                return None
+            return module
+        except Exception as ex:
+            logger.debug("Exception running TypeScript analyzer bridge: %s", ex)
+            return None
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
+    # --------------------------------------------------------------------------
+    # Swift via native SwiftSyntax 600.0.1 analyzer binary
+    # --------------------------------------------------------------------------
+    @classmethod
+    def parse_swift_with_syntax(cls, source_code: str) -> Optional[UniversalModule]:
+        """Parses Swift source into UniversalModule using the native SwiftSyntax analyzer binary."""
+        bin_path = NATIVE_DIR / "swift" / ".build" / "arm64-apple-macosx" / "debug" / "ElmosSwiftAnalyzer"
+        if not bin_path.exists():
+            bin_path = NATIVE_DIR / "swift" / ".build" / "release" / "ElmosSwiftAnalyzer"
+        if not bin_path.exists():
+            return None
+
+        with tempfile.NamedTemporaryFile("w", suffix=".swift", delete=False, encoding="utf-8") as f:
+            f.write(source_code)
+            f.flush()
+            temp_path = f.name
+
+        try:
+            inv_res = subprocess.run([str(bin_path), temp_path, "--inventory"], capture_output=True, text=True, timeout=10)
+            if inv_res.returncode != 0:
+                logger.debug("Swift analyzer inventory failed: %s", inv_res.stderr)
+                return None
+
+            inv_data = json.loads(inv_res.stdout)
+            module = UniversalModule(name="SwiftModule", source_language="swift")
+            main_class = UniversalClass(name="SwiftDefaultClass")
+            module.classes.append(main_class)
+
+            for subj in inv_data.get("subjects", []):
+                name = subj.get("name")
+                if not name or not subj.get("analyzable"):
+                    continue
+                fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=10)
+                if fn_res.returncode == 0:
+                    fn_data = json.loads(fn_res.stdout)
+                    for fn_item in fn_data.get("functions", []):
+                        u_meth = cls._convert_syn_function(fn_item)
+                        main_class.methods.append(u_meth)
+
+            if not main_class.methods:
+                return None
+            return module
+        except Exception as ex:
+            logger.debug("Exception running Swift analyzer bridge: %s", ex)
+            return None
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
 

@@ -7,6 +7,13 @@ Includes:
 - CdcReconciliationReport: Machine-readable evidence reporting
 """
 
+from .connector import (
+    DatabaseStreamConnector,
+    KeysetPaginationReader,
+    MockDatabaseStreamConnector,
+    StreamingDataComparator,
+    TableChunk,
+)
 from .data_comparator import (
     ChunkDiffResult,
     DataComparator,
@@ -23,6 +30,8 @@ from .event_comparator import (
     EventComparator,
     EventReconciliationReport,
     EventStreamAnomaly,
+    parse_canal_events,
+    parse_debezium_event,
 )
 from .pg_logical_cdc import PostgresLogicalReplicationCdc
 from .reporter import CdcReconciliationReport, CdcReporter
@@ -46,20 +55,27 @@ __all__ = [
     "ColumnDiff",
     "ColumnSchema",
     "DataComparator",
+    "DatabaseStreamConnector",
     "DiffStatus",
     "EventComparator",
     "EventReconciliationReport",
     "EventStreamAnomaly",
     "ForeignKeySpec",
+    "KeysetPaginationReader",
+    "MockDatabaseStreamConnector",
     "PostgresLogicalReplicationCdc",
     "RowDiff",
     "SchemaComparator",
     "SchemaDiffReport",
     "SchemaDiffResult",
     "SnapshotCompareReport",
+    "StreamingDataComparator",
+    "TableChunk",
     "TableSchema",
     "hash_normalized_string",
     "hash_rows",
     "normalize_cell_value",
     "normalize_row_dict",
+    "parse_canal_events",
+    "parse_debezium_event",
 ]

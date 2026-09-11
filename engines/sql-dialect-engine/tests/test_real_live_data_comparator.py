@@ -7,12 +7,21 @@ Validates:
 """
 
 import pytest
-import psycopg2
-import psycopg2.extras
+
+try:
+    import psycopg2
+    import psycopg2.extras
+    _HAS_PSYCOPG2 = True
+except ImportError:
+    psycopg2 = None
+    _HAS_PSYCOPG2 = False
+
 from elmos_sql_dialect.cdc import DataComparator
 
 
 def is_pg_available() -> bool:
+    if not _HAS_PSYCOPG2:
+        return False
     try:
         conn = psycopg2.connect(dbname="postgres", user="stephen", host="localhost", port=5432)
         conn.close()

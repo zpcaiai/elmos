@@ -552,13 +552,14 @@ def render_default(
     )
 
 
-def sqlglot_read_dialect(dialect: Dialect) -> str:
+def sqlglot_read_dialect(dialect: Dialect | str) -> str:
     """Map canonical Dialect to the closest dialect name understood by sqlglot."""
-    if dialect is Dialect.DM8:
+    val = dialect.value if isinstance(dialect, Dialect) else dialect
+    if val in ("dm8", Dialect.DM8.value):
         return "oracle"
-    if dialect is Dialect.OPENGAUSS:
+    if val in ("opengauss", Dialect.OPENGAUSS.value):
         return "postgres"
-    return dialect.value
+    return val
 
 
 IDENTIFIER_PATTERN = r"[A-Za-z_][A-Za-z0-9_]{0,62}"

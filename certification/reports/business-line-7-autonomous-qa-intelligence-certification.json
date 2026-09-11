@@ -6,10 +6,10 @@
   "local_execution_status": "LOCAL_EXECUTED_SELF_ATTESTED",
   "external_evidence_status": "NOT_RUN",
   "certification": "NOT_CERTIFIED",
-  "verified_at": "2026-09-10T16:15:52.816219+00:00",
+  "verified_at": "2026-09-11T10:16:12.029132+00:00",
   "metrics": {
-    "total_bl7_loc": 116964,
-    "total_new_subsystems_loc": 16565,
+    "total_bl7_loc": 119230,
+    "total_new_subsystems_loc": 16577,
     "new_subsystems_breakdown": {
       "go_daemon": 1139,
       "qa_subsystems": 2426,
@@ -18,9 +18,9 @@
       "inference_gateway": 3725,
       "foundry_gateway": 234,
       "foundry_scheduler": 1542,
-      "foundry_automated_handlers": 1282,
+      "foundry_automated_handlers": 1294,
       "pi_task_execution": 727,
-      "TOTAL_NEW_SUBSYSTEMS_LOC": 16565
+      "TOTAL_NEW_SUBSYSTEMS_LOC": 16577
     },
     "suites_executed": 11,
     "suites_passed": 11,
@@ -28,81 +28,81 @@
     "zero_tolerance_violations": 0
   },
   "loc_by_component": {
-    "engines/autonomous-qa-engine": 49201,
+    "engines/autonomous-qa-engine": 50318,
     "engines/project-intelligence-engine": 23659,
-    "engines/knowledge-skill-model-foundry-engine": 34365,
+    "engines/knowledge-skill-model-foundry-engine": 35514,
     "apps/inference-gateway": 3725,
     "tests/autonomous-qa-self-healing": 2234,
     "tests/project-intelligence-skills": 2322,
     "tests/knowledge-skill-model-foundry-skills": 1458,
-    "TOTAL_BL7_LOC": 116964
+    "TOTAL_BL7_LOC": 119230
   },
   "suites": [
     {
       "name": "Pillar 1: PR Self-Healing Closed Loop (GitHub/GitLab/AST/Sandbox)",
       "passed": true,
       "test_count": 19,
-      "duration_seconds": 0.59
+      "duration_seconds": 9.02
     },
     {
       "name": "Pillar 1: Autonomous QA Industrial Subsystems (17 Subsystem Engines)",
       "passed": true,
       "test_count": 20,
-      "duration_seconds": 0.53
+      "duration_seconds": 7.18
     },
     {
       "name": "Pillar 1: Go Daemon Webhook & Sandboxed Runner Verification (go vet)",
       "passed": true,
       "test_count": 1,
-      "duration_seconds": 1.64
+      "duration_seconds": 12.05
     },
     {
       "name": "Pillar 2: Project Intelligence Deep Analysis (Callgraph/Taint/Architecture/Threats)",
       "passed": true,
       "test_count": 4,
-      "duration_seconds": 0.18
+      "duration_seconds": 4.29
     },
     {
       "name": "Pillar 2: Project Intelligence Subsystems (14 Subsystem Engines)",
       "passed": true,
       "test_count": 15,
-      "duration_seconds": 0.17
+      "duration_seconds": 3.73
     },
     {
       "name": "Pillar 3: Foundry High-Frequency Core Skills & Handlers",
       "passed": true,
       "test_count": 12,
-      "duration_seconds": 8.4
+      "duration_seconds": 180.95
     },
     {
       "name": "Pillar 3: Knowledge-Skill-Model Foundry Subsystems (9 Subsystem Engines)",
       "passed": true,
       "test_count": 9,
-      "duration_seconds": 0.36
+      "duration_seconds": 4.86
     },
     {
       "name": "Pillar 3: LLM API Gateway & Multi-Provider Router (Go Unit & E2E Tests)",
       "passed": true,
       "test_count": 22,
-      "duration_seconds": 1.1
+      "duration_seconds": 21.1
     },
     {
       "name": "Pillar 3: Distributed Task Scheduler & Fencing Worker Pool",
       "passed": true,
       "test_count": 12,
-      "duration_seconds": 0.54
+      "duration_seconds": 3.36
     },
     {
       "name": "Pillar 3: 1,244 Brokered Skills Automated Execution Broker & Handlers",
       "passed": true,
       "test_count": 6,
-      "duration_seconds": 1.28
+      "duration_seconds": 39.73
     },
     {
       "name": "Pillar 2: 500 Intelligence Tasks, 248 Acceptance Scenarios & Subsystems Runner",
       "passed": true,
       "test_count": 10,
-      "duration_seconds": 0.17
+      "duration_seconds": 120.62
     }
   ],
   "anti_cheating": {
@@ -145,5 +145,5 @@
     "certification_authority": "NOT_CERTIFIED"
   },
   "blockers": [],
-  "local_report_digest": "sha256:60dd9dc9b104743e6f2fcbd561c43398bfd90086121923fec3ea16865d370be8"
+  "local_report_digest": "sha256:c60d794b7d329bc1de2782049472ad063248c605501612c1fc4a94a6e1a47a1b"
 }

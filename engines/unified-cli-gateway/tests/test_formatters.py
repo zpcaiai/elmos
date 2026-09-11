@@ -57,6 +57,11 @@ class TestFormatTable(unittest.TestCase):
 class TestFormatOutput(unittest.TestCase):
     """Tests for format_output multi-format rendering."""
 
+    def setUp(self):
+        import elmos_cli.formatters
+        elmos_cli.formatters.yaml.dump = _yaml_dump
+        sys.modules['yaml'].dump = _yaml_dump
+
     def test_json_format(self):
         res = format_output({"a": 1}, "json")
         self.assertEqual(json.loads(res), {"a": 1})

@@ -9,7 +9,7 @@ Ensures that:
 
 from __future__ import annotations
 
-from collections import defaultdict, deque
+from collections import deque
 from dataclasses import dataclass, field
 from typing import Any
 

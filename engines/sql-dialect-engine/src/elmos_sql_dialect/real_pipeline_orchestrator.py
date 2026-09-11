@@ -18,11 +18,11 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import os
 import platform
 import time
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
-from typing import Any, Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -201,10 +201,10 @@ class RealMigrationPipelineOrchestrator:
         # Phase 4: ChinaDB 方言降级 (DM8, openGauss, Procedural AST)
         # ==========================================
         t0 = time.perf_counter()
-        from elmos_sql_dialect.dm8_dialect import lower_dm8_ddl, lower_dm8_upsert
-        from elmos_sql_dialect.opengauss_dialect import lower_opengauss_ddl, lower_opengauss_query
-        from elmos_sql_dialect.procedural_ast_lowerer import ProceduralAstLowerer
+        from elmos_sql_dialect.dm8_dialect import lower_dm8_ddl
         from elmos_sql_dialect.models import Dialect
+        from elmos_sql_dialect.opengauss_dialect import lower_opengauss_ddl
+        from elmos_sql_dialect.procedural_ast_lowerer import ProceduralAstLowerer
 
         dm8_sql = lower_dm8_ddl("CREATE TABLE test (id SERIAL PRIMARY KEY, active BOOLEAN);")
         og_sql = lower_opengauss_ddl("CREATE TABLE test (id SERIAL PRIMARY KEY, active BOOLEAN);")
@@ -293,7 +293,7 @@ class RealMigrationPipelineOrchestrator:
         # Phase 6: 物理 CDC 增量事件抓取 (WAL Slot)
         # ==========================================
         t0 = time.perf_counter()
-        from elmos_sql_dialect.cdc import EventComparator, PostgresLogicalReplicationCdc
+        from elmos_sql_dialect.cdc import PostgresLogicalReplicationCdc
         schema_cdc = f"{target_schema_prefix}_cdc"
         slot_name = f"{target_schema_prefix}_slot"
         conn = self.connection_factory()
