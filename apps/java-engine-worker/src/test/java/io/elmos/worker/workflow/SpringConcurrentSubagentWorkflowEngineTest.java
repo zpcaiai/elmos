@@ -218,7 +218,7 @@ class SpringConcurrentSubagentWorkflowEngineTest {
 
                     @ExceptionHandler(Exception.class)
                     public ResponseEntity<String> handleGeneric(Exception ex, HttpServletRequest req) {
-                        return ResponseEntity.internalServerError().body(ex.getMessage());
+                        return ResponseEntity.internalServerError().body("An internal error occurred");
                     }
                 }
                 """);

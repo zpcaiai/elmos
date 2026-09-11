@@ -147,15 +147,17 @@
           "name": "pytest",
           "kind": "pytest",
           "timeout_seconds": 1800,
-          "project": "engines/commercial-capability-expansion-engine",
+          "project": null,
           "tests": [
             "engines/commercial-capability-expansion-engine/tests"
           ],
           "uv_args": [
-            "--extra",
-            "dev"
+            "--with",
+            "pytest==8.4.2"
           ],
-          "pythonpath": [],
+          "pythonpath": [
+            "engines/commercial-capability-expansion-engine/src"
+          ],
           "environment": {}
         }
       ]
