@@ -35,7 +35,7 @@
     }
   },
   "industrial_quality_percent": 100.0,
-  "issued_at": "2026-09-11T05:08:28.586037+00:00",
+  "issued_at": "2026-09-11T10:06:51.154728+00:00",
   "overall_score_percent": 100.0,
   "overall_status": "PASSED",
   "proof_kind": "interpret+emit+domain-tokens+python-host-run",

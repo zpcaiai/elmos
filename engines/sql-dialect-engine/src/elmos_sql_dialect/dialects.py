@@ -552,6 +552,15 @@ def render_default(
     )
 
 
+def sqlglot_read_dialect(dialect: Dialect) -> str:
+    """Map canonical Dialect to the closest dialect name understood by sqlglot."""
+    if dialect is Dialect.DM8:
+        return "oracle"
+    if dialect is Dialect.OPENGAUSS:
+        return "postgres"
+    return dialect.value
+
+
 IDENTIFIER_PATTERN = r"[A-Za-z_][A-Za-z0-9_]{0,62}"
 """certified-ddl-v1 requires plain, unquoted identifiers only (see parser.py)
 so this module never has to reproduce four different quoting characters

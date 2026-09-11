@@ -20,8 +20,7 @@ _EXTERNAL_MODS = [
     'elmos_security_engine.iam_policy_transpiler',
 ]
 for _mod in _EXTERNAL_MODS:
-    if _mod not in sys.modules:
-        sys.modules[_mod] = MagicMock()
+    sys.modules[_mod] = MagicMock()
 
 # Setup specific return values on mock functions so dispatcher serialization works
 sys.modules['elmos_formal_assurance.lean_dafny_bridge'].generate_lean4_proof.return_value = {
@@ -57,11 +56,30 @@ sys.modules['elmos_polyglot_compiler.service'].diff_api_contracts.return_value =
     "breaking_changes": [],
 }
 
+# Mock yaml
+sys.modules['yaml'].dump.return_value = "tenant_id: test-tenant\n"
+sys.modules['yaml'].safe_load.return_value = {"tenant_id": "test-tenant"}
+
 # Mock sql transpiler gateway
 _sql_gw = sys.modules['elmos_sql_dialect.sql_transpiler_gateway']
 _sql_gw.SUPPORTED_DIALECTS = ["oracle", "postgresql", "mysql", "tsql"]
-_sql_gw.transpile_sql.return_value = {"status": "SUCCESS", "transpiled_sql": "SELECT 1"}
-_sql_gw.diff_ddl_schemas.return_value = {"status": "IDENTICAL", "differences": []}
+_transpile_res = MagicMock()
+_transpile_res.status = "SYNTAX_READY"
+_transpile_res.source_dialect = "oracle"
+_transpile_res.target_dialect = "postgres"
+_transpile_res.source_profile = "oracle-26ai-ee"
+_transpile_res.target_profile = "postgresql-18.4"
+_transpile_res.source_sql = "SELECT 1"
+_transpile_res.target_sql = "SELECT 1"
+_transpile_res.transformed_constructs = []
+_transpile_res.warnings = []
+_transpile_res.semantic_equivalence = "CERTIFIED"
+_transpile_res.reason_code = "OK"
+_transpile_res.reason = "OK"
+_transpile_res.verification = {}
+_transpile_res.merkle_receipt = "0000"
+_sql_gw.SqlTranspilerGateway.return_value.transpile.return_value = _transpile_res
+_sql_gw.SqlTranspilerGateway.return_value.diff_schemas.return_value = {"status": "IDENTICAL", "differences": []}
 
 # Mock security transpiler
 _sec_mod = sys.modules['elmos_security_engine.iam_policy_transpiler']
