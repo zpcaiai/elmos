@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "artifactDigest": "sha256:replace-me",
+  "programs": {
+    "canonicalKernel": "NOT_RUN",
+    "goldenJourneys": "NOT_RUN",
+    "providers": "NOT_RUN"
+  },
+  "p0Failures": [],
+  "decision": "BLOCKED"
+}

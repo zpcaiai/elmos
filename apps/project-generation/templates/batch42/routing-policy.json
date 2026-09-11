@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "example-agent-factory-routing-policy",
+  "batch": 42,
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "NOT_RUN",
+  "evidenceRefs": [],
+  "records": [],
+  "metadata": {}
+}

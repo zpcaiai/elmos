@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "id": "example-finops-economics-zero-tolerance",
+  "batch": 44,
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "NOT_RUN",
+  "flags": [
+    {
+      "name": "customerDataLossFromBudgetStops",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "duplicateMeterEvents",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "nonzeroBillingReconciliationDifference",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "securityGateBypassesForCost",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "testIntegrityViolations",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unallocatedMaterialCosts",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unapprovedNegativeMarginDeals",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unexplainedPriceOverrides",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    }
+  ]
+}

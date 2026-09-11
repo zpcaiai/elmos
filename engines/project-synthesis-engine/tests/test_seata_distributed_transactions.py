@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from elmos_project_synthesis.seata_distributed_transactions import (
-    BranchStatus,
     BranchType,
     DirtyWriteException,
-    GlobalLockManager,
     GlobalTransactionStatus,
     LockConflictError,
     RootContext,
@@ -16,8 +16,6 @@ from elmos_project_synthesis.seata_distributed_transactions import (
     SeataTransactionCoordinator,
     SeataTransactionManager,
     TccAntiHangingManager,
-    UndoLogRecord,
-    UndoLogTable,
 )
 
 
@@ -73,8 +71,13 @@ def test_seata_at_mode_rollback_and_restore():
     
     # State tracking
     account_state = {"acc-01": 500}
-    current_accessor = lambda pk: {"balance": account_state[pk]}
-    state_mutator = lambda pk, field, val: account_state.update({pk: val})
+
+    def current_accessor(pk: str) -> dict[str, Any]:
+        return {"balance": account_state[pk]}
+
+    def state_mutator(pk: str, field: str, val: Any) -> None:
+        account_state.update({pk: val})
+
     rm.register_data_accessor("accounts", current_accessor, state_mutator)
 
     # Branch 1 executes: balance from 500 down to 300
@@ -114,8 +117,13 @@ def test_seata_dirty_write_detection():
     xid = tm.begin(transaction_name="dirty_write_demo")
 
     account_state = {"acc-99": 200}
-    current_accessor = lambda pk: {"balance": account_state[pk]}
-    state_mutator = lambda pk, field, val: account_state.update({pk: val})
+
+    def current_accessor(pk: str) -> dict[str, Any]:
+        return {"balance": account_state[pk]}
+
+    def state_mutator(pk: str, field: str, val: Any) -> None:
+        account_state.update({pk: val})
+
     rm.register_data_accessor("accounts", current_accessor, state_mutator)
 
     before_img = {"balance": 200}

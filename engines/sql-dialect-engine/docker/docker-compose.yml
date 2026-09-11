@@ -1,0 +1,148 @@
+networks:
+  cdc-network:
+    driver: bridge
+    name: elmos-cdc-network
+
+volumes:
+  postgres_source_data:
+  mysql_source_data:
+  opengauss_target_data:
+  dm8_target_data:
+
+services:
+  # 1. PostgreSQL 16 Source Database with Logical Replication Enabled
+  postgres-source:
+    image: postgres:16-alpine
+    container_name: elmos-postgres-source
+    ports:
+      - "55432:5432"
+    environment:
+      POSTGRES_USER: cdc_user
+      POSTGRES_PASSWORD: cdc_password
+      POSTGRES_DB: source_db
+    command: >
+      postgres
+      -c wal_level=logical
+      -c max_wal_senders=10
+      -c max_replication_slots=10
+      -c track_commit_timestamp=on
+      -c max_connections=100
+    volumes:
+      - ./init-scripts/01-postgres-init.sql:/docker-entrypoint-initdb.d/01-postgres-init.sql:ro
+      - postgres_source_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cdc_user -d source_db -h 127.0.0.1"]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
+    networks:
+      - cdc-network
+
+  # 2. MySQL 8.0 Source Database with Binlog ROW format Enabled
+  mysql-source:
+    image: mysql:8.0
+    container_name: elmos-mysql-source
+    ports:
+      - "33306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: source_db
+      MYSQL_USER: cdc_user
+      MYSQL_PASSWORD: cdc_password
+    command: >
+      --server-id=1
+      --log-bin=mysql-bin
+      --binlog-format=ROW
+      --binlog-row-image=FULL
+      --gtid-mode=ON
+      --enforce-gtid-consistency=ON
+      --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql_source_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-proot_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - cdc-network
+
+  # 3. openGauss Target Database (port 54321)
+  opengauss-target:
+    image: enmotech/opengauss:3.0.0
+    container_name: elmos-opengauss-target
+    ports:
+      - "54321:5432"
+    environment:
+      GS_PASSWORD: Enmotech@123
+      GS_PORT: 5432
+    volumes:
+      - ./init-scripts/02-opengauss-init.sql:/docker-entrypoint-initdb.d/02-opengauss-init.sql:ro
+      - opengauss_target_data:/var/lib/opengauss/data
+    healthcheck:
+      test: ["CMD-SHELL", "su - omm -c 'gs_ctl status -D /var/lib/opengauss/data' || pg_isready -h 127.0.0.1 -p 5432 -U omm || true"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+    networks:
+      - cdc-network
+
+  # 4. DM8 (Dameng 8) Target Database or Mock Compatibility Runner (port 5236)
+  dm8-target:
+    build:
+      context: .
+      dockerfile: Dockerfile.dm8_mock
+    container_name: elmos-dm8-target
+    ports:
+      - "5236:5236"
+    environment:
+      DM8_PORT: 5236
+      PAGE_SIZE: 16
+      CASE_SENSITIVE: "Y"
+    volumes:
+      - ./init-scripts/03-dm8-init.sql:/init-scripts/03-dm8-init.sql:ro
+      - dm8_target_data:/var/lib/dm8/data
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 5236 || true"]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+      start_period: 3s
+    networks:
+      - cdc-network
+
+  # 5. Lightweight CDC Runner with Python, psql, curl, and validation tools
+  cdc-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.runner
+    container_name: elmos-cdc-runner
+    depends_on:
+      postgres-source:
+        condition: service_healthy
+      mysql-source:
+        condition: service_healthy
+      dm8-target:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres-source
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: cdc_user
+      POSTGRES_PASSWORD: cdc_password
+      POSTGRES_DB: source_db
+      MYSQL_HOST: mysql-source
+      MYSQL_PORT: 3306
+      MYSQL_USER: cdc_user
+      MYSQL_PASSWORD: cdc_password
+      MYSQL_DB: source_db
+      OPENGAUSS_HOST: opengauss-target
+      OPENGAUSS_PORT: 5432
+      DM8_HOST: dm8-target
+      DM8_PORT: 5236
+    volumes:
+      - ../../../:/workspace
+    networks:
+      - cdc-network

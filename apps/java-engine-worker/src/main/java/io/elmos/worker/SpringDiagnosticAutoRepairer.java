@@ -131,6 +131,30 @@ public final class SpringDiagnosticAutoRepairer {
             rulesApplied.add("CONVERT_SPRING_XML_TO_JAVACONFIG");
         }
 
+        // 8. Spring Ecosystem Dependency Modernizer (Springfox -> Springdoc, MyBatis 3, -parameters)
+        var ecoRes = io.elmos.worker.ecosystem.SpringEcosystemDependencyModernizer.modernize(projectRoot);
+        if (ecoRes.modified()) {
+            changesCount += ecoRes.changesCount();
+            modifiedFiles.addAll(ecoRes.modifiedFiles());
+            rulesApplied.addAll(ecoRes.rulesApplied());
+        }
+
+        // 9. Spring MVC Web Routing Modernizer (Trailing-slash matching, jakarta exception handling)
+        var webRes = io.elmos.worker.web.SpringMvcWebRoutingModernizer.modernize(projectRoot, "io.elmos.benchmark.config");
+        if (webRes.modified()) {
+            changesCount += webRes.changesCount();
+            modifiedFiles.addAll(webRes.modifiedFiles());
+            rulesApplied.addAll(webRes.rulesApplied());
+        }
+
+        // 10. Test Modernizer (JUnit 4 -> JUnit 5 Jupiter)
+        var testRes = io.elmos.worker.testing.SpringJUnitModernizer.modernize(projectRoot);
+        if (testRes.modified()) {
+            changesCount += testRes.changesCount();
+            modifiedFiles.addAll(testRes.modifiedFiles());
+            rulesApplied.addAll(testRes.rulesApplied());
+        }
+
         return new RepairResult(changesCount > 0, changesCount, Collections.unmodifiableSet(modifiedFiles), Collections.unmodifiableList(rulesApplied));
     }
 

@@ -1,0 +1,75 @@
+# Default values for {{.ServiceName}}.
+replicaCount: {{.Replicas}}
+
+image:
+  repository: {{.ImageRepository}}
+  pullPolicy: IfNotPresent
+  tag: "{{.ImageTag}}"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "{{.Port}}"
+  prometheus.io/path: "/metrics"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  httpPort: {{.Port}}
+  grpcPort: {{.GRPCPort}}
+
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: {{.ServiceName}}.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: {{.Replicas}}
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+config:
+  appEnv: "{{.Environment}}"
+  logLevel: "info"
+  logFormat: "json"
+  databaseUrl: "{{.Database}}://user:pass@{{.ServiceName}}-db:5432/{{.ServiceName}}"

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "pack_key": "sample-verification-pack",
+  "status": "research",
+  "owner": "TODO",
+  "exact_scope": {
+    "migration_route": "java-to-csharp",
+    "source_artifact_digest": "sha256:TODO",
+    "target_artifact_digest": "sha256:TODO",
+    "workload_key": "sample-workload",
+    "risk_tier": "P0",
+    "environment_digest": "sha256:TODO"
+  },
+  "metrics": {},
+  "evidence_refs": [],
+  "limitations": [
+    "No certification evidence yet."
+  ],
+  "approved_at": null
+}

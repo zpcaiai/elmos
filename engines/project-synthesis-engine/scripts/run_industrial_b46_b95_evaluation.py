@@ -45,6 +45,13 @@ from elmos_project_synthesis.autonomic_healing_pipeline import (
 from elmos_project_synthesis.autonomous_intent_resolver import (
     autonomous_resolve_and_approve,
 )
+from elmos_project_synthesis.distributed_tracing import (
+    TraceContext,
+    TraceContextManager,
+    TraceContextThreadPoolExecutor,
+    extract_traceparent_header,
+    inject_traceparent_header,
+)
 from elmos_project_synthesis.distributed_transactions import (
     DistributedLockManager,
     OutboxDispatcher,
@@ -85,6 +92,16 @@ from elmos_project_synthesis.domain_models import (
     Money,
     Quantity,
 )
+from elmos_project_synthesis.dual_token_auth import (
+    DualTokenAuthManager,
+    ReplayAttackError,
+    SeamlessRefreshClientInterceptor,
+    TokenRevokedError,
+)
+from elmos_project_synthesis.enterprise_order_aggregate import (
+    OrderAggregate,
+    OrderStatus,
+)
 from elmos_project_synthesis.enterprise_production_target import (
     generate_enterprise_target_files,
 )
@@ -93,27 +110,6 @@ from elmos_project_synthesis.infrastructure_emitters.terraform_infra_emitter imp
 
 # Engine imports
 from elmos_project_synthesis.intake import approve_request, create_draft
-from elmos_project_synthesis.distributed_tracing import (
-    TraceContext,
-    TraceContextManager,
-    TraceContextThreadPoolExecutor,
-    extract_traceparent_header,
-    inject_traceparent_header,
-)
-from elmos_project_synthesis.dual_token_auth import (
-    DualTokenAuthManager,
-    ReplayAttackError,
-    SeamlessRefreshClientInterceptor,
-    TokenRevokedError,
-)
-from elmos_project_synthesis.enterprise_order_aggregate import (
-    DomainInvariantViolationError,
-    OrderAggregate,
-    OrderItem,
-    OrderStatus,
-    PaymentRecord,
-    ShippingDetail,
-)
 from elmos_project_synthesis.k8s_deployment_controller import (
     K8sDeploymentController,
     LocalK8sDetector,
@@ -124,19 +120,6 @@ from elmos_project_synthesis.messaging_infrastructure.distributed_cache_lock_emi
     MockRedisState,
     RedisClusterLockManager,
     XFetchCacheStampedeGuard,
-)
-from elmos_project_synthesis.seata_distributed_transactions import (
-    BranchStatus,
-    BranchType,
-    DirtyWriteException,
-    GlobalLockManager,
-    GlobalTransactionStatus,
-    LockConflictError,
-    RootContext,
-    SeataResourceManager,
-    SeataTransactionCoordinator,
-    SeataTransactionManager,
-    TccAntiHangingManager,
 )
 from elmos_project_synthesis.messaging_infrastructure.messaging_middleware_emitter import (
     ConsumedMessage,
@@ -151,6 +134,15 @@ from elmos_project_synthesis.rootless_container_sandbox import (
     LinuxRootlessSandboxRunner,
     RootlessSandboxDetector,
     SandboxSecurityConfig,
+)
+from elmos_project_synthesis.seata_distributed_transactions import (
+    BranchType,
+    LockConflictError,
+    RootContext,
+    SeataResourceManager,
+    SeataTransactionCoordinator,
+    SeataTransactionManager,
+    TccAntiHangingManager,
 )
 from elmos_project_synthesis.specialized_language_harness import (
     run_specialized_language_evaluation,

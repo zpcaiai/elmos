@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "id": "example-agent-factory-metrics",
+  "batch": 42,
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "NOT_RUN",
+  "metrics": [
+    {
+      "name": "adversarialEvalPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "agentEvalPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "costBudgetCompliance",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "evidenceTraceCoverage",
+      "threshold": 0.98,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "holdoutPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "humanTakeoverPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "killSwitchPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "policyComplianceRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "policyViolationCount",
+      "threshold": 0.0,
+      "comparator": "max",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "taskSuccessRate",
+      "threshold": 0.95,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "toolPermissionConformance",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    }
+  ]
+}

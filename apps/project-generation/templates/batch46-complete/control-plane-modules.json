@@ -1,0 +1,79 @@
+{
+  "modules": [
+    {
+      "name": "Identity Tenant",
+      "owner": "platform-engineering",
+      "bounded_context": "identity-tenant",
+      "status": "planned"
+    },
+    {
+      "name": "Project",
+      "owner": "platform-engineering",
+      "bounded_context": "project",
+      "status": "planned"
+    },
+    {
+      "name": "Repository",
+      "owner": "platform-engineering",
+      "bounded_context": "repository",
+      "status": "planned"
+    },
+    {
+      "name": "Workflow",
+      "owner": "platform-engineering",
+      "bounded_context": "workflow",
+      "status": "planned"
+    },
+    {
+      "name": "Migration",
+      "owner": "platform-engineering",
+      "bounded_context": "migration",
+      "status": "planned"
+    },
+    {
+      "name": "Artifact",
+      "owner": "platform-engineering",
+      "bounded_context": "artifact",
+      "status": "planned"
+    },
+    {
+      "name": "Evidence",
+      "owner": "platform-engineering",
+      "bounded_context": "evidence",
+      "status": "planned"
+    },
+    {
+      "name": "Policy",
+      "owner": "platform-engineering",
+      "bounded_context": "policy",
+      "status": "planned"
+    },
+    {
+      "name": "Runner Control",
+      "owner": "platform-engineering",
+      "bounded_context": "runner-control",
+      "status": "planned"
+    },
+    {
+      "name": "Validation",
+      "owner": "platform-engineering",
+      "bounded_context": "validation",
+      "status": "planned"
+    },
+    {
+      "name": "Certification",
+      "owner": "platform-engineering",
+      "bounded_context": "certification",
+      "status": "planned"
+    }
+  ],
+  "shared_infrastructure": [
+    "PostgreSQL",
+    "Object Storage",
+    "Durable Workflow",
+    "Private Runner"
+  ],
+  "service_split_policy": {
+    "requires_evidence": true
+  }
+}

@@ -10,7 +10,7 @@ export class Asset {
 
 @Controller('api/v1/assets')
 export class EnterpriseAssetController {
-  @Get(':serial\)
+  @Get(':serial')
   async getAssetBySerial(@Param('serial') serial: string): Promise<Asset> {
     try {
       if (!serial) {

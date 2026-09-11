@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "id": "example-supply-chain-compliance-metrics",
+  "batch": 40,
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "NOT_RUN",
+  "metrics": [
+    {
+      "name": "auditEvidenceFreshnessRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "criticalVulnerabilityCount",
+      "threshold": 0.0,
+      "comparator": "max",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "evidenceTraceCoverage",
+      "threshold": 0.98,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "independentAssessmentClosureRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "provenanceCoverage",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "sbomCoverage",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "secureSdlcControlCoverage",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "signaturePassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "signatureVerificationRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "supplyChainCoverageRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "threatModelCoverage",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "vulnerabilitySlaCompliance",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    }
+  ]
+}

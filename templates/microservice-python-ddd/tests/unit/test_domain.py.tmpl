@@ -1,0 +1,56 @@
+import pytest
+
+from app.domain.exceptions.domain_exceptions import (
+    BusinessRuleViolationException,
+    DomainValidationException,
+)
+from app.domain.models.entity import Entity, EntityStatus
+
+
+def test_entity_creation_success():
+    """Verify valid domain entity creation."""
+    entity = Entity.create(name="Test Entity", description="Testing domain logic")
+    assert entity.id.startswith("ent-")
+    assert entity.name == "Test Entity"
+    assert entity.description == "Testing domain logic"
+    assert entity.status == EntityStatus.PENDING
+    assert entity.created_at is not None
+    assert entity.updated_at is not None
+
+
+def test_entity_creation_empty_name_fails():
+    """Verify empty name violates domain invariants."""
+    with pytest.raises(DomainValidationException) as exc_info:
+        Entity.create(name="   ", description="Empty name")
+    assert "cannot be empty" in str(exc_info.value)
+
+
+def test_entity_activation_success():
+    """Verify entity status transition to active."""
+    entity = Entity.create(name="Active Test")
+    entity.activate()
+    assert entity.status == EntityStatus.ACTIVE
+
+
+def test_entity_deactivation_success():
+    """Verify entity status transition to inactive."""
+    entity = Entity.create(name="Inactive Test")
+    entity.activate()
+    entity.deactivate()
+    assert entity.status == EntityStatus.INACTIVE
+
+
+def test_entity_update_details():
+    """Verify updating entity attributes updates timestamp and preserves invariants."""
+    entity = Entity.create(name="Original Name", description="Original Desc")
+    entity.update_details(name="Updated Name", description="Updated Desc")
+    assert entity.name == "Updated Name"
+    assert entity.description == "Updated Desc"
+
+
+def test_entity_cannot_activate_when_archived():
+    """Verify state transition rules."""
+    entity = Entity.create(name="Archived Test")
+    entity.status = EntityStatus.ARCHIVED
+    with pytest.raises(BusinessRuleViolationException):
+        entity.activate()

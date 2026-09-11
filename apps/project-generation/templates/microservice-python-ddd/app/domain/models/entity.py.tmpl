@@ -1,0 +1,74 @@
+"""Entity aggregate root model."""
+
+import uuid
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from enum import Enum
+
+from app.domain.exceptions.domain_exceptions import (
+    BusinessRuleViolationException,
+    DomainValidationException,
+)
+
+
+class EntityStatus(str, Enum):  # noqa: UP042
+    """Lifecycle status of an Entity."""
+
+    PENDING = "PENDING"
+    ACTIVE = "ACTIVE"
+    INACTIVE = "INACTIVE"
+    ARCHIVED = "ARCHIVED"
+
+
+@dataclass
+class Entity:
+    """Sample Domain Aggregate Root enforcing domain invariants."""
+
+    id: str
+    name: str
+    description: str = ""
+    status: EntityStatus = EntityStatus.PENDING
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+
+    @classmethod
+    def create(cls, name: str, description: str = "", entity_id: str | None = None) -> "Entity":
+        """Factory constructor generating a unique identifier and enforcing invariants."""
+        trimmed = name.strip() if name else ""
+        if not trimmed:
+            raise DomainValidationException("Entity name cannot be empty")
+        if len(trimmed) > 100:
+            raise DomainValidationException("Entity name cannot exceed 100 characters")
+
+        now = datetime.now(UTC)
+        return cls(
+            id=entity_id or f"ent-{uuid.uuid4().hex[:12]}",
+            name=trimmed,
+            description=description.strip() if description else "",
+            status=EntityStatus.PENDING,
+            created_at=now,
+            updated_at=now,
+        )
+
+    def activate(self) -> None:
+        """Transition entity to ACTIVE state."""
+        if self.status == EntityStatus.ARCHIVED:
+            raise BusinessRuleViolationException("Cannot activate an archived entity")
+        self.status = EntityStatus.ACTIVE
+        self.updated_at = datetime.now(UTC)
+
+    def deactivate(self) -> None:
+        """Transition entity to INACTIVE state."""
+        if self.status == EntityStatus.ARCHIVED:
+            raise BusinessRuleViolationException("Cannot deactivate an archived entity")
+        self.status = EntityStatus.INACTIVE
+        self.updated_at = datetime.now(UTC)
+
+    def update_details(self, name: str, description: str) -> None:
+        """Update mutable entity properties while asserting invariants."""
+        trimmed = name.strip() if name else ""
+        if not trimmed:
+            raise DomainValidationException("Entity name cannot be empty")
+        self.name = trimmed
+        self.description = description.strip() if description else ""
+        self.updated_at = datetime.now(UTC)

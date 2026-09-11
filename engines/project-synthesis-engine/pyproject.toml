@@ -47,6 +47,7 @@ ignore = ["S101", "E501"]
 "src/elmos_project_synthesis/messaging_infrastructure/distributed_cache_lock_emitter.py" = ["S311"]
 "src/elmos_project_synthesis/messaging_infrastructure/messaging_middleware_emitter.py" = ["S311"]
 "scripts/*" = ["S"]
+"tests/*" = ["S105", "S106"]
 
 [tool.mypy]
 python_version = "3.12"

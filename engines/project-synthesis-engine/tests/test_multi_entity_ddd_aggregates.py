@@ -3,18 +3,15 @@
 from __future__ import annotations
 
 from decimal import Decimal
+
 import pytest
 
 from elmos_project_synthesis.enterprise_order_aggregate import (
-    Address,
     DomainError,
     InvariantViolationError,
     Money,
     OrderAggregate,
-    OrderItem,
     OrderStatus,
-    PaymentRecord,
-    ShippingDetail,
 )
 
 

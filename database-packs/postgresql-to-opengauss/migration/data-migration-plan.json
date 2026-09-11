@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-to-opengauss",
+  "owner": "ELMOS Database Migration",
+  "status": "blocked",
+  "strategy": "query-contract-first-no-data-movement",
+  "source": {
+    "engine": "postgresql",
+    "versions": [
+      "17.5"
+    ],
+    "edition": "community",
+    "dialect": "postgresql",
+    "driver_versions": [
+      "psql:17.5"
+    ],
+    "charset": "UTF8",
+    "collation": "C",
+    "timezone": "UTC",
+    "extensions": []
+  },
+  "target": {
+    "engine": "opengauss",
+    "versions": [
+      "5.0.0"
+    ],
+    "edition": "enterprise",
+    "dialect": "opengauss-pg-compatible",
+    "driver_versions": [
+      "opengauss-jdbc:5.0.0"
+    ],
+    "charset": "UTF-8",
+    "collation": "en_US.UTF-8",
+    "timezone": "Asia/Shanghai",
+    "extensions": []
+  },
+  "backfill": {
+    "batch_size": 1000,
+    "checkpoint": "tenant_id,id",
+    "idempotent": true
+  },
+  "cdc": {
+    "status": "NOT_RUN",
+    "reason": "No authorized openGauss target or durable CDC lease is available."
+  },
+  "authority": {
+    "before_cutover": "source",
+    "after_cutover": "NOT_RUN"
+  },
+  "reconciliation": [
+    {
+      "grain": "row-and-column",
+      "keys": ["tenant_id", "id"],
+      "required_difference_count": 0
+    }
+  ],
+  "rollback": {
+    "strategy": "retain-postgresql-authority-and-drop-disposable-opengauss-schema"
+  },
+  "privacy": {
+    "data": "synthetic",
+    "production_data": false
+  }
+}

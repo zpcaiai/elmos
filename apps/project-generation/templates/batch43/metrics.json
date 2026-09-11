@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "id": "example-product-lifecycle-metrics",
+  "batch": 43,
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "NOT_RUN",
+  "metrics": [
+    {
+      "name": "backportValidationRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "compatibilityMatrixPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "deprecationOwnerCoverage",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "evidenceTraceCoverage",
+      "threshold": 0.98,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "migrationGuideAccuracyRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "mixedVersionPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "rollbackPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "unsupportedBreakingChangeCount",
+      "threshold": 0.0,
+      "comparator": "max",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "upgradePassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "versionedSurfaceCoverage",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    }
+  ]
+}

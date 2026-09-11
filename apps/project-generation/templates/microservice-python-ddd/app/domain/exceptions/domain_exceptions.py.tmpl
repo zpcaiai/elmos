@@ -1,0 +1,46 @@
+"""Domain exception hierarchy."""
+
+
+class DomainException(Exception):
+    """Base exception for all domain-level business errors."""
+
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+        self.message = message
+
+
+class EntityNotFoundException(DomainException):
+    """Raised when an aggregate root or entity cannot be found."""
+
+    def __init__(self, entity_id: str, entity_type: str = "Entity") -> None:
+        super().__init__(f"{entity_type} with ID '{entity_id}' was not found.")
+        self.entity_id = entity_id
+        self.entity_type = entity_type
+
+
+EntityNotFoundError = EntityNotFoundException
+
+
+class EntityAlreadyExistsException(DomainException):
+    """Raised when attempting to create an entity with an existing identifier."""
+
+    def __init__(self, entity_id: str) -> None:
+        super().__init__(f"Entity with ID '{entity_id}' already exists.")
+        self.entity_id = entity_id
+
+
+class DomainValidationException(DomainException):
+    """Raised when an entity violates business invariants or rules."""
+    pass
+
+
+EntityValidationError = DomainValidationException
+EntityValidationException = DomainValidationException
+
+
+class BusinessRuleViolationException(DomainException):
+    """Raised when a business operation is prohibited by domain policy."""
+    pass
+
+
+InvalidStateTransitionError = BusinessRuleViolationException

@@ -10,10 +10,13 @@ import io.elmos.worker.security.SpringSecurityCorsCsrfAdvancedModernizer;
 import io.elmos.worker.security.SpringSecurityFilterChainModernizer;
 import io.elmos.worker.testing.SpringJUnitModernizer;
 import io.elmos.worker.validation.SpringCloudArchitectureValidator;
+import io.elmos.worker.validation.SpringEcosystemAuditValidator;
 import io.elmos.worker.validation.SpringEnterpriseModernizationAuditSuite;
 import io.elmos.worker.validation.SpringEnterpriseModernizationAuditSuite.ProjectAuditVerdict;
 import io.elmos.worker.validation.SpringJpaHibernateQueryValidator;
 import io.elmos.worker.validation.SpringSecurityAuditValidator;
+import io.elmos.worker.validation.SpringTestingAuditValidator;
+import io.elmos.worker.validation.SpringWebRoutingAuditValidator;
 import io.elmos.worker.validation.SpringXmlMigrationValidator;
 import io.elmos.worker.web.SpringMvcWebRoutingModernizer;
 import io.elmos.worker.xml.SpringXmlToJavaConfigConverter;
@@ -405,14 +408,17 @@ public final class SpringConcurrentSubagentWorkflowEngine {
             var ecoRes = SpringEcosystemDependencyModernizer.modernize(worktree);
             logs.add(String.format("Subagent-E finished: %d files modified.", ecoRes.modifiedFiles().size()));
 
+            SpringEcosystemAuditValidator validator = new SpringEcosystemAuditValidator();
+            var auditReport = validator.auditProject(worktree);
+
             return new SubagentOutcome(
                     SubagentDomain.ECOSYSTEM,
-                    true,
+                    auditReport.isCompliant(),
                     ecoRes.changesCount(),
                     ecoRes.modifiedFiles(),
                     ecoRes.rulesApplied(),
-                    100.0,
-                    true,
+                    auditReport.complianceScore(),
+                    auditReport.isCompliant(),
                     System.currentTimeMillis() - start,
                     logs
             );
@@ -431,14 +437,17 @@ public final class SpringConcurrentSubagentWorkflowEngine {
             var webRes = SpringMvcWebRoutingModernizer.modernize(worktree, "io.elmos.benchmark.config");
             logs.add(String.format("Subagent-F finished: %d files modified.", webRes.modifiedFiles().size()));
 
+            SpringWebRoutingAuditValidator validator = new SpringWebRoutingAuditValidator();
+            var auditReport = validator.auditProject(worktree);
+
             return new SubagentOutcome(
                     SubagentDomain.WEB_ROUTING,
-                    true,
+                    auditReport.isCompliant(),
                     webRes.changesCount(),
                     webRes.modifiedFiles(),
                     webRes.rulesApplied(),
-                    100.0,
-                    true,
+                    auditReport.complianceScore(),
+                    auditReport.isCompliant(),
                     System.currentTimeMillis() - start,
                     logs
             );
@@ -457,14 +466,17 @@ public final class SpringConcurrentSubagentWorkflowEngine {
             var testRes = SpringJUnitModernizer.modernize(worktree);
             logs.add(String.format("Subagent-G finished: %d files modified.", testRes.modifiedFiles().size()));
 
+            SpringTestingAuditValidator validator = new SpringTestingAuditValidator();
+            var auditReport = validator.auditProject(worktree);
+
             return new SubagentOutcome(
                     SubagentDomain.TESTING,
-                    true,
+                    auditReport.isCompliant(),
                     testRes.changesCount(),
                     testRes.modifiedFiles(),
                     testRes.rulesApplied(),
-                    100.0,
-                    true,
+                    auditReport.complianceScore(),
+                    auditReport.isCompliant(),
                     System.currentTimeMillis() - start,
                     logs
             );

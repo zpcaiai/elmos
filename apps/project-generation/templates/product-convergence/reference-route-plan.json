@@ -1,0 +1,50 @@
+{
+  "route_id": "java-spring-to-csharp-aspnet-reference",
+  "source": {
+    "language_versions": [
+      "17",
+      "21"
+    ],
+    "framework_versions": [
+      "Spring Boot 3.x"
+    ]
+  },
+  "target": {
+    "language_versions": [
+      "C# current LTS"
+    ],
+    "framework_versions": [
+      "ASP.NET Core current LTS",
+      "EF Core current LTS"
+    ]
+  },
+  "repository_profile": {
+    "loc_min": 100000,
+    "loc_max": 500000,
+    "module_min": 5,
+    "module_max": 20
+  },
+  "required_capabilities": [
+    "REST",
+    "authentication",
+    "authorization",
+    "database",
+    "transaction",
+    "messaging",
+    "cache",
+    "scheduler",
+    "third-party-api",
+    "ci-cd",
+    "container"
+  ],
+  "acceptance": {
+    "build_green_rate": 1.0,
+    "p0_behavior_pass_rate": 1.0,
+    "critical_unknowns": 0,
+    "maintainability_gate": "passed",
+    "rollback_drill": "passed",
+    "customer_handoff": "passed"
+  },
+  "status": "planned",
+  "evidence": []
+}

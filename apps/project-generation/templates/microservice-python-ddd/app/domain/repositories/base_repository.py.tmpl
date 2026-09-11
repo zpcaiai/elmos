@@ -1,0 +1,32 @@
+from abc import ABC, abstractmethod
+
+from app.domain.models.entity import Entity
+
+
+class BaseRepository(ABC):
+    """Abstract base repository contract defined in the domain layer."""
+
+    @abstractmethod
+    async def get_by_id(self, entity_id: str) -> Entity | None:
+        """Retrieve an entity aggregate by primary identifier."""
+        pass
+
+    @abstractmethod
+    async def save(self, entity: Entity) -> None:
+        """Persist a new entity aggregate to storage."""
+        pass
+
+    @abstractmethod
+    async def update(self, entity: Entity) -> None:
+        """Persist changes to an existing entity aggregate."""
+        pass
+
+    @abstractmethod
+    async def delete(self, entity_id: str) -> bool:
+        """Remove an entity aggregate from storage by ID."""
+        pass
+
+    @abstractmethod
+    async def list(self, offset: int = 0, limit: int = 20) -> tuple[list[Entity], int]:
+        """List entities with pagination, returning (items, total_count)."""
+        pass

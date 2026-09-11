@@ -31,15 +31,20 @@ class SpringEnterpriseModernizationAuditSuiteTest {
         System.out.println("--------------------------------------------------------------------------------");
 
         report.projectVerdicts().forEach((id, verdict) -> {
-            System.out.printf("[%s] %s | Sec: %.1f | JPA: %.1f | Cloud: %.1f | XML: %.1f | Overall: %.1f\n",
+            System.out.printf("[%s] %s | Sec: %.1f | JPA: %.1f | Cloud: %.1f | XML: %.1f | Eco: %.1f | Web: %.1f | Test: %.1f | Overall: %.1f\n",
                     verdict.fullyCertified() ? "CERTIFIED" : "DEFECT",
                     id,
                     verdict.securityScore(),
                     verdict.jpaScore(),
                     verdict.cloudScore(),
                     verdict.xmlScore(),
-                    verdict.overallMaturityScore()); if (!verdict.fullyCertified()) verdict.auditLogs().forEach(l -> System.out.println("   " + l)
-            );
+                    verdict.ecosystemScore(),
+                    verdict.webScore(),
+                    verdict.testingScore(),
+                    verdict.overallMaturityScore());
+            if (!verdict.fullyCertified()) {
+                verdict.auditLogs().forEach(l -> System.out.println("   " + l));
+            }
         });
 
         System.out.println("================================================================================");

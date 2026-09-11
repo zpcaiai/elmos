@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "extension_id": "sample.publisher.extension",
+  "owner": "lifecycle-team",
+  "deprecation_announced": true,
+  "eol_date": "2027-07-01",
+  "replacement_or_exit_available": true,
+  "config_export_tested": true,
+  "data_portability_tested": true,
+  "uninstall_tested": true,
+  "residual_dependencies": 0,
+  "customers_unresolved": 0,
+  "evidence_refs": [
+    "lifecycle/evidence.txt"
+  ]
+}

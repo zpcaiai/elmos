@@ -45,57 +45,76 @@ public final class SpringMvcWebRoutingModernizer {
         int changes = 0;
 
         try {
-            // 1. Generate LegacyWebMvcTrailingSlashConfiguration
-            Path configDir = projectRoot.resolve("src/main/java/" + baseConfigPackage.replace('.', '/'));
-            Files.createDirectories(configDir);
-            Path configFile = configDir.resolve("LegacyWebMvcTrailingSlashConfiguration.java");
-
-            String configSource = String.format("""
-                    package %s;
-
-                    import org.springframework.context.annotation.Configuration;
-                    import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
-                    import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-                    /**
-                     * Restores trailing-slash matching compatibility for Spring Boot 3 PathPatternParser.
-                     */
-                    @Configuration
-                    public class LegacyWebMvcTrailingSlashConfiguration implements WebMvcConfigurer {
-
-                        @Override
-                        @SuppressWarnings("deprecation")
-                        public void configurePathMatch(PathMatchConfigurer configurer) {
-                            configurer.setUseTrailingSlashMatch(true);
-                        }
-                    }
-                    """, baseConfigPackage);
-
-            Files.writeString(configFile, configSource, StandardCharsets.UTF_8);
-            String relConfig = projectRoot.relativize(configFile).toString().replace("\\", "/");
-            modifiedFiles.add(relConfig);
-            rulesApplied.add("RULE-SPRING-MVC-TRAILING-SLASH-COMPATIBILITY");
-            changes++;
-
-            // 2. Scan and modernize ResponseEntityExceptionHandler subclasses in project
+            List<Path> javaFiles;
             try (var stream = Files.walk(projectRoot)) {
-                List<Path> javaFiles = stream
+                javaFiles = stream
                         .filter(Files::isRegularFile)
                         .filter(p -> p.toString().endsWith(".java"))
                         .toList();
+            }
 
-                for (Path javaFile : javaFiles) {
-                    String code = Files.readString(javaFile, StandardCharsets.UTF_8);
-                    if (code.contains("ResponseEntityExceptionHandler") || code.contains("@ControllerAdvice")) {
-                        String updated = modernizeExceptionHandlers(code, rulesApplied);
-                        if (!updated.equals(code)) {
-                            Files.writeString(javaFile, updated, StandardCharsets.UTF_8);
-                            String rel = projectRoot.relativize(javaFile).toString().replace("\\", "/");
-                            modifiedFiles.add(rel);
-                            changes++;
-                        }
+            if (javaFiles.isEmpty()) {
+                return WebModernizationResult.empty();
+            }
+
+            boolean hasControllers = false;
+            boolean hasTrailingSlashConfig = false;
+
+            for (Path javaFile : javaFiles) {
+                String code = Files.readString(javaFile, StandardCharsets.UTF_8);
+                if (code.contains("@RestController") || code.contains("@Controller")) {
+                    hasControllers = true;
+                }
+                if (code.contains("setUseTrailingSlashMatch(true)")
+                        || code.contains("LegacyWebMvcTrailingSlashConfiguration")
+                        || code.contains("setUseTrailingSlashMatch(Boolean.TRUE)")) {
+                    hasTrailingSlashConfig = true;
+                }
+
+                if (code.contains("ResponseEntityExceptionHandler") || code.contains("@ControllerAdvice")
+                        || code.contains("javax.servlet.http.HttpServletRequest")) {
+                    String updated = modernizeExceptionHandlers(code, rulesApplied);
+                    if (!updated.equals(code)) {
+                        Files.writeString(javaFile, updated, StandardCharsets.UTF_8);
+                        String rel = projectRoot.relativize(javaFile).toString().replace("\\", "/");
+                        modifiedFiles.add(rel);
+                        changes++;
                     }
                 }
+            }
+
+            // Generate LegacyWebMvcTrailingSlashConfiguration only if controllers exist and config is missing
+            if (hasControllers && !hasTrailingSlashConfig) {
+                Path configDir = projectRoot.resolve("src/main/java/" + baseConfigPackage.replace('.', '/'));
+                Files.createDirectories(configDir);
+                Path configFile = configDir.resolve("LegacyWebMvcTrailingSlashConfiguration.java");
+
+                String configSource = String.format("""
+                        package %s;
+
+                        import org.springframework.context.annotation.Configuration;
+                        import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+                        import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+                        /**
+                         * Restores trailing-slash matching compatibility for Spring Boot 3 PathPatternParser.
+                         */
+                        @Configuration
+                        public class LegacyWebMvcTrailingSlashConfiguration implements WebMvcConfigurer {
+
+                            @Override
+                            @SuppressWarnings("deprecation")
+                            public void configurePathMatch(PathMatchConfigurer configurer) {
+                                configurer.setUseTrailingSlashMatch(true);
+                            }
+                        }
+                        """, baseConfigPackage);
+
+                Files.writeString(configFile, configSource, StandardCharsets.UTF_8);
+                String relConfig = projectRoot.relativize(configFile).toString().replace("\\", "/");
+                modifiedFiles.add(relConfig);
+                rulesApplied.add("RULE-SPRING-MVC-TRAILING-SLASH-COMPATIBILITY");
+                changes++;
             }
 
         } catch (IOException e) {

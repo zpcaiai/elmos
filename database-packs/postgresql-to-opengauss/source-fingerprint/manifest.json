@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-to-opengauss",
+  "snapshot_digest": "sha256:44e3cc0b0607cd24201a4b313d145e0257bf883bc9751f5957fd7e64ceb53a17",
+  "engine_facts": {
+    "engine": "postgresql",
+    "version": "17.5",
+    "edition": "community",
+    "driver": "psql:17.5",
+    "charset": "UTF8",
+    "collation": "C",
+    "timezone": "UTC",
+    "collection_mode": "declared-query-contract-static-analysis"
+  },
+  "object_counts": {
+    "declared_tables": 1,
+    "declared_queries": 1
+  },
+  "runtime_workload": {
+    "top_queries": ["query:postgresql-orders-page"],
+    "plans": [],
+    "locks": [],
+    "jobs": []
+  },
+  "unknowns": [
+    "No live PostgreSQL statistics, plans, locks, extensions, roles, jobs, or workload capture was authorized."
+  ],
+  "coverage": 1.0,
+  "coverage_scope": "one declared synthetic query contract only"
+}

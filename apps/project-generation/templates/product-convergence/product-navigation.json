@@ -1,0 +1,15 @@
+{
+  "primary": [
+    "Portfolio",
+    "Projects",
+    "Migration Studio",
+    "Validation",
+    "Releases",
+    "Runners",
+    "Evidence",
+    "Marketplace",
+    "Operations",
+    "Administration"
+  ],
+  "internal_batch_ids_visible_to_customer": false
+}

@@ -12,14 +12,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Enterprise Modernization Audit Suite.
+ * Enterprise Modernization 7-in-1 Unified Industrial Audit Suite.
  *
- * <p>Executes all 4 industrial-grade validators against modernized project workspaces:
+ * <p>Executes all 7 industrial-grade validators against modernized project workspaces:
  * <ol>
  *   <li>{@link SpringSecurityAuditValidator}: SecurityFilterChain, lambda DSL, requestMatchers, method security.</li>
  *   <li>{@link SpringJpaHibernateQueryValidator}: Jakarta Persistence, @JdbcTypeCode(JSON), SQM positional parameters, CriteriaBuilder.</li>
  *   <li>{@link SpringCloudArchitectureValidator}: LoadBalancer, Gateway, Resilience4j, OpenFeign, Micrometer Tracing.</li>
  *   <li>{@link SpringXmlMigrationValidator}: Completeness of XML bean definitions, tx, component-scan to JavaConfig.</li>
+ *   <li>{@link SpringEcosystemAuditValidator}: Springfox to Springdoc, MyBatis 3.0.3+ Jakarta upgrade, -parameters flag.</li>
+ *   <li>{@link SpringWebRoutingAuditValidator}: Trailing-slash URL matching configuration, jakarta.servlet exception handlers.</li>
+ *   <li>{@link SpringTestingAuditValidator}: JUnit 4 to JUnit 5 Jupiter migration, assertion integrity, Zero-Test Rule.</li>
  * </ol>
  */
 public final class SpringEnterpriseModernizationAuditSuite {
@@ -35,10 +38,42 @@ public final class SpringEnterpriseModernizationAuditSuite {
             double cloudScore,
             boolean xmlCompliant,
             double xmlScore,
+            boolean ecosystemCompliant,
+            double ecosystemScore,
+            boolean webCompliant,
+            double webScore,
+            boolean testingCompliant,
+            double testingScore,
             double overallMaturityScore,
             boolean fullyCertified,
             List<String> auditLogs
-    ) {}
+    ) {
+        public ProjectAuditVerdict(
+                String projectId,
+                String projectName,
+                boolean securityCompliant,
+                double securityScore,
+                boolean jpaCompliant,
+                double jpaScore,
+                boolean cloudCompliant,
+                double cloudScore,
+                boolean xmlCompliant,
+                double xmlScore,
+                double overallMaturityScore,
+                boolean fullyCertified,
+                List<String> auditLogs
+        ) {
+            this(projectId, projectName,
+                    securityCompliant, securityScore,
+                    jpaCompliant, jpaScore,
+                    cloudCompliant, cloudScore,
+                    xmlCompliant, xmlScore,
+                    true, 100.0,
+                    true, 100.0,
+                    true, 100.0,
+                    overallMaturityScore, fullyCertified, auditLogs);
+        }
+    }
 
     public record SuiteAuditReport(
             int totalProjectsAudited,
@@ -53,9 +88,12 @@ public final class SpringEnterpriseModernizationAuditSuite {
     private final SpringJpaHibernateQueryValidator jpaValidator = new SpringJpaHibernateQueryValidator();
     private final SpringCloudArchitectureValidator cloudValidator = new SpringCloudArchitectureValidator();
     private final SpringXmlMigrationValidator xmlValidator = new SpringXmlMigrationValidator();
+    private final SpringEcosystemAuditValidator ecosystemValidator = new SpringEcosystemAuditValidator();
+    private final SpringWebRoutingAuditValidator webValidator = new SpringWebRoutingAuditValidator();
+    private final SpringTestingAuditValidator testingValidator = new SpringTestingAuditValidator();
 
     /**
-     * Runs comprehensive audit checks on a single modernized project directory.
+     * Runs comprehensive 7-domain audit checks on a single modernized project directory.
      */
     public ProjectAuditVerdict auditModernizedProject(Path projectRoot, String projectId, String projectName) throws IOException {
         List<String> logs = new ArrayList<>();
@@ -63,17 +101,26 @@ public final class SpringEnterpriseModernizationAuditSuite {
 
         // 1. Security Audit
         var secReport = securityValidator.auditProject(projectRoot);
+        for (var v : secReport.violations()) {
+            logs.add("    Security Violation: " + v.ruleId() + " " + v.filePath() + ":" + v.line() + " - " + v.message());
+        }
         logs.add("  - Security Audit: " + (secReport.isCompliant() ? "COMPLIANT" : "NON-COMPLIANT")
                 + " (Score: " + secReport.complianceScore() + ", Violations: " + secReport.totalViolations() + ")");
 
         // 2. JPA / Hibernate Audit
         var jpaReport = jpaValidator.auditProject(projectRoot);
+        for (var v : jpaReport.violations()) {
+            logs.add("    JPA Violation: " + v.ruleId() + " " + v.filePath() + ":" + v.line() + " - " + v.message());
+        }
         logs.add("  - JPA / Hibernate Audit: " + (jpaReport.isCompliant() ? "COMPLIANT" : "NON-COMPLIANT")
                 + " (Score: " + jpaReport.complianceScore() + ", Violations: " + jpaReport.totalViolations() + ")");
 
         // 3. Spring Cloud Audit
         var cloudReport = cloudValidator.auditProject(projectRoot);
-        for (var v : cloudReport.violations()) logs.add("    Cloud Violation: " + v.ruleId() + " " + v.filePath() + ":" + v.line() + " - " + v.message()); logs.add("  - Spring Cloud Audit: " + (cloudReport.isCompliant() ? "COMPLIANT" : "NON-COMPLIANT")
+        for (var v : cloudReport.violations()) {
+            logs.add("    Cloud Violation: " + v.ruleId() + " " + v.filePath() + ":" + v.line() + " - " + v.message());
+        }
+        logs.add("  - Spring Cloud Audit: " + (cloudReport.isCompliant() ? "COMPLIANT" : "NON-COMPLIANT")
                 + " (Score: " + cloudReport.complianceScore() + ", Violations: " + cloudReport.totalViolations() + ")");
 
         // 4. XML Migration Audit
@@ -81,8 +128,45 @@ public final class SpringEnterpriseModernizationAuditSuite {
         logs.add("  - XML Migration Audit: " + (xmlReport.isFullyMigrated() ? "COMPLIANT" : "PARTIAL")
                 + " (Completeness: " + xmlReport.migrationCompletenessRate() + "%)");
 
-        double overallScore = (secReport.complianceScore() + jpaReport.complianceScore() + cloudReport.complianceScore() + xmlReport.migrationCompletenessRate()) / 4.0;
-        boolean certified = secReport.isCompliant() && jpaReport.isCompliant() && cloudReport.isCompliant() && xmlReport.isFullyMigrated();
+        // 5. Ecosystem Audit (Springfox, MyBatis, -parameters)
+        var ecoReport = ecosystemValidator.auditProject(projectRoot);
+        for (var v : ecoReport.violations()) {
+            logs.add("    Ecosystem Violation: " + v.ruleId() + " " + v.filePath() + ":" + v.line() + " - " + v.message());
+        }
+        logs.add("  - Ecosystem Audit: " + (ecoReport.isCompliant() ? "COMPLIANT" : "NON-COMPLIANT")
+                + " (Score: " + ecoReport.complianceScore() + ", Violations: " + ecoReport.totalViolations() + ")");
+
+        // 6. Web Routing Audit (Trailing slash, jakarta exception handlers)
+        var webReport = webValidator.auditProject(projectRoot);
+        for (var v : webReport.violations()) {
+            logs.add("    Web Routing Violation: " + v.ruleId() + " " + v.filePath() + ":" + v.line() + " - " + v.message());
+        }
+        logs.add("  - Web Routing Audit: " + (webReport.isCompliant() ? "COMPLIANT" : "NON-COMPLIANT")
+                + " (Score: " + webReport.complianceScore() + ", Violations: " + webReport.totalViolations() + ")");
+
+        // 7. Testing Suite Audit (JUnit 4 -> 5 Jupiter, Zero-test rule)
+        var testReport = testingValidator.auditProject(projectRoot);
+        for (var v : testReport.violations()) {
+            logs.add("    Testing Violation: " + v.ruleId() + " " + v.filePath() + ":" + v.line() + " - " + v.message());
+        }
+        logs.add("  - Testing Suite Audit: " + (testReport.isCompliant() ? "COMPLIANT" : "NON-COMPLIANT")
+                + " (Score: " + testReport.complianceScore() + ", Violations: " + testReport.totalViolations() + ")");
+
+        double overallScore = (secReport.complianceScore()
+                + jpaReport.complianceScore()
+                + cloudReport.complianceScore()
+                + xmlReport.migrationCompletenessRate()
+                + ecoReport.complianceScore()
+                + webReport.complianceScore()
+                + testReport.complianceScore()) / 7.0;
+
+        boolean certified = secReport.isCompliant()
+                && jpaReport.isCompliant()
+                && cloudReport.isCompliant()
+                && xmlReport.isFullyMigrated()
+                && ecoReport.isCompliant()
+                && webReport.isCompliant()
+                && testReport.isCompliant();
 
         return new ProjectAuditVerdict(
                 projectId,
@@ -95,6 +179,12 @@ public final class SpringEnterpriseModernizationAuditSuite {
                 cloudReport.complianceScore(),
                 xmlReport.isFullyMigrated(),
                 xmlReport.migrationCompletenessRate(),
+                ecoReport.isCompliant(),
+                ecoReport.complianceScore(),
+                webReport.isCompliant(),
+                webReport.complianceScore(),
+                testReport.isCompliant(),
+                testReport.complianceScore(),
                 overallScore,
                 certified,
                 Collections.unmodifiableList(logs)

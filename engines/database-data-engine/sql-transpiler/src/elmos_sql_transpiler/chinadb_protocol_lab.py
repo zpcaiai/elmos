@@ -116,34 +116,26 @@ class ProtocolLabDatabase:
 
             # 6. TRANSACTION CONTROLS: BEGIN / COMMIT / ROLLBACK / SAVEPOINT
             if upper in ("BEGIN", "START TRANSACTION", "BEGIN TRANSACTION"):
-                try:
+                with contextlib.suppress(sqlite3.OperationalError):
                     self._sqlite.execute("BEGIN TRANSACTION")
-                except sqlite3.OperationalError:
-                    pass
                 self.transaction_logs.append({"action": "BEGIN", "timestamp": time.time()})
                 return [], [], 0
 
             if upper == "COMMIT":
-                try:
+                with contextlib.suppress(sqlite3.OperationalError):
                     self._sqlite.execute("COMMIT")
-                except sqlite3.OperationalError:
-                    pass
                 self.transaction_logs.append({"action": "COMMIT", "timestamp": time.time()})
                 return [], [], 0
 
             if upper == "ROLLBACK":
-                try:
+                with contextlib.suppress(sqlite3.OperationalError):
                     self._sqlite.execute("ROLLBACK")
-                except sqlite3.OperationalError:
-                    pass
                 self.transaction_logs.append({"action": "ROLLBACK", "timestamp": time.time()})
                 return [], [], 0
 
             if upper.startswith("SAVEPOINT "):
-                try:
+                with contextlib.suppress(sqlite3.OperationalError):
                     self._sqlite.execute(clean)
-                except sqlite3.OperationalError:
-                    pass
                 self.transaction_logs.append({"action": clean, "timestamp": time.time()})
                 return [], [], 0
 
@@ -239,14 +231,11 @@ class ProtocolLabDatabase:
         table = self.tables.get(tname)
         if not table:
             return
-        with self._lock:
-            try:
-                r_cur = self._sqlite.execute(f"SELECT * FROM '{tname}';")
-                col_names = [d[0].lower() for d in r_cur.description] if r_cur.description else []
-                fetched = r_cur.fetchall()
-                table._rows = [dict(zip(col_names, row)) for row in fetched]
-            except Exception:
-                pass
+        with self._lock, contextlib.suppress(Exception):
+            r_cur = self._sqlite.execute(f"SELECT * FROM '{tname}';")
+            col_names = [d[0].lower() for d in r_cur.description] if r_cur.description else []
+            fetched = r_cur.fetchall()
+            table._rows = [dict(zip(col_names, row, strict=False)) for row in fetched]
 
     def _auto_create_table_from_insert(self, tname: str, sql: str) -> None:
         """Auto-create table schema when insert occurs before explicit DDL."""
@@ -291,10 +280,8 @@ class ProtocolLabDatabase:
             cols = [c.strip().lower() for c in m.group(4).split(",")]
             if tname in self.tables:
                 self.tables[tname].indexes[idx_name] = cols
-        try:
+        with contextlib.suppress(Exception):
             self._sqlite.execute(sql)
-        except Exception:
-            pass
         return [], [], 0
 
     def _handle_insert(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:

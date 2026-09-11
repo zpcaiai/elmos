@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "pack_key": "unset-to-unset",
+  "capabilities": [
+    {
+      "key": "runtime-architecture-discovery",
+      "status": "detected-only",
+      "scope": "Static and runtime infrastructure discovery",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet"
+      ]
+    }
+  ]
+}
