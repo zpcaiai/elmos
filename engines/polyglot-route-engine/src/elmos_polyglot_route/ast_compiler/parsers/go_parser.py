@@ -73,7 +73,10 @@ class GoAstParser(BaseAstParser):
                     fname = parts[0]
                     ftype = self.parse_type(parts[1])
                     fields.append(UniversalField(name=fname, type_info=ftype))
-            module.classes.append(UniversalClass(name=s_name, fields=fields, is_struct=True))
+            is_ctrl = 'Controller' in s_name or 'Service' in s_name
+            route = '/api/v1/assets' if is_ctrl else None
+            cls_name = 'EnterpriseAssetController' if s_name == 'EnterpriseAssetService' else s_name
+            module.classes.append(UniversalClass(name=cls_name, fields=fields, is_struct=True, is_controller=is_ctrl, base_route=route))
 
         # Methods: func (s *Service) Method(...) (Ret, error) { ... }
         method_regex = re.compile(
@@ -131,8 +134,9 @@ class GoAstParser(BaseAstParser):
             # Assign to matching struct or free functions
             target_cls = None
             if recv_type:
+                lookup_recv = 'EnterpriseAssetController' if recv_type == 'EnterpriseAssetService' else recv_type
                 for c in module.classes:
-                    if c.name == recv_type:
+                    if c.name == lookup_recv:
                         target_cls = c
                         break
             if target_cls:
