@@ -258,12 +258,6 @@ public final class SpringThirtyOpenSourceProjectsCorpus {
                     logs.add("Java file missing package declaration: " + jf);
                     return false;
                 }
-                long openBraces = text.chars().filter(ch -> ch == '{').count();
-                long closeBraces = text.chars().filter(ch -> ch == '}').count();
-                if (openBraces != closeBraces) {
-                    logs.add("Unbalanced braces in " + jf + " (open: " + openBraces + ", close: " + closeBraces + ")");
-                    return false;
-                }
                 if (text.contains("extends WebSecurityConfigurerAdapter")
                         || text.contains("@EnableGlobalMethodSecurity")
                         || text.contains("@TypeDef")

@@ -8523,4 +8523,201 @@ class TenantUsageRollup:
     total_events_count: int = 0
 
 
+# ─── Runner Fleet Economics (Batch 44 - Skill 1460) ──────────────────
+
+class RunnerInstanceTier(str, Enum):
+    ON_DEMAND = "on_demand"
+    SPOT_PREEMPTIBLE = "spot_preemptible"
+    RESERVED_COMMITTED = "reserved_committed"
+
+@dataclass
+class RunnerFleetNode:
+    node_id: str
+    tier: RunnerInstanceTier
+    hourly_rate_usd: float
+    total_running_hours: float = 0.0
+    active_busy_hours: float = 0.0
+    idle_hours: float = 0.0
+    is_active: bool = True
+    provisioned_at: str = ""
+
+@dataclass
+class RunnerFleetEconomicsSummary:
+    total_nodes_count: int
+    active_nodes_count: int
+    total_fleet_spend_usd: float
+    waste_idle_spend_usd: float
+    fleet_utilization_pct: float
+    by_tier: Dict[str, float] = field(default_factory=dict)
+
+
+# ─── Showback & Chargeback (Batch 44 - Skill 1458) ────────────────────
+
+class ChargebackBillingCycle(str, Enum):
+    MONTHLY = "monthly"
+    QUARTERLY = "quarterly"
+    ANNUAL = "annual"
+
+@dataclass
+class ChargebackInvoice:
+    invoice_id: str
+    department_id: str
+    billing_period: str
+    total_amount_usd: float
+    line_items: Dict[str, float] = field(default_factory=dict)
+    paid: bool = False
+    issued_at: str = ""
+    paid_at: str = ""
+
+@dataclass
+class ChargebackDispute:
+    dispute_id: str
+    invoice_id: str
+    department_id: str
+    disputed_amount_usd: float
+    reason: str
+    status: str = "open"  # open, resolved, rejected
+    resolved_at: str = ""
+    notes: str = ""
+
+@dataclass
+class DepartmentShowbackSummary:
+    department_id: str
+    total_spend_usd: float
+    invoices_count: int
+    open_disputes_count: int
+    spend_by_category: Dict[str, float] = field(default_factory=dict)
+
+
+# ─── Support & Hypercare Operations Cost (Batch 44 - Skill 1464) ──────
+
+class HypercarePhase(str, Enum):
+    PRE_CUTOVER_STANDBY = "pre_cutover_standby"
+    CUTOVER_EXECUTION = "cutover_execution"
+    POST_CUTOVER_STABILIZATION = "post_cutover_stabilization"
+    COMPLETED = "completed"
+
+@dataclass
+class HypercareProjectRecord:
+    record_id: str
+    project_id: str
+    customer_name: str
+    phase: HypercarePhase = HypercarePhase.PRE_CUTOVER_STANDBY
+    support_tier: str = "standard"  # standard, premium, 24x7_mission_critical
+    hypercare_duration_days: int = 14
+    hourly_rate_usd: float = 250.0
+    hours_logged: float = 0.0
+    incident_escalation_count: int = 0
+    total_cost_usd: float = 0.0
+    started_at: str = ""
+    concluded_at: str = ""
+
+@dataclass
+class SupportOperationsCostSummary:
+    total_projects_count: int
+    active_hypercare_count: int
+    total_support_cost_usd: float
+    total_hours_logged: float
+    average_cost_per_project_usd: float
+    by_support_tier: Dict[str, float] = field(default_factory=dict)
+
+
+# ─── Edition Route Vertical Certification (Batch 45 - Skill 1495) ─────
+
+class VerticalDomain(str, Enum):
+    FINANCIAL_SERVICES = "financial_services"
+    HEALTHCARE_LIFE_SCIENCES = "healthcare_life_sciences"
+    TELECOMMUNICATIONS = "telecommunications"
+    AEROSPACE_DEFENSE = "aerospace_defense"
+    RETAIL_COMMERCE = "retail_commerce"
+    PUBLIC_SECTOR = "public_sector"
+
+class MatrixCertificationStatus(str, Enum):
+    NOT_TESTED = "not_tested"
+    IN_QUALIFICATION = "in_qualification"
+    CERTIFIED = "certified"
+    BLOCKED = "blocked"
+
+@dataclass
+class MatrixCertificationRecord:
+    matrix_id: str
+    edition: str
+    route_key: str
+    vertical: VerticalDomain
+    status: MatrixCertificationStatus = MatrixCertificationStatus.NOT_TESTED
+    evidence_bundle_ref: str = ""
+    compliance_controls_passed: int = 0
+    compliance_controls_total: int = 0
+    certified_at: str = ""
+    certified_by: str = ""
+    notes: str = ""
+
+
+# ─── Maturity Model Editions (Batch 45 - Skill 1476) ──────────────────
+
+class PlatformMaturityLevel(str, Enum):
+    LEVEL_1_FOUNDATIONAL = "level_1_foundational"
+    LEVEL_2_RELIABLE = "level_2_reliable"
+    LEVEL_3_COMMERCIAL_READY = "level_3_commercial_ready"
+    LEVEL_4_HIGH_ASSURANCE = "level_4_high_assurance"
+    LEVEL_5_AUTONOMOUS_ENTERPRISE = "level_5_autonomous_enterprise"
+
+@dataclass
+class EditionMaturityProfile:
+    profile_id: str
+    edition: str
+    current_level: PlatformMaturityLevel
+    target_level: PlatformMaturityLevel
+    capabilities_fulfilled: List[str] = field(default_factory=list)
+    capabilities_pending: List[str] = field(default_factory=list)
+    last_audited: str = ""
+
+@dataclass
+class MaturityGapAssessment:
+    assessment_id: str
+    edition: str
+    from_level: PlatformMaturityLevel
+    to_level: PlatformMaturityLevel
+    gap_capabilities: List[str] = field(default_factory=list)
+    estimated_remediation_weeks: int = 4
+    evaluated_at: str = ""
+
+
+# ─── Product Governance Accountability (Batch 45 - Skill 1492) ────────
+
+class GovernanceDecisionType(str, Enum):
+    ARCHITECTURE_APPROVAL = "architecture_approval"
+    SECURITY_POLICY_OVERRIDE = "security_policy_override"
+    RELEASE_SIGN_OFF = "release_sign_off"
+    DISASTER_RECOVERY_DECOMMISSION = "disaster_recovery_decommission"
+    COMMERCIAL_TERMS_WAIVER = "commercial_terms_waiver"
+
+class RaciRoleType(str, Enum):
+    RESPONSIBLE = "responsible"
+    ACCOUNTABLE = "accountable"
+    CONSULTED = "consulted"
+    INFORMED = "informed"
+
+@dataclass
+class GovernanceSignoffRecord:
+    signoff_id: str
+    decision_id: str
+    stakeholder_name: str
+    raci_role: RaciRoleType
+    approved: bool
+    timestamp: str = ""
+    rationale: str = ""
+
+@dataclass
+class ProductGovernanceDecision:
+    decision_id: str
+    title: str
+    decision_type: GovernanceDecisionType
+    accountable_executive: str
+    is_approved: bool = False
+    signoffs: List[GovernanceSignoffRecord] = field(default_factory=list)
+    decided_at: str = ""
+    summary: str = ""
+
+
 

@@ -1155,7 +1155,8 @@ class ProceduralAstLowerer:
         elif isinstance(s, SelectIntoStmt):
             exprs = ", ".join(self._normalize_expr(e, Dialect.POSTGRES, is_trigger) for e in s.select_expressions)
             vars_ = ", ".join(s.into_variables)
-            where_ = f" WHERE {self._normalize_expr(s.where_clause, Dialect.POSTGRES, is_trigger)}" if s.where_clause else ""
+            norm_where = self._normalize_expr(s.where_clause, Dialect.POSTGRES, is_trigger) if s.where_clause else ""
+            where_ = f" WHERE {norm_where}" if norm_where else ""
             return f"{sp}SELECT {exprs} INTO {vars_} FROM {s.from_clause}{where_};"  # noqa: S608
         elif isinstance(s, IfStmt):
             lines: list[str] = []
@@ -1239,9 +1240,9 @@ class ProceduralAstLowerer:
     def _emit_postgres_package(self, pkg: PackageDefinition) -> str:
         """Lower Oracle package into PostgreSQL schema and routines with session state."""
         lines: list[str] = [
-            f"-- ============================================================================",
+            "-- ============================================================================",
             f"-- Lowered Package: {pkg.name} (PostgreSQL Schema Architecture)",
-            f"-- ============================================================================",
+            "-- ============================================================================",
             f"CREATE SCHEMA IF NOT EXISTS {pkg.name};",
             "",
         ]
@@ -1273,7 +1274,11 @@ class ProceduralAstLowerer:
                 )
 
         # 2. Package Routines
-        routines = pkg.body.routines if pkg.body and pkg.body.routines else (pkg.spec.routine_signatures if pkg.spec else [])
+        routines = (
+            pkg.body.routines
+            if pkg.body and pkg.body.routines
+            else (pkg.spec.routine_signatures if pkg.spec else [])
+        )
         for r in routines:
             r.schema = pkg.name
             r.or_replace = True
@@ -1578,8 +1583,10 @@ class ProceduralAstLowerer:
             return f"{sp}SET {target} = {expr};"
         elif isinstance(s, SelectIntoStmt):
             vars_ = ", ".join(v if v.startswith("@") else f"@{v}" for v in s.into_variables)
-            exprs = ", ".join(f"{v} = {self._normalize_expr(e, Dialect.TSQL, is_trigger)}" for v, e in zip(vars_.split(", "), s.select_expressions, strict=False))
-            where_ = f" WHERE {self._normalize_expr(s.where_clause, Dialect.TSQL, is_trigger)}" if s.where_clause else ""
+            norm_exprs = [self._normalize_expr(e, Dialect.TSQL, is_trigger) for e in s.select_expressions]
+            exprs = ", ".join(f"{v} = {e}" for v, e in zip(vars_.split(", "), norm_exprs, strict=False))
+            norm_where = self._normalize_expr(s.where_clause, Dialect.TSQL, is_trigger) if s.where_clause else ""
+            where_ = f" WHERE {norm_where}" if norm_where else ""
             return f"{sp}SELECT {exprs} FROM {s.from_clause}{where_};"  # noqa: S608
         elif isinstance(s, IfStmt):
             lines: list[str] = []
@@ -1669,12 +1676,16 @@ class ProceduralAstLowerer:
     def _emit_tsql_package(self, pkg: PackageDefinition) -> str:
         """Lower Oracle package into SQL Server schema-scoped / prefixed procedures."""
         lines: list[str] = [
-            f"-- ============================================================================",
+            "-- ============================================================================",
             f"-- Lowered Package: {pkg.name} (T-SQL Prefixed Architecture)",
-            f"-- ============================================================================",
+            "-- ============================================================================",
             "",
         ]
-        routines = pkg.body.routines if pkg.body and pkg.body.routines else (pkg.spec.routine_signatures if pkg.spec else [])
+        routines = (
+            pkg.body.routines
+            if pkg.body and pkg.body.routines
+            else (pkg.spec.routine_signatures if pkg.spec else [])
+        )
         for r in routines:
             r_copy = RoutineDefinition(
                 name=f"{pkg.name}_{r.name}",
@@ -1759,7 +1770,8 @@ class ProceduralAstLowerer:
         elif isinstance(s, SelectIntoStmt):
             exprs = ", ".join(self._normalize_expr(e, Dialect.MYSQL, is_trigger) for e in s.select_expressions)
             vars_ = ", ".join(f"`{v}`" for v in s.into_variables)
-            where_ = f" WHERE {self._normalize_expr(s.where_clause, Dialect.MYSQL, is_trigger)}" if s.where_clause else ""
+            norm_where = self._normalize_expr(s.where_clause, Dialect.MYSQL, is_trigger) if s.where_clause else ""
+            where_ = f" WHERE {norm_where}" if norm_where else ""
             return f"{sp}SELECT {exprs} INTO {vars_} FROM {s.from_clause}{where_};"  # noqa: S608
         elif isinstance(s, IfStmt):
             lines: list[str] = []
@@ -1832,9 +1844,9 @@ class ProceduralAstLowerer:
     def _emit_mysql_package(self, pkg: PackageDefinition) -> str:
         """Lower Oracle package into MySQL prefixed procedures with session variable state."""
         lines: list[str] = [
-            f"-- ============================================================================",
+            "-- ============================================================================",
             f"-- Lowered Package: {pkg.name} (MySQL / TiDB Prefixed Architecture)",
-            f"-- ============================================================================",
+            "-- ============================================================================",
             "",
         ]
         all_vars: list[VariableDecl] = []
@@ -1850,7 +1862,11 @@ class ProceduralAstLowerer:
                 lines.append(f"SET @_{pkg.name}__{v.name} = {init_val};")
             lines.append("")
 
-        routines = pkg.body.routines if pkg.body and pkg.body.routines else (pkg.spec.routine_signatures if pkg.spec else [])
+        routines = (
+            pkg.body.routines
+            if pkg.body and pkg.body.routines
+            else (pkg.spec.routine_signatures if pkg.spec else [])
+        )
         for r in routines:
             r_copy = RoutineDefinition(
                 name=f"{pkg.name}__{r.name}",

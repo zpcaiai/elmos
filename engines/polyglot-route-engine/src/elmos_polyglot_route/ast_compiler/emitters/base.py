@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any
-from ..ir import UniversalClass, UniversalField, UniversalMethod, UniversalModule, UniversalParam, UniversalType
+
+from ..ir import UniversalModule, UniversalType
 
 
 class BaseEmitter(ABC):
@@ -13,10 +13,11 @@ class BaseEmitter(ABC):
     def __init__(self, language: str) -> None:
         self.language = language
 
-    @abstractmethod
     def emit_module(self, module: UniversalModule) -> str:
-        """Emit target source code from UniversalModule."""
-        pass
+        """Emit target source by walking industrial IR statements."""
+        from elmos_polyglot_route.industrial.emitter import emit_industrial_module
+
+        return emit_industrial_module(module, self.language)
 
     @abstractmethod
     def format_type(self, t: UniversalType) -> str:
