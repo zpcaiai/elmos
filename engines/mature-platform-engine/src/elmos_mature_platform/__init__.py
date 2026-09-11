@@ -145,6 +145,12 @@ from elmos_mature_platform.vex_applicability_engine import VexApplicabilityEngin
 from elmos_mature_platform.holdout_feedback_calibration_engine import HoldoutFeedbackCalibrationEngine
 from elmos_mature_platform.migration_knowledge_factory_engine import MigrationKnowledgeFactoryEngine
 from elmos_mature_platform.agent_memory_state_governance_engine import AgentMemoryStateGovernanceEngine
+from elmos_mature_platform.air_gapped_edition_engine import AirGappedEditionEngine
+from elmos_mature_platform.sbom_component_identity_engine import SbomComponentIdentityEngine
+from elmos_mature_platform.agent_red_team_engine import AgentRedTeamEngine
+from elmos_mature_platform.agent_migration_factory_engine import AgentMigrationFactoryEngine
+from elmos_mature_platform.language_framework_specialist_agent_engine import LanguageFrameworkSpecialistAgentEngine
+
 from elmos_mature_platform.physical import (
     CloudVendorControlPlaneDriver,
     IndustrialLoopback,
@@ -305,6 +311,11 @@ __all__ = [
     "MigrationKnowledgeFactoryEngine",
     "SecuritySupplyChainGateEngine",
     "VexApplicabilityEngine",
+    "AirGappedEditionEngine",
+    "SbomComponentIdentityEngine",
+    "AgentRedTeamEngine",
+    "AgentMigrationFactoryEngine",
+    "LanguageFrameworkSpecialistAgentEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",

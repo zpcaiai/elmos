@@ -7822,3 +7822,200 @@ class MemoryGovernanceQuota:
     max_entries_per_agent: int = 1000
     max_bytes_per_agent: int = 10485760
     default_ttl_seconds: int = 86400
+
+
+# ─── Air-Gapped Edition Models (Batch 38 - Skill 1333) ───────────────
+
+class AirgapIsolationStatus(str, Enum):
+    ISOLATED = "isolated"
+    DEGRADED = "degraded"
+    BREACHED = "breached"
+    UNVERIFIED = "unverified"
+
+class AirgapTransferMedium(str, Enum):
+    OPTICAL_DISC = "optical_disc"
+    SECURE_USB = "secure_usb"
+    DATA_DIODE = "data_diode"
+    MANUAL_IMPORT = "manual_import"
+
+@dataclass
+class AirgapComplianceCheck:
+    check_id: str
+    name: str
+    passed: bool = False
+    details: str = ""
+    checked_at: str = ""
+
+@dataclass
+class AirgapEditionDeployment:
+    deployment_id: str
+    customer_id: str
+    site_name: str
+    version: str
+    isolation_status: AirgapIsolationStatus = AirgapIsolationStatus.ISOLATED
+    network_interfaces_disabled: bool = True
+    offline_license_valid: bool = True
+    license_expires_at: str = ""
+    last_compliance_audit: str = ""
+    allowed_transfer_mediums: List[AirgapTransferMedium] = field(default_factory=list)
+    active_bundle_ids: List[str] = field(default_factory=list)
+    created_at: str = ""
+
+
+# ─── SBOM Component Identity Models (Batch 40 - Skill 1379) ──────────
+
+class ComponentPurlType(str, Enum):
+    MAVEN = "maven"
+    NPM = "npm"
+    PYPI = "pypi"
+    GOLANG = "golang"
+    CARGO = "cargo"
+    NUGET = "nuget"
+    GENERIC = "generic"
+
+@dataclass
+class SbomIdentityRecord:
+    identity_id: str
+    component_name: str
+    version: str
+    purl: str
+    purl_type: ComponentPurlType = ComponentPurlType.GENERIC
+    cpe: str = ""
+    sha256_digest: str = ""
+    license_expression: str = "UNKNOWN"
+    supplier: str = ""
+    is_direct_dependency: bool = True
+    verified_identity: bool = False
+    tamper_detected: bool = False
+    registered_at: str = ""
+
+@dataclass
+class SbomIdentityVerificationResult:
+    verification_id: str
+    component_count: int = 0
+    verified_count: int = 0
+    mismatch_count: int = 0
+    unresolved_count: int = 0
+    tampered_components: List[str] = field(default_factory=list)
+    verdict: str = "fail"  # pass, fail, warning
+    verified_at: str = ""
+
+
+# ─── Agent Red Team Models (Batch 42 - Skill 1421) ───────────────────
+
+class RedTeamAttackCategory(str, Enum):
+    PROMPT_INJECTION = "prompt_injection"
+    GOAL_HIJACKING = "goal_hijacking"
+    PRIVILEGE_ESCALATION = "privilege_escalation"
+    DATA_EXFILTRATION = "data_exfiltration"
+    TOOL_ABUSE = "tool_abuse"
+    SYSTEM_PROMPT_EXTRACTION = "system_prompt_extraction"
+
+class AttackSimulationResult(str, Enum):
+    DEFENDED = "defended"
+    BYPASSED = "bypassed"
+    PARTIALLY_BLOCKED = "partially_blocked"
+    ERROR = "error"
+
+@dataclass
+class RedTeamAttackVector:
+    vector_id: str
+    category: RedTeamAttackCategory
+    name: str
+    payload: str
+    expected_defense: str
+    severity: str = "high"
+
+@dataclass
+class RedTeamExerciseRecord:
+    exercise_id: str
+    agent_id: str
+    vector_id: str
+    category: RedTeamAttackCategory
+    result: AttackSimulationResult
+    agent_response: str = ""
+    defense_mechanisms_triggered: List[str] = field(default_factory=list)
+    vulnerability_score: float = 0.0  # 0 to 10
+    simulated_at: str = ""
+
+
+# ─── Agent Migration Factory Models (Batch 42 - Skill 1423) ──────────
+
+class AgentTaskLifecycle(str, Enum):
+    INITIALIZED = "initialized"
+    DISPATCHED = "dispatched"
+    ANALYZING = "analyzing"
+    TRANSFORMING = "transforming"
+    VERIFYING = "verifying"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+
+@dataclass
+class AgentMigrationTask:
+    task_id: str
+    project_id: str
+    wave_id: str
+    agent_id: str
+    source_language: str
+    target_language: str
+    source_module: str
+    target_module: str
+    status: AgentTaskLifecycle = AgentTaskLifecycle.INITIALIZED
+    assigned_worktree: str = ""
+    checkpoint_id: str = ""
+    error_message: str = ""
+    started_at: str = ""
+    completed_at: str = ""
+
+@dataclass
+class MigrationWavePlan:
+    wave_id: str
+    wave_number: int
+    tasks: List[str] = field(default_factory=list)  # task_ids
+    concurrency_limit: int = 5
+    status: str = "pending"
+    started_at: str = ""
+    completed_at: str = ""
+
+
+# ─── Language & Framework Specialist Agent Models (Batch 42 - Skill 1417) ──
+
+class SpecialistDomain(str, Enum):
+    JAVA_SPRING = "java_spring"
+    DOTNET_CSHARP = "dotnet_csharp"
+    PYTHON_FASTAPI = "python_fastapi"
+    TYPESCRIPT_NODE = "typescript_node"
+    GO_CLOUD = "go_cloud"
+    RUST_SYSTEMS = "rust_systems"
+    LEGACY_COBOL = "legacy_cobol"
+
+class SpecialistCapabilityRating(str, Enum):
+    NOVICE = "novice"
+    COMPETENT = "competent"
+    EXPERT = "expert"
+    MASTER = "master"
+
+@dataclass
+class SpecialistAgentProfile:
+    specialist_id: str
+    name: str
+    domain: SpecialistDomain
+    rating: SpecialistCapabilityRating = SpecialistCapabilityRating.COMPETENT
+    supported_frameworks: List[str] = field(default_factory=list)
+    prompt_specialization: str = ""
+    max_context_tokens: int = 128000
+    active_tasks_count: int = 0
+    total_tasks_completed: int = 0
+    success_rate_pct: float = 100.0
+
+@dataclass
+class SpecialistDispatchDecision:
+    dispatch_id: str
+    task_id: str
+    domain: SpecialistDomain
+    selected_specialist_id: str
+    match_score: float = 0.0
+    rationale: str = ""
+    dispatched_at: str = ""
+
