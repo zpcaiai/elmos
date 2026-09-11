@@ -372,7 +372,14 @@ def _run(
         # generated workspace's environment. Let uv/direct workspace tools
         # resolve the generated `.venv` without inheriting a misleading path.
         if language == "python":
-            process_environment.pop("VIRTUAL_ENV", None)
+            for env_var in (
+                "VIRTUAL_ENV",
+                "UV_PROJECT_ENVIRONMENT",
+                "UV_PROJECT",
+                "UV_PYTHON",
+                "UV_WORKING_DIRECTORY",
+            ):
+                process_environment.pop(env_var, None)
             # Use the host trust store for the public PyPI connection. This is
             # the uv-supported path behind managed TLS proxies and avoids
             # rustls `close_notify` failures observed on otherwise valid HTTPS.
@@ -731,7 +738,14 @@ def _probe(
         # The generated workspace owns the environment created by the earlier
         # locked sync. Never let the synthesis engine's ambient venv redirect
         # the probe, and never let a runtime probe resolve or rebuild packages.
-        env.pop("VIRTUAL_ENV", None)
+        for env_var in (
+            "VIRTUAL_ENV",
+            "UV_PROJECT_ENVIRONMENT",
+            "UV_PROJECT",
+            "UV_PYTHON",
+            "UV_WORKING_DIRECTORY",
+        ):
+            env.pop(env_var, None)
         env["UV_SYSTEM_CERTS"] = "true"
     elif language == "go":
         gomod_cache, go_cache = _go_module_cache_roots(cwd)
