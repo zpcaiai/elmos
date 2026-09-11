@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
+from elmos_mature_platform.physical.sigstore_cosign import SigstoreCosignDriver
 from elmos_mature_platform.types import (
     InTotoStatement,
     ProvenanceAttestationStatus,
@@ -23,10 +24,12 @@ SLSA_LEVEL_ORDER = {
 class SlsaProvenanceEngine:
     """Engine for managing SLSA Provenance and build attestations."""
 
-    def __init__(self) -> None:
+    def __init__(self, sigstore_driver: Optional[SigstoreCosignDriver] = None) -> None:
         """Initialize the SlsaProvenanceEngine."""
         self._statements: Dict[str, InTotoStatement] = {}
         self._trusted_builders: Dict[str, SlsaLevel] = {}
+        self._sigstore = sigstore_driver or SigstoreCosignDriver.from_env()
+        self._physical_receipts: List[Dict[str, Any]] = []
 
     def generate_statement(self, statement: InTotoStatement) -> str:
         """Store a statement and mark it as GENERATED."""
@@ -53,6 +56,18 @@ class SlsaProvenanceEngine:
         statement.signature = signature
         statement.signer_key_id = signer_key_id
         statement.status = ProvenanceAttestationStatus.SIGNED
+        attestation = self._sigstore.attest_artifact(
+            artifact_digest=statement.subject_sha256,
+            subject_name=statement.subject_name or statement.statement_id,
+            builder_id=statement.builder_id,
+            key_id=signer_key_id,
+            signature_base64=signature,
+            materialize_keys=False,
+        )
+        self._physical_receipts.append(attestation.to_dict())
+        statement.parameters.setdefault("sigstore", attestation.to_dict())
+        if attestation.rekor_uuid:
+            statement.parameters["rekor_uuid"] = attestation.rekor_uuid
         
         return statement
 

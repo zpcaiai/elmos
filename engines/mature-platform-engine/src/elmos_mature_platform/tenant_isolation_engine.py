@@ -1,5 +1,6 @@
 import uuid
 from typing import Dict, List, Optional
+from elmos_mature_platform.physical.kubernetes_api import KubernetesControlPlaneDriver
 from elmos_mature_platform.types import (
     RegionId,
     TenantDescriptor,
@@ -12,12 +13,14 @@ from elmos_mature_platform.types import (
 class TenantIsolationEngine:
     """Engine for managing multi-tenant isolation, quotas, and security boundaries."""
 
-    def __init__(self) -> None:
+    def __init__(self, kubernetes_driver: Optional[KubernetesControlPlaneDriver] = None) -> None:
         self.tenants: Dict[str, TenantDescriptor] = {}
         self.usage: Dict[str, TenantResourceUsage] = {}
         self.cross_tenant_violations = 0
         self.residency_violations = 0
         self.access_attempts = 0
+        self._k8s = kubernetes_driver or KubernetesControlPlaneDriver.from_env()
+        self._physical_receipts: List[Dict] = []
 
     def provision_tenant(self, descriptor: TenantDescriptor) -> TenantWorkspaceBinding:
         """Provisions a new tenant and returns its hardened workspace binding."""
@@ -25,6 +28,12 @@ class TenantIsolationEngine:
         self.usage[descriptor.tenant_id] = TenantResourceUsage(tenant_id=descriptor.tenant_id)
         
         workspace_id = f"ws-{uuid.uuid4().hex[:8]}"
+        bundle = self._k8s.apply_tenant_isolation(
+            tenant_id=descriptor.tenant_id,
+            cpu_cores=descriptor.cpu_cores_limit,
+            memory_gb=descriptor.memory_gb_limit,
+        )
+        self._physical_receipts.append(bundle.to_dict())
         return TenantWorkspaceBinding(
             workspace_id=workspace_id,
             tenant_id=descriptor.tenant_id,

@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import Any, Callable, Dict, List, Mapping, Optional
 
 from ..domain import TenantScope
+from ..industrial_runtime.host_broker import INDUSTRIAL_BROKER_ID, execute_industrial_skill
 from ..native_semantics import load_native_programs
-from .domain_generators import generate_domain_output
 from .pack_00_05_core_foundry import CoreFoundryPackHandler
 from .pack_06_10_model_foundry import ModelFoundryPackHandler
 from .pack_11_16_governance_platform import GovernancePlatformPackHandler
@@ -73,48 +73,45 @@ class AutomatedPackHandlerRegistry:
         for skill_name, program in self._programs.items():
             declared_outputs = [str(o['name']) for o in program.document.get('outputs', [])]
             pack_name = str(program.document.get('pack', ''))
-            specialized_executor = PACK_EXECUTION_DISPATCH.get(pack_name)
 
             def _make_handler(
                 s_name: str = skill_name,
                 outs: Optional[List[str]] = None,
-                spec_exec: Optional[Any] = specialized_executor,
                 p_name: str = pack_name,
             ) -> HandlerFunc:
                 output_list = outs if outs is not None else list(declared_outputs)
 
                 def _handler(name: str, payload: Mapping[str, Any], scope: TenantScope, invocation_id: str) -> Dict[str, Any]:
-                    output_dict: Dict[str, Any] = {}
-                    domain_meta: Dict[str, Any] = {}
-
-                    # 1. Execute specialized domain handler if available
-                    if spec_exec is not None:
-                        try:
-                            domain_result = spec_exec(s_name, payload, scope, invocation_id)
-                            domain_meta = {k: v for k, v in domain_result.items() if k not in ('outputs', 'status')}
-                            if 'outputs' in domain_result and isinstance(domain_result['outputs'], Mapping):
-                                output_dict.update(domain_result['outputs'])
-                        except Exception as e:
-                            domain_meta = {'handler_fallback_warning': str(e)}
-
-                    # 2. Complete all required declared outputs
-                    for out_name in output_list:
-                        if out_name not in output_dict:
-                            output_dict[out_name] = generate_domain_output(out_name, s_name, payload, invocation_id)
-
-                    result: Dict[str, Any] = {
-                        'status': 'SUCCEEDED',
-                        'outputs': output_dict,
-                        'execution_status': 'LOCAL_EXECUTED_SELF_ATTESTED',
-                        'skill': s_name,
+                    kernel = execute_industrial_skill(
+                        s_name,
+                        payload,
+                        tenant_scope=scope,
+                        invocation_id=invocation_id,
+                        pack=p_name,
+                    )
+                    output_dict: Dict[str, Any] = {
+                        out_name: kernel.materialize_output(out_name) for out_name in output_list
                     }
-                    result.update(domain_meta)
-                    result['pack'] = p_name
-                    return result
+                    return {
+                        "status": "SUCCEEDED" if kernel.ok else "FAILED",
+                        "outputs": output_dict,
+                        "execution_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+                        "execution_mode": kernel.execution_mode,
+                        "host_broker": INDUSTRIAL_BROKER_ID,
+                        "kernel_family": kernel.family,
+                        "algorithm": kernel.algorithm,
+                        "input_digest": kernel.input_digest,
+                        "output_digest": kernel.output_digest,
+                        "llm_required": False,
+                        "industrial": True,
+                        "skill": s_name,
+                        "pack": p_name,
+                        "error": kernel.error,
+                    }
 
                 return _handler
 
-            self._handlers[skill_name] = _make_handler(skill_name, declared_outputs, specialized_executor, pack_name)
+            self._handlers[skill_name] = _make_handler(skill_name, declared_outputs, pack_name)
 
     def get_handler(self, skill_name: str) -> Optional[HandlerFunc]:
         return self._handlers.get(skill_name)

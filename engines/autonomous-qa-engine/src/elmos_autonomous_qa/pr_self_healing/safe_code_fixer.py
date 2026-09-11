@@ -57,6 +57,17 @@ class SafeCodeFixer:
         trace: FailureTrace,
     ) -> PatchProposal:
         """Synthesize a safe code repair for the given failure."""
+        if classification.category in {
+            FailureCategory.RACE_CONDITION,
+            FailureCategory.DEADLOCK,
+            FailureCategory.DISTRIBUTED_LOCK_FAILURE,
+            FailureCategory.DATABASE_DEADLOCK,
+            FailureCategory.ASYNC_TIMING,
+        }:
+            from elmos_autonomous_qa.industrial.production_healer import ProductionDefectHealer
+
+            return ProductionDefectHealer.heal(file_path, original_content, classification, trace)
+
         ext = PurePosixPath(file_path).suffix.lower()
         patched_content = original_content
 

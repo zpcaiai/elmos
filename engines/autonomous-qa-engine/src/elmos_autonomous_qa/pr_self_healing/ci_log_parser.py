@@ -109,7 +109,11 @@ class CILogParser:
                 category = FailureCategory.IMPORT_OR_SYMBOL_ERROR
             elif "TypeError" in exc_class or "AttributeError" in exc_class:
                 category = FailureCategory.TYPE_MISMATCH
-            elif "Timeout" in exc_class or "Deadlock" in exc_class:
+            elif "Deadlock" in exc_class or "deadlock" in error_msg.lower():
+                category = FailureCategory.DEADLOCK
+            elif "StaleFencing" in exc_class or "fencing" in error_msg.lower():
+                category = FailureCategory.DISTRIBUTED_LOCK_FAILURE
+            elif "Timeout" in exc_class:
                 category = FailureCategory.FLAKY_OR_TIMEOUT
 
             # Extract expected vs actual if assertion

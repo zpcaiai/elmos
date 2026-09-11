@@ -79,6 +79,20 @@ class Money(ValueObject):
                 "MONEY_INVALID_CURRENCY", f"Invalid ISO 4217 currency code: {self.currency}"
             )
 
+    @classmethod
+    def of(cls, amount: str | Decimal | float, currency: str = "USD") -> Money:
+        """Factory method to construct Money with type-safe conversion."""
+        return cls(amount=Decimal(str(amount)), currency=currency)
+
+    def __add__(self, other: Money) -> Money:
+        return self.add(other)
+
+    def __sub__(self, other: Money) -> Money:
+        return self.subtract(other)
+
+    def __mul__(self, factor: int | Decimal) -> Money:
+        return self.multiply(factor)
+
     def add(self, other: Money) -> Money:
         if self.currency != other.currency:
             raise DomainInvariantViolationError(

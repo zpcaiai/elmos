@@ -19,6 +19,8 @@
  *    - Virtual Scroll Engine (Binary Search Prefix Offsets / ResizeObserver / MiniApp RecycleView)
  *    - Gesture & Animation Engine (Spring Physics / Framer Motion / MiniApp WXS 60FPS Responder)
  *    - Headless Differential Verification Suite (DOM AST / Playwright / Automator)
+ *    - MicroFrontend Container & Subpackage Optimizer (ProxySandbox / EventBus / Subpackage Splitter)
+ *    - Runtime & Hardware API Engine (BLE / Camera / Canvas 2D / WeChat Pay & PayScore / Custom NavBar)
  * Conforms to Batch 32 Skills (1201-1222) and Execution Integrity Contract.
  */
 
@@ -51,3 +53,5 @@ export * from './virtual-scroll-engine';
 export * from './gesture-animation-engine';
 export * from './headless-differential-suite';
 export * from './ui-library-engine';
+export * from './mfe-container';
+export * from './runtime';

@@ -35,6 +35,8 @@ from .scm_models import (
     WebhookEvent,
 )
 from .test_self_healer import TestSelfHealer
+from elmos_autonomous_qa.industrial.loop_guard import LoopDecision, RepairLoopGuard
+from elmos_autonomous_qa.industrial.test_integrity import TestIntegrityOracle
 
 logger = logging.getLogger("elmos.autonomous_qa.orchestrator")
 
@@ -153,11 +155,42 @@ class PRSelfHealingOrchestrator:
                 audit_events=audit_events,
             )
 
+        guard = RepairLoopGuard(max_cycles=3)
+        failure_sig = f"{classification.category.value}:{target_file}:{primary_trace.error_message[:120]}"
+        loop_decision = guard.begin_cycle(failure_sig)
+        if loop_decision != LoopDecision.CONTINUE:
+            return PRSelfHealingSession(
+                session_id=session_id,
+                tenant_id=tenant_id,
+                project_id=project_id,
+                provider=event.provider,
+                repo_owner=event.repository_owner,
+                repo_name=event.repository_name,
+                source_ref=event.commit_sha or event.ref,
+                target_ref=event.target_branch,
+                state=PRSelfHealingState.REJECTED,
+                failure_traces=failure_traces,
+                defect_classification=classification,
+                error_message=f"Repair loop aborted: {loop_decision.value}",
+                audit_events=audit_events,
+            )
+
         try:
             if classification.recommended_strategy == RepairStrategy.TEST_SELF_HEAL:
                 patch = TestSelfHealer.heal_test(target_file, orig_content, classification, primary_trace)
             else:
                 patch = SafeCodeFixer.synthesize_fix(target_file, orig_content, classification, primary_trace)
+            integrity = TestIntegrityOracle.evaluate(
+                orig_content,
+                patch.patched_content,
+                is_test=patch.is_test_file,
+                allow_oracle_update=classification.recommended_strategy == RepairStrategy.TEST_SELF_HEAL,
+            )
+            if not integrity.ok:
+                raise ValueError("test integrity violated: " + "; ".join(integrity.violations))
+            loop_decision = guard.record_patch(patch.patch_sha256)
+            if loop_decision != LoopDecision.CONTINUE:
+                raise ValueError(f"Repair loop aborted: {loop_decision.value}")
         except Exception as exc:
             audit("PATCH_SYNTHESIS_FAILED", {"error": str(exc)})
             return PRSelfHealingSession(

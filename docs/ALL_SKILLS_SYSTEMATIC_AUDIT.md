@@ -3,30 +3,29 @@
 ## 1. 审计统计概览
 
 - **技能总数**：`4669` 个标准技能规范 (`SKILL.md`)
-- **审计耗时**：`3.14` 秒
+- **审计耗时**：`15.74` 秒
 - **Frontmatter 格式合规率**：`100.0%` (4669 / 4669 均合法具备 YAML Frontmatter)
 
 ### 四层宏观状态分布 (与平台总体演进目标对齐)
 
 | 宏观分类 | 技能数量 | 占比 | 核心定义与保障 |
 | :--- | :---: | :---: | :--- |
-| `[VERIFIED / CODE_COMPLETE]` | **2162** | **46.3%** | 具备 Python 专属 Handler、双根契约与真实测试验证 (Exit Code 0) |
-| `[DECLARED / SPEC_ONLY]` | **1617** | **34.6%** | 已完成规范向可执行代码实现的转化，属于待下发或上游锁定规范 |
+| `[VERIFIED / CODE_COMPLETE]` | **3495** | **74.9%** | 具备 Python 专属 Handler、双根契约与真实测试验证 (Exit Code 0) |
+| `[DECLARED / SPEC_ONLY]` | **244** | **5.2%** | 已完成规范向可执行代码实现的转化，属于待下发或上游锁定规范 |
 | `[PRODUCTION_CONTRACT]` | **473** | **10.1%** | 保持生产契约稳定，生产核心数据模型与控制门禁 |
-| `[TEST_READY / BOUNDED]` | **417** | **8.9%** | 受控沙箱与局部控制平面状态，具备离线可运行测试与有界环境 |
+| `[TEST_READY / BOUNDED]` | **457** | **9.8%** | 受控沙箱与局部控制平面状态，具备离线可运行测试与有界环境 |
 
 ### 细分声明实现状态 TOP 15
 
 | 细分实现状态 | 技能数量 | 占比 |
 | :--- | :---: | :---: |
-| `VERIFIED` | 2162 | 46.3% |
-| `DECLARED` | 1566 | 33.5% |
+| `VERIFIED` | 3495 | 74.9% |
 | `production-contract` | 473 | 10.1% |
+| `DECLARED` | 241 | 5.2% |
 | `LOCAL_CONTROL_PLANE` | 102 | 2.2% |
 | `BLUEPRINT_IMPORTED` | 101 | 2.2% |
 | `RUNTIME_BOUND_NOT_EXECUTED` | 87 | 1.9% |
-| `SPEC_ONLY` | 47 | 1.0% |
-| `test-ready-not-run` | 35 | 0.7% |
+| `test-ready-not-run` | 75 | 1.6% |
 | `LOCAL_EXECUTED_SELF_ATTESTED` | 29 | 0.6% |
 | `PARTIAL_LOCAL_IMPLEMENTED` | 26 | 0.6% |
 | `BOUNDED_LOCAL_IMPLEMENTED` | 19 | 0.4% |
@@ -34,6 +33,7 @@
 | `PLANNING_ONLY_IMPLEMENTED` | 5 | 0.1% |
 | `LOCAL_IMPLEMENTED_BOUNDED` | 1 | 0.0% |
 | `GUIDANCE_ONLY_NOT_EXECUTABLE` | 1 | 0.0% |
+| `in` | 1 | 0.0% |
 
 ### 核心批次与类别分布
 
@@ -109,53 +109,53 @@
 
 | 技能名称 | 核心职责 | 关键任务/验收ID | 宏观状态 | 细分状态 |
 | :--- | :--- | :--- | :---: | :---: |
-| `chinadb-00-migration-program-orchestrator` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Mig | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-01-estate-inventory-assessment` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Est | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-02-semantic-db-ir` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Sem | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-03-rule-mutation-dsl` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Rul | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-04-data-movement-cdc` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Com | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-05-ddl-auto-conversion` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for DDL | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-06-sql-auto-conversion` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-07-plsql-tsql-conversion` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for PL/ | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-08-application-code-auto-refactor` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for App | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-09-behavior-equivalence-verification` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Beh | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-10-performance-equivalence-verification` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Per | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-11-guarded-auto-repair` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Gua | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-12-cutover-rollback` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Cut | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-13-production-migration-certification` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for E1- | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-14-security-governance` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Sec | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-15-evidence-ledger-reproducibility` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Evi | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-16-release-ci-quality-gates` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Rel | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-20-source-oracle-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Ora | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-21-source-sqlserver-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-22-source-postgresql-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Pos | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-23-source-mysql-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for MyS | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-24-source-db2-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for DB2 | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-25-source-sybase-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Syb | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-30-app-java-spring-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Jav | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-31-app-dotnet-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for .NE | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-32-app-python-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Pyt | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-33-app-nodejs-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Nod | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-34-app-go-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Go  | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-40-target-dm8` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for DM8 | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-41-target-kingbasees` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Kin | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-42-target-opengauss` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for ope | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-43-target-tidb` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for TiD | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-44-target-gbase8s` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBa | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-45-target-gbase8c` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBa | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-46-target-gbase8a` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBa | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-47-target-highgo` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Hig | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-48-target-oceanbase-oracle` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Oce | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-49-target-oceanbase-mysql` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Oce | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-50-target-gaussdb-oracle` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Gau | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-51-target-gaussdb-m` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Gau | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-52-target-goldendb` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Gol | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-60-route-support-matrix` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Rou | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-61-fixture-corpus-and-mutation-tests` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Com | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-62-benchmark-lab` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Dat | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-63-migration-estimation-commercial-report` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Com | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-64-vendor-native-tool-bridge` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Ven | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
-| `chinadb-65-observability-migration-control-plane` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Mig | - | `[DECLARED / SPEC_ONLY]` | `SPEC_ONLY` |
+| `chinadb-00-migration-program-orchestrator` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Mig | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-01-estate-inventory-assessment` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Est | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-02-semantic-db-ir` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Sem | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-03-rule-mutation-dsl` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Rul | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-04-data-movement-cdc` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Com | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-05-ddl-auto-conversion` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for DDL | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-06-sql-auto-conversion` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-07-plsql-tsql-conversion` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for PL/ | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-08-application-code-auto-refactor` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for App | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-09-behavior-equivalence-verification` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Beh | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-10-performance-equivalence-verification` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Per | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-11-guarded-auto-repair` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Gua | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-12-cutover-rollback` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Cut | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-13-production-migration-certification` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for E1- | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-14-security-governance` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Sec | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-15-evidence-ledger-reproducibility` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Evi | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-16-release-ci-quality-gates` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Rel | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-20-source-oracle-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Ora | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-21-source-sqlserver-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for SQL | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-22-source-postgresql-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Pos | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-23-source-mysql-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for MyS | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-24-source-db2-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for DB2 | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-25-source-sybase-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Syb | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-30-app-java-spring-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Jav | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-31-app-dotnet-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for .NE | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-32-app-python-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Pyt | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-33-app-nodejs-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Nod | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-34-app-go-adapter` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Go  | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-40-target-dm8` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for DM8 | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-41-target-kingbasees` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Kin | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-42-target-opengauss` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for ope | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-43-target-tidb` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for TiD | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-44-target-gbase8s` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBa | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-45-target-gbase8c` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBa | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-46-target-gbase8a` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for GBa | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-47-target-highgo` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Hig | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-48-target-oceanbase-oracle` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Oce | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-49-target-oceanbase-mysql` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Oce | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-50-target-gaussdb-oracle` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Gau | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-51-target-gaussdb-m` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Gau | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-52-target-goldendb` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Gol | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-60-route-support-matrix` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Rou | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-61-fixture-corpus-and-mutation-tests` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Com | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-62-benchmark-lab` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Dat | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-63-migration-estimation-commercial-report` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Com | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-64-vendor-native-tool-bridge` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Ven | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
+| `chinadb-65-observability-migration-control-plane` | Use when ELMOS must follow the ChinaDB commercial database-migration specification for Mig | - | `[VERIFIED / CODE_COMPLETE]` | `VERIFIED` |
 
 ### 批次 `b38` (22 个技能)
 

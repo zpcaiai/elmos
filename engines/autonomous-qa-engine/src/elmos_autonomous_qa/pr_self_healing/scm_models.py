@@ -39,6 +39,11 @@ class FailureCategory(StrEnum):
     FLAKY_OR_TIMEOUT = "flaky_or_timeout"
     ENVIRONMENT_OR_CONFIG = "environment_or_config"
     SPECIFICATION_DRIFT = "specification_drift"
+    RACE_CONDITION = "race_condition"
+    DEADLOCK = "deadlock"
+    DISTRIBUTED_LOCK_FAILURE = "distributed_lock_failure"
+    DATABASE_DEADLOCK = "database_deadlock"
+    ASYNC_TIMING = "async_timing"
     UNKNOWN = "unknown"
 
 

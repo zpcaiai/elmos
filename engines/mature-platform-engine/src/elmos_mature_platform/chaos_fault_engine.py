@@ -8,6 +8,7 @@ import time
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 from elmos_mature_platform.cross_region_simulation import CrossRegionSimulationEnvironment
+from elmos_mature_platform.physical.toxiproxy import ToxiproxyDriver
 from elmos_mature_platform.types import (
     ChaosExecutionResult,
     ChaosExperimentConfig,
@@ -23,13 +24,20 @@ from elmos_mature_platform.types import (
 class EnterpriseChaosEngine:
     """Industrial Chaos Fault Injection Engine supporting 12 fault types with blast-radius safety governor."""
 
-    def __init__(self, cluster_sim: CrossRegionSimulationEnvironment, seed: int = 1337) -> None:
+    def __init__(
+        self,
+        cluster_sim: CrossRegionSimulationEnvironment,
+        seed: int = 1337,
+        toxiproxy_driver: Optional[ToxiproxyDriver] = None,
+    ) -> None:
         self.sim = cluster_sim
         self._rnd = random.Random(seed)
         self.active_faults: Dict[str, FaultDescriptor] = {}
         self.history: List[FaultDescriptor] = []
         self.governor_interventions: int = 0
         self.event_log: List[str] = []
+        self._toxiproxy = toxiproxy_driver or ToxiproxyDriver.from_env()
+        self._physical_receipts: List[Dict[str, Any]] = []
 
     def _log(self, message: str) -> None:
         ts = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
@@ -43,6 +51,18 @@ class EnterpriseChaosEngine:
         fault.started_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
         try:
+            if fault.fault_type in {
+                FaultType.NETWORK_PARTITION,
+                FaultType.LATENCY_INJECTION,
+                FaultType.PACKET_DROP_CORRUPT,
+            }:
+                injection = self._toxiproxy.inject_fault(
+                    target_service=fault.target_region.value,
+                    fault_type=fault.fault_type.value,
+                    latency_ms=int(fault.parameters.get("latency_ms", 250)),
+                )
+                self._physical_receipts.append(injection.to_dict())
+
             if fault.fault_type == FaultType.NETWORK_PARTITION:
                 self.sim.isolate_region(fault.target_region)
                 fault.impact_summary = f"Isolated region {fault.target_region.value} from peer mesh"

@@ -18,10 +18,10 @@ metadata:
   source_contract_sha256: sha256:93f83797e0b2ee566f0d4d0f6b1391e0a90a5d62d30044723e59b51d88999555
   source_origin: commercial-extension
   installed_namespace: spring-golden-route-commercial-v2
-  implementation_state: "VERIFIED"
+  implementation_state: SPECIFICATION_IMPORTED
   runtime_evidence_status: NOT_RUN
   customer_evidence_status: NOT_RUN
-  external_evidence_status: "LOCAL_EXECUTED"
+  external_evidence_status: NOT_RUN
   certification: NOT_CERTIFIED
   side_effects_authorized: false
 ---

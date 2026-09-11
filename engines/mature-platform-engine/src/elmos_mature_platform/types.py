@@ -6514,3 +6514,165 @@ class MatureReleaseReadinessRecord:
     reviewed_at: str = ""
 
 
+# ─── Edition Responsibility Matrix Models (B38) ────────────────────
+
+class ResponsibilityArea(str, Enum):
+    INFRASTRUCTURE_HARDWARE = "infrastructure_hardware"
+    OS_CONTAINER_RUNTIME = "os_container_runtime"
+    PLATFORM_SOFTWARE = "platform_software"
+    SECURITY_PATCHING = "security_patching"
+    BACKUP_AND_RESTORE = "backup_and_restore"
+    DISASTER_RECOVERY = "disaster_recovery"
+    DATA_PRIVACY_RESIDENCY = "data_privacy_residency"
+    UPGRADE_EXECUTION = "upgrade_execution"
+
+class ResponsibleParty(str, Enum):
+    PLATFORM_PROVIDER = "platform_provider"
+    CUSTOMER = "customer"
+    SHARED = "shared"
+
+@dataclass
+class EditionResponsibilityRecord:
+    area: ResponsibilityArea
+    party: ResponsibleParty
+    sla_guaranteed: bool = True
+    notes: str = ""
+
+@dataclass
+class EditionResponsibilityMatrix:
+    matrix_id: str
+    edition: EditionType
+    responsibilities: Dict[str, EditionResponsibilityRecord] = field(default_factory=dict)
+    last_reviewed: str = ""
+    approved_by: str = ""
+
+# ─── Production Readiness Review Models (B39) ───────────────────────
+
+class PrrCategory(str, Enum):
+    MONITORING_ALERTS = "monitoring_alerts"
+    CAPACITY_SCALING = "capacity_scaling"
+    DISASTER_RECOVERY = "disaster_recovery"
+    SECURITY_COMPLIANCE = "security_compliance"
+    INCIDENT_RUNBOOKS = "incident_runbooks"
+    DEPLOYMENT_ROLLBACK = "deployment_rollback"
+    DEPENDENCY_RESILIENCE = "dependency_resilience"
+
+class PrrItemStatus(str, Enum):
+    PASS = "pass"
+    FAIL = "fail"
+    BLOCKED = "blocked"
+    WAIVED = "waived"
+
+@dataclass
+class PrrChecklistItem:
+    item_id: str
+    category: PrrCategory
+    title: str
+    status: PrrItemStatus = PrrItemStatus.FAIL
+    owner: str = ""
+    remediation: str = ""
+    blocking: bool = True
+
+@dataclass
+class ProductionReadinessReviewRecord:
+    review_id: str
+    service_name: str
+    target_environment: str
+    checklist: List[PrrChecklistItem] = field(default_factory=list)
+    approved: bool = False
+    readiness_score: float = 0.0
+    sign_off_sre: str = ""
+    reviewed_at: str = ""
+
+# ─── Customer Audit Evidence Models (B40) ───────────────────────────
+
+class AuditEvidenceType(str, Enum):
+    ACCESS_LOGS = "access_logs"
+    VULNERABILITY_SCANS = "vulnerability_scans"
+    CHANGE_RECORDS = "change_records"
+    ENCRYPTION_CERTS = "encryption_certs"
+    BACKUP_LOGS = "backup_logs"
+    INCIDENT_REPORTS = "incident_reports"
+
+@dataclass
+class CustomerAuditArtifact:
+    artifact_id: str
+    evidence_type: AuditEvidenceType
+    title: str
+    checksum_sha256: str
+    collected_at: str = ""
+    file_size_bytes: int = 0
+
+@dataclass
+class CustomerAuditEvidencePackage:
+    package_id: str
+    customer_id: str
+    framework: ComplianceFramework
+    artifacts: List[CustomerAuditArtifact] = field(default_factory=list)
+    status: str = "preparing"
+    merkle_root: str = ""
+    download_expiry: str = ""
+    generated_at: str = ""
+
+# ─── Knowledge Confidence and Provenance Models (B41) ────────────────
+
+class KnowledgeConfidenceLevel(str, Enum):
+    UNVERIFIED = "unverified"
+    EXPERIMENTAL = "experimental"
+    PRODUCTION_PROVEN = "production_proven"
+    GOLD_CERTIFIED = "gold_certified"
+    DEPRECATED = "deprecated"
+
+@dataclass
+class EvidenceProvenanceRecord:
+    provenance_id: str
+    knowledge_id: str
+    source_run_id: str
+    author: str
+    empirical_success_count: int = 0
+    empirical_failure_count: int = 0
+    confidence_score: float = 0.5
+    confidence_level: KnowledgeConfidenceLevel = KnowledgeConfidenceLevel.EXPERIMENTAL
+    last_empirically_verified: str = ""
+    citation_urls: List[str] = field(default_factory=list)
+
+@dataclass
+class KnowledgeDecayPolicy:
+    policy_id: str
+    half_life_days: int = 90
+    min_confidence_floor: float = 0.2
+
+# ─── Design Partner Reference Validation Models (B45) ───────────────
+
+class DesignPartnerPhase(str, Enum):
+    ONBOARDING = "onboarding"
+    PILOT_EXECUTION = "pilot_execution"
+    UAT_VALIDATION = "uat_validation"
+    ACCEPTANCE_SIGNED = "acceptance_signed"
+    REFERENCE_PUBLISHED = "reference_published"
+
+@dataclass
+class PartnerAcceptanceCriteria:
+    criterion_id: str
+    description: str
+    target_metric: str
+    actual_metric: str = ""
+    passed: bool = False
+
+@dataclass
+class DesignPartnerValidationStudy:
+    study_id: str
+    partner_name: str
+    industry: str
+    source_platform: str
+    target_platform: str
+    phase: DesignPartnerPhase = DesignPartnerPhase.ONBOARDING
+    criteria: List[PartnerAcceptanceCriteria] = field(default_factory=list)
+    roi_savings_pct: float = 0.0
+    testimonial_quote: str = ""
+    formal_acceptance_signed: bool = False
+    lead_sponsor: str = ""
+    signed_at: str = ""
+
+
+

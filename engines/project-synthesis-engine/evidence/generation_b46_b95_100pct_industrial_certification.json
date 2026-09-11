@@ -3,7 +3,7 @@
   "business_line": "5. 多语言项目生成 (B46-B95)",
   "business_line_id": "line-5-multilang-synthesis",
   "certification_standard": "ELMOS-INDUSTRIAL-PRODUCTION-SPEC-B46-B95-V2",
-  "certified_at": "2026-09-10T08:54:19.975555+00:00",
+  "certified_at": "2026-09-11T02:02:10.230388+00:00",
   "evaluation_verdict": "100% FULLY_CERTIFIED_L5_AUTONOMOUS",
   "scores": {
     "真实纯自动覆盖率": "100%",
@@ -85,12 +85,12 @@
     "k8s_deployment_and_probes": {
       "status": "PASSED",
       "manifests_generated": [
-        "PodDisruptionBudget",
-        "Service",
         "NetworkPolicy",
+        "PodDisruptionBudget",
         "Deployment",
-        "ServiceAccount",
-        "Namespace"
+        "Namespace",
+        "Service",
+        "ServiceAccount"
       ],
       "security_standard": "Kubernetes Restricted PodSecurity Standards",
       "dry_run_validation": "PASSED",
@@ -172,7 +172,7 @@
       "packaging_verification": "NON_ROOT_MULTISTAGE_PASSED",
       "self_healing_action": "AUTOMATIC_ROLLBACK",
       "self_healing_status": "RECOVERED",
-      "self_healing_receipt_digest": "sha256:fe64806f5e23de78e89ba4c7d45eaacd38f4c8ac24b0e8b12651573bccc662a0"
+      "self_healing_receipt_digest": "sha256:f51fe79f427fb34c41b18a7dff126752588777d2473259451f9414df35e13fe1"
     },
     "specialized_language_runtimes_b81_b95": {
       "status": "PASSED",
@@ -183,7 +183,7 @@
       "b66_80_cases": 450,
       "execution_status": "LOCAL_EXECUTED",
       "gate_decision": "LOCAL_PASSED",
-      "evidence_digest": "sha256:0b76eb39c1fb361b89f71f4d105b209939ce53247983732ae7b991717bf27c6e"
+      "evidence_digest": "sha256:4b4f67303723c4977f789368f16d623d0cb8a0d911c9dbb332cd08c1152646c9"
     },
     "enterprise_domain_archetypes": {
       "status": "PASSED",
@@ -209,6 +209,6 @@
       "suites_count": 15
     }
   },
-  "total_execution_duration_seconds": 13.728,
-  "evidence_sha256": "sha256:97bb0075c31b4beaad3cadaafe581c02732d4d66bc3eac5e4b41a5738b4973db"
+  "total_execution_duration_seconds": 13.878,
+  "evidence_sha256": "sha256:86ab7c78c5fee5dff0da7908f05d457bc35e5b16861bb027dc848f8c02fe6790"
 }

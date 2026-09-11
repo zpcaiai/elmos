@@ -196,3 +196,103 @@ def test_scanner_with_procedural_lowering_eliminates_blockers():
         assert rep_lowered.disposition_counts["AUTOMATED_TRANSLATION_CANDIDATE"] == rep_lowered.totals["discovered"]
 
 
+def test_package_lowering_oracle_to_postgres_and_mysql():
+    lowerer = ProceduralAstLowerer(target_dialect=Dialect.POSTGRES)
+    spec_sql = """
+    CREATE OR REPLACE PACKAGE bank_ops IS
+        c_tax_rate CONSTANT NUMBER := 0.05;
+        g_session_user VARCHAR2(50);
+        PROCEDURE set_user(p_user IN VARCHAR2);
+        FUNCTION calc_tax(p_amount IN NUMBER) RETURN NUMBER;
+    END bank_ops;
+    """
+    body_sql = """
+    CREATE OR REPLACE PACKAGE BODY bank_ops IS
+        v_private_audit_id NUMBER := 0;
+
+        PROCEDURE set_user(p_user IN VARCHAR2) IS
+        BEGIN
+            g_session_user := p_user;
+        END set_user;
+
+        FUNCTION calc_tax(p_amount IN NUMBER) RETURN NUMBER IS
+        BEGIN
+            RETURN p_amount * c_tax_rate;
+        END calc_tax;
+
+    BEGIN
+        v_private_audit_id := 1001;
+    END bank_ops;
+    """
+    pkg = lowerer.parse_package(spec_sql=spec_sql, body_sql=body_sql, source_dialect=Dialect.ORACLE)
+    assert pkg.name == "bank_ops"
+    assert len(pkg.spec.variables) == 2
+    assert len(pkg.body.routines) == 2
+    assert len(pkg.body.initialization_statements) >= 1
+
+    # Lower to PostgreSQL
+    lowered_pg = lowerer.lower_package(pkg, target_dialect=Dialect.POSTGRES)
+    assert "CREATE SCHEMA IF NOT EXISTS bank_ops;" in lowered_pg
+    assert "bank_ops.set_g_session_user" in lowered_pg
+    assert "bank_ops.get_g_session_user" in lowered_pg
+    assert "bank_ops.set_user" in lowered_pg
+    assert "bank_ops.calc_tax" in lowered_pg
+
+    # Lower to MySQL
+    lowered_mysql = lowerer.lower_package(pkg, target_dialect=Dialect.MYSQL)
+    assert "bank_ops__set_user" in lowered_mysql
+    assert "bank_ops__calc_tax" in lowered_mysql
+    assert "@_bank_ops__g_session_user" in lowered_mysql
+
+
+def test_autonomous_transaction_lowering():
+    lowerer = ProceduralAstLowerer(target_dialect=Dialect.POSTGRES)
+    oracle_sql = """
+    CREATE OR REPLACE PROCEDURE log_audit_trail(
+        p_event IN VARCHAR2,
+        p_detail IN VARCHAR2
+    ) IS
+        PRAGMA AUTONOMOUS_TRANSACTION;
+    BEGIN
+        INSERT INTO audit_logs(event, detail, created_at) VALUES (p_event, p_detail, SYSDATE);
+        COMMIT;
+    END log_audit_trail;
+    """
+    routine = lowerer.parse_routine(oracle_sql, source_dialect=Dialect.ORACLE)
+    assert routine.body.is_autonomous is True
+
+    lowered_pg = lowerer.lower_routine(routine, target_dialect=Dialect.POSTGRES)
+    assert "[Autonomous Transaction]" in lowered_pg
+    assert "COMMIT;" in lowered_pg
+    assert "CURRENT_TIMESTAMP" in lowered_pg
+
+    lowered_tsql = lowerer.lower_routine(routine, target_dialect=Dialect.TSQL)
+    assert "[Autonomous Transaction]" in lowered_tsql
+    assert "COMMIT TRANSACTION;" in lowered_tsql
+    assert "GETDATE()" in lowered_tsql
+
+
+def test_cursor_notfound_and_trigger_pseudo_records():
+    lowerer = ProceduralAstLowerer(target_dialect=Dialect.POSTGRES)
+    trig_sql = """
+    CREATE OR REPLACE TRIGGER trg_check_limit
+    BEFORE UPDATE ON accounts
+    FOR EACH ROW
+    DECLARE
+        v_max_limit NUMBER := 100000;
+    BEGIN
+        IF :NEW.balance > v_max_limit THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Limit exceeded');
+        END IF;
+        :NEW.updated_at := NVL(:NEW.updated_at, SYSDATE);
+    END;
+    """
+    trig = lowerer.parse_trigger(trig_sql, source_dialect=Dialect.ORACLE)
+    lowered_pg = lowerer.lower_trigger(trig, target_dialect=Dialect.POSTGRES)
+    assert "NEW.balance > v_max_limit" in lowered_pg
+    assert ":NEW" not in lowered_pg
+    assert "COALESCE(" in lowered_pg
+    assert "CURRENT_TIMESTAMP" in lowered_pg
+
+
+

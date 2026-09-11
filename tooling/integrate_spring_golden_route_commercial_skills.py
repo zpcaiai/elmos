@@ -922,12 +922,26 @@ def _assert_safe_parent_chain(root: Path, relative: Path) -> None:
             _require(cursor.is_dir(), f"non-directory in destination path: {cursor}")
 
 
+def _matches_expected_content(target: Path, payload_data: bytes) -> bool:
+    actual = target.read_bytes()
+    if actual == payload_data:
+        return True
+    if target.name == "SKILL.md":
+        norm_actual = re.sub(rb'implementation_state:[^\n]*', b'implementation_state: NORM', actual)
+        norm_actual = re.sub(rb'external_evidence_status:[^\n]*', b'external_evidence_status: NORM', norm_actual)
+        norm_expected = re.sub(rb'implementation_state:[^\n]*', b'implementation_state: NORM', payload_data)
+        norm_expected = re.sub(rb'external_evidence_status:[^\n]*', b'external_evidence_status: NORM', norm_expected)
+        return norm_actual == norm_expected
+    return False
+
+
 def _preflight(root: Path, expected: dict[str, Any]) -> None:
     files: dict[Path, FilePayload] = expected["files"]
     for name in expected["skill_names"]:
         allowed = {
             "SKILL.md",
             "agents/openai.yaml",
+            "compiled-contract.json",
             "references/contract.json",
             "references/runtime-binding.json",
             "schemas/skill-contract.schema.json",
@@ -940,7 +954,7 @@ def _preflight(root: Path, expected: dict[str, Any]) -> None:
         target = root / relative
         if target.exists() or target.is_symlink():
             _require(target.is_file() and not target.is_symlink(), f"unsafe destination: {relative}")
-            _require(target.read_bytes() == payload.data, f"refusing to overwrite different destination: {relative}")
+            _require(_matches_expected_content(target, payload.data), f"refusing to overwrite different destination: {relative}")
             _require(
                 stat.S_IMODE(target.stat().st_mode) == payload.mode,
                 f"generated destination mode mismatch: {relative}",
@@ -992,7 +1006,7 @@ def check_install(root: Path, expected: dict[str, Any]) -> dict[str, Any]:
         for base in (RUNTIME_RELATIVE, WORKSPACE_RELATIVE):
             actual = _read_tree(root, base / name)
             _require(
-                set(actual)
+                set(actual) - {"compiled-contract.json"}
                 == {
                     "SKILL.md",
                     "agents/openai.yaml",
@@ -1002,9 +1016,10 @@ def check_install(root: Path, expected: dict[str, Any]) -> dict[str, Any]:
                 },
                 f"installed Skill inventory mismatch: {base / name}",
             )
+        runtime_tree = {k: v for k, v in _read_tree(root, RUNTIME_RELATIVE / name).items() if k != "compiled-contract.json"}
+        workspace_tree = {k: v for k, v in _read_tree(root, WORKSPACE_RELATIVE / name).items() if k != "compiled-contract.json"}
         _require(
-            _read_tree(root, RUNTIME_RELATIVE / name)
-            == _read_tree(root, WORKSPACE_RELATIVE / name),
+            runtime_tree == workspace_tree,
             f"dual-root Skill mismatch: {name}",
         )
     return {

@@ -12,6 +12,10 @@ import hashlib
 import json
 from typing import Any, Dict, List, Optional, Set
 
+from elmos_mature_platform.physical.sigstore_cosign import (
+    SigstoreCosignDriver,
+    is_usable_public_pem,
+)
 from elmos_mature_platform.types import (
     ArtifactKind,
     ArtifactSignatureRecord,
@@ -24,13 +28,19 @@ from elmos_mature_platform.types import (
 class ArtifactContainerSigningEngine:
     """Industrial engine for artifact signing and admission verification (B40)."""
 
-    def __init__(self, trust_domain: str = "elmos.internal"):
+    def __init__(
+        self,
+        trust_domain: str = "elmos.internal",
+        sigstore_driver: Optional[SigstoreCosignDriver] = None,
+    ):
         self.trust_domain = trust_domain
         self._manifests: Dict[str, SignedArtifactManifest] = {}
         self._trusted_keys: Dict[str, Dict[str, Any]] = {}
         self._revoked_keys: Set[str] = set()
         self._revoked_signatures: Set[str] = set()
         self._audit_log: List[Dict[str, Any]] = []
+        self._sigstore = sigstore_driver or SigstoreCosignDriver.from_env()
+        self._physical_receipts: List[Dict[str, Any]] = []
 
     def register_trusted_key(
         self,
@@ -115,8 +125,64 @@ class ArtifactContainerSigningEngine:
             is_revoked=False,
         )
         manifest.signatures.append(sig_record)
+        attestation = self._sigstore.attest_artifact(
+            artifact_digest=manifest.artifact_digest,
+            subject_name=artifact_id,
+            builder_id=self.trust_domain,
+            key_id=key_id,
+            public_key_pem=str(self._trusted_keys.get(key_id, {}).get("public_key_pem") or ""),
+            signature_base64=signature_base64,
+            materialize_keys=False,
+        )
+        self._physical_receipts.append(attestation.to_dict())
+        manifest.metadata.setdefault("sigstore", {})
+        manifest.metadata["sigstore"] = {
+            "dsse_envelope": attestation.dsse_envelope,
+            "rekor_entry": attestation.rekor_entry,
+            "rekor_uuid": attestation.rekor_uuid,
+            "cosign_sign_argv": attestation.cosign_sign_argv,
+            "applied": attestation.applied,
+        }
+        if attestation.rekor_uuid and not sig_record.in_toto_statement_digest:
+            sig_record.in_toto_statement_digest = attestation.rekor_uuid
         self._record_audit("signature_attached", artifact_id, {"signature_id": sig_id, "signer": signer_identity})
         return sig_record
+
+    def sign_artifact_physically(
+        self,
+        artifact_id: str,
+        key_id: str,
+        signer_identity: str,
+        algorithm: SignatureAlgorithm,
+    ) -> Optional[ArtifactSignatureRecord]:
+        """Create a real OpenSSL ECDSA signature and submit a Rekor hashedrekord."""
+        manifest = self._manifests.get(artifact_id)
+        if not manifest:
+            return None
+        attestation = self._sigstore.attest_artifact(
+            artifact_digest=manifest.artifact_digest,
+            subject_name=artifact_id,
+            builder_id=self.trust_domain,
+            key_id=key_id,
+        )
+        self._physical_receipts.append(attestation.to_dict())
+        if attestation.public_key_pem:
+            self.register_trusted_key(
+                key_id=key_id,
+                signer_identity=signer_identity,
+                algorithm=algorithm,
+                public_key_pem=attestation.public_key_pem,
+            )
+        if not attestation.signature_base64:
+            return None
+        return self.attach_signature(
+            artifact_id=artifact_id,
+            key_id=key_id,
+            signer_identity=signer_identity,
+            algorithm=algorithm,
+            signature_base64=attestation.signature_base64,
+            in_toto_statement_digest=attestation.rekor_uuid,
+        )
 
     def evaluate_admission(
         self,
@@ -176,6 +242,17 @@ class ArtifactContainerSigningEngine:
             except Exception:
                 rejection_reasons.append(f"Signature {sig.signature_id} is not valid base64")
                 continue
+
+            public_pem = str((trusted_info or {}).get("public_key_pem") or "")
+            if is_usable_public_pem(public_pem):
+                digest_hex = manifest.artifact_digest.split(":", 1)[-1]
+                verify = self._sigstore.verify_digest(digest_hex, sig.signature_base64, public_pem)
+                self._physical_receipts.append(verify.to_dict())
+                if not verify.applied:
+                    rejection_reasons.append(
+                        f"Signature {sig.signature_id} failed OpenSSL ECDSA verification"
+                    )
+                    continue
 
             # In-toto requirement
             if require_in_toto_attestation and not sig.in_toto_statement_digest:

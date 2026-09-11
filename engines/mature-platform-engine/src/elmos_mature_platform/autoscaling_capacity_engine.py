@@ -2,17 +2,20 @@ import time
 from typing import Dict, List, Optional
 import uuid
 from datetime import datetime, timezone
+from elmos_mature_platform.physical.kubernetes_api import KubernetesControlPlaneDriver
 from elmos_mature_platform.types import (
     ScalingDirection, ScalingTrigger, ScalingPolicy, ScalingDecision,
     AutoscalingCapacityPlan, FairSchedulingQuota
 )
 
 class AutoscalingCapacityEngine:
-    def __init__(self):
+    def __init__(self, kubernetes_driver: Optional[KubernetesControlPlaneDriver] = None):
         self.policies: Dict[str, ScalingPolicy] = {}  # service_name -> policy
         self.quotas: Dict[str, Dict[str, FairSchedulingQuota]] = {}  # tenant_id -> service_name -> quota
         self.scaling_history: Dict[str, List[ScalingDecision]] = {}  # service_name -> decisions
         self.last_scaling_time: Dict[str, float] = {}  # service_name -> timestamp
+        self._k8s = kubernetes_driver or KubernetesControlPlaneDriver.from_env()
+        self._physical_receipts: List[Dict] = []
 
     def register_policy(self, policy: ScalingPolicy) -> None:
         self.policies[policy.service_name] = policy
@@ -91,7 +94,21 @@ class AutoscalingCapacityEngine:
 
         self.last_scaling_time[decision.service_name] = time.time()
         self.scaling_history[decision.service_name].append(decision)
-        return {"status": "applied", "decision": decision}
+        policy = self.policies[decision.service_name]
+        utilization = int(policy.threshold_value) if policy.threshold_value <= 100 else 80
+        bundle = self._k8s.apply_hpa_vpa(
+            service_name=decision.service_name,
+            min_replicas=policy.min_instances,
+            max_replicas=policy.max_instances,
+            target_utilization=max(1, utilization),
+            trigger=policy.trigger.value,
+        )
+        self._physical_receipts.append(bundle.to_dict())
+        return {
+            "status": "applied",
+            "decision": decision,
+            "physical": bundle.to_dict(),
+        }
 
     def check_cooldown(self, service_name: str) -> bool:
         if service_name not in self.policies or service_name not in self.last_scaling_time:

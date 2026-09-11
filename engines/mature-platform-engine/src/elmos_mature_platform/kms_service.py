@@ -14,6 +14,7 @@ import tempfile
 import time
 from typing import Any, Dict, List, Optional, Set, Tuple
 
+from elmos_mature_platform.physical.vault_transit import VaultTransitDriver
 from elmos_mature_platform.types import (
     CryptoAuditEntry,
     EncryptedPayload,
@@ -32,7 +33,11 @@ def _b64d(s: str) -> bytes:
 class EnterpriseKmsService:
     """Enterprise KMS with Envelope Encryption, Key Rotation, Crypto-Shredding and Tamper-Evident Audit."""
 
-    def __init__(self, key_store_dir: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        key_store_dir: Optional[str] = None,
+        vault_driver: Optional[VaultTransitDriver] = None,
+    ) -> None:
         self._temp_dir = tempfile.TemporaryDirectory()
         self.root_dir = key_store_dir or self._temp_dir.name
         self.keys: Dict[str, Dict[int, KmsKeyDescriptor]] = {}  # key_id -> version -> descriptor
@@ -40,6 +45,9 @@ class EnterpriseKmsService:
         self.audit_log: List[CryptoAuditEntry] = []
         self.last_audit_hash: str = "0" * 64
         self.event_log: List[str] = []
+        self._vault = vault_driver or VaultTransitDriver.from_env()
+        self._physical_receipts: List[Dict[str, Any]] = []
+        self._vault_wrapped_deks: Dict[str, str] = {}
 
         # Create master platform root key
         self.create_key("platform-master-key", rotation_days=90)
@@ -104,6 +112,8 @@ class EnterpriseKmsService:
 
         self._append_audit("CREATE_KEY", key_id, 1, "system", "kms-admin", "SUCCESS")
         self._log(f"Created KMS key {key_id} version 1 (256-bit AES)")
+        vault_receipt = self._vault.create_key(key_id)
+        self._physical_receipts.append(vault_receipt.to_dict())
         return desc
 
     def rotate_key(self, key_id: str, actor: str = "kms-rotator") -> KmsKeyDescriptor:
@@ -129,6 +139,8 @@ class EnterpriseKmsService:
 
         self._append_audit("ROTATE_KEY", key_id, new_ver, "system", actor, "SUCCESS")
         self._log(f"Rotated key {key_id} to active version {new_ver}")
+        vault_receipt = self._vault.rotate_key(key_id)
+        self._physical_receipts.append(vault_receipt.to_dict())
         return desc
 
     def crypto_shred_key(self, key_id: str, version: Optional[int] = None, actor: str = "compliance-officer") -> int:
@@ -233,6 +245,11 @@ class EnterpriseKmsService:
         self._append_audit("ENVELOPE_ENCRYPT", key_id, active_ver, tenant_id, actor, "SUCCESS")
         self._log(f"Envelope encrypted payload for tenant={tenant_id}, resource={resource_id}, key={key_id} v{active_ver}")
 
+        vault_wrap = self._vault.encrypt(key_id, dek, context=aad)
+        self._physical_receipts.append(vault_wrap.to_dict())
+        if vault_wrap.applied and vault_wrap.ciphertext:
+            self._vault_wrapped_deks[sha256_ct] = vault_wrap.ciphertext
+
         return EncryptedPayload(
             key_id=key_id,
             key_version=active_ver,
@@ -291,6 +308,11 @@ class EnterpriseKmsService:
         tag = _b64d(payload.tag_b64)
 
         plaintext = self._decrypt_aes_cbc_hmac(ct, iv, tag, dek, actual_aad)
+
+        vault_ciphertext = self._vault_wrapped_deks.get(payload.sha256_ciphertext)
+        if vault_ciphertext:
+            vault_unwrap = self._vault.decrypt(key_id, vault_ciphertext, context=actual_aad)
+            self._physical_receipts.append(vault_unwrap.to_dict())
 
         self._append_audit("ENVELOPE_DECRYPT", key_id, ver, tenant_id, actor, "SUCCESS")
         return plaintext

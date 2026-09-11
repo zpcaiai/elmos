@@ -14,7 +14,7 @@ from ..adapters import (
 )
 from ..canonical import canonical_digest
 from ..domain import TenantScope
-from .domain_generators import generate_domain_output
+from ..industrial_runtime.host_broker import INDUSTRIAL_BROKER_ID, execute_industrial_skill
 
 AUTOMATED_BROKER_ID = 'automated_host_broker'
 AUTOMATED_BROKER_VERSION = '1.0.0'
@@ -36,12 +36,21 @@ def automated_broker_executor(
     skill_name = program.skill_name
     invocation_id = request.invocation_id
     req_binding_digest = request.binding_digest
+    pack_name = str(program.document.get('pack') or '')
+    kernel = execute_industrial_skill(
+        skill_name,
+        payload,
+        tenant_scope=tenant_scope,
+        invocation_id=invocation_id,
+        pack=pack_name,
+    )
+    if not kernel.ok:
+        raise ValueError(f"Industrial kernel failed for {skill_name}: {kernel.error}")
 
-    # 1. Generate domain outputs matching declared output contracts
     declared_outputs = [o['name'] for o in program.document.get('outputs', [])]
-    outputs: dict[str, Any] = {}
-    for out_name in declared_outputs:
-        outputs[out_name] = generate_domain_output(out_name, skill_name, payload, invocation_id)
+    outputs: dict[str, Any] = {
+        out_name: kernel.materialize_output(out_name) for out_name in declared_outputs
+    }
 
     # 2. Build stage traces with chained input->output digests
     stages_trace = []
@@ -52,7 +61,8 @@ def automated_broker_executor(
             'stage': stage['name'],
             'skill': skill_name,
             'invocation_id': invocation_id,
-            'output': 'SUCCESS',
+            'kernel_output_digest': kernel.output_digest,
+            'algorithm': kernel.algorithm,
         })
         checkpoint_digest = canonical_digest({
             'checkpoint': stage['name'],
@@ -129,7 +139,12 @@ def automated_broker_executor(
         }),
         'request_binding_digest': req_binding_digest,
         'outcome': 'CONFIRMED',
-        'provider': 'elmos-native-automated-broker',
+        'provider': INDUSTRIAL_BROKER_ID,
+        'kernel_family': kernel.family,
+        'algorithm': kernel.algorithm,
+        'input_digest': kernel.input_digest,
+        'output_digest': kernel.output_digest,
+        'llm_required': False,
     }
 
     return {

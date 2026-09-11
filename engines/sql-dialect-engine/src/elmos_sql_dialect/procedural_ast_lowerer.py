@@ -219,6 +219,35 @@ class TriggerDefinition:
     or_replace: bool = False
 
 
+@dataclass
+class PackageSpec:
+    name: str
+    schema: str | None = None
+    or_replace: bool = False
+    variables: list[VariableDecl] = field(default_factory=list)
+    routine_signatures: list[RoutineDefinition] = field(default_factory=list)
+    custom_types: list[dict[str, Any]] = field(default_factory=list)
+
+
+@dataclass
+class PackageBody:
+    name: str
+    schema: str | None = None
+    or_replace: bool = False
+    private_variables: list[VariableDecl] = field(default_factory=list)
+    routines: list[RoutineDefinition] = field(default_factory=list)
+    initialization_statements: list[Any] = field(default_factory=list)
+
+
+@dataclass
+class PackageDefinition:
+    name: str
+    schema: str | None = None
+    or_replace: bool = False
+    spec: PackageSpec | None = None
+    body: PackageBody | None = None
+
+
 class ProceduralAstLowerer:
     """Master Procedural SQL AST Parser and Lowerer."""
 
@@ -310,6 +339,198 @@ class ProceduralAstLowerer:
             body=body,
             schema=schema,
             or_replace=or_replace,
+        )
+
+    def parse_package(
+        self,
+        sql: str = "",
+        source_dialect: Dialect = Dialect.ORACLE,
+        spec_sql: str | None = None,
+        body_sql: str | None = None,
+    ) -> PackageDefinition:
+        """Parse Oracle/DM8 package specification and body into PackageDefinition AST."""
+        spec: PackageSpec | None = None
+        body: PackageBody | None = None
+
+        if spec_sql is not None and body_sql is not None:
+            spec = self.parse_package_spec(spec_sql, source_dialect)
+            body = self.parse_package_body(body_sql, source_dialect)
+            return PackageDefinition(
+                name=spec.name or body.name,
+                schema=spec.schema or body.schema,
+                or_replace=spec.or_replace or body.or_replace,
+                spec=spec,
+                body=body,
+            )
+
+        clean_sql = self._clean_sql(sql)
+        m_body = re.search(
+            r"CREATE\s+(?:OR\s+REPLACE\s+)?PACKAGE\s+BODY\s+(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)",
+            clean_sql,
+            re.IGNORECASE,
+        )
+        m_spec = re.search(
+            r"CREATE\s+(?:OR\s+REPLACE\s+)?PACKAGE\s+(?!BODY\b)(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)",
+            clean_sql,
+            re.IGNORECASE,
+        )
+
+        pkg_name = "unknown_package"
+        pkg_schema = None
+        or_replace = False
+
+        if m_spec and m_body:
+            pkg_schema = m_spec.group(1) or m_body.group(1)
+            pkg_name = m_spec.group(2) or m_body.group(2)
+            or_replace = bool(re.search(r"OR\s+REPLACE", clean_sql[: m_spec.end()], re.IGNORECASE))
+            if m_body.start() > m_spec.start():
+                spec_sql = clean_sql[m_spec.start() : m_body.start()]
+                body_sql = clean_sql[m_body.start() :]
+            else:
+                body_sql = clean_sql[m_body.start() : m_spec.start()]
+                spec_sql = clean_sql[m_spec.start() :]
+            spec = self.parse_package_spec(spec_sql, source_dialect)
+            body = self.parse_package_body(body_sql, source_dialect)
+        elif m_spec:
+            pkg_schema = m_spec.group(1)
+            pkg_name = m_spec.group(2)
+            or_replace = bool(re.search(r"OR\s+REPLACE", clean_sql[: m_spec.end()], re.IGNORECASE))
+            spec = self.parse_package_spec(clean_sql, source_dialect)
+        elif m_body:
+            pkg_schema = m_body.group(1)
+            pkg_name = m_body.group(2)
+            or_replace = bool(re.search(r"OR\s+REPLACE", clean_sql[: m_body.end()], re.IGNORECASE))
+            body = self.parse_package_body(clean_sql, source_dialect)
+        else:
+            raise DialectError("PACKAGE_PARSE_FAILED", "Could not extract package metadata")
+
+        return PackageDefinition(
+            name=pkg_name,
+            schema=pkg_schema,
+            or_replace=or_replace,
+            spec=spec,
+            body=body,
+        )
+
+    def parse_package_spec(self, sql: str, source_dialect: Dialect = Dialect.ORACLE) -> PackageSpec:
+        """Parse package specification (public signatures and variables)."""
+        clean_sql = self._clean_sql(sql)
+        m = re.search(
+            r"CREATE\s+(?:OR\s+REPLACE\s+)?PACKAGE\s+(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)\s+(?:IS|AS)\b(.*)\bEND(?:\s+[A-Za-z0-9_]+)?\s*;?",
+            clean_sql,
+            re.IGNORECASE | re.DOTALL,
+        )
+        if not m:
+            raise DialectError("PACKAGE_SPEC_PARSE_FAILED", "Invalid package specification syntax")
+
+        schema = m.group(1)
+        name = m.group(2)
+        or_replace = bool(re.search(r"OR\s+REPLACE", clean_sql[: m.start(3)], re.IGNORECASE))
+        inner_content = m.group(3).strip()
+
+        variables: list[VariableDecl] = []
+        routine_signatures: list[RoutineDefinition] = []
+
+        stmts = [s.strip() for s in inner_content.split(";") if s.strip()]
+        for stmt in stmts:
+            upper = stmt.upper()
+            if upper.startswith("PROCEDURE ") or upper.startswith("FUNCTION "):
+                kind = RoutineKind.PROCEDURE if upper.startswith("PROCEDURE ") else RoutineKind.FUNCTION
+                m_sig = re.search(r"^(?:PROCEDURE|FUNCTION)\s+([A-Za-z0-9_]+)", stmt, re.IGNORECASE)
+                if m_sig:
+                    r_name = m_sig.group(1)
+                    params = self._parse_parameters(stmt, m_sig.end())
+                    ret_type = None
+                    if kind == RoutineKind.FUNCTION:
+                        m_ret = re.search(r"\bRETURN\s+([A-Za-z0-9_]+(?:\s*\([^)]+\))?)", stmt, re.IGNORECASE)
+                        if m_ret:
+                            ret_type = m_ret.group(1).strip()
+                    routine_signatures.append(
+                        RoutineDefinition(
+                            name=r_name,
+                            kind=kind,
+                            parameters=params,
+                            return_type=ret_type,
+                            schema=name,
+                        )
+                    )
+            else:
+                decl = self._parse_variable_decl(stmt)
+                if decl:
+                    variables.append(decl)
+
+        return PackageSpec(
+            name=name,
+            schema=schema,
+            or_replace=or_replace,
+            variables=variables,
+            routine_signatures=routine_signatures,
+        )
+
+    def parse_package_body(self, sql: str, source_dialect: Dialect = Dialect.ORACLE) -> PackageBody:
+        """Parse package body (private variables, routine implementations, init block)."""
+        clean_sql = self._clean_sql(sql)
+        m = re.search(
+            r"CREATE\s+(?:OR\s+REPLACE\s+)?PACKAGE\s+BODY\s+(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)\s+(?:IS|AS)\b(.*)",
+            clean_sql,
+            re.IGNORECASE | re.DOTALL,
+        )
+        if not m:
+            raise DialectError("PACKAGE_BODY_PARSE_FAILED", "Invalid package body syntax")
+
+        schema = m.group(1)
+        name = m.group(2)
+        or_replace = bool(re.search(r"OR\s+REPLACE", clean_sql[: m.start(3)], re.IGNORECASE))
+        body_content = m.group(3).strip()
+        body_content = re.sub(r"\bEND(?:\s+[A-Za-z0-9_]+)?\s*;?$", "", body_content, flags=re.IGNORECASE).strip()
+
+        private_vars: list[VariableDecl] = []
+        routines: list[RoutineDefinition] = []
+        init_stmts: list[Any] = []
+
+        routine_pattern = re.compile(
+            r"\b(PROCEDURE|FUNCTION)\s+([A-Za-z0-9_]+)\b.*?\bEND(?:\s+[A-Za-z0-9_]+)?\s*;",
+            re.IGNORECASE | re.DOTALL,
+        )
+
+        last_end = 0
+        for match in routine_pattern.finditer(body_content):
+            preceding = body_content[last_end : match.start()].strip()
+            if preceding:
+                for line in preceding.split(";"):
+                    line = line.strip()
+                    if line:
+                        decl = self._parse_variable_decl(line)
+                        if decl:
+                            private_vars.append(decl)
+
+            routine_text = match.group(0)
+            pseudo_sql = f"CREATE OR REPLACE {routine_text}"
+            parsed_r = self.parse_routine(pseudo_sql, source_dialect)
+            parsed_r.schema = name
+            routines.append(parsed_r)
+            last_end = match.end()
+
+        trailing = body_content[last_end:].strip()
+        if trailing:
+            m_init = re.search(r"^\s*BEGIN\b\s*(.*)", trailing, re.IGNORECASE | re.DOTALL)
+            if m_init:
+                init_stmts = self._parse_statement_list(m_init.group(1))
+            else:
+                for line in trailing.split(";"):
+                    line = line.strip()
+                    if line:
+                        decl = self._parse_variable_decl(line)
+                        if decl:
+                            private_vars.append(decl)
+
+        return PackageBody(
+            name=name,
+            schema=schema,
+            or_replace=or_replace,
+            private_variables=private_vars,
+            routines=routines,
+            initialization_statements=init_stmts,
         )
 
     # -------------------------------------------------------------------------
@@ -433,32 +654,38 @@ class ProceduralAstLowerer:
                 results.append(CursorDecl(name=c_name, query_sql=c_query))
                 continue
 
-            clean_line = re.sub(r"^\s*DECLARE\s+", "", line, flags=re.IGNORECASE).strip()
-            is_constant = bool(re.search(r"\bCONSTANT\b", clean_line, re.IGNORECASE))
-            clean_line = re.sub(r"\bCONSTANT\b", "", clean_line, flags=re.IGNORECASE).strip()
-
-            default_val = None
-            if ":=" in clean_line:
-                clean_line, default_val = clean_line.split(":=", 1)
-            elif "DEFAULT" in clean_line.upper():
-                parts = re.split(r"\bDEFAULT\b", clean_line, flags=re.IGNORECASE)
-                clean_line, default_val = parts[0], parts[1]
-            elif "=" in clean_line:
-                clean_line, default_val = clean_line.split("=", 1)
-
-            tokens = clean_line.strip().split()
-            if len(tokens) >= 2:
-                v_name = tokens[0]
-                v_type = " ".join(tokens[1:])
-                results.append(
-                    VariableDecl(
-                        name=v_name,
-                        data_type=v_type,
-                        default_expr=default_val.strip() if default_val else None,
-                        is_constant=is_constant,
-                    )
-                )
+            decl = self._parse_variable_decl(line)
+            if decl:
+                results.append(decl)
         return results
+
+    def _parse_variable_decl(self, line: str) -> VariableDecl | None:
+        clean_line = re.sub(r"^\s*DECLARE\s+", "", line, flags=re.IGNORECASE).strip()
+        if not clean_line or clean_line.startswith("--"):
+            return None
+        is_constant = bool(re.search(r"\bCONSTANT\b", clean_line, re.IGNORECASE))
+        clean_line = re.sub(r"\bCONSTANT\b", "", clean_line, flags=re.IGNORECASE).strip()
+
+        default_val = None
+        if ":=" in clean_line:
+            clean_line, default_val = clean_line.split(":=", 1)
+        elif "DEFAULT" in clean_line.upper():
+            parts = re.split(r"\bDEFAULT\b", clean_line, flags=re.IGNORECASE)
+            clean_line, default_val = parts[0], parts[1]
+        elif "=" in clean_line:
+            clean_line, default_val = clean_line.split("=", 1)
+
+        tokens = clean_line.strip().split()
+        if len(tokens) >= 2:
+            v_name = tokens[0]
+            v_type = " ".join(tokens[1:])
+            return VariableDecl(
+                name=v_name,
+                data_type=v_type,
+                default_expr=default_val.strip() if default_val else None,
+                is_constant=is_constant,
+            )
+        return None
 
     def _parse_statement_list(self, text: str) -> list[Any]:
         statements: list[Any] = []
@@ -814,6 +1041,20 @@ class ProceduralAstLowerer:
             return self._emit_mysql_trigger(trigger)
         raise DialectError("UNSUPPORTED_TARGET", f"Dialect {td} is not supported")
 
+    def lower_package(self, package: PackageDefinition, target_dialect: Dialect | str | None = None) -> str:
+        """Lower PackageDefinition AST into target SQL dialect string."""
+        td = Dialect(target_dialect.lower()) if target_dialect else self.target_dialect
+        if td == Dialect.POSTGRES:
+            return self._emit_postgres_package(package)
+        elif td == Dialect.ORACLE:
+            return self._emit_oracle_package(package)
+        elif td == Dialect.TSQL:
+            return self._emit_tsql_package(package)
+        elif td == Dialect.MYSQL:
+            return self._emit_mysql_package(package)
+        raise DialectError("UNSUPPORTED_TARGET", f"Dialect {td} is not supported")
+
+
 
     # -------------------------------------------------------------------------
     # PostgreSQL Emitters
@@ -837,12 +1078,15 @@ class ProceduralAstLowerer:
         lines.append("LANGUAGE plpgsql")
         lines.append("AS $$")
 
+        if r.body.is_autonomous:
+            lines.append("    -- [Autonomous Transaction]: Lowered to independent procedure execution context")
+
         if r.body.declarations:
             lines.append("DECLARE")
             for d in r.body.declarations:
                 if isinstance(d, VariableDecl):
                     c_str = "CONSTANT " if d.is_constant else ""
-                    def_str = f" := {d.default_expr}" if d.default_expr else ""
+                    def_str = f" := {self._normalize_expr(d.default_expr, Dialect.POSTGRES)}" if d.default_expr else ""
                     lines.append(f"    {d.name} {c_str}{self._map_type(d.data_type, Dialect.POSTGRES)}{def_str};")
                 elif isinstance(d, CursorDecl):
                     lines.append(f"    {d.name} CURSOR FOR {d.query_sql};")
@@ -906,17 +1150,19 @@ class ProceduralAstLowerer:
         sp = " " * indent
         if isinstance(s, AssignmentStmt):
             target = self._normalize_pseudo_record(s.target, Dialect.POSTGRES) if is_trigger else s.target
-            return f"{sp}{target} := {s.expression};"
+            expr = self._normalize_expr(s.expression, Dialect.POSTGRES, is_trigger)
+            return f"{sp}{target} := {expr};"
         elif isinstance(s, SelectIntoStmt):
-            exprs = ", ".join(s.select_expressions)
+            exprs = ", ".join(self._normalize_expr(e, Dialect.POSTGRES, is_trigger) for e in s.select_expressions)
             vars_ = ", ".join(s.into_variables)
-            where_ = f" WHERE {s.where_clause}" if s.where_clause else ""
+            where_ = f" WHERE {self._normalize_expr(s.where_clause, Dialect.POSTGRES, is_trigger)}" if s.where_clause else ""
             return f"{sp}SELECT {exprs} INTO {vars_} FROM {s.from_clause}{where_};"  # noqa: S608
         elif isinstance(s, IfStmt):
             lines: list[str] = []
             for i, b in enumerate(s.branches):
                 kw = "IF" if i == 0 else "ELSIF"
-                lines.append(f"{sp}{kw} {b.condition} THEN")
+                cond = self._normalize_expr(b.condition, Dialect.POSTGRES, is_trigger)
+                lines.append(f"{sp}{kw} {cond} THEN")
                 for substmt in b.statements:
                     lines.append(self._emit_postgres_stmt(substmt, indent + 4, is_trigger))
             if s.else_statements:
@@ -926,7 +1172,8 @@ class ProceduralAstLowerer:
             lines.append(f"{sp}END IF;")
             return "\n".join(lines)
         elif isinstance(s, WhileStmt):
-            lines = [f"{sp}WHILE {s.condition} LOOP"]
+            cond = self._normalize_expr(s.condition, Dialect.POSTGRES, is_trigger)
+            lines = [f"{sp}WHILE {cond} LOOP"]
             for substmt in s.statements:
                 lines.append(self._emit_postgres_stmt(substmt, indent + 4, is_trigger))
             lines.append(f"{sp}END LOOP;")
@@ -952,10 +1199,10 @@ class ProceduralAstLowerer:
             lines.append(f"{sp}END LOOP;")
             return "\n".join(lines)
         elif isinstance(s, ExitWhenStmt):
-            cond = f" WHEN {s.condition}" if s.condition else ""
+            cond = f" WHEN {self._normalize_expr(s.condition, Dialect.POSTGRES, is_trigger)}" if s.condition else ""
             return f"{sp}EXIT{cond};"
         elif isinstance(s, ReturnStmt):
-            expr = f" {s.expression}" if s.expression else ""
+            expr = f" {self._normalize_expr(s.expression, Dialect.POSTGRES, is_trigger)}" if s.expression else ""
             return f"{sp}RETURN{expr};"
         elif isinstance(s, CursorOpenStmt):
             return f"{sp}OPEN {s.cursor_name};"
@@ -984,10 +1231,70 @@ class ProceduralAstLowerer:
             elif s.action == "ROLLBACK_TO":
                 return f"{sp}ROLLBACK TO SAVEPOINT {s.savepoint_name};"
         elif isinstance(s, DmlStmt):
-            return f"{sp}{s.sql}"
+            return f"{sp}{self._normalize_expr(s.sql, Dialect.POSTGRES, is_trigger)}"
         elif isinstance(s, RawStmt):
-            return f"{sp}{s.text}"
+            return f"{sp}{self._normalize_expr(s.text, Dialect.POSTGRES, is_trigger)}"
         return f"{sp}NULL;"
+
+    def _emit_postgres_package(self, pkg: PackageDefinition) -> str:
+        """Lower Oracle package into PostgreSQL schema and routines with session state."""
+        lines: list[str] = [
+            f"-- ============================================================================",
+            f"-- Lowered Package: {pkg.name} (PostgreSQL Schema Architecture)",
+            f"-- ============================================================================",
+            f"CREATE SCHEMA IF NOT EXISTS {pkg.name};",
+            "",
+        ]
+
+        # 1. State Variables Management (Session Config getters/setters)
+        all_vars: list[VariableDecl] = []
+        if pkg.spec:
+            all_vars.extend(pkg.spec.variables)
+        if pkg.body:
+            all_vars.extend(pkg.body.private_variables)
+
+        if all_vars:
+            lines.append(f"-- Package State Management for {pkg.name}")
+            for v in all_vars:
+                pg_type = self._map_type(v.data_type, Dialect.POSTGRES)
+                lines.append(
+                    f"CREATE OR REPLACE FUNCTION {pkg.name}.get_{v.name}() RETURNS {pg_type} AS $$\n"
+                    f"BEGIN\n"
+                    f"    RETURN current_setting('{pkg.name}.{v.name}', true)::{pg_type};\n"
+                    f"END;\n"
+                    f"$$ LANGUAGE plpgsql;\n"
+                )
+                lines.append(
+                    f"CREATE OR REPLACE FUNCTION {pkg.name}.set_{v.name}(p_val {pg_type}) RETURNS void AS $$\n"
+                    f"BEGIN\n"
+                    f"    PERFORM set_config('{pkg.name}.{v.name}', p_val::text, false);\n"
+                    f"END;\n"
+                    f"$$ LANGUAGE plpgsql;\n"
+                )
+
+        # 2. Package Routines
+        routines = pkg.body.routines if pkg.body and pkg.body.routines else (pkg.spec.routine_signatures if pkg.spec else [])
+        for r in routines:
+            r.schema = pkg.name
+            r.or_replace = True
+            lines.append(self._emit_postgres_routine(r))
+            lines.append("")
+
+        # 3. Initialization Block
+        if pkg.body and pkg.body.initialization_statements:
+            lines.append(f"-- Package Initialization for {pkg.name}")
+            init_lines = [
+                f"CREATE OR REPLACE FUNCTION {pkg.name}._init() RETURNS void AS $$",
+                "BEGIN",
+            ]
+            for s in pkg.body.initialization_statements:
+                init_lines.append(self._emit_postgres_stmt(s, indent=4))
+            init_lines.append("END;")
+            init_lines.append("$$ LANGUAGE plpgsql;")
+            lines.append("\n".join(init_lines))
+            lines.append(f"SELECT {pkg.name}._init();")
+
+        return "\n".join(lines)
 
     # -------------------------------------------------------------------------
     # Oracle / DM8 Emitters
@@ -1149,6 +1456,51 @@ class ProceduralAstLowerer:
             return f"{sp}{s.text}"
         return f"{sp}NULL;"
 
+    def _emit_oracle_package(self, pkg: PackageDefinition) -> str:
+        """Emit native Oracle / DM8 package specification and body."""
+        lines: list[str] = []
+        replace_str = "OR REPLACE " if pkg.or_replace else ""
+        obj_name = f"{pkg.schema}.{pkg.name}" if pkg.schema else pkg.name
+
+        if pkg.spec:
+            lines.append(f"CREATE {replace_str}PACKAGE {obj_name} IS")
+            for v in pkg.spec.variables:
+                c_str = "CONSTANT " if v.is_constant else ""
+                def_str = f" := {v.default_expr}" if v.default_expr else ""
+                lines.append(f"    {v.name} {c_str}{self._map_type(v.data_type, Dialect.ORACLE)}{def_str};")
+            for r in pkg.spec.routine_signatures:
+                kind_str = "PROCEDURE" if r.kind == RoutineKind.PROCEDURE else "FUNCTION"
+                param_strs: list[str] = []
+                for p in r.parameters:
+                    mode_str = f"{p.mode.value} " if p.mode != ParamMode.IN else ""
+                    default_str = f" := {p.default_expr}" if p.default_expr else ""
+                    param_strs.append(f"{p.name} {mode_str}{self._map_type(p.data_type, Dialect.ORACLE)}{default_str}")
+                ret_str = f" RETURN {self._map_type(r.return_type, Dialect.ORACLE)}" if r.return_type else ""
+                lines.append(f"    {kind_str} {r.name}({', '.join(param_strs)}){ret_str};")
+            lines.append(f"END {pkg.name};")
+            lines.append("/")
+            lines.append("")
+
+        if pkg.body:
+            lines.append(f"CREATE {replace_str}PACKAGE BODY {obj_name} IS")
+            for v in pkg.body.private_variables:
+                c_str = "CONSTANT " if v.is_constant else ""
+                def_str = f" := {v.default_expr}" if v.default_expr else ""
+                lines.append(f"    {v.name} {c_str}{self._map_type(v.data_type, Dialect.ORACLE)}{def_str};")
+            for r in pkg.body.routines:
+                r_sql = self._emit_oracle_routine(r)
+                r_sql = re.sub(r"^CREATE\s+(?:OR\s+REPLACE\s+)?", "", r_sql.strip(), flags=re.IGNORECASE)
+                lines.append(r_sql)
+                lines.append("")
+            if pkg.body.initialization_statements:
+                lines.append("BEGIN")
+                for s in pkg.body.initialization_statements:
+                    lines.append(self._emit_oracle_stmt(s, indent=4))
+            lines.append(f"END {pkg.name};")
+            lines.append("/")
+
+        return "\n".join(lines)
+
     # -------------------------------------------------------------------------
     # SQL Server (T-SQL) Emitters
     # -------------------------------------------------------------------------
@@ -1171,10 +1523,13 @@ class ProceduralAstLowerer:
         lines.append("BEGIN")
         lines.append("    SET NOCOUNT ON;")
 
+        if r.body.is_autonomous:
+            lines.append("    -- [Autonomous Transaction]: Converted to independent transaction scope")
+
         for d in r.body.declarations:
             if isinstance(d, VariableDecl):
                 v_name = d.name if d.name.startswith("@") else f"@{d.name}"
-                def_str = f" = {d.default_expr}" if d.default_expr else ""
+                def_str = f" = {self._normalize_expr(d.default_expr, Dialect.TSQL)}" if d.default_expr else ""
                 lines.append(f"    DECLARE {v_name} {self._map_type(d.data_type, Dialect.TSQL)}{def_str};")
             elif isinstance(d, CursorDecl):
                 c_name = d.name if d.name.startswith("@") else f"@{d.name}"
@@ -1219,17 +1574,19 @@ class ProceduralAstLowerer:
         sp = " " * indent
         if isinstance(s, AssignmentStmt):
             target = s.target if s.target.startswith("@") else f"@{s.target}"
-            return f"{sp}SET {target} = {s.expression};"
+            expr = self._normalize_expr(s.expression, Dialect.TSQL, is_trigger)
+            return f"{sp}SET {target} = {expr};"
         elif isinstance(s, SelectIntoStmt):
             vars_ = ", ".join(v if v.startswith("@") else f"@{v}" for v in s.into_variables)
-            exprs = ", ".join(f"{v} = {e}" for v, e in zip(vars_.split(", "), s.select_expressions, strict=False))
-            where_ = f" WHERE {s.where_clause}" if s.where_clause else ""
+            exprs = ", ".join(f"{v} = {self._normalize_expr(e, Dialect.TSQL, is_trigger)}" for v, e in zip(vars_.split(", "), s.select_expressions, strict=False))
+            where_ = f" WHERE {self._normalize_expr(s.where_clause, Dialect.TSQL, is_trigger)}" if s.where_clause else ""
             return f"{sp}SELECT {exprs} FROM {s.from_clause}{where_};"  # noqa: S608
         elif isinstance(s, IfStmt):
             lines: list[str] = []
             for i, b in enumerate(s.branches):
                 kw = "IF" if i == 0 else "ELSE IF"
-                lines.append(f"{sp}{kw} {b.condition}")
+                cond = self._normalize_expr(b.condition, Dialect.TSQL, is_trigger)
+                lines.append(f"{sp}{kw} {cond}")
                 lines.append(f"{sp}BEGIN")
                 for substmt in b.statements:
                     lines.append(self._emit_tsql_stmt(substmt, indent + 4, is_trigger))
@@ -1242,7 +1599,8 @@ class ProceduralAstLowerer:
                 lines.append(f"{sp}END")
             return "\n".join(lines)
         elif isinstance(s, WhileStmt):
-            lines = [f"{sp}WHILE {s.condition}", f"{sp}BEGIN"]
+            cond = self._normalize_expr(s.condition, Dialect.TSQL, is_trigger)
+            lines = [f"{sp}WHILE {cond}", f"{sp}BEGIN"]
             for substmt in s.statements:
                 lines.append(self._emit_tsql_stmt(substmt, indent + 4, is_trigger))
             lines.append(f"{sp}END")
@@ -1270,11 +1628,12 @@ class ProceduralAstLowerer:
             lines.append(f"{sp}END")
             return "\n".join(lines)
         elif isinstance(s, ExitWhenStmt):
-            if s.condition:
-                return f"{sp}IF {s.condition} BREAK;"
+            cond = self._normalize_expr(s.condition, Dialect.TSQL, is_trigger)
+            if cond:
+                return f"{sp}IF {cond} BREAK;"
             return f"{sp}BREAK;"
         elif isinstance(s, ReturnStmt):
-            expr = f" {s.expression}" if s.expression else ""
+            expr = f" {self._normalize_expr(s.expression, Dialect.TSQL, is_trigger)}" if s.expression else ""
             return f"{sp}RETURN{expr};"
         elif isinstance(s, CursorOpenStmt):
             c_name = s.cursor_name if s.cursor_name.startswith("@") else f"@{s.cursor_name}"
@@ -1302,10 +1661,34 @@ class ProceduralAstLowerer:
             elif s.action == "ROLLBACK_TO":
                 return f"{sp}ROLLBACK TRANSACTION {s.savepoint_name};"
         elif isinstance(s, DmlStmt):
-            return f"{sp}{s.sql}"
+            return f"{sp}{self._normalize_expr(s.sql, Dialect.TSQL, is_trigger)}"
         elif isinstance(s, RawStmt):
-            return f"{sp}{s.text}"
+            return f"{sp}{self._normalize_expr(s.text, Dialect.TSQL, is_trigger)}"
         return f"{sp}-- noop"
+
+    def _emit_tsql_package(self, pkg: PackageDefinition) -> str:
+        """Lower Oracle package into SQL Server schema-scoped / prefixed procedures."""
+        lines: list[str] = [
+            f"-- ============================================================================",
+            f"-- Lowered Package: {pkg.name} (T-SQL Prefixed Architecture)",
+            f"-- ============================================================================",
+            "",
+        ]
+        routines = pkg.body.routines if pkg.body and pkg.body.routines else (pkg.spec.routine_signatures if pkg.spec else [])
+        for r in routines:
+            r_copy = RoutineDefinition(
+                name=f"{pkg.name}_{r.name}",
+                kind=r.kind,
+                parameters=r.parameters,
+                return_type=r.return_type,
+                body=r.body,
+                schema=pkg.schema or "dbo",
+                or_replace=r.or_replace,
+            )
+            lines.append(self._emit_tsql_routine(r_copy))
+            lines.append("GO")
+            lines.append("")
+        return "\n".join(lines)
 
     # -------------------------------------------------------------------------
     # MySQL Emitters
@@ -1328,9 +1711,12 @@ class ProceduralAstLowerer:
 
         lines.append("BEGIN")
 
+        if r.body.is_autonomous:
+            lines.append("    -- [Autonomous Transaction]: Converted to independent transaction scope")
+
         for d in r.body.declarations:
             if isinstance(d, VariableDecl):
-                def_str = f" DEFAULT {d.default_expr}" if d.default_expr else ""
+                def_str = f" DEFAULT {self._normalize_expr(d.default_expr, Dialect.MYSQL)}" if d.default_expr else ""
                 lines.append(f"    DECLARE `{d.name}` {self._map_type(d.data_type, Dialect.MYSQL)}{def_str};")
             elif isinstance(d, CursorDecl):
                 lines.append(f"    DECLARE `{d.name}` CURSOR FOR {d.query_sql};")
@@ -1368,17 +1754,19 @@ class ProceduralAstLowerer:
         sp = " " * indent
         if isinstance(s, AssignmentStmt):
             target = self._normalize_pseudo_record(s.target, Dialect.MYSQL) if is_trigger else f"`{s.target}`"
-            return f"{sp}SET {target} = {s.expression};"
+            expr = self._normalize_expr(s.expression, Dialect.MYSQL, is_trigger)
+            return f"{sp}SET {target} = {expr};"
         elif isinstance(s, SelectIntoStmt):
-            exprs = ", ".join(s.select_expressions)
+            exprs = ", ".join(self._normalize_expr(e, Dialect.MYSQL, is_trigger) for e in s.select_expressions)
             vars_ = ", ".join(f"`{v}`" for v in s.into_variables)
-            where_ = f" WHERE {s.where_clause}" if s.where_clause else ""
+            where_ = f" WHERE {self._normalize_expr(s.where_clause, Dialect.MYSQL, is_trigger)}" if s.where_clause else ""
             return f"{sp}SELECT {exprs} INTO {vars_} FROM {s.from_clause}{where_};"  # noqa: S608
         elif isinstance(s, IfStmt):
             lines: list[str] = []
             for i, b in enumerate(s.branches):
                 kw = "IF" if i == 0 else "ELSEIF"
-                lines.append(f"{sp}{kw} {b.condition} THEN")
+                cond = self._normalize_expr(b.condition, Dialect.MYSQL, is_trigger)
+                lines.append(f"{sp}{kw} {cond} THEN")
                 for substmt in b.statements:
                     lines.append(self._emit_mysql_stmt(substmt, indent + 4, is_trigger))
             if s.else_statements:
@@ -1388,7 +1776,8 @@ class ProceduralAstLowerer:
             lines.append(f"{sp}END IF;")
             return "\n".join(lines)
         elif isinstance(s, WhileStmt):
-            lines = [f"{sp}WHILE {s.condition} DO"]
+            cond = self._normalize_expr(s.condition, Dialect.MYSQL, is_trigger)
+            lines = [f"{sp}WHILE {cond} DO"]
             for substmt in s.statements:
                 lines.append(self._emit_mysql_stmt(substmt, indent + 4, is_trigger))
             lines.append(f"{sp}END WHILE;")
@@ -1400,11 +1789,12 @@ class ProceduralAstLowerer:
             lines.append(f"{sp}END LOOP simple_loop;")
             return "\n".join(lines)
         elif isinstance(s, ExitWhenStmt):
-            if s.condition:
-                return f"{sp}IF {s.condition} THEN LEAVE simple_loop; END IF;"
+            cond = self._normalize_expr(s.condition, Dialect.MYSQL, is_trigger)
+            if cond:
+                return f"{sp}IF {cond} THEN LEAVE simple_loop; END IF;"
             return f"{sp}LEAVE simple_loop;"
         elif isinstance(s, ReturnStmt):
-            expr = f" {s.expression}" if s.expression else ""
+            expr = f" {self._normalize_expr(s.expression, Dialect.MYSQL, is_trigger)}" if s.expression else ""
             return f"{sp}RETURN{expr};"
         elif isinstance(s, CursorOpenStmt):
             return f"{sp}OPEN `{s.cursor_name}`;"
@@ -1434,10 +1824,47 @@ class ProceduralAstLowerer:
             elif s.action == "ROLLBACK_TO":
                 return f"{sp}ROLLBACK TO SAVEPOINT {s.savepoint_name};"
         elif isinstance(s, DmlStmt):
-            return f"{sp}{s.sql}"
+            return f"{sp}{self._normalize_expr(s.sql, Dialect.MYSQL, is_trigger)}"
         elif isinstance(s, RawStmt):
-            return f"{sp}{s.text}"
+            return f"{sp}{self._normalize_expr(s.text, Dialect.MYSQL, is_trigger)}"
         return f"{sp}-- noop"
+
+    def _emit_mysql_package(self, pkg: PackageDefinition) -> str:
+        """Lower Oracle package into MySQL prefixed procedures with session variable state."""
+        lines: list[str] = [
+            f"-- ============================================================================",
+            f"-- Lowered Package: {pkg.name} (MySQL / TiDB Prefixed Architecture)",
+            f"-- ============================================================================",
+            "",
+        ]
+        all_vars: list[VariableDecl] = []
+        if pkg.spec:
+            all_vars.extend(pkg.spec.variables)
+        if pkg.body:
+            all_vars.extend(pkg.body.private_variables)
+
+        if all_vars:
+            lines.append(f"-- Session variables for package {pkg.name}")
+            for v in all_vars:
+                init_val = v.default_expr or "NULL"
+                lines.append(f"SET @_{pkg.name}__{v.name} = {init_val};")
+            lines.append("")
+
+        routines = pkg.body.routines if pkg.body and pkg.body.routines else (pkg.spec.routine_signatures if pkg.spec else [])
+        for r in routines:
+            r_copy = RoutineDefinition(
+                name=f"{pkg.name}__{r.name}",
+                kind=r.kind,
+                parameters=r.parameters,
+                return_type=r.return_type,
+                body=r.body,
+                schema=pkg.schema,
+                or_replace=r.or_replace,
+            )
+            lines.append(self._emit_mysql_routine(r_copy))
+            lines.append("")
+
+        return "\n".join(lines)
 
     # -------------------------------------------------------------------------
     # Mapping Utilities
@@ -1534,6 +1961,43 @@ class ProceduralAstLowerer:
             else:
                 results.append("SQLEXCEPTION")
         return results
+
+    def _normalize_expr(self, expr: str | None, target_dialect: Dialect, is_trigger: bool = False) -> str:
+        if not expr:
+            return ""
+        s = expr
+        if target_dialect == Dialect.POSTGRES:
+            if is_trigger:
+                s = re.sub(r":([Nn][Ee][Ww])\.", r"\1.", s)
+                s = re.sub(r":([Oo][Ll][Dd])\.", r"\1.", s)
+            s = re.sub(r"\b[A-Za-z0-9_]+%NOTFOUND\b", "NOT FOUND", s, flags=re.IGNORECASE)
+            s = re.sub(r"\b[A-Za-z0-9_]+%FOUND\b", "FOUND", s, flags=re.IGNORECASE)
+            s = re.sub(r"\b[A-Za-z0-9_]+%ISOPEN\b", "IS OPEN", s, flags=re.IGNORECASE)
+            s = re.sub(r"\bNVL\(", "COALESCE(", s, flags=re.IGNORECASE)
+            s = re.sub(r"\bSYSDATE\b", "CURRENT_TIMESTAMP", s, flags=re.IGNORECASE)
+            s = re.sub(r"\bSYSTIMESTAMP\b", "CURRENT_TIMESTAMP", s, flags=re.IGNORECASE)
+        elif target_dialect == Dialect.MYSQL:
+            if is_trigger:
+                s = re.sub(r":([Nn][Ee][Ww])\.", r"\1.", s)
+                s = re.sub(r":([Oo][Ll][Dd])\.", r"\1.", s)
+            s = re.sub(r"\b[A-Za-z0-9_]+%NOTFOUND\b", "v_not_found = 1", s, flags=re.IGNORECASE)
+            s = re.sub(r"\b[A-Za-z0-9_]+%FOUND\b", "v_not_found = 0", s, flags=re.IGNORECASE)
+            s = re.sub(r"\bNVL\(", "IFNULL(", s, flags=re.IGNORECASE)
+            s = re.sub(r"\bSYSDATE\b", "NOW()", s, flags=re.IGNORECASE)
+            s = re.sub(r"\bSYSTIMESTAMP\b", "NOW()", s, flags=re.IGNORECASE)
+        elif target_dialect == Dialect.TSQL:
+            if is_trigger:
+                s = re.sub(r":([Nn][Ee][Ww])\.", r"inserted.", s)
+                s = re.sub(r":([Oo][Ll][Dd])\.", r"deleted.", s)
+            s = re.sub(r"\b[A-Za-z0-9_]+%NOTFOUND\b", "@@FETCH_STATUS <> 0", s, flags=re.IGNORECASE)
+            s = re.sub(r"\b[A-Za-z0-9_]+%FOUND\b", "@@FETCH_STATUS = 0", s, flags=re.IGNORECASE)
+            s = re.sub(r"\bNVL\(", "ISNULL(", s, flags=re.IGNORECASE)
+            s = re.sub(r"\bSYSDATE\b", "GETDATE()", s, flags=re.IGNORECASE)
+            s = re.sub(r"\bSYSTIMESTAMP\b", "SYSDATETIME()", s, flags=re.IGNORECASE)
+        elif target_dialect == Dialect.ORACLE:
+            if is_trigger:
+                s = re.sub(r"(?<!:)\b(NEW|OLD)\.", r":\1.", s)
+        return s
 
     def _normalize_pseudo_record(self, target: str, dialect: Dialect) -> str:
         if dialect == Dialect.ORACLE:

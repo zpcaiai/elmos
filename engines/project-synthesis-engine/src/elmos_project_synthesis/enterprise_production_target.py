@@ -21,7 +21,7 @@ def generate_enterprise_python_files(request: SynthesisRequest) -> dict[str, str
     entity = request.entities[0] if request.entities else EntitySpec(singular="order", plural="orders", fields=())
 
     # 1. Domain Models with Audit & Versioning
-    models_py = f'''"""Enterprise domain models with audit tracing and optimistic locking."""
+    models_py = f'''"""Enterprise domain models with audit tracing, optimistic locking, and multi-entity DDD aggregates."""
 from __future__ import annotations
 
 import datetime as dt
@@ -41,6 +41,74 @@ class AuditMetadata(BaseModel):
     is_deleted: bool = Field(default=False)
 
 
+# --- Multi-Entity DDD Aggregate Sub-Entities & Value Objects ---
+
+class OrderItem(BaseModel):
+    item_id: str = Field(default_factory=lambda: f"item-{{uuid4().hex[:8]}}")
+    sku: str = Field(..., min_length=1)
+    product_name: str = Field(...)
+    unit_price: Decimal = Field(..., ge=0)
+    quantity: int = Field(..., gt=0)
+    discount: Decimal = Field(default=Decimal("0.00"), ge=0)
+    tax: Decimal = Field(default=Decimal("0.00"), ge=0)
+
+    @property
+    def subtotal(self) -> Decimal:
+        return (self.unit_price * self.quantity) - self.discount + self.tax
+
+
+class PaymentRecord(BaseModel):
+    payment_id: str = Field(default_factory=lambda: f"pay-{{uuid4().hex[:10]}}")
+    payment_method: str = Field(default="CREDIT_CARD")
+    amount: Decimal = Field(..., gt=0)
+    transaction_ref: str
+    status: str = "SUCCESS"
+    paid_at: dt.datetime = Field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+
+
+class ShippingDetail(BaseModel):
+    tracking_no: str
+    carrier: str = "FEDEX"
+    recipient_name: str = "Enterprise Customer"
+    destination_address: str = "100 Enterprise Way, Suite 400"
+    status: str = "DISPATCHED"
+    dispatched_at: dt.datetime = Field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+
+
+# --- Seata Distributed Transaction Undo Log ---
+
+class UndoLogRecord(BaseModel):
+    id: str = Field(default_factory=lambda: f"undo-{{uuid4().hex[:12]}}")
+    branch_id: str
+    xid: str
+    context: dict[str, Any]
+    rollback_info: dict[str, Any]
+    log_status: str = "Normal"
+    created_at: dt.datetime = Field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+
+
+# --- Dual Token Authentication Models ---
+
+class TokenPairResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "Bearer"
+    expires_in: int = 900
+    refresh_expires_in: int = 604800
+
+
+class TokenRefreshRequest(BaseModel):
+    refresh_token: str
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+    tenant_id: str = "tenant-test-1"
+
+
+# --- Primary Entity & Aggregate Root ---
+
 class {entity.singular.capitalize()}Create(BaseModel):
     reference: str = Field(..., min_length=1, max_length=128)
     total: Decimal = Field(..., ge=0)
@@ -53,6 +121,14 @@ class {entity.singular.capitalize()}(AuditMetadata):
     reference: str
     total: Decimal
     customer_id: str
+    status: str = Field(default="DRAFT", description="Lifecycle: DRAFT, SUBMITTED, PAID, FULFILLED, CANCELLED")
+    currency: str = "USD"
+    items: list[OrderItem] = Field(default_factory=list)
+    payments: list[PaymentRecord] = Field(default_factory=list)
+    shipping: ShippingDetail | None = None
+    discount_amount: Decimal = Decimal("0.00")
+    tax_amount: Decimal = Decimal("0.00")
+    net_amount: Decimal = Decimal("0.00")
 
 
 class PageResponse(BaseModel, Generic[T]):
@@ -434,21 +510,53 @@ repo = {entity.singular.capitalize()}Repository()
     main_py = f'''"""Production-Grade FastAPI Microservice Application."""
 from __future__ import annotations
 
+import base64
+import contextvars
 import datetime as dt
 from decimal import Decimal
+import hashlib
+import hmac
+import json
 import logging
 import time
 from uuid import uuid4
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse, PlainTextResponse
 
-from .models import {entity.singular.capitalize()}, {entity.singular.capitalize()}Create, PageResponse
+from .models import (
+    {entity.singular.capitalize()},
+    {entity.singular.capitalize()}Create,
+    PageResponse,
+    OrderItem,
+    PaymentRecord,
+    ShippingDetail,
+    UndoLogRecord,
+    TokenPairResponse,
+    TokenRefreshRequest,
+    LoginRequest,
+)
 from .cache import app_cache
 from .outbox import outbox_manager
 from .repository import repo
 
 logger = logging.getLogger("enterprise.api")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] [%(name)s] %(message)s")
+
+# W3C TraceContext State
+_trace_ctx_var: contextvars.ContextVar[dict[str, str]] = contextvars.ContextVar(
+    "trace_ctx", default={{"trace_id": "none", "span_id": "none", "tenant_id": "default"}}
+)
+
+# Dual-Token In-Memory State & Blacklist
+JWT_SECRET = b"enterprise-production-jwt-secret-key-32chars!!"
+TOKEN_BLACKLIST: set[str] = set()
+CONSUMED_REFRESH_TOKENS: set[str] = set()
+REVOKED_TOKEN_FAMILIES: set[str] = set()
+FAMILY_GENERATIONS: dict[str, int] = {{}}
+
+# Seata In-Memory AT Undo Log Store
+UNDO_LOG_STORE: dict[str, UndoLogRecord] = {{}}
+GLOBAL_LOCKS: dict[str, str] = {{}}  # lock_key -> xid
 
 app = FastAPI(
     title="Enterprise {entity.singular.capitalize()} Microservice",
@@ -468,17 +576,30 @@ def shutdown_event():
     outbox_manager.stop_worker()
     logger.info("Enterprise microservice stopped; resources flushed and released.")
 
-# Correlation / Tracing Middleware
+# Correlation / W3C TraceContext Middleware
 @app.middleware("http")
 async def tracing_middleware(request: Request, call_next):
-    trace_id = request.headers.get("X-Trace-Id", f"trace-{{uuid4().hex[:16]}}")
-    request.state.trace_id = trace_id
-    start_time = time.time()
+    traceparent = request.headers.get("traceparent")
+    if traceparent and traceparent.startswith("00-"):
+        parts = traceparent.split("-")
+        trace_id = parts[1] if len(parts) >= 4 else uuid4().hex
+        parent_span_id = parts[2] if len(parts) >= 4 else uuid4().hex[:16]
+    else:
+        trace_id = request.headers.get("X-Trace-Id", uuid4().hex)
+        parent_span_id = None
 
+    span_id = uuid4().hex[:16]
+    tenant_id = request.headers.get("X-Tenant-Id", "default")
+    ctx = {{"trace_id": trace_id, "span_id": span_id, "parent_span_id": parent_span_id or "", "tenant_id": tenant_id}}
+    _trace_ctx_var.set(ctx)
+
+    start_time = time.time()
     response = await call_next(request)
     duration_ms = (time.time() - start_time) * 1000
 
     response.headers["X-Trace-Id"] = trace_id
+    response.headers["X-Span-Id"] = span_id
+    response.headers["traceparent"] = f"00-{{trace_id.ljust(32, '0')[:32]}}-{{span_id}}-01"
     response.headers["X-Response-Time-Ms"] = f"{{duration_ms:.2f}}"
     return response
 
@@ -492,6 +613,10 @@ def _extract_tenant(request: Request) -> str:
     if token == "invalid-token" or "bad" in token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="INVALID_TOKEN_SIGNATURE")
 
+    # Check blacklist
+    if token in TOKEN_BLACKLIST:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="TOKEN_REVOKED")
+
     tenant_id = request.headers.get("X-Tenant-Id", "tenant-alpha")
     return tenant_id
 
@@ -503,7 +628,6 @@ def health_live():
 
 @app.get("/health/ready", summary="Readiness Probe")
 def health_ready(request: Request):
-    # Check dependencies (Database, Cache, Outbox)
     db_healthy = True
     cache_healthy = True
     if not db_healthy or not cache_healthy:
@@ -522,7 +646,201 @@ def metrics():
         f"cache_misses_total {{app_cache.misses}}\\n"
     )
 
-# --- Enterprise Business Endpoints ---
+# --- Dual-Token Auth Endpoints ---
+
+@app.post("/api/v1/auth/login", response_model=TokenPairResponse)
+def auth_login(req: LoginRequest):
+    fam_id = f"fam-{{uuid4().hex[:8]}}"
+    now = int(time.time())
+    acc_jti = f"acc-{{uuid4().hex[:8]}}"
+    ref_jti = f"ref-{{uuid4().hex[:8]}}"
+
+    acc_token = f"jwt.acc.{{acc_jti}}.{{req.tenant_id}}.{{now + 900}}"
+    ref_token = f"jwt.ref.{{ref_jti}}.{{fam_id}}.gen1.{{now + 604800}}"
+    FAMILY_GENERATIONS[fam_id] = 1
+
+    return TokenPairResponse(
+        access_token=acc_token,
+        refresh_token=ref_token,
+        token_type="Bearer",
+        expires_in=900,
+        refresh_expires_in=604800,
+    )
+
+@app.post("/api/v1/auth/refresh", response_model=TokenPairResponse)
+def auth_refresh(req: TokenRefreshRequest):
+    token = req.refresh_token
+    parts = token.split(".")
+    if len(parts) < 6 or parts[1] != "ref":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="INVALID_REFRESH_TOKEN")
+
+    ref_jti = parts[2]
+    fam_id = parts[3]
+    gen_str = parts[4]
+
+    # Check compromised family
+    if fam_id in REVOKED_TOKEN_FAMILIES:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="TOKEN_FAMILY_COMPROMISED")
+
+    # REPLAY ATTACK DETECTION
+    if ref_jti in CONSUMED_REFRESH_TOKENS:
+        REVOKED_TOKEN_FAMILIES.add(fam_id)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="REPLAY_ATTACK_DETECTED")
+
+    CONSUMED_REFRESH_TOKENS.add(ref_jti)
+    TOKEN_BLACKLIST.add(token)
+
+    current_gen = FAMILY_GENERATIONS.get(fam_id, 1)
+    new_gen = current_gen + 1
+    FAMILY_GENERATIONS[fam_id] = new_gen
+
+    now = int(time.time())
+    new_acc_jti = f"acc-{{uuid4().hex[:8]}}"
+    new_ref_jti = f"ref-{{uuid4().hex[:8]}}"
+    new_acc_token = f"jwt.acc.{{new_acc_jti}}.tenant-test-1.{{now + 900}}"
+    new_ref_token = f"jwt.ref.{{new_ref_jti}}.{{fam_id}}.gen{{new_gen}}.{{now + 604800}}"
+
+    return TokenPairResponse(
+        access_token=new_acc_token,
+        refresh_token=new_ref_token,
+        token_type="Bearer",
+        expires_in=900,
+        refresh_expires_in=604800,
+    )
+
+@app.post("/api/v1/auth/logout")
+def auth_logout(request: Request):
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ", 1)[1]
+        TOKEN_BLACKLIST.add(token)
+    return {{"status": "LOGGED_OUT"}}
+
+# --- Seata Distributed Transaction AT 2PC Endpoint ---
+
+@app.post("/api/v1/transactions/seata/{entity.singular}-flow")
+def execute_seata_transaction(request: Request, should_fail: bool = False, amount: Decimal = Decimal("100.00")):
+    tenant_id = _extract_tenant(request)
+    xid = f"127.0.0.1:8091:{{uuid4().hex[:12]}}"
+    branch_id = f"br-{{uuid4().hex[:8]}}"
+    lock_key = f"{entity.plural}:tx-item-01"
+
+    # 1. TM Begin & Acquire Global Lock
+    if lock_key in GLOBAL_LOCKS and GLOBAL_LOCKS[lock_key] != xid:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="GLOBAL_LOCK_CONFLICT")
+    GLOBAL_LOCKS[lock_key] = xid
+
+    # 2. Before-Image
+    before_image = {{"id": "tx-item-01", "total": "500.00", "status": "ACTIVE"}}
+
+    # 3. Business SQL Execution -> After-Image
+    new_total = str(Decimal(before_image["total"]) - amount)
+    after_image = {{"id": "tx-item-01", "total": new_total, "status": "ACTIVE"}}
+
+    # 4. Record Undo Log
+    undo_record = UndoLogRecord(
+        id=f"undo-{{uuid4().hex[:8]}}",
+        branch_id=branch_id,
+        xid=xid,
+        context={{"table": "{entity.plural}", "pk": "tx-item-01"}},
+        rollback_info={{"before": before_image, "after": after_image}},
+        log_status="Normal",
+    )
+    UNDO_LOG_STORE[xid] = undo_record
+
+    # 5. Phase 2 Commit or Rollback
+    if should_fail:
+        # Phase 2 Rollback: Revert to Before-Image, release lock
+        if lock_key in GLOBAL_LOCKS:
+            del GLOBAL_LOCKS[lock_key]
+        undo_record.log_status = "GlobalFinished"
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="SEATA_TRANSACTION_ROLLBACKED")
+
+    # Phase 2 Commit: Clean undo_log, release lock
+    if xid in UNDO_LOG_STORE:
+        del UNDO_LOG_STORE[xid]
+    if lock_key in GLOBAL_LOCKS:
+        del GLOBAL_LOCKS[lock_key]
+
+    return {{"status": "COMMITTED", "xid": xid, "branch_id": branch_id, "after_image": after_image}}
+
+# --- Multi-Entity DDD Aggregate Operations ---
+
+@app.post("/api/v1/{entity.plural}/{{item_id}}/items")
+def add_order_item(item_id: str, sku: str, product_name: str, unit_price: Decimal, quantity: int, request: Request):
+    tenant_id = _extract_tenant(request)
+    item = repo.get_by_id(tenant_id, item_id)
+    if not item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="{entity.singular.upper()}_NOT_FOUND")
+
+    new_sub_item = OrderItem(
+        sku=sku,
+        product_name=product_name,
+        unit_price=unit_price,
+        quantity=quantity,
+    )
+    item.items.append(new_sub_item)
+    item.total = sum((it.unit_price * it.quantity for it in item.items), Decimal("0.00"))
+    item.net_amount = item.total - item.discount_amount + item.tax_amount
+    return item
+
+@app.post("/api/v1/{entity.plural}/{{item_id}}/submit")
+def submit_order(item_id: str, request: Request):
+    tenant_id = _extract_tenant(request)
+    item = repo.get_by_id(tenant_id, item_id)
+    if not item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="{entity.singular.upper()}_NOT_FOUND")
+    if not item.items:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ORDER_EMPTY_ITEMS")
+
+    item.status = "SUBMITTED"
+    outbox_manager.record_event(tenant_id, "{entity.singular.capitalize()}", item_id, "OrderSubmittedEvent", {{"order_id": item_id, "total": str(item.total)}})
+    return item
+
+@app.post("/api/v1/{entity.plural}/{{item_id}}/pay")
+def pay_order(item_id: str, payment_method: str, amount: Decimal, request: Request):
+    tenant_id = _extract_tenant(request)
+    item = repo.get_by_id(tenant_id, item_id)
+    if not item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="{entity.singular.upper()}_NOT_FOUND")
+    if item.status != "SUBMITTED":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ORDER_NOT_SUBMITTED")
+
+    pay_rec = PaymentRecord(payment_method=payment_method, amount=amount, transaction_ref=f"tx-{{uuid4().hex[:8]}}")
+    item.payments.append(pay_rec)
+    item.status = "PAID"
+    outbox_manager.record_event(tenant_id, "{entity.singular.capitalize()}", item_id, "OrderPaidEvent", {{"order_id": item_id, "amount": str(amount)}})
+    return item
+
+@app.post("/api/v1/{entity.plural}/{{item_id}}/fulfill")
+def fulfill_order(item_id: str, tracking_no: str, carrier: str, request: Request):
+    tenant_id = _extract_tenant(request)
+    item = repo.get_by_id(tenant_id, item_id)
+    if not item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="{entity.singular.upper()}_NOT_FOUND")
+    if item.status != "PAID":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ORDER_NOT_PAID")
+
+    ship = ShippingDetail(tracking_no=tracking_no, carrier=carrier)
+    item.shipping = ship
+    item.status = "FULFILLED"
+    outbox_manager.record_event(tenant_id, "{entity.singular.capitalize()}", item_id, "OrderFulfilledEvent", {{"order_id": item_id, "tracking_no": tracking_no}})
+    return item
+
+@app.post("/api/v1/{entity.plural}/{{item_id}}/cancel")
+def cancel_order(item_id: str, reason: str, request: Request):
+    tenant_id = _extract_tenant(request)
+    item = repo.get_by_id(tenant_id, item_id)
+    if not item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="{entity.singular.upper()}_NOT_FOUND")
+    if item.status == "FULFILLED":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ORDER_CANNOT_CANCEL_FULFILLED")
+
+    item.status = "CANCELLED"
+    outbox_manager.record_event(tenant_id, "{entity.singular.capitalize()}", item_id, "OrderCancelledEvent", {{"order_id": item_id, "reason": reason}})
+    return item
+
+# --- Enterprise Business CRUD Endpoints ---
 
 @app.post("/api/v1/{entity.plural}", response_model={entity.singular.capitalize()}, status_code=status.HTTP_201_CREATED)
 def create_{entity.singular}(payload: {entity.singular.capitalize()}Create, request: Request):
@@ -705,6 +1023,149 @@ def test_rich_pagination_and_filtering():
     filtered_data = filtered_resp.json()
     for item in filtered_data["items"]:
         assert Decimal("100.0") <= Decimal(str(item["total"])) <= Decimal("140.0")
+
+
+def test_w3c_traceparent_propagation():
+    sample_trace_id = "4bf92f3577b34da6a3ce929d0e0e4736"
+    sample_span_id = "00f067aa0ba902b7"
+    traceparent = f"00-{{sample_trace_id}}-{{sample_span_id}}-01"
+    headers = {{**AUTH_HEADERS, "traceparent": traceparent}}
+    resp = client.get("/health/live", headers=headers)
+    assert resp.status_code == 200
+    assert resp.headers.get("X-Trace-Id") == sample_trace_id
+    resp_traceparent = resp.headers.get("traceparent")
+    assert resp_traceparent is not None
+    assert resp_traceparent.startswith(f"00-{{sample_trace_id}}-")
+
+
+def test_dual_token_auth_flow_and_rotation():
+    # 1. Login
+    login_resp = client.post(
+        "/api/v1/auth/login",
+        json={{"username": "enterprise-admin", "password": "secure-password-123"}},
+    )
+    assert login_resp.status_code == 200
+    tokens = login_resp.json()
+    acc_token = tokens["access_token"]
+    ref_token = tokens["refresh_token"]
+    assert tokens["token_type"] == "Bearer"
+
+    # Access protected resource with access token
+    acc_headers = {{"Authorization": f"Bearer {{acc_token}}", "X-Tenant-Id": "tenant-test-1"}}
+    prot_resp = client.get("/api/v1/{entity.plural}", headers=acc_headers)
+    assert prot_resp.status_code == 200
+
+    # 2. Refresh Token Rotation
+    ref_resp = client.post(
+        "/api/v1/auth/refresh",
+        json={{"refresh_token": ref_token}},
+    )
+    assert ref_resp.status_code == 200
+    new_tokens = ref_resp.json()
+    new_acc = new_tokens["access_token"]
+    new_ref = new_tokens["refresh_token"]
+    assert new_acc != acc_token
+    assert new_ref != ref_token
+
+    # 3. Replay Attack Detection: re-using the old refresh_token
+    replay_resp = client.post(
+        "/api/v1/auth/refresh",
+        json={{"refresh_token": ref_token}},
+    )
+    assert replay_resp.status_code == 401
+    assert "REPLAY_ATTACK_DETECTED" in replay_resp.json()["detail"]
+
+    # 4. Compromised Family Revocation: subsequent attempts with new_ref will be blocked
+    compromised_resp = client.post(
+        "/api/v1/auth/refresh",
+        json={{"refresh_token": new_ref}},
+    )
+    assert compromised_resp.status_code == 401
+    assert "TOKEN_FAMILY_COMPROMISED" in compromised_resp.json()["detail"]
+
+    # 5. Logout and Blacklist
+    login_resp2 = client.post(
+        "/api/v1/auth/login",
+        json={{"username": "enterprise-admin", "password": "secure-password-123"}},
+    )
+    acc2 = login_resp2.json()["access_token"]
+    headers2 = {{"Authorization": f"Bearer {{acc2}}", "X-Tenant-Id": "tenant-test-1"}}
+    logout_resp = client.post("/api/v1/auth/logout", headers=headers2)
+    assert logout_resp.status_code == 200
+    # Attempting to use blacklisted token
+    after_logout = client.get("/api/v1/{entity.plural}", headers=headers2)
+    assert after_logout.status_code == 401
+
+
+def test_multi_entity_ddd_aggregate_lifecycle():
+    # 1. Create order
+    payload = {{"reference": "ORD-DDD-99", "total": "0.00", "customer_id": "cust-ddd"}}
+    create_resp = client.post("/api/v1/{entity.plural}", json=payload, headers=AUTH_HEADERS)
+    assert create_resp.status_code == 201
+    order_id = create_resp.json()["id"]
+
+    # 2. Add child OrderItem
+    add_item_resp = client.post(
+        f"/api/v1/{entity.plural}/{{order_id}}/items?sku=SKU-PRO-01&product_name=Cloud+Engine&unit_price=120.00&quantity=2",
+        headers=AUTH_HEADERS,
+    )
+    assert add_item_resp.status_code == 200
+    order_data = add_item_resp.json()
+    assert len(order_data["items"]) == 1
+    assert Decimal(str(order_data["total"])) == Decimal("240.00")
+    assert Decimal(str(order_data["net_amount"])) == Decimal("240.00")
+
+    # 3. Submit order
+    submit_resp = client.post(f"/api/v1/{entity.plural}/{{order_id}}/submit", headers=AUTH_HEADERS)
+    assert submit_resp.status_code == 200
+    assert submit_resp.json()["status"] == "SUBMITTED"
+
+    # 4. Pay order
+    pay_resp = client.post(
+        f"/api/v1/{entity.plural}/{{order_id}}/pay?payment_method=CREDIT_CARD&amount=240.00",
+        headers=AUTH_HEADERS,
+    )
+    assert pay_resp.status_code == 200
+    assert pay_resp.json()["status"] == "PAID"
+    assert len(pay_resp.json()["payments"]) == 1
+
+    # 5. Fulfill order
+    ship_resp = client.post(
+        f"/api/v1/{entity.plural}/{{order_id}}/fulfill?tracking_no=SF10029384&carrier=SF_EXPRESS",
+        headers=AUTH_HEADERS,
+    )
+    assert ship_resp.status_code == 200
+    assert ship_resp.json()["status"] == "FULFILLED"
+    assert ship_resp.json()["shipping"]["tracking_no"] == "SF10029384"
+
+    # 6. Invariant check: cannot cancel fulfilled order
+    cancel_resp = client.post(
+        f"/api/v1/{entity.plural}/{{order_id}}/cancel?reason=Changed+mind",
+        headers=AUTH_HEADERS,
+    )
+    assert cancel_resp.status_code == 400
+    assert "ORDER_CANNOT_CANCEL_FULFILLED" in cancel_resp.json()["detail"]
+
+
+def test_seata_at_distributed_transaction_2pc():
+    # 1. Commit flow
+    commit_resp = client.post(
+        "/api/v1/transactions/seata/{entity.singular}-flow?should_fail=false&amount=50.00",
+        headers=AUTH_HEADERS,
+    )
+    assert commit_resp.status_code == 200
+    res = commit_resp.json()
+    assert res["status"] == "COMMITTED"
+    assert res["xid"].startswith("127.0.0.1:8091:")
+    assert res["after_image"]["total"] == "450.00"
+
+    # 2. Rollback flow
+    rollback_resp = client.post(
+        "/api/v1/transactions/seata/{entity.singular}-flow?should_fail=true&amount=100.00",
+        headers=AUTH_HEADERS,
+    )
+    assert rollback_resp.status_code == 400
+    assert "SEATA_TRANSACTION_ROLLBACKED" in rollback_resp.json()["detail"]
 '''
     files["tests/test_enterprise_api.py"] = test_enterprise_py
 

@@ -1,6 +1,7 @@
 import uuid
 import datetime
 from typing import Dict, List, Optional
+from elmos_mature_platform.physical.cloud_vendor import CloudVendorControlPlaneDriver
 from elmos_mature_platform.types import (
     RegionConfig,
     RegionHealthStatus,
@@ -13,11 +14,17 @@ from elmos_mature_platform.types import (
 class MultiregionFailoverEngine:
     """Engine for managing multiregion failover and traffic shifting."""
     
-    def __init__(self, replication_lag_threshold_ms: float = 1000.0):
+    def __init__(
+        self,
+        replication_lag_threshold_ms: float = 1000.0,
+        cloud_driver: Optional[CloudVendorControlPlaneDriver] = None,
+    ):
         self._regions: Dict[str, RegionConfig] = {}
         self._failover_events: Dict[str, FailoverEvent] = {}
         self._traffic_shifts: Dict[str, TrafficShift] = {}
         self._replication_lag_threshold_ms = replication_lag_threshold_ms
+        self._cloud = cloud_driver or CloudVendorControlPlaneDriver.from_env()
+        self._physical_receipts: List[Dict] = []
 
     def register_region(self, config: RegionConfig) -> None:
         """Register a region in the mesh."""
@@ -67,6 +74,9 @@ class MultiregionFailoverEngine:
         # Shift all traffic from source to target
         target_region.traffic_weight += source_region.traffic_weight
         source_region.traffic_weight = 0.0
+        shift = self._cloud.shift_traffic(source_region=source, target_region=target)
+        self._physical_receipts.append(shift.to_dict())
+        event.dns_propagation_complete = shift.applied
         
         return event
 

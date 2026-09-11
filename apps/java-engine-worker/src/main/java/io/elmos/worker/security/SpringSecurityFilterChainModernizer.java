@@ -180,11 +180,36 @@ public final class SpringSecurityFilterChainModernizer {
                 }
             }
 
-            // 4. Modernize authorizeRequests() and Ant/Mvc/Regex Matchers
-            if (content.contains("authorizeRequests()")) {
-                content = content.replace("authorizeRequests()", "authorizeHttpRequests()");
-                rules.add("MIGRATE_AUTHORIZE_HTTP_REQUESTS");
-                changes++;
+            // 4. Modernize authorizeRequests() and Ant/Mvc/Regex Matchers into Lambda DSL
+            if (content.contains("authorizeRequests()") || content.contains("authorizeHttpRequests()")) {
+                Pattern authPattern = Pattern.compile("(?<=[.\\s])authorize(?:Http)?Requests\\(\\)([\\s\\S]*?)(?=(?:\\.and\\(\\)|;|\\.(?:csrf|cors|headers|sessionManagement|formLogin|httpBasic|anonymous|logout|oauth2ResourceServer|exceptionHandling|addFilter)\\())");
+                Matcher authMatcher = authPattern.matcher(content);
+                if (authMatcher.find()) {
+                    StringBuffer sb = new StringBuffer();
+                    do {
+                        String chain = authMatcher.group(1).trim();
+                        if (!chain.isEmpty()) {
+                            String modernizedChain = chain
+                                    .replace(".antMatchers(", ".requestMatchers(")
+                                    .replace(".mvcMatchers(", ".requestMatchers(")
+                                    .replace(".regexMatchers(", ".requestMatchers(");
+                            String replacement = "authorizeHttpRequests(auth -> auth"
+                                    + (modernizedChain.startsWith(".") ? "" : ".")
+                                    + modernizedChain + ")";
+                            authMatcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+                        } else {
+                            authMatcher.appendReplacement(sb, "authorizeHttpRequests()");
+                        }
+                    } while (authMatcher.find());
+                    authMatcher.appendTail(sb);
+                    content = sb.toString();
+                    rules.add("MIGRATE_AUTHORIZE_HTTP_REQUESTS_LAMBDA_DSL");
+                    changes++;
+                } else if (content.contains("authorizeRequests()")) {
+                    content = content.replace("authorizeRequests()", "authorizeHttpRequests()");
+                    rules.add("MIGRATE_AUTHORIZE_HTTP_REQUESTS");
+                    changes++;
+                }
             }
             if (content.contains("antMatchers(")) {
                 content = content.replace("antMatchers(", "requestMatchers(");

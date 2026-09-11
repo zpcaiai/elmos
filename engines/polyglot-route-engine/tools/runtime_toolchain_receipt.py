@@ -38,6 +38,7 @@ from route_runtime_metadata import (  # noqa: E402
 
 from elmos_polyglot_route.models import (  # noqa: E402
     DEPRECATED_LANGUAGES,
+    HOSTED_REPOSITORY_MATRIX_LANGUAGES,
     ROUTED_LANGUAGES,
     RouteError,
 )
@@ -180,7 +181,7 @@ def _validate_exact_toolchain_contract() -> None:
 
 def build_receipt() -> dict[str, Any]:
     _validate_exact_toolchain_contract()
-    active = tuple(ROUTED_LANGUAGES)
+    active = tuple(HOSTED_REPOSITORY_MATRIX_LANGUAGES)
     if active != EXPECTED_ACTIVE_LANGUAGES:
         raise RouteError("ACTIVE_ROUTE_LANGUAGE_SET_DRIFT")
     if tuple(DEPRECATED_LANGUAGES) != EXACT_TOOLCHAIN_DEPRECATED_LANGUAGES:

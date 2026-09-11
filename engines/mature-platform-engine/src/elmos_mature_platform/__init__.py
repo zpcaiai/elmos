@@ -95,6 +95,21 @@ from elmos_mature_platform.enterprise_support_sla_engine import EnterpriseSuppor
 from elmos_mature_platform.independent_security_assessment_engine import IndependentSecurityAssessmentEngine
 from elmos_mature_platform.migration_run_ingestion_engine import MigrationRunIngestionEngine
 from elmos_mature_platform.mature_release_readiness_engine import MatureReleaseReadinessEngine
+from elmos_mature_platform.edition_responsibility_matrix_engine import EditionResponsibilityMatrixEngine
+from elmos_mature_platform.production_readiness_review_engine import ProductionReadinessReviewEngine
+from elmos_mature_platform.customer_audit_evidence_engine import CustomerAuditEvidenceEngine
+from elmos_mature_platform.knowledge_confidence_provenance_engine import KnowledgeConfidenceProvenanceEngine
+from elmos_mature_platform.design_partner_reference_validation_engine import DesignPartnerReferenceValidationEngine
+from elmos_mature_platform.physical import (
+    CloudVendorControlPlaneDriver,
+    IndustrialLoopback,
+    KubernetesControlPlaneDriver,
+    PhysicalBundle,
+    PhysicalCallResult,
+    SigstoreCosignDriver,
+    ToxiproxyDriver,
+    VaultTransitDriver,
+)
 from elmos_mature_platform.types import (
     AgentAutonomyLevel,
     AgentDeploymentMode,
@@ -195,6 +210,11 @@ __all__ = [
     "IndependentSecurityAssessmentEngine",
     "MigrationRunIngestionEngine",
     "MatureReleaseReadinessEngine",
+    "EditionResponsibilityMatrixEngine",
+    "ProductionReadinessReviewEngine",
+    "CustomerAuditEvidenceEngine",
+    "KnowledgeConfidenceProvenanceEngine",
+    "DesignPartnerReferenceValidationEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",
@@ -246,6 +266,14 @@ __all__ = [
     "VersionCompatibilityEngine",
     "WorkflowVersionRecoveryEngine",
     "ZeroDowntimeUpgradeEngine",
+    "CloudVendorControlPlaneDriver",
+    "IndustrialLoopback",
+    "KubernetesControlPlaneDriver",
+    "PhysicalBundle",
+    "PhysicalCallResult",
+    "SigstoreCosignDriver",
+    "ToxiproxyDriver",
+    "VaultTransitDriver",
     # Key Types (68)
     "AgentAutonomyLevel",
     "AgentDeploymentMode",

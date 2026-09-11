@@ -74,6 +74,21 @@ class DefectTriageRCA:
         confidence = 0.85
         explanation = ""
 
+        production = cls._classify_production_defect(trace, primary_file)
+        if production is not None:
+            category, strategy, confidence, explanation = production
+            return DefectClassification(
+                category=category,
+                primary_file=primary_file,
+                primary_line=primary_line,
+                is_test_failure_only=is_test_file,
+                is_spec_drift=False,
+                confidence_score=confidence,
+                affected_symbols=list(set(affected_symbols)),
+                recommended_strategy=strategy,
+                explanation=explanation,
+            )
+
         # Case 1: Syntax or Compiler Error
         if category in (FailureCategory.SYNTAX_ERROR, FailureCategory.IMPORT_OR_SYMBOL_ERROR):
             strategy = RepairStrategy.SAFE_CODE_FIX
@@ -120,11 +135,20 @@ class DefectTriageRCA:
                 f"{trace.error_message}. Safe code fix required to handle types/nullability."
             )
 
-        # Case 4: Flaky or Timeout
+        # Case 4: Flaky or Timeout — never heal by sleeping or weakening tests.
         elif category == FailureCategory.FLAKY_OR_TIMEOUT:
-            strategy = RepairStrategy.MANUAL_INSPECTION_REQUIRED
-            confidence = 0.70
-            explanation = f"Potential flaky test or timeout in `{trace.test_file}`: {trace.error_message}."
+            if cls._looks_like_async_timing(trace.error_message):
+                category = FailureCategory.ASYNC_TIMING
+                strategy = RepairStrategy.SAFE_CODE_FIX
+                confidence = 0.88
+                explanation = (
+                    f"Async timing defect in `{primary_file}`: {trace.error_message}. "
+                    "Replace sleep barriers with event/condition waits; do not inject delays."
+                )
+            else:
+                strategy = RepairStrategy.MANUAL_INSPECTION_REQUIRED
+                confidence = 0.70
+                explanation = f"Potential flaky test or timeout in `{trace.test_file}`: {trace.error_message}."
 
         else:
             strategy = RepairStrategy.SAFE_CODE_FIX
@@ -142,6 +166,62 @@ class DefectTriageRCA:
             recommended_strategy=strategy,
             explanation=explanation,
         )
+
+    @staticmethod
+    def _looks_like_async_timing(message: str) -> bool:
+        lowered = message.lower()
+        return any(token in lowered for token in ("asyncio", "timing", "sleep", "event loop", "not published"))
+
+    @classmethod
+    def _classify_production_defect(
+        cls,
+        trace: FailureTrace,
+        primary_file: str,
+    ) -> tuple[FailureCategory, RepairStrategy, float, str] | None:
+        blob = " ".join(
+            [
+                trace.error_message,
+                trace.exception_class,
+                " ".join(trace.stack_trace),
+                primary_file,
+            ]
+        ).lower()
+        if any(token in blob for token in ("stale fencing", "fencing token", "stale lock", "lease expired")):
+            return (
+                FailureCategory.DISTRIBUTED_LOCK_FAILURE,
+                RepairStrategy.SAFE_CODE_FIX,
+                0.93,
+                f"Distributed lock without fencing in `{primary_file}`: {trace.error_message}.",
+            )
+        if "database" in blob and "deadlock" in blob:
+            return (
+                FailureCategory.DATABASE_DEADLOCK,
+                RepairStrategy.SAFE_CODE_FIX,
+                0.92,
+                f"Database deadlock from unordered row locks in `{primary_file}`.",
+            )
+        if any(token in blob for token in ("deadlock", "lock order", "circular wait")):
+            return (
+                FailureCategory.DEADLOCK,
+                RepairStrategy.SAFE_CODE_FIX,
+                0.94,
+                f"Lock-order deadlock in `{primary_file}`: {trace.error_message}.",
+            )
+        if any(token in blob for token in ("lost update", "race condition", "shared state", "lost-update")):
+            return (
+                FailureCategory.RACE_CONDITION,
+                RepairStrategy.SAFE_CODE_FIX,
+                0.93,
+                f"Shared-state race in `{primary_file}`: {trace.error_message}.",
+            )
+        if cls._looks_like_async_timing(blob):
+            return (
+                FailureCategory.ASYNC_TIMING,
+                RepairStrategy.SAFE_CODE_FIX,
+                0.90,
+                f"Async/timing defect in `{primary_file}`: {trace.error_message}.",
+            )
+        return None
 
     @staticmethod
     def _is_test_path(path: str) -> bool:

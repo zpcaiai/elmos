@@ -158,20 +158,25 @@ spec:
             httpGet:
               path: /health/live
               port: {port}
-            initialDelaySeconds: 2
-            periodSeconds: 3
-            failureThreshold: 10
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 12
           livenessProbe:
             httpGet:
               path: /health/live
               port: {port}
+            initialDelaySeconds: 15
             periodSeconds: 10
+            timeoutSeconds: 3
             failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /health/ready
               port: {port}
+            initialDelaySeconds: 5
             periodSeconds: 5
+            timeoutSeconds: 3
             failureThreshold: 2
           volumeMounts:
             - mountPath: /tmp
@@ -199,6 +204,55 @@ spec:
     - port: {port}
       targetPort: {port}
       name: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {app_name}-ingress
+  namespace: {namespace}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "16m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "15"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+spec:
+  rules:
+    - host: {app_name}.example.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {app_name}
+                port:
+                  number: {port}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {app_name}-ingress-canary
+  namespace: {namespace}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-by-header: "X-Canary"
+    nginx.ingress.kubernetes.io/canary-by-header-value: "always"
+    nginx.ingress.kubernetes.io/canary-weight: "20"
+    nginx.ingress.kubernetes.io/canary-by-cookie: "canary_user"
+spec:
+  rules:
+    - host: {app_name}.example.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {app_name}-canary
+                port:
+                  number: {port}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -233,6 +287,76 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: {app_name}
+""".strip()
+
+
+def generate_istio_canary_manifests(
+    app_name: str,
+    namespace: str = "default",
+    host: str = "api.enterprise.internal",
+    v1_weight: int = 80,
+    v2_weight: int = 20,
+) -> str:
+    """Generate Istio VirtualService & DestinationRule manifests for canary traffic routing."""
+    return f"""---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {app_name}-virtual-service
+  namespace: {namespace}
+spec:
+  hosts:
+    - {host}
+  gateways:
+    - mesh
+    - enterprise-gateway
+  http:
+    - match:
+        - headers:
+            x-canary:
+              exact: always
+      route:
+        - destination:
+            host: {app_name}
+            subset: v2
+    - route:
+        - destination:
+            host: {app_name}
+            subset: v1
+          weight: {v1_weight}
+        - destination:
+            host: {app_name}
+            subset: v2
+          weight: {v2_weight}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: {app_name}-destination-rule
+  namespace: {namespace}
+spec:
+  host: {app_name}
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_CONN
+    connectionPool:
+      tcp:
+        maxConnections: 1024
+      http:
+        http1MaxPendingRequests: 100
+        maxRequestsPerConnection: 10
+    outlierDetection:
+      consecutive5xxErrors: 3
+      interval: 10s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2
 """.strip()
 
 

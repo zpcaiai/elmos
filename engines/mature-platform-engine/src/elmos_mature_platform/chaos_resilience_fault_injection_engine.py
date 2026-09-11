@@ -2,6 +2,8 @@ from typing import List, Dict, Optional
 from datetime import datetime, timezone
 import uuid
 
+from elmos_mature_platform.physical.kubernetes_api import KubernetesControlPlaneDriver
+from elmos_mature_platform.physical.toxiproxy import ToxiproxyDriver
 from elmos_mature_platform.types import (
     FaultInjectionRule,
     ChaosExperiment,
@@ -15,9 +17,17 @@ class ChaosResilienceFaultInjectionEngine:
     Engine for managing chaos resilience and fault injection experiments.
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        toxiproxy_driver: Optional[ToxiproxyDriver] = None,
+        kubernetes_driver: Optional[KubernetesControlPlaneDriver] = None,
+    ):
         self._rules: Dict[str, FaultInjectionRule] = {}
         self._experiments: Dict[str, ChaosExperiment] = {}
+        self._toxiproxy = toxiproxy_driver or ToxiproxyDriver.from_env()
+        self._k8s = kubernetes_driver or KubernetesControlPlaneDriver.from_env()
+        self._physical_receipts: List[Dict] = []
+        self._experiment_proxies: Dict[str, List[str]] = {}
 
     def _now_iso(self) -> str:
         return datetime.now(timezone.utc).isoformat()
@@ -82,6 +92,32 @@ class ChaosResilienceFaultInjectionEngine:
             
         experiment.status = ExperimentStatus.RUNNING
         experiment.started_at = self._now_iso()
+        proxy_names: List[str] = []
+        for rule_id in experiment.rules:
+            rule = self._rules.get(rule_id)
+            if not rule:
+                continue
+            latency = None
+            if rule.parameters.get("latency_ms"):
+                try:
+                    latency = int(rule.parameters["latency_ms"])
+                except (TypeError, ValueError):
+                    latency = None
+            injection = self._toxiproxy.inject_fault(
+                target_service=rule.target_service,
+                fault_type=rule.fault_type.value,
+                probability=rule.probability,
+                latency_ms=latency,
+            )
+            self._physical_receipts.append(injection.to_dict())
+            proxy_names.append(injection.proxy_name)
+            chaos = self._k8s.apply_chaos_mesh(
+                service_name=rule.target_service,
+                fault_type=rule.fault_type.value,
+                latency_ms=latency or 250,
+            )
+            self._physical_receipts.append(chaos.to_dict())
+        self._experiment_proxies[experiment_id] = proxy_names
         return experiment
 
     def complete_experiment(self, experiment_id: str, summary: str, hypothesis_confirmed: bool) -> ChaosExperiment:
@@ -111,6 +147,8 @@ class ChaosResilienceFaultInjectionEngine:
         experiment.status = ExperimentStatus.ABORTED
         experiment.completed_at = self._now_iso()
         experiment.result_summary = f"ABORTED: {reason}"
+        reset = self._toxiproxy.reset()
+        self._physical_receipts.append(reset.to_dict())
         return experiment
 
     def rollback_experiment(self, experiment_id: str) -> ChaosExperiment:
@@ -132,6 +170,8 @@ class ChaosResilienceFaultInjectionEngine:
         experiment.completed_at = self._now_iso()
         # append rollback info to result summary
         experiment.result_summary += " | ROLLED_BACK"
+        reset = self._toxiproxy.reset()
+        self._physical_receipts.append(reset.to_dict())
         return experiment
 
     def get_active_experiments(self) -> List[ChaosExperiment]:
