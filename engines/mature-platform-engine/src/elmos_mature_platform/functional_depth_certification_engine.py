@@ -1,234 +1,166 @@
-from typing import Dict, List
-from datetime import datetime, timezone
+"""Functional Depth Certification Engine - Batch 45 Skill 1477.
 
-from elmos_mature_platform.types import (
-    FunctionalArea,
-    DepthLevel,
-    FunctionalRequirement,
-    DepthCertification,
-    DepthGap
+Evaluates test coverage and execution results across all 10 critical functional categories,
+calculates weighted depth scores, and certifies applications against enterprise depth gates.
+"""
+
+from datetime import datetime, timezone
+from typing import Dict, List, Optional, Any, Set
+import uuid
+
+from .types import (
+    FunctionalCategory,
+    FunctionalTestCaseResult,
+    FunctionalDepthCertificationRecord,
 )
 
+
 class FunctionalDepthCertificationEngine:
-    """
-    Engine to evaluate and certify functional depth of different areas.
-    """
-    
-    def __init__(self):
-        self.requirements: Dict[str, FunctionalRequirement] = {}
-        self.certifications: Dict[str, DepthCertification] = {}
-        
-        self._depth_order = {
-            DepthLevel.BASIC: 1,
-            DepthLevel.STANDARD: 2,
-            DepthLevel.ADVANCED: 3,
-            DepthLevel.COMPLETE: 4
-        }
-        
-        self._effort_estimates = {
-            DepthLevel.BASIC: 8.0,
-            DepthLevel.STANDARD: 16.0,
-            DepthLevel.ADVANCED: 32.0,
-            DepthLevel.COMPLETE: 48.0
-        }
-    
-    def add_requirement(self, req: FunctionalRequirement) -> None:
-        """Add or update a functional requirement."""
-        self.requirements[req.req_id] = req
-        
-    def record_test_results(self, req_id: str, test_count: int, pass_count: int) -> None:
-        """Record test results for a requirement."""
-        if req_id not in self.requirements:
-            raise ValueError(f"Requirement {req_id} not found.")
-        req = self.requirements[req_id]
-        req.test_count = test_count
-        req.pass_count = pass_count
-        
-        if test_count > 0 and test_count == pass_count:
-            req.certified = True
-        else:
-            req.certified = False
-            
-    def mark_implemented(self, req_id: str) -> None:
-        """Mark a requirement as implemented."""
-        if req_id not in self.requirements:
-            raise ValueError(f"Requirement {req_id} not found.")
-        self.requirements[req_id].implemented = True
-        
-    def create_certification(self, cert: DepthCertification) -> str:
-        """Create a new depth certification."""
-        self.certifications[cert.cert_id] = cert
-        return cert.cert_id
-        
-    def _is_requirement_met(self, req: FunctionalRequirement) -> bool:
-        return req.implemented and req.certified
-        
-    def evaluate_depth(self, cert_id: str) -> DepthCertification:
-        """Evaluate achieved depth based on requirements for the given certification."""
-        if cert_id not in self.certifications:
-            raise ValueError(f"Certification {cert_id} not found.")
-            
-        cert = self.certifications[cert_id]
-        area = cert.area
-        
-        area_reqs = [r for r in self.requirements.values() if r.area == area]
-        
-        cert.requirements_total = len(area_reqs)
-        cert.requirements_met = sum(1 for r in area_reqs if self._is_requirement_met(r))
-        
-        if cert.requirements_total > 0:
-            cert.coverage_pct = (cert.requirements_met / cert.requirements_total) * 100
-        else:
-            cert.coverage_pct = 0.0
-            
-        achieved = None
-        for depth in [DepthLevel.BASIC, DepthLevel.STANDARD, DepthLevel.ADVANCED, DepthLevel.COMPLETE]:
-            target_val = self._depth_order[depth]
-            reqs_to_check = [r for r in area_reqs if self._depth_order[r.depth] <= target_val]
-            
-            reqs_at_depth = [r for r in area_reqs if r.depth == depth]
-            if not reqs_at_depth:
-                break
-                
-            all_met = all(self._is_requirement_met(r) for r in reqs_to_check)
-            if all_met:
-                achieved = depth
-            else:
-                break
-                
-        if achieved:
-            cert.achieved_depth = achieved
-        else:
-            cert.achieved_depth = DepthLevel.BASIC
-            
-        return cert
-        
-    def certify_area(self, cert_id: str, certifier: str) -> DepthCertification:
-        """Certify if all requirements up to target_depth are met."""
-        cert = self.evaluate_depth(cert_id)
-        target_val = self._depth_order[cert.target_depth]
-        
-        area_reqs = [r for r in self.requirements.values() if r.area == cert.area]
-        basic_reqs = [r for r in area_reqs if self._depth_order[r.depth] <= self._depth_order[DepthLevel.BASIC]]
-        basic_met = all(self._is_requirement_met(r) for r in basic_reqs) if basic_reqs else False
-        
-        if not basic_met and target_val >= self._depth_order[DepthLevel.BASIC]:
-            achieved_val = 0
-        else:
-            achieved_val = self._depth_order[cert.achieved_depth]
-            
-        if achieved_val >= target_val:
-            cert.certified = True
-            cert.certified_at = datetime.now(timezone.utc).isoformat()
-            cert.certifier = certifier
-        else:
-            cert.certified = False
-            cert.certified_at = ""
-            cert.certifier = ""
-            
-        return cert
-        
-    def get_depth_gaps(self, cert_id: str) -> List[DepthGap]:
-        """Identify gaps between target and achieved depth."""
-        cert = self.evaluate_depth(cert_id)
-        
-        gaps = []
-        target_val = self._depth_order[cert.target_depth]
-        area_reqs = [r for r in self.requirements.values() if r.area == cert.area]
-        
-        missing = []
-        effort = 0.0
-        
-        for r in area_reqs:
-            if self._depth_order[r.depth] <= target_val:
-                if not self._is_requirement_met(r):
-                    missing.append(r.req_id)
-                    effort += self._effort_estimates[r.depth]
-                    
-        if missing:
-            gaps.append(DepthGap(
-                area=cert.area,
-                target_depth=cert.target_depth,
-                current_depth=cert.achieved_depth,
-                missing_requirements=missing,
-                effort_estimate_hours=effort
-            ))
-            
-        return gaps
-        
-    def get_area_coverage(self, area: FunctionalArea) -> Dict:
-        """Coverage report for area."""
-        area_reqs = [r for r in self.requirements.values() if r.area == area]
-        total = len(area_reqs)
-        met = sum(1 for r in area_reqs if self._is_requirement_met(r))
-        
-        by_depth = {}
-        for d in DepthLevel:
-            d_reqs = [r for r in area_reqs if r.depth == d]
-            d_total = len(d_reqs)
-            d_met = sum(1 for r in d_reqs if self._is_requirement_met(r))
-            by_depth[d.value] = {
-                "total": d_total,
-                "met": d_met,
-                "coverage": (d_met / d_total * 100) if d_total > 0 else 0.0
+    """Enforces functional depth certification across all enterprise functional categories."""
+
+    def __init__(self) -> None:
+        self._records: Dict[str, FunctionalDepthCertificationRecord] = {}
+
+    def _now_iso(self) -> str:
+        return datetime.now(timezone.utc).isoformat()
+
+    def create_certification_record(
+        self,
+        application_id: str,
+        version: str,
+        min_depth_threshold: float = 95.0,
+    ) -> FunctionalDepthCertificationRecord:
+        """Create a new functional depth certification record."""
+        if not application_id or not version:
+            raise ValueError("application_id and version must not be empty")
+        if min_depth_threshold <= 0.0 or min_depth_threshold > 100.0:
+            raise ValueError("min_depth_threshold must be between 0.0 and 100.0")
+
+        cert_id = f"fdcert-{uuid.uuid4().hex[:12]}"
+        record = FunctionalDepthCertificationRecord(
+            cert_id=cert_id,
+            application_id=application_id,
+            version=version,
+            depth_score=0.0,
+            is_certified=False,
+            test_results=[],
+            certified_at="",
+            certified_by="",
+            min_depth_threshold=min_depth_threshold,
+        )
+        self._records[cert_id] = record
+        return record
+
+    def record_test_result(
+        self,
+        cert_id: str,
+        test_result: FunctionalTestCaseResult,
+    ) -> FunctionalDepthCertificationRecord:
+        """Add a functional test case execution result."""
+        if cert_id not in self._records:
+            raise ValueError(f"Certification record {cert_id} not found")
+        if not test_result.test_id or not test_result.name:
+            raise ValueError("test_id and name must not be empty")
+        if test_result.depth_weight <= 0.0:
+            raise ValueError("depth_weight must be positive")
+
+        record = self._records[cert_id]
+        record.test_results.append(test_result)
+        return record
+
+    def evaluate_depth(self, cert_id: str) -> FunctionalDepthCertificationRecord:
+        """Calculate weighted score, verify category coverage, and evaluate certification status."""
+        if cert_id not in self._records:
+            raise ValueError(f"Certification record {cert_id} not found")
+
+        record = self._records[cert_id]
+        if not record.test_results:
+            record.depth_score = 0.0
+            record.is_certified = False
+            return record
+
+        total_weight = sum(t.depth_weight for t in record.test_results)
+        passed_weight = sum(t.depth_weight for t in record.test_results if t.passed)
+
+        record.depth_score = round((passed_weight / total_weight * 100.0), 2) if total_weight > 0 else 0.0
+
+        # Check coverage across all 10 mandatory functional categories
+        covered_cats: Set[FunctionalCategory] = {t.category for t in record.test_results}
+        all_cats: Set[FunctionalCategory] = set(FunctionalCategory)
+        all_covered = all_cats.issubset(covered_cats)
+
+        # Certification requires meeting the depth threshold AND covering all 10 categories
+        record.is_certified = (record.depth_score >= record.min_depth_threshold) and all_covered
+        return record
+
+    def issue_certification(
+        self,
+        cert_id: str,
+        certified_by: str,
+    ) -> FunctionalDepthCertificationRecord:
+        """Issue final certification attestation if depth criteria are met."""
+        if cert_id not in self._records:
+            raise ValueError(f"Certification record {cert_id} not found")
+        if not certified_by:
+            raise ValueError("certified_by must not be empty")
+
+        record = self.evaluate_depth(cert_id)
+        if not record.is_certified:
+            uncovered = self.get_uncovered_categories(cert_id)
+            reasons = []
+            if record.depth_score < record.min_depth_threshold:
+                reasons.append(f"depth score {record.depth_score}% < threshold {record.min_depth_threshold}%")
+            if uncovered:
+                reasons.append(f"uncovered categories: {[c.value for c in uncovered]}")
+            raise ValueError(f"Cannot certify application: {'; '.join(reasons)}")
+
+        record.certified_by = certified_by
+        record.certified_at = self._now_iso()
+        return record
+
+    def get_uncovered_categories(self, cert_id: str) -> List[FunctionalCategory]:
+        """Return any functional categories that lack test results."""
+        if cert_id not in self._records:
+            raise ValueError(f"Certification record {cert_id} not found")
+
+        record = self._records[cert_id]
+        covered = {t.category for t in record.test_results}
+        return [c for c in FunctionalCategory if c not in covered]
+
+    def get_category_breakdown(self, cert_id: str) -> Dict[str, Any]:
+        """Generate test results and pass rate per functional category."""
+        if cert_id not in self._records:
+            raise ValueError(f"Certification record {cert_id} not found")
+
+        record = self._records[cert_id]
+        breakdown: Dict[str, Dict[str, Any]] = {}
+
+        for cat in FunctionalCategory:
+            cat_tests = [t for t in record.test_results if t.category == cat]
+            passed = sum(1 for t in cat_tests if t.passed)
+            total = len(cat_tests)
+            breakdown[cat.value] = {
+                "total_tests": total,
+                "passed_tests": passed,
+                "failed_tests": total - passed,
+                "pass_rate_pct": round((passed / total * 100.0), 2) if total > 0 else 0.0,
             }
-            
+
+        return breakdown
+
+    def get_record(self, cert_id: str) -> Optional[FunctionalDepthCertificationRecord]:
+        """Retrieve certification record by ID."""
+        return self._records.get(cert_id)
+
+    def get_certification_summary(self) -> Dict[str, Any]:
+        """Generate high-level summary across all certification records."""
+        total = len(self._records)
+        certified_count = sum(1 for r in self._records.values() if r.is_certified)
+        total_score = sum(r.depth_score for r in self._records.values())
+
         return {
-            "area": area.value,
-            "total_requirements": total,
-            "met_requirements": met,
-            "overall_coverage": (met / total * 100) if total > 0 else 0.0,
-            "by_depth": by_depth
+            "total_certifications": total,
+            "certified_count": certified_count,
+            "certification_rate_pct": round((certified_count / total * 100.0), 2) if total > 0 else 0.0,
+            "avg_depth_score": round(total_score / total, 2) if total > 0 else 0.0,
         }
-        
-    def get_requirements_by_depth(self, depth: DepthLevel) -> List[FunctionalRequirement]:
-        """Filter requirements by depth."""
-        return [r for r in self.requirements.values() if r.depth == depth]
-        
-    def get_certification_report(self) -> Dict:
-        """Summary: areas, depths, coverage, gaps"""
-        report = {
-            "total_certifications": len(self.certifications),
-            "certified_count": sum(1 for c in self.certifications.values() if c.certified),
-            "certifications": [],
-            "overall_coverage": 0.0
-        }
-        
-        total_reqs = 0
-        total_met = 0
-        
-        for c in self.certifications.values():
-            self.evaluate_depth(c.cert_id)
-            gaps = self.get_depth_gaps(c.cert_id)
-            
-            c_dict = {
-                "cert_id": c.cert_id,
-                "area": c.area.value,
-                "target_depth": c.target_depth.value,
-                "achieved_depth": c.achieved_depth.value,
-                "certified": c.certified,
-                "coverage_pct": c.coverage_pct,
-                "gaps": len(gaps[0].missing_requirements) if gaps else 0
-            }
-            report["certifications"].append(c_dict)
-            
-            total_reqs += c.requirements_total
-            total_met += c.requirements_met
-            
-        if total_reqs > 0:
-            report["overall_coverage"] = (total_met / total_reqs) * 100
-            
-        return report
-        
-    def estimate_effort_to_depth(self, area: FunctionalArea, target: DepthLevel) -> float:
-        """Estimate hours to reach target depth for an area."""
-        area_reqs = [r for r in self.requirements.values() if r.area == area]
-        target_val = self._depth_order[target]
-        
-        effort = 0.0
-        for r in area_reqs:
-            if self._depth_order[r.depth] <= target_val:
-                if not self._is_requirement_met(r):
-                    effort += self._effort_estimates[r.depth]
-                    
-        return effort

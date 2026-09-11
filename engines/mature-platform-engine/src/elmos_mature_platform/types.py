@@ -6839,5 +6839,168 @@ class EcosystemCertificationRecord:
     badges: List[str] = field(default_factory=list)
 
 
+# ─── Customer VPC Edition Models (B38) ──────────────────────────────
+
+class CloudProvider(str, Enum):
+    AWS = "aws"
+    AZURE = "azure"
+    GCP = "gcp"
+    ALIBABA = "alibaba"
+
+class VpcPeeringStatus(str, Enum):
+    REQUESTED = "requested"
+    ACTIVE = "active"
+    REJECTED = "rejected"
+    EXPIRED = "expired"
+
+@dataclass
+class CustomerVpcConfig:
+    vpc_id: str
+    customer_id: str
+    provider: CloudProvider
+    cidr_block: str
+    private_subnet_ids: List[str] = field(default_factory=list)
+    egress_mode: str = "nat_gateway"
+    kms_key_arn: str = ""
+    peering_connection_id: str = ""
+    peering_status: VpcPeeringStatus = VpcPeeringStatus.REQUESTED
+    is_deployed: bool = False
+    created_at: str = ""
+
+@dataclass
+class VpcDeploymentVerification:
+    verification_id: str
+    vpc_id: str
+    subnets_reachable: bool = False
+    kms_encrypt_decrypt_ok: bool = False
+    egress_connectivity_ok: bool = False
+    passed: bool = False
+    verified_at: str = ""
 
 
+# ─── Tenant Project Migration Health Models (B39) ───────────────────
+
+class MigrationHealthState(str, Enum):
+    HEALTHY = "healthy"
+    WARNING = "warning"
+    CRITICAL = "critical"
+    PAUSED = "paused"
+
+@dataclass
+class MigrationHealthMetric:
+    metric_name: str
+    current_value: float
+    warning_threshold: float
+    critical_threshold: float
+    is_healthy: bool = True
+
+@dataclass
+class TenantMigrationHealthRecord:
+    record_id: str
+    tenant_id: str
+    project_id: str
+    state: MigrationHealthState = MigrationHealthState.HEALTHY
+    replication_lag_seconds: float = 0.0
+    error_rate_pct: float = 0.0
+    throughput_items_per_sec: float = 0.0
+    metrics: List[MigrationHealthMetric] = field(default_factory=list)
+    last_health_check: str = ""
+    health_summary: str = ""
+
+
+# ─── License IP Provenance Models (B40) ─────────────────────────────
+
+class LicenseType(str, Enum):
+    PERMISSIVE = "permissive"
+    WEAK_COPYLEFT = "weak_copyleft"
+    STRONG_COPYLEFT = "strong_copyleft"
+    PROPRIETARY = "proprietary"
+    UNKNOWN = "unknown"
+
+class IpContaminationRisk(str, Enum):
+    NONE = "none"
+    LOW = "low"
+    MEDIUM = "medium"
+    CRITICAL = "critical"
+
+@dataclass
+class CodeArtifactLicenseRecord:
+    record_id: str
+    artifact_name: str
+    spdx_identifier: str
+    license_type: LicenseType
+    contamination_risk: IpContaminationRisk
+    copyright_holder: str
+    license_file_digest: str = ""
+    is_approved_for_commercial_use: bool = False
+    scanned_at: str = ""
+
+
+# ─── Diagnostic Root Cause Recommendation Models (B41) ──────────────
+
+class DiagnosticSeverity(str, Enum):
+    INFO = "info"
+    WARNING = "warning"
+    ERROR = "error"
+    FATAL = "fatal"
+
+class RemediationEffort(str, Enum):
+    IMMEDIATE_RETRY = "immediate_retry"
+    AUTOMATIC_PATCH = "automatic_patch"
+    CONFIG_UPDATE = "config_update"
+    MANUAL_REFACTOR = "manual_refactor"
+
+@dataclass
+class RootCauseHypothesis:
+    hypothesis_id: str
+    cause_name: str
+    confidence_score: float
+    matching_error_pattern: str
+    recommended_action: str
+    effort: RemediationEffort
+    automated_fix_available: bool = False
+
+@dataclass
+class DiagnosticReport:
+    report_id: str
+    run_id: str
+    error_signature: str
+    primary_root_cause: Optional[RootCauseHypothesis] = None
+    secondary_hypotheses: List[RootCauseHypothesis] = field(default_factory=list)
+    generated_at: str = ""
+
+
+# ─── Functional Depth Certification Models (B45) ─────────────────────
+
+class FunctionalCategory(str, Enum):
+    AUTH_SECURITY = "auth_security"
+    DATA_VALIDATION = "data_validation"
+    BUSINESS_LOGIC = "business_logic"
+    TRANSACTION_INTEGRITY = "transaction_integrity"
+    STATE_TRANSITIONS = "state_transitions"
+    ASYNC_PROCESSING = "async_processing"
+    REPORTING_ANALYTICS = "reporting_analytics"
+    EVENT_EMISSION = "event_emission"
+    EXTERNAL_INTEGRATIONS = "external_integrations"
+    EDGE_CASE_HANDLING = "edge_case_handling"
+
+@dataclass
+class FunctionalTestCaseResult:
+    test_id: str
+    category: FunctionalCategory
+    name: str
+    passed: bool
+    depth_weight: float = 1.0
+    execution_time_ms: float = 0.0
+
+@dataclass
+class FunctionalDepthCertificationRecord:
+    cert_id: str
+    application_id: str
+    version: str
+    depth_score: float = 0.0
+    is_certified: bool = False
+    test_results: List[FunctionalTestCaseResult] = field(default_factory=list)
+    certified_at: str = ""
+    certified_by: str = ""
+    min_depth_threshold: float = 95.0

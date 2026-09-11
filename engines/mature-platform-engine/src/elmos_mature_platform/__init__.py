@@ -105,6 +105,11 @@ from elmos_mature_platform.oncall_follow_the_sun_engine import OncallFollowTheSu
 from elmos_mature_platform.runner_update_supply_chain_engine import RunnerUpdateSupplyChainEngine
 from elmos_mature_platform.automation_buildgreen_prediction_engine import AutomationBuildgreenPredictionEngine
 from elmos_mature_platform.ecosystem_certification_engine import EcosystemCertificationEngine
+from elmos_mature_platform.customer_vpc_edition_engine import CustomerVpcEditionEngine
+from elmos_mature_platform.tenant_project_migration_health_engine import TenantProjectMigrationHealthEngine
+from elmos_mature_platform.license_ip_provenance_engine import LicenseIpProvenanceEngine
+from elmos_mature_platform.diagnostic_root_cause_recommendation_engine import DiagnosticRootCauseRecommendationEngine
+from elmos_mature_platform.functional_depth_certification_engine import FunctionalDepthCertificationEngine
 from elmos_mature_platform.physical import (
     CloudVendorControlPlaneDriver,
     IndustrialLoopback,
@@ -225,6 +230,11 @@ __all__ = [
     "RunnerUpdateSupplyChainEngine",
     "AutomationBuildgreenPredictionEngine",
     "EcosystemCertificationEngine",
+    "CustomerVpcEditionEngine",
+    "TenantProjectMigrationHealthEngine",
+    "LicenseIpProvenanceEngine",
+    "DiagnosticRootCauseRecommendationEngine",
+    "FunctionalDepthCertificationEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",
