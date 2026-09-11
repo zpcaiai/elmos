@@ -202,7 +202,7 @@ class DM8ASTTransformer:
         has_semicolon = stripped.endswith(";")
         ast = parse_one(stripped, read=source_dialect)
 
-        if isinstance(ast, exp.Create) and ast.kind.upper() == "SEQUENCE":
+        if isinstance(ast, exp.Create) and (ast.kind or "").upper() == "SEQUENCE":
             ast.set("exists", False)
             out = self.generator.generate(ast)
             return f"{out};" if has_semicolon else out

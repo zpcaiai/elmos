@@ -117,8 +117,20 @@ class OpenGaussASTTransformer:
             col.set("kind", exp.var("DOUBLE PRECISION"))
         elif kind_sql == "BINARY_FLOAT":
             col.set("kind", exp.var("REAL"))
-        elif kind_sql == "TINYINT":
+        elif col.kind and (col.kind.is_type("tinyint") or "TINYINT" in kind_sql):
+            args = [a.sql() for a in col.kind.expressions] if col.kind.expressions else []
+            if args == ["1"] or "(1)" in kind_sql:
+                col.set("kind", exp.var("BOOLEAN"))
+            else:
+                col.set("kind", exp.var("SMALLINT"))
+        elif col.kind and (col.kind.is_type("smallint") or "SMALLINT" in kind_sql):
             col.set("kind", exp.var("SMALLINT"))
+        elif col.kind and (col.kind.is_type("mediumint") or "MEDIUMINT" in kind_sql):
+            col.set("kind", exp.var("INT"))
+        elif col.kind and (col.kind.is_type("bigint") or "BIGINT" in kind_sql):
+            col.set("kind", exp.var("BIGINT"))
+        elif col.kind and (col.kind.is_type("int", "integer") or "INT" in kind_sql):
+            col.set("kind", exp.var("INT"))
 
         # 5. Date / Time types
         elif col.kind and col.kind.is_type("datetime"):

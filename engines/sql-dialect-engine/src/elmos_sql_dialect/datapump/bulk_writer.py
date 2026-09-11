@@ -8,7 +8,7 @@ from typing import Any
 try:
     from psycopg2.extras import execute_values
 except ImportError:
-    execute_values = None
+    execute_values = None  # type: ignore[assignment]
 
 from .chunk_reader import DataChunk
 
@@ -37,22 +37,29 @@ class BulkWriter:
         if not chunk.rows:
             return 0
 
-        qualified_table = f'"{self.schema_name}"."{self.table_name}"'
-        col_names = [f'"{c}"' for c in chunk.columns]
+        is_mysql = "pymysql" in type(self.conn).__module__ or "mysql" in type(self.conn).__module__
+        q = "`" if is_mysql else '"'
+        qualified_table = f"{q}{self.schema_name}{q}.{q}{self.table_name}{q}"
+        col_names = [f"{q}{c}{q}" for c in chunk.columns]
         cols_str = ", ".join(col_names)
 
-        conflict_clause = ""
-        if self.on_conflict == "NOTHING":
-            if self.conflict_keys:
-                keys_str = ", ".join(f'"{k}"' for k in self.conflict_keys)
-                conflict_clause = f"ON CONFLICT ({keys_str}) DO NOTHING"
-            else:
-                conflict_clause = "ON CONFLICT DO NOTHING"
-
-        query = f"INSERT INTO {qualified_table} ({cols_str}) VALUES %s {conflict_clause};"
-
         with self.conn.cursor() as cur:
-            execute_values(cur, query, chunk.rows, page_size=len(chunk.rows))
+            if is_mysql:
+                val_placeholders = ", ".join(["%s"] * len(chunk.columns))
+                ignore_clause = "IGNORE" if self.on_conflict == "NOTHING" else ""
+                query = f"INSERT {ignore_clause} INTO {qualified_table} ({cols_str}) VALUES ({val_placeholders});"
+                cur.executemany(query, chunk.rows)
+            else:
+                conflict_clause = ""
+                if self.on_conflict == "NOTHING":
+                    if self.conflict_keys:
+                        keys_str = ", ".join(f'"{k}"' for k in self.conflict_keys)
+                        conflict_clause = f"ON CONFLICT ({keys_str}) DO NOTHING"
+                    else:
+                        conflict_clause = "ON CONFLICT DO NOTHING"
+
+                query = f"INSERT INTO {qualified_table} ({cols_str}) VALUES %s {conflict_clause};"
+                execute_values(cur, query, chunk.rows, page_size=len(chunk.rows))
         self.conn.commit()
 
         return len(chunk.rows)

@@ -71,6 +71,7 @@ def run_18_cases_and_collect():
     daemon_proc = None
     try:
         http_req("/v1/workbench/health", method="GET")
+        print("Docker Sandbox Daemon is already running.")
     except Exception:
         print("Starting Docker Sandbox Daemon for evidence collection...")
         daemon_proc = subprocess.Popen(
@@ -78,7 +79,21 @@ def run_18_cases_and_collect():
              "--port", str(PORT), "--key", KEY, "--repo-root", str(ROOT)],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
         )
-        time.sleep(1.5)
+        ready = False
+        last_err = None
+        for _ in range(20):
+            time.sleep(0.5)
+            try:
+                http_req("/v1/workbench/health", method="GET")
+                ready = True
+                print("Docker Sandbox Daemon is ready.")
+                break
+            except Exception as e:
+                last_err = e
+        if not ready:
+            poll_ret = daemon_proc.poll()
+            out, err = daemon_proc.communicate(timeout=2) if poll_ret is not None else ("", "")
+            raise RuntimeError(f"Daemon failed to start (exit code {poll_ret}, last_err: {last_err}). Stdout: {out}, Stderr: {err}")
 
     cases_data = []
 

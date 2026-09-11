@@ -87,7 +87,15 @@ class PhysicalStressEngine:
         conn.autocommit = True
         try:
             with conn.cursor() as cur:
-                cur.execute(f"CREATE SCHEMA IF NOT EXISTS {schema};")
+                cur.execute(
+                    "SELECT 1 FROM information_schema.schemata WHERE schema_name = %s;",
+                    (schema,),
+                )
+                if not cur.fetchone():
+                    try:
+                        cur.execute(f"CREATE SCHEMA {schema};")
+                    except Exception:
+                        pass
                 cur.execute(f"DROP TABLE IF EXISTS {schema}.{table_name} CASCADE;")
                 cur.execute(f"""
                     CREATE TABLE {schema}.{table_name} (

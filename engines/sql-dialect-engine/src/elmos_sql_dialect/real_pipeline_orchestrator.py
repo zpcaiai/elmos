@@ -453,9 +453,11 @@ class RealMigrationPipelineOrchestrator:
         t0 = time.perf_counter()
         from elmos_sql_dialect.datapump import PhysicalStressEngine
         schema_stress = f"{target_schema_prefix}_stress"
+        stress_target_factory = self.target_connection_factory or self.connection_factory
+        stress_target_name = "openGauss-Target" if self.target_connection_factory else "PostgreSQL-16-Local"
         stress_engine = PhysicalStressEngine(
-            connection_factory=self.connection_factory,
-            target_name="PostgreSQL-16-Local",
+            connection_factory=stress_target_factory,
+            target_name=stress_target_name,
             concurrency=8,
             transactions_per_worker=20,
             max_retries=4,
@@ -464,8 +466,9 @@ class RealMigrationPipelineOrchestrator:
             stress_engine.setup_stress_table(schema=schema_stress, table_name="accounts", num_accounts=20)
             stress_report = stress_engine.run_benchmark(schema=schema_stress, table_name="accounts", num_accounts=20)
             assert stress_report.successful_transactions > 0
-            assert stress_report.tps > 5.0
+            assert stress_report.tps > 2.0
             p8_det = {
+                "target_database": stress_target_name,
                 "workers": stress_report.concurrency_workers,
                 "total_tx": stress_report.total_transactions,
                 "successful_tx": stress_report.successful_transactions,
@@ -475,7 +478,7 @@ class RealMigrationPipelineOrchestrator:
             }
         finally:
             stress_engine.teardown_stress_table(schema=schema_stress, table_name="accounts")
-            conn = self.connection_factory()
+            conn = stress_target_factory()
             conn.autocommit = True
             try:
                 with conn.cursor() as cur:

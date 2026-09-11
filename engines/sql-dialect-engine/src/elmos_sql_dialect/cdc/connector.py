@@ -370,7 +370,7 @@ class StreamingDataComparator:
         src_map = {r.get(pk_col): r for r in src_chunk.rows if pk_col in r}
         tgt_map = {r.get(pk_col): r for r in tgt_chunk.rows if pk_col in r}
 
-        all_pks = sorted(set(src_map.keys()) | set(tgt_map.keys()))
+        all_pks = sorted([k for k in (set(src_map.keys()) | set(tgt_map.keys())) if k is not None], key=str)
         mismatched_pks: list[Any] = []
         diff_samples: list[RowDiff] = []
 

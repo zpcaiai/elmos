@@ -121,14 +121,16 @@ class ChunkReader:
                 logger.warning("No columns found for table %s.%s", self.schema_name, self.table_name)
                 return
 
-            qualified_table = f'"{self.schema_name}"."{self.table_name}"'
-            col_list_str = ", ".join(f'"{c}"' for c in cols)
+            is_mysql = "pymysql" in type(self.conn).__module__ or "mysql" in type(self.conn).__module__
+            q = "`" if is_mysql else '"'
+            qualified_table = f"{q}{self.schema_name}{q}.{q}{self.table_name}{q}"
+            col_list_str = ", ".join(f"{q}{c}{q}" for c in cols)
 
             chunk_idx = 0
             if pk:
                 # Keyset Pagination: WHERE pk > last_val ORDER BY pk LIMIT chunk_size
                 last_val: Any = None
-                pk_quoted = f'"{pk}"'
+                pk_quoted = f"{q}{pk}{q}"
                 pk_idx = cols.index(pk) if pk in cols else -1
 
                 while True:
@@ -165,21 +167,39 @@ class ChunkReader:
                     if len(rows) < self.chunk_size:
                         break
             else:
-                # Fallback to server-side named cursor
-                cursor_name = f"chunk_cur_{self.table_name}_{id(self)}"
-                with self.conn.cursor(name=cursor_name) as named_cur:
-                    named_cur.execute(f"SELECT {col_list_str} FROM {qualified_table};")
-                    while True:
-                        rows = named_cur.fetchmany(self.chunk_size)
-                        if not rows:
-                            break
-                        c_hash = compute_chunk_hash(rows)
-                        yield DataChunk(
-                            table_name=self.table_name,
-                            chunk_index=chunk_idx,
-                            columns=cols,
-                            rows=rows,
-                            chunk_hash=c_hash,
-                            row_count=len(rows),
-                        )
-                        chunk_idx += 1
+                # Fallback: server-side named cursor for Postgres, standard cursor for MySQL
+                if is_mysql:
+                    with self.conn.cursor() as named_cur:
+                        named_cur.execute(f"SELECT {col_list_str} FROM {qualified_table};")
+                        while True:
+                            rows = named_cur.fetchmany(self.chunk_size)
+                            if not rows:
+                                break
+                            c_hash = compute_chunk_hash(rows)
+                            yield DataChunk(
+                                table_name=self.table_name,
+                                chunk_index=chunk_idx,
+                                columns=cols,
+                                rows=rows,
+                                chunk_hash=c_hash,
+                                row_count=len(rows),
+                            )
+                            chunk_idx += 1
+                else:
+                    cursor_name = f"chunk_cur_{self.table_name}_{id(self)}"
+                    with self.conn.cursor(name=cursor_name) as named_cur:
+                        named_cur.execute(f"SELECT {col_list_str} FROM {qualified_table};")
+                        while True:
+                            rows = named_cur.fetchmany(self.chunk_size)
+                            if not rows:
+                                break
+                            c_hash = compute_chunk_hash(rows)
+                            yield DataChunk(
+                                table_name=self.table_name,
+                                chunk_index=chunk_idx,
+                                columns=cols,
+                                rows=rows,
+                                chunk_hash=c_hash,
+                                row_count=len(rows),
+                            )
+                            chunk_idx += 1
