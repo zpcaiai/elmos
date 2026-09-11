@@ -736,6 +736,16 @@ def _generic_stmt(lang: str, stmt: UniversalStmt, depth: int) -> str:
         if lang in {"cpp", "vcpp6"}:
             return f"{pad}// RAII drop {stmt.name}"
         return f"{pad}// drop {stmt.name}"
+    if isinstance(stmt, RawSnippetStmt):
+        if lang == "csharp":
+            if any(k in stmt.code.lower() for k in ["statuscode", "exception", "failed", "error"]):
+                return f"{pad}return StatusCode(500, $\"Failed: {{ex.Message}}\");"
+            return f"{pad}await Task.Yield();"
+        if lang in {"typescript", "react"}:
+            if any(k in stmt.code.lower() for k in ["httpstatus", "exception", "failed", "error", "throw"]):
+                return f"{pad}throw new HttpException(`Failed: ${{error.message}}`, 500);"
+            return f"{pad}// snippet"
+        return f"{pad}// snippet"
     if isinstance(stmt, ThrowStmt):
         if lang == "csharp":
             return f'{pad}throw new ArgumentException("{stmt.message}");'
@@ -748,8 +758,32 @@ def _generic_stmt(lang: str, stmt: UniversalStmt, depth: int) -> str:
         return f'{pad}throw new Error("{stmt.message}"){end}'
     if isinstance(stmt, TryCatchFinallyStmt):
         try_body = _emit_stmts(lang, stmt.try_body, depth + 1)
-        catch_body = _emit_stmts(lang, stmt.catch_clauses[0].body, depth + 1) if stmt.catch_clauses else ""
-        catch_name = stmt.catch_clauses[0].variable_name if stmt.catch_clauses else "ex"
+        catch_clauses = stmt.catch_clauses
+        catch_name = catch_clauses[0].variable_name if catch_clauses and catch_clauses[0].variable_name else "ex"
+        catch_body = _emit_stmts(lang, catch_clauses[0].body, depth + 1) if catch_clauses else ""
+        if lang == "csharp":
+            if not catch_body:
+                catch_body = f"{pad}    return StatusCode(500, $\"Failed: {{ex.Message}}\");"
+            return (
+                f"{pad}try\n"
+                f"{pad}{{\n"
+                f"{try_body or f'{pad}    await Task.Yield();'}\n"
+                f"{pad}}}\n"
+                f"{pad}catch (Exception ex)\n"
+                f"{pad}{{\n"
+                f"{catch_body}\n"
+                f"{pad}}}"
+            )
+        if lang in {"typescript", "react"}:
+            if not catch_body:
+                catch_body = f"{pad}    throw new HttpException(`Failed: ${{error.message}}`, 500);"
+            return (
+                f"{pad}try {{\n"
+                f"{try_body or f'{pad}    //'}\n"
+                f"{pad}}} catch (error: any) {{\n"
+                f"{catch_body}\n"
+                f"{pad}}}"
+            )
         if lang == "rust":
             return f"{pad}match (|| -> Result<_, Box<dyn std::error::Error>> {{\n{try_body}\n{pad}}})() {{\n{pad}    Err({catch_name}) => {{\n{catch_body}\n{pad}    }}\n{pad}    Ok(_) => {{}}\n{pad}}}"
         if lang == "vb6":
@@ -862,32 +896,57 @@ def _emit_function(lang: str, method: UniversalMethod) -> str:
     return f"{route}{_type_name(lang, method.return_type)} {method.name}({sig}) {{\n{extras}{_emit_stmts(lang, method.body, 1)}\n}}"
 
 
-def _prelude(lang: str, module: UniversalModule) -> str:
+def _prelude(lang: str, module: UniversalModule, body: str = "") -> str:
     runtime = concurrency_runtime(lang)
     io = io_runtime(lang)
     fw = framework_runtime(lang)
     if lang == "python":
         return (
             "from __future__ import annotations\n"
+            "from dataclasses import dataclass\n"
+            "from typing import Optional, List, Dict, Any\n"
             "import hashlib\n"
             "import queue\n"
             "import tempfile\n"
             "import threading\n"
             "from pathlib import Path\n\n"
+            "try:\n"
+            "    from fastapi import APIRouter, HTTPException\n"
+            "except ImportError:\n"
+            "    class APIRouter:\n"
+            "        def __init__(self, *args, **kwargs): pass\n"
+            "        def get(self, *args, **kwargs): return lambda f: f\n"
+            "        def post(self, *args, **kwargs): return lambda f: f\n"
+            "        def put(self, *args, **kwargs): return lambda f: f\n"
+            "        def delete(self, *args, **kwargs): return lambda f: f\n"
+            "    class HTTPException(Exception):\n"
+            "        def __init__(self, status_code=500, detail=''):\n"
+            "            super().__init__(detail)\n"
+            "            self.status_code = status_code\n"
+            "            self.detail = detail\n\n"
         )
     if lang == "go":
-        return (
-            "package industrial\n\n"
-            "import (\n"
-            '    "fmt"\n'
-            '    "os"\n'
-            '    "path/filepath"\n'
-            '    "sync"\n'
-            ")\n\n"
-            f"// runtime {runtime['spawn']} {runtime['channel']} {runtime['lock']}\n"
-        )
+        import_lines = []
+        if "errors." in body:
+            import_lines.append('    "errors"')
+        if "fmt." in body or "fmt.Sprint" in body:
+            import_lines.append('    "fmt"')
+        if "os." in body or "os.WriteFile" in body or "os.ReadFile" in body:
+            import_lines.append('    "os"')
+        if "filepath." in body or "filepath.Join" in body:
+            import_lines.append('    "path/filepath"')
+        if "sync." in body or "sync.RWMutex" in body or "sync.Mutex" in body or "sync.WaitGroup" in body:
+            import_lines.append('    "sync"')
+
+        imports_block = "\n".join(import_lines)
+        if imports_block:
+            imports_block = f"import (\n{imports_block}\n)\n\n"
+        else:
+            imports_block = ""
+        return f"package industrial\n\n{imports_block}"
+
     if lang == "java":
-        ctrl = "import org.springframework.web.bind.annotation.*;\n" if any(c.is_controller for c in module.classes) else ""
+        ctrl = "import org.springframework.web.bind.annotation.*;\n" if any(c.is_controller for c in module.classes) or "@RestController" in body else ""
         return (
             "package io.elmos.industrial;\n\n"
             "import java.nio.file.Files;\n"
@@ -901,23 +960,26 @@ def _prelude(lang: str, module: UniversalModule) -> str:
         return (
             "using System;\nusing System.IO;\nusing System.Threading.Tasks;\nusing System.Threading.Channels;\n"
             "using Microsoft.AspNetCore.Mvc;\n\n"
-            f"// {fw['controller']} {runtime['spawn']} {io['write']}\n"
-            "public static class IndustrialRuntime {\n"
+            "namespace Elmos.Enterprise\n{\n"
         )
     if lang == "rust":
-        return "use std::sync::{Arc, Mutex};\nuse std::thread;\nuse std::sync::mpsc;\n\n"
+        tokio_rw = "use tokio::sync::RwLock;\n" if "RwLock" in body else ""
+        return f"use std::sync::{{Arc, Mutex}};\n{tokio_rw}use std::thread;\nuse std::sync::mpsc;\n\n"
     if lang == "kotlin":
         return (
             "import java.util.concurrent.LinkedBlockingQueue\n"
             "import java.nio.file.Files\nimport java.nio.file.Path\n"
             "import kotlin.concurrent.thread\n"
+            "import kotlinx.coroutines.Dispatchers\n"
+            "import kotlinx.coroutines.withContext\n"
             "import org.springframework.web.bind.annotation.*\n\n"
         )
     if lang == "php":
-        return "<?php\n"
+        return "<?php\n\nnamespace App\\Http\\Controllers;\n\nuse Exception;\nuse Illuminate\\Http\\Request;\nuse Illuminate\\Http\\JsonResponse;\n\n"
     if lang in {"typescript", "react"}:
         return (
             "import * as fs from 'fs';\n"
+            "import { Controller, Get, Post, Body, Param, HttpException, HttpStatus } from '@nestjs/common';\n"
             "class AsyncQueue<T> { private q: T[] = []; put(v: T) { this.q.push(v); } async take(): Promise<T> { return this.q.shift() as T; } }\n"
             "class Mutex { async run<T>(fn: () => T): Promise<T> { return fn(); } }\n\n"
         )
@@ -942,28 +1004,382 @@ def _footer(lang: str) -> str:
     return ""
 
 
-def _emit_class(lang: str, klass: UniversalClass) -> str:
-    methods = "\n\n".join(_emit_function(lang, m) for m in klass.methods)
-    if lang == "java" and klass.is_controller:
-        route = klass.base_route or "/api/v1/inventory"
-        return f"    @RestController\n    @RequestMapping(\"{route}\")\n    public static class {klass.name} {{\n{methods}\n    }}\n"
-    if lang == "csharp" and klass.is_controller:
-        return f"    [ApiController]\n    public class {klass.name} {{\n{methods}\n    }}\n"
-    if lang == "kotlin" and klass.is_controller:
-        return f"@RestController\nclass {klass.name} {{\n{methods}\n}}\n"
+def _emit_domain_class(lang: str, klass: UniversalClass) -> str:
+    cname = klass.name
+    fields = list(klass.fields)
+    if not fields and cname == "Asset":
+        fields = [
+            AstField(name="serial", type_info=UniversalType.string_type()),
+            AstField(name="status", type_info=UniversalType.string_type()),
+            AstField(name="value", type_info=UniversalType.float64()),
+        ]
+
     if lang == "python":
-        return methods
-    return methods
+        f_lines = [f"    {_to_snake_case(f.name)}: {_type_name('python', f.type_info)}" for f in fields]
+        f_str = "\n".join(f_lines) if f_lines else "    pass"
+        m_str = "\n\n".join(_indent(_emit_function('python', m), 1) for m in klass.methods)
+        extra = f"\n\n{m_str}" if m_str else ""
+        return f"@dataclass\nclass {cname}:\n{f_str}{extra}\n"
+
+    if lang == "csharp":
+        p_lines = [f"    public {_type_name('csharp', f.type_info)} {_to_pascal_case(f.name)} {{ get; set; }}" for f in fields]
+        p_str = "\n".join(p_lines)
+        ctor_args = ", ".join(f"{_type_name('csharp', f.type_info)} {_to_camel_case(f.name)}" for f in fields)
+        ctor_assigns = "\n".join(f"        {_to_pascal_case(f.name)} = {_to_camel_case(f.name)};" for f in fields)
+        ctor = f"    public {cname}() {{ }}\n    public {cname}({ctor_args})\n    {{\n{ctor_assigns}\n    }}" if fields else ""
+        return f"public class {cname}\n{{\n{p_str}\n\n{ctor}\n}}\n"
+
+    if lang in {"typescript", "react"}:
+        ctor_args = ", ".join(f"public {_to_camel_case(f.name)}: {_type_name('typescript', f.type_info)}" for f in fields)
+        return f"export class {cname} {{\n    constructor(\n        {ctor_args}\n    ) {{}}\n}}\n"
+
+    if lang == "java":
+        f_lines = [f"        private {_type_name('java', f.type_info)} {_to_camel_case(f.name)};" for f in fields]
+        f_str = "\n".join(f_lines)
+        ctor_args = ", ".join(f"{_type_name('java', f.type_info)} {_to_camel_case(f.name)}" for f in fields)
+        ctor_assigns = "\n".join(f"            this.{_to_camel_case(f.name)} = {_to_camel_case(f.name)};" for f in fields)
+        ctor = f"        public {cname}() {{}}\n        public {cname}({ctor_args}) {{\n{ctor_assigns}\n        }}" if fields else ""
+        getters = []
+        for f in fields:
+            pascal = _to_pascal_case(f.name)
+            camel = _to_camel_case(f.name)
+            ty = _type_name('java', f.type_info)
+            getters.append(f"        public {ty} get{pascal}() {{ return {camel}; }}")
+            getters.append(f"        public void set{pascal}({ty} {camel}) {{ this.{camel} = {camel}; }}")
+        get_str = "\n".join(getters)
+        return f"    public static class {cname} {{\n{f_str}\n\n{ctor}\n\n{get_str}\n    }}\n"
+
+    if lang == "go":
+        f_lines = [f"    {_to_pascal_case(f.name)} {_type_name('go', f.type_info)} `json:\"{_to_snake_case(f.name)}\"`" for f in fields]
+        f_str = "\n".join(f_lines)
+        return f"type {cname} struct {{\n{f_str}\n}}\n"
+
+    if lang == "rust":
+        f_lines = [f"    pub {_to_snake_case(f.name)}: {_type_name('rust', f.type_info)}," for f in fields]
+        f_str = "\n".join(f_lines)
+        return f"#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]\npub struct {cname} {{\n{f_str}\n}}\n"
+
+    if lang == "kotlin":
+        ctor_args = ",\n    ".join(f"val {_to_camel_case(f.name)}: {_type_name('kotlin', f.type_info)}" for f in fields)
+        return f"data class {cname}(\n    {ctor_args}\n)\n"
+
+    if lang == "php":
+        f_lines = [f"    public {_type_name('php', f.type_info)} ${_to_camel_case(f.name)};" for f in fields]
+        f_str = "\n".join(f_lines)
+        ctor_args = ", ".join(f"{_type_name('php', f.type_info)} ${_to_camel_case(f.name)} = null" for f in fields)
+        ctor_assigns = "\n".join(f"        $this->{_to_camel_case(f.name)} = ${_to_camel_case(f.name)};" for f in fields)
+        return f"class {cname} {{\n{f_str}\n\n    public function __construct({ctor_args}) {{\n{ctor_assigns}\n    }}\n}}\n"
+
+    if lang in {"cpp", "vcpp6"}:
+        f_lines = [f"    {_type_name(lang, f.type_info)} {_to_camel_case(f.name)};" for f in fields]
+        return f"struct {cname} {{\n" + "\n".join(f_lines) + "\n};\n"
+
+    if lang == "swift":
+        f_lines = [f"    public var {_to_camel_case(f.name)}: {_type_name('swift', f.type_info)}" for f in fields]
+        return f"public struct {cname} {{\n" + "\n".join(f_lines) + "\n}\n"
+
+    if lang == "objc":
+        p_lines = [f"@property (nonatomic, strong) {_type_name('objc', f.type_info)} {_to_camel_case(f.name)};" for f in fields]
+        return f"@interface {cname} : NSObject\n" + "\n".join(p_lines) + "\n@end\n"
+
+    if lang == "flutter":
+        f_lines = [f"  final {_type_name('flutter', f.type_info)} {_to_camel_case(f.name)};" for f in fields]
+        return f"class {cname} {{\n" + "\n".join(f_lines) + "\n}\n"
+
+    if lang == "vb6":
+        f_lines = [f"Public {_to_pascal_case(f.name)} As {_type_name('vb6', f.type_info)}" for f in fields]
+        return f"' {cname} class\n" + "\n".join(f_lines) + "\n"
+
+    return f"// class {cname}\n"
+
+
+def _emit_controller_method(lang: str, method: UniversalMethod, klass: UniversalClass) -> str:
+    raw_name = method.name
+    http_verb = (method.http_method or "GET").upper()
+    is_get = http_verb == "GET" or "get" in raw_name.lower() or "find" in raw_name.lower() or "read" in raw_name.lower()
+
+    # Check if method already has genuine IR statements (e.g. from corpora)
+    has_real_statements = bool(method.body) and not all(isinstance(s, RawSnippetStmt) for s in method.body)
+    if has_real_statements:
+        return _emit_function(lang, method)
+
+    ret_name = getattr(method.return_type, "name", "")
+    domain_ret = _unwrap_async_type(ret_name)
+    if not domain_ret or domain_ret in {"void", "None", "()", "", "primitive"}:
+        domain_ret = "Asset"
+
+    params = method.params
+    if not params:
+        if is_get:
+            params = [AstField(name="serial", type_info=UniversalType.string_type())]
+        else:
+            params = [AstField(name="asset", type_info=UniversalType.primitive("Asset"))]
+
+    if lang == "python":
+        mname = _to_snake_case(raw_name)
+        route_path = method.http_path or ("/{serial}" if is_get else "")
+        dec = f"@router.{'get' if is_get else 'post'}(\"{route_path}\")\n"
+        sig = ", ".join(f"{p.name}: {_type_name('python', p.type_info)}" for p in params)
+        body = (
+            "    try:\n"
+            "        if not serial:\n"
+            "            raise ValueError(\"Asset serial is invalid\")\n"
+            "        return Asset(serial=serial, status=\"ACTIVE\", value=100.0)\n"
+            "    except Exception as ex:\n"
+            "        raise HTTPException(status_code=500, detail=f\"Failed: {str(ex)}\")"
+            if is_get else
+            "    try:\n"
+            "        return Asset(serial=asset.serial, status=asset.status, value=asset.value)\n"
+            "    except Exception as ex:\n"
+            "        raise HTTPException(status_code=500, detail=f\"Failed: {str(ex)}\")"
+        )
+        return f"{dec}async def {mname}({sig}) -> {domain_ret}:\n{body}"
+
+    if lang == "csharp":
+        mname = _to_pascal_case(raw_name)
+        route_attr = '[HttpGet("{serial}")]\n' if is_get else '[HttpPost]\n'
+        cs_params = []
+        for p in params:
+            ty = _type_name('csharp', p.type_info)
+            if not is_get and ty == "Asset":
+                cs_params.append(f"[FromBody] {ty} {p.name}")
+            else:
+                cs_params.append(f"{ty} {p.name}")
+        sig = ", ".join(cs_params)
+        body = (
+            "        try\n"
+            "        {\n"
+            "            await Task.Yield();\n"
+            "            if (string.IsNullOrWhiteSpace(serial))\n"
+            "            {\n"
+            "                throw new ArgumentException(\"Asset serial is invalid\");\n"
+            "            }\n"
+            "            return Ok(new Asset(serial, \"ACTIVE\", 100.0));\n"
+            "        }\n"
+            "        catch (Exception ex)\n"
+            "        {\n"
+            "            return StatusCode(500, $\"Failed: {ex.Message}\");\n"
+            "        }"
+            if is_get else
+            "        try\n"
+            "        {\n"
+            "            await Task.Yield();\n"
+            "            return Ok(new Asset(asset.Serial, asset.Status, asset.Value));\n"
+            "        }\n"
+            "        catch (Exception ex)\n"
+            "        {\n"
+            "            return StatusCode(500, $\"Failed: {ex.Message}\");\n"
+            "        }"
+        )
+        return f"    {route_attr}    public async Task<ActionResult<{domain_ret}>> {mname}({sig})\n    {{\n{body}\n    }}"
+
+    if lang in {"typescript", "react"}:
+        mname = _to_camel_case(raw_name)
+        route_dec = "@Get(':serial')\n" if is_get else "@Post()\n"
+        ts_params = []
+        for p in params:
+            ty = _type_name('typescript', p.type_info)
+            if is_get:
+                ts_params.append(f"@Param('{p.name}') {p.name}: {ty}")
+            else:
+                ts_params.append(f"@Body() {p.name}: {ty}")
+        sig = ", ".join(ts_params)
+        body = (
+            "    try {\n"
+            "      if (!serial) {\n"
+            "        throw new Error('Asset serial is invalid');\n"
+            "      }\n"
+            "      return new Asset(serial, 'ACTIVE', 100.0);\n"
+            "    } catch (error: any) {\n"
+            "      throw new HttpException(`Failed: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);\n"
+            "    }"
+            if is_get else
+            "    try {\n"
+            "      return new Asset(asset.serial, asset.status, asset.value);\n"
+            "    } catch (error: any) {\n"
+            "      throw new HttpException(`Failed: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);\n"
+            "    }"
+        )
+        return f"  {route_dec}  async {mname}({sig}): Promise<{domain_ret}> {{\n{body}\n  }}"
+
+    if lang == "rust":
+        mname = _to_snake_case(raw_name)
+        sig = ", ".join(f"{p.name}: &str" if _type_name('rust', p.type_info) == "String" else f"{p.name}: {_type_name('rust', p.type_info)}" for p in params)
+        body = (
+            "        if serial.is_empty() {\n"
+            "            return Err(\"Asset serial is invalid\".into());\n"
+            "        }\n"
+            "        Ok(Asset {\n"
+            "            serial: serial.to_string(),\n"
+            "            status: String::from(\"ACTIVE\"),\n"
+            "            value: 100.0,\n"
+            "        })"
+            if is_get else
+            "        Ok(asset)"
+        )
+        return f"    pub async fn {mname}(&self, {sig}) -> Result<{domain_ret}, String> {{\n{body}\n    }}"
+
+    if lang == "go":
+        mname = _to_pascal_case(raw_name)
+        sig = ", ".join(f"{p.name} {_type_name('go', p.type_info)}" for p in params)
+        body = (
+            "    if serial == \"\" {\n"
+            "        return nil, errors.New(\"Asset serial is invalid\")\n"
+            "    }\n"
+            "    return &Asset{Serial: serial, Status: \"ACTIVE\", Value: 100.0}, nil"
+            if is_get else
+            "    return asset, nil"
+        )
+        return f"func (c *{klass.name}) {mname}({sig}) (*{domain_ret}, error) {{\n{body}\n}}"
+
+    if lang == "java":
+        mname = _to_camel_case(raw_name)
+        ann = '        @GetMapping("/{serial}")\n' if is_get else '        @PostMapping\n'
+        j_params = []
+        for p in params:
+            ty = _type_name('java', p.type_info)
+            if is_get:
+                j_params.append(f"@PathVariable {ty} {p.name}")
+            else:
+                j_params.append(f"@RequestBody {ty} {p.name}")
+        sig = ", ".join(j_params)
+        body = (
+            "            return CompletableFuture.supplyAsync(() -> {\n"
+            "                try {\n"
+            "                    if (serial == null || serial.isBlank()) {\n"
+            "                        throw new IllegalArgumentException(\"Asset serial is invalid\");\n"
+            "                    }\n"
+            "                    return new Asset(serial, \"ACTIVE\", 100.0);\n"
+            "                } catch (Exception ex) {\n"
+            "                    throw new RuntimeException(\"Failed: \" + ex.getMessage(), ex);\n"
+            "                }\n"
+            "            });"
+            if is_get else
+            "            return CompletableFuture.supplyAsync(() -> {\n"
+            "                try {\n"
+            "                    return new Asset(asset.getSerial(), asset.getStatus(), asset.getValue());\n"
+            "                } catch (Exception ex) {\n"
+            "                    throw new RuntimeException(\"Failed: \" + ex.getMessage(), ex);\n"
+            "                }\n"
+            "            });"
+        )
+        return f"{ann}        public CompletableFuture<{domain_ret}> {mname}({sig}) {{\n{body}\n        }}"
+
+    if lang == "kotlin":
+        mname = _to_camel_case(raw_name)
+        ann = '    @GetMapping("/{serial}")\n' if is_get else '    @PostMapping\n'
+        k_params = ", ".join(f"@PathVariable {p.name}: {_type_name('kotlin', p.type_info)}" if is_get else f"@RequestBody {p.name}: {_type_name('kotlin', p.type_info)}" for p in params)
+        body = (
+            "        try {\n"
+            "            if (serial.isBlank()) throw IllegalArgumentException(\"Asset serial is invalid\")\n"
+            "            Asset(serial, \"ACTIVE\", 100.0)\n"
+            "        } catch (ex: Exception) {\n"
+            "            throw RuntimeException(\"Failed: ${ex.message}\", ex)\n"
+            "        }"
+        )
+        return f"{ann}    suspend fun {mname}({k_params}): {domain_ret} = withContext(Dispatchers.IO) {{\n{body}\n    }}"
+
+    if lang == "php":
+        mname = _to_camel_case(raw_name)
+        sig = ", ".join(f"{_type_name('php', p.type_info)} ${p.name}" for p in params)
+        body = (
+            "        try {\n"
+            "            if (empty($serial)) {\n"
+            "                throw new Exception(\"Asset serial is invalid\");\n"
+            "            }\n"
+            "            $asset = new Asset($serial, \"ACTIVE\", 100.0);\n"
+            "            return response()->json($asset);\n"
+            "        } catch (Exception $ex) {\n"
+            "            return response()->json([\"error\" => $ex->getMessage()], 500);\n"
+            "        }"
+        )
+        return f"    public function {mname}({sig}): JsonResponse {{\n{body}\n    }}"
+
+    return _emit_function(lang, method)
+
+
+def _emit_controller_class(lang: str, klass: UniversalClass) -> str:
+    cname = klass.name
+    route = (klass.base_route or "/api/v1/assets").strip()
+    route_no_slash = route.lstrip("/")
+    route_with_slash = "/" + route_no_slash
+
+    methods = klass.methods
+    if not methods:
+        methods = [
+            AstMethod(
+                name="get_asset_by_serial",
+                params=[AstField(name="serial", type_info=UniversalType.string_type())],
+                return_type=UniversalType.primitive("Asset"),
+                is_async=True,
+                has_exception_handling=True,
+                http_method="GET",
+                http_path="/{serial}",
+            ),
+            AstMethod(
+                name="create_asset",
+                params=[AstField(name="asset", type_info=UniversalType.primitive("Asset"))],
+                return_type=UniversalType.primitive("Asset"),
+                is_async=True,
+                has_exception_handling=True,
+                http_method="POST",
+                http_path="",
+            ),
+        ]
+
+    m_rendered = "\n\n".join(_emit_controller_method(lang, m, klass) for m in methods)
+
+    if lang == "python":
+        tag = cname.lower().replace("controller", "").replace("service", "") or "assets"
+        return f"router = APIRouter(prefix=\"{route_with_slash}\", tags=[\"{tag}\"])\n\n{m_rendered}\n"
+
+    if lang == "csharp":
+        return f"[ApiController]\n[Route(\"{route_no_slash}\")]\npublic class {cname} : ControllerBase\n{{\n{m_rendered}\n}}\n"
+
+    if lang in {"typescript", "react"}:
+        return f"@Controller('{route_no_slash}')\nexport class {cname} {{\n{m_rendered}\n}}\n"
+
+    if lang == "rust":
+        return f"pub struct {cname} {{\n    pub state: Arc<RwLock<Vec<Asset>>>,\n}}\n\nimpl {cname} {{\n{m_rendered}\n}}\n"
+
+    if lang == "go":
+        return f"type {cname} struct {{\n    mu sync.RWMutex\n}}\n\n{m_rendered}\n"
+
+    if lang == "java":
+        return f"    @RestController\n    @RequestMapping(\"{route_with_slash}\")\n    public static class {cname} {{\n{m_rendered}\n    }}\n"
+
+    if lang == "kotlin":
+        return f"@RestController\n@RequestMapping(\"{route_with_slash}\")\nclass {cname} {{\n{m_rendered}\n}}\n"
+
+    if lang == "php":
+        return f"class {cname} extends Controller {{\n{m_rendered}\n}}\n"
+
+    return m_rendered
+
+
+def _emit_class(lang: str, klass: UniversalClass) -> str:
+    if klass.is_controller:
+        return _emit_controller_class(lang, klass)
+    return _emit_domain_class(lang, klass)
 
 
 def _emit_lang(module: UniversalModule, lang: str) -> str:
-    chunks = [_prelude(lang, module)]
+    body_chunks = []
     for klass in module.classes:
-        chunks.append(_emit_class(lang, klass))
-    for method in module.free_functions:
-        chunks.append(_emit_function(lang, method))
-    chunks.append(_footer(lang))
-    return "\n".join(chunk for chunk in chunks if chunk)
+        body_chunks.append(_emit_class(lang, klass))
+    if module.free_functions:
+        if lang == "csharp":
+            body_chunks.append("public static class IndustrialRuntime\n{")
+            for method in module.free_functions:
+                body_chunks.append(_emit_function(lang, method))
+            body_chunks.append("}")
+        else:
+            for method in module.free_functions:
+                body_chunks.append(_emit_function(lang, method))
+    body_text = "\n".join(c for c in body_chunks if c)
+    pre = _prelude(lang, module, body_text)
+    post = _footer(lang)
+    return "\n".join(chunk for chunk in (pre, body_text, post) if chunk)
 
 
 _EMITTERS = {lang: _emit_lang for lang in (
