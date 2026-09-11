@@ -100,6 +100,53 @@ export class CrossPlatformCameraEngine {
     };
   }
 
+  /**
+   * Capture photo frame alias for unified hardware contracts
+   */
+  public async capturePhotoFrame(quality: 'high' | 'normal' | 'low' = 'high'): Promise<CameraFrameSnapshot> {
+    return this.takePhoto(quality);
+  }
+
+  /**
+   * Start real-time camera stream listener (onCameraFrame / MediaStream)
+   */
+  public async startCameraStream(listener?: (frame: CameraFrameSnapshot) => void): Promise<void> {
+    this.isStreaming = true;
+    if (this.isMockMode && listener) {
+      listener({
+        width: 1280,
+        height: 720,
+        data: new Uint8ClampedArray(1280 * 720 * 4),
+      });
+      return;
+    }
+
+    if (typeof wx !== 'undefined' && wx.createCameraContext) {
+      const cameraCtx = wx.createCameraContext();
+      if ((cameraCtx as any).onCameraFrame) {
+        const listenerHandle = (cameraCtx as any).onCameraFrame((frame: any) => {
+          if (listener) {
+            listener({
+              width: frame.width,
+              height: frame.height,
+              data: new Uint8ClampedArray(frame.data),
+            });
+          }
+        });
+        if (listenerHandle && listenerHandle.start) {
+          listenerHandle.start();
+        }
+      }
+    }
+  }
+
+  /**
+   * Stop real-time camera stream listener
+   */
+  public async stopCameraStream(): Promise<void> {
+    this.isStreaming = false;
+  }
+
   private mapWxScanType(wxType: string): BarcodeScanResult['format'] {
     switch (wxType) {
       case 'QR_CODE':
@@ -116,3 +163,9 @@ export class CrossPlatformCameraEngine {
     }
   }
 }
+
+/**
+ * Backward-compatible alias for CrossPlatformCameraEngine
+ */
+export { CrossPlatformCameraEngine as CameraEngine };
+

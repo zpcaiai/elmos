@@ -250,6 +250,7 @@ _COMMON_PATTERNS: dict[str, list[tuple[str, re.Pattern[str], str]]] = {
 
 PROFILE_TYPED_PURE_FUNCTION: Final[str] = "typed-pure-function-v1"
 PROFILE_ENTERPRISE_PRODUCTION: Final[str] = "enterprise-production-v1"
+PROFILE_ENTERPRISE_INDUSTRIAL: Final[str] = "enterprise-industrial-v1"
 
 
 class SemanticHazardGuard:
@@ -300,7 +301,7 @@ class SemanticHazardGuard:
             return
 
         # Enterprise profile: All 4 hazard domains are fully supported via the Enterprise Transpiler
-        if profile == PROFILE_ENTERPRISE_PRODUCTION:
+        if profile in {PROFILE_ENTERPRISE_PRODUCTION, PROFILE_ENTERPRISE_INDUSTRIAL}:
             unknown_hazards = [h for h in hazards if h.category not in HAZARD_CATEGORIES]
             if unknown_hazards:
                 primary = unknown_hazards[0]

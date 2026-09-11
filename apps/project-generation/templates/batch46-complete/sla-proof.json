@@ -1,0 +1,10 @@
+{
+  "observation_days": 0,
+  "slo_passed": false,
+  "support_passed": false,
+  "incident_drill_passed": false,
+  "restore_passed": false,
+  "upgrade_passed": false,
+  "customer_value_realized": false,
+  "evidence": []
+}

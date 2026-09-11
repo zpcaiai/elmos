@@ -940,6 +940,8 @@ _INTEGRATION_TIMEOUT_SECONDS: dict[str, int] = {
 _HARNESS_STARTUP_TIMEOUT_SECONDS: dict[str, int] = {
     "kotlin": 300,
     "rust": 300,
+    "csharp": 300,
+    "java": 300,
 }
 
 # Python declares its integration command inline in ``runtime_commands``

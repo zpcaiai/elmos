@@ -1,38 +1,84 @@
 {
   "schemaVersion": "1.0",
   "businessLine": "3. 数据库与 SQL 方言迁移 (含 ChinaDB)",
-  "evaluatedAt": "2026-09-11T01:13:58.246723+00:00",
-  "durationSeconds": 0.222,
+  "evaluatedAt": "2026-09-11T02:58:57.457258+00:00",
+  "durationSeconds": 2.486,
   "closureStatus": "100%_INDUSTRIAL_CLOSED",
   "overallVerdict": "PASSED",
   "metrics": {
     "proceduralAstLoweringCoveragePercent": 100.0,
     "blockingSyntaxEliminatedPercent": 100.0,
+    "benchmarksCovered": 52,
+    "benchmarksRequired": 52,
+    "loweringOperationsExecuted": 208,
     "domesticTargetsCovered": 13,
     "domesticTargetsRequired": 13,
     "ddlSuccessRate": 1.0,
     "cdcReconciliationSuccessRate": 1.0,
     "stressTestSloP95MetRate": 1.0,
-    "financialConservationInvariantViolations": 0
+    "financialConservationInvariantViolations": 0,
+    "doubleEntryZeroSumViolations": 0,
+    "totalTransactionsExecuted": 8320
   },
   "proceduralAstLowering": {
     "evaluationKind": "PROCEDURAL_AST_LOWERING",
-    "sampleCount": 3,
+    "sampleCount": 52,
+    "domainsCovered": [
+      "Core Banking",
+      "Government & ERP",
+      "Insurance IFRS 17",
+      "Supply Chain & WMS",
+      "Telecom Billing"
+    ],
     "blockingSyntaxAddressed": [
       "PRAGMA AUTONOMOUS_TRANSACTION",
+      "PACKAGE SPECIFICATION & BODY STATE",
       "EXECUTE IMMEDIATE (Dynamic SQL)",
-      "EXCEPTION WHEN ... THEN",
-      "CURSOR & FOR ... IN LOOPS",
-      "TRIGGER PSEUDO-RECORDS (:NEW, :OLD)",
-      "SAVEPOINT & ROLLBACK TRAN"
+      "DYNAMIC CURSORS (%NOTFOUND, %ROWCOUNT, FOR ... IN)",
+      "TRIGGER PSEUDO-RECORDS (:NEW, :OLD) & WHEN CONDITIONS",
+      "EXCEPTION HIERARCHY & USER-DEFINED RAISE",
+      "SAVEPOINT & PARTIAL ROLLBACK"
     ],
     "blockingSyntaxEliminatedPercent": 100.0,
+    "totalLoweringOperations": 208,
     "cases": [
       {
-        "name": "oracle_plsql_finance_transfer",
+        "id": "FIN-01-DOUBLE-ENTRY",
+        "domain": "Core Banking",
+        "name": "Double-entry journal transfer with ledger balance check",
+        "kind": "PROCEDURE",
         "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "TRANSACTION_ACID",
+          "SAVEPOINT",
+          "EXCEPTION_HIERARCHY",
+          "FOR_UPDATE"
+        ],
         "astNodeType": "RoutineDefinition",
         "autonomousTransactionPreserved": false,
+        "statementCount": 10,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "FIN-02-AUTONOMOUS-AUDIT",
+        "domain": "Core Banking",
+        "name": "Autonomous transaction compliance audit logger",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "PRAGMA_AUTONOMOUS_TRANSACTION",
+          "ISOLATED_COMMIT"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": true,
         "statementCount": 2,
         "targetsEmitted": [
           "postgres",
@@ -43,8 +89,40 @@
         "status": "PASSED"
       },
       {
-        "name": "tsql_batch_rebate",
-        "sourceDialect": "tsql",
+        "id": "FIN-03-LOAN-AMORTIZATION",
+        "domain": "Core Banking",
+        "name": "Loan repayment schedule calculator with monthly compound interest",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "FOR_LOOP",
+          "NUMERIC_DECIMAL",
+          "DYNAMIC_INSERT"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 5,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "FIN-04-DAILY-INTEREST-ACCRUAL",
+        "domain": "Core Banking",
+        "name": "EOD deposit daily interest accrual with cursor loop",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "CURSOR_FOR_LOOP",
+          "ACTUAL_365",
+          "BATCH_UPDATE"
+        ],
         "astNodeType": "RoutineDefinition",
         "autonomousTransactionPreserved": false,
         "statementCount": 3,
@@ -57,11 +135,1101 @@
         "status": "PASSED"
       },
       {
-        "name": "plpgsql_audit_trigger",
-        "sourceDialect": "postgres",
+        "id": "FIN-05-FX-REVALUATION",
+        "domain": "Core Banking",
+        "name": "Multi-currency Nostro account foreign exchange revaluation",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "EXCEPTION_OTHERS",
+          "MULTI_JOIN",
+          "PRECISION_DECIMAL"
+        ],
         "astNodeType": "RoutineDefinition",
         "autonomousTransactionPreserved": false,
+        "statementCount": 4,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "FIN-06-AML-RISK-EVALUATOR",
+        "domain": "Core Banking",
+        "name": "Anti-money laundering velocity monitoring rule engine",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "DYNAMIC_SQL",
+          "EXECUTE_IMMEDIATE",
+          "AGGREGATION"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 4,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "FIN-07-STANDING-ORDER-BATCH",
+        "domain": "Core Banking",
+        "name": "Batch execution of recurring scheduled standing orders",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "CURSOR_LOOP",
+          "NESTED_PROC_CALL",
+          "IDEMPOTENT"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 4,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "FIN-08-ACCOUNT-HOLD-CONTROL",
+        "domain": "Core Banking",
+        "name": "Judicial freeze and compliance hold enforcement",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "TRIGGER_SAFETY",
+          "ATOMIC_FREEZE",
+          "RECORD_LOCK"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 5,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "FIN-09-TRIAL-BALANCE-EOD",
+        "domain": "Core Banking",
+        "name": "End-of-day general ledger trial balance verification",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "TRIAL_BALANCE",
+          "DEBIT_CREDIT_EQUALITY",
+          "ZERO_DIFFERENCE"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 4,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "FIN-10-MERCHANT-BATCH-SETTLE",
+        "domain": "Core Banking",
+        "name": "Merchant POS transaction batch clearing and fee deduction",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "FEE_SCHEDULE",
+          "MULTI_TIER",
+          "SETTLEMENT"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 4,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "FIN-11-AUDIT-TRIGGER-ROW",
+        "domain": "Core Banking",
+        "name": "Row-level balance change tamper-proof audit trigger",
+        "kind": "TRIGGER",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "TRIGGER_PSEUDO_RECORDS",
+          "NEW_OLD_COMPARE",
+          "FOR_EACH_ROW"
+        ],
+        "astNodeType": "TriggerDefinition",
+        "autonomousTransactionPreserved": false,
         "statementCount": 2,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "FIN-12-PACKAGE-CBS-OPS",
+        "domain": "Core Banking",
+        "name": "Core Banking Operations Package (Spec and Body)",
+        "kind": "PACKAGE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "PACKAGE_SPEC_BODY",
+          "SESSION_STATE",
+          "INITIALIZATION_BLOCK"
+        ],
+        "astNodeType": "PackageDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "TEL-01-VOICE-CDR-RATING",
+        "domain": "Telecom Billing",
+        "name": "Voice Call Detail Record (CDR) duration and distance rating",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "DURATION_BUCKETING",
+          "PEAK_OFFPEAK",
+          "TARIFF_EVAL"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 5,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "TEL-02-DATA-STEPDOWN-RATING",
+        "domain": "Telecom Billing",
+        "name": "Data roaming stepped pricing with tier boundary conditions",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "TIERED_STEPDOWN",
+          "STEP_LOGIC",
+          "MATH_ROUNDING"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "TEL-03-OCS-CREDIT-RESERVATION",
+        "domain": "Telecom Billing",
+        "name": "Online Charging System (OCS) diameter credit reservation",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "OCS_RESERVATION",
+          "LOCK_BALANCE",
+          "EXPIRY_TS"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 5,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "TEL-04-MONTHLY-BILL-GENERATOR",
+        "domain": "Telecom Billing",
+        "name": "Subscriber monthly bill aggregation with VAT calculation",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "INVOICE_AGGREGATION",
+          "TAX_BREAKDOWN",
+          "DATE_TRUNC"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 5,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "TEL-05-PREPAID-VOUCHER-RECHARGE",
+        "domain": "Telecom Billing",
+        "name": "Prepaid scratch-card voucher redemption with hash verification",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "VOUCHER_REDEMPTION",
+          "HASH_CHECK",
+          "STATUS_TRANSITION"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 6,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "TEL-06-BALANCE-THRESHOLD-TRIGGER",
+        "domain": "Telecom Billing",
+        "name": "Subscriber low-balance real-time alert trigger",
+        "kind": "TRIGGER",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "AFTER_UPDATE_TRIGGER",
+          "THRESHOLD_EVENT",
+          "NOTIFICATION_QUEUE"
+        ],
+        "astNodeType": "TriggerDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 1,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "TEL-07-FAMILY-PLAN-POOLING",
+        "domain": "Telecom Billing",
+        "name": "Family shared data pool quota reallocation procedure",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "HIERARCHICAL_ACCOUNT",
+          "QUOTA_DEDUCTION",
+          "POOLING"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "TEL-08-SERVICE-SUSPEND-CASCADE",
+        "domain": "Telecom Billing",
+        "name": "Delinquent account automated service suspension cascade",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "CASCADE_UPDATE",
+          "SERVICE_PROVISIONING",
+          "AUDIT_TRACKING"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "TEL-09-ROAMING-SETTLEMENT",
+        "domain": "Telecom Billing",
+        "name": "Inter-carrier wholesale roaming TAP3 file settlement calculation",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "SDR_CURRENCY",
+          "WHOLESALE_DISCOUNT",
+          "TAP3_RECON"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "TEL-10-PACKAGE-OCS-RATING",
+        "domain": "Telecom Billing",
+        "name": "Online Charging & Tariff Rating Engine Package",
+        "kind": "PACKAGE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "PACKAGE_SPEC_BODY",
+          "STATEFUL_CACHE",
+          "TARIFF_MATH"
+        ],
+        "astNodeType": "PackageDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 2,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "INS-01-IFRS17-DCF-VALUATION",
+        "domain": "Insurance IFRS 17",
+        "name": "Discounted Cash Flow (DCF) fulfillment cash flow calculation",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "DISCOUNT_CURVE",
+          "ACTUARIAL_SUM",
+          "TENOR_LOOP"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 4,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "INS-02-CSM-AMORTIZATION",
+        "domain": "Insurance IFRS 17",
+        "name": "Contractual Service Margin (CSM) coverage units amortization",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "COVERAGE_UNITS",
+          "CSM_RELEASE",
+          "LOSS_COMPONENT"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 4,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "INS-03-CHAIN-LADDER-IBNR",
+        "domain": "Insurance IFRS 17",
+        "name": "Actuarial Chain Ladder Incurred But Not Reported (IBNR) reserve",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "TRIANGLE_DEVELOPMENT",
+          "FACTOR_LINK",
+          "RESERVE_ALLOC"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 5,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "INS-04-CLAIM-ADJUDICATION",
+        "domain": "Insurance IFRS 17",
+        "name": "Automated health/auto claim deductible and copay adjudication",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "DEDUCTIBLE_MATH",
+          "LIMIT_CHECK",
+          "POLICY_STATUS"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 9,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "INS-05-REINSURANCE-CESSION",
+        "domain": "Insurance IFRS 17",
+        "name": "Quota share & excess of loss reinsurance cession allocation",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "QUOTA_SHARE",
+          "XOL_LIMIT",
+          "CESSION_CALC"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 4,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "INS-06-SURRENDER-VALUE-CALC",
+        "domain": "Insurance IFRS 17",
+        "name": "Life policy cash surrender value with mortality penalty table",
+        "kind": "FUNCTION",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "ACTUARIAL_FUNCTION",
+          "CASH_VALUE",
+          "PENALTY_CURVE"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 4,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "INS-07-UNDERWRITING-SCORECARD",
+        "domain": "Insurance IFRS 17",
+        "name": "Underwriting multi-factor risk scorecard matrix",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "SCORECARD_MATRIX",
+          "BMI_EVAL",
+          "RISK_LOAD"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 4,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "INS-08-POLICY-LAPSE-TRIGGER",
+        "domain": "Insurance IFRS 17",
+        "name": "Unpaid premium grace period expiration auto-lapse trigger",
+        "kind": "TRIGGER",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "AUTO_LAPSE",
+          "GRACE_PERIOD",
+          "BEFORE_UPDATE"
+        ],
+        "astNodeType": "TriggerDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 1,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "INS-09-ANNUITY-DISBURSEMENT",
+        "domain": "Insurance IFRS 17",
+        "name": "Pension retirement annuity payment batch distribution",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "BATCH_PAYOUT",
+          "LIFETIME_ANNUITY",
+          "ESCROW_LEDGER"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "INS-10-PACKAGE-ACTUARIAL-ENGINE",
+        "domain": "Insurance IFRS 17",
+        "name": "IFRS 17 Actuarial Valuation and Reserve Package",
+        "kind": "PACKAGE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "PACKAGE_SPEC_BODY",
+          "YIELD_CURVE",
+          "MORTALITY_TABLE"
+        ],
+        "astNodeType": "PackageDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 2,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "SCM-01-FIFO-BIN-ALLOCATION",
+        "domain": "Supply Chain & WMS",
+        "name": "Warehouse FIFO / FEFO inventory allocation cursor algorithm",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "FIFO_CURSOR",
+          "BATCH_EXPIRY",
+          "MULTI_BIN_DEDUCT"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "SCM-02-AUTO-REORDER-TRIGGER",
+        "domain": "Supply Chain & WMS",
+        "name": "Automated Purchase Requisition trigger on safety stock breach",
+        "kind": "TRIGGER",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "SAFETY_STOCK",
+          "REORDER_POINT",
+          "PO_GENERATION"
+        ],
+        "astNodeType": "TriggerDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 1,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "SCM-03-CROSS-DOCKING-ROUTE",
+        "domain": "Supply Chain & WMS",
+        "name": "Inbound ASN cross-docking direct route dispatch",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "CROSS_DOCKING",
+          "ASN_MATCHING",
+          "BAY_ASSIGNMENT"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "SCM-04-FREIGHT-RATE-CALC",
+        "domain": "Supply Chain & WMS",
+        "name": "Carrier freight cost calculation by cubic volume and dimensional weight",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "DIMENSIONAL_WEIGHT",
+          "DISTANCE_RATE",
+          "FUEL_SURCHARGE"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "SCM-05-COLD-CHAIN-TRIGGER",
+        "domain": "Supply Chain & WMS",
+        "name": "Cold chain sensor temperature excursion quarantine trigger",
+        "kind": "TRIGGER",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "IOT_TELEMETRY",
+          "BATCH_QUARANTINE",
+          "CRITICAL_ALERT"
+        ],
+        "astNodeType": "TriggerDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 1,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "SCM-06-RMA-RESTOCK-PROC",
+        "domain": "Supply Chain & WMS",
+        "name": "Return Merchandise Authorization (RMA) inspection and restock",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "RESTOCK_INVENTORY",
+          "REFUND_TRIGGER",
+          "CONDITION_EVAL"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "SCM-07-PALLET-PACKING-SOLVER",
+        "domain": "Supply Chain & WMS",
+        "name": "Outbound carton pallet packing weight and volume constraint solver",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "KNAPSACK_GREEDY",
+          "PALLET_LIMITS",
+          "VOLUME_CALC"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "SCM-08-SUPPLIER-SCORECARD",
+        "domain": "Supply Chain & WMS",
+        "name": "Vendor On-Time In-Full (OTIF) monthly performance rating",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "OTIF_PERCENTAGE",
+          "KPI_AGGREGATION",
+          "GRADE_CLASSIFY"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "SCM-09-CYCLE-COUNT-VARIANCE",
+        "domain": "Supply Chain & WMS",
+        "name": "Physical inventory cycle count discrepancy reconciliation",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "CYCLE_COUNT",
+          "VARIANCE_THRESHOLD",
+          "GL_ADJUSTMENT"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 4,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "SCM-10-PACKAGE-WMS-ROUTING",
+        "domain": "Supply Chain & WMS",
+        "name": "Warehouse Logistics & Wave Dispatch Package",
+        "kind": "PACKAGE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "PACKAGE_SPEC_BODY",
+          "WAREHOUSE_ZONES",
+          "BATCH_DISPATCH"
+        ],
+        "astNodeType": "PackageDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 2,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "ERP-01-PROGRESSIVE-IIT",
+        "domain": "Government & ERP",
+        "name": "Progressive Individual Income Tax (IIT) with 7-bracket deduction",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "7_BRACKET_TAX",
+          "QUICK_DEDUCTION",
+          "CUMULATIVE_WITHHOLD"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 4,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "ERP-02-VAT-OFFSET-RECON",
+        "domain": "Government & ERP",
+        "name": "Corporate Value Added Tax (VAT) Input/Output credit offset",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "INPUT_OUTPUT_VAT",
+          "TAX_CREDIT",
+          "RECONCILIATION"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 5,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "ERP-03-FIXED-ASSET-DEPRECIATION",
+        "domain": "Government & ERP",
+        "name": "Fixed asset double declining balance depreciation monthly batch",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "DEPRECIATION_MATH",
+          "SALVAGE_VALUE",
+          "ASSET_BOOK"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "ERP-04-LEAVE-ACCRUAL-CALC",
+        "domain": "Government & ERP",
+        "name": "Employee tenure statutory annual leave accrual calculator",
+        "kind": "FUNCTION",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "TENURE_TIER",
+          "CARRY_FORWARD",
+          "STATUTORY_RULES"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 1,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "ERP-05-INTERCOMPANY-COST-ALLOCATION",
+        "domain": "Government & ERP",
+        "name": "Multi-entity corporate shared service cost allocation",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "MULTI_ENTITY",
+          "HEADCOUNT_RATIO",
+          "INTERCOMPANY_GL"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "ERP-06-PURCHASE-APPROVAL-HIERARCHY",
+        "domain": "Government & ERP",
+        "name": "Purchase requisition financial delegation limit approval routing",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "DELEGATION_OF_AUTHORITY",
+          "MULTI_TIER_SIGN",
+          "STATUS_FLOW"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "ERP-07-BUDGET-OVERRUN-TRIGGER",
+        "domain": "Government & ERP",
+        "name": "Department GL expense budget overrun blocker trigger",
+        "kind": "TRIGGER",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "BUDGET_GUARD",
+          "BEFORE_INSERT",
+          "ERROR_APPLICATION"
+        ],
+        "astNodeType": "TriggerDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 2,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "ERP-08-DISBURSE-PAYROLL-BATCH",
+        "domain": "Government & ERP",
+        "name": "Company-wide payroll direct deposit settlement batch",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "BULK_DISBURSEMENT",
+          "BANK_FILE_GEN",
+          "IDEMPOTENT_RUN"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 4,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "ERP-09-CUSTOMS-DUTY-CALC",
+        "domain": "Government & ERP",
+        "name": "Cross-border import customs duty and consumption tax calculator",
+        "kind": "PROCEDURE",
+        "sourceDialect": "oracle",
+        "complexity": "HIGH",
+        "features": [
+          "TARIFF_LOOKUP",
+          "DUTY_COMPOUND",
+          "CUSTOMS_CIF"
+        ],
+        "astNodeType": "RoutineDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
+        "targetsEmitted": [
+          "postgres",
+          "oracle",
+          "tsql",
+          "mysql"
+        ],
+        "status": "PASSED"
+      },
+      {
+        "id": "ERP-10-PACKAGE-FINANCIAL-CLOSING",
+        "domain": "Government & ERP",
+        "name": "Fiscal Month-End Period Closing and General Ledger Lock Package",
+        "kind": "PACKAGE",
+        "sourceDialect": "oracle",
+        "complexity": "CRITICAL",
+        "features": [
+          "PACKAGE_SPEC_BODY",
+          "PERIOD_LOCK",
+          "CLOSING_ORCHESTRATION"
+        ],
+        "astNodeType": "PackageDefinition",
+        "autonomousTransactionPreserved": false,
+        "statementCount": 3,
         "targetsEmitted": [
           "postgres",
           "oracle",
@@ -78,8 +1246,11 @@
     "allTargetsReady": true,
     "allDdlPassed": true,
     "allCdcIdentical": true,
+    "allReferentialIntegrityPassed": true,
     "allStressSloMet": true,
     "allBalanceConserved": true,
+    "allDoubleEntryBalanced": true,
+    "totalTransactionsExecuted": 8320,
     "targets": [
       {
         "targetId": "dm8",
@@ -87,42 +1258,69 @@
         "port": 5236,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.13,
+        "latencyMs": 0.12,
         "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
           "tablesFound": [
             "accounts",
+            "audit_log",
+            "cbs_general_ledger",
             "tx_history"
           ],
           "accountPrimaryKeyVerified": true
         },
         "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
           "mismatchedCount": 0,
           "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
         },
         "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.016,
-          "tps": 9859.4,
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.234,
+          "tps": 2739.3,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.07,
-            "p95": 0.09,
-            "p99": 0.13
+            "p50": 0.11,
+            "p90": 1.85,
+            "p95": 5.25,
+            "p99": 15.12
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.0
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.00000000006,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
         }
       },
       {
@@ -131,42 +1329,69 @@
         "port": 54321,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.01,
+        "latencyMs": 0.04,
         "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
           "tablesFound": [
             "accounts",
+            "audit_log",
+            "cbs_general_ledger",
             "tx_history"
           ],
           "accountPrimaryKeyVerified": true
         },
         "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
           "mismatchedCount": 0,
           "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
         },
         "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.017,
-          "tps": 9549.3,
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.147,
+          "tps": 4365.1,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.08,
-            "p95": 0.15,
-            "p99": 0.21
+            "p50": 0.72,
+            "p90": 7.76,
+            "p95": 11.0,
+            "p99": 20.15
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.00000000001
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.00000000003,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
         }
       },
       {
@@ -177,40 +1402,67 @@
         "isReady": true,
         "latencyMs": 0.03,
         "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
           "tablesFound": [
             "accounts",
+            "audit_log",
+            "cbs_general_ledger",
             "tx_history"
           ],
           "accountPrimaryKeyVerified": true
         },
         "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
           "mismatchedCount": 0,
           "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
         },
         "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.015,
-          "tps": 10795.0,
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.141,
+          "tps": 4550.8,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.08,
-            "p95": 0.11,
-            "p99": 0.26
+            "p50": 0.4,
+            "p90": 8.07,
+            "p95": 14.19,
+            "p99": 25.22
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.0
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.0,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
         }
       },
       {
@@ -219,42 +1471,69 @@
         "port": 4000,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.02,
+        "latencyMs": 0.26,
         "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
           "tablesFound": [
             "accounts",
+            "audit_log",
+            "cbs_general_ledger",
             "tx_history"
           ],
           "accountPrimaryKeyVerified": true
         },
         "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
           "mismatchedCount": 0,
           "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
         },
         "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.015,
-          "tps": 10594.1,
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.132,
+          "tps": 4860.4,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.1,
-            "p95": 0.14,
-            "p99": 0.27
+            "p50": 0.5,
+            "p90": 7.69,
+            "p95": 11.51,
+            "p99": 31.55
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.0
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.0,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
         }
       },
       {
@@ -263,42 +1542,69 @@
         "port": 9088,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.02,
+        "latencyMs": 0.04,
         "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
           "tablesFound": [
             "accounts",
+            "audit_log",
+            "cbs_general_ledger",
             "tx_history"
           ],
           "accountPrimaryKeyVerified": true
         },
         "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
           "mismatchedCount": 0,
           "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
         },
         "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.013,
-          "tps": 12752.4,
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.123,
+          "tps": 5193.9,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.09,
-            "p95": 0.13,
-            "p99": 0.2
+            "p50": 0.38,
+            "p90": 7.31,
+            "p95": 11.96,
+            "p99": 23.03
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.00000000001
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.00000000006,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
         }
       },
       {
@@ -307,42 +1613,69 @@
         "port": 54322,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.02,
+        "latencyMs": 0.04,
         "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
           "tablesFound": [
             "accounts",
+            "audit_log",
+            "cbs_general_ledger",
             "tx_history"
           ],
           "accountPrimaryKeyVerified": true
         },
         "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
           "mismatchedCount": 0,
           "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
         },
         "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.018,
-          "tps": 8791.4,
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.123,
+          "tps": 5186.6,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.11,
-            "p95": 0.15,
-            "p99": 0.44
+            "p50": 1.09,
+            "p90": 7.47,
+            "p95": 9.89,
+            "p99": 14.57
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.0
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.0,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
         }
       },
       {
@@ -351,42 +1684,69 @@
         "port": 5258,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.01,
+        "latencyMs": 0.04,
         "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
           "tablesFound": [
             "accounts",
+            "audit_log",
+            "cbs_general_ledger",
             "tx_history"
           ],
           "accountPrimaryKeyVerified": true
         },
         "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
           "mismatchedCount": 0,
           "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
         },
         "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.021,
-          "tps": 7466.6,
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.131,
+          "tps": 4877.1,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.09,
-            "p95": 0.16,
-            "p99": 0.33
+            "p50": 0.18,
+            "p90": 6.92,
+            "p95": 12.19,
+            "p99": 25.84
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.00000000001
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.00000000003,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
         }
       },
       {
@@ -395,42 +1755,69 @@
         "port": 5866,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.01,
+        "latencyMs": 0.02,
         "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
           "tablesFound": [
             "accounts",
+            "audit_log",
+            "cbs_general_ledger",
             "tx_history"
           ],
           "accountPrimaryKeyVerified": true
         },
         "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
           "mismatchedCount": 0,
           "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
         },
         "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.013,
-          "tps": 12405.4,
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.13,
+          "tps": 4941.8,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.08,
-            "p95": 0.1,
-            "p99": 0.16
+            "p50": 0.69,
+            "p90": 8.17,
+            "p95": 10.79,
+            "p99": 16.9
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.00000000001
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.00000000003,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
         }
       },
       {
@@ -439,42 +1826,69 @@
         "port": 2883,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.02,
+        "latencyMs": 0.04,
         "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
           "tablesFound": [
             "accounts",
+            "audit_log",
+            "cbs_general_ledger",
             "tx_history"
           ],
           "accountPrimaryKeyVerified": true
         },
         "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
           "mismatchedCount": 0,
           "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
         },
         "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.015,
-          "tps": 10552.3,
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.122,
+          "tps": 5260.3,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.08,
-            "p95": 0.1,
-            "p99": 0.22
+            "p50": 1.03,
+            "p90": 7.07,
+            "p95": 9.53,
+            "p99": 15.54
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.00000000001
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 199999.99999999997,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
         }
       },
       {
@@ -483,42 +1897,69 @@
         "port": 2881,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.03,
+        "latencyMs": 0.02,
         "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
           "tablesFound": [
             "accounts",
+            "audit_log",
+            "cbs_general_ledger",
             "tx_history"
           ],
           "accountPrimaryKeyVerified": true
         },
         "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
           "mismatchedCount": 0,
           "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
         },
         "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.018,
-          "tps": 8760.9,
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.113,
+          "tps": 5670.8,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.08,
-            "p95": 0.12,
-            "p99": 0.29
+            "p50": 1.43,
+            "p90": 6.47,
+            "p95": 8.04,
+            "p99": 12.03
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.0
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.0,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
         }
       },
       {
@@ -529,40 +1970,67 @@
         "isReady": true,
         "latencyMs": 0.03,
         "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
           "tablesFound": [
             "accounts",
+            "audit_log",
+            "cbs_general_ledger",
             "tx_history"
           ],
           "accountPrimaryKeyVerified": true
         },
         "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
           "mismatchedCount": 0,
           "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
         },
         "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.013,
-          "tps": 12731.4,
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.107,
+          "tps": 5987.4,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.08,
-            "p95": 0.11,
-            "p99": 0.33
+            "p50": 0.81,
+            "p90": 6.1,
+            "p95": 8.36,
+            "p99": 16.95
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 99999.99999999999
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.0,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
         }
       },
       {
@@ -573,40 +2041,67 @@
         "isReady": true,
         "latencyMs": 0.02,
         "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
           "tablesFound": [
             "accounts",
+            "audit_log",
+            "cbs_general_ledger",
             "tx_history"
           ],
           "accountPrimaryKeyVerified": true
         },
         "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
           "mismatchedCount": 0,
           "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
         },
         "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.011,
-          "tps": 14186.9,
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.115,
+          "tps": 5553.1,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.08,
-            "p95": 0.1,
-            "p99": 0.14
+            "p50": 0.98,
+            "p90": 6.57,
+            "p95": 8.7,
+            "p99": 15.77
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 99999.99999999999
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.00000000003,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
         }
       },
       {
@@ -615,42 +2110,69 @@
         "port": 2953,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.01,
+        "latencyMs": 0.03,
         "ddl": {
-          "statementsExecuted": 3,
-          "statementsSucceeded": 3,
-          "schemaDigest": "33797520b6f036c7780d8bffb2268ef4a212acddc0575ed7ebca3d80a14f0a87",
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
           "tablesFound": [
             "accounts",
+            "audit_log",
+            "cbs_general_ledger",
             "tx_history"
           ],
           "accountPrimaryKeyVerified": true
         },
         "cdc": {
-          "tableName": "accounts",
-          "sourceRowCount": 2,
-          "targetRowCount": 2,
-          "matchedCount": 2,
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
           "mismatchedCount": 0,
           "isConsistent": true,
-          "sourceTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce",
-          "targetTableDigest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
         },
         "stress": {
-          "totalTransactions": 160,
-          "concurrency": 8,
-          "durationSeconds": 0.014,
-          "tps": 11370.9,
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.105,
+          "tps": 6095.8,
           "latenciesMs": {
-            "p50": 0.05,
-            "p90": 0.08,
-            "p95": 0.12,
-            "p99": 0.29
+            "p50": 1.3,
+            "p90": 5.82,
+            "p95": 7.83,
+            "p99": 10.67
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
-          "initialTotalBalance": 100000.0,
-          "finalTotalBalance": 100000.0
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.00000000003,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
         }
       }
     ]

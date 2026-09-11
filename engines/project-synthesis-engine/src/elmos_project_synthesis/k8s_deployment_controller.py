@@ -91,8 +91,10 @@ def generate_enterprise_k8s_manifests(
     port: int = 8080,
     replicas: int = 2,
     image_name: str = "app:latest",
+    image: str | None = None,
 ) -> str:
     """Generate complete production Kubernetes specifications conforming to Restricted PSS."""
+    effective_image = image or image_name
     return f"""---
 apiVersion: v1
 kind: Namespace
@@ -126,6 +128,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: {app_name}
+        app.kubernetes.io/part-of: elmos-enterprise
     spec:
       serviceAccountName: {app_name}-sa
       securityContext:
@@ -137,7 +140,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: {app_name}
-          image: {image_name}
+          image: {effective_image}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {port}
@@ -146,7 +149,8 @@ spec:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
             capabilities:
-              drop: ["ALL"]
+              drop:
+                - ALL
           resources:
             requests:
               cpu: "100m"

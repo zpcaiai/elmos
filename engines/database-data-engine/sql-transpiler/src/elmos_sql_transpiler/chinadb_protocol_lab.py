@@ -14,8 +14,10 @@ import contextlib
 import logging
 import re
 import socket
+import sqlite3
 import struct
 import threading
+import time
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -40,13 +42,24 @@ class ColumnDef:
 class TableDef:
     name: str
     columns: dict[str, ColumnDef] = field(default_factory=dict)
-    rows: list[dict[str, Any]] = field(default_factory=list)
     indexes: dict[str, list[str]] = field(default_factory=dict)
     primary_key_cols: list[str] = field(default_factory=list)
+    _rows: list[dict[str, Any]] = field(default_factory=list)
+    db_ref: Any = None
+
+    @property
+    def rows(self) -> list[dict[str, Any]]:
+        if self.db_ref is not None:
+            self.db_ref._sync_table_rows_internal(self.name)
+        return self._rows
+
+    @rows.setter
+    def rows(self, val: list[dict[str, Any]]) -> None:
+        self._rows = val
 
 
 class ProtocolLabDatabase:
-    """Thread-safe multi-tenant in-memory relational database for ChinaDB test lab."""
+    """Thread-safe multi-tenant in-memory relational database backed by SQLite ACID engine."""
 
     def __init__(self, name: str = "chinadb_lab") -> None:
         self.name = name
@@ -55,29 +68,24 @@ class ProtocolLabDatabase:
         self.triggers: dict[str, str] = {}
         self._lock = threading.RLock()
         self.transaction_logs: list[dict[str, Any]] = []
+        # True relational ACID storage engine
+        self._sqlite = sqlite3.connect(":memory:", check_same_thread=False, isolation_level=None)
+        self._sqlite.execute("PRAGMA foreign_keys = ON;")
 
     def execute_sql(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
-        """Execute a subset of SQL (DDL and DML) and return (col_names, rows, affected_rows)."""
+        """Execute a subset of SQL (DDL and DML) with true ACID semantics."""
         clean = sql.strip().rstrip(";")
+        if not clean:
+            return [], [], 0
         upper = clean.upper()
 
         with self._lock:
-            # 1. CREATE TABLE
-            if upper.startswith("CREATE TABLE"):
-                return self._handle_create_table(clean)
-
-            # 2. DROP TABLE
-            if upper.startswith("DROP TABLE"):
-                return self._handle_drop_table(clean)
-
-            # 3. CREATE INDEX
-            if upper.startswith("CREATE INDEX") or upper.startswith("CREATE UNIQUE INDEX"):
-                return self._handle_create_index(clean)
-
-            # 4. CREATE PROCEDURE / FUNCTION
-            if upper.startswith("CREATE") and ("PROCEDURE" in upper or "FUNCTION" in upper):
+            # 1. CREATE PROCEDURE / FUNCTION / PACKAGE
+            if upper.startswith("CREATE") and any(
+                k in upper for k in ("PROCEDURE", "FUNCTION", "PACKAGE")
+            ):
                 m = re.search(
-                    r"CREATE\s+(?:OR\s+REPLACE\s+)?(?:PROCEDURE|FUNCTION)\s+([A-Za-z0-9_]+)",
+                    r"CREATE\s+(?:OR\s+REPLACE\s+)?(?:PROCEDURE|FUNCTION|PACKAGE(?:\s+BODY)?)\s+([A-Za-z0-9_]+)",
                     clean,
                     re.I,
                 )
@@ -85,7 +93,7 @@ class ProtocolLabDatabase:
                 self.routines[name] = clean
                 return [], [], 0
 
-            # 5. CREATE TRIGGER
+            # 2. CREATE TRIGGER
             if upper.startswith("CREATE") and "TRIGGER" in upper:
                 m = re.search(
                     r"CREATE\s+(?:OR\s+REPLACE\s+)?TRIGGER\s+([A-Za-z0-9_]+)", clean, re.I
@@ -94,101 +102,161 @@ class ProtocolLabDatabase:
                 self.triggers[name] = clean
                 return [], [], 0
 
-            # 6. INSERT INTO
-            if upper.startswith("INSERT INTO"):
+            # 3. CREATE TABLE
+            if upper.startswith("CREATE TABLE"):
+                return self._handle_create_table(clean)
+
+            # 4. DROP TABLE
+            if upper.startswith("DROP TABLE"):
+                return self._handle_drop_table(clean)
+
+            # 5. CREATE INDEX
+            if upper.startswith("CREATE INDEX") or upper.startswith("CREATE UNIQUE INDEX"):
+                return self._handle_create_index(clean)
+
+            # 6. TRANSACTION CONTROLS: BEGIN / COMMIT / ROLLBACK / SAVEPOINT
+            if upper in ("BEGIN", "START TRANSACTION", "BEGIN TRANSACTION"):
+                with contextlib.suppress(sqlite3.OperationalError):
+                    self._sqlite.execute("BEGIN TRANSACTION")
+                self.transaction_logs.append({"action": "BEGIN", "timestamp": time.time()})
+                return [], [], 0
+
+            if upper == "COMMIT":
+                with contextlib.suppress(sqlite3.OperationalError):
+                    self._sqlite.execute("COMMIT")
+                self.transaction_logs.append({"action": "COMMIT", "timestamp": time.time()})
+                return [], [], 0
+
+            if upper == "ROLLBACK":
+                with contextlib.suppress(sqlite3.OperationalError):
+                    self._sqlite.execute("ROLLBACK")
+                self.transaction_logs.append({"action": "ROLLBACK", "timestamp": time.time()})
+                return [], [], 0
+
+            if upper.startswith("SAVEPOINT "):
+                with contextlib.suppress(sqlite3.OperationalError):
+                    self._sqlite.execute(clean)
+                self.transaction_logs.append({"action": clean, "timestamp": time.time()})
+                return [], [], 0
+
+            if upper.startswith("SET "):
+                return [], [], 0
+
+            # 7. INSERT INTO
+            if upper.startswith("INSERT INTO") or upper.startswith("INSERT OR REPLACE"):
                 return self._handle_insert(clean)
 
-            # 7. UPDATE
+            # 8. UPDATE
             if upper.startswith("UPDATE"):
                 return self._handle_update(clean)
 
-            # 8. DELETE FROM
+            # 9. DELETE FROM
             if upper.startswith("DELETE FROM") or upper.startswith("DELETE"):
                 return self._handle_delete(clean)
 
-            # 9. SELECT
-            if upper.startswith("SELECT"):
+            # 10. SELECT
+            if upper.startswith("SELECT") or upper.startswith("WITH "):
                 return self._handle_select(clean)
 
-            # 10. COMMIT / ROLLBACK / BEGIN / SET
-            if upper in ("COMMIT", "ROLLBACK", "BEGIN", "START TRANSACTION") or upper.startswith(
-                "SET "
-            ):
+            # Default fallback: try execute directly on SQLite
+            try:
+                cur = self._sqlite.execute(clean)
+                col_names = [d[0] for d in cur.description] if cur.description else []
+                rows = [tuple(r) for r in cur.fetchall()]
+                return col_names, rows, cur.rowcount if cur.rowcount >= 0 else 0
+            except Exception:
                 return [], [], 0
 
-            # Default fallback: acknowledge
-            return [], [], 0
+    def _normalize_ddl_for_sqlite(self, sql: str) -> str:
+        """Translate domestic ChinaDB types and DDL quirks to SQLite compatible DDL."""
+        clean = sql
+        # Normalize types
+        clean = re.sub(r"\bVARCHAR2\((\d+)\)", r"VARCHAR(\1)", clean, flags=re.I)
+        clean = re.sub(r"\bNUMBER\((\d+),\s*(\d+)\)", r"DECIMAL(\1,\2)", clean, flags=re.I)
+        clean = re.sub(r"\bNUMBER\b", r"NUMERIC", clean, flags=re.I)
+        clean = re.sub(r"\bSERIAL\s+PRIMARY\s+KEY\b", r"INTEGER PRIMARY KEY AUTOINCREMENT", clean, flags=re.I)
+        clean = re.sub(r"\bBIGSERIAL\s+PRIMARY\s+KEY\b", r"INTEGER PRIMARY KEY AUTOINCREMENT", clean, flags=re.I)
+        clean = re.sub(r"\bSERIAL\b", r"INTEGER", clean, flags=re.I)
+        clean = re.sub(r"\bBIGSERIAL\b", r"INTEGER", clean, flags=re.I)
+        clean = re.sub(r"\bBYTEA\b", r"BLOB", clean, flags=re.I)
+        # Strip schema prefixes like public.accounts
+        clean = re.sub(r"\bCREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:[A-Za-z0-9_]+\.)([A-Za-z0-9_]+)", r"CREATE TABLE IF NOT EXISTS \1", clean, flags=re.I)
+        # Strip storage and engine clauses
+        clean = re.sub(r"\s+ENGINE\s*=\s*\w+", "", clean, flags=re.I)
+        clean = re.sub(r"\s+DEFAULT\s+CHARSET\s*=\s*[\w\d]+", "", clean, flags=re.I)
+        clean = re.sub(r"\s+COLLATE\s*=\s*[\w\d]+", "", clean, flags=re.I)
+        clean = re.sub(r"\s+STORAGE\s*\([^)]*\)", "", clean, flags=re.I)
+        clean = re.sub(r"\s+TABLESPACE\s+\w+", "", clean, flags=re.I)
+        clean = re.sub(r"\s+PCTFREE\s+\d+", "", clean, flags=re.I)
+        clean = re.sub(r"\s+COMMENT\s+'[^']*'", "", clean, flags=re.I)
+        # Strip distribution and partition clauses specific to ChinaDB MPP (GBase 8a, GBase 8c, etc.)
+        clean = re.sub(r"\s+DISTRIBUTED?\s+BY\s+.*?(?:;|$)", ";", clean, flags=re.I)
+        clean = re.sub(r"\s+PARTITION\s+BY\s+.*?(?:;|$)", ";", clean, flags=re.I)
+        return clean
+
+    def _sync_table_def(self, table_name: str) -> None:
+        """Synchronize TableDef and column definitions from SQLite PRAGMA table_info."""
+        tname = table_name.lower()
+        cur = self._sqlite.execute(f"PRAGMA table_info('{tname}');")
+        cols = cur.fetchall()
+        if not cols:
+            return
+
+        table = self.tables.get(tname)
+        if not table:
+            table = TableDef(name=tname, db_ref=self)
+            self.tables[tname] = table
+
+        table.primary_key_cols = []
+        for col_info in cols:
+            # col_info: (cid, name, type, notnull, dflt_value, pk)
+            cname = str(col_info[1]).lower()
+            ctype = str(col_info[2]) if col_info[2] else "VARCHAR"
+            notnull = bool(col_info[3])
+            dflt = col_info[4]
+            is_pk = bool(col_info[5])
+            table.columns[cname] = ColumnDef(
+                name=cname,
+                data_type=ctype,
+                is_nullable=not notnull,
+                is_primary_key=is_pk,
+                default_value=dflt,
+            )
+            if is_pk:
+                table.primary_key_cols.append(cname)
+
+    def _sync_table_rows_internal(self, table_name: str) -> None:
+        """On-demand sync of table rows from SQLite when table.rows is accessed."""
+        tname = table_name.lower()
+        table = self.tables.get(tname)
+        if not table:
+            return
+        with self._lock, contextlib.suppress(Exception):
+            r_cur = self._sqlite.execute(f"SELECT * FROM '{tname}';")
+            col_names = [d[0].lower() for d in r_cur.description] if r_cur.description else []
+            fetched = r_cur.fetchall()
+            table._rows = [dict(zip(col_names, row, strict=False)) for row in fetched]
+
+    def _auto_create_table_from_insert(self, tname: str, sql: str) -> None:
+        """Auto-create table schema when insert occurs before explicit DDL."""
+        m = re.search(r"\((.*?)\)\s*VALUES", sql, re.I | re.S)
+        if m:
+            cols = [c.strip().strip('"`[]').lower() for c in m.group(1).split(",")]
+            col_defs = ", ".join(f"'{c}' TEXT" for c in cols)
+            self._sqlite.execute(f"CREATE TABLE IF NOT EXISTS '{tname}' ({col_defs});")
+            self._sync_table_def(tname)
 
     def _handle_create_table(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
         m = re.search(
-            r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)\s*\((.*)\)",
+            r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)",
             sql,
-            re.I | re.S,
+            re.I,
         )
-        if not m:
-            return [], [], 0
-        table_name = m.group(2).lower()
-        cols_text = m.group(3)
-
-        table = TableDef(name=table_name)
-        # Parse simple columns
-        for item in self._split_col_defs(cols_text):
-            item = item.strip()
-            if not item:
-                continue
-            item_u = item.upper()
-            if item_u.startswith("PRIMARY KEY"):
-                pk_match = re.search(r"PRIMARY\s+KEY\s*\((.*?)\)", item, re.I)
-                if pk_match:
-                    table.primary_key_cols = [
-                        c.strip().lower() for c in pk_match.group(1).split(",")
-                    ]
-                continue
-            if item_u.startswith("CONSTRAINT") and "PRIMARY KEY" in item_u:
-                pk_match = re.search(r"PRIMARY\s+KEY\s*\((.*?)\)", item, re.I)
-                if pk_match:
-                    table.primary_key_cols = [
-                        c.strip().lower() for c in pk_match.group(1).split(",")
-                    ]
-                continue
-            if (
-                item_u.startswith("FOREIGN KEY")
-                or item_u.startswith("CONSTRAINT")
-                or item_u.startswith("CHECK")
-            ):
-                continue
-
-            tokens = item.split()
-            cname = tokens[0].strip('"`[]').lower()
-            ctype = tokens[1] if len(tokens) > 1 else "VARCHAR"
-            is_pk = "PRIMARY KEY" in item_u
-            is_null = "NOT NULL" not in item_u
-            table.columns[cname] = ColumnDef(
-                name=cname, data_type=ctype, is_nullable=is_null, is_primary_key=is_pk
-            )
-            if is_pk and cname not in table.primary_key_cols:
-                table.primary_key_cols.append(cname)
-
-        self.tables[table_name] = table
+        tname = m.group(2).lower() if m else "unnamed_table"
+        normalized = self._normalize_ddl_for_sqlite(sql)
+        self._sqlite.execute(normalized)
+        self._sync_table_def(tname)
         return [], [], 0
-
-    def _split_col_defs(self, text: str) -> list[str]:
-        items: list[str] = []
-        cur: list[str] = []
-        depth = 0
-        for ch in text:
-            if ch == "(":
-                depth += 1
-            elif ch == ")":
-                depth -= 1
-            elif ch == "," and depth == 0:
-                items.append("".join(cur).strip())
-                cur = []
-                continue
-            cur.append(ch)
-        if cur:
-            items.append("".join(cur).strip())
-        return items
 
     def _handle_drop_table(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
         m = re.search(
@@ -197,144 +265,64 @@ class ProtocolLabDatabase:
         if m:
             tname = m.group(2).lower()
             self.tables.pop(tname, None)
+            self._sqlite.execute(f"DROP TABLE IF EXISTS '{tname}';")
         return [], [], 0
 
     def _handle_create_index(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
         m = re.search(
-            r"CREATE\s+(?:UNIQUE\s+)?INDEX\s+([A-Za-z0-9_]+)\s+ON\s+([A-Za-z0-9_]+)\s*\((.*?)\)",
+            r"CREATE\s+(?:UNIQUE\s+)?INDEX\s+([A-Za-z0-9_]+)\s+ON\s+(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)\s*\((.*?)\)",
             sql,
             re.I,
         )
         if m:
             idx_name = m.group(1).lower()
-            tname = m.group(2).lower()
-            cols = [c.strip().lower() for c in m.group(3).split(",")]
+            tname = m.group(3).lower()
+            cols = [c.strip().lower() for c in m.group(4).split(",")]
             if tname in self.tables:
                 self.tables[tname].indexes[idx_name] = cols
+        with contextlib.suppress(Exception):
+            self._sqlite.execute(sql)
         return [], [], 0
 
     def _handle_insert(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
-        m = re.search(
-            r"INSERT\s+INTO\s+(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)\s*(?:\((.*?)\))?\s*VALUES\s*(.*)",
-            sql,
-            re.I | re.S,
-        )
-        if not m:
-            return [], [], 0
-        tname = m.group(2).lower()
-        table = self.tables.get(tname)
-        if not table:
-            # Auto-create table schema if not explicitly created
-            table = TableDef(name=tname)
-            self.tables[tname] = table
+        m = re.search(r"INSERT\s+INTO\s+(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)", sql, re.I)
+        tname = m.group(2).lower() if m else None
+        if tname and tname not in self.tables:
+            self._auto_create_table_from_insert(tname, sql)
 
-        cols_str = m.group(3)
-        vals_str = m.group(4).strip()
-        if cols_str:
-            target_cols = [c.strip().strip('"`[]').lower() for c in cols_str.split(",")]
-        else:
-            target_cols = list(table.columns.keys())
-
-        # Parse tuples (val1, val2), (val3, val4)
-        tuples = re.findall(r"\((.*?)\)", vals_str, re.S)
-        affected = 0
-        for tup in tuples:
-            raw_vals = [v.strip().strip("'\"") for v in tup.split(",")]
-            row_dict: dict[str, Any] = {}
-            if not target_cols:
-                target_cols = [f"col_{i}" for i in range(len(raw_vals))]
-            for i, col in enumerate(target_cols):
-                val: Any = raw_vals[i] if i < len(raw_vals) else None
-                if val is not None and val.upper() == "NULL":
-                    val = None
-                row_dict[col] = val
-                if col not in table.columns:
-                    table.columns[col] = ColumnDef(name=col, data_type="VARCHAR")
-
-            # Check if updating existing by PK (UPSERT)
-            pk_cols = table.primary_key_cols or (target_cols[:1] if target_cols else [])
-            updated = False
-            if pk_cols:
-                for existing in table.rows:
-                    if all(existing.get(pk) == row_dict.get(pk) for pk in pk_cols):
-                        existing.update(row_dict)
-                        updated = True
-                        break
-            if not updated:
-                table.rows.append(row_dict)
-            affected += 1
+        try:
+            cur = self._sqlite.execute(sql)
+            affected = cur.rowcount if cur.rowcount >= 0 else 1
+        except sqlite3.IntegrityError:
+            # Fallback to UPSERT for test scenarios that update existing PK via insert
+            replace_sql = re.sub(r"^\s*INSERT\s+INTO\b", "INSERT OR REPLACE INTO", sql, flags=re.I)
+            cur = self._sqlite.execute(replace_sql)
+            affected = cur.rowcount if cur.rowcount >= 0 else 1
 
         return [], [], affected
 
     def _handle_update(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
-        m = re.search(
-            r"UPDATE\s+([A-Za-z0-9_]+)\s+SET\s+(.*?)(?:\s+WHERE\s+(.*))?$", sql, re.I | re.S
-        )
-        if not m:
-            return [], [], 0
-        tname = m.group(1).lower()
-        table = self.tables.get(tname)
-        if not table:
-            return [], [], 0
-        set_str = m.group(2)
-        where_str = m.group(3)
-
-        assignments: dict[str, Any] = {}
-        for assign in set_str.split(","):
-            if "=" in assign:
-                k, v = assign.split("=", 1)
-                k = k.strip().strip('"`[]').lower()
-                v = v.strip().strip("'\"")
-                assignments[k] = v
-
-        affected = 0
-        for row in table.rows:
-            if self._matches_where(row, where_str):
-                for k, v in assignments.items():
-                    # Handle basic arithmetic like balance = balance - 100
-                    if isinstance(row.get(k), (int, float)) or (
-                        isinstance(row.get(k), str) and row.get(k, "").replace(".", "", 1).isdigit()
-                    ):
-                        try:
-                            cur_v = float(row.get(k, 0))
-                            if "+" in v:
-                                parts = v.split("+")
-                                delta = float(parts[-1].strip())
-                                row[k] = str(cur_v + delta)
-                            elif "-" in v:
-                                parts = v.split("-")
-                                delta = float(parts[-1].strip())
-                                row[k] = str(cur_v - delta)
-                            else:
-                                row[k] = v
-                        except Exception:
-                            row[k] = v
-                    else:
-                        row[k] = v
-                affected += 1
-        return [], [], affected
+        try:
+            cur = self._sqlite.execute(sql)
+            affected = cur.rowcount if cur.rowcount >= 0 else 1
+            return [], [], affected
+        except sqlite3.OperationalError as e:
+            if "no such table" in str(e).lower():
+                return [], [], 0
+            raise
 
     def _handle_delete(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
-        m = re.search(r"DELETE\s+FROM\s+([A-Za-z0-9_]+)(?:\s+WHERE\s+(.*))?$", sql, re.I | re.S)
-        if not m:
-            return [], [], 0
-        tname = m.group(1).lower()
-        table = self.tables.get(tname)
-        if not table:
-            return [], [], 0
-        where_str = m.group(2)
-        remaining = []
-        affected = 0
-        for row in table.rows:
-            if self._matches_where(row, where_str):
-                affected += 1
-            else:
-                remaining.append(row)
-        table.rows = remaining
-        return [], [], affected
+        try:
+            cur = self._sqlite.execute(sql)
+            affected = cur.rowcount if cur.rowcount >= 0 else 1
+            return [], [], affected
+        except sqlite3.OperationalError as e:
+            if "no such table" in str(e).lower():
+                return [], [], 0
+            raise
 
     def _handle_select(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
-        # Handle SELECT 1
+        # Fast path for SELECT 1
         if re.search(r"SELECT\s+1\b", sql, re.I) and "FROM" not in sql.upper():
             return ["?column?"], [(1,)], 1
 
@@ -347,51 +335,15 @@ class ProtocolLabDatabase:
                 cnt = len(tbl.rows) if tbl else 0
                 return ["count"], [(cnt,)], 1
 
-        m = re.search(
-            r"SELECT\s+(.*?)\s+FROM\s+([A-Za-z0-9_]+)(?:\s+WHERE\s+(.*?))?(?:\s+ORDER\s+BY\s+.*)?(?:\s+LIMIT\s+.*)?$",
-            sql,
-            re.I | re.S,
-        )
-        if not m:
-            return ["result"], [("OK",)], 1
-        cols_req = m.group(1).strip()
-        tname = m.group(2).lower()
-        where_str = m.group(3)
-
-        table = self.tables.get(tname)
-        if not table:
-            return [], [], 0
-
-        matching_rows = [r for r in table.rows if self._matches_where(r, where_str)]
-
-        if cols_req == "*":
-            col_names = list(table.columns.keys()) or (
-                list(matching_rows[0].keys()) if matching_rows else ["id"]
-            )
-        else:
-            col_names = [c.strip().strip('"`[]').lower() for c in cols_req.split(",")]
-
-        rows_out: list[tuple[Any, ...]] = []
-        for r in matching_rows:
-            rows_out.append(tuple(r.get(c) for c in col_names))
-
-        return col_names, rows_out, len(rows_out)
-
-    def _matches_where(self, row: dict[str, Any], where_str: str | None) -> bool:
-        if not where_str:
-            return True
-        where_str = where_str.strip()
-        # Simple AND equality
-        conditions = re.split(r"\s+AND\s+", where_str, flags=re.I)
-        for cond in conditions:
-            if "=" in cond:
-                k, v = cond.split("=", 1)
-                k = k.strip().strip('"`[]').lower()
-                v = v.strip().strip("'\"")
-                row_val = str(row.get(k, ""))
-                if row_val != v:
-                    return False
-        return True
+        try:
+            cur = self._sqlite.execute(sql)
+            col_names = [d[0] for d in cur.description] if cur.description else []
+            rows = [tuple(r) for r in cur.fetchall()]
+            return col_names, rows, len(rows)
+        except sqlite3.OperationalError as e:
+            if "no such table" in str(e).lower():
+                return [], [], 0
+            raise
 
 
 # -----------------------------------------------------------------------------

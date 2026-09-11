@@ -1,0 +1,121 @@
+package errors
+
+import (
+	"fmt"
+	"net/http"
+)
+
+// Kind classifies application errors for mapping to transport status codes.
+type Kind int
+
+const (
+	KindUnknown Kind = iota
+	KindNotFound
+	KindValidation
+	KindConflict
+	KindUnauthorized
+	KindForbidden
+	KindInternal
+)
+
+// AppError represents a typed domain or application error.
+type AppError struct {
+	Kind    Kind
+	Message string
+	Err     error
+}
+
+func (e *AppError) Error() string {
+	if e.Err != nil {
+		return fmt.Sprintf("%s: %v", e.Message, e.Err)
+	}
+	return e.Message
+}
+
+func (e *AppError) Unwrap() error {
+	return e.Err
+}
+
+// NewNotFound creates a resource not found error (HTTP 404).
+func NewNotFound(msg string) *AppError {
+	return &AppError{Kind: KindNotFound, Message: msg}
+}
+
+// NewValidation creates a client validation error (HTTP 400).
+func NewValidation(msg string) *AppError {
+	return &AppError{Kind: KindValidation, Message: msg}
+}
+
+// NewConflict creates a state conflict error (HTTP 409).
+func NewConflict(msg string) *AppError {
+	return &AppError{Kind: KindConflict, Message: msg}
+}
+
+// NewUnauthorized creates an authentication error (HTTP 401).
+func NewUnauthorized(msg string) *AppError {
+	return &AppError{Kind: KindUnauthorized, Message: msg}
+}
+
+// NewForbidden creates an authorization error (HTTP 403).
+func NewForbidden(msg string) *AppError {
+	return &AppError{Kind: KindForbidden, Message: msg}
+}
+
+// NewInternal creates an unexpected internal error (HTTP 500).
+func NewInternal(msg string, err error) *AppError {
+	return &AppError{Kind: KindInternal, Message: msg, Err: err}
+}
+
+// HTTPStatusCode maps an AppError Kind to standard HTTP status codes.
+func HTTPStatusCode(err error) int {
+	if err == nil {
+		return http.StatusOK
+	}
+
+	var appErr *AppError
+	if As(err, &appErr) {
+		switch appErr.Kind {
+		case KindNotFound:
+			return http.StatusNotFound
+		case KindValidation:
+			return http.StatusBadRequest
+		case KindConflict:
+			return http.StatusConflict
+		case KindUnauthorized:
+			return http.StatusUnauthorized
+		case KindForbidden:
+			return http.StatusForbidden
+		case KindInternal:
+			return http.StatusInternalServerError
+		default:
+			return http.StatusInternalServerError
+		}
+	}
+
+	return http.StatusInternalServerError
+}
+
+// As wraps errors.As for convenience.
+func As(err error, target any) bool {
+	return genericAs(err, target)
+}
+
+func genericAs(err error, target any) bool {
+	t, ok := target.(**AppError)
+	if !ok {
+		return false
+	}
+	curr := err
+	for curr != nil {
+		if e, ok := curr.(*AppError); ok {
+			*t = e
+			return true
+		}
+		if u, ok := curr.(interface{ Unwrap() error }); ok {
+			curr = u.Unwrap()
+		} else {
+			break
+		}
+	}
+	return false
+}

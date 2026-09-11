@@ -231,7 +231,7 @@ class CSharpAstParser(BaseAstParser):
                     annotations=m_attrs,
                     http_method=http_m,
                     http_path=http_p,
-                    body=[RawSnippetStmt(m_body.strip())]
+                    body=self._parse_statements_simple(m_body.strip())
                 ))
 
         return UniversalClass(
@@ -270,3 +270,27 @@ class CSharpAstParser(BaseAstParser):
             elif len(parts) == 1:
                 params.append(UniversalParam(name=parts[0], type_info=UniversalType.string_type()))
         return params
+
+    def _parse_statements_simple(self, body_str: str) -> list[UniversalStmt]:
+        stmts: list[UniversalStmt] = []
+        try_match = re.search(r'\btry\s*\{', body_str)
+        if try_match:
+            start = try_match.end() - 1
+            end = self._find_matching_brace(body_str, start)
+            try_content = body_str[start+1:end] if end != -1 else ''
+            catches = []
+            catch_regex = re.compile(r'\bcatch\s*(?:\(([^)]+)\))?\s*\{')
+            for cm in catch_regex.finditer(body_str):
+                c_start = cm.end() - 1
+                c_end = self._find_matching_brace(body_str, c_start)
+                c_content = body_str[c_start+1:c_end] if c_end != -1 else ''
+                c_decl = (cm.group(1) or '').strip().split()
+                exc_type = c_decl[0] if c_decl else 'Exception'
+                exc_var = c_decl[1] if len(c_decl) > 1 else 'ex'
+                catches.append(CatchClause(exception_type=exc_type, variable_name=exc_var, body=[RawSnippetStmt(c_content.strip())]))
+            stmts.append(TryCatchFinallyStmt(try_body=[RawSnippetStmt(try_content.strip())], catch_clauses=catches))
+            return stmts
+        if body_str.strip():
+            stmts.append(RawSnippetStmt(body_str.strip()))
+        return stmts
+

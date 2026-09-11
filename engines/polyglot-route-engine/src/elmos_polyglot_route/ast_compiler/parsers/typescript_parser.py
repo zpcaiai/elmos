@@ -79,6 +79,27 @@ class TypeScriptAstParser(BaseAstParser):
                     in_str = False
         return -1
 
+    def _find_matching_paren(self, s: str, start_idx: int) -> int:
+        depth = 0
+        in_str = False
+        quote_char = ''
+        for i in range(start_idx, len(s)):
+            c = s[i]
+            if not in_str:
+                if c in ('"', "'", '`'):
+                    in_str = True
+                    quote_char = c
+                elif c == '(':
+                    depth += 1
+                elif c == ')':
+                    depth -= 1
+                    if depth == 0:
+                        return i
+            else:
+                if c == quote_char and (i == 0 or s[i - 1] != '\\'):
+                    in_str = False
+        return -1
+
     def _parse_decorators(self, raw: str) -> list[UniversalAnnotation]:
         annos = []
         for m in re.finditer(r'@([a-zA-Z0-9_]+)(?:\(([^)]*)\))?', raw):
@@ -161,37 +182,43 @@ class TypeScriptAstParser(BaseAstParser):
                 fields.append(UniversalField(name=f_name, type_info=f_type, annotations=f_annos))
 
         # Methods: @Get(':serial') async getAssetBySerial(@Param('serial') serial: string): Promise<Asset> { ... }
-        method_regex = re.compile(
+        method_start_regex = re.compile(
             r'((?:@[a-zA-Z0-9_]+(?:\([^)]*\))?\s*)*)'
             r'(?:(public|private|protected)\s+)?'
             r'(?:(static|async)\s+)*'
-            r'([a-zA-Z0-9_]+)\s*'
-            r'\(([^)]*)\)'
-            r'(?:\s*:\s*([a-zA-Z0-9_<>,\[\]]+))?'
-            r'\s*\{',
+            r'([a-zA-Z0-9_]+)\s*\(',
             re.MULTILINE
         )
 
         pos = 0
         while pos < len(body):
-            m = method_regex.search(body, pos)
+            m = method_start_regex.search(body, pos)
             if not m:
                 break
             dec_str = m.group(1)
             name_str = m.group(4)
-            if name_str in ('constructor', 'if', 'for', 'while', 'switch'):
+            if name_str in ('constructor', 'if', 'for', 'while', 'switch', 'catch'):
                 pos = m.end()
                 continue
-            params_str = m.group(5)
-            ret_type_str = m.group(6) or 'void'
+            open_paren = m.end() - 1
+            close_paren = self._find_matching_paren(body, open_paren)
+            if close_paren == -1:
+                pos = m.end()
+                continue
+            params_str = body[open_paren + 1:close_paren]
+            after_paren = body[close_paren + 1:]
+            ret_match = re.match(r'(?:\s*:\s*([a-zA-Z0-9_<>,\[\]\s]+?))?\s*\{', after_paren)
+            if not ret_match:
+                pos = close_paren + 1
+                continue
+            ret_type_str = (ret_match.group(1) or '').strip() or 'void'
+            open_brace = close_paren + 1 + ret_match.end() - 1
+            brace_end = self._find_matching_brace(body, open_brace)
+            m_body = body[open_brace + 1:brace_end] if brace_end != -1 else ''
+            pos = brace_end + 1 if brace_end != -1 else len(body)
 
             m_annos = self._parse_decorators(dec_str)
             params = self._parse_ts_params(params_str)
-
-            brace_start = m.end() - 1
-            brace_end = self._find_matching_brace(body, brace_start)
-            m_body = body[brace_start + 1:brace_end] if brace_end != -1 else ''
-            pos = brace_end + 1 if brace_end != -1 else len(body)
 
             is_async = 'async' in m.group(0) or 'Promise<' in ret_type_str
             inner_ret = ret_type_str
@@ -223,7 +250,7 @@ class TypeScriptAstParser(BaseAstParser):
                 annotations=m_annos,
                 http_method=http_m,
                 http_path=http_p,
-                body=[RawSnippetStmt(m_body.strip())]
+                body=self._parse_statements_simple(m_body.strip())
             ))
 
         return UniversalClass(
@@ -264,3 +291,27 @@ class TypeScriptAstParser(BaseAstParser):
             else:
                 params.append(UniversalParam(name=p.strip(), type_info=UniversalType.string_type()))
         return params
+
+    def _parse_statements_simple(self, body_str: str) -> list[UniversalStmt]:
+        stmts: list[UniversalStmt] = []
+        try_match = re.search(r'\btry\s*\{', body_str)
+        if try_match:
+            start = try_match.end() - 1
+            end = self._find_matching_brace(body_str, start)
+            try_content = body_str[start+1:end] if end != -1 else ''
+            catches = []
+            catch_regex = re.compile(r'\bcatch\s*(?:\(([^)]+)\))?\s*\{')
+            for cm in catch_regex.finditer(body_str):
+                c_start = cm.end() - 1
+                c_end = self._find_matching_brace(body_str, c_start)
+                c_content = body_str[c_start+1:c_end] if c_end != -1 else ''
+                c_decl = (cm.group(1) or '').strip().split(':')
+                exc_var = c_decl[0].strip() if c_decl else 'error'
+                exc_type = c_decl[1].strip() if len(c_decl) > 1 else 'any'
+                catches.append(CatchClause(exception_type=exc_type, variable_name=exc_var, body=[RawSnippetStmt(c_content.strip())]))
+            stmts.append(TryCatchFinallyStmt(try_body=[RawSnippetStmt(try_content.strip())], catch_clauses=catches))
+            return stmts
+        if body_str.strip():
+            stmts.append(RawSnippetStmt(body_str.strip()))
+        return stmts
+

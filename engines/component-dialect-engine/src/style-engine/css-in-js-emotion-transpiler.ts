@@ -34,7 +34,7 @@ export class CssInJsEmotionTranspiler {
     combinedWxss: string;
     themeVariables: Record<string, string>;
   } {
-    const components: TranspiledCssInJsComponent[];
+    const components: TranspiledCssInJsComponent[] = [];
     const themeVariables: Record<string, string> = {};
 
     const sourceFile = ts.createSourceFile(

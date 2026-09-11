@@ -263,6 +263,33 @@ export class CrossPlatformBleEngine {
     }
   }
 
+  /**
+   * Subscribe to BLE characteristic value notification
+   */
+  public async notifyBLECharacteristicValueChange(
+    deviceId: string,
+    serviceId: string,
+    charId: string,
+    state: boolean = true
+  ): Promise<void> {
+    if (this.isMockMode) {
+      return;
+    }
+
+    if (typeof wx !== 'undefined' && wx.notifyBLECharacteristicValueChange) {
+      return new Promise((resolve, reject) => {
+        wx.notifyBLECharacteristicValueChange({
+          deviceId,
+          serviceId,
+          characteristicId: charId,
+          state,
+          success: () => resolve(),
+          fail: (err: any) => reject(new Error(err.errMsg || 'notifyBLECharacteristicValueChange failed')),
+        });
+      });
+    }
+  }
+
   public getDiscoveredDevices(): BleDevice[] {
     return Array.from(this.discoveredDevices.values());
   }
@@ -271,3 +298,13 @@ export class CrossPlatformBleEngine {
     return this.connectedDevices.has(deviceId);
   }
 }
+
+/**
+ * Enterprise BLE Hardware Simulator for offline development, mocking & automated CI tests
+ */
+export class BleHardwareSimulator extends CrossPlatformBleEngine {
+  constructor() {
+    super(true);
+  }
+}
+

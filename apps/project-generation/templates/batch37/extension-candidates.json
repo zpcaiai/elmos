@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "candidates": [
+    {
+      "key": "language-adapter-sdk",
+      "strategic_value": 5,
+      "customer_demand": 5,
+      "reuse": 5,
+      "security_risk": 4,
+      "implementation_effort": 4,
+      "decision": "approve"
+    },
+    {
+      "key": "untyped-arbitrary-script",
+      "strategic_value": 2,
+      "customer_demand": 2,
+      "reuse": 1,
+      "security_risk": 5,
+      "implementation_effort": 2,
+      "decision": "reject"
+    }
+  ]
+}

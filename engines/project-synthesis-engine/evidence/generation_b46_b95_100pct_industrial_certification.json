@@ -3,7 +3,7 @@
   "business_line": "5. 多语言项目生成 (B46-B95)",
   "business_line_id": "line-5-multilang-synthesis",
   "certification_standard": "ELMOS-INDUSTRIAL-PRODUCTION-SPEC-B46-B95-V2",
-  "certified_at": "2026-09-11T02:02:10.230388+00:00",
+  "certified_at": "2026-09-11T02:44:33.034998+00:00",
   "evaluation_verdict": "100% FULLY_CERTIFIED_L5_AUTONOMOUS",
   "scores": {
     "真实纯自动覆盖率": "100%",
@@ -20,8 +20,8 @@
     "specialized_batches_covered": 15,
     "specialized_skills_executed": 180,
     "verification_test_cases_evaluated": 1090,
-    "industrial_suites_count": 15,
-    "industrial_tests_passed": 64,
+    "industrial_suites_count": 20,
+    "industrial_tests_passed": 87,
     "human_intervention_required": false
   },
   "capabilities_certified": [
@@ -36,7 +36,12 @@
     "Specialized Language Runtimes & Cross-Compilation (B81-B95): Complete execution harness for 15 specialized & legacy language packs (COBOL, ABAP, PLC, Delphi, Erlang, Lua, SAS, RPG, Apex, MATLAB, Modelica, VB6, R, PL/SQL), executing 180 skills and evaluating 1,090 verification test cases to LOCAL_EXECUTED/LOCAL_PASSED status.",
     "Enterprise Domain Archetypes: Complete Banking & Double-Entry Ledger (ISO-4217, zero-sum invariant, Merkle audit chain, FX revaluation), Warehouse & Supply Chain (storage zones, lot/bin tracking, 3% pack-weight verification, carrier manifests), and SaaS Billing (windowed usage deduplication, sub-cent proration, graduated tiered pricing).",
     "Resilient Messaging & Distributed Cache Locks: Exponential backoff with full jitter, idempotent message deduplication store, dead letter queue (DLQ) automated routing & replay, Redis cluster distributed locking with monotonic fencing tokens, and XFetch early expiration cache stampede defense.",
-    "Cloud-Native Kubernetes & Multi-Cloud Terraform: Production Helm v3 chart generator with values.schema.json, PSS Restricted SecurityContext, HPA, NetworkPolicy, PodDisruptionBudget, and multi-cloud Terraform/OpenTofu modules for AWS (EKS/RDS/ElastiCache), GCP (GKE/Cloud SQL/Memorystore), and Azure (AKS/Postgres/Redis)."
+    "Cloud-Native Kubernetes & Multi-Cloud Terraform: Production Helm v3 chart generator with values.schema.json, PSS Restricted SecurityContext, HPA, NetworkPolicy, PodDisruptionBudget, and multi-cloud Terraform/OpenTofu modules for AWS (EKS/RDS/ElastiCache), GCP (GKE/Cloud SQL/Memorystore), and Azure (AKS/Postgres/Redis).",
+    "Seata Distributed Transactions (AT 2PC & TCC): TM/TC/RM lifecycle orchestration, AT mode undo_log generation with Before-Image and After-Image capture, unmanaged dirty-write detection, global row lock management with conflict prevention, and TCC anti-hanging / empty rollback protection.",
+    "Distributed Tracing (W3C TraceContext): Full W3C TraceContext standard compliance (traceparent 00-version, trace_id, parent_id/span_id, trace_flags, tracestate), contextvar trace management, and cross-thread TraceContextThreadPoolExecutor context propagation.",
+    "Dual-Token Authentication & Replay Defense: Short-lived Access Token + long-lived Refresh Token with automated Token Rotation, Token Family tracking with replay attack compromise detection, immediate revocation of compromised families, distributed blacklist with TTL expiration, and seamless 401 client interceptor retry.",
+    "Multi-Entity DDD Aggregates & Invariants: Rich domain aggregates (OrderAggregate with OrderItem, PaymentRecord, ShippingDetail), Money value object with high-precision Decimal arithmetic and ISO-4217 currency guards, subtotal/discount/tax balance invariants, and strongly typed DomainEvent queues.",
+    "Production-Grade K8s Ingress Canary & Hardened Probes: Nginx Ingress Canary with header, weight percentage, and cookie routing; Istio VirtualService canary traffic splitting; 3-tier health probes (startupProbe, livenessProbe, readinessProbe) conforming to Restricted Pod Security Standards."
   ],
   "verification_components": {
     "ddd_domain_engine": {
@@ -85,12 +90,13 @@
     "k8s_deployment_and_probes": {
       "status": "PASSED",
       "manifests_generated": [
-        "NetworkPolicy",
-        "PodDisruptionBudget",
+        "Ingress",
         "Deployment",
+        "PodDisruptionBudget",
+        "NetworkPolicy",
         "Namespace",
-        "Service",
-        "ServiceAccount"
+        "ServiceAccount",
+        "Service"
       ],
       "security_standard": "Kubernetes Restricted PodSecurity Standards",
       "dry_run_validation": "PASSED",
@@ -172,7 +178,7 @@
       "packaging_verification": "NON_ROOT_MULTISTAGE_PASSED",
       "self_healing_action": "AUTOMATIC_ROLLBACK",
       "self_healing_status": "RECOVERED",
-      "self_healing_receipt_digest": "sha256:f51fe79f427fb34c41b18a7dff126752588777d2473259451f9414df35e13fe1"
+      "self_healing_receipt_digest": "sha256:f676845bdbe19b07bb54d901a61342ae0aeada9fd4f671875e44b0675fea9980"
     },
     "specialized_language_runtimes_b81_b95": {
       "status": "PASSED",
@@ -183,7 +189,7 @@
       "b66_80_cases": 450,
       "execution_status": "LOCAL_EXECUTED",
       "gate_decision": "LOCAL_PASSED",
-      "evidence_digest": "sha256:4b4f67303723c4977f789368f16d623d0cb8a0d911c9dbb332cd08c1152646c9"
+      "evidence_digest": "sha256:a2c64c6172d77b2a007a566b113b831881893eb93c6b444a6ee831bcbd0eabf6"
     },
     "enterprise_domain_archetypes": {
       "status": "PASSED",
@@ -203,12 +209,49 @@
       "helm_v3_package": "VALUES_SCHEMA_NONROOT_NETWORKPOLICY_PDB_HPA",
       "terraform_multi_cloud": "AWS_EKS_GCP_GKE_AZURE_AKS_OPENTOFU_READY"
     },
+    "seata_distributed_transactions": {
+      "status": "PASSED",
+      "seata_at_mode": "2PC_BEFORE_AFTER_IMAGE_ROLLBACK_VERIFIED",
+      "global_row_locks": "CONFLICT_DETECTION_VERIFIED",
+      "tcc_anti_hanging": "EMPTY_ROLLBACK_AND_TRY_REJECTION_VERIFIED",
+      "root_context": "CONTEXTVAR_THREAD_LOCAL_VERIFIED"
+    },
+    "distributed_tracing_w3c": {
+      "status": "PASSED",
+      "w3c_traceparent": "VERSION_00_COMPLIANT",
+      "context_propagation": "CONTEXTVAR_AND_THREADPOOL_VERIFIED",
+      "child_span_hierarchy": "TRACE_PARENT_LINKAGE_VERIFIED"
+    },
+    "dual_token_auth_and_replay_defense": {
+      "status": "PASSED",
+      "dual_token_lifecycle": "SHORT_LIVED_ACCESS_LONG_LIVED_REFRESH",
+      "token_rotation": "NEW_PAIR_ON_EVERY_REFRESH",
+      "replay_attack_defense": "CONSUMED_TOKEN_DETECTION_AND_FAMILY_REVOCATION",
+      "client_interceptor": "SEAMLESS_401_REFRESH_AND_RETRY_VERIFIED"
+    },
+    "multi_entity_ddd_aggregates": {
+      "status": "PASSED",
+      "aggregate_root": "OrderAggregate",
+      "child_entities": [
+        "OrderItem",
+        "PaymentRecord",
+        "ShippingDetail"
+      ],
+      "financial_invariants": "SUBTOTAL_DISCOUNT_TAX_TRIAL_BALANCE_VERIFIED",
+      "event_emission": "STRONGLY_TYPED_DOMAIN_EVENTS_DRAINED"
+    },
+    "k8s_ingress_canary_and_production_probes": {
+      "status": "PASSED",
+      "nginx_canary_routing": "WEIGHT_HEADER_COOKIE_VERIFIED",
+      "istio_virtualservice": "85_15_TRAFFIC_SPLIT_VERIFIED",
+      "hardened_probes": "STARTUP_LIVENESS_READINESS_RESTRICTED_PSS_VERIFIED"
+    },
     "pytest_industrial_suite": {
       "status": "PASSED",
-      "tests_passed": 64,
-      "suites_count": 15
+      "tests_passed": 87,
+      "suites_count": 20
     }
   },
-  "total_execution_duration_seconds": 13.878,
-  "evidence_sha256": "sha256:86ab7c78c5fee5dff0da7908f05d457bc35e5b16861bb027dc848f8c02fe6790"
+  "total_execution_duration_seconds": 35.223,
+  "evidence_sha256": "sha256:167bafbd08174b2b6c7ed9248e15030ebfbd238765e5865202a1cae0f46ce0b5"
 }

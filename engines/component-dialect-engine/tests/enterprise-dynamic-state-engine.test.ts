@@ -33,7 +33,7 @@ describe('Enterprise Dynamic State Engine (M32)', () => {
 
       const runner = new MiniAppSagaRunner(getState, dispatch);
 
-      function* testWorker() {
+      function* testWorker(): Generator<any, string, any> {
         const currentUser = yield SagaEffects.select((s) => s.user);
         expect(currentUser).toBe('Stephen');
 
@@ -132,7 +132,7 @@ describe('Enterprise Dynamic State Engine (M32)', () => {
 
     it('should connect to MiniApp setData and automatically sync mutations', () => {
       const store = new EnterprisePiniaStore('theme', { mode: 'light', primaryColor: '#1677ff' });
-      const mockPage = {
+      const mockPage: { data: Record<string, any>; setData: jest.Mock } = {
         data: {},
         setData: jest.fn((patch) => {
           Object.assign(mockPage.data, patch);
@@ -205,12 +205,20 @@ describe('Enterprise Dynamic State Engine (M32)', () => {
         },
       });
 
-      const mockPage = {
+      let callCount = 0;
+      const mockPage: { data: Record<string, any>; setData: jest.Mock } = {
         data: {},
         setData: jest.fn((patch) => {
           Object.assign(mockPage.data, patch);
-          expect(patch['order.items[0].qty']).toBe(3);
-          done();
+          callCount++;
+          if (callCount === 2) {
+            try {
+              expect(patch['order.items[0].qty']).toBe(3);
+              done();
+            } catch (err) {
+              done(err);
+            }
+          }
         }),
       };
 

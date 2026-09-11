@@ -125,11 +125,11 @@ class RootContext:
 # ============================================================================
 
 
-class LockConflictError(Exception):
+class LockConflictError(RuntimeError):
     """Raised when a branch fails to acquire a global row lock."""
 
 
-class DirtyWriteError(Exception):
+class DirtyWriteError(RuntimeError):
     """Raised when After-Image mismatch indicates an unmanaged dirty write."""
 
 
@@ -309,6 +309,7 @@ class SeataTransactionCoordinator:
         self._sessions: dict[str, GlobalSession] = {}
         self.lock_manager = GlobalLockManager()
         self._lock = threading.Lock()
+        self._default_rm: Any | None = None
 
     def begin(self, transaction_name: str, timeout_seconds: float = 60.0) -> str:
         """Start a new global transaction, returns unique XID."""
@@ -609,12 +610,12 @@ class SeataResourceManager:
                         mut(pk, k, v)
                 else:
                     table_data = self.simulated_db.setdefault(table, {})
-                    current = table_data.get(pk)
+                    current_val: dict[str, Any] | None = table_data.get(pk)
 
                     # Dirty-write detection: current row state MUST match After-Image!
-                    if current != after:
+                    if current_val != after:
                         raise DirtyWriteError(
-                            f"Dirty write detected on table '{table}', pk '{pk}'! Current={current}, Expected After={after}"
+                            f"Dirty write detected on table '{table}', pk '{pk}'! Current={current_val}, Expected After={after}"
                         )
 
                     # Revert data to Before-Image

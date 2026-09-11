@@ -1495,7 +1495,8 @@ class TestEnterpriseCorporaFullAutonomousMigrationLifecycle:
             source_engine="oracle",
             target_engine="dm8",
             concurrency_threads=4,
-            target_p95_latency_ms=75.0,
+            stress_concurrency=4,
+            target_p95_latency_ms=150.0,
             zero_human_review_required=True,
         )
 

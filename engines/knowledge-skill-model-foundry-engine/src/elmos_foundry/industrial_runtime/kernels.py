@@ -19,11 +19,6 @@ from typing import Any
 
 from .families import KernelFamily, classify_skill
 
-try:
-    from ..core_skill_handlers import HIGH_FREQUENCY_CORE_HANDLERS
-except Exception:  # pragma: no cover - import isolation for unit tests
-    HIGH_FREQUENCY_CORE_HANDLERS = {}
-
 
 def _digest(value: Any) -> str:
     encoded = json.dumps(value, ensure_ascii=False, sort_keys=True, default=str, separators=(",", ":")).encode("utf-8")
@@ -142,40 +137,6 @@ def execute_kernel(
     family = classify_skill(skill_name, pack)
     input_digest = _digest({"skill": skill_name, "pack": pack, "payload": body, "family": family.value})
 
-    core = HIGH_FREQUENCY_CORE_HANDLERS.get(skill_name)
-    if core is not None and _has_explicit_domain_input(body):
-        try:
-            core_out = dict(core(body))
-            artifacts = {"core": core_out}
-            artifacts.update({key: value for key, value in core_out.items() if key != "status"})
-            return KernelResult(
-                ok=str(core_out.get("status", "EXECUTED")) in {"EXECUTED", "NOOP", "SUCCEEDED"},
-                family=family.value,
-                skill_name=skill_name,
-                algorithm=f"core_skill_handler:{skill_name}",
-                input_digest=input_digest,
-                output_digest=_digest(core_out),
-                metrics={
-                    "core_status": core_out.get("status"),
-                    **{key: value for key, value in core_out.items() if key != "status" and not isinstance(value, (dict, list))},
-                },
-                artifacts=artifacts,
-                pack=pack,
-            )
-        except Exception as exc:
-            return KernelResult(
-                ok=False,
-                family=family.value,
-                skill_name=skill_name,
-                algorithm=f"core_skill_handler:{skill_name}",
-                input_digest=input_digest,
-                output_digest=_digest({"error": str(exc)}),
-                metrics={},
-                artifacts={},
-                error=str(exc),
-                pack=pack,
-            )
-
     try:
         artifacts, metrics, algorithm = _DISPATCH[family](skill_name, body)
     except KernelExecutionError as exc:
@@ -209,20 +170,6 @@ class KernelExecutionError(ValueError):
     def __init__(self, message: str, algorithm: str) -> None:
         super().__init__(message)
         self.algorithm = algorithm
-
-
-def _has_explicit_domain_input(payload: Mapping[str, Any]) -> bool:
-    keys = {
-        "source_code",
-        "sql",
-        "lock_acquisitions",
-        "dependencies",
-        "prompt",
-        "documents",
-        "query",
-        "schema",
-    }
-    return any(key in payload for key in keys)
 
 
 def _source(payload: Mapping[str, Any]) -> str:

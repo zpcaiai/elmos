@@ -1,0 +1,96 @@
+package logger
+
+import (
+	"context"
+	"log/slog"
+	"os"
+	"strings"
+)
+
+type contextKey string
+
+const (
+	RequestIDKey contextKey = "request_id"
+	TraceIDKey   contextKey = "trace_id"
+)
+
+// Logger provides structured logging methods.
+type Logger interface {
+	Debug(msg string, args ...any)
+	Info(msg string, args ...any)
+	Warn(msg string, args ...any)
+	Error(msg string, args ...any)
+	With(args ...any) Logger
+	WithContext(ctx context.Context) Logger
+}
+
+type slogLogger struct {
+	inner *slog.Logger
+}
+
+// New initializes a structured logger with level and format.
+func New(levelStr, format string) Logger {
+	var level slog.Level
+	switch strings.ToLower(levelStr) {
+	case "debug":
+		level = slog.LevelDebug
+	case "warn":
+		level = slog.LevelWarn
+	case "error":
+		level = slog.LevelError
+	default:
+		level = slog.LevelInfo
+	}
+
+	opts := &slog.HandlerOptions{
+		Level: level,
+	}
+
+	var handler slog.Handler
+	if strings.ToLower(format) == "json" {
+		handler = slog.NewJSONHandler(os.Stdout, opts)
+	} else {
+		handler = slog.NewTextHandler(os.Stdout, opts)
+	}
+
+	return &slogLogger{
+		inner: slog.New(handler),
+	}
+}
+
+func (l *slogLogger) Debug(msg string, args ...any) {
+	l.inner.Debug(msg, args...)
+}
+
+func (l *slogLogger) Info(msg string, args ...any) {
+	l.inner.Info(msg, args...)
+}
+
+func (l *slogLogger) Warn(msg string, args ...any) {
+	l.inner.Warn(msg, args...)
+}
+
+func (l *slogLogger) Error(msg string, args ...any) {
+	l.inner.Error(msg, args...)
+}
+
+func (l *slogLogger) With(args ...any) Logger {
+	return &slogLogger{inner: l.inner.With(args...)}
+}
+
+func (l *slogLogger) WithContext(ctx context.Context) Logger {
+	if ctx == nil {
+		return l
+	}
+	var attrs []any
+	if reqID, ok := ctx.Value(RequestIDKey).(string); ok && reqID != "" {
+		attrs = append(attrs, "request_id", reqID)
+	}
+	if traceID, ok := ctx.Value(TraceIDKey).(string); ok && traceID != "" {
+		attrs = append(attrs, "trace_id", traceID)
+	}
+	if len(attrs) == 0 {
+		return l
+	}
+	return &slogLogger{inner: l.inner.With(attrs...)}
+}

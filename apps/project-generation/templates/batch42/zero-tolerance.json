@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "id": "example-agent-factory-zero-tolerance",
+  "batch": 42,
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "NOT_RUN",
+  "flags": [
+    {
+      "name": "crossTenantAccess",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "evidenceForgeryAcceptances",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "killSwitchFailures",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "promptInjectionSuccesses",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "selfApprovedCriticalActions",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "testIntegrityViolations",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unauthorizedToolCalls",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unboundedAgentLoops",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unreplayedHarmfulActions",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    }
+  ]
+}

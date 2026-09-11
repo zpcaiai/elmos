@@ -1,0 +1,73 @@
+import pytest
+from fastapi.testclient import TestClient
+
+from app.main import app
+
+
+@pytest.fixture
+def client():
+    """Test client fixture running against the FastAPI app instance."""
+    with TestClient(app) as test_client:
+        yield test_client
+
+
+def test_healthz_endpoint(client: TestClient):
+    """Verify Kubernetes liveness probe."""
+    response = client.get("/healthz")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "healthy"
+    assert data["service"] == "{{.ServiceName}}"
+
+
+def test_readyz_endpoint(client: TestClient):
+    """Verify Kubernetes readiness probe."""
+    response = client.get("/readyz")
+    assert response.status_code == 200
+    assert response.json()["status"] == "ready"
+
+
+def test_entity_crud_lifecycle(client: TestClient):
+    """Verify full CRUD lifecycle via HTTP endpoints."""
+    # 1. Create
+    create_resp = client.post(
+        "/api/v1/entities",
+        json={"name": "Widget Alpha", "description": "High performance widget"},
+    )
+    assert create_resp.status_code == 201
+    created_data = create_resp.json()
+    entity_id = created_data["id"]
+    assert created_data["name"] == "Widget Alpha"
+    assert created_data["status"] == "PENDING"
+
+    # 2. Get by ID
+    get_resp = client.get(f"/api/v1/entities/{entity_id}")
+    assert get_resp.status_code == 200
+    assert get_resp.json()["id"] == entity_id
+
+    # 3. Update
+    update_resp = client.put(
+        f"/api/v1/entities/{entity_id}",
+        json={"name": "Widget Alpha Revised", "description": "Updated description"},
+    )
+    assert update_resp.status_code == 200
+    assert update_resp.json()["name"] == "Widget Alpha Revised"
+
+    # 4. Activate
+    activate_resp = client.post(f"/api/v1/entities/{entity_id}/activate")
+    assert activate_resp.status_code == 200
+    assert activate_resp.json()["status"] == "ACTIVE"
+
+    # 5. List
+    list_resp = client.get("/api/v1/entities?offset=0&limit=10")
+    assert list_resp.status_code == 200
+    list_data = list_resp.json()
+    assert list_data["total_count"] >= 1
+
+    # 6. Delete
+    del_resp = client.delete(f"/api/v1/entities/{entity_id}")
+    assert del_resp.status_code == 204
+
+    # 7. Verify deletion
+    not_found_resp = client.get(f"/api/v1/entities/{entity_id}")
+    assert not_found_resp.status_code == 404

@@ -134,6 +134,45 @@ public final class SpringCorpusEnterpriseProjectsPart2 {
                     public void setRecordedAt(Instant t) { this.recordedAt = t; }
                 }
                 """);
+        files.put("src/main/java/io/elmos/benchmark/iot/domain/TelemetryDataPoint.java", """
+                package io.elmos.benchmark.iot.domain;
+
+                import javax.persistence.*;
+                import java.time.Instant;
+                import org.hibernate.annotations.Type;
+
+                @Entity
+                @Table(name = "telemetry_data_points")
+                public class TelemetryDataPoint {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;
+
+                    @Column(nullable = false)
+                    private String deviceId;
+
+                    private String metricType;
+                    private Double readingValue;
+
+                    private Instant timestamp;
+
+                    @Type(type = "json")
+                    private String metadata;
+
+                    public Long getId() { return id; }
+                    public void setId(Long id) { this.id = id; }
+                    public String getDeviceId() { return deviceId; }
+                    public void setDeviceId(String deviceId) { this.deviceId = deviceId; }
+                    public String getMetricType() { return metricType; }
+                    public void setMetricType(String metricType) { this.metricType = metricType; }
+                    public Double getReadingValue() { return readingValue; }
+                    public void setReadingValue(Double readingValue) { this.readingValue = readingValue; }
+                    public Instant getTimestamp() { return timestamp; }
+                    public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
+                    public String getMetadata() { return metadata; }
+                    public void setMetadata(String metadata) { this.metadata = metadata; }
+                }
+                """);
     }
 
     private static void populateHealthcareEmrRecords(Map<String, String> files, String id, String bootVer, String javaVer) {
@@ -172,6 +211,46 @@ public final class SpringCorpusEnterpriseProjectsPart2 {
                     public void setClinicalObservations(String obs) { this.clinicalObservations = obs; }
                 }
                 """);
+        files.put("src/main/java/io/elmos/benchmark/healthcare/domain/PatientRecord.java", """
+                package io.elmos.benchmark.healthcare.domain;
+
+                import javax.persistence.*;
+                import java.time.LocalDate;
+                import org.hibernate.annotations.Type;
+
+                @Entity
+                @Table(name = "patient_records")
+                public class PatientRecord {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;
+
+                    @Column(nullable = false, unique = true)
+                    private String mrn;
+
+                    @Column(nullable = false)
+                    private String fullName;
+
+                    private LocalDate dateOfBirth;
+                    private String bloodGroup;
+
+                    @Type(type = "json")
+                    private String encryptedMedicalNotes;
+
+                    public Long getId() { return id; }
+                    public void setId(Long id) { this.id = id; }
+                    public String getMrn() { return mrn; }
+                    public void setMrn(String mrn) { this.mrn = mrn; }
+                    public String getFullName() { return fullName; }
+                    public void setFullName(String fullName) { this.fullName = fullName; }
+                    public LocalDate getDateOfBirth() { return dateOfBirth; }
+                    public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
+                    public String getBloodGroup() { return bloodGroup; }
+                    public void setBloodGroup(String bloodGroup) { this.bloodGroup = bloodGroup; }
+                    public String getEncryptedMedicalNotes() { return encryptedMedicalNotes; }
+                    public void setEncryptedMedicalNotes(String encryptedMedicalNotes) { this.encryptedMedicalNotes = encryptedMedicalNotes; }
+                }
+                """);
     }
 
     private static void populateLogisticsFleetDispatch(Map<String, String> files, String id, String bootVer, String javaVer) {
@@ -208,6 +287,45 @@ public final class SpringCorpusEnterpriseProjectsPart2 {
                     public void setDestinationHub(String d) { this.destinationHub = d; }
                     public String getRouteWaypoints() { return routeWaypoints; }
                     public void setRouteWaypoints(String r) { this.routeWaypoints = r; }
+                }
+                """);
+        files.put("src/main/java/io/elmos/benchmark/logistics/domain/FleetVehicle.java", """
+                package io.elmos.benchmark.logistics.domain;
+
+                import javax.persistence.*;
+                import org.hibernate.annotations.Type;
+
+                @Entity
+                @Table(name = "fleet_vehicles")
+                public class FleetVehicle {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;
+
+                    @Column(nullable = false, unique = true)
+                    private String vin;
+
+                    @Column(nullable = false)
+                    private String fleetCode;
+
+                    private String currentStatus;
+                    private Integer capacityKg;
+
+                    @Type(type = "json")
+                    private String telemetryData;
+
+                    public Long getId() { return id; }
+                    public void setId(Long id) { this.id = id; }
+                    public String getVin() { return vin; }
+                    public void setVin(String vin) { this.vin = vin; }
+                    public String getFleetCode() { return fleetCode; }
+                    public void setFleetCode(String fleetCode) { this.fleetCode = fleetCode; }
+                    public String getCurrentStatus() { return currentStatus; }
+                    public void setCurrentStatus(String currentStatus) { this.currentStatus = currentStatus; }
+                    public Integer getCapacityKg() { return capacityKg; }
+                    public void setCapacityKg(Integer capacityKg) { this.capacityKg = capacityKg; }
+                    public String getTelemetryData() { return telemetryData; }
+                    public void setTelemetryData(String telemetryData) { this.telemetryData = telemetryData; }
                 }
                 """);
     }

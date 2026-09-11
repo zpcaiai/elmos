@@ -1,0 +1,12 @@
+{
+  "case_id": "CASE-ID",
+  "source_sha256": "",
+  "environment_sha256": "",
+  "fixture_sha256": "",
+  "commands": [],
+  "artifacts": [],
+  "raw_logs": [],
+  "replay_command": "",
+  "created_at": "",
+  "manifest_sha256": ""
+}

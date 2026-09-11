@@ -148,10 +148,10 @@ export class ScopedCssSandbox {
    * Prefixes all CSS selectors with the sub-app container selector
    */
   public static prefixStyles(cssContent: string, prefixSelector: string): string {
-    return cssContent.replace(/(^|[\}\s])([^{/@][^{]*?)\{/g, (match, p1, selector) => {
+    return cssContent.replace(/(^|[\}\n;])\s*([^{};@\s][^{};]*?)\s*\{/g, (_match, delimiter, selector) => {
       const trimmed = selector.trim();
       if (trimmed.startsWith('@') || trimmed.length === 0) {
-        return match;
+        return _match;
       }
       const scoped = trimmed
         .split(',')
@@ -163,7 +163,7 @@ export class ScopedCssSandbox {
           return `${prefixSelector} ${part}`;
         })
         .join(', ');
-      return `${p1}${scoped} {`;
+      return `${delimiter ? delimiter + ' ' : ''}${scoped} {`;
     });
   }
 }

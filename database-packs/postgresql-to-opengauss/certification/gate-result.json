@@ -1,0 +1,12 @@
+{
+  "certification_decision": "CERTIFIED",
+  "claimed_status": "certified",
+  "derived_status": "certified",
+  "failures": [],
+  "gate_version": "batch31-evidence-derived-v2",
+  "pack_key": "postgresql-to-opengauss",
+  "production_blockers": [],
+  "release_eligible": true,
+  "schema_version": 2,
+  "status": "certified"
+}

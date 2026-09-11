@@ -1,0 +1,32 @@
+{
+  "package_id": "reference-product",
+  "package_type": "core",
+  "version": "1.0.0",
+  "lifecycle": {
+    "status": "draft"
+  },
+  "ownership": {
+    "product_owner": "product-platform",
+    "engineering_owner": "platform-engineering",
+    "security_owner": "product-security",
+    "maintenance_owner": "platform-operations"
+  },
+  "compatibility": {
+    "product_versions": [
+      "1.x"
+    ],
+    "protocol_versions": [
+      "1.x"
+    ],
+    "runtime_versions": [
+      "java-21",
+      "dotnet-8"
+    ]
+  },
+  "contracts": [],
+  "dependencies": [],
+  "policies": [],
+  "evidence": [],
+  "certification": {},
+  "economics": {}
+}

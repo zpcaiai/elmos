@@ -1,0 +1,93 @@
+package http
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"runtime/debug"
+	"time"
+
+	"{{.ModuleName}}/pkg/logger"
+)
+
+// ResponseWriterWrapper intercepts status codes for metrics/logging.
+type ResponseWriterWrapper struct {
+	http.ResponseWriter
+	StatusCode int
+}
+
+func (rw *ResponseWriterWrapper) WriteHeader(code int) {
+	rw.StatusCode = code
+	rw.ResponseWriter.WriteHeader(code)
+}
+
+// RequestIDMiddleware injects or forwards an X-Request-ID header.
+func RequestIDMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		reqID := r.Header.Get("X-Request-ID")
+		if reqID == "" {
+			reqID = fmt.Sprintf("req-%d", time.Now().UnixNano())
+		}
+		w.Header().Set("X-Request-ID", reqID)
+
+		ctx := context.WithValue(r.Context(), logger.RequestIDKey, reqID)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+// LoggingMiddleware logs inbound HTTP requests with duration and status code.
+func LoggingMiddleware(log logger.Logger) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+			ww := &ResponseWriterWrapper{ResponseWriter: w, StatusCode: http.StatusOK}
+
+			next.ServeHTTP(ww, r)
+
+			duration := time.Since(start)
+			log.WithContext(r.Context()).Info("Handled HTTP request",
+				"method", r.Method,
+				"path", r.URL.Path,
+				"status", ww.StatusCode,
+				"duration_ms", duration.Milliseconds(),
+			)
+		})
+	}
+}
+
+// RecoveryMiddleware catches panics and returns a 500 Internal Server Error.
+func RecoveryMiddleware(log logger.Logger) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			defer func() {
+				if rec := recover(); rec != nil {
+					stack := string(debug.Stack())
+					log.WithContext(r.Context()).Error("Panic recovered in HTTP handler",
+						"panic", rec,
+						"stack", stack,
+					)
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(http.StatusInternalServerError)
+					_, _ = w.Write([]byte(`{"error":"internal server error"}`))
+				}
+			}()
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// CORSMiddleware sets permissive standard CORS headers for microservice communication.
+func CORSMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Request-ID")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}

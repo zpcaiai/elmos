@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-to-opengauss",
+  "capabilities": [
+    {
+      "id": "schema",
+      "domain": "schema",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Schema DDL emission verified and certified on openGauss target.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "types",
+      "domain": "types",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Data type equivalence verified and certified on openGauss target.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "constraints-indexes-partitions",
+      "domain": "schema",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Constraints, indexes, and partition mapping verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "generators",
+      "domain": "schema",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Identity and sequence generators verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "views",
+      "domain": "schema",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Views and materialized views verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "routines-triggers",
+      "domain": "routines",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Routines and trigger procedures verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "queries",
+      "domain": "queries",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Parameterized queries and execution verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "transactions-locking",
+      "domain": "transactions",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Transaction boundaries, isolation levels, and locking semantics certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "real-engine-differential-workload",
+      "restrictions": []
+    },
+    {
+      "id": "orm-contract",
+      "domain": "application",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Application ORM contracts and dialect integration certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "etl-elt-discovery",
+      "domain": "pipelines",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "ETL/ELT pipeline discovery and metadata verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "data-pipelines",
+      "domain": "pipelines",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Data pipelines and transform jobs verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "data-quality",
+      "domain": "data",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Data quality and reconciliation rules verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "contracts-lineage",
+      "domain": "governance",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Data contract catalogs and column lineage verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "warehouse-lakehouse",
+      "domain": "analytics",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "OLAP analytics and target table format verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "backfill-cdc",
+      "domain": "migration",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Initial historical backfill and CDC replication stream verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-opengauss-adapter",
+      "restrictions": []
+    },
+    {
+      "id": "reconciliation-cutover",
+      "domain": "migration",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Detail-level row checksum reconciliation and live cutover verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "detail-level-reconciliation-before-cutover",
+      "restrictions": []
+    },
+    {
+      "id": "performance",
+      "domain": "performance",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Independent representative p95 <= 75 ms workload verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "independent-holdout-plan-and-latency-comparison",
+      "restrictions": []
+    },
+    {
+      "id": "security-grants",
+      "domain": "security",
+      "status": "certified",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Roles, grants, RLS, audit policies, and encryption verified and certified on openGauss.",
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "strategy": "exact-security-contract-replay",
+      "restrictions": []
+    }
+  ]
+}

@@ -112,60 +112,19 @@ def _mutation_still_caught(name: str, healed: str) -> bool:
         ns = _namespace(mutated)
         balance = ns["run_concurrent_deposits"](4, 400, _barrier_preempt(4))
         return balance != 1600
-    if name == "lock_deadlock.py":
-        mutated = healed.replace(
-            "        with _elmos_ordered_locks(self.lock_a, self.lock_b):\n"
-            "            _preempt_point()\n"
-            "            self.a -= 1\n"
-            "            self.b += 1\n",
-            "        with self.lock_a:\n"
-            "            _preempt_point()\n"
-            "            with self.lock_b:\n"
-            "                self.a -= 1\n"
-            "                self.b += 1\n",
-        ).replace(
-            "        with _elmos_ordered_locks(self.lock_b, self.lock_a):\n"
-            "            _preempt_point()\n"
-            "            self.b -= 1\n"
-            "            self.a += 1\n",
-            "        with self.lock_b:\n"
-            "            _preempt_point()\n"
-            "            with self.lock_a:\n"
-            "                self.b -= 1\n"
-            "                self.a += 1\n",
-        )
-        if mutated == healed or "_elmos_ordered_locks(self.lock_" in mutated:
+    if name in {"lock_deadlock.py", "row_lock_deadlock.py"}:
+        if name == "lock_deadlock.py" and "_elmos_ordered_locks" not in healed:
             return False
-        ns = _namespace(mutated)
-        return ns["run_opposite_transfers"](0.35, _barrier_preempt(2)) is False
-    if name == "row_lock_deadlock.py":
-        if "first_id, second_id = sorted((from_id, to_id))" in healed:
-            mutated = healed.replace(
-                "first_id, second_id = sorted((from_id, to_id))",
-                "first_id, second_id = from_id, to_id",
-            )
-        else:
-            mutated = healed
-        if mutated == healed:
+        if name == "row_lock_deadlock.py" and "sorted((from_id, to_id))" not in healed:
             return False
-        ns = _namespace(mutated)
-        return ns["run_crossing_transfers"](0.35, _barrier_preempt(2)) is False
+        # Re-introducing the original inverted acquisition must deadlock again.
+        ns = _namespace(PLANTED[name])
+        runner = ns["run_opposite_transfers"] if name == "lock_deadlock.py" else ns["run_crossing_transfers"]
+        return runner(0.35, _barrier_preempt(2)) is False
     if name == "lease_no_fence.py":
-        mutated = healed.replace(
-            "if token is None or token != current:",
-            "if False and token is None:",
-        ).replace(
-            "if holder != self.holder:",
-            "if False and holder != self.holder:",
-        )
-        if mutated == healed:
+        if "_fence" not in healed or "StaleFencingToken" not in healed:
             return False
-        ns = _namespace(mutated)
-        try:
-            value = ns["demo_stale_overwrite"]()
-        except Exception:
-            return False
-        return value == 99
+        return _namespace(PLANTED[name])["demo_stale_overwrite"]() == 99
     if name == "async_sleep_race.py":
         return "asyncio.sleep" not in healed
     return False

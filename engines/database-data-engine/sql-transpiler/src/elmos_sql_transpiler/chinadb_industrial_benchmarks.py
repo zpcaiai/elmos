@@ -14,7 +14,14 @@ complex triggers with pseudo-records, multi-tier exception hierarchies, and save
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from elmos_sql_dialect.models import Dialect
+from enum import StrEnum
+
+
+class Dialect(StrEnum):
+    POSTGRES = "postgres"
+    MYSQL = "mysql"
+    ORACLE = "oracle"
+    TSQL = "tsql"
 
 
 @dataclass

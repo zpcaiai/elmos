@@ -297,6 +297,78 @@ class LockStmt(UniversalStmt):
 
 
 @dataclass
+class SpawnStmt(UniversalStmt):
+    """Launch a concurrent unit (goroutine / thread / task / executor job)."""
+
+    body: list[UniversalStmt] = field(default_factory=list)
+    join_handle: str | None = None
+
+
+@dataclass
+class ChannelMakeStmt(UniversalStmt):
+    name: str
+    element_type: UniversalType = field(default_factory=UniversalType.int64)
+    capacity: int = 1
+
+
+@dataclass
+class ChannelSendStmt(UniversalStmt):
+    channel: str
+    value: UniversalExpr
+
+
+@dataclass
+class ChannelRecvStmt(UniversalStmt):
+    channel: str
+    target: str
+
+
+@dataclass
+class SelectArm:
+    kind: str  # recv | send | default
+    channel: str | None = None
+    value: UniversalExpr | None = None
+    target: str | None = None
+    body: list[UniversalStmt] = field(default_factory=list)
+
+
+@dataclass
+class SelectStmt(UniversalStmt):
+    arms: list[SelectArm] = field(default_factory=list)
+
+
+@dataclass
+class IoReadStmt(UniversalStmt):
+    path: UniversalExpr
+    target: str
+    binary: bool = False
+
+
+@dataclass
+class IoWriteStmt(UniversalStmt):
+    path: UniversalExpr
+    value: UniversalExpr
+    binary: bool = False
+
+
+@dataclass
+class MoveStmt(UniversalStmt):
+    source: str
+    target: str
+
+
+@dataclass
+class DropStmt(UniversalStmt):
+    name: str
+    kind: str = "owned"
+
+
+@dataclass
+class JoinStmt(UniversalStmt):
+    handle: str
+
+
+@dataclass
 class RawSnippetStmt(UniversalStmt):
     code: str
 

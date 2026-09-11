@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.ServiceName}}
+  namespace: {{.Namespace}}
+  labels:
+    app.kubernetes.io/name: {{.ServiceName}}
+    app.kubernetes.io/instance: {{.ServiceName}}-{{.Environment}}
+    app.kubernetes.io/version: "{{.Version}}"
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: {{.ProjectName}}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: {{.ServiceName}}
+  ports:
+    - name: http
+      port: {{.Port}}
+      targetPort: http
+      protocol: TCP
+    - name: grpc
+      port: {{.GRPCPort}}
+      targetPort: grpc
+      protocol: TCP

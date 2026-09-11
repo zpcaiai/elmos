@@ -1,0 +1,42 @@
+.PHONY: all install run test test-coverage lint docker-build k8s-deploy clean
+
+APP_NAME ?= {{.ServiceName}}
+IMAGE ?= {{.ImageRepository}}:{{.ImageTag}}
+PYTHON ?= python3
+
+all: install test
+
+install:
+	@echo "==> Installing dependencies..."
+	$(PYTHON) -m pip install --upgrade pip
+	$(PYTHON) -m pip install -e ".[dev]"
+
+run:
+	@echo "==> Running FastAPI application locally..."
+	uvicorn app.main:app --host 0.0.0.0 --port {{.Port}} --reload
+
+test:
+	@echo "==> Running unit & integration test suite..."
+	pytest tests/ -v
+
+test-coverage:
+	@echo "==> Running test suite with coverage report..."
+	pytest --cov=app --cov-report=term-missing --cov-report=html:coverage_html tests/
+
+lint:
+	@echo "==> Checking code format and lint..."
+	ruff check app/ tests/
+	ruff format --check app/ tests/
+
+docker-build:
+	@echo "==> Building container image $(IMAGE)..."
+	docker build -t $(IMAGE) .
+
+k8s-deploy:
+	@echo "==> Deploying to Kubernetes..."
+	kubectl apply -f deploy/k8s/
+
+clean:
+	@echo "==> Cleaning cache and temporary files..."
+	rm -rf .pytest_cache .coverage coverage_html/ .ruff_cache/ build/ dist/ *.egg-info
+	find . -type d -name "__pycache__" -exec rm -rf {} +

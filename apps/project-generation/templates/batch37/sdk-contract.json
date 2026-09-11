@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "sdk_kind": "extension-core",
+  "sdk_version": "1.0.0",
+  "protocol_version": "1.0.0",
+  "supported_extension_kinds": [
+    "language-adapter",
+    "framework-adapter",
+    "transformation-recipe",
+    "dependency-mapping",
+    "comparator-normalizer",
+    "evidence-collector",
+    "runner-job",
+    "vertical-pack",
+    "policy-extension"
+  ],
+  "contracts": [
+    {
+      "name": "extension-manifest",
+      "version": "1",
+      "schema_ref": "schemas/batch37/extension-manifest.schema.json"
+    }
+  ],
+  "conformance": {
+    "development": "corpus/development",
+    "negative": "corpus/negative",
+    "holdout": "corpus/holdout"
+  }
+}

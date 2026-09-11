@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import pytest
 
 from elmos_project_synthesis.distributed_tracing import (
     TraceContext,

@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "pack_key": "unset-to-unset",
+  "capabilities": [
+    {
+      "id": "schema",
+      "domain": "schema",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "types",
+      "domain": "types",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "constraints-indexes-partitions",
+      "domain": "schema",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "generators",
+      "domain": "schema",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "views",
+      "domain": "schema",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "routines-triggers",
+      "domain": "routines",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "queries",
+      "domain": "queries",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "transactions-locking",
+      "domain": "transactions",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "orm-contract",
+      "domain": "application",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "etl-elt-discovery",
+      "domain": "pipelines",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "data-pipelines",
+      "domain": "pipelines",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "data-quality",
+      "domain": "data",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "contracts-lineage",
+      "domain": "governance",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "warehouse-lakehouse",
+      "domain": "analytics",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "backfill-cdc",
+      "domain": "migration",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "reconciliation-cutover",
+      "domain": "migration",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "performance",
+      "domain": "performance",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "security-grants",
+      "domain": "security",
+      "status": "detected-only",
+      "owner": "UNASSIGNED",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    }
+  ]
+}

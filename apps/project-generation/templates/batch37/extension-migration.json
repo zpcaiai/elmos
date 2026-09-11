@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "extension_id": "sample.publisher.extension",
+  "from_version": "0.9.0",
+  "to_version": "1.0.0",
+  "owner": "extension-team",
+  "config_schema_from": "1",
+  "config_schema_to": "2",
+  "state_schema_from": "1",
+  "state_schema_to": "2",
+  "steps": [
+    {
+      "step_id": "migrate-config",
+      "idempotent": true,
+      "reversible_or_compensated": true
+    }
+  ],
+  "dry_run_passed": true,
+  "checkpointed": true,
+  "reconciliation_passed": true,
+  "rollback_tested": true,
+  "mixed_version_tested": true,
+  "secret_values_embedded": false,
+  "evidence_refs": [
+    "migrations/evidence.txt"
+  ]
+}

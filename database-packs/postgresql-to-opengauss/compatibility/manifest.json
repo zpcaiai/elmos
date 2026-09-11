@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-to-opengauss",
+  "components": [
+    {
+      "id": "opengauss-pg-compatible-query-renderer",
+      "domain": "queries",
+      "mode": "explicit-target-adapter",
+      "status": "local-only",
+      "scope": "parameterized SELECT ordering and row-limit emission",
+      "evidence_ref": "certification/local-postgresql-opengauss-query-evidence.json"
+    }
+  ],
+  "budget": {
+    "max_components": 5,
+    "prohibited_domains": [
+      "money",
+      "security",
+      "transaction-core"
+    ],
+    "max_emulated_object_ratio": 0.1
+  }
+}

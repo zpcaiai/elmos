@@ -1,0 +1,54 @@
+{
+  "profile_key": "client-acceptance-default",
+  "version": "0.1.0",
+  "owner": "UNASSIGNED",
+  "browser_matrix": [
+    "chromium-UNSET"
+  ],
+  "device_matrix": [],
+  "locales": [
+    "en-US"
+  ],
+  "themes": [
+    "default"
+  ],
+  "rendering": {
+    "modes": [
+      "UNSET"
+    ]
+  },
+  "visual": {
+    "baseline_policy": "approved-only",
+    "max_unapproved_differences": 0
+  },
+  "accessibility": {
+    "standard": "WCAG-UNSET",
+    "critical_violations": 0
+  },
+  "interaction": {
+    "p0_pass_rate": 1.0
+  },
+  "performance": {
+    "budgets": {}
+  },
+  "seo": {
+    "required": false
+  },
+  "i18n": {
+    "missing_keys": 0
+  },
+  "security": {
+    "authorization_regressions": 0
+  },
+  "p0_journeys": [],
+  "thresholds": {
+    "source_fingerprint_coverage": 0.95,
+    "ui_ir_source_map_coverage": 0.95,
+    "target_build_green_rate": 1.0,
+    "target_startup_or_launch_rate": 1.0,
+    "p0_journey_pass_rate": 1.0,
+    "visual_regressions": 0,
+    "critical_accessibility_violations": 0
+  },
+  "exclusions": []
+}

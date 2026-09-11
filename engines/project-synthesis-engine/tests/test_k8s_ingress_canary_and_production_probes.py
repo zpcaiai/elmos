@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from elmos_project_synthesis.k8s_deployment_controller import (
     K8sDeploymentController,
     generate_enterprise_k8s_manifests,

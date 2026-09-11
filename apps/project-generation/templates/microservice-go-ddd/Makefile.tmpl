@@ -1,0 +1,25 @@
+.PHONY: all build run test lint clean docker-build
+
+APP_NAME ?= {{.ProjectName}}
+BIN_DIR ?= bin
+
+all: lint test build
+
+build:
+	@mkdir -p $(BIN_DIR)
+	go build -o $(BIN_DIR)/server cmd/server/main.go
+
+run:
+	go run cmd/server/main.go
+
+test:
+	go test -v -race ./...
+
+lint:
+	go vet ./...
+
+clean:
+	rm -rf $(BIN_DIR)
+
+docker-build:
+	docker build -t $(APP_NAME):latest .

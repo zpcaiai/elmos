@@ -97,7 +97,7 @@ class Money(ValueObject):
         if self.currency != other.currency:
             raise DomainInvariantViolationError(
                 "MONEY_CURRENCY_MISMATCH",
-                f"Cannot add different currencies: {self.currency} and {other.currency}",
+                f"Currency mismatch: Cannot add different currencies: {self.currency} and {other.currency}",
             )
         return Money(amount=self.amount + other.amount, currency=self.currency)
 
@@ -105,7 +105,7 @@ class Money(ValueObject):
         if self.currency != other.currency:
             raise DomainInvariantViolationError(
                 "MONEY_CURRENCY_MISMATCH",
-                f"Cannot subtract different currencies: {self.currency} and {other.currency}",
+                f"Currency mismatch: Cannot subtract different currencies: {self.currency} and {other.currency}",
             )
         if self.amount < other.amount:
             raise DomainInvariantViolationError(

@@ -13,15 +13,30 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(
+        classes = {JavaEngineWorkerApplication.class, SpringWorkerPrometheusEndpointTest.SecurityPermitAllConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = {
                 "elmos.worker.spring-upgrade.enabled=false",
                 "elmos.worker.spring-upgrade.ingress-auth-enabled=false",
-                "management.endpoints.web.exposure.include=health,info,prometheus"
+                "management.endpoints.web.exposure.include=health,info,prometheus",
+                "spring.cloud.compatibility-verifier.enabled=false",
+                "spring.cloud.gateway.enabled=false"
         }
 )
 @AutoConfigureObservability
-class SpringWorkerPrometheusEndpointTest {
+public class SpringWorkerPrometheusEndpointTest {
+
+    @org.springframework.boot.test.context.TestConfiguration
+    public static class SecurityPermitAllConfig {
+        @org.springframework.context.annotation.Bean
+        public org.springframework.security.web.SecurityFilterChain testSecurityFilterChain(
+                org.springframework.security.config.annotation.web.builders.HttpSecurity http) throws Exception {
+            http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .csrf(csrf -> csrf.disable());
+            return http.build();
+        }
+    }
+
     @Autowired
     private TestRestTemplate http;
 
@@ -29,6 +44,9 @@ class SpringWorkerPrometheusEndpointTest {
     void exportsPrometheusMetricsOnTheInternalActuatorEndpoint() {
         ResponseEntity<String> health = http.getForEntity("/actuator/health", String.class);
         assertEquals(HttpStatus.OK, health.getStatusCode());
+
+        ResponseEntity<String> capabilities = http.getForEntity("/engine/v1/capabilities", String.class);
+        assertEquals(HttpStatus.OK, capabilities.getStatusCode());
 
         ResponseEntity<String> metrics = http.getForEntity("/actuator/prometheus", String.class);
         assertEquals(HttpStatus.OK, metrics.getStatusCode());

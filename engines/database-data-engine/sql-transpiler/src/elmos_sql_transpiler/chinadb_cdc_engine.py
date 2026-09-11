@@ -47,6 +47,20 @@ class DataReconciliationReceipt:
     reconciliation_ts: float = field(default_factory=time.time)
 
 
+@dataclass
+class MultiTableReconciliationReceipt:
+    target_id: str
+    tables: dict[str, DataReconciliationReceipt]
+    total_source_rows: int
+    total_target_rows: int
+    total_matched: int
+    total_mismatched: int
+    merkle_tree_root: str
+    cross_table_referential_integrity: bool
+    is_consistent: bool
+    reconciliation_ts: float = field(default_factory=time.time)
+
+
 class ChinaDbCdcEngine:
     """CDC Synchronization Engine and Data Verifier."""
 
@@ -89,6 +103,78 @@ class ChinaDbCdcEngine:
             if self.apply_event(target_id, ev):
                 count += 1
         return count
+
+    def apply_transaction_batch(self, target_id: str, events: list[ChangeEvent]) -> int:
+        """Apply a batch of CDC events inside a strict ACID transaction."""
+        self.orchestrator.execute_query(target_id, "BEGIN;")
+        try:
+            count = 0
+            for ev in events:
+                if self.apply_event(target_id, ev):
+                    count += 1
+            self.orchestrator.execute_query(target_id, "COMMIT;")
+            return count
+        except Exception:
+            self.orchestrator.execute_query(target_id, "ROLLBACK;")
+            raise
+
+    def reconcile_multi_table_data(
+        self,
+        source_dataset: dict[str, list[dict[str, Any]]],
+        target_id: str,
+        pk_map: dict[str, list[str]] | None = None,
+    ) -> MultiTableReconciliationReceipt:
+        """Reconcile multi-table datasets and verify cross-table Merkle root & foreign key referential integrity."""
+        pk_map = pk_map or {}
+        table_receipts: dict[str, DataReconciliationReceipt] = {}
+        total_src = 0
+        total_tgt = 0
+        total_matched = 0
+        total_mismatched = 0
+        merkle_leaves: list[str] = []
+
+        all_consistent = True
+        for tname, records in source_dataset.items():
+            pks = pk_map.get(tname)
+            receipt = self.reconcile_table_data(records, target_id, tname, pk_columns=pks)
+            table_receipts[tname] = receipt
+            total_src += receipt.source_row_count
+            total_tgt += receipt.target_row_count
+            total_matched += receipt.matched_count
+            total_mismatched += receipt.mismatched_count
+            if not receipt.is_consistent:
+                all_consistent = False
+            merkle_leaves.append(f"{tname.lower()}:{receipt.target_table_digest}")
+
+        merkle_leaves.sort()
+        merkle_tree_root = hashlib.sha256("||".join(merkle_leaves).encode("utf-8")).hexdigest()
+
+        # Check cross-table referential integrity if accounts and tx_history exist
+        db = self.orchestrator.get_database(target_id)
+        accounts_tbl = db.tables.get("accounts")
+        tx_tbl = db.tables.get("tx_history")
+        ref_integrity = True
+        if accounts_tbl and tx_tbl:
+            valid_accs = {str(r.get("acc_no", "")).strip() for r in accounts_tbl.rows}
+            for tx in tx_tbl.rows:
+                from_acc = str(tx.get("from_acc", "")).strip()
+                to_acc = str(tx.get("to_acc", "")).strip()
+                if (from_acc and from_acc not in valid_accs) or (to_acc and to_acc not in valid_accs):
+                    ref_integrity = False
+                    all_consistent = False
+                    break
+
+        return MultiTableReconciliationReceipt(
+            target_id=target_id,
+            tables=table_receipts,
+            total_source_rows=total_src,
+            total_target_rows=total_tgt,
+            total_matched=total_matched,
+            total_mismatched=total_mismatched,
+            merkle_tree_root=merkle_tree_root,
+            cross_table_referential_integrity=ref_integrity,
+            is_consistent=all_consistent and (total_mismatched == 0),
+        )
 
     def reconcile_table_data(
         self,
