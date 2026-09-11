@@ -1,8 +1,5 @@
 ---
 name: "autonomous-qa-25-test-self-healing"
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "Run 25-test-self-healing through its exact repository-owned Autonomous QA handler."
 metadata:
   source_package: "elmos-autonomous-qa-self-healing-skills"
@@ -21,7 +18,7 @@ metadata:
   runtime_phase: "repair"
   runtime_mutating: "true"
   runtime_operation: "external-plan:elmos_autonomous_qa.domain.validate_test_heal"
-  runtime_evidence: "LOCAL_EXECUTED"
+  runtime_evidence: "LOCAL_HANDLER_BOUND_NOT_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "NOT_CERTIFIED"
 ---

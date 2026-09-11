@@ -1,8 +1,5 @@
 ---
 name: legacy-web-31-legacy-web-semantic-ir
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for Legacy Web Semantic IR; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
   source_package: elmos.java-legacy-web.repository-modernization

@@ -1,8 +1,5 @@
 ---
 name: legacy-web-03-checkpoint-resume-cancel
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for 检查点、恢复与取消; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
   source_package: elmos.java-legacy-web.repository-modernization

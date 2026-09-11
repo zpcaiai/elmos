@@ -1,8 +1,5 @@
 ---
 name: legacy-web-04-wall-clock-eta-and-cost-model
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for 机器运行时 ETA 与成本模型; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
   source_package: elmos.java-legacy-web.repository-modernization

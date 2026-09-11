@@ -1,8 +1,5 @@
 ---
 name: legacy-web-28-transaction-and-side-effect-topology
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for 事务与副作用拓扑恢复; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
   source_package: elmos.java-legacy-web.repository-modernization

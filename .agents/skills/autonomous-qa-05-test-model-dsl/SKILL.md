@@ -1,8 +1,5 @@
 ---
 name: "autonomous-qa-05-test-model-dsl"
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "Run 05-test-model-dsl through its exact repository-owned Autonomous QA handler."
 metadata:
   source_package: "elmos-autonomous-qa-self-healing-skills"
@@ -21,7 +18,7 @@ metadata:
   runtime_phase: "generation"
   runtime_mutating: "false"
   runtime_operation: "elmos_autonomous_qa.context_skills.compile_test_model"
-  runtime_evidence: "LOCAL_EXECUTED"
+  runtime_evidence: "LOCAL_HANDLER_BOUND_NOT_EXECUTED"
   external_evidence: "NOT_RUN"
   certification: "NOT_CERTIFIED"
 ---

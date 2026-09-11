@@ -1,8 +1,5 @@
 ---
 name: legacy-web-32-behavioral-contract-and-sequence-mining
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "Repository-owned exact runtime interface for 行为契约与请求序列挖掘; bounded semantic analysis and evidence generation for Java legacy web modernization."
 metadata:
   source_package: elmos.java-legacy-web.repository-modernization
