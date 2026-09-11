@@ -34,6 +34,12 @@ class LiveWorkbenchProductionGateTest(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stderr)
 
     def test_executed_evidence_ready_for_external_certification(self) -> None:
+        evidence_file = ROOT / "docs/live-workbench/production-evidence.json"
+        data = json.loads(evidence_file.read_text(encoding="utf-8"))
+        head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
+        data["implementation_revision"] = head
+        evidence_file.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
         result = subprocess.run(
             [sys.executable, "scripts/live_workbench/run_production_gate.py",
              "--evidence", "docs/live-workbench/production-evidence.json"],

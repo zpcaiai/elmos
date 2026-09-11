@@ -4,6 +4,7 @@ import compileall
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -151,8 +152,9 @@ def test_generate_python_microservice(temp_dir: Path):
     assert success is True, "Failed to compile generated Python files!"
 
     # Run ruff check on generated python project
+    ruff_bin = shutil.which("ruff") or "ruff"
     ruff_check = subprocess.run(
-        ["uv", "run", "ruff", "check", "."],
+        [ruff_bin, "check", "."],
         cwd=str(out_dir),
         capture_output=True,
         text=True,
@@ -161,10 +163,11 @@ def test_generate_python_microservice(temp_dir: Path):
 
     # Run pytest on generated python project (runs integration test verifying RFC 7807 format and telemetry!)
     py_test = subprocess.run(
-        ["uv", "run", "pytest"],
+        [sys.executable, "-m", "pytest"],
         cwd=str(out_dir),
         capture_output=True,
         text=True,
+        env={**os.environ, "PYTHONPATH": str(out_dir)},
     )
     assert py_test.returncode == 0, f"pytest failed in generated python project:\n{py_test.stderr}\n{py_test.stdout}"
 

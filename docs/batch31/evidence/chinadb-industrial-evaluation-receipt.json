@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0",
   "businessLine": "3. 数据库与 SQL 方言迁移 (含 ChinaDB)",
-  "evaluatedAt": "2026-09-11T02:58:57.457258+00:00",
-  "durationSeconds": 2.486,
+  "evaluatedAt": "2026-09-11T16:31:30.322160+00:00",
+  "durationSeconds": 2.213,
   "closureStatus": "100%_INDUSTRIAL_CLOSED",
   "overallVerdict": "PASSED",
   "metrics": {
@@ -1258,7 +1258,7 @@
         "port": 5236,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.12,
+        "latencyMs": 0.11,
         "ddl": {
           "statementsExecuted": 7,
           "statementsSucceeded": 7,
@@ -1306,19 +1306,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.234,
-          "tps": 2739.3,
+          "durationSeconds": 0.172,
+          "tps": 3714.5,
           "latenciesMs": {
-            "p50": 0.11,
-            "p90": 1.85,
-            "p95": 5.25,
-            "p99": 15.12
+            "p50": 0.15,
+            "p90": 0.35,
+            "p95": 0.52,
+            "p99": 1.89
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.00000000006,
+          "finalTotalBalance": 199999.99999999997,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
@@ -1377,19 +1377,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.147,
-          "tps": 4365.1,
+          "durationSeconds": 0.185,
+          "tps": 3462.7,
           "latenciesMs": {
-            "p50": 0.72,
-            "p90": 7.76,
-            "p95": 11.0,
-            "p99": 20.15
+            "p50": 0.16,
+            "p90": 0.46,
+            "p95": 0.71,
+            "p99": 2.2
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.00000000003,
+          "finalTotalBalance": 199999.99999999997,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
@@ -1400,7 +1400,7 @@
         "port": 5432,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.03,
+        "latencyMs": 0.05,
         "ddl": {
           "statementsExecuted": 7,
           "statementsSucceeded": 7,
@@ -1448,13 +1448,13 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.141,
-          "tps": 4550.8,
+          "durationSeconds": 0.146,
+          "tps": 4389.5,
           "latenciesMs": {
-            "p50": 0.4,
-            "p90": 8.07,
-            "p95": 14.19,
-            "p99": 25.22
+            "p50": 0.11,
+            "p90": 0.33,
+            "p95": 0.58,
+            "p99": 1.6
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
@@ -1471,7 +1471,7 @@
         "port": 4000,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.26,
+        "latencyMs": 0.02,
         "ddl": {
           "statementsExecuted": 7,
           "statementsSucceeded": 7,
@@ -1519,19 +1519,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.132,
-          "tps": 4860.4,
+          "durationSeconds": 0.16,
+          "tps": 3994.4,
           "latenciesMs": {
-            "p50": 0.5,
-            "p90": 7.69,
-            "p95": 11.51,
-            "p99": 31.55
+            "p50": 0.14,
+            "p90": 0.33,
+            "p95": 0.44,
+            "p99": 1.38
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.0,
+          "finalTotalBalance": 199999.99999999994,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
@@ -1540,219 +1540,6 @@
         "targetId": "gbase-8s",
         "protocol": "POSTGRES",
         "port": 9088,
-        "mode": "PROTOCOL_LAB",
-        "isReady": true,
-        "latencyMs": 0.04,
-        "ddl": {
-          "statementsExecuted": 7,
-          "statementsSucceeded": 7,
-          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
-          "tablesFound": [
-            "accounts",
-            "audit_log",
-            "cbs_general_ledger",
-            "tx_history"
-          ],
-          "accountPrimaryKeyVerified": true
-        },
-        "cdc": {
-          "totalSourceRows": 5,
-          "totalTargetRows": 5,
-          "matchedCount": 5,
-          "mismatchedCount": 0,
-          "isConsistent": true,
-          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
-          "crossTableReferentialIntegrity": true,
-          "tables": {
-            "accounts": {
-              "sourceRowCount": 2,
-              "targetRowCount": 2,
-              "matched": 2,
-              "isConsistent": true,
-              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
-            },
-            "tx_history": {
-              "sourceRowCount": 1,
-              "targetRowCount": 1,
-              "matched": 1,
-              "isConsistent": true,
-              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
-            },
-            "audit_log": {
-              "sourceRowCount": 2,
-              "targetRowCount": 2,
-              "matched": 2,
-              "isConsistent": true,
-              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
-            }
-          }
-        },
-        "stress": {
-          "totalTransactions": 640,
-          "concurrency": 16,
-          "durationSeconds": 0.123,
-          "tps": 5193.9,
-          "latenciesMs": {
-            "p50": 0.38,
-            "p90": 7.31,
-            "p95": 11.96,
-            "p99": 23.03
-          },
-          "sloPassed": true,
-          "conservationInvariantHolds": true,
-          "doubleEntryZeroSumVerified": true,
-          "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.00000000006,
-          "txHistoryRecorded": 640,
-          "auditEntriesRecorded": 1280
-        }
-      },
-      {
-        "targetId": "gbase-8c",
-        "protocol": "POSTGRES",
-        "port": 54322,
-        "mode": "PROTOCOL_LAB",
-        "isReady": true,
-        "latencyMs": 0.04,
-        "ddl": {
-          "statementsExecuted": 7,
-          "statementsSucceeded": 7,
-          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
-          "tablesFound": [
-            "accounts",
-            "audit_log",
-            "cbs_general_ledger",
-            "tx_history"
-          ],
-          "accountPrimaryKeyVerified": true
-        },
-        "cdc": {
-          "totalSourceRows": 5,
-          "totalTargetRows": 5,
-          "matchedCount": 5,
-          "mismatchedCount": 0,
-          "isConsistent": true,
-          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
-          "crossTableReferentialIntegrity": true,
-          "tables": {
-            "accounts": {
-              "sourceRowCount": 2,
-              "targetRowCount": 2,
-              "matched": 2,
-              "isConsistent": true,
-              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
-            },
-            "tx_history": {
-              "sourceRowCount": 1,
-              "targetRowCount": 1,
-              "matched": 1,
-              "isConsistent": true,
-              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
-            },
-            "audit_log": {
-              "sourceRowCount": 2,
-              "targetRowCount": 2,
-              "matched": 2,
-              "isConsistent": true,
-              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
-            }
-          }
-        },
-        "stress": {
-          "totalTransactions": 640,
-          "concurrency": 16,
-          "durationSeconds": 0.123,
-          "tps": 5186.6,
-          "latenciesMs": {
-            "p50": 1.09,
-            "p90": 7.47,
-            "p95": 9.89,
-            "p99": 14.57
-          },
-          "sloPassed": true,
-          "conservationInvariantHolds": true,
-          "doubleEntryZeroSumVerified": true,
-          "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.0,
-          "txHistoryRecorded": 640,
-          "auditEntriesRecorded": 1280
-        }
-      },
-      {
-        "targetId": "gbase-8a",
-        "protocol": "MYSQL",
-        "port": 5258,
-        "mode": "PROTOCOL_LAB",
-        "isReady": true,
-        "latencyMs": 0.04,
-        "ddl": {
-          "statementsExecuted": 7,
-          "statementsSucceeded": 7,
-          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
-          "tablesFound": [
-            "accounts",
-            "audit_log",
-            "cbs_general_ledger",
-            "tx_history"
-          ],
-          "accountPrimaryKeyVerified": true
-        },
-        "cdc": {
-          "totalSourceRows": 5,
-          "totalTargetRows": 5,
-          "matchedCount": 5,
-          "mismatchedCount": 0,
-          "isConsistent": true,
-          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
-          "crossTableReferentialIntegrity": true,
-          "tables": {
-            "accounts": {
-              "sourceRowCount": 2,
-              "targetRowCount": 2,
-              "matched": 2,
-              "isConsistent": true,
-              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
-            },
-            "tx_history": {
-              "sourceRowCount": 1,
-              "targetRowCount": 1,
-              "matched": 1,
-              "isConsistent": true,
-              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
-            },
-            "audit_log": {
-              "sourceRowCount": 2,
-              "targetRowCount": 2,
-              "matched": 2,
-              "isConsistent": true,
-              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
-            }
-          }
-        },
-        "stress": {
-          "totalTransactions": 640,
-          "concurrency": 16,
-          "durationSeconds": 0.131,
-          "tps": 4877.1,
-          "latenciesMs": {
-            "p50": 0.18,
-            "p90": 6.92,
-            "p95": 12.19,
-            "p99": 25.84
-          },
-          "sloPassed": true,
-          "conservationInvariantHolds": true,
-          "doubleEntryZeroSumVerified": true,
-          "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.00000000003,
-          "txHistoryRecorded": 640,
-          "auditEntriesRecorded": 1280
-        }
-      },
-      {
-        "targetId": "highgo-hgdb",
-        "protocol": "POSTGRES",
-        "port": 5866,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
         "latencyMs": 0.02,
@@ -1803,30 +1590,30 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.13,
-          "tps": 4941.8,
+          "durationSeconds": 0.145,
+          "tps": 4423.0,
           "latenciesMs": {
-            "p50": 0.69,
-            "p90": 8.17,
-            "p95": 10.79,
-            "p99": 16.9
+            "p50": 0.14,
+            "p90": 0.33,
+            "p95": 0.48,
+            "p99": 1.24
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.00000000003,
+          "finalTotalBalance": 200000.0,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
       },
       {
-        "targetId": "oceanbase-oracle",
+        "targetId": "gbase-8c",
         "protocol": "POSTGRES",
-        "port": 2883,
+        "port": 54322,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.04,
+        "latencyMs": 0.02,
         "ddl": {
           "statementsExecuted": 7,
           "statementsSucceeded": 7,
@@ -1874,13 +1661,84 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.122,
-          "tps": 5260.3,
+          "durationSeconds": 0.146,
+          "tps": 4376.1,
           "latenciesMs": {
-            "p50": 1.03,
-            "p90": 7.07,
-            "p95": 9.53,
-            "p99": 15.54
+            "p50": 0.13,
+            "p90": 0.32,
+            "p95": 0.46,
+            "p99": 1.42
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.00000000003,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
+        }
+      },
+      {
+        "targetId": "gbase-8a",
+        "protocol": "MYSQL",
+        "port": 5258,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.05,
+        "ddl": {
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
+          "tablesFound": [
+            "accounts",
+            "audit_log",
+            "cbs_general_ledger",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
+        },
+        "stress": {
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.135,
+          "tps": 4723.4,
+          "latenciesMs": {
+            "p50": 0.14,
+            "p90": 0.29,
+            "p95": 0.4,
+            "p99": 1.12
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
@@ -1892,12 +1750,12 @@
         }
       },
       {
-        "targetId": "oceanbase-mysql",
-        "protocol": "MYSQL",
-        "port": 2881,
+        "targetId": "highgo-hgdb",
+        "protocol": "POSTGRES",
+        "port": 5866,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.02,
+        "latencyMs": 0.04,
         "ddl": {
           "statementsExecuted": 7,
           "statementsSucceeded": 7,
@@ -1945,13 +1803,155 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.113,
-          "tps": 5670.8,
+          "durationSeconds": 0.121,
+          "tps": 5299.7,
           "latenciesMs": {
-            "p50": 1.43,
-            "p90": 6.47,
-            "p95": 8.04,
-            "p99": 12.03
+            "p50": 0.11,
+            "p90": 0.27,
+            "p95": 0.35,
+            "p99": 0.92
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 199999.99999999997,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
+        }
+      },
+      {
+        "targetId": "oceanbase-oracle",
+        "protocol": "POSTGRES",
+        "port": 2883,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.11,
+        "ddl": {
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
+          "tablesFound": [
+            "accounts",
+            "audit_log",
+            "cbs_general_ledger",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
+        },
+        "stress": {
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.15,
+          "tps": 4267.5,
+          "latenciesMs": {
+            "p50": 0.13,
+            "p90": 0.33,
+            "p95": 0.51,
+            "p99": 1.85
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.00000000003,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
+        }
+      },
+      {
+        "targetId": "oceanbase-mysql",
+        "protocol": "MYSQL",
+        "port": 2881,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.04,
+        "ddl": {
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
+          "tablesFound": [
+            "accounts",
+            "audit_log",
+            "cbs_general_ledger",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
+        },
+        "stress": {
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.097,
+          "tps": 6593.8,
+          "latenciesMs": {
+            "p50": 0.09,
+            "p90": 0.23,
+            "p95": 0.34,
+            "p99": 0.66
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
@@ -1968,7 +1968,7 @@
         "port": 8000,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.03,
+        "latencyMs": 0.07,
         "ddl": {
           "statementsExecuted": 7,
           "statementsSucceeded": 7,
@@ -2016,19 +2016,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.107,
-          "tps": 5987.4,
+          "durationSeconds": 0.156,
+          "tps": 4114.3,
           "latenciesMs": {
-            "p50": 0.81,
-            "p90": 6.1,
-            "p95": 8.36,
-            "p99": 16.95
+            "p50": 0.1,
+            "p90": 0.27,
+            "p95": 0.39,
+            "p99": 1.61
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.0,
+          "finalTotalBalance": 199999.99999999997,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
@@ -2039,7 +2039,7 @@
         "port": 3307,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.02,
+        "latencyMs": 0.04,
         "ddl": {
           "statementsExecuted": 7,
           "statementsSucceeded": 7,
@@ -2087,19 +2087,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.115,
-          "tps": 5553.1,
+          "durationSeconds": 0.164,
+          "tps": 3910.8,
           "latenciesMs": {
-            "p50": 0.98,
-            "p90": 6.57,
-            "p95": 8.7,
-            "p99": 15.77
+            "p50": 0.12,
+            "p90": 0.4,
+            "p95": 0.65,
+            "p99": 1.66
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.00000000003,
+          "finalTotalBalance": 200000.0,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
@@ -2158,19 +2158,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.105,
-          "tps": 6095.8,
+          "durationSeconds": 0.151,
+          "tps": 4248.3,
           "latenciesMs": {
-            "p50": 1.3,
-            "p90": 5.82,
-            "p95": 7.83,
-            "p99": 10.67
+            "p50": 0.12,
+            "p90": 0.34,
+            "p95": 0.55,
+            "p99": 2.08
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.00000000003,
+          "finalTotalBalance": 199999.99999999997,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
