@@ -1,19 +1,19 @@
 {
   "metadata": {
     "total_skills": 4677,
-    "audited_at": "2026-09-11T09:57:14Z",
-    "scan_duration_seconds": 85.95,
+    "audited_at": "2026-09-11T14:36:17Z",
+    "scan_duration_seconds": 45.74,
     "tier_summary": {
       "[TEST_READY / BOUNDED]": 457,
-      "[VERIFIED / CODE_COMPLETE]": 3495,
-      "[DECLARED / SPEC_ONLY]": 252,
+      "[VERIFIED / CODE_COMPLETE]": 3460,
+      "[DECLARED / SPEC_ONLY]": 287,
       "[PRODUCTION_CONTRACT]": 473
     },
     "status_summary": {
       "LOCAL_CONTROL_PLANE": 102,
       "RUNTIME_BOUND_NOT_EXECUTED": 87,
-      "VERIFIED": 3495,
-      "DECLARED": 249,
+      "VERIFIED": 3460,
+      "DECLARED": 284,
       "test-ready-not-run": 75,
       "LOCAL_IMPLEMENTED_BOUNDED": 1,
       "BLUEPRINT_IMPORTED": 101,
@@ -13433,8 +13433,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-141; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1332
     },
     {
@@ -13446,8 +13446,8 @@
         "ELMOS-POLY-217"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2115
     },
     {
@@ -13457,8 +13457,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-143; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1348
     },
     {
@@ -13470,8 +13470,8 @@
         "ELMOS-POLY-281"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2169
     },
     {
@@ -13651,8 +13651,8 @@
         "ELMOS-POLY-222"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2120
     },
     {
@@ -13673,8 +13673,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-146; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1342
     },
     {
@@ -13684,8 +13684,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-093; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1305
     },
     {
@@ -13695,8 +13695,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-095; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1303
     },
     {
@@ -13706,8 +13706,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-097; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1315
     },
     {
@@ -13717,8 +13717,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-085; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1299
     },
     {
@@ -13728,8 +13728,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-103; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1313
     },
     {
@@ -13739,8 +13739,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-102; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1325
     },
     {
@@ -13750,8 +13750,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-086; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1307
     },
     {
@@ -13772,8 +13772,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-055; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1307
     },
     {
@@ -13783,8 +13783,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-052; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1313
     },
     {
@@ -13794,8 +13794,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-061; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1315
     },
     {
@@ -13805,8 +13805,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-096; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1311
     },
     {
@@ -13816,8 +13816,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-053; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1305
     },
     {
@@ -13827,8 +13827,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-101; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1311
     },
     {
@@ -13838,8 +13838,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-105; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1313
     },
     {
@@ -13849,8 +13849,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-104; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1311
     },
     {
@@ -13860,8 +13860,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-049; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1309
     },
     {
@@ -13871,8 +13871,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-062; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1321
     },
     {
@@ -13882,8 +13882,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-099; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1303
     },
     {
@@ -13893,8 +13893,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-050; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1313
     },
     {
@@ -13904,8 +13904,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-106; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1335
     },
     {
@@ -13937,8 +13937,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-094; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1311
     },
     {
@@ -13948,8 +13948,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-091; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1323
     },
     {
@@ -13959,8 +13959,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-059; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1323
     },
     {
@@ -13970,8 +13970,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-056; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1307
     },
     {
@@ -13981,8 +13981,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-088; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1303
     },
     {
@@ -13992,8 +13992,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-092; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1319
     },
     {
@@ -14003,8 +14003,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-051; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1313
     },
     {
@@ -14014,8 +14014,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-058; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1311
     },
     {
@@ -14036,8 +14036,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-100; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1305
     },
     {
@@ -14047,8 +14047,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-087; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1303
     },
     {
@@ -14058,8 +14058,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-054; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1309
     },
     {
@@ -14069,8 +14069,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-060; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1311
     },
     {
@@ -14080,8 +14080,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-057; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1321
     },
     {
@@ -14091,8 +14091,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-089; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1303
     },
     {
@@ -14102,8 +14102,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-090; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1313
     },
     {
@@ -14113,8 +14113,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-098; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1307
     },
     {
@@ -14206,8 +14206,8 @@
         "ELMOS-POLY-255"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2091
     },
     {
@@ -16440,8 +16440,8 @@
         "ELMOS-POLY-202"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2119
     },
     {
@@ -16552,8 +16552,8 @@
         "ELMOS-POLY-182"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2149
     },
     {
@@ -16678,8 +16678,8 @@
         "ELMOS-POLY-242"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2161
     },
     {
@@ -16700,8 +16700,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-022; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1328
     },
     {
@@ -16711,8 +16711,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-008; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1315
     },
     {
@@ -17882,8 +17882,8 @@
         "ELMOS-POLY-209"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2125
     },
     {
@@ -17973,8 +17973,8 @@
         "ELMOS-POLY-220"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2097
     },
     {
@@ -18496,8 +18496,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-074; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1315
     },
     {
@@ -18518,8 +18518,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-157; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1342
     },
     {
@@ -18544,8 +18544,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-113; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1336
     },
     {
@@ -18577,8 +18577,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-010; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1325
     },
     {
@@ -18590,8 +18590,8 @@
         "ELMOS-POLY-248"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2472
     },
     {
@@ -19010,8 +19010,8 @@
         "ELMOS-POLY-229"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2188
     },
     {
@@ -19032,8 +19032,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-019; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1342
     },
     {
@@ -19067,8 +19067,8 @@
         "ELMOS-POLY-280"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2120
     },
     {
@@ -19109,8 +19109,8 @@
         "ELMOS-POLY-272"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2081
     },
     {
@@ -19164,8 +19164,8 @@
         "ELMOS-POLY-259"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2053
     },
     {
@@ -19177,8 +19177,8 @@
         "ELMOS-POLY-299"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2104
     },
     {
@@ -19212,8 +19212,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-021; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1328
     },
     {
@@ -19245,8 +19245,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-005; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1329
     },
     {
@@ -19316,8 +19316,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-071; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1323
     },
     {
@@ -19327,8 +19327,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-154; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1340
     },
     {
@@ -19349,8 +19349,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-118; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1336
     },
     {
@@ -19360,8 +19360,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-145; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1338
     },
     {
@@ -19371,8 +19371,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-144; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1326
     },
     {
@@ -19692,8 +19692,8 @@
         "ELMOS-POLY-185"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2066
     },
     {
@@ -20196,8 +20196,8 @@
         "ELMOS-POLY-262"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2329
     },
     {
@@ -20475,8 +20475,8 @@
         "ELMOS-POLY-199"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2037
     },
     {
@@ -20612,8 +20612,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-107; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1346
     },
     {
@@ -20803,8 +20803,8 @@
         "ELMOS-POLY-207"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2088
     },
     {
@@ -20902,8 +20902,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-151; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1350
     },
     {
@@ -21074,8 +21074,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-084; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1338
     },
     {
@@ -21136,8 +21136,8 @@
         "ELMOS-POLY-190"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2114
     },
     {
@@ -21147,8 +21147,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-123; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1336
     },
     {
@@ -21171,8 +21171,8 @@
         "ELMOS-POLY-177"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2174
     },
     {
@@ -21415,8 +21415,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-032; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1334
     },
     {
@@ -21475,8 +21475,8 @@
         "ELMOS-POLY-293"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2126
     },
     {
@@ -21488,8 +21488,8 @@
         "ELMOS-POLY-264"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2110
     },
     {
@@ -21687,8 +21687,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-024; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1346
     },
     {
@@ -22218,8 +22218,8 @@
         "ELMOS-POLY-283"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2167
     },
     {
@@ -22258,8 +22258,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-039; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1334
     },
     {
@@ -22271,8 +22271,8 @@
         "ELMOS-POLY-214"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2339
     },
     {
@@ -22355,8 +22355,8 @@
         "ELMOS-POLY-261"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2145
     },
     {
@@ -22575,8 +22575,8 @@
         "ELMOS-POLY-290"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2158
     },
     {
@@ -22829,8 +22829,8 @@
         "ELMOS-POLY-215"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2096
     },
     {
@@ -22951,8 +22951,8 @@
         "ELMOS-POLY-237"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2114
     },
     {
@@ -23306,8 +23306,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-023; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1350
     },
     {
@@ -23372,8 +23372,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-009; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1317
     },
     {
@@ -23394,8 +23394,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-042; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1340
     },
     {
@@ -24033,8 +24033,8 @@
         "ELMOS-POLY-273"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2107
     },
     {
@@ -24225,8 +24225,8 @@
         "ELMOS-POLY-239"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2134
     },
     {
@@ -24326,8 +24326,8 @@
         "ELMOS-POLY-227"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2135
     },
     {
@@ -24520,8 +24520,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-108; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1344
     },
     {
@@ -24531,8 +24531,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-155; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1362
     },
     {
@@ -24555,8 +24555,8 @@
         "ELMOS-POLY-226"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2105
     },
     {
@@ -24623,8 +24623,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-048; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1326
     },
     {
@@ -24645,8 +24645,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-140; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1340
     },
     {
@@ -24689,8 +24689,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-006; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1337
     },
     {
@@ -24762,8 +24762,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-020; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1340
     },
     {
@@ -24840,8 +24840,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-029; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1340
     },
     {
@@ -24884,8 +24884,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-124; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1326
     },
     {
@@ -24895,8 +24895,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-018; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1346
     },
     {
@@ -24937,8 +24937,8 @@
         "ELMOS-POLY-246"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2154
     },
     {
@@ -25120,8 +25120,8 @@
         "ELMOS-POLY-170"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2070
     },
     {
@@ -25133,8 +25133,8 @@
         "ELMOS-POLY-254"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2099
     },
     {
@@ -25144,8 +25144,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-038; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1350
     },
     {
@@ -25803,8 +25803,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-167; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1364
     },
     {
@@ -25906,8 +25906,8 @@
         "ELMOS-POLY-183"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2113
     },
     {
@@ -26102,8 +26102,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-111; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1346
     },
     {
@@ -26164,8 +26164,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-080; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1325
     },
     {
@@ -26253,8 +26253,8 @@
         "ELMOS-POLY-191"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2106
     },
     {
@@ -26407,8 +26407,8 @@
         "ELMOS-POLY-296"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2129
     },
     {
@@ -26451,8 +26451,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-025; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1338
     },
     {
@@ -26873,8 +26873,8 @@
         "ELMOS-POLY-195"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2102
     },
     {
@@ -26908,8 +26908,8 @@
         "ELMOS-POLY-205"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2122
     },
     {
@@ -27180,8 +27180,8 @@
         "ELMOS-POLY-297"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2125
     },
     {
@@ -28131,8 +28131,8 @@
         "ELMOS-POLY-218"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2142
     },
     {
@@ -28155,8 +28155,8 @@
         "ELMOS-POLY-241"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2135
     },
     {
@@ -28230,8 +28230,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-068; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1335
     },
     {
@@ -28243,8 +28243,8 @@
         "ELMOS-POLY-249"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2088
     },
     {
@@ -28256,8 +28256,8 @@
         "ELMOS-POLY-260"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2111
     },
     {
@@ -28298,8 +28298,8 @@
         "ELMOS-POLY-298"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2166
     },
     {
@@ -28353,8 +28353,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-121; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1362
     },
     {
@@ -28444,8 +28444,8 @@
         "ELMOS-POLY-288"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2334
     },
     {
@@ -28630,8 +28630,8 @@
         "ELMOS-POLY-275"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2146
     },
     {
@@ -28659,8 +28659,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-148; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1336
     },
     {
@@ -28670,8 +28670,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-149; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1348
     },
     {
@@ -28703,8 +28703,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-013; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1319
     },
     {
@@ -28789,8 +28789,8 @@
         "ELMOS-POLY-184"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2261
     },
     {
@@ -28877,8 +28877,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-030; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1326
     },
     {
@@ -28921,8 +28921,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-063; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1329
     },
     {
@@ -29076,8 +29076,8 @@
         "ELMOS-POLY-258"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2071
     },
     {
@@ -29188,8 +29188,8 @@
         "ELMOS-POLY-181"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2159
     },
     {
@@ -29212,8 +29212,8 @@
         "ELMOS-POLY-192"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2160
     },
     {
@@ -29393,8 +29393,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-037; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1332
     },
     {
@@ -29430,8 +29430,8 @@
         "ELMOS-POLY-257"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2164
     },
     {
@@ -29483,8 +29483,8 @@
         "ELMOS-POLY-289"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2126
     },
     {
@@ -29496,8 +29496,8 @@
         "ELMOS-POLY-252"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2108
     },
     {
@@ -29509,8 +29509,8 @@
         "ELMOS-POLY-169"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2069
     },
     {
@@ -29882,8 +29882,8 @@
         "ELMOS-POLY-263"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2125
     },
     {
@@ -30238,8 +30238,8 @@
         "ELMOS-POLY-267"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2070
     },
     {
@@ -30249,8 +30249,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-129; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1332
     },
     {
@@ -30260,8 +30260,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-134; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1344
     },
     {
@@ -30271,8 +30271,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-133; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1340
     },
     {
@@ -30364,8 +30364,8 @@
         "ELMOS-POLY-225"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2097
     },
     {
@@ -30420,8 +30420,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-003; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1337
     },
     {
@@ -30743,8 +30743,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-159; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1338
     },
     {
@@ -30754,8 +30754,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-110; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1348
     },
     {
@@ -30765,8 +30765,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-076; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1333
     },
     {
@@ -30999,8 +30999,8 @@
         "ELMOS-POLY-234"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2096
     },
     {
@@ -31047,8 +31047,8 @@
         "ELMOS-POLY-224"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2097
     },
     {
@@ -31221,8 +31221,8 @@
         "ELMOS-POLY-203"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2182
     },
     {
@@ -31258,8 +31258,8 @@
         "ELMOS-POLY-212"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2117
     },
     {
@@ -31348,8 +31348,8 @@
         "ELMOS-POLY-208"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2183
     },
     {
@@ -32098,8 +32098,8 @@
         "ELMOS-POLY-251"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2113
     },
     {
@@ -32226,8 +32226,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-069; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1335
     },
     {
@@ -32239,8 +32239,8 @@
         "ELMOS-POLY-256"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2097
     },
     {
@@ -32261,8 +32261,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-079; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1335
     },
     {
@@ -32272,8 +32272,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-070; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1337
     },
     {
@@ -32327,8 +32327,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-116; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1338
     },
     {
@@ -32367,8 +32367,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-065; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1324
     },
     {
@@ -32389,8 +32389,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-165; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1358
     },
     {
@@ -32400,8 +32400,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-168; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1351
     },
     {
@@ -32411,8 +32411,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-066; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1335
     },
     {
@@ -32446,8 +32446,8 @@
         "ELMOS-POLY-172"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2132
     },
     {
@@ -32492,8 +32492,8 @@
         "ELMOS-POLY-194"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2131
     },
     {
@@ -32570,8 +32570,8 @@
         "ELMOS-POLY-277"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2151
     },
     {
@@ -32623,8 +32623,8 @@
         "ELMOS-POLY-221"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2109
     },
     {
@@ -32717,8 +32717,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-036; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1346
     },
     {
@@ -32741,8 +32741,8 @@
         "ELMOS-POLY-173"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2067
     },
     {
@@ -32856,8 +32856,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-132; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1358
     },
     {
@@ -32867,8 +32867,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-131; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1354
     },
     {
@@ -32891,8 +32891,8 @@
         "ELMOS-POLY-266"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2086
     },
     {
@@ -32902,8 +32902,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-117; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1342
     },
     {
@@ -33286,8 +33286,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-163; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1352
     },
     {
@@ -33332,8 +33332,8 @@
         "ELMOS-POLY-240"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2050
     },
     {
@@ -33411,8 +33411,8 @@
         "ELMOS-POLY-291"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2137
     },
     {
@@ -33424,8 +33424,8 @@
         "ELMOS-POLY-211"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2181
     },
     {
@@ -33475,8 +33475,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-016; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1326
     },
     {
@@ -33497,8 +33497,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-015; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1330
     },
     {
@@ -33649,8 +33649,8 @@
         "ELMOS-POLY-271"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2098
     },
     {
@@ -33682,8 +33682,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-031; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1322
     },
     {
@@ -34526,8 +34526,8 @@
         "ELMOS-POLY-236"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2188
     },
     {
@@ -34577,8 +34577,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-004; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1345
     },
     {
@@ -34876,8 +34876,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-041; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1336
     },
     {
@@ -34971,8 +34971,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-162; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1342
     },
     {
@@ -34982,8 +34982,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-119; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1334
     },
     {
@@ -34993,8 +34993,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-081; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1317
     },
     {
@@ -35006,8 +35006,8 @@
         "ELMOS-POLY-174"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2080
     },
     {
@@ -35064,8 +35064,8 @@
         "ELMOS-POLY-274"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2411
     },
     {
@@ -35077,8 +35077,8 @@
         "ELMOS-POLY-231"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2215
     },
     {
@@ -35088,8 +35088,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-127; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1334
     },
     {
@@ -35099,8 +35099,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-142; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1352
     },
     {
@@ -35218,8 +35218,8 @@
         "ELMOS-POLY-186"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2124
     },
     {
@@ -35351,8 +35351,8 @@
         "ELMOS-POLY-187"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2094
     },
     {
@@ -35364,8 +35364,8 @@
         "ELMOS-POLY-188"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2066
     },
     {
@@ -35375,8 +35375,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-077; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1315
     },
     {
@@ -35386,8 +35386,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-120; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1338
     },
     {
@@ -35397,8 +35397,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-161; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1342
     },
     {
@@ -35410,8 +35410,8 @@
         "ELMOS-POLY-219"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2107
     },
     {
@@ -35541,8 +35541,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-028; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1346
     },
     {
@@ -35599,8 +35599,8 @@
         "ELMOS-POLY-233"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2142
     },
     {
@@ -35862,8 +35862,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-128; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1330
     },
     {
@@ -36044,8 +36044,8 @@
         "ELMOS-POLY-265"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2050
     },
     {
@@ -36130,8 +36130,8 @@
         "ELMOS-POLY-180"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2095
     },
     {
@@ -36231,8 +36231,8 @@
         "ELMOS-POLY-175"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2090
     },
     {
@@ -36242,8 +36242,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-153; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1348
     },
     {
@@ -36420,8 +36420,8 @@
         "ELMOS-POLY-244"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2135
     },
     {
@@ -36431,8 +36431,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-043; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1354
     },
     {
@@ -36754,8 +36754,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-136; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1334
     },
     {
@@ -36765,8 +36765,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-135; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1330
     },
     {
@@ -36789,8 +36789,8 @@
         "ELMOS-POLY-216"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2150
     },
     {
@@ -36937,8 +36937,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-001; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1354
     },
     {
@@ -37087,8 +37087,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-125; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1352
     },
     {
@@ -37098,8 +37098,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-139; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1364
     },
     {
@@ -37166,8 +37166,8 @@
         "ELMOS-POLY-171"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2164
     },
     {
@@ -37538,8 +37538,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-047; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1329
     },
     {
@@ -37587,8 +37587,8 @@
         "ELMOS-POLY-201"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2132
     },
     {
@@ -37755,8 +37755,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-011; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1315
     },
     {
@@ -38265,8 +38265,8 @@
         "ELMOS-POLY-286"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2190
     },
     {
@@ -38476,8 +38476,8 @@
         "ELMOS-POLY-292"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2171
     },
     {
@@ -38515,8 +38515,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-040; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1334
     },
     {
@@ -38660,8 +38660,8 @@
         "ELMOS-POLY-197"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2160
     },
     {
@@ -38673,8 +38673,8 @@
         "ELMOS-POLY-250"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2125
     },
     {
@@ -39280,8 +39280,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-072; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1323
     },
     {
@@ -39291,8 +39291,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-109; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1328
     },
     {
@@ -39415,8 +39415,8 @@
         "ELMOS-POLY-193"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2138
     },
     {
@@ -39428,8 +39428,8 @@
         "ELMOS-POLY-210"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2197
     },
     {
@@ -39734,8 +39734,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-115; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1334
     },
     {
@@ -40283,8 +40283,8 @@
         "ELMOS-POLY-206"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2097
     },
     {
@@ -40753,8 +40753,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-045; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1338
     },
     {
@@ -40978,8 +40978,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-152; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1346
     },
     {
@@ -41163,8 +41163,8 @@
         "ELMOS-POLY-232"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2399
     },
     {
@@ -41236,8 +41236,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-007; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1333
     },
     {
@@ -41308,8 +41308,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-147; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1348
     },
     {
@@ -41341,8 +41341,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-078; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1327
     },
     {
@@ -41352,8 +41352,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-164; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1346
     },
     {
@@ -41392,8 +41392,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-122; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1336
     },
     {
@@ -41461,8 +41461,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-034; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1342
     },
     {
@@ -41534,8 +41534,8 @@
         "ELMOS-POLY-269"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2052
     },
     {
@@ -41545,8 +41545,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-126; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1344
     },
     {
@@ -41707,8 +41707,8 @@
         "ELMOS-POLY-270"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2123
     },
     {
@@ -41736,8 +41736,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-002; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1339
     },
     {
@@ -41762,8 +41762,8 @@
         "ELMOS-POLY-179"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2057
     },
     {
@@ -41773,8 +41773,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-075; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1327
     },
     {
@@ -41987,8 +41987,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-166; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1364
     },
     {
@@ -42074,8 +42074,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-027; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1338
     },
     {
@@ -42127,8 +42127,8 @@
         "ELMOS-POLY-245"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2114
     },
     {
@@ -42193,8 +42193,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-044; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1350
     },
     {
@@ -42335,8 +42335,8 @@
         "ELMOS-POLY-287"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2145
     },
     {
@@ -42348,8 +42348,8 @@
         "ELMOS-POLY-282"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2219
     },
     {
@@ -42407,8 +42407,8 @@
         "ELMOS-POLY-253"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2090
     },
     {
@@ -42449,8 +42449,8 @@
         "ELMOS-POLY-235"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2090
     },
     {
@@ -42552,8 +42552,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-082; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1336
     },
     {
@@ -42587,8 +42587,8 @@
         "ELMOS-POLY-295"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2088
     },
     {
@@ -42616,8 +42616,8 @@
         "ELMOS-POLY-247"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2165
     },
     {
@@ -42653,8 +42653,8 @@
         "ELMOS-POLY-300"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2391
     },
     {
@@ -42761,8 +42761,8 @@
         "ELMOS-POLY-196"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2118
     },
     {
@@ -42772,8 +42772,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-026; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1348
     },
     {
@@ -43012,8 +43012,8 @@
         "ELMOS-POLY-204"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2125
     },
     {
@@ -43386,8 +43386,8 @@
         "ELMOS-POLY-278"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2053
     },
     {
@@ -43532,8 +43532,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-067; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1327
     },
     {
@@ -43567,8 +43567,8 @@
         "ELMOS-POLY-176"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2093
     },
     {
@@ -43815,8 +43815,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-064; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1333
     },
     {
@@ -44226,8 +44226,8 @@
         "ELMOS-POLY-230"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2218
     },
     {
@@ -44306,8 +44306,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-160; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1348
     },
     {
@@ -44486,8 +44486,8 @@
         "ELMOS-POLY-200"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2044
     },
     {
@@ -44573,8 +44573,8 @@
         "ELMOS-POLY-238"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2082
     },
     {
@@ -44744,8 +44744,8 @@
         "ELMOS-POLY-189"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2087
     },
     {
@@ -45179,8 +45179,8 @@
         "ELMOS-POLY-178"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2046
     },
     {
@@ -45192,8 +45192,8 @@
         "ELMOS-POLY-279"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2105
     },
     {
@@ -45315,8 +45315,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-083; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1334
     },
     {
@@ -45547,8 +45547,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-014; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1325
     },
     {
@@ -46454,8 +46454,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-114; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1342
     },
     {
@@ -46730,8 +46730,8 @@
         "ELMOS-POLY-228"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2173
     },
     {
@@ -46794,8 +46794,8 @@
         "ELMOS-POLY-223"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2210
     },
     {
@@ -46840,8 +46840,8 @@
         "ELMOS-POLY-213"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2185
     },
     {
@@ -47076,8 +47076,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-035; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1330
     },
     {
@@ -47241,8 +47241,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-156; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1358
     },
     {
@@ -47252,8 +47252,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-073; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1319
     },
     {
@@ -47280,8 +47280,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-112; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1344
     },
     {
@@ -47368,8 +47368,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-017; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1346
     },
     {
@@ -47392,8 +47392,8 @@
         "ELMOS-POLY-276"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2112
     },
     {
@@ -47490,8 +47490,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-033; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1352
     },
     {
@@ -47525,8 +47525,8 @@
         "ELMOS-POLY-198"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2480
     },
     {
@@ -47595,8 +47595,8 @@
         "ELMOS-POLY-243"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2097
     },
     {
@@ -47635,8 +47635,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-158; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1350
     },
     {
@@ -47683,8 +47683,8 @@
         "ELMOS-POLY-294"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2122
     },
     {
@@ -47694,8 +47694,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-046; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1338
     },
     {
@@ -47915,8 +47915,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-137; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1334
     },
     {
@@ -47926,8 +47926,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-138; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1344
     },
     {
@@ -48076,8 +48076,8 @@
         "ELMOS-POLY-284"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2075
     },
     {
@@ -48453,8 +48453,8 @@
         "ELMOS-POLY-285"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2165
     },
     {
@@ -48574,8 +48574,8 @@
         "ELMOS-POLY-268"
       ],
       "dependencies": [],
-      "status": "DECLARED",
-      "tier": "[DECLARED / SPEC_ONLY]",
+      "status": "VERIFIED",
+      "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2082
     },
     {
@@ -48817,8 +48817,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-130; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1336
     },
     {
@@ -48828,8 +48828,8 @@
       "description": "Invoke the repository-owned bounded contract for ELMOS-POLY-150; preserve fail-closed evidence and authority boundaries.",
       "tasks": [],
       "dependencies": [],
-      "status": "VERIFIED",
-      "tier": "[VERIFIED / CODE_COMPLETE]",
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
       "size_bytes": 1352
     },
     {
