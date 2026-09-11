@@ -21,6 +21,8 @@ from elmos_cli.composite_pipeline import derive_action_key, run_composite_pipeli
 class TestCompositePipeline(unittest.TestCase):
     def setUp(self):
         _ACTION_CACHE_STORE.clear()
+        if 'elmos_formal_assurance.lean_dafny_bridge' in sys.modules:
+            sys.modules['elmos_formal_assurance.lean_dafny_bridge'].generate_lean4_proof = MagicMock(side_effect=Exception("mocked"))
 
     def test_derive_action_key(self):
         key1 = derive_action_key("java", "csharp", "code1", {"opt1": 1})
@@ -111,9 +113,7 @@ class TestCompositePipeline(unittest.TestCase):
             "dafny_specification": "mock_dafny",
             "proof_id": "mock_id"
         }
-        old_gen = MockBridge.generate_lean4_proof
-        MockBridge.generate_lean4_proof = lambda *args, **kwargs: mock_proof
-        try:
+        with patch.object(sys.modules['elmos_formal_assurance.lean_dafny_bridge'], 'generate_lean4_proof', return_value=mock_proof):
             result = run_composite_pipeline(
                 src_lang="java",
                 tgt_lang="csharp",
@@ -123,8 +123,6 @@ class TestCompositePipeline(unittest.TestCase):
             self.assertEqual(result["formal_assurance"]["proof_id"], "mock_id")
             self.assertEqual(result["formal_assurance"]["lean4_specification"], "mock_lean")
             self.assertEqual(result["formal_assurance"]["dafny_specification"], "mock_dafny")
-        finally:
-            MockBridge.generate_lean4_proof = old_gen
 
     def test_run_composite_pipeline_kwargs_support(self):
         result = run_composite_pipeline(

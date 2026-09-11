@@ -6,7 +6,7 @@
   "host_python_runs": 140,
   "human_review_backlog_count": 0,
   "industrial_quality_percent": 100.0,
-  "issued_at": "2026-09-11T10:13:18.169393+00:00",
+  "issued_at": "2026-09-11T10:15:07.345614+00:00",
   "merkle_root": "fcafb05ad6dc5daa04a27822c1d9c5faed48b2a6c121d613ae99583c8464df58",
   "pairs_passed": 1050,
   "pairs_total": 1050,
@@ -15,7 +15,7 @@
       "details": {
         "files": 17
       },
-      "duration_ms": 93.59725000103936,
+      "duration_ms": 10.351000004447997,
       "errors": [],
       "name": "Anti-template and anti-string-audit",
       "passed": true,
@@ -25,7 +25,7 @@
       "details": {
         "required": 12
       },
-      "duration_ms": 169.40454201539978,
+      "duration_ms": 7.057416019961238,
       "errors": [],
       "name": "Industrial architecture",
       "passed": true,
@@ -35,7 +35,7 @@
       "details": {
         "corpora": 5
       },
-      "duration_ms": 392.99016701988876,
+      "duration_ms": 652.6939999894239,
       "errors": [],
       "name": "Five-corpus IR oracle",
       "passed": true,
@@ -51,7 +51,7 @@
         "pairs_total": 1050,
         "route_count": 210
       },
-      "duration_ms": 117790.61395899043,
+      "duration_ms": 105960.08704099222,
       "errors": [],
       "name": "210-route industrial campaign",
       "passed": true,
@@ -61,7 +61,7 @@
       "details": {
         "runs": 15
       },
-      "duration_ms": 384.9950000003446,
+      "duration_ms": 300.91029198956676,
       "errors": [],
       "name": "Python host compile-run",
       "passed": true,
@@ -71,7 +71,7 @@
       "details": {
         "industrial_quality_percent": 100.0
       },
-      "duration_ms": 0.04733400419354439,
+      "duration_ms": 0.03308302257210016,
       "errors": [],
       "name": "Honest industrial quality metric",
       "passed": true,
@@ -82,7 +82,7 @@
         "leaf_count": 29,
         "merkle_root": "fcafb05ad6dc5daa04a27822c1d9c5faed48b2a6c121d613ae99583c8464df58"
       },
-      "duration_ms": 0.06075002602301538,
+      "duration_ms": 0.1765000051818788,
       "errors": [],
       "name": "Merkle seal",
       "passed": true,

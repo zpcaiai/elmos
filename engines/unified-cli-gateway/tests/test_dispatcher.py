@@ -94,6 +94,11 @@ class TestDispatcher(unittest.TestCase):
     """Verify CLI dispatcher routing and subcommand handling."""
 
     def setUp(self):
+        sys.modules['elmos_formal_assurance.lean_dafny_bridge'].generate_lean4_proof = MagicMock(return_value={
+            "status": "SAT_PROVED",
+            "obligation": "test_obligation",
+            "proof_artifact": "theorem t1 : True := trivial",
+        })
         self.patches = [
             patch('elmos_cli.composite_pipeline.run_composite_pipeline', return_value={"status": "SUCCESS"}),
             patch('elmos_cli.interactive.run_interactive_wizard', return_value=0),

@@ -25,6 +25,7 @@ from dataclasses import dataclass
 
 import sqlglot
 
+from .dialects import sqlglot_read_dialect
 from .models import EXECUTABLE_DIALECTS, Dialect
 
 
@@ -83,7 +84,7 @@ class ValidationReport:
 
 def validate_syntax(sql: str, dialect: Dialect, *, routine: bool = False) -> tuple[str, tuple[str, ...]]:
     try:
-        statements = [s for s in sqlglot.parse(sql, read=dialect.value) if s is not None]
+        statements = [s for s in sqlglot.parse(sql, read=sqlglot_read_dialect(dialect)) if s is not None]
     except sqlglot.errors.SqlglotError as exc:
         if routine:
             fallback = _routine_parser_fallback(sql, dialect)
@@ -100,8 +101,8 @@ def validate_syntax(sql: str, dialect: Dialect, *, routine: bool = False) -> tup
             len(statements) == 2
             and type(statements[0]).__name__ == "Command"
             and type(statements[1]).__name__ == "EndStatement"
-            and statements[0].sql(dialect=dialect.value).lstrip().upper().startswith("CREATE FUNCTION")
-            and statements[1].sql(dialect=dialect.value).strip().upper() == "END"
+            and statements[0].sql(dialect=sqlglot_read_dialect(dialect)).lstrip().upper().startswith("CREATE FUNCTION")
+            and statements[1].sql(dialect=sqlglot_read_dialect(dialect)).strip().upper() == "END"
         ):
             return "PASSED", (
                 "sqlglot exposes target PL/SQL CREATE FUNCTION as Command + EndStatement; "
@@ -110,7 +111,7 @@ def validate_syntax(sql: str, dialect: Dialect, *, routine: bool = False) -> tup
     if len(statements) != 1:
         if routine and dialect is Dialect.TSQL:
             if type(statements[0]).__name__ == "Command" and statements[0].sql(
-                dialect=dialect.value
+                dialect=sqlglot_read_dialect(dialect)
             ).lstrip().upper().startswith("CREATE FUNCTION"):
                 return "PASSED", (
                     "sqlglot exposes target T-SQL CREATE FUNCTION as Command; "
