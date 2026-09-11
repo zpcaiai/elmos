@@ -94,8 +94,8 @@ class PhysicalStressEngine:
                 if not cur.fetchone():
                     try:
                         cur.execute(f"CREATE SCHEMA {schema};")
-                    except Exception:
-                        pass
+                    except Exception as exc:
+                        logger.debug("Schema %s might already exist: %s", schema, exc)
                 cur.execute(f"DROP TABLE IF EXISTS {schema}.{table_name} CASCADE;")
                 cur.execute(f"""
                     CREATE TABLE {schema}.{table_name} (

@@ -1,0 +1,7 @@
+{
+  "defaultDenyNetwork": true,
+  "isolationProvider": "ROOTLESS_OCI",
+  "rootless": true,
+  "sourceReadOnly": true,
+  "timestamp": 1789127881
+}

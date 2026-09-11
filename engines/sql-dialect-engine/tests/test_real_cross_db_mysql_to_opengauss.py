@@ -16,8 +16,20 @@ import time
 from decimal import Decimal
 from pathlib import Path
 
-import psycopg2
-import pymysql
+try:
+    import psycopg2
+    import psycopg2.extras
+    _HAS_PSYCOPG2 = True
+except ImportError:
+    psycopg2 = None
+    _HAS_PSYCOPG2 = False
+
+try:
+    import pymysql
+    _HAS_PYMYSQL = True
+except ImportError:
+    pymysql = None
+    _HAS_PYMYSQL = False
 import pytest
 
 from elmos_sql_dialect.cdc import DataComparator
@@ -27,6 +39,8 @@ from elmos_sql_dialect.opengauss_dialect import lower_opengauss_ddl
 
 
 def is_mysql_available() -> bool:
+    if not _HAS_PYMYSQL:
+        return False
     try:
         conn = pymysql.connect(
             host="127.0.0.1",
@@ -43,6 +57,8 @@ def is_mysql_available() -> bool:
 
 
 def is_opengauss_available() -> bool:
+    if not _HAS_PSYCOPG2:
+        return False
     try:
         conn = psycopg2.connect(
             dbname="omm",

@@ -173,7 +173,7 @@ public final class SpringEcosystemDependencyModernizer {
 
         // 2. Upgrade MyBatis 2.x to 3.0.3
         if (result.contains("mybatis-spring-boot-starter")) {
-            Pattern mybatisPattern = Pattern.compile("(?s)(<artifactId>mybatis-spring-boot-starter</artifactId>.*?<version>)2\\.[0-9]+\\.[0-9]+(</version>)");
+            Pattern mybatisPattern = Pattern.compile("(?s)(<artifactId>mybatis-spring-boot-starter</artifactId>(?:(?!</dependency>).)*?<version>)2\\.[0-9]+\\.[0-9]+(</version>)");
             Matcher m = mybatisPattern.matcher(result);
             if (m.find()) {
                 result = m.replaceFirst(Matcher.quoteReplacement(m.group(1)) + "3.0.3" + Matcher.quoteReplacement(m.group(2)));
@@ -183,7 +183,7 @@ public final class SpringEcosystemDependencyModernizer {
 
         // 2b. Upgrade mybatis-spring 2.x to 3.0.3
         if (result.contains("mybatis-spring")) {
-            Pattern mybatisSpringPattern = Pattern.compile("(?s)(<artifactId>mybatis-spring</artifactId>.*?<version>)2\\.[0-9]+\\.[0-9]+(</version>)");
+            Pattern mybatisSpringPattern = Pattern.compile("(?s)(<artifactId>mybatis-spring</artifactId>(?:(?!</dependency>).)*?<version>)2\\.[0-9]+\\.[0-9]+(</version>)");
             Matcher m2 = mybatisSpringPattern.matcher(result);
             if (m2.find()) {
                 result = m2.replaceAll(Matcher.quoteReplacement(m2.group(1)) + "3.0.3" + Matcher.quoteReplacement(m2.group(2)));
@@ -233,6 +233,21 @@ public final class SpringEcosystemDependencyModernizer {
                             </plugin>
                         </plugins>""";
                 result = result.replaceFirst("</plugins>", pluginDef);
+            } else if (result.contains("</build>")) {
+                String pluginDef = """
+                        <plugins>
+                            <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-compiler-plugin</artifactId>
+                                <configuration>
+                                    <compilerArgs>
+                                        <arg>-parameters</arg>
+                                    </compilerArgs>
+                                </configuration>
+                            </plugin>
+                        </plugins>
+                    </build>""";
+                result = result.replaceFirst("</build>", pluginDef);
             } else if (result.contains("</project>")) {
                 String pluginDef = """
                     <build>

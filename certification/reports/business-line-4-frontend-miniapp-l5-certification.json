@@ -1,12 +1,12 @@
 {
-  "certification_id": "CERT-M32-L5-FRONTEND-12E93FA124243647",
+  "certification_id": "CERT-M32-L5-FRONTEND-18D7E204E300E94A",
   "business_line": "4. 大前端与小程序迁移 (M32)",
   "batch": "Batch 32 (M32)",
   "specification_level": "L5_INDUSTRIAL_ZERO_HUMAN_AUTONOMOUS",
-  "timestamp_utc": "2026-09-11T10:11:21.883939+00:00",
+  "timestamp_utc": "2026-09-11T12:26:22.913982+00:00",
   "overall_verdict": "CERTIFIED",
   "total_loc": 81163,
-  "merkle_root": "6f0c4e967d8d8a52bf3d58ff711af86e658db06bf3f4e70c3e792d38fa453297",
+  "merkle_root": "03ea65e68b2acc52a363e028d2ce4d15928fc8fc24cd2ac3df0413d308ba232c",
   "hazard_coverage": {
     "dynamic_state_management": "100.0% (Redux Saga / Pinia Plugins / MobX Proxy / 1024KB SetData Chunking)",
     "style_isolation_css_in_js": "100.0% (Emotion / CSS Modules :global / Tailwind JIT / Pseudo-class)",
@@ -19,7 +19,7 @@
       "phase": 1,
       "name": "Code Volume & Architectural Integrity Audit",
       "passed": true,
-      "duration_ms": 20509.45,
+      "duration_ms": 49384.18,
       "errors": [],
       "details": {
         "total_loc": 81163,
@@ -37,7 +37,7 @@
       "phase": 2,
       "name": "Dynamic State Management Engine Verification",
       "passed": true,
-      "duration_ms": 4.15,
+      "duration_ms": 153.02,
       "errors": [],
       "details": {
         "saga_effects_verified": 9,
@@ -50,7 +50,7 @@
       "phase": 3,
       "name": "Style Isolation & Dynamic CSS-in-JS Verification",
       "passed": true,
-      "duration_ms": 6.26,
+      "duration_ms": 20.53,
       "errors": [],
       "details": {
         "emotion_features_verified": 4,
@@ -62,7 +62,7 @@
       "phase": 4,
       "name": "Cross-Platform Native SDK & Hardware API Verification",
       "passed": true,
-      "duration_ms": 7.38,
+      "duration_ms": 18.97,
       "errors": [],
       "details": {
         "hardware_subsystems_audited": [
@@ -78,7 +78,7 @@
       "phase": 5,
       "name": "Enterprise Microfrontend Container & Subpackage Optimization",
       "passed": true,
-      "duration_ms": 0.67,
+      "duration_ms": 5.22,
       "errors": [],
       "details": {
         "mfe_components_audited": [
@@ -93,7 +93,7 @@
       "phase": 6,
       "name": "Enterprise Turnkey Benchmark Corpora Verification",
       "passed": true,
-      "duration_ms": 0.55,
+      "duration_ms": 1.58,
       "errors": [],
       "details": {
         "corpora": [
@@ -108,11 +108,11 @@
       "phase": 7,
       "name": "Full Automated Unit & Integration Test Suite",
       "passed": true,
-      "duration_ms": 116199.1,
+      "duration_ms": 271541.17,
       "errors": [],
       "details": {
         "exit_code": 0,
-        "raw_output_snippet": "a Architecture\n      ✓ should compute minimal dot-delimited and bracket-delimited diff paths (1 ms)\n      ✓ should chunk oversized payloads into multiple setData calls (2 ms)\n\nPASS tests/css-in-js-and-style-isolation.test.ts (68.523 s)\n  CSS-in-JS & Style Isolation Engine (M32)\n    Emotion / styled-components Transpiler\n      ✓ should parse tagged template literals, separate static styles, and extract dynamic bindings (942 ms)\n    CSS Modules Scoped Isolation Engine\n      ✓ should generate deterministic scoped class hashes and rewrite class names (2 ms)\n    Media Query & Pseudo-Class Bridge\n      ✓ should map :hover, :active, and :focus to hover-class and focused classes (1 ms)\n      ✓ should generate responsive viewport observer code for MiniApp (17 ms)\n\nA worker process has failed to exit gracefully and has been force exited. This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks. Active timers can also cause this, ensure that .unref() was called on them.\nTest Suites: 4 passed, 4 total\nTests:       26 passed, 26 total\nSnapshots:   0 total\nTime:        75.878 s\nRan all test suites matching /tests\\/enterprise-dynamic-state-engine.test.ts|tests\\/css-in-js-and-style-isolation.test.ts|tests\\/cross-platform-hardware-native-sdk.test.ts|tests\\/enterprise-mfe-and-subpackages.test.ts/i.\nForce exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?\n",
+        "raw_output_snippet": "hould trigger $onAction before/after/error lifecycle hooks (7 ms)\n      ✓ should support $patch both with partial object and mutator function (19 ms)\n      ✓ should connect to MiniApp setData and automatically sync mutations (35 ms)\n    MobX Transparent Reactive Proxy (createObservableProxy, reaction, autorun)\n      ✓ should transparently track property reads and fire autorun on mutation (266 ms)\n      ✓ should fire reaction with new and old value (1 ms)\n      ✓ should automatically compute dirty paths and sync to MiniApp Page instance (32 ms)\n    MiniApp Granular Path-Diffing setData Architecture\n      ✓ should compute minimal dot-delimited and bracket-delimited diff paths (5 ms)\n      ✓ should chunk oversized payloads into multiple setData calls (2 ms)\n\nA worker process has failed to exit gracefully and has been force exited. This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks. Active timers can also cause this, ensure that .unref() was called on them.\nTest Suites: 4 passed, 4 total\nTests:       26 passed, 26 total\nSnapshots:   0 total\nTime:        196.89 s\nRan all test suites matching /tests\\/enterprise-dynamic-state-engine.test.ts|tests\\/css-in-js-and-style-isolation.test.ts|tests\\/cross-platform-hardware-native-sdk.test.ts|tests\\/enterprise-mfe-and-subpackages.test.ts/i.\nForce exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?\n",
         "passed_tests": 26,
         "total_tests": 26
       }
@@ -350,7 +350,7 @@
     "engines/component-dialect-engine/tsconfig.json": "9f83e7ee208a218c19b4632484602d9053d58dca72819680f81ac9d9421d8740",
     "engines/component-dialect-engine/schemas/component-translation-evidence.schema.json": "43eeb28c49b12d009cd4badd94039d8b7b70c0246f74b43b87dece89029503ec",
     "engines/component-dialect-engine/schemas/cross-platform-component-ir.schema.json": "428a9c31dbd5224ba8666c8b49a40bde4cb9edf7a8ca7e909d7fef57beeb4004",
-    "scripts/batch32/run_business_line_4_m32_gate.py": "0b293aff4f83e2463cbc0969b08d06ccb02e944fe717f0c9d2a5b4655a7bce43",
+    "scripts/batch32/run_business_line_4_m32_gate.py": "2ca8f19982d5fce2c14d2b6e2f9dc5ad748344a51585c73c4fff1401145eb087",
     "scripts/batch32/replay_frontend_formal_route_campaign_v2.py": "dbd8fb8fb4e09b9727d021891bc5b7813fea2d7b2b9a26f0462df603c1cd0bb2",
     "scripts/batch32/b32_skill_runtime.py": "555280293ad53d849202a11143076875b9f6e809532a7e21e5ac53d4765143fd",
     "scripts/batch32/enterprise_frontend_transpiler.py": "b87a6cd6d5741d156f7e4c9ac0ecd27251c8c3e92752c1e8ae55603df97d4348",

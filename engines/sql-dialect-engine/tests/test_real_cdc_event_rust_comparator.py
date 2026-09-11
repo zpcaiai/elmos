@@ -7,8 +7,6 @@ out-of-order LSN sequences, duplicate event IDs, and state divergences.
 
 from __future__ import annotations
 
-import pytest
-
 from elmos_sql_dialect.cdc.event_comparator import (
     CdcEvent,
     CdcOpType,

@@ -11,8 +11,13 @@ Validates:
 import time
 from pathlib import Path
 
-import psycopg2
-import psycopg2.extras
+try:
+    import psycopg2
+    import psycopg2.extras
+    _HAS_PSYCOPG2 = True
+except ImportError:
+    psycopg2 = None
+    _HAS_PSYCOPG2 = False
 import pytest
 
 from elmos_sql_dialect.cdc import DataComparator
@@ -21,6 +26,8 @@ from elmos_sql_dialect.opengauss_dialect import lower_opengauss_ddl
 
 
 def is_pg_available() -> bool:
+    if not _HAS_PSYCOPG2:
+        return False
     try:
         conn = psycopg2.connect(dbname="postgres", user="stephen", host="localhost", port=5432, connect_timeout=2)
         conn.close()
@@ -30,6 +37,8 @@ def is_pg_available() -> bool:
 
 
 def is_opengauss_available() -> bool:
+    if not _HAS_PSYCOPG2:
+        return False
     try:
         conn = psycopg2.connect(
             dbname="omm", user="gaussdb", password="Enmotech@123", host="localhost", port=54321, connect_timeout=2

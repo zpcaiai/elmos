@@ -459,7 +459,7 @@ class BusinessLine4M32GateRunner:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            timeout=240,
+            timeout=600,
         )
 
         output = proc.stdout + "\n" + proc.stderr

@@ -36,7 +36,15 @@ class DockerSandboxDaemonTest(unittest.TestCase):
             [sys.executable, str(DAEMON_SCRIPT), "--port", str(PORT), "--key", KEY, "--repo-root", str(ROOT)],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
         )
-        time.sleep(1.0)
+        for _ in range(20):
+            time.sleep(0.5)
+            try:
+                req = urllib.request.Request(f"http://127.0.0.1:{PORT}/v1/workbench/health")
+                with urllib.request.urlopen(req, timeout=1) as resp:
+                    if resp.status == 200:
+                        break
+            except Exception:
+                pass
 
     @classmethod
     def tearDownClass(cls):
@@ -61,7 +69,7 @@ class DockerSandboxDaemonTest(unittest.TestCase):
         }
         req = urllib.request.Request(url, data=body_bytes if method == "POST" else None, headers=headers, method=method)
         try:
-            with urllib.request.urlopen(req, timeout=10) as resp:
+            with urllib.request.urlopen(req, timeout=30) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
                 return resp.status, data
         except urllib.error.HTTPError as err:

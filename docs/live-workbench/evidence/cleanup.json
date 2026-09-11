@@ -1,0 +1,18 @@
+{
+  "cleanupReceipt": {
+    "evidenceRefs": [
+      "ev:cleanup:1789127881"
+    ],
+    "memberChecks": {
+      "containerKilled": true,
+      "networkDisconnected": true,
+      "volumePruned": true
+    },
+    "observedAtEpochSecond": 1789127881,
+    "status": "CLEANED",
+    "verifierId": "docker-reaper-local"
+  },
+  "dockerContainerDestroyed": true,
+  "providerSessionId": "docker-clean-ev-test",
+  "timestamp": 1789127881
+}

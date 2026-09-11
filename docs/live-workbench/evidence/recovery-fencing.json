@@ -1,0 +1,6 @@
+{
+  "monotonicSequence": true,
+  "reconnectDeduplication": true,
+  "sseCursorReplay": true,
+  "timestamp": 1789127881
+}

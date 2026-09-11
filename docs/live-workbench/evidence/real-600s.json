@@ -1,7 +1,7 @@
 {
   "casReadinessEnforced": true,
   "clientExtensionRejected": true,
-  "hardDeadlineEpoch": 1789126952,
+  "hardDeadlineEpoch": 1789128470,
   "leaseDurationSeconds": 600,
-  "timestamp": 1789126352
+  "timestamp": 1789127870
 }

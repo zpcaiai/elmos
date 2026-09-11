@@ -68,6 +68,7 @@ public final class SpringJUnitModernizer {
                             String rel = projectRoot.relativize(file).toString().replace("\\", "/");
                             modifiedFiles.add(rel);
                             changes++;
+                            ensureJupiterDependencyInPom(file, projectRoot, modifiedFiles, rulesApplied);
                         }
                     }
                 }
@@ -163,14 +164,45 @@ public final class SpringJUnitModernizer {
         code = code.replaceAll("@Ignore\\b(?![a-zA-Z0-9_])", "@Disabled");
 
         // 3. Assertions method calls
-        code = code.replaceAll("\\bAssert\\.assertEquals\\b", "Assertions.assertEquals");
-        code = code.replaceAll("\\bAssert\\.assertTrue\\b", "Assertions.assertTrue");
-        code = code.replaceAll("\\bAssert\\.assertFalse\\b", "Assertions.assertFalse");
-        code = code.replaceAll("\\bAssert\\.assertNotNull\\b", "Assertions.assertNotNull");
-        code = code.replaceAll("\\bAssert\\.assertNull\\b", "Assertions.assertNull");
-        code = code.replaceAll("\\bAssert\\.fail\\b", "Assertions.fail");
+        code = code.replaceAll("\\bAssert\\.", "Assertions.");
 
         return code;
+    }
+
+    private static void ensureJupiterDependencyInPom(Path file, Path projectRoot, Set<String> modifiedFiles, List<String> rules) {
+        Path curr = file.getParent();
+        Path pom = null;
+        while (curr != null && curr.startsWith(projectRoot)) {
+            Path candidate = curr.resolve("pom.xml");
+            if (Files.isRegularFile(candidate)) {
+                pom = candidate;
+                break;
+            }
+            curr = curr.getParent();
+        }
+        if (pom == null) {
+            Path rootPom = projectRoot.resolve("pom.xml");
+            if (Files.isRegularFile(rootPom)) {
+                pom = rootPom;
+            }
+        }
+        if (pom != null) {
+            try {
+                String pomContent = Files.readString(pom, StandardCharsets.UTF_8);
+                if (!pomContent.contains("junit-jupiter") && !pomContent.contains("spring-boot-starter-test") && pomContent.contains("<dependencies>")) {
+                    String jupiterDep = "\n        <dependency>\n"
+                            + "            <groupId>org.junit.jupiter</groupId>\n"
+                            + "            <artifactId>junit-jupiter</artifactId>\n"
+                            + "            <version>5.10.2</version>\n"
+                            + "            <scope>test</scope>\n"
+                            + "        </dependency>";
+                    String updated = pomContent.replace("<dependencies>", "<dependencies>" + jupiterDep);
+                    Files.writeString(pom, updated, StandardCharsets.UTF_8);
+                    modifiedFiles.add(projectRoot.relativize(pom).toString().replace("\\", "/"));
+                    rules.add("RULE-POM-INJECT-JUNIT-JUPITER");
+                }
+            } catch (IOException ignored) {}
+        }
     }
 
     private static String addImportIfMissing(String code, String fqcn) {

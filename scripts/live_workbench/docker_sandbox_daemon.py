@@ -65,6 +65,26 @@ class DockerSandboxState:
         self.preview_origin = preview_origin
         self.sessions: Dict[str, SessionRecord] = {}
         self.by_control: Dict[str, str] = {}
+        self._docker_ok: bool | None = None
+        self._last_docker_check: float = 0.0
+
+    def is_docker_ready(self) -> bool:
+        now = time.time()
+        cache_ttl = 30.0 if self._docker_ok else 3.0
+        if self._docker_ok is not None and (now - self._last_docker_check) < cache_ttl:
+            return self._docker_ok
+        try:
+            import shutil
+            docker_cmd = shutil.which("docker") or "docker"
+            res = subprocess.run(
+                [docker_cmd, "version", "--format", "{{.Server.Version}}"],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=10
+            )
+            self._docker_ok = (res.returncode == 0)
+        except Exception:
+            self._docker_ok = False
+        self._last_docker_check = now
+        return self._docker_ok
 
     def verify_signature(self, path: str, idempotency_key: str, timestamp_str: str, body_sha256: str, sig: str) -> bool:
         canonical = f"lw.v1\n{path}\n{idempotency_key}\n{timestamp_str}\n{body_sha256}".encode("utf-8")
@@ -112,8 +132,7 @@ class SandboxHandler(BaseHTTPRequestHandler):
             return
 
         if self.path == "/v1/workbench/health":
-            res = subprocess.run(["docker", "info"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            docker_ok = res.returncode == 0
+            docker_ok = self.state.is_docker_ready()
             self._send_json(200, {
                 "schemaVersion": VERSION,
                 "ready": docker_ok,

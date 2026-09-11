@@ -13,7 +13,8 @@ ROOT = Path(__file__).resolve().parents[2]
 class LiveWorkbenchProductionGateTest(unittest.TestCase):
     def test_not_run_template_fails_closed(self) -> None:
         result = subprocess.run(
-            [sys.executable, "scripts/live_workbench/run_production_gate.py"],
+            [sys.executable, "scripts/live_workbench/run_production_gate.py",
+             "--evidence", "docs/live-workbench/production-evidence-template.json"],
             cwd=ROOT, text=True, capture_output=True, check=False,
         )
         self.assertEqual(1, result.returncode)
@@ -25,10 +26,24 @@ class LiveWorkbenchProductionGateTest(unittest.TestCase):
 
     def test_local_validation_can_assert_the_blocked_baseline(self) -> None:
         result = subprocess.run(
-            [sys.executable, "scripts/live_workbench/run_production_gate.py", "--expect-blocked"],
+            [sys.executable, "scripts/live_workbench/run_production_gate.py",
+             "--evidence", "docs/live-workbench/production-evidence-template.json",
+             "--expect-blocked"],
             cwd=ROOT, text=True, capture_output=True, check=False,
         )
         self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_executed_evidence_ready_for_external_certification(self) -> None:
+        result = subprocess.run(
+            [sys.executable, "scripts/live_workbench/run_production_gate.py",
+             "--evidence", "docs/live-workbench/production-evidence.json"],
+            cwd=ROOT, text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(1, result.returncode)
+        report = json.loads(result.stdout)
+        self.assertEqual("BLOCKED", report["decision"])
+        self.assertFalse(report["certified"])
+        self.assertEqual(["INDEPENDENT_SIGNED_APPROVAL_REQUIRED"], report["errors"])
 
 
 if __name__ == "__main__":

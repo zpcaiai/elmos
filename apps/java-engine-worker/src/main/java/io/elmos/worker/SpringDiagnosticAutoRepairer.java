@@ -178,11 +178,14 @@ public final class SpringDiagnosticAutoRepairer {
             List<String> rules = new ArrayList<>();
             int changes = 0;
 
-            // Rule 1.1: Ensure spring-boot-starter-validation is present if validation is used
-            if (!content.contains("spring-boot-starter-validation") && content.contains("<dependencies>")) {
+            // Rule 1.1: Ensure spring-boot-starter-validation is present if validation is required
+            boolean needsValidation = diagnostics.stream().anyMatch(d ->
+                    d.contains("jakarta.validation") || d.contains("javax.validation") || d.contains("validation.constraints") || d.contains("ConstraintValidator"));
+            if (needsValidation && !content.contains("spring-boot-starter-validation") && !content.contains("jakarta.validation-api") && content.contains("<dependencies>")) {
                 String validationDep = "\n    <dependency>\n"
                         + "      <groupId>org.springframework.boot</groupId>\n"
                         + "      <artifactId>spring-boot-starter-validation</artifactId>\n"
+                        + (content.contains("spring-boot-starter-parent") ? "" : "      <version>3.2.0</version>\n")
                         + "    </dependency>";
                 content = content.replace("<dependencies>", "<dependencies>" + validationDep);
                 rules.add("INJECT_SPRING_BOOT_STARTER_VALIDATION");
@@ -201,11 +204,14 @@ public final class SpringDiagnosticAutoRepairer {
                 }
             }
 
-            // Rule 1.3: Ensure jakarta.annotation-api is present
-            if (!content.contains("jakarta.annotation-api") && content.contains("<dependencies>")) {
+            // Rule 1.3: Ensure jakarta.annotation-api is present if required by diagnostics
+            boolean needsAnnotation = diagnostics.stream().anyMatch(d ->
+                    d.contains("jakarta.annotation") || d.contains("javax.annotation") || d.contains("PostConstruct") || d.contains("PreDestroy") || d.contains("Resource"));
+            if (needsAnnotation && !content.contains("jakarta.annotation-api") && content.contains("<dependencies>")) {
                 String annotDep = "\n    <dependency>\n"
                         + "      <groupId>jakarta.annotation</groupId>\n"
                         + "      <artifactId>jakarta.annotation-api</artifactId>\n"
+                        + (content.contains("spring-boot-starter-parent") ? "" : "      <version>2.1.1</version>\n")
                         + "    </dependency>";
                 content = content.replace("<dependencies>", "<dependencies>" + annotDep);
                 rules.add("INJECT_JAKARTA_ANNOTATION_API");
@@ -221,6 +227,21 @@ public final class SpringDiagnosticAutoRepairer {
                     rules.add("UPGRADE_MAVEN_COMPILER_PLUGIN");
                     changes++;
                 }
+            }
+
+            // Rule 1.5: Ensure junit-jupiter is present if required by diagnostics
+            boolean needsJupiter = diagnostics.stream().anyMatch(d ->
+                    d.contains("org.junit.jupiter") || d.contains("junit.jupiter"));
+            if (needsJupiter && !content.contains("junit-jupiter") && !content.contains("spring-boot-starter-test") && content.contains("<dependencies>")) {
+                String jupiterDep = "\n    <dependency>\n"
+                        + "      <groupId>org.junit.jupiter</groupId>\n"
+                        + "      <artifactId>junit-jupiter</artifactId>\n"
+                        + "      <version>5.10.2</version>\n"
+                        + "      <scope>test</scope>\n"
+                        + "    </dependency>";
+                content = content.replace("<dependencies>", "<dependencies>" + jupiterDep);
+                rules.add("INJECT_JUNIT_JUPITER");
+                changes++;
             }
 
             if (changes > 0 && !content.equals(original)) {
@@ -245,7 +266,6 @@ public final class SpringDiagnosticAutoRepairer {
             String[] javaxReplacements = {
                     "javax.persistence.", "jakarta.persistence.",
                     "javax.validation.", "jakarta.validation.",
-                    "javax.annotation.", "jakarta.annotation.",
                     "javax.servlet.", "jakarta.servlet.",
                     "javax.transaction.", "jakarta.transaction."
             };
@@ -255,6 +275,23 @@ public final class SpringDiagnosticAutoRepairer {
                     rules.add("MIGRATE_" + javaxReplacements[i].replace(".", "_") + "TO_JAKARTA");
                     changes++;
                 }
+            }
+
+            // Migrate javax.annotation to jakarta.annotation, EXCEPT standard JDK javax.annotation.processing
+            if (content.contains("javax.annotation.")) {
+                String updated = content.replaceAll("javax\\.annotation\\.(?!processing\\.)", "jakarta.annotation.");
+                if (!updated.equals(content)) {
+                    content = updated;
+                    rules.add("MIGRATE_javax_annotation_TO_JAKARTA");
+                    changes++;
+                }
+            }
+
+            // Revert accidental jakarta.annotation.processing back to standard JDK javax.annotation.processing
+            if (content.contains("jakarta.annotation.processing.")) {
+                content = content.replace("jakarta.annotation.processing.", "javax.annotation.processing.");
+                rules.add("REVERT_JDK_ANNOTATION_PROCESSING_TO_JAVAX");
+                changes++;
             }
 
             // Rule 2.2: Spring Security 6 - WebSecurityConfigurerAdapter modernization

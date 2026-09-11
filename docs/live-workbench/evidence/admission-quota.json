@@ -1,0 +1,6 @@
+{
+  "maxAccountSlots": 3,
+  "overflowAdmissionsRejected": true,
+  "slotWeightEnforced": true,
+  "timestamp": 1789127881
+}
