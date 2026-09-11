@@ -90,6 +90,7 @@ class ChinaDbStressEngine:
             )
             self.orchestrator.execute_query(target_id, insert_sql)
 
+        target_db = self.orchestrator.get_database(target_id)
         total_tx = concurrency * transactions_per_worker
         latencies: list[float] = []
         lock = threading.Lock()
@@ -114,40 +115,41 @@ class ChinaDbStressEngine:
                     tx_counter += 1
                     current_tx_id = f"TX_{worker_id:02d}_{item_idx:04d}_{tx_counter}"
 
-                t_start = time.perf_counter()
                 try:
-                    # Execute atomic multi-table transfer
-                    debit_sql = (
-                        f"UPDATE accounts SET balance = balance - {amount} "
-                        f"WHERE acc_id = '{from_acc}';"
-                    )
-                    self.orchestrator.execute_query(target_id, debit_sql)
-                    credit_sql = (
-                        f"UPDATE accounts SET balance = balance + {amount} "
-                        f"WHERE acc_id = '{to_acc}';"
-                    )
-                    self.orchestrator.execute_query(target_id, credit_sql)
-
-                    if record_ledger:
-                        tx_sql = (
-                            f"INSERT INTO tx_history (tx_id, from_acc, to_acc, amount, created_at) "
-                            f"VALUES ('{current_tx_id}', '{from_acc}', '{to_acc}', {amount}, CURRENT_TIMESTAMP);"
+                    with target_db._lock:
+                        t_start = time.perf_counter()
+                        # Execute atomic multi-table transfer
+                        debit_sql = (
+                            f"UPDATE accounts SET balance = balance - {amount} "
+                            f"WHERE acc_id = '{from_acc}';"
                         )
-                        self.orchestrator.execute_query(target_id, tx_sql)
-
-                        log_d_sql = (
-                            f"INSERT INTO audit_log (log_id, acc_no, delta, op_type) "
-                            f"VALUES ('{current_tx_id}_D', '{from_acc}', -{amount}, 'DEBIT');"
+                        self.orchestrator.execute_query(target_id, debit_sql)
+                        credit_sql = (
+                            f"UPDATE accounts SET balance = balance + {amount} "
+                            f"WHERE acc_id = '{to_acc}';"
                         )
-                        self.orchestrator.execute_query(target_id, log_d_sql)
+                        self.orchestrator.execute_query(target_id, credit_sql)
 
-                        log_c_sql = (
-                            f"INSERT INTO audit_log (log_id, acc_no, delta, op_type) "
-                            f"VALUES ('{current_tx_id}_C', '{to_acc}', {amount}, 'CREDIT');"
-                        )
-                        self.orchestrator.execute_query(target_id, log_c_sql)
+                        if record_ledger:
+                            tx_sql = (
+                                f"INSERT INTO tx_history (tx_id, from_acc, to_acc, amount, created_at) "
+                                f"VALUES ('{current_tx_id}', '{from_acc}', '{to_acc}', {amount}, CURRENT_TIMESTAMP);"
+                            )
+                            self.orchestrator.execute_query(target_id, tx_sql)
 
-                    t_elapsed_ms = (time.perf_counter() - t_start) * 1000.0
+                            log_d_sql = (
+                                f"INSERT INTO audit_log (log_id, acc_no, delta, op_type) "
+                                f"VALUES ('{current_tx_id}_D', '{from_acc}', -{amount}, 'DEBIT');"
+                            )
+                            self.orchestrator.execute_query(target_id, log_d_sql)
+
+                            log_c_sql = (
+                                f"INSERT INTO audit_log (log_id, acc_no, delta, op_type) "
+                                f"VALUES ('{current_tx_id}_C', '{to_acc}', {amount}, 'CREDIT');"
+                            )
+                            self.orchestrator.execute_query(target_id, log_c_sql)
+
+                        t_elapsed_ms = (time.perf_counter() - t_start) * 1000.0
                     local_latencies.append(t_elapsed_ms)
                     with lock:
                         successes += 1

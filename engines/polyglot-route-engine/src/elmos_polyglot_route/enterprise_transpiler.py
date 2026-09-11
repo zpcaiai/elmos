@@ -135,7 +135,7 @@ class EnterpriseSemanticParser:
         if not module.classes:
             module.classes.append(
                 EnterpriseClass(
-                    name="EnterpriseAssetService",
+                    name="EnterpriseAssetController",
                     is_controller=True,
                     base_route="/api/v1/assets",
                 )

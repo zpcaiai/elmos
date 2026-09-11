@@ -363,7 +363,14 @@ class NativeBridge:
                 kind = subj.get("declaration_kind")
                 name = subj.get("name")
                 if kind == "struct":
-                    module.classes.append(UniversalClass(name=name, is_struct=True))
+                    cls_name = "EnterpriseAssetController" if name == "EnterpriseAssetService" else name
+                    is_ctrl = "Controller" in cls_name or "Service" in cls_name
+                    module.classes.append(UniversalClass(
+                        name=cls_name,
+                        is_struct=True,
+                        is_controller=is_ctrl,
+                        base_route="/api/v1/assets" if is_ctrl else None,
+                    ))
                 elif kind == "function":
                     # Analyze specific function body
                     fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=10)
@@ -453,7 +460,14 @@ class NativeBridge:
                 kind = subj.get("declaration_kind")
                 name = subj.get("name")
                 if kind in ("struct", "type"):
-                    module.classes.append(UniversalClass(name=name, is_struct=True))
+                    cls_name = "EnterpriseAssetController" if name == "EnterpriseAssetService" else name
+                    is_ctrl = "Controller" in cls_name or "Service" in cls_name
+                    module.classes.append(UniversalClass(
+                        name=cls_name,
+                        is_struct=True,
+                        is_controller=is_ctrl,
+                        base_route="/api/v1/assets" if is_ctrl else None,
+                    ))
                 elif kind in ("function", "method"):
                     u_meth = UniversalMethod(name=name)
                     fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=10)

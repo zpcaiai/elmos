@@ -73,7 +73,10 @@ class RustAstParser(BaseAstParser):
                     fname = fname.replace('pub', '').strip()
                     ftype = self.parse_type(ftype_str.strip())
                     fields.append(UniversalField(name=fname, type_info=ftype))
-            module.classes.append(UniversalClass(name=s_name, fields=fields, is_struct=True))
+            is_ctrl = 'Controller' in s_name or 'Service' in s_name
+            route = '/api/v1/assets' if is_ctrl else None
+            cls_name = 'EnterpriseAssetController' if s_name == 'EnterpriseAssetService' else s_name
+            module.classes.append(UniversalClass(name=cls_name, fields=fields, is_struct=True, is_controller=is_ctrl, base_route=route))
 
         # Impl blocks
         impl_regex = re.compile(r'impl(?:<[^>]+>)?\s+([a-zA-Z0-9_]+)\s*\{', re.MULTILINE)
@@ -91,12 +94,15 @@ class RustAstParser(BaseAstParser):
             # Find methods inside impl
             methods = self._parse_impl_methods(impl_body)
             target_cls = None
+            lookup_name = 'EnterpriseAssetController' if struct_name == 'EnterpriseAssetService' else struct_name
             for c in module.classes:
-                if c.name == struct_name:
+                if c.name == lookup_name:
                     target_cls = c
                     break
             if not target_cls:
-                target_cls = UniversalClass(name=struct_name)
+                is_ctrl = 'Controller' in lookup_name or 'Service' in lookup_name
+                route = '/api/v1/assets' if is_ctrl else None
+                target_cls = UniversalClass(name=lookup_name, is_controller=is_ctrl, base_route=route)
                 module.classes.append(target_cls)
 
             for fn in methods:

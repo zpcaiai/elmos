@@ -289,14 +289,14 @@ class JavaAstParser(BaseAstParser):
     def _parse_statements_simple(self, body_str: str) -> list[UniversalStmt]:
         stmts: list[UniversalStmt] = []
         # Check for try-catch
-        try_match = re.search(r'try\s*\{', body_str)
+        try_match = re.search(r'\btry\s*\{', body_str)
         if try_match:
             start = try_match.end() - 1
             end = self._find_matching_brace(body_str, start)
             try_content = body_str[start+1:end] if end != -1 else ''
             # catches
             catches = []
-            catch_regex = re.compile(r'catch\s*\(([^)]+)\)\s*\{')
+            catch_regex = re.compile(r'\bcatch\s*\(([^)]+)\)\s*\{')
             for cm in catch_regex.finditer(body_str):
                 c_start = cm.end() - 1
                 c_end = self._find_matching_brace(body_str, c_start)

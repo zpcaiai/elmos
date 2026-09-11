@@ -93,6 +93,7 @@ class PythonAstParser(BaseAstParser):
                 methods=routed_functions,
             )
             module.classes.append(controller_cls)
+            module.free_functions = other_functions
         elif other_functions and not module.classes:
             wrapper_cls = UniversalClass(
                 name="PythonService",
