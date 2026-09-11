@@ -151,11 +151,29 @@ test("ordinary accounts cannot trigger an administrator login notification", asy
   );
 });
 
-test("owner-only API key files are accepted by the production notification path", async () => {
+test("owner-only API key files are accepted with POSIX evidence or fail closed", async () => {
   const root = mkdtempSync(path.join(tmpdir(), "elmos-resend-secret-test-"));
   const secretPath = path.join(root, "resend-api-key");
   try {
     writeFileSync(secretPath, "re_file_key_with_more_than_24_chars\n", { mode: 0o600 });
+    if (process.platform === "win32") {
+      await assert.rejects(
+        notifyAdministratorLogin(
+          new Request("https://console.example.com/api/auth/callback"),
+          administratorPrincipal(),
+          "OIDC",
+          {
+            environment: {
+              ELMOS_ADMIN_LOGIN_NOTIFICATIONS_ENABLED: "true",
+              ELMOS_ADMIN_LOGIN_EMAIL_FROM: "ELMOS Security <security@example.com>",
+              ELMOS_RESEND_API_KEY_FILE: secretPath,
+            },
+          },
+        ),
+        (error) => error?.code === "ADMIN_LOGIN_NOTIFICATION_SECRET_FILE_UNSAFE",
+      );
+      return;
+    }
     const receipt = await notifyAdministratorLogin(
       new Request("https://console.example.com/api/auth/callback"),
       administratorPrincipal(),
@@ -242,7 +260,11 @@ test("symbolic-link API key paths fail closed", async () => {
           },
         },
       ),
-      (error) => error?.code === "ADMIN_LOGIN_NOTIFICATION_SECRET_FILE_UNAVAILABLE",
+      (error) => error?.code === (
+        process.platform === "win32"
+          ? "ADMIN_LOGIN_NOTIFICATION_SECRET_FILE_UNSAFE"
+          : "ADMIN_LOGIN_NOTIFICATION_SECRET_FILE_UNAVAILABLE"
+      ),
     );
   } finally {
     rmSync(root, { recursive: true, force: true });

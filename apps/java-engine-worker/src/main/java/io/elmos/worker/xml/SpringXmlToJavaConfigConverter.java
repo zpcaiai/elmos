@@ -128,7 +128,7 @@ public final class SpringXmlToJavaConfigConverter {
                     Files.createDirectories(targetJavaDir);
                     Path javaFilePath = targetJavaDir.resolve(converted.configClassName() + ".java");
                     Files.writeString(javaFilePath, converted.generatedJavaSource(), StandardCharsets.UTF_8);
-                    generatedJavaFiles.add(projectRoot.relativize(javaFilePath).toString());
+                    generatedJavaFiles.add(projectRoot.relativize(javaFilePath).toString().replace('\\', '/'));
                 }
             }
         } catch (Exception e) {

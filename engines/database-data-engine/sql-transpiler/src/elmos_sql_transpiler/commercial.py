@@ -70,12 +70,16 @@ def _digest_text(value: str) -> str:
     return f"sha256:{sha256(value.encode('utf-8')).hexdigest()}"
 
 
-def _catalog_text() -> str:
+def _catalog_bytes() -> bytes:
     return (
         files("elmos_sql_transpiler")
         .joinpath("data/chinadb-commercial-v1.json")
-        .read_text(encoding="utf-8")
+        .read_bytes()
     )
+
+
+def _catalog_text() -> str:
+    return _catalog_bytes().decode("utf-8")
 
 
 def _object_list(value: object, *, name: str) -> list[dict[str, Any]]:
@@ -164,7 +168,7 @@ def commercial_capabilities() -> dict[str, Any]:
     if not isinstance(copied, dict):
         raise RuntimeError("commercial capability registry copy failed")
     result = {str(key): value for key, value in copied.items()}
-    result["capabilitySnapshotDigest"] = _digest_text(_catalog_text())
+    result["capabilitySnapshotDigest"] = f"sha256:{sha256(_catalog_bytes()).hexdigest()}"
     result["targetCount"] = _EXPECTED_TARGET_COUNT
     result["plannedRouteCount"] = _EXPECTED_ROUTE_COUNT
     result["boundaries"] = {

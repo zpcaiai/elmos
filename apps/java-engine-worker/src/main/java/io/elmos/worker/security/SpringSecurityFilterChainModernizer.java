@@ -361,7 +361,7 @@ public final class SpringSecurityFilterChainModernizer {
 
             if (changes > 0 && !content.equals(original)) {
                 Files.writeString(file, content, StandardCharsets.UTF_8);
-                String relPath = projectRoot.relativize(file).toString();
+                String relPath = projectRoot.relativize(file).toString().replace('\\', '/');
                 return new SecurityModernizationResult(true, changes, Set.of(relPath), rules);
             }
         } catch (IOException ignored) {}

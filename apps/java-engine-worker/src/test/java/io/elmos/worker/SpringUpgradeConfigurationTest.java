@@ -12,37 +12,48 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class SpringUpgradeConfigurationTest {
     @Test
     void legacyHomesAndAdditionalLegacyJdksFormOneExactRegistry() {
+        Path base = Path.of(System.getProperty("java.io.tmpdir")).toAbsolutePath().normalize();
+        Path java8 = base.resolve("java-8");
+        Path java11 = base.resolve("java-11");
+        Path java17 = base.resolve("java-17");
+        Path java21 = base.resolve("java-21");
         Map<String, Path> homes = SpringUpgradeConfiguration.javaHomes(
-                "/opt/java/openjdk-17",
-                "/opt/java/openjdk",
-                "8=/opt/java/openjdk-8,11=/opt/java/openjdk-11"
+                java17.toString(),
+                java21.toString(),
+                "8=" + java8 + ",11=" + java11
         );
 
         assertEquals(Map.of(
-                "8", Path.of("/opt/java/openjdk-8"),
-                "11", Path.of("/opt/java/openjdk-11"),
-                "17", Path.of("/opt/java/openjdk-17"),
-                "21", Path.of("/opt/java/openjdk")
+                "8", java8,
+                "11", java11,
+                "17", java17,
+                "21", java21
         ), homes);
     }
 
     @Test
     void emptyAdditionalRegistryPreservesTheOriginalSeventeenAndTwentyOneContract() {
+        Path base = Path.of(System.getProperty("java.io.tmpdir")).toAbsolutePath().normalize();
+        Path java17 = base.resolve("legacy-java-17");
+        Path java21 = base.resolve("legacy-java-21");
         Map<String, Path> homes = SpringUpgradeConfiguration.javaHomes(
-                "/legacy/java-17", "/legacy/java-21", "");
+                java17.toString(), java21.toString(), "");
 
         assertEquals(Map.of(
-                "17", Path.of("/legacy/java-17"),
-                "21", Path.of("/legacy/java-21")
+                "17", java17,
+                "21", java21
         ), homes);
     }
 
     @Test
     void additionalHomesMustBeExactAbsoluteReleaseMappings() {
+        Path base = Path.of(System.getProperty("java.io.tmpdir")).toAbsolutePath().normalize();
+        String java17 = base.resolve("legacy-java-17").toString();
+        String java21 = base.resolve("legacy-java-21").toString();
         assertThrows(IllegalArgumentException.class, () -> SpringUpgradeConfiguration.javaHomes(
-                "/legacy/java-17", "/legacy/java-21", "11=relative/jdk-11"));
+                java17, java21, "11=relative/jdk-11"));
         assertThrows(IllegalArgumentException.class, () -> SpringUpgradeConfiguration.javaHomes(
-                "/legacy/java-17", "/legacy/java-21", "11"));
+                java17, java21, "11"));
     }
 
     @Test
