@@ -110,6 +110,11 @@ from elmos_mature_platform.tenant_project_migration_health_engine import TenantP
 from elmos_mature_platform.license_ip_provenance_engine import LicenseIpProvenanceEngine
 from elmos_mature_platform.diagnostic_root_cause_recommendation_engine import DiagnosticRootCauseRecommendationEngine
 from elmos_mature_platform.functional_depth_certification_engine import FunctionalDepthCertificationEngine
+from elmos_mature_platform.self_hosted_edition_engine import SelfHostedEditionEngine
+from elmos_mature_platform.sla_service_credit_governance_engine import SlaServiceCreditGovernanceEngine
+from elmos_mature_platform.secure_code_review_approval_engine import SecureCodeReviewApprovalEngine
+from elmos_mature_platform.recipe_mapping_recommendation_engine import RecipeMappingRecommendationEngine
+from elmos_mature_platform.semantic_behavior_certification_engine import SemanticBehaviorCertificationEngine
 from elmos_mature_platform.physical import (
     CloudVendorControlPlaneDriver,
     IndustrialLoopback,
@@ -235,6 +240,11 @@ __all__ = [
     "LicenseIpProvenanceEngine",
     "DiagnosticRootCauseRecommendationEngine",
     "FunctionalDepthCertificationEngine",
+    "SelfHostedEditionEngine",
+    "SlaServiceCreditGovernanceEngine",
+    "SecureCodeReviewApprovalEngine",
+    "RecipeMappingRecommendationEngine",
+    "SemanticBehaviorCertificationEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",
