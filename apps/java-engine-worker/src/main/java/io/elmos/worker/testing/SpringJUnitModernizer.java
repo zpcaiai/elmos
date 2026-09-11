@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Subagent-G: Automated Testing Suite Modernizer (JUnit 4 to JUnit 5 Jupiter).
@@ -163,8 +165,9 @@ public final class SpringJUnitModernizer {
         code = code.replaceAll("@After\\b(?![a-zA-Z0-9_])", "@AfterEach");
         code = code.replaceAll("@Ignore\\b(?![a-zA-Z0-9_])", "@Disabled");
 
-        // 3. Assertions method calls
+        // 3. Assertions method calls and method references
         code = code.replaceAll("\\bAssert\\.", "Assertions.");
+        code = code.replaceAll("\\bAssert::", "Assertions::");
 
         // 4. Swap JUnit 4 (message, condition) to JUnit 5 (condition, message)
         Pattern messageFirstPattern = Pattern.compile("(?s)Assertions\\.(assertTrue|assertFalse|assertNotNull|assertNull)\\s*\\(\\s*(\"[^\"]*\")\\s*,\\s*(.*?)\\s*\\)");

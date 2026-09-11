@@ -270,10 +270,9 @@ public final class SpringModernizationArchitectureRulebookEnforcer {
                     "Replace javax.servlet.* with jakarta.servlet.*.");
 
             if (line.contains("import javax.annotation.") && !line.contains("import javax.annotation.processing.")) {
-                violations.add(new RuleViolation(
-                        "COR-002", path, lineNum,
+                addViolation("COR-002", path, lineNum, line.trim(),
                         "javax.annotation.* namespace must be migrated to jakarta.annotation.* (excluding standard JDK processing)",
-                        "Replace javax.annotation.* with jakarta.annotation.*."));
+                        "Replace javax.annotation.* with jakarta.annotation.*.", violations);
             }
 
             checkPattern(line, lineNum, path, "import javax.validation.",
