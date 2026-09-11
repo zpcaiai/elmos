@@ -115,6 +115,11 @@ from elmos_mature_platform.sla_service_credit_governance_engine import SlaServic
 from elmos_mature_platform.secure_code_review_approval_engine import SecureCodeReviewApprovalEngine
 from elmos_mature_platform.recipe_mapping_recommendation_engine import RecipeMappingRecommendationEngine
 from elmos_mature_platform.semantic_behavior_certification_engine import SemanticBehaviorCertificationEngine
+from elmos_mature_platform.upgrade_rollback_disaster_recovery_engine import UpgradeRollbackDisasterRecoveryEngine
+from elmos_mature_platform.secure_sdlc_ssdf_engine import SecureSdlcSsdfEngine
+from elmos_mature_platform.migration_entity_relations_engine import MigrationEntityRelationsEngine
+from elmos_mature_platform.agent_factory_gate_engine import AgentFactoryGateEngine
+from elmos_mature_platform.target_maintainability_certification_engine import TargetMaintainabilityCertificationEngine
 from elmos_mature_platform.physical import (
     CloudVendorControlPlaneDriver,
     IndustrialLoopback,
@@ -245,6 +250,11 @@ __all__ = [
     "SecureCodeReviewApprovalEngine",
     "RecipeMappingRecommendationEngine",
     "SemanticBehaviorCertificationEngine",
+    "UpgradeRollbackDisasterRecoveryEngine",
+    "SecureSdlcSsdfEngine",
+    "MigrationEntityRelationsEngine",
+    "AgentFactoryGateEngine",
+    "TargetMaintainabilityCertificationEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",

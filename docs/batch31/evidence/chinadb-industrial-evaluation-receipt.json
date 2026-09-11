@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0",
   "businessLine": "3. 数据库与 SQL 方言迁移 (含 ChinaDB)",
-  "evaluatedAt": "2026-09-11T02:43:16.904913+00:00",
-  "durationSeconds": 5.341,
+  "evaluatedAt": "2026-09-11T02:58:57.457258+00:00",
+  "durationSeconds": 2.486,
   "closureStatus": "100%_INDUSTRIAL_CLOSED",
   "overallVerdict": "PASSED",
   "metrics": {
@@ -1258,7 +1258,7 @@
         "port": 5236,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.19,
+        "latencyMs": 0.12,
         "ddl": {
           "statementsExecuted": 7,
           "statementsSucceeded": 7,
@@ -1306,19 +1306,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.166,
-          "tps": 3849.9,
+          "durationSeconds": 0.234,
+          "tps": 2739.3,
           "latenciesMs": {
-            "p50": 0.22,
-            "p90": 6.76,
-            "p95": 12.2,
-            "p99": 27.74
+            "p50": 0.11,
+            "p90": 1.85,
+            "p95": 5.25,
+            "p99": 15.12
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.00000000006,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
@@ -1377,19 +1377,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.251,
-          "tps": 2548.8,
+          "durationSeconds": 0.147,
+          "tps": 4365.1,
           "latenciesMs": {
-            "p50": 0.13,
-            "p90": 8.79,
-            "p95": 17.89,
-            "p99": 38.49
+            "p50": 0.72,
+            "p90": 7.76,
+            "p95": 11.0,
+            "p99": 20.15
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 199999.99999999997,
+          "finalTotalBalance": 200000.00000000003,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
@@ -1398,6 +1398,148 @@
         "targetId": "opengauss",
         "protocol": "POSTGRES",
         "port": 5432,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.03,
+        "ddl": {
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
+          "tablesFound": [
+            "accounts",
+            "audit_log",
+            "cbs_general_ledger",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
+        },
+        "stress": {
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.141,
+          "tps": 4550.8,
+          "latenciesMs": {
+            "p50": 0.4,
+            "p90": 8.07,
+            "p95": 14.19,
+            "p99": 25.22
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.0,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
+        }
+      },
+      {
+        "targetId": "tidb",
+        "protocol": "MYSQL",
+        "port": 4000,
+        "mode": "PROTOCOL_LAB",
+        "isReady": true,
+        "latencyMs": 0.26,
+        "ddl": {
+          "statementsExecuted": 7,
+          "statementsSucceeded": 7,
+          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
+          "tablesFound": [
+            "accounts",
+            "audit_log",
+            "cbs_general_ledger",
+            "tx_history"
+          ],
+          "accountPrimaryKeyVerified": true
+        },
+        "cdc": {
+          "totalSourceRows": 5,
+          "totalTargetRows": 5,
+          "matchedCount": 5,
+          "mismatchedCount": 0,
+          "isConsistent": true,
+          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
+          "crossTableReferentialIntegrity": true,
+          "tables": {
+            "accounts": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
+            },
+            "tx_history": {
+              "sourceRowCount": 1,
+              "targetRowCount": 1,
+              "matched": 1,
+              "isConsistent": true,
+              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
+            },
+            "audit_log": {
+              "sourceRowCount": 2,
+              "targetRowCount": 2,
+              "matched": 2,
+              "isConsistent": true,
+              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
+            }
+          }
+        },
+        "stress": {
+          "totalTransactions": 640,
+          "concurrency": 16,
+          "durationSeconds": 0.132,
+          "tps": 4860.4,
+          "latenciesMs": {
+            "p50": 0.5,
+            "p90": 7.69,
+            "p95": 11.51,
+            "p99": 31.55
+          },
+          "sloPassed": true,
+          "conservationInvariantHolds": true,
+          "doubleEntryZeroSumVerified": true,
+          "initialTotalBalance": 200000.0,
+          "finalTotalBalance": 200000.0,
+          "txHistoryRecorded": 640,
+          "auditEntriesRecorded": 1280
+        }
+      },
+      {
+        "targetId": "gbase-8s",
+        "protocol": "POSTGRES",
+        "port": 9088,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
         "latencyMs": 0.04,
@@ -1448,161 +1590,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.211,
-          "tps": 3036.5,
+          "durationSeconds": 0.123,
+          "tps": 5193.9,
           "latenciesMs": {
-            "p50": 0.21,
-            "p90": 8.07,
-            "p95": 15.24,
-            "p99": 54.84
+            "p50": 0.38,
+            "p90": 7.31,
+            "p95": 11.96,
+            "p99": 23.03
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
           "finalTotalBalance": 200000.00000000006,
-          "txHistoryRecorded": 640,
-          "auditEntriesRecorded": 1280
-        }
-      },
-      {
-        "targetId": "tidb",
-        "protocol": "MYSQL",
-        "port": 4000,
-        "mode": "PROTOCOL_LAB",
-        "isReady": true,
-        "latencyMs": 0.02,
-        "ddl": {
-          "statementsExecuted": 7,
-          "statementsSucceeded": 7,
-          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
-          "tablesFound": [
-            "accounts",
-            "audit_log",
-            "cbs_general_ledger",
-            "tx_history"
-          ],
-          "accountPrimaryKeyVerified": true
-        },
-        "cdc": {
-          "totalSourceRows": 5,
-          "totalTargetRows": 5,
-          "matchedCount": 5,
-          "mismatchedCount": 0,
-          "isConsistent": true,
-          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
-          "crossTableReferentialIntegrity": true,
-          "tables": {
-            "accounts": {
-              "sourceRowCount": 2,
-              "targetRowCount": 2,
-              "matched": 2,
-              "isConsistent": true,
-              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
-            },
-            "tx_history": {
-              "sourceRowCount": 1,
-              "targetRowCount": 1,
-              "matched": 1,
-              "isConsistent": true,
-              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
-            },
-            "audit_log": {
-              "sourceRowCount": 2,
-              "targetRowCount": 2,
-              "matched": 2,
-              "isConsistent": true,
-              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
-            }
-          }
-        },
-        "stress": {
-          "totalTransactions": 640,
-          "concurrency": 16,
-          "durationSeconds": 0.216,
-          "tps": 2968.3,
-          "latenciesMs": {
-            "p50": 0.11,
-            "p90": 11.31,
-            "p95": 26.17,
-            "p99": 45.59
-          },
-          "sloPassed": true,
-          "conservationInvariantHolds": true,
-          "doubleEntryZeroSumVerified": true,
-          "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.0,
-          "txHistoryRecorded": 640,
-          "auditEntriesRecorded": 1280
-        }
-      },
-      {
-        "targetId": "gbase-8s",
-        "protocol": "POSTGRES",
-        "port": 9088,
-        "mode": "PROTOCOL_LAB",
-        "isReady": true,
-        "latencyMs": 0.02,
-        "ddl": {
-          "statementsExecuted": 7,
-          "statementsSucceeded": 7,
-          "schemaDigest": "16907fdd6004963e8721ed06a9c648943da42b91a3ce5097e37abdf5467702cb",
-          "tablesFound": [
-            "accounts",
-            "audit_log",
-            "cbs_general_ledger",
-            "tx_history"
-          ],
-          "accountPrimaryKeyVerified": true
-        },
-        "cdc": {
-          "totalSourceRows": 5,
-          "totalTargetRows": 5,
-          "matchedCount": 5,
-          "mismatchedCount": 0,
-          "isConsistent": true,
-          "merkleTreeRoot": "19eb80ff5e2daa3a5c175395818d8f9163846c7cefcf434f063fab453f0e346e",
-          "crossTableReferentialIntegrity": true,
-          "tables": {
-            "accounts": {
-              "sourceRowCount": 2,
-              "targetRowCount": 2,
-              "matched": 2,
-              "isConsistent": true,
-              "digest": "694f6c0c6244623e592c18718eb46b27af415b41155517c4ca0012af3a8ab3ce"
-            },
-            "tx_history": {
-              "sourceRowCount": 1,
-              "targetRowCount": 1,
-              "matched": 1,
-              "isConsistent": true,
-              "digest": "43c5a8ea559e3ff76d8904fded629fc3fbb243eb1db2c5229278299c5618ed70"
-            },
-            "audit_log": {
-              "sourceRowCount": 2,
-              "targetRowCount": 2,
-              "matched": 2,
-              "isConsistent": true,
-              "digest": "34e46ff65248937e13a93a95e4d738f2fed25db2924cfa3b92edcae598580940"
-            }
-          }
-        },
-        "stress": {
-          "totalTransactions": 640,
-          "concurrency": 16,
-          "durationSeconds": 0.255,
-          "tps": 2505.6,
-          "latenciesMs": {
-            "p50": 0.09,
-            "p90": 1.41,
-            "p95": 13.9,
-            "p99": 93.94
-          },
-          "sloPassed": true,
-          "conservationInvariantHolds": true,
-          "doubleEntryZeroSumVerified": true,
-          "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 199999.99999999997,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
@@ -1661,19 +1661,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.298,
-          "tps": 2148.7,
+          "durationSeconds": 0.123,
+          "tps": 5186.6,
           "latenciesMs": {
-            "p50": 0.11,
-            "p90": 3.33,
-            "p95": 14.84,
-            "p99": 69.64
+            "p50": 1.09,
+            "p90": 7.47,
+            "p95": 9.89,
+            "p99": 14.57
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 199999.99999999997,
+          "finalTotalBalance": 200000.0,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
@@ -1732,19 +1732,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.235,
-          "tps": 2719.0,
+          "durationSeconds": 0.131,
+          "tps": 4877.1,
           "latenciesMs": {
-            "p50": 0.16,
-            "p90": 6.19,
-            "p95": 9.55,
-            "p99": 26.19
+            "p50": 0.18,
+            "p90": 6.92,
+            "p95": 12.19,
+            "p99": 25.84
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 199999.99999999994,
+          "finalTotalBalance": 200000.00000000003,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
@@ -1755,7 +1755,7 @@
         "port": 5866,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.07,
+        "latencyMs": 0.02,
         "ddl": {
           "statementsExecuted": 7,
           "statementsSucceeded": 7,
@@ -1803,13 +1803,13 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.346,
-          "tps": 1848.1,
+          "durationSeconds": 0.13,
+          "tps": 4941.8,
           "latenciesMs": {
-            "p50": 0.14,
-            "p90": 17.16,
-            "p95": 32.67,
-            "p99": 78.51
+            "p50": 0.69,
+            "p90": 8.17,
+            "p95": 10.79,
+            "p99": 16.9
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
@@ -1874,19 +1874,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.389,
-          "tps": 1643.6,
+          "durationSeconds": 0.122,
+          "tps": 5260.3,
           "latenciesMs": {
-            "p50": 0.11,
-            "p90": 4.25,
-            "p95": 27.24,
-            "p99": 103.84
+            "p50": 1.03,
+            "p90": 7.07,
+            "p95": 9.53,
+            "p99": 15.54
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.00000000003,
+          "finalTotalBalance": 199999.99999999997,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
@@ -1897,7 +1897,7 @@
         "port": 2881,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.03,
+        "latencyMs": 0.02,
         "ddl": {
           "statementsExecuted": 7,
           "statementsSucceeded": 7,
@@ -1945,19 +1945,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.353,
-          "tps": 1815.0,
+          "durationSeconds": 0.113,
+          "tps": 5670.8,
           "latenciesMs": {
-            "p50": 0.11,
-            "p90": 10.92,
-            "p95": 38.66,
-            "p99": 107.3
+            "p50": 1.43,
+            "p90": 6.47,
+            "p95": 8.04,
+            "p99": 12.03
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.00000000006,
+          "finalTotalBalance": 200000.0,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
@@ -2016,19 +2016,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.44,
-          "tps": 1456.1,
+          "durationSeconds": 0.107,
+          "tps": 5987.4,
           "latenciesMs": {
-            "p50": 0.12,
-            "p90": 7.09,
-            "p95": 17.12,
-            "p99": 100.41
+            "p50": 0.81,
+            "p90": 6.1,
+            "p95": 8.36,
+            "p99": 16.95
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 200000.00000000003,
+          "finalTotalBalance": 200000.0,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
@@ -2039,7 +2039,7 @@
         "port": 3307,
         "mode": "PROTOCOL_LAB",
         "isReady": true,
-        "latencyMs": 0.03,
+        "latencyMs": 0.02,
         "ddl": {
           "statementsExecuted": 7,
           "statementsSucceeded": 7,
@@ -2087,13 +2087,13 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.46,
-          "tps": 1390.2,
+          "durationSeconds": 0.115,
+          "tps": 5553.1,
           "latenciesMs": {
-            "p50": 0.1,
-            "p90": 2.9,
-            "p95": 19.22,
-            "p99": 120.88
+            "p50": 0.98,
+            "p90": 6.57,
+            "p95": 8.7,
+            "p99": 15.77
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
@@ -2158,19 +2158,19 @@
         "stress": {
           "totalTransactions": 640,
           "concurrency": 16,
-          "durationSeconds": 0.561,
-          "tps": 1140.7,
+          "durationSeconds": 0.105,
+          "tps": 6095.8,
           "latenciesMs": {
-            "p50": 0.11,
-            "p90": 3.67,
-            "p95": 18.07,
-            "p99": 163.18
+            "p50": 1.3,
+            "p90": 5.82,
+            "p95": 7.83,
+            "p99": 10.67
           },
           "sloPassed": true,
           "conservationInvariantHolds": true,
           "doubleEntryZeroSumVerified": true,
           "initialTotalBalance": 200000.0,
-          "finalTotalBalance": 199999.99999999997,
+          "finalTotalBalance": 200000.00000000003,
           "txHistoryRecorded": 640,
           "auditEntriesRecorded": 1280
         }
