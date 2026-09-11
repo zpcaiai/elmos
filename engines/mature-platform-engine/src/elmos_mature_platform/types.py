@@ -574,6 +574,10 @@ class EscalationTier(str, Enum):
     TIER_2 = "tier_2"  # Senior engineer
     TIER_3 = "tier_3"  # Domain expert / architect
     MANAGEMENT = "management"  # VP/Director escalation
+    TIER_1_ONCALL = "tier_1_oncall"
+    TIER_2_TECH_LEAD = "tier_2_tech_lead"
+    TIER_3_DOMAIN_EXPERT = "tier_3_domain_expert"
+    INCIDENT_COMMANDER = "incident_commander"
 
 class OnCallShift(str, Enum):
     """Follow-the-sun rotation shifts."""
@@ -7582,12 +7586,6 @@ class SreShiftRegion(str, Enum):
     APAC = "apac"
     EMEA = "emea"
     AMER = "amer"
-
-class EscalationTier(str, Enum):
-    TIER_1_ONCALL = "tier_1_oncall"
-    TIER_2_TECH_LEAD = "tier_2_tech_lead"
-    TIER_3_DOMAIN_EXPERT = "tier_3_domain_expert"
-    INCIDENT_COMMANDER = "incident_commander"
 
 @dataclass
 class SreOncallShift:
