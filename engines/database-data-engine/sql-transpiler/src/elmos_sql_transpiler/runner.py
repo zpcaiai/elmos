@@ -558,6 +558,7 @@ class PostgreSQLRunner(EngineRunner):
         super().__init__("postgresql-17.5")
         self.data_directory: Path | None = None
         self.socket_directory: Path | None = None
+        self._external_socket_dir: str | None = None
         self.port: int | None = None
         self.started = False
 
@@ -604,11 +605,18 @@ class PostgreSQLRunner(EngineRunner):
         if self.root is None:
             raise RuntimeError("Runner temporary directory is unavailable")
         self.data_directory = self.root / "data"
-        self.socket_directory = self.root / "socket"
-        self.socket_directory.mkdir()
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
             listener.bind(("127.0.0.1", 0))
             self.port = int(listener.getsockname()[1])
+        sock_candidate = self.root / "socket"
+        expected_sock_path = sock_candidate / f".s.PGSQL.{self.port}"
+        if len(str(expected_sock_path)) <= 100:
+            self.socket_directory = sock_candidate
+            self.socket_directory.mkdir(exist_ok=True)
+            self._external_socket_dir = None
+        else:
+            self._external_socket_dir = tempfile.mkdtemp(dir="/tmp", prefix="pg_sock_")
+            self.socket_directory = Path(self._external_socket_dir)
         self._run(
             [
                 str(self._binary("initdb")),
@@ -634,19 +642,29 @@ class PostgreSQLRunner(EngineRunner):
                 "-c full_page_writes=off",
             ]
         )
-        self._run(
-            [
-                str(self._binary("pg_ctl")),
-                "-D",
-                str(self.data_directory),
-                "-l",
-                str(log_path),
-                "-o",
-                server_options,
-                "-w",
-                "start",
-            ]
-        )
+        try:
+            self._run(
+                [
+                    str(self._binary("pg_ctl")),
+                    "-D",
+                    str(self.data_directory),
+                    "-l",
+                    str(log_path),
+                    "-o",
+                    server_options,
+                    "-w",
+                    "start",
+                ]
+            )
+        except RunnerBlockedError as exc:
+            log_detail = (
+                log_path.read_text(encoding="utf-8", errors="replace")
+                if log_path.exists()
+                else ""
+            )
+            raise RunnerBlockedError(
+                f"{exc}\nPostgreSQL server log:\n{log_detail[-1000:]}"
+            ) from exc
         self.started = True
 
     def stop(self) -> None:
@@ -666,6 +684,9 @@ class PostgreSQLRunner(EngineRunner):
                 )
             finally:
                 self.started = False
+                if self._external_socket_dir and os.path.exists(self._external_socket_dir):
+                    shutil.rmtree(self._external_socket_dir, ignore_errors=True)
+                    self._external_socket_dir = None
 
     def connect(self) -> Any:
         if not self.started or self.port is None:
