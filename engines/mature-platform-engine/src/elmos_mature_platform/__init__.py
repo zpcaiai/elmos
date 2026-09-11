@@ -9,6 +9,16 @@ from elmos_mature_platform.agent_redteam_engine import AgentRedTeamEngine
 from elmos_mature_platform.agent_shadow_canary_engine import AgentShadowCanaryEngine
 from elmos_mature_platform.airgap_bundle_engine import AirgapBundleEngine
 from elmos_mature_platform.api_compatibility_gate_engine import ApiCompatibilityGateEngine
+from elmos_mature_platform.artifact_container_signing_engine import ArtifactContainerSigningEngine
+from elmos_mature_platform.compatibility_test_matrix_engine import CompatibilityTestMatrixEngine
+from elmos_mature_platform.dependency_sca_governance_engine import DependencyScaGovernanceEngine
+from elmos_mature_platform.operations_evidence_reporting_engine import OperationsEvidenceReportingEngine
+from elmos_mature_platform.platform_cost_anomaly_monitoring_engine import PlatformCostAnomalyMonitoringEngine
+from elmos_mature_platform.public_api_compatibility_engine import PublicApiCompatibilityEngine
+from elmos_mature_platform.route_breadth_certification_engine import RouteBreadthCertificationEngine
+from elmos_mature_platform.runner_version_compatibility_engine import RunnerVersionCompatibilityEngine
+from elmos_mature_platform.similar_project_retrieval_engine import SimilarProjectRetrievalEngine
+from elmos_mature_platform.usage_billing_reconciliation_engine import UsageBillingReconciliationEngine
 from elmos_mature_platform.autoscaling_capacity_engine import AutoscalingCapacityEngine
 from elmos_mature_platform.backup_restore_engine import BackupRestoreEngine
 from elmos_mature_platform.change_management_engine import ChangeManagementEngine
@@ -60,6 +70,16 @@ from elmos_mature_platform.tenant_isolation_engine import TenantIsolationEngine
 from elmos_mature_platform.version_compatibility_engine import VersionCompatibilityEngine
 from elmos_mature_platform.workflow_version_recovery_engine import WorkflowVersionRecoveryEngine
 from elmos_mature_platform.zero_downtime_upgrade_engine import ZeroDowntimeUpgradeEngine
+from elmos_mature_platform.artifact_container_signing_engine import ArtifactContainerSigningEngine
+from elmos_mature_platform.compatibility_test_matrix_engine import CompatibilityTestMatrixEngine
+from elmos_mature_platform.platform_cost_anomaly_monitoring_engine import PlatformCostAnomalyMonitoringEngine
+from elmos_mature_platform.runner_version_compatibility_engine import RunnerVersionCompatibilityEngine
+from elmos_mature_platform.usage_billing_reconciliation_engine import UsageBillingReconciliationEngine
+from elmos_mature_platform.dependency_sca_governance_engine import DependencyScaGovernanceEngine
+from elmos_mature_platform.operations_evidence_reporting_engine import OperationsEvidenceReportingEngine
+from elmos_mature_platform.public_api_compatibility_engine import PublicApiCompatibilityEngine
+from elmos_mature_platform.route_breadth_certification_engine import RouteBreadthCertificationEngine
+from elmos_mature_platform.similar_project_retrieval_engine import SimilarProjectRetrievalEngine
 from elmos_mature_platform.types import (
     AgentAutonomyLevel,
     AgentDeploymentMode,
@@ -129,12 +149,22 @@ from elmos_mature_platform.types import (
 )
 
 __all__ = [
-    # Engines (56)
+    # Engines
     "AgentBudgetLimitsEngine",
     "AgentRedTeamEngine",
     "AgentShadowCanaryEngine",
     "AirgapBundleEngine",
     "ApiCompatibilityGateEngine",
+    "ArtifactContainerSigningEngine",
+    "CompatibilityTestMatrixEngine",
+    "DependencyScaGovernanceEngine",
+    "OperationsEvidenceReportingEngine",
+    "PlatformCostAnomalyMonitoringEngine",
+    "PublicApiCompatibilityEngine",
+    "RouteBreadthCertificationEngine",
+    "RunnerVersionCompatibilityEngine",
+    "SimilarProjectRetrievalEngine",
+    "UsageBillingReconciliationEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",

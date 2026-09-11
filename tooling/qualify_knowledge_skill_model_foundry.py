@@ -137,7 +137,7 @@ EXCLUDED_PATHS = frozenset(
     }
 )
 TRANSIENT_NAMES = frozenset(
-    {"__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache", ".venv"}
+    {"__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache", ".venv", "uv.lock"}
 )
 TRANSIENT_SUFFIXES = (".pyc", ".pyo")
 

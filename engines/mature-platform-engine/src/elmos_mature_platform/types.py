@@ -5453,3 +5453,472 @@ class AutonomyEnforcementGate:
     allowed: bool = False
     requires_human_approval: bool = False
     evaluated_at: str = ""
+
+
+# ─── Public API Compatibility Models ─────────────────────────────────
+
+class ApiChangeKind(str, Enum):
+    BREAKING = "breaking"
+    NON_BREAKING = "non_breaking"
+    DEPRECATION = "deprecation"
+    SECURITY_PATCH = "security_patch"
+
+@dataclass
+class ApiEndpointSpec:
+    endpoint_id: str
+    method: str  # GET, POST, PUT, DELETE
+    path: str
+    version: str
+    parameters: Dict[str, str] = field(default_factory=dict)
+    response_schema_hash: str = ""
+    is_deprecated: bool = False
+    deprecated_in: str = ""
+    removal_in: str = ""
+
+@dataclass
+class ApiCompatibilityAssessment:
+    assessment_id: str
+    base_version: str
+    target_version: str
+    change_kind: ApiChangeKind
+    endpoint_id: str
+    breaking_changes: List[str] = field(default_factory=list)
+    compatible: bool = True
+    assessed_at: str = ""
+    notes: str = ""
+
+@dataclass
+class SdkVersionMatrix:
+    matrix_id: str
+    platform_version: str
+    language: str  # python, java, go, typescript, csharp
+    sdk_version: str
+    supported: bool = True
+    min_platform_version: str = ""
+    max_platform_version: str = ""
+
+
+# ─── Operations Evidence Reporting Models ────────────────────────────
+
+class EvidenceReportType(str, Enum):
+    DAILY_OPS = "daily_ops"
+    SLA_AUDIT = "sla_audit"
+    INCIDENT_POSTMORTEM = "incident_postmortem"
+    CUSTOMER_QUARTERLY = "customer_quarterly"
+
+@dataclass
+class OperationalEvidenceItem:
+    item_id: str
+    report_id: str
+    evidence_type: str  # metric, log_snippet, incident_ref, runbook_exec
+    source_system: str
+    payload: Dict[str, Any] = field(default_factory=dict)
+    collected_at: str = ""
+    verified: bool = True
+    provenance_hash: str = ""
+
+@dataclass
+class CustomerOperationsReport:
+    report_id: str
+    customer_id: str
+    report_type: EvidenceReportType
+    time_window_start: str
+    time_window_end: str
+    overall_uptime_pct: float = 99.9
+    sla_violations_count: int = 0
+    incident_count: int = 0
+    evidence_items: List[str] = field(default_factory=list)  # item_ids
+    generated_at: str = ""
+    published: bool = False
+    signoff_by: str = ""
+
+
+# ─── Dependency SCA Governance Models ────────────────────────────────
+
+class LicenseRiskLevel(str, Enum):
+    PERMISSIVE = "permissive"
+    WEAK_COPYLEFT = "weak_copyleft"
+    STRONG_COPYLEFT = "strong_copyleft"
+    PROPRIETARY = "proprietary"
+    UNKNOWN = "unknown"
+
+@dataclass
+class ScaDependencyRecord:
+    dependency_id: str
+    package_name: str
+    version: str
+    ecosystem: str  # npm, pypi, maven, nuget, golang
+    license_spdx: str = "UNKNOWN"
+    license_risk: LicenseRiskLevel = LicenseRiskLevel.UNKNOWN
+    vulnerabilities: List[str] = field(default_factory=list)  # cve_ids
+    direct: bool = True
+    reachable: bool = True
+    is_quarantined: bool = False
+
+@dataclass
+class LicenseComplianceVerdict:
+    verdict_id: str
+    project_id: str
+    passed: bool = True
+    disallowed_licenses_found: List[str] = field(default_factory=list)
+    quarantined_packages: List[str] = field(default_factory=list)
+    reviewed_at: str = ""
+    reviewer: str = ""
+
+@dataclass
+class ScaGovernanceSummary:
+    summary_id: str
+    project_id: str
+    total_dependencies: int = 0
+    direct_dependencies: int = 0
+    transitive_dependencies: int = 0
+    vulnerable_dependencies: int = 0
+    high_risk_licenses_count: int = 0
+    overall_compliant: bool = True
+
+
+# ─── Similar Project Retrieval Models ────────────────────────────────
+
+@dataclass
+class ProjectFingerprint:
+    project_id: str
+    project_name: str
+    source_language: str
+    source_framework: str
+    target_language: str
+    target_framework: str
+    loc_count: int = 0
+    module_count: int = 0
+    architectural_pattern: str = ""  # monolith, microservices, modular_monolith
+    tags: List[str] = field(default_factory=list)
+    feature_vector: List[float] = field(default_factory=list)
+
+@dataclass
+class SimilarityMatchResult:
+    matched_project_id: str
+    similarity_score: float  # 0.0 - 1.0
+    shared_tags: List[str] = field(default_factory=list)
+    recommended_recipes: List[str] = field(default_factory=list)
+    estimated_duration_days: float = 0.0
+
+@dataclass
+class TargetStackRecommendation:
+    recommendation_id: str
+    source_framework: str
+    recommended_target_framework: str
+    confidence_score: float = 0.0
+    rationale: str = ""
+    alternatives: List[str] = field(default_factory=list)
+
+
+# ─── Route Breadth Certification Models ──────────────────────────────
+
+class RouteCertificationStatus(str, Enum):
+    NOT_EVALUATED = "not_evaluated"
+    CANDIDATE = "candidate"
+    CERTIFIED = "certified"
+    PROVISIONAL = "provisional"
+    DEPRECATED = "deprecated"
+
+@dataclass
+class MigrationRouteCell:
+    route_id: str
+    source_language: str
+    target_language: str
+    source_framework: str = ""
+    target_framework: str = ""
+    status: RouteCertificationStatus = RouteCertificationStatus.NOT_EVALUATED
+    test_coverage_pct: float = 0.0
+    syntax_fidelity_score: float = 0.0
+    semantic_equivalence_score: float = 0.0
+    certified_at: str = ""
+    certifier: str = ""
+    known_limitations: List[str] = field(default_factory=list)
+
+@dataclass
+class RouteBreadthMatrixReport:
+    report_id: str
+    total_routes: int = 0
+    certified_routes_count: int = 0
+    candidate_routes_count: int = 0
+    provisional_routes_count: int = 0
+    coverage_breadth_pct: float = 0.0
+    language_pairs_supported: List[str] = field(default_factory=list)
+    generated_at: str = ""
+
+
+# ─── Runner Version Compatibility Models (B38) ──────────────────────
+
+class RunnerProtocolVersion(str, Enum):
+    V1_LEGACY = "1.0.0"
+    V2_STABLE = "2.0.0"
+    V2_1_STREAMING = "2.1.0"
+    V3_HERMETIC = "3.0.0"
+    V3_1_ASYNC = "3.1.0"
+
+class RunnerStatus(str, Enum):
+    ACTIVE = "active"
+    DRAINING = "draining"
+    DRAINED = "drained"
+    DEPRECATED = "deprecated"
+    INCOMPATIBLE = "incompatible"
+    OFFLINE = "offline"
+
+class RunnerCapability(str, Enum):
+    DOCKER_SANDBOX = "docker_sandbox"
+    EBPF_TRACING = "ebpf_tracing"
+    AIRGAP_BUNDLE = "airgap_bundle"
+    GPU_PASSTHROUGH = "gpu_passthrough"
+    DISTRIBUTED_CACHE = "distributed_cache"
+    WASM_RUNTIME = "wasm_runtime"
+    HSM_SIGNING = "hsm_signing"
+
+@dataclass
+class RunnerRegistration:
+    runner_id: str
+    hostname: str
+    runner_version: str  # e.g. "3.1.0"
+    protocol_version: str  # e.g. "3.0.0"
+    supported_capabilities: List[RunnerCapability] = field(default_factory=list)
+    status: RunnerStatus = RunnerStatus.ACTIVE
+    active_jobs_count: int = 0
+    last_heartbeat: str = ""
+    drain_requested_at: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class CompatibilityCheckResult:
+    compatible: bool
+    control_plane_version: str
+    runner_version: str
+    version_relation: str  # "exact", "n_minus_1", "n_plus_1", "incompatible_major", "too_old", "too_new"
+    unsupported_capabilities: List[str] = field(default_factory=list)
+    upgrade_required: bool = False
+    details: str = ""
+
+@dataclass
+class RunnerDrainUpgradePlan:
+    plan_id: str
+    runner_id: str
+    current_version: str
+    target_version: str
+    drain_timeout_seconds: int = 300
+    status: str = "pending"  # pending, draining, ready_for_upgrade, completed, aborted
+    created_at: str = ""
+    completed_at: str = ""
+
+
+# ─── Platform Cost Anomaly Monitoring Models (B39) ──────────────────
+
+class CostMetricType(str, Enum):
+    LLM_TOKENS = "llm_tokens"
+    COMPUTE_CPU_HOURS = "compute_cpu_hours"
+    MEMORY_GB_HOURS = "memory_gb_hours"
+    STORAGE_GB_MONTHS = "storage_gb_months"
+    NETWORK_EGRESS_GB = "network_egress_gb"
+    CACHE_OPERATIONS = "cache_operations"
+
+class CostAnomalySeverity(str, Enum):
+    INFO = "info"
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+class CostMitigationAction(str, Enum):
+    NOTIFY_ONLY = "notify_only"
+    ALERT_ONCALL = "alert_oncall"
+    THROTTLE_RATE_LIMIT = "throttle_rate_limit"
+    TRIP_CIRCUIT_BREAKER = "trip_circuit_breaker"
+    SUSPEND_WORKLOAD = "suspend_workload"
+
+@dataclass
+class CostDataPoint:
+    point_id: str
+    tenant_id: str
+    metric_type: CostMetricType
+    timestamp: str
+    amount_usd: float
+    quantity: float
+    unit: str
+
+@dataclass
+class CostAnomalyAlert:
+    alert_id: str
+    tenant_id: str
+    metric_type: CostMetricType
+    current_amount_usd: float
+    baseline_mean_usd: float
+    baseline_std_usd: float
+    z_score: float
+    severity: CostAnomalySeverity
+    recommended_action: CostMitigationAction
+    triggered_at: str
+    anomaly_reason: str = ""
+    is_resolved: bool = False
+    resolved_at: str = ""
+
+@dataclass
+class CostThrottlePolicy:
+    policy_id: str
+    tenant_id: str
+    metric_type: CostMetricType
+    hourly_spend_cap_usd: float
+    daily_spend_cap_usd: float
+    current_hourly_spend_usd: float = 0.0
+    current_daily_spend_usd: float = 0.0
+    circuit_breaker_tripped: bool = False
+
+
+# ─── Artifact Container Signing Models (B40) ────────────────────────
+
+class SignatureAlgorithm(str, Enum):
+    RS256 = "RS256"
+    ES256 = "ES256"
+    ED25519 = "ED25519"
+    HMAC_SHA256 = "HMAC_SHA256"
+
+class ArtifactKind(str, Enum):
+    OCI_CONTAINER_IMAGE = "oci_container_image"
+    MIGRATION_RECIPE_BUNDLE = "migration_recipe_bundle"
+    RUNNER_BINARY = "runner_binary"
+    MODEL_WEIGHT_BUNDLE = "model_weight_bundle"
+    PROVENANCE_ATTESTATION = "provenance_attestation"
+
+@dataclass
+class ArtifactSignatureRecord:
+    signature_id: str
+    key_id: str
+    signer_identity: str
+    algorithm: SignatureAlgorithm
+    signature_base64: str
+    signed_digest: str  # sha256:...
+    timestamp: str
+    certificate_pem: str = ""
+    in_toto_statement_digest: str = ""
+    is_revoked: bool = False
+
+@dataclass
+class SignedArtifactManifest:
+    artifact_id: str
+    artifact_kind: ArtifactKind
+    artifact_digest: str  # sha256:...
+    artifact_size_bytes: int
+    signatures: List[ArtifactSignatureRecord] = field(default_factory=list)
+    created_at: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class SigningAdmissionVerdict:
+    verdict_id: str
+    artifact_id: str
+    artifact_digest: str
+    admitted: bool = True
+    required_signers_satisfied: bool = True
+    signature_valid: bool = True
+    not_revoked: bool = True
+    rejection_reasons: List[str] = field(default_factory=list)
+    evaluated_at: str = ""
+
+
+# ─── Compatibility Test Matrix Models (B43) ─────────────────────────
+
+class MatrixCellStatus(str, Enum):
+    COMPATIBLE = "compatible"
+    INCOMPATIBLE = "incompatible"
+    DEGRADED = "degraded"
+    UNTESTED = "untested"
+    DEPRECATED = "deprecated"
+
+@dataclass
+class CompatibilityCell:
+    cell_id: str
+    language_runtime: str  # e.g. "java@21"
+    framework: str         # e.g. "spring-boot@3.2.0"
+    database: str          # e.g. "postgresql@16"
+    cloud_profile: str     # e.g. "aws-standard"
+    status: MatrixCellStatus = MatrixCellStatus.UNTESTED
+    broken_features: List[str] = field(default_factory=list)
+    test_run_id: str = ""
+    latency_p95_ms: float = 0.0
+    evaluated_at: str = ""
+
+@dataclass
+class CompatibilityTestMatrixReport:
+    report_id: str
+    target_profile: str
+    total_cells: int = 0
+    compatible_cells_count: int = 0
+    incompatible_cells_count: int = 0
+    degraded_cells_count: int = 0
+    untested_cells_count: int = 0
+    compatibility_score_pct: float = 0.0
+    breaking_pairwise_combinations: List[str] = field(default_factory=list)
+    lts_ready: bool = True
+    generated_at: str = ""
+
+
+# ─── Usage Billing Reconciliation Models (B44) ──────────────────────
+
+class BillingItemType(str, Enum):
+    TOKEN_INFERENCE = "token_inference"
+    RUNNER_EXECUTION = "runner_execution"
+    STORAGE_PERSISTENCE = "storage_persistence"
+    RECIPE_USAGE = "recipe_usage"
+    PLATFORM_LICENSE = "platform_license"
+
+class DiscrepancyType(str, Enum):
+    UNDERBILLING = "underbilling"
+    OVERBILLING = "overbilling"
+    UNMETERED_USAGE = "unmetered_usage"
+    DUPLICATE_INVOICE_LINE = "duplicate_invoice_line"
+    ROUNDING_ERROR = "rounding_error"
+
+@dataclass
+class MeteredUsageRecord:
+    meter_id: str
+    tenant_id: str
+    item_type: BillingItemType
+    quantity: float
+    unit_price_usd: float
+    subtotal_usd: float
+    timestamp: str
+    hash_prev: str = ""
+    hash_curr: str = ""
+
+@dataclass
+class InvoiceLineItemRecord:
+    line_id: str
+    invoice_id: str
+    item_type: BillingItemType
+    quantity: float
+    unit_price_usd: float
+    total_billed_usd: float
+
+@dataclass
+class BillingDiscrepancy:
+    discrepancy_id: str
+    tenant_id: str
+    item_type: BillingItemType
+    metered_amount_usd: float
+    invoiced_amount_usd: float
+    variance_usd: float
+    discrepancy_type: DiscrepancyType
+    resolved: bool = False
+    adjustment_credit_usd: float = 0.0
+
+@dataclass
+class BillingReconciliationStatement:
+    statement_id: str
+    tenant_id: str
+    period_start: str
+    period_end: str
+    total_metered_usd: float = 0.0
+    total_invoiced_usd: float = 0.0
+    variance_total_usd: float = 0.0
+    discrepancies: List[BillingDiscrepancy] = field(default_factory=list)
+    balanced: bool = True
+    tolerance_threshold_usd: float = 0.01
+    audit_hash: str = ""
+    reconciled_at: str = ""
+
