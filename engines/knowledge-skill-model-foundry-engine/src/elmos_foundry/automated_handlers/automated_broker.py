@@ -14,7 +14,9 @@ from ..adapters import (
 )
 from ..canonical import canonical_digest
 from ..domain import TenantScope
-from ..industrial_runtime.host_broker import INDUSTRIAL_BROKER_ID, execute_industrial_skill
+from ..exact_skills.compiler import ExactSkillError
+from ..exact_skills.registry import run_exact_skill
+from ..industrial_runtime.host_broker import INDUSTRIAL_BROKER_ID
 
 AUTOMATED_BROKER_ID = 'automated_host_broker'
 AUTOMATED_BROKER_VERSION = '1.0.0'
@@ -36,122 +38,49 @@ def automated_broker_executor(
     skill_name = program.skill_name
     invocation_id = request.invocation_id
     req_binding_digest = request.binding_digest
-    pack_name = str(program.document.get('pack') or '')
-    kernel = execute_industrial_skill(
-        skill_name,
-        payload,
-        tenant_scope=tenant_scope,
-        invocation_id=invocation_id,
-        pack=pack_name,
+    try:
+        executed = run_exact_skill(
+            skill_name,
+            payload,
+            tenant_scope=tenant_scope,
+            invocation_id=invocation_id,
+            request_binding_digest=req_binding_digest,
+        )
+    except ExactSkillError as exc:
+        raise ValueError(f"Exact handler failed for {skill_name}: {exc}") from exc
+    if executed.get("status") != "SUCCEEDED" or executed.get("semantic_execution") is None:
+        raise ValueError(f"Exact handler failed for {skill_name}: {executed.get('error')}")
+
+    program.validate_result(
+        {"semantic_execution": executed["semantic_execution"]},
+        request_binding_digest=req_binding_digest,
     )
-    if not kernel.ok:
-        raise ValueError(f"Industrial kernel failed for {skill_name}: {kernel.error}")
 
-    declared_outputs = [o['name'] for o in program.document.get('outputs', [])]
-    outputs: dict[str, Any] = {
-        out_name: kernel.materialize_output(out_name) for out_name in declared_outputs
-    }
-
-    # 2. Build stage traces with chained input->output digests
-    stages_trace = []
-    curr_input_digest = req_binding_digest
-
-    for stage in program.stages:
-        stage_out_digest = canonical_digest({
-            'stage': stage['name'],
-            'skill': skill_name,
-            'invocation_id': invocation_id,
-            'kernel_output_digest': kernel.output_digest,
-            'algorithm': kernel.algorithm,
-        })
-        checkpoint_digest = canonical_digest({
-            'checkpoint': stage['name'],
-            'skill': skill_name,
-            'scope': tenant_scope.binding_digest,
-        })
-        tool_receipts = []
-        for tool in stage.get('tools', ()):
-            tool_receipts.append({
-                'tool': tool,
-                'outcome': 'CONFIRMED',
-                'receipt_digest': canonical_digest({
-                    'tool': tool,
-                    'invocation_id': invocation_id,
-                    'executed': True,
-                }),
-            })
-        stages_trace.append({
-            'index': stage['index'],
-            'name': stage['name'],
-            'operation': stage['operation'],
-            'status': 'SUCCEEDED',
-            'input_digest': curr_input_digest,
-            'output_digest': stage_out_digest,
-            'checkpoint_digest': checkpoint_digest,
-            'tool_receipts': tool_receipts,
-        })
-        curr_input_digest = stage_out_digest
-
-    # 3. Build gate evidence
-    gate_evidence = []
-    for gate in program.required_gates:
-        gate_evidence.append({
-            'gate': gate,
-            'status': 'PASSED',
-            'evidence_digest': canonical_digest({
-                'gate': gate,
-                'skill': skill_name,
-                'scope': tenant_scope.binding_digest,
-                'verified': True,
-            }),
-        })
-
-    # 4. Build rollback record
-    rollback = {
-        'strategy': program.rollback_strategy,
-        'status': 'NOT_REQUIRED',
-        'receipt_digest': canonical_digest({
-            'strategy': program.rollback_strategy,
-            'skill': skill_name,
-            'clean': True,
-        }),
-    }
-
-    # 5. Build full semantic execution trace
-    semantic_execution = {
-        'schema_version': 'elmos.foundry.native-semantic-trace.v1',
-        'skill_name': program.skill_name,
-        'handler_id': program.handler_id,
-        'program_digest': program.digest,
-        'request_binding_digest': req_binding_digest,
-        'stages': stages_trace,
-        'gate_evidence': gate_evidence,
-        'rollback': rollback,
-    }
-
-    # 6. Build provider receipt
     provider_receipt = {
         'receipt_digest': canonical_digest({
             'provider': 'elmos-native-automated-broker',
             'request_binding_digest': req_binding_digest,
             'skill': skill_name,
-            'timestamp': int(time.time()),
+            'handler_id': executed.get('handler_id'),
+            'program_digest': executed.get('program_digest'),
+            'output_digest': executed.get('output_digest'),
         }),
         'request_binding_digest': req_binding_digest,
         'outcome': 'CONFIRMED',
         'provider': INDUSTRIAL_BROKER_ID,
-        'kernel_family': kernel.family,
-        'algorithm': kernel.algorithm,
-        'input_digest': kernel.input_digest,
-        'output_digest': kernel.output_digest,
+        'kernel_family': executed.get('kernel_family'),
+        'algorithm': executed.get('algorithm'),
+        'input_digest': executed.get('input_digest'),
+        'output_digest': executed.get('output_digest'),
         'llm_required': False,
+        'exact': True,
     }
 
     return {
         'status': 'SUCCEEDED',
-        'outputs': outputs,
+        'outputs': executed['outputs'],
         'provider_receipt': provider_receipt,
-        'semantic_execution': semantic_execution,
+        'semantic_execution': executed['semantic_execution'],
     }
 
 def automated_result_verifier(

@@ -147,6 +147,7 @@ def execute_kernel(
         try:
             core_out = dict(core(body))
             artifacts = {"core": core_out}
+            artifacts.update({key: value for key, value in core_out.items() if key != "status"})
             return KernelResult(
                 ok=str(core_out.get("status", "EXECUTED")) in {"EXECUTED", "NOOP", "SUCCEEDED"},
                 family=family.value,
@@ -154,7 +155,10 @@ def execute_kernel(
                 algorithm=f"core_skill_handler:{skill_name}",
                 input_digest=input_digest,
                 output_digest=_digest(core_out),
-                metrics={"core_status": core_out.get("status")},
+                metrics={
+                    "core_status": core_out.get("status"),
+                    **{key: value for key, value in core_out.items() if key != "status" and not isinstance(value, (dict, list))},
+                },
                 artifacts=artifacts,
                 pack=pack,
             )
