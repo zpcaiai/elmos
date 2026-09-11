@@ -16,6 +16,7 @@ import (
 	grpcInterface "{{.ModuleName}}/internal/interfaces/grpc"
 	httpInterface "{{.ModuleName}}/internal/interfaces/http"
 	"{{.ModuleName}}/pkg/logger"
+	"{{.ModuleName}}/pkg/telemetry"
 )
 
 func main() {
@@ -30,14 +31,20 @@ func main() {
 		"env", cfg.Environment,
 	)
 
-	// 3. Initialize Infrastructure & Repositories
+	// 3. Initialize OpenTelemetry Distributed Tracing
+	_, shutdownTracer, err := telemetry.InitTracer(context.Background(), "{{.ServiceName}}", cfg.Environment)
+	if err != nil {
+		log.Error("Failed to initialize OpenTelemetry tracer", "error", err)
+	}
+
+	// 4. Initialize Infrastructure & Repositories
 	repo := persistence.NewRepository(cfg.DatabaseURL)
 	log.Info("Initialized database persistence layer", "database", "{{.Database}}")
 
-	// 4. Initialize Application Services (Use Cases)
+	// 5. Initialize Application Services (Use Cases)
 	entityService := service.NewEntityService(repo, log)
 
-	// 5. Initialize Interfaces (HTTP & gRPC)
+	// 6. Initialize Interfaces (HTTP & gRPC)
 	httpHandler := httpInterface.NewHandler(entityService, log)
 	httpRouter := httpInterface.NewRouter(httpHandler, log)
 
@@ -51,7 +58,7 @@ func main() {
 
 	grpcServer := grpcInterface.NewServer(entityService, log, cfg.GRPCPort)
 
-	// 6. Start Servers in Goroutines
+	// 7. Start Servers in Goroutines
 	go func() {
 		log.Info("HTTP server listening", "port", cfg.HTTPPort)
 		if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
@@ -67,33 +74,49 @@ func main() {
 		}
 	}()
 
-	// 7. Graceful Shutdown on SIGINT / SIGTERM
+	// 8. Graceful Shutdown on SIGINT / SIGTERM with 30-second drain timeout
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	sig := <-quit
 
-	log.Info("Received shutdown signal", "signal", sig.String())
+	log.Info("Received shutdown signal, starting graceful drain", "signal", sig.String())
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Stop gRPC server
+	// Stop gRPC server first
 	grpcServer.GracefulStop()
 	log.Info("gRPC server stopped")
 
-	// Stop HTTP server
+	// Drain active HTTP connections
 	if err := httpServer.Shutdown(shutdownCtx); err != nil {
-		log.Error("HTTP server forced to shutdown", "error", err)
+		log.Error("HTTP server forced to shutdown during drain", "error", err)
 	} else {
-		log.Info("HTTP server exited cleanly")
+		log.Info("HTTP server drained and exited cleanly")
 	}
 
-	// Close repository connections if needed
+	// Flush and close repository persistence connections
 	if closer, ok := any(repo).(interface{ Close() error }); ok {
 		if err := closer.Close(); err != nil {
-			log.Error("Failed to close persistence connection", "error", err)
+			log.Error("Failed to flush and close persistence connection", "error", err)
+		} else {
+			log.Info("Persistence connection flushed and closed successfully")
 		}
 	}
 
-	log.Info("Service shutdown complete")
+	// Flush pending OpenTelemetry spans
+	if shutdownTracer != nil {
+		if err := shutdownTracer(shutdownCtx); err != nil {
+			log.Error("Failed to flush OpenTelemetry tracer", "error", err)
+		} else {
+			log.Info("OpenTelemetry tracer flushed successfully")
+		}
+	}
+
+	// Flush structured logger buffer if available
+	if syncer, ok := any(log).(interface{ Sync() error }); ok {
+		_ = syncer.Sync()
+	}
+
+	log.Info("Service graceful shutdown complete")
 }

@@ -1,0 +1,85 @@
+package middleware_test
+
+import (
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
+	"{{.ModuleName}}/internal/interfaces/http/middleware"
+	"{{.ModuleName}}/pkg/telemetry"
+)
+
+func TestTelemetryMiddleware_TraceparentHeader(t *testing.T) {
+	tp := telemetry.NewTracerProvider("test-service", "test", &telemetry.NoopExporter{})
+	telemetry.SetGlobalTracerProvider(tp)
+
+	innerHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		span := telemetry.SpanFromContext(r.Context())
+		if span == nil {
+			t.Error("expected span in request context")
+		}
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("ok"))
+	})
+
+	handler := middleware.TelemetryMiddleware("test-service")(innerHandler)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/entities", nil)
+	validTraceparent := "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
+	req.Header.Set("traceparent", validTraceparent)
+	rec := httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d", rec.Code)
+	}
+
+	respTraceparent := rec.Header().Get("traceparent")
+	if respTraceparent == "" {
+		t.Fatal("expected traceparent header in response")
+	}
+	if !strings.HasPrefix(respTraceparent, "00-4bf92f3577b34da6a3ce929d0e0e4736-") {
+		t.Fatalf("expected response traceparent to match trace ID, got %s", respTraceparent)
+	}
+}
+
+func TestMetricsMiddleware_AndPrometheusHandler(t *testing.T) {
+	innerHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("success"))
+	})
+
+	handler := middleware.MetricsMiddleware(innerHandler)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/entities", nil)
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d", rec.Code)
+	}
+
+	metricsReq := httptest.NewRequest(http.MethodGet, "/metrics", nil)
+	metricsRec := httptest.NewRecorder()
+	middleware.PrometheusHandler(metricsRec, metricsReq)
+
+	if metricsRec.Code != http.StatusOK {
+		t.Fatalf("expected status 200 from /metrics, got %d", metricsRec.Code)
+	}
+
+	body := metricsRec.Body.String()
+	if !strings.Contains(body, "http_requests_total") {
+		t.Fatalf("expected 'http_requests_total' in metrics output, got:
+%s", body)
+	}
+	if !strings.Contains(body, "http_request_duration_seconds") {
+		t.Fatalf("expected 'http_request_duration_seconds' in metrics output, got:
+%s", body)
+	}
+	if !strings.Contains(body, "service_up 1") {
+		t.Fatalf("expected 'service_up 1' in metrics output, got:
+%s", body)
+	}
+}

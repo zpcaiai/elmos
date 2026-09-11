@@ -50,19 +50,23 @@ public final class SpringEcosystemDependencyModernizer {
         int changes = 0;
 
         try {
-            // 1. Modernize pom.xml
-            Path pom = projectRoot.resolve("pom.xml");
-            if (Files.isRegularFile(pom)) {
+            // 1. Modernize all pom.xml files discovered across multi-module reactor
+            List<Path> poms = io.elmos.worker.SpringMultiModuleProjectScanner.findPomFiles(projectRoot);
+            for (Path pom : poms) {
                 String pomContent = Files.readString(pom, StandardCharsets.UTF_8);
                 String updatedPom = modernizePom(pomContent, rulesApplied);
                 if (!updatedPom.equals(pomContent)) {
                     Files.writeString(pom, updatedPom, StandardCharsets.UTF_8);
-                    modifiedFiles.add("pom.xml");
+                    modifiedFiles.add(projectRoot.relativize(pom).toString().replace("\\", "/"));
                     changes++;
                 }
             }
 
-            // 2. Modernize Java Controllers (Swagger 2 -> OpenAPI 3)
+            // 2. Synthesize Spring Boot 3 AutoConfiguration.imports from spring.factories
+            int importsChanged = modernizeAutoConfigurationImports(projectRoot, modifiedFiles, rulesApplied);
+            changes += importsChanged;
+
+            // 3. Modernize Java Controllers (Swagger 2 -> OpenAPI 3)
             try (var stream = Files.walk(projectRoot)) {
                 List<Path> javaFiles = stream
                         .filter(Files::isRegularFile)
@@ -86,6 +90,69 @@ public final class SpringEcosystemDependencyModernizer {
         }
 
         return new EcosystemModernizationResult(!modifiedFiles.isEmpty(), changes, modifiedFiles, rulesApplied);
+    }
+
+    private static int modernizeAutoConfigurationImports(Path projectRoot, Set<String> modifiedFiles, List<String> rules) {
+        int count = 0;
+        try (var stream = Files.walk(projectRoot)) {
+            List<Path> factories = stream
+                    .filter(Files::isRegularFile)
+                    .filter(p -> p.getFileName().toString().equals("spring.factories"))
+                    .toList();
+
+            for (Path factory : factories) {
+                String content = Files.readString(factory, StandardCharsets.UTF_8);
+                if (content.contains("org.springframework.boot.autoconfigure.EnableAutoConfiguration")) {
+                    List<String> autoConfigs = extractAutoConfigurations(content);
+                    if (!autoConfigs.isEmpty()) {
+                        Path importsFile = factory.getParent().resolve("spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports");
+                        if (!Files.exists(importsFile)) {
+                            Files.createDirectories(importsFile.getParent());
+                            Files.writeString(importsFile, String.join("\n", autoConfigs) + "\n", StandardCharsets.UTF_8);
+                            modifiedFiles.add(projectRoot.relativize(importsFile).toString().replace("\\", "/"));
+                            rules.add("RULE-SPRING-BOOT3-AUTOCONFIGURATION-IMPORTS-SYNTHESIZED");
+                            count++;
+                        }
+                    }
+                }
+            }
+        } catch (IOException ignored) {}
+        return count;
+    }
+
+    private static List<String> extractAutoConfigurations(String factoriesContent) {
+        List<String> configs = new ArrayList<>();
+        String[] lines = factoriesContent.split("\n");
+        boolean inAutoConfig = false;
+        for (String line : lines) {
+            String trimmed = line.trim();
+            if (trimmed.startsWith("org.springframework.boot.autoconfigure.EnableAutoConfiguration")) {
+                inAutoConfig = true;
+                int eqIdx = trimmed.indexOf('=');
+                if (eqIdx != -1) {
+                    String rest = trimmed.substring(eqIdx + 1).replace("\\", "").trim();
+                    if (!rest.isEmpty()) configs.add(rest);
+                }
+                continue;
+            }
+            if (inAutoConfig) {
+                if (trimmed.isEmpty() || (!trimmed.endsWith("\\") && !trimmed.contains("."))) {
+                    if (!trimmed.isEmpty() && trimmed.contains(".")) {
+                        configs.add(trimmed.replace("\\", "").trim());
+                    }
+                    inAutoConfig = false;
+                } else {
+                    String cls = trimmed.replace("\\", "").replace(",", "").trim();
+                    if (!cls.isEmpty()) {
+                        configs.add(cls);
+                    }
+                    if (!line.endsWith("\\")) {
+                        inAutoConfig = false;
+                    }
+                }
+            }
+        }
+        return configs;
     }
 
     private static String modernizePom(String pom, List<String> rules) {
@@ -112,6 +179,26 @@ public final class SpringEcosystemDependencyModernizer {
                 result = m.replaceFirst(Matcher.quoteReplacement(m.group(1)) + "3.0.3" + Matcher.quoteReplacement(m.group(2)));
                 rules.add("RULE-MYBATIS-BOOT-3-JAKARTA-UPGRADE");
             }
+        }
+
+        // 2b. Upgrade mybatis-spring 2.x to 3.0.3
+        if (result.contains("mybatis-spring")) {
+            Pattern mybatisSpringPattern = Pattern.compile("(?s)(<artifactId>mybatis-spring</artifactId>.*?<version>)2\\.[0-9]+\\.[0-9]+(</version>)");
+            Matcher m2 = mybatisSpringPattern.matcher(result);
+            if (m2.find()) {
+                result = m2.replaceAll(Matcher.quoteReplacement(m2.group(1)) + "3.0.3" + Matcher.quoteReplacement(m2.group(2)));
+                rules.add("RULE-MYBATIS-SPRING-3-UPGRADE");
+            }
+            if (result.contains("<mybatis-spring.version>2.")) {
+                result = result.replaceAll("<mybatis-spring\\.version>2\\.[0-9]+\\.[0-9]+</mybatis-spring\\.version>", "<mybatis-spring.version>3.0.3</mybatis-spring.version>");
+                rules.add("RULE-MYBATIS-SPRING-PROPERTY-UPGRADE");
+            }
+        }
+
+        // 2c. Upgrade HikariCP 4.x to 5.1.0 for Spring Boot 3
+        if (result.contains("<HikariCP.version>4.")) {
+            result = result.replaceAll("<HikariCP\\.version>4\\.[0-9]+\\.[0-9]+</HikariCP\\.version>", "<HikariCP.version>5.1.0</HikariCP.version>");
+            rules.add("RULE-HIKARICP-VERSION-UPGRADE");
         }
 
         // 3. Inject -parameters into maven-compiler-plugin if not already present

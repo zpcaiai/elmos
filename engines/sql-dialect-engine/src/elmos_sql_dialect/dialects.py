@@ -69,6 +69,8 @@ _ON_DELETE_SUPPORT: dict[Dialect, frozenset[ReferentialAction]] = {
     Dialect.ORACLE: frozenset(
         {ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}
     ),
+    Dialect.DM8: frozenset(ReferentialAction),
+    Dialect.OPENGAUSS: frozenset(ReferentialAction),
 }
 
 _ON_UPDATE_SUPPORT: dict[Dialect, frozenset[ReferentialAction]] = {
@@ -78,6 +80,8 @@ _ON_UPDATE_SUPPORT: dict[Dialect, frozenset[ReferentialAction]] = {
         {ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}
     ),
     Dialect.ORACLE: frozenset({ReferentialAction.NO_ACTION}),
+    Dialect.DM8: frozenset(ReferentialAction),
+    Dialect.OPENGAUSS: frozenset(ReferentialAction),
 }
 
 _OMIT_NO_ACTION = frozenset({Dialect.ORACLE})
@@ -130,6 +134,8 @@ _MAX_VARCHAR_LENGTH: dict[Dialect, int] = {
     Dialect.MYSQL: 65_535,
     Dialect.ORACLE: 4_000,
     Dialect.TSQL: 4_000,
+    Dialect.DM8: 8_000,
+    Dialect.OPENGAUSS: 10_485_760,
 }
 
 #: Same, for fixed-length CHAR columns.
@@ -140,6 +146,8 @@ _MAX_CHAR_LENGTH: dict[Dialect, int] = {
     Dialect.MYSQL: 255,
     Dialect.ORACLE: 2_000,
     Dialect.TSQL: 4_000,
+    Dialect.DM8: 8_000,
+    Dialect.OPENGAUSS: 10_485_760,
 }
 
 #: Documented maximum DECIMAL/NUMERIC/NUMBER precision per vendor.
@@ -148,6 +156,8 @@ _MAX_DECIMAL_PRECISION: dict[Dialect, int] = {
     Dialect.MYSQL: 65,
     Dialect.ORACLE: 38,
     Dialect.TSQL: 38,
+    Dialect.DM8: 38,
+    Dialect.OPENGAUSS: 1_000,
 }
 
 #: Documented maximum DECIMAL scale per vendor (MySQL caps scale at 30
@@ -176,6 +186,8 @@ def render_type(
             Dialect.MYSQL: "BOOLEAN",
             Dialect.TSQL: "BIT",
             Dialect.ORACLE: "NUMBER(1)",
+            Dialect.DM8: "BIT",
+            Dialect.OPENGAUSS: "BOOLEAN",
         }[dialect]
     if t == CanonicalType.INT16:
         return {
@@ -183,6 +195,8 @@ def render_type(
             Dialect.MYSQL: "SMALLINT",
             Dialect.TSQL: "SMALLINT",
             Dialect.ORACLE: "NUMBER(5)",
+            Dialect.DM8: "SMALLINT",
+            Dialect.OPENGAUSS: "SMALLINT",
         }[dialect]
     if t == CanonicalType.INT32:
         return {
@@ -190,6 +204,8 @@ def render_type(
             Dialect.MYSQL: "INT",
             Dialect.TSQL: "INT",
             Dialect.ORACLE: "NUMBER(10)",
+            Dialect.DM8: "INT",
+            Dialect.OPENGAUSS: "INTEGER",
         }[dialect]
     if t == CanonicalType.INT64:
         return {
@@ -197,6 +213,8 @@ def render_type(
             Dialect.MYSQL: "BIGINT",
             Dialect.TSQL: "BIGINT",
             Dialect.ORACLE: "NUMBER(19)",
+            Dialect.DM8: "BIGINT",
+            Dialect.OPENGAUSS: "BIGINT",
         }[dialect]
     if t == CanonicalType.FLOAT64:
         return {
@@ -204,6 +222,8 @@ def render_type(
             Dialect.MYSQL: "DOUBLE",
             Dialect.ORACLE: "BINARY_DOUBLE",
             Dialect.TSQL: "FLOAT(53)",
+            Dialect.DM8: "DOUBLE",
+            Dialect.OPENGAUSS: "DOUBLE PRECISION",
         }[dialect]
     if t == CanonicalType.DECIMAL:
         # precision is mandatory in the canonical model: an unparameterised
@@ -227,7 +247,11 @@ def render_type(
                 f"DECIMAL scale {scale} exceeds the maximum {scale_limit} that "
                 f"{dialect.value} accepts",
             )
-        name = "NUMBER" if dialect == Dialect.ORACLE else ("NUMERIC" if dialect == Dialect.POSTGRES else "DECIMAL")
+        name = (
+            "NUMBER"
+            if dialect == Dialect.ORACLE
+            else ("NUMERIC" if dialect in (Dialect.POSTGRES, Dialect.OPENGAUSS) else "DECIMAL")
+        )
         return f"{name}({precision}, {scale})"
     if t == CanonicalType.CHAR:
         length = type_ref.length if type_ref.length is not None else 1
@@ -268,11 +292,15 @@ def render_type(
             # NVARCHAR(MAX), not VARCHAR(MAX) -- same code-page reason as CHAR.
             Dialect.TSQL: "NVARCHAR(MAX)",
             Dialect.ORACLE: "CLOB",
+            Dialect.DM8: "CLOB",
+            Dialect.OPENGAUSS: "TEXT",
         }[dialect]
     if t == CanonicalType.JSON:
         if type_ref.json_binary:
-            if dialect is Dialect.POSTGRES:
+            if dialect in (Dialect.POSTGRES, Dialect.OPENGAUSS):
                 return "JSONB"
+            if dialect is Dialect.DM8:
+                return "CLOB"
             if type_policy is not None and type_policy.json_binary == "json":
                 if dialect is Dialect.MYSQL:
                     return "JSON"
@@ -284,8 +312,10 @@ def render_type(
                 "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED",
                 "JSONB storage/index/operator semantics cannot be represented as a common JSON type",
             )
-        if dialect in (Dialect.POSTGRES, Dialect.MYSQL):
+        if dialect in (Dialect.POSTGRES, Dialect.MYSQL, Dialect.OPENGAUSS):
             return "JSON"
+        if dialect is Dialect.DM8:
+            return "CLOB"
         if type_policy is not None and type_policy.json_binary == "json":
             if dialect is Dialect.ORACLE:
                 return "CLOB"
@@ -296,11 +326,11 @@ def render_type(
             f"{dialect.value} JSON mapping requires a versioned provider capability and is not inferred",
         )
     if t == CanonicalType.ARRAY:
-        if dialect is Dialect.POSTGRES:
+        if dialect in (Dialect.POSTGRES, Dialect.OPENGAUSS):
             if type_ref.element_type is None:
                 raise DialectError(
                     "CERTIFIED_DDL_UNSUPPORTED_TYPE",
-                    "PostgreSQL ARRAY types require a typed element type",
+                    f"{dialect.value} ARRAY types require a typed element type",
                 )
             return f"{render_type(type_ref.element_type, dialect, type_policy)}[]"
         if type_policy is not None and type_policy.array == "json":
@@ -332,6 +362,8 @@ def render_type(
                 Dialect.MYSQL: "LONGBLOB",
                 Dialect.ORACLE: "BLOB",
                 Dialect.TSQL: "VARBINARY(MAX)",
+                Dialect.DM8: "BLOB",
+                Dialect.OPENGAUSS: "BYTEA",
             }[dialect]
         length = type_ref.length
         if dialect is Dialect.ORACLE and length > 2_000:
@@ -349,10 +381,15 @@ def render_type(
                 "CERTIFIED_DDL_LENGTH_EXCEEDS_TARGET",
                 f"binary length {length} exceeds SQL Server's VARBINARY limit",
             )
-        if dialect is Dialect.POSTGRES:
+        if dialect is Dialect.DM8 and length > 8_000:
+            raise DialectError(
+                "CERTIFIED_DDL_LENGTH_EXCEEDS_TARGET",
+                f"binary length {length} exceeds DM8 VARBINARY limit",
+            )
+        if dialect in (Dialect.POSTGRES, Dialect.OPENGAUSS):
             raise DialectError(
                 "CERTIFIED_DDL_BINARY_LENGTH_ENFORCEMENT_UNSUPPORTED",
-                "PostgreSQL BYTEA does not enforce the source binary length; retain this column "
+                f"{dialect.value} BYTEA does not enforce the source binary length; retain this column "
                 "for a target-specific route",
             )
         if dialect is Dialect.ORACLE:
@@ -374,6 +411,8 @@ def render_type(
             Dialect.MYSQL: "DATETIME",
             Dialect.TSQL: "DATETIME2",
             Dialect.ORACLE: "TIMESTAMP",
+            Dialect.DM8: "TIMESTAMP",
+            Dialect.OPENGAUSS: "TIMESTAMP",
         }[dialect]
     if t == CanonicalType.UUID:
         return {
@@ -381,6 +420,8 @@ def render_type(
             Dialect.MYSQL: "CHAR(36)",
             Dialect.ORACLE: "VARCHAR2(36 CHAR)",
             Dialect.TSQL: "UNIQUEIDENTIFIER",
+            Dialect.DM8: "VARCHAR(36)",
+            Dialect.OPENGAUSS: "UUID",
         }[dialect]
     raise DialectError("CERTIFIED_DDL_UNREACHABLE_TYPE", f"no renderer registered for {t}")  # pragma: no cover
 
@@ -395,6 +436,8 @@ def render_auto_increment_suffix(dialect: Dialect) -> str:
         Dialect.TSQL: " IDENTITY(1,1)",
         # Oracle 12c+ (released 2013); certified-ddl-v1 does not target 11g or earlier.
         Dialect.ORACLE: " GENERATED BY DEFAULT AS IDENTITY",
+        Dialect.DM8: " IDENTITY(1, 1)",
+        Dialect.OPENGAUSS: " GENERATED BY DEFAULT AS IDENTITY",
     }[dialect]
 
 
@@ -412,16 +455,22 @@ def render_default(
         # truncates the sub-millisecond precision of the DATETIME2 column this
         # profile renders. SYSDATETIME() returns datetime2(7) and matches
         # CURRENT_TIMESTAMP on the other three dialects.
-        return "SYSDATETIME()" if dialect == Dialect.TSQL else "CURRENT_TIMESTAMP"
+        if dialect == Dialect.TSQL:
+            return "SYSDATETIME()"
+        if dialect == Dialect.DM8:
+            return "SYSDATE"
+        return "CURRENT_TIMESTAMP"
     if default.kind == DefaultKind.UUID:
         return {
             Dialect.POSTGRES: "gen_random_uuid()",
             Dialect.MYSQL: "(UUID())",
             Dialect.ORACLE: "SYS_GUID()",
             Dialect.TSQL: "NEWID()",
+            Dialect.DM8: "RAWTOHEX(SYS_GUID())",
+            Dialect.OPENGAUSS: "gen_random_uuid()",
         }[dialect]
     if default.kind == DefaultKind.ARRAY:
-        if dialect is not Dialect.POSTGRES:
+        if dialect not in (Dialect.POSTGRES, Dialect.OPENGAUSS):
             if type_policy is not None and type_policy.array == "json":
                 import json as _json
                 elements: list[str | int | bool | None] = []
@@ -482,7 +531,7 @@ def render_default(
                 and type_ref.canonical_type is CanonicalType.JSON
                 and type_ref.json_binary
             ):
-                if dialect is Dialect.POSTGRES:
+                if dialect in (Dialect.POSTGRES, Dialect.OPENGAUSS):
                     return f"'{escaped}'::jsonb"
                 if type_policy is not None and type_policy.json_binary == "json":
                     return f"'{escaped}'"
@@ -493,9 +542,9 @@ def render_default(
         return f"'{escaped}'"
     if default.kind == DefaultKind.BOOLEAN:
         assert default.literal in ("true", "false")
-        # Oracle/SQL Server render BOOLEAN as NUMBER(1)/BIT (see render_type):
-        # neither dialect accepts a TRUE/FALSE literal against that column type.
-        if dialect in (Dialect.ORACLE, Dialect.TSQL):
+        # Oracle/SQL Server/DM8 render BOOLEAN as NUMBER(1)/BIT (see render_type):
+        # these dialects do not accept a TRUE/FALSE literal against that column type.
+        if dialect in (Dialect.ORACLE, Dialect.TSQL, Dialect.DM8):
             return "1" if default.literal == "true" else "0"
         return "TRUE" if default.literal == "true" else "FALSE"
     raise DialectError(  # pragma: no cover

@@ -1,0 +1,12 @@
+.PHONY: spring-modernization-check spring-modernization-install spring-modernization-clean
+
+spring-modernization-check:
+	@echo "--- Spring Modernization Engine Tests ---"
+	cd engines/spring-modernization-engine && \
+		PYTHONPATH=src .venv/bin/python3 -m pytest tests/ -v --tb=short
+
+spring-modernization-install:
+	cd engines/spring-modernization-engine && uv venv --python 3.12 && uv pip install pytest && uv pip install -e .
+
+spring-modernization-clean:
+	rm -rf engines/spring-modernization-engine/build engines/spring-modernization-engine/src/*.egg-info engines/spring-modernization-engine/.pytest_cache

@@ -24,6 +24,14 @@ class DatabaseSessionManager:
         # e.g., self._engine = create_async_engine(self.database_url)
         self._engine = object()
 
+    async def ping(self) -> bool:
+        """Ping database connection to verify pool health."""
+        if self._engine is None:
+            logger.warning("Database ping failed: pool not initialized")
+            return False
+        logger.info("Database connection pool ping successful")
+        return True
+
     async def close(self) -> None:
         """Close connection pool gracefully."""
         if self._engine is not None:

@@ -54,3 +54,29 @@ def test_unified_service():
     assert spec.diagram_type == DiagramType.ARCHITECTURE
     with pytest.raises(ValueError):
         svc.generate_diagram("INVALID", {}) # type: ignore
+
+def test_process_flow_generator():
+    svc = UnifiedDiagramService()
+    data = {
+        "title": "Order Processing Workflow",
+        "steps": [
+            {"id": "start", "name": "Receive Order", "type": "start"},
+            {"id": "validate", "name": "Validate Payment", "type": "decision"},
+            {"id": "fulfill", "name": "Fulfill Inventory", "type": "process"},
+            {"id": "db", "name": "Order DB", "type": "database"},
+            {"id": "end", "name": "Complete Order", "type": "end"}
+        ],
+        "transitions": [
+            {"source": "start", "target": "validate"},
+            {"source": "validate", "target": "fulfill", "label": "Approved"},
+            {"source": "fulfill", "target": "db"},
+            {"source": "db", "target": "end"}
+        ]
+    }
+    spec = svc.generate_diagram(DiagramType.PROCESS_FLOW, data)
+    assert spec.diagram_type == DiagramType.PROCESS_FLOW
+    assert "start([\"Receive Order\"])" in spec.mermaid_code
+    assert "validate{\"Validate Payment\"}" in spec.mermaid_code
+    assert "fulfill[\"Fulfill Inventory\"]" in spec.mermaid_code
+    assert "db[(\"Order DB\")]" in spec.mermaid_code
+    assert "validate -- \"Approved\" --> fulfill" in spec.mermaid_code

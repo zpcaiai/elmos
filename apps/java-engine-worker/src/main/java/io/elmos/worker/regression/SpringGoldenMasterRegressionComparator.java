@@ -460,4 +460,15 @@ public final class SpringGoldenMasterRegressionComparator {
 
         return sb.toString();
     }
+
+    /**
+     * Executes asynchronous event stream differential comparison between baseline and modernized event traces.
+     */
+    public static io.elmos.worker.messaging.SpringAsyncMessagingDifferentialComparator.MessagingEquivalenceVerdict compareMessageStreams(
+            List<io.elmos.worker.messaging.SpringAsyncMessagingDifferentialComparator.MessageEvent> baselineEvents,
+            List<io.elmos.worker.messaging.SpringAsyncMessagingDifferentialComparator.MessageEvent> modernizedEvents
+    ) {
+        var comparator = new io.elmos.worker.messaging.SpringAsyncMessagingDifferentialComparator();
+        return comparator.compareStreams(baselineEvents, modernizedEvents);
+    }
 }

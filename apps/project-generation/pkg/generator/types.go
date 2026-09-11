@@ -30,6 +30,13 @@ type ProjectConfig struct {
 	Replicas        int               `json:"replicas"`
 	OutputDir       string            `json:"output_dir"`
 	TemplateDir     string            `json:"template_dir"`
+	WithTelemetry   *bool             `json:"with_telemetry,omitempty"`
+	WithResilience  *bool             `json:"with_resilience,omitempty"`
+}
+
+// Bool returns a pointer to a bool value.
+func Bool(b bool) *bool {
+	return &b
 }
 
 // TemplateVars represents data passed to template engines for rendering.
@@ -48,6 +55,8 @@ type TemplateVars struct {
 	Namespace       string
 	ImageRepository string
 	ImageTag        string
+	WithTelemetry   bool
+	WithResilience  bool
 }
 
 // ToMap converts TemplateVars to a map for flexible template rendering.
@@ -67,6 +76,8 @@ func (v TemplateVars) ToMap() map[string]interface{} {
 		"Namespace":       v.Namespace,
 		"ImageRepository": v.ImageRepository,
 		"ImageTag":        v.ImageTag,
+		"WithTelemetry":   v.WithTelemetry,
+		"WithResilience":  v.WithResilience,
 	}
 }
 

@@ -281,8 +281,9 @@ func (v *DDDValidator) detectPyLayer(relPath string) Layer {
 }
 
 var (
-	pyImportRe     = regexp.MustCompile(`^\s*import\s+([a-zA-Z0-9_\.]+)`)
-	pyFromImportRe = regexp.MustCompile(`^\s*from\s+([a-zA-Z0-9_\.]+)\s+import`)
+	pyImportRe        = regexp.MustCompile(`^\s*import\s+([a-zA-Z0-9_\.]+)`)
+	pyFromImportRe    = regexp.MustCompile(`^\s*from\s+([a-zA-Z0-9_\.]+)\s+import`)
+	pyDynamicImportRe = regexp.MustCompile(`(?:(?:importlib\.)?import_module|__import__)\s*\(\s*(?:name\s*=\s*)?["']([^"']+)["']`)
 )
 
 func (v *DDDValidator) validatePyFile(rootDir, filePath string) ([]Violation, error) {
@@ -313,11 +314,15 @@ func (v *DDDValidator) validatePyFile(rootDir, filePath string) ([]Violation, er
 		lineNum++
 		line := scanner.Text()
 		var importPath string
+		isDynamic := false
 
 		if m := pyFromImportRe.FindStringSubmatch(line); len(m) > 1 {
 			importPath = m[1]
 		} else if m := pyImportRe.FindStringSubmatch(line); len(m) > 1 {
 			importPath = m[1]
+		} else if m := pyDynamicImportRe.FindStringSubmatch(line); len(m) > 1 {
+			importPath = m[1]
+			isDynamic = true
 		}
 
 		if importPath == "" {
@@ -327,6 +332,11 @@ func (v *DDDValidator) validatePyFile(rootDir, filePath string) ([]Violation, er
 		targetLayer := v.detectImportLayer(importPath)
 		if targetLayer == LayerUnknown {
 			continue
+		}
+
+		suffix := ""
+		if isDynamic {
+			suffix = fmt.Sprintf(" (detected dynamic reflection import: '%s')", importPath)
 		}
 
 		// Rule 1: Domain layer must NEVER depend on outer layers
@@ -339,7 +349,7 @@ func (v *DDDValidator) validatePyFile(rootDir, filePath string) ([]Violation, er
 					TargetLayer: targetLayer,
 					ImportPath:  importPath,
 					Rule:        "Rule 1: Domain layer must not depend on Application, Infrastructure, or Interfaces",
-					Message:     fmt.Sprintf("Domain file '%s' violates isolation by importing %s", relPath, importPath),
+					Message:     fmt.Sprintf("Domain file '%s' violates isolation by importing %s%s", relPath, importPath, suffix),
 				})
 			}
 		}
@@ -354,7 +364,7 @@ func (v *DDDValidator) validatePyFile(rootDir, filePath string) ([]Violation, er
 					TargetLayer: targetLayer,
 					ImportPath:  importPath,
 					Rule:        "Rule 2: Application layer can only depend on Domain, never on Infrastructure or Interfaces",
-					Message:     fmt.Sprintf("Application file '%s' violates layer direction by importing %s", relPath, importPath),
+					Message:     fmt.Sprintf("Application file '%s' violates layer direction by importing %s%s", relPath, importPath, suffix),
 				})
 			}
 		}
@@ -369,7 +379,7 @@ func (v *DDDValidator) validatePyFile(rootDir, filePath string) ([]Violation, er
 					TargetLayer: targetLayer,
 					ImportPath:  importPath,
 					Rule:        "Rule 3: Interfaces must not directly depend on Infrastructure implementations",
-					Message:     fmt.Sprintf("Interfaces file '%s' directly couples with Infrastructure %s", relPath, importPath),
+					Message:     fmt.Sprintf("Interfaces file '%s' directly couples with Infrastructure %s%s", relPath, importPath, suffix),
 				})
 			}
 		}

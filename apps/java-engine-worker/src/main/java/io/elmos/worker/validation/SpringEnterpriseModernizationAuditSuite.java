@@ -229,4 +229,100 @@ public final class SpringEnterpriseModernizationAuditSuite {
                 Collections.unmodifiableMap(verdicts)
         );
     }
+
+    public record ShimHygieneVerdict(
+            boolean isCompliant,
+            int totalShimsFound,
+            int compliantShimsCount,
+            List<String> nonCompliantFiles,
+            String summary
+    ) {}
+
+    public record ReactorIntegrityVerdict(
+            boolean isMultiModule,
+            int totalModulesDiscovered,
+            boolean allSubmodulesExist,
+            List<String> missingSubmodules,
+            String summary
+    ) {}
+
+    /**
+     * Audits hygiene of generated private artifact mock shims.
+     * Ensures all generated stubs have @ConditionalOnMissingBean to avoid shadowing real beans.
+     */
+    public static ShimHygieneVerdict auditShimHygiene(Path projectRoot) {
+        if (!Files.isDirectory(projectRoot)) {
+            return new ShimHygieneVerdict(true, 0, 0, Collections.emptyList(), "Project root is not a directory");
+        }
+        int total = 0;
+        int compliant = 0;
+        List<String> nonCompliant = new ArrayList<>();
+
+        try (var stream = Files.walk(projectRoot)) {
+            List<Path> javaFiles = stream.filter(Files::isRegularFile).filter(p -> p.toString().endsWith(".java")).toList();
+            for (Path p : javaFiles) {
+                String code = Files.readString(p);
+                if (code.contains("Automatically synthesized Mock Shim stub by Elmos")) {
+                    total++;
+                    boolean isServiceOrComponent = code.contains("@Component");
+                    if (isServiceOrComponent) {
+                        if (code.contains("@ConditionalOnMissingBean")) {
+                            compliant++;
+                        } else {
+                            nonCompliant.add(p.toString());
+                        }
+                    } else {
+                        compliant++; // Interface or DTO does not need @ConditionalOnMissingBean
+                    }
+                }
+            }
+        } catch (IOException e) {
+            return new ShimHygieneVerdict(false, total, compliant, List.of("IO error: " + e.getMessage()), "Failed to audit shims");
+        }
+
+        boolean ok = nonCompliant.isEmpty();
+        String summary = total == 0 ? "No synthetic shims present" : "Verified " + compliant + "/" + total + " shims compliant with @ConditionalOnMissingBean hygiene";
+        return new ShimHygieneVerdict(ok, total, compliant, Collections.unmodifiableList(nonCompliant), summary);
+    }
+
+    /**
+     * Audits multi-module reactor topology and parent-child consistency.
+     */
+    public static ReactorIntegrityVerdict auditReactorIntegrity(Path projectRoot) {
+        Path rootPom = projectRoot.resolve("pom.xml");
+        if (!Files.isRegularFile(rootPom)) {
+            return new ReactorIntegrityVerdict(false, 0, true, Collections.emptyList(), "Single module / no root pom");
+        }
+
+        List<String> submodules = io.elmos.worker.SpringMultiModuleProjectScanner.declaredSubmodules(rootPom);
+        if (submodules.isEmpty()) {
+            return new ReactorIntegrityVerdict(false, 1, true, Collections.emptyList(), "Single module project");
+        }
+
+        List<String> missing = new ArrayList<>();
+        for (String sub : submodules) {
+            Path subPom = projectRoot.resolve(sub).resolve("pom.xml");
+            if (!Files.isRegularFile(subPom)) {
+                missing.add(sub);
+            }
+        }
+
+        List<io.elmos.worker.SpringMultiModuleProjectScanner.ReactorModuleNode> dag =
+                io.elmos.worker.SpringMultiModuleProjectScanner.resolveReactorDag(projectRoot);
+
+        boolean allExist = missing.isEmpty();
+        String summary = "Multi-module reactor verified: " + dag.size() + " modules discovered in DAG. " + (allExist ? "All declared submodules verified." : "Missing: " + missing);
+        return new ReactorIntegrityVerdict(true, dag.size(), allExist, Collections.unmodifiableList(missing), summary);
+    }
+
+    /**
+     * Audits asynchronous messaging stream equivalence.
+     */
+    public static io.elmos.worker.messaging.SpringAsyncMessagingDifferentialComparator.MessagingEquivalenceVerdict auditAsyncMessagingEquivalence(
+            List<io.elmos.worker.messaging.SpringAsyncMessagingDifferentialComparator.MessageEvent> baseline,
+            List<io.elmos.worker.messaging.SpringAsyncMessagingDifferentialComparator.MessageEvent> modernized
+    ) {
+        var comparator = new io.elmos.worker.messaging.SpringAsyncMessagingDifferentialComparator();
+        return comparator.compareStreams(baseline, modernized);
+    }
 }

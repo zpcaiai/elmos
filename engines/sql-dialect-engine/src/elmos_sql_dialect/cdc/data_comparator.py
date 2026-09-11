@@ -359,6 +359,55 @@ class DataComparator:
             execution_engine=engine_used,
         )
 
+    def compare_live_tables(
+        self,
+        source_connection: Any,
+        target_connection: Any,
+        source_table: str,
+        target_table: str,
+        pk_col: str,
+        columns: list[str] | None = None,
+        source_schema: str = "public",
+        target_schema: str = "public",
+    ) -> SnapshotCompareReport:
+        """Stream and compare real database tables chunk by chunk using ChunkReader."""
+        from elmos_sql_dialect.datapump.chunk_reader import ChunkReader
+
+        src_reader = ChunkReader(
+            connection=source_connection,
+            table_name=source_table,
+            columns=columns,
+            primary_key_col=pk_col,
+            chunk_size=self.chunk_size,
+            schema_name=source_schema,
+        )
+        tgt_reader = ChunkReader(
+            connection=target_connection,
+            table_name=target_table,
+            columns=columns,
+            primary_key_col=pk_col,
+            chunk_size=self.chunk_size,
+            schema_name=target_schema,
+        )
+
+        all_src_rows: list[dict[str, Any]] = []
+        for chunk in src_reader.iter_chunks():
+            for r in chunk.rows:
+                all_src_rows.append(dict(zip(chunk.columns, r)))
+
+        all_tgt_rows: list[dict[str, Any]] = []
+        for chunk in tgt_reader.iter_chunks():
+            for r in chunk.rows:
+                all_tgt_rows.append(dict(zip(chunk.columns, r)))
+
+        return self.compare_row_sets(
+            source_rows=all_src_rows,
+            target_rows=all_tgt_rows,
+            pk_col=pk_col,
+            table_name=source_table,
+            columns=columns,
+        )
+
     def _compare_chunk_with_rust(
         self,
         chunk_id: int,

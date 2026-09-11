@@ -137,6 +137,15 @@ func (e *Engine) Generate(cfg ProjectConfig) (*GenerationResult, error) {
 		return nil, err
 	}
 
+	withTelemetry := true
+	if cfg.WithTelemetry != nil {
+		withTelemetry = *cfg.WithTelemetry
+	}
+	withResilience := true
+	if cfg.WithResilience != nil {
+		withResilience = *cfg.WithResilience
+	}
+
 	vars := TemplateVars{
 		ProjectName:     cfg.ProjectName,
 		ModuleName:      cfg.ModuleName,
@@ -152,6 +161,8 @@ func (e *Engine) Generate(cfg ProjectConfig) (*GenerationResult, error) {
 		Namespace:       cfg.Namespace,
 		ImageRepository: cfg.ImageRepository,
 		ImageTag:        cfg.ImageTag,
+		WithTelemetry:   withTelemetry,
+		WithResilience:  withResilience,
 	}
 
 	var generatedFiles []string
@@ -169,6 +180,21 @@ func (e *Engine) Generate(cfg ProjectConfig) (*GenerationResult, error) {
 		}
 
 		if relPath == "." {
+			return nil
+		}
+
+		// Skip optional feature files if disabled
+		cleanRel := filepath.ToSlash(relPath)
+		if !withTelemetry && strings.Contains(cleanRel, "telemetry") {
+			if d.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		if !withResilience && (strings.Contains(cleanRel, "resilience") || strings.Contains(cleanRel, "circuit_breaker")) {
+			if d.IsDir() {
+				return filepath.SkipDir
+			}
 			return nil
 		}
 

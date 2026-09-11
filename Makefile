@@ -771,6 +771,8 @@ router-industrial-skills:
 -include Makefile.cross-language
 -include Makefile.spring-modernization
 -include Makefile.multilang-generation
+-include Makefile.uir-java-typescript
+-include Makefile.uir-java-csharp
 
-four-subsystem-check: teaching-subsystem-check cross-language-check spring-modernization-check multilang-generation-check
-	@echo "All four subsystem engines verified."
+four-subsystem-check: teaching-subsystem-check cross-language-check spring-modernization-check multilang-generation-check uir-java-typescript-check uir-java-csharp-check
+	@echo "All four subsystem engines and UIR routes verified."

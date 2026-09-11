@@ -13,6 +13,7 @@ class DiagramType(Enum):
     MODULE_DEPENDENCY = "MODULE_DEPENDENCY"
     CALL_SEQUENCE = "CALL_SEQUENCE"
     DATA_FLOW = "DATA_FLOW"
+    PROCESS_FLOW = "PROCESS_FLOW"
     ER_DIAGRAM = "ER_DIAGRAM"
     THREAT_MODEL = "THREAT_MODEL"
     MINDMAP = "MINDMAP"
@@ -83,6 +84,53 @@ class DataFlowDiagramGenerator:
             
         return DiagramSpec(DiagramType.DATA_FLOW, data.get('title', 'Data Flow'), "\n".join(lines), nodes, edges)
 
+class ProcessFlowDiagramGenerator:
+    """
+    Generates Mermaid process flowcharts (数据流程图 / 业务流程图)
+    representing processing steps, decisions, inputs/outputs, and data transitions.
+    """
+    def generate(self, data: Dict[str, Any]) -> DiagramSpec:
+        raw_nodes = data.get('steps', data.get('nodes', []))
+        raw_edges = data.get('transitions', data.get('flows', []))
+        nodes = min(len(raw_nodes), MAX_NODES)
+        edges = min(len(raw_edges), MAX_EDGES)
+
+        lines = ["graph TD", f"%% Title: {sanitize_label(data.get('title', 'Process Flow'))}"]
+
+        for step in raw_nodes[:nodes]:
+            sid = sanitize_label(step['id'])
+            slabel = sanitize_label(step.get('name', step.get('label', sid)))
+            stype = step.get('type', 'process').lower()
+            if stype in ('start', 'end', 'terminal'):
+                lines.append(f"{sid}([\"{slabel}\"])")
+            elif stype in ('decision', 'condition'):
+                lines.append(f"{sid}{{\"{slabel}\"}}")
+            elif stype in ('database', 'storage', 'data'):
+                lines.append(f"{sid}[(\"{slabel}\")]")
+            elif stype in ('io', 'input', 'output'):
+                lines.append(f"{sid}[/\"{slabel}\"/]")
+            elif stype in ('subprocess', 'subroutine'):
+                lines.append(f"{sid}[[\"{slabel}\"]]")
+            else:
+                lines.append(f"{sid}[\"{slabel}\"]")
+
+        for trans in raw_edges[:edges]:
+            src = sanitize_label(trans['source'])
+            tgt = sanitize_label(trans['target'])
+            lbl = sanitize_label(trans.get('label', trans.get('condition', '')))
+            if lbl:
+                lines.append(f"{src} -- \"{lbl}\" --> {tgt}")
+            else:
+                lines.append(f"{src} --> {tgt}")
+
+        return DiagramSpec(
+            DiagramType.PROCESS_FLOW,
+            data.get('title', 'Process Flow'),
+            "\n".join(lines),
+            nodes,
+            edges
+        )
+
 class ERDiagramGenerator:
     def generate(self, data: Dict[str, Any]) -> DiagramSpec:
         nodes = min(len(data.get('tables', [])), MAX_NODES)
@@ -143,6 +191,7 @@ class UnifiedDiagramService:
             DiagramType.MODULE_DEPENDENCY: ModuleDependencyDiagramGenerator(),
             DiagramType.CALL_SEQUENCE: CallSequenceDiagramGenerator(),
             DiagramType.DATA_FLOW: DataFlowDiagramGenerator(),
+            DiagramType.PROCESS_FLOW: ProcessFlowDiagramGenerator(),
             DiagramType.ER_DIAGRAM: ERDiagramGenerator(),
             DiagramType.THREAT_MODEL: ThreatModelDiagramGenerator(),
             DiagramType.MINDMAP: MindmapDiagramGenerator(),

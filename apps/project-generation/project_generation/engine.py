@@ -29,6 +29,8 @@ class ProjectConfig:
     replicas: int = 2
     output_dir: str = ""
     template_dir: str = ""
+    with_telemetry: bool = True
+    with_resilience: bool = True
 
     def __post_init__(self) -> None:
         if not self.module_name:
@@ -126,14 +128,29 @@ class ProjectGenerator:
                 "ImageRepository": config.image_repository,
                 "ImageTag": config.image_tag,
                 "Replicas": config.replicas,
+                "WithTelemetry": config.with_telemetry,
+                "WithResilience": config.with_resilience,
             }
 
             for root, dirs, files in os.walk(tmpl_dir):
                 rel_dir = Path(root).relative_to(tmpl_dir)
+                rel_dir_str = str(rel_dir).replace("\\\\", "/")
+
+                # Skip directories if disabled
+                if not config.with_telemetry and "telemetry" in rel_dir_str:
+                    continue
+                if not config.with_resilience and ("resilience" in rel_dir_str or "circuit_breaker" in rel_dir_str):
+                    continue
+
                 target_dir = out_root / rel_dir
                 target_dir.mkdir(parents=True, exist_ok=True)
 
                 for file in files:
+                    if not config.with_telemetry and "telemetry" in file:
+                        continue
+                    if not config.with_resilience and ("resilience" in file or "circuit_breaker" in file):
+                        continue
+
                     src_file = Path(root) / file
                     is_tmpl = file.endswith(".tmpl")
                     out_filename = file[:-5] if is_tmpl else file

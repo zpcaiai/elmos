@@ -175,6 +175,41 @@ class DDDValidator:
                     v = self._check_rule(rel_path, lineno, source_layer, import_path, is_di_factory)
                     if v:
                         violations.append(v)
+            elif isinstance(node, ast.Call):
+                # Detect dynamic imports: importlib.import_module(...) or __import__(...) or import_module(...)
+                is_dynamic_import = False
+                if isinstance(node.func, ast.Attribute) and node.func.attr == "import_module":
+                    is_dynamic_import = True
+                elif isinstance(node.func, ast.Name) and node.func.id in ("import_module", "__import__"):
+                    is_dynamic_import = True
+
+                if is_dynamic_import:
+                    arg_node = None
+                    if node.args:
+                        arg_node = node.args[0]
+                    elif node.keywords:
+                        for kw in node.keywords:
+                            if kw.arg in ("name", "module"):
+                                arg_node = kw.value
+                                break
+
+                    target_paths: List[str] = []
+                    if isinstance(arg_node, ast.Constant) and isinstance(arg_node.value, str):
+                        target_paths.append(arg_node.value)
+                    elif isinstance(arg_node, ast.JoinedStr):
+                        parts = [
+                            part.value
+                            for part in arg_node.values
+                            if isinstance(part, ast.Constant) and isinstance(part.value, str)
+                        ]
+                        if parts:
+                            target_paths.append("".join(parts))
+
+                    for target_path in target_paths:
+                        v = self._check_rule(rel_path, lineno, source_layer, target_path, is_di_factory)
+                        if v:
+                            v.message += f" (detected dynamic reflection import: '{target_path}')"
+                            violations.append(v)
 
         return violations
 

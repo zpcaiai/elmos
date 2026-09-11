@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Diagram Specification",
+  "type": "object",
+  "properties": {
+    "diagram_type": {
+      "type": "string",
+      "enum": ["architecture", "module_dependency", "call_sequence", "data_flow", "er", "threat_model", "mindmap", "deployment", "component"]
+    },
+    "title": { "type": "string" },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "type": { "type": "string" },
+          "metadata": { "type": "object" }
+        },
+        "required": ["id", "label"]
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": { "type": "string" },
+          "target": { "type": "string" },
+          "label": { "type": "string" },
+          "type": { "type": "string" }
+        },
+        "required": ["source", "target"]
+      }
+    },
+    "mermaid_code": { "type": "string" },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "author": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "project": { "type": "string" }
+      }
+    }
+  },
+  "required": ["diagram_type"]
+}

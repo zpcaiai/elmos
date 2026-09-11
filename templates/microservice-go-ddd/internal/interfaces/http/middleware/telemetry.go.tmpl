@@ -1,0 +1,198 @@
+package middleware
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
+	"sync"
+	"sync/atomic"
+	"time"
+
+	"{{.ModuleName}}/pkg/logger"
+	"{{.ModuleName}}/pkg/telemetry"
+)
+
+// StatusResponseWriter wraps http.ResponseWriter to intercept response status code.
+type StatusResponseWriter struct {
+	http.ResponseWriter
+	StatusCode int
+	Written    int64
+}
+
+// NewStatusResponseWriter creates a wrapper with default 200 OK.
+func NewStatusResponseWriter(w http.ResponseWriter) *StatusResponseWriter {
+	return &StatusResponseWriter{
+		ResponseWriter: w,
+		StatusCode:     http.StatusOK,
+	}
+}
+
+// WriteHeader captures the status code.
+func (rw *StatusResponseWriter) WriteHeader(code int) {
+	rw.StatusCode = code
+	rw.ResponseWriter.WriteHeader(code)
+}
+
+// Write captures the byte count.
+func (rw *StatusResponseWriter) Write(b []byte) (int, error) {
+	n, err := rw.ResponseWriter.Write(b)
+	atomic.AddInt64(&rw.Written, int64(n))
+	return n, err
+}
+
+// TelemetryMiddleware creates a middleware that creates OTel trace spans for requests.
+func TelemetryMiddleware(serviceName string) func(http.Handler) http.Handler {
+	propagator := telemetry.W3CPropagator{}
+	tracer := telemetry.GetTracer("http-middleware")
+
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Extract incoming W3C traceparent header
+			ctx := propagator.Extract(r.Context(), r.Header)
+
+			spanName := fmt.Sprintf("HTTP %s %s", r.Method, r.URL.Path)
+			ctx, span := tracer.Start(ctx, spanName)
+			defer span.End()
+
+			// Set semantic conventions
+			span.SetAttribute("http.method", r.Method)
+			span.SetAttribute("http.target", r.URL.Path)
+			span.SetAttribute("http.host", r.Host)
+			span.SetAttribute("http.user_agent", r.UserAgent())
+
+			// Bind trace ID into logger context for correlated structured logs
+			ctx = context.WithValue(ctx, logger.TraceIDKey, span.TraceID())
+
+			// Inject traceparent into outgoing response headers
+			propagator.Inject(ctx, w.Header())
+
+			sw := NewStatusResponseWriter(w)
+			next.ServeHTTP(sw, r.WithContext(ctx))
+
+			span.SetAttribute("http.status_code", sw.StatusCode)
+			if sw.StatusCode >= http.StatusBadRequest {
+				span.SetStatus(telemetry.StatusError, fmt.Sprintf("HTTP status %d", sw.StatusCode))
+			} else {
+				span.SetStatus(telemetry.StatusOk, "OK")
+			}
+		})
+	}
+}
+
+// MetricSample stores metric stats for duration histograms/summaries.
+type MetricSample struct {
+	Count uint64
+	Sum   float64
+}
+
+// MetricsRegistry maintains thread-safe Prometheus metrics.
+type MetricsRegistry struct {
+	mu           sync.RWMutex
+	requestTotal map[string]uint64        // key: method|path|status
+	duration     map[string]*MetricSample // key: method|path
+}
+
+// NewMetricsRegistry initializes a new Prometheus metrics store.
+func NewMetricsRegistry() *MetricsRegistry {
+	return &MetricsRegistry{
+		requestTotal: make(map[string]uint64),
+		duration:     make(map[string]*MetricSample),
+	}
+}
+
+// Global default metrics registry
+var DefaultMetrics = NewMetricsRegistry()
+
+// RecordRequest increments request counter and records request duration in seconds.
+func (m *MetricsRegistry) RecordRequest(method, path string, status int, durationSec float64) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	normPath := normalizePath(path)
+	totalKey := fmt.Sprintf("%s|%s|%d", method, normPath, status)
+	m.requestTotal[totalKey]++
+
+	durKey := fmt.Sprintf("%s|%s", method, normPath)
+	sample, ok := m.duration[durKey]
+	if !ok {
+		sample = &MetricSample{}
+		m.duration[durKey] = sample
+	}
+	sample.Count++
+	sample.Sum += durationSec
+}
+
+// MetricsMiddleware tracks Prometheus request counters and duration metrics.
+func MetricsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		sw := NewStatusResponseWriter(w)
+
+		next.ServeHTTP(sw, r)
+
+		durationSec := time.Since(start).Seconds()
+		DefaultMetrics.RecordRequest(r.Method, r.URL.Path, sw.StatusCode, durationSec)
+	})
+}
+
+// PrometheusHandler exposes standard Prometheus exposition format.
+func PrometheusHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain; version=0.0.4; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	var sb strings.Builder
+	sb.WriteString("# HELP service_up Service availability indicator
+")
+	sb.WriteString("# TYPE service_up gauge
+")
+	sb.WriteString("service_up 1
+
+")
+
+	sb.WriteString("# HELP http_requests_total Total number of HTTP requests received.
+")
+	sb.WriteString("# TYPE http_requests_total counter
+")
+
+	DefaultMetrics.mu.RLock()
+	for key, count := range DefaultMetrics.requestTotal {
+		parts := strings.Split(key, "|")
+		if len(parts) == 3 {
+			method, path, statusStr := parts[0], parts[1], parts[2]
+			sb.WriteString(fmt.Sprintf("http_requests_total{method=%q,path=%q,status=%q} %d
+", method, path, statusStr, count))
+		}
+	}
+
+	sb.WriteString("
+# HELP http_request_duration_seconds Latency of HTTP requests in seconds.
+")
+	sb.WriteString("# TYPE http_request_duration_seconds summary
+")
+	for key, sample := range DefaultMetrics.duration {
+		parts := strings.Split(key, "|")
+		if len(parts) == 2 {
+			method, path := parts[0], parts[1]
+			sb.WriteString(fmt.Sprintf("http_request_duration_seconds_sum{method=%q,path=%q} %.6f
+", method, path, sample.Sum))
+			sb.WriteString(fmt.Sprintf("http_request_duration_seconds_count{method=%q,path=%q} %d
+", method, path, sample.Count))
+		}
+	}
+	DefaultMetrics.mu.RUnlock()
+
+	_, _ = w.Write([]byte(sb.String()))
+}
+
+func normalizePath(path string) string {
+	parts := strings.Split(strings.Trim(path, "/"), "/")
+	if len(parts) >= 4 && parts[0] == "api" && parts[1] == "v1" && parts[2] == "entities" {
+		if _, err := strconv.Atoi(parts[3]); err == nil || len(parts[3]) > 0 {
+			parts[3] = "{id}"
+			return "/" + strings.Join(parts, "/")
+		}
+	}
+	return path
+}

@@ -1,0 +1,23 @@
+.PHONY: multilang-generation-check multilang-generation-install multilang-generation-clean project-generation-app-check project-generation-app-build
+
+multilang-generation-check:
+	@echo "--- Multi-Language Project Generation Engine Tests ---"
+	cd engines/multilang-project-generation-engine && \
+		PYTHONPATH=src .venv/bin/python3 -m pytest tests/ -v --tb=short
+	@echo "--- Multi-Language Project Generation App Tests ---"
+	cd apps/project-generation && go test -v ./... && uv run pytest tests/test_generator.py -v
+
+multilang-generation-install:
+	cd engines/multilang-project-generation-engine && uv venv --python 3.12 && uv pip install pytest pyyaml && uv pip install -e .
+	cd apps/project-generation && uv venv && uv pip install -e .
+
+multilang-generation-clean:
+	rm -rf engines/multilang-project-generation-engine/build engines/multilang-project-generation-engine/src/*.egg-info engines/multilang-project-generation-engine/.pytest_cache
+	rm -rf apps/project-generation/bin apps/project-generation/.pytest_cache apps/project-generation/.venv
+
+project-generation-app-check:
+	cd apps/project-generation && go test -v ./... && uv run pytest tests/test_generator.py -v
+
+project-generation-app-build:
+	cd apps/project-generation && go build -o bin/project-gen ./cmd/project-gen
+

@@ -86,8 +86,12 @@ public final class SpringJUnitModernizer {
                 || content.contains("org.junit.Assert")
                 || content.contains("org.junit.Before")
                 || content.contains("org.junit.After")
+                || content.contains("org.junit.BeforeClass")
+                || content.contains("org.junit.AfterClass")
                 || content.contains("org.junit.Ignore")
-                || content.contains("SpringRunner.class");
+                || content.contains("SpringRunner")
+                || content.contains("SpringJUnit4ClassRunner")
+                || content.contains("@RunWith");
     }
 
     private static String modernizeTestContent(String content, List<String> rules) {
@@ -97,6 +101,14 @@ public final class SpringJUnitModernizer {
         if (code.contains("import org.junit.Test;")) {
             code = code.replace("import org.junit.Test;", "import org.junit.jupiter.api.Test;");
             rules.add("RULE-JUNIT4-TEST-TO-JUPITER");
+        }
+        if (code.contains("import org.junit.BeforeClass;")) {
+            code = code.replace("import org.junit.BeforeClass;", "import org.junit.jupiter.api.BeforeAll;");
+            rules.add("RULE-JUNIT4-BEFORE_CLASS-TO-BEFORE_ALL");
+        }
+        if (code.contains("import org.junit.AfterClass;")) {
+            code = code.replace("import org.junit.AfterClass;", "import org.junit.jupiter.api.AfterAll;");
+            rules.add("RULE-JUNIT4-AFTER_CLASS-TO-AFTER_ALL");
         }
         if (code.contains("import org.junit.Before;")) {
             code = code.replace("import org.junit.Before;", "import org.junit.jupiter.api.BeforeEach;");
@@ -119,6 +131,11 @@ public final class SpringJUnitModernizer {
                     "import org.springframework.test.context.junit.jupiter.SpringExtension;");
             rules.add("RULE-SPRINGRUNNER-TO-SPRINGEXTENSION");
         }
+        if (code.contains("import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;")) {
+            code = code.replace("import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;",
+                    "import org.springframework.test.context.junit.jupiter.SpringExtension;");
+            rules.add("RULE-SPRINGJUNIT4CLASSRUNNER-TO-SPRINGEXTENSION");
+        }
         if (code.contains("import org.junit.Assert;")) {
             code = code.replace("import org.junit.Assert;", "import org.junit.jupiter.api.Assertions;");
             rules.add("RULE-JUNIT4-ASSERT-TO-JUPITER");
@@ -129,7 +146,18 @@ public final class SpringJUnitModernizer {
         }
 
         // 2. Annotations rewriting
-        code = code.replaceAll("@RunWith\\s*\\(\\s*SpringRunner\\.class\\s*\\)", "@ExtendWith(SpringExtension.class)");
+        if (code.contains("@RunWith")) {
+            code = code.replaceAll("@RunWith\\s*\\(\\s*(?:SpringRunner|SpringJUnit4ClassRunner)\\.class\\s*\\)", "@ExtendWith(SpringExtension.class)");
+            rules.add("RULE-RUNWITH-SPRING-TO-EXTENDWITH");
+            if (code.contains("@ExtendWith") && !code.contains("import org.junit.jupiter.api.extension.ExtendWith;")) {
+                code = addImportIfMissing(code, "org.junit.jupiter.api.extension.ExtendWith");
+            }
+            if (code.contains("SpringExtension.class") && !code.contains("import org.springframework.test.context.junit.jupiter.SpringExtension;")) {
+                code = addImportIfMissing(code, "org.springframework.test.context.junit.jupiter.SpringExtension");
+            }
+        }
+        code = code.replaceAll("@BeforeClass\\b(?![a-zA-Z0-9_])", "@BeforeAll");
+        code = code.replaceAll("@AfterClass\\b(?![a-zA-Z0-9_])", "@AfterAll");
         code = code.replaceAll("@Before\\b(?![a-zA-Z0-9_])", "@BeforeEach");
         code = code.replaceAll("@After\\b(?![a-zA-Z0-9_])", "@AfterEach");
         code = code.replaceAll("@Ignore\\b(?![a-zA-Z0-9_])", "@Disabled");
@@ -143,5 +171,20 @@ public final class SpringJUnitModernizer {
         code = code.replaceAll("\\bAssert\\.fail\\b", "Assertions.fail");
 
         return code;
+    }
+
+    private static String addImportIfMissing(String code, String fqcn) {
+        String importStatement = "import " + fqcn + ";\n";
+        if (code.contains("import " + fqcn + ";")) {
+            return code;
+        }
+        int pkgIdx = code.indexOf("package ");
+        if (pkgIdx >= 0) {
+            int semiIdx = code.indexOf(";", pkgIdx);
+            if (semiIdx >= 0) {
+                return code.substring(0, semiIdx + 1) + "\n\n" + importStatement + code.substring(semiIdx + 1);
+            }
+        }
+        return importStatement + code;
     }
 }

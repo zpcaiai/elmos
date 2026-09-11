@@ -20,9 +20,10 @@ const (
 
 // AppError represents a typed domain or application error.
 type AppError struct {
-	Kind    Kind
-	Message string
-	Err     error
+	Kind     Kind
+	Message  string
+	Err      error
+	Instance string
 }
 
 func (e *AppError) Error() string {
@@ -34,6 +35,96 @@ func (e *AppError) Error() string {
 
 func (e *AppError) Unwrap() error {
 	return e.Err
+}
+
+// ProblemDetails represents an RFC 7807 Problem Details object.
+type ProblemDetails struct {
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Detail   string `json:"detail"`
+	Instance string `json:"instance,omitempty"`
+}
+
+// ProblemTypeForKind maps an error Kind to an RFC 7807 type URI.
+func ProblemTypeForKind(k Kind) string {
+	switch k {
+	case KindNotFound:
+		return "urn:problem-type:not-found"
+	case KindValidation:
+		return "urn:problem-type:validation-error"
+	case KindConflict:
+		return "urn:problem-type:conflict"
+	case KindUnauthorized:
+		return "urn:problem-type:unauthorized"
+	case KindForbidden:
+		return "urn:problem-type:forbidden"
+	case KindInternal:
+		return "urn:problem-type:internal-server-error"
+	default:
+		return "urn:problem-type:unknown"
+	}
+}
+
+// ProblemTitleForKind maps an error Kind to an RFC 7807 short title.
+func ProblemTitleForKind(k Kind) string {
+	switch k {
+	case KindNotFound:
+		return "Resource Not Found"
+	case KindValidation:
+		return "Validation Failed"
+	case KindConflict:
+		return "Conflict"
+	case KindUnauthorized:
+		return "Unauthorized"
+	case KindForbidden:
+		return "Forbidden"
+	case KindInternal:
+		return "Internal Server Error"
+	default:
+		return "An Error Occurred"
+	}
+}
+
+// ToProblemDetails converts an AppError into an RFC 7807 ProblemDetails struct.
+func (e *AppError) ToProblemDetails(instance string) *ProblemDetails {
+	inst := instance
+	if inst == "" {
+		inst = e.Instance
+	}
+	return &ProblemDetails{
+		Type:     ProblemTypeForKind(e.Kind),
+		Title:    ProblemTitleForKind(e.Kind),
+		Status:   HTTPStatusCode(e),
+		Detail:   e.Error(),
+		Instance: inst,
+	}
+}
+
+// ToProblemDetails transforms any Go error into an RFC 7807 ProblemDetails representation.
+func ToProblemDetails(err error, instance string) *ProblemDetails {
+	if err == nil {
+		return &ProblemDetails{
+			Type:     "about:blank",
+			Title:    "OK",
+			Status:   http.StatusOK,
+			Detail:   "Operation completed successfully",
+			Instance: instance,
+		}
+	}
+
+	var appErr *AppError
+	if As(err, &appErr) {
+		return appErr.ToProblemDetails(instance)
+	}
+
+	return &ProblemDetails{
+		Type:     "urn:problem-type:internal-server-error",
+		Title:    "Internal Server Error",
+		Status:   http.StatusInternalServerError,
+		Detail:   err.Error(),
+		Instance: instance,
+	}
 }
 
 // NewNotFound creates a resource not found error (HTTP 404).

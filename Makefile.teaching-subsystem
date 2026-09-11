@@ -1,0 +1,12 @@
+.PHONY: teaching-subsystem-check teaching-subsystem-install teaching-subsystem-clean
+
+teaching-subsystem-check:
+	@echo "--- Teaching Subsystem Engine Tests ---"
+	cd engines/teaching-subsystem-engine && \
+		PYTHONPATH=src .venv/bin/python3 -m pytest tests/ -v --tb=short
+
+teaching-subsystem-install:
+	cd engines/teaching-subsystem-engine && uv venv --python 3.12 && uv pip install pytest && uv pip install -e .
+
+teaching-subsystem-clean:
+	rm -rf engines/teaching-subsystem-engine/build engines/teaching-subsystem-engine/src/*.egg-info engines/teaching-subsystem-engine/.pytest_cache

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"{{.ModuleName}}/internal/interfaces/http/middleware"
 	"{{.ModuleName}}/pkg/logger"
 )
 
@@ -15,7 +16,7 @@ func NewRouter(h *Handler, log logger.Logger) http.Handler {
 	mux.HandleFunc("/healthz", h.Healthz)
 	mux.HandleFunc("/livez", h.Livez)
 	mux.HandleFunc("/readyz", h.Readyz)
-	mux.HandleFunc("/metrics", h.Metrics)
+	mux.HandleFunc("/metrics", middleware.PrometheusHandler)
 
 	// REST API v1 routing dispatcher
 	mux.HandleFunc("/api/v1/entities", func(w http.ResponseWriter, r *http.Request) {
@@ -55,6 +56,8 @@ func NewRouter(h *Handler, log logger.Logger) http.Handler {
 	handler := CORSMiddleware(mux)
 	handler = LoggingMiddleware(log)(handler)
 	handler = RecoveryMiddleware(log)(handler)
+	handler = middleware.MetricsMiddleware(handler)
+	handler = middleware.TelemetryMiddleware("{{.ServiceName}}")(handler)
 	handler = RequestIDMiddleware(handler)
 
 	return handler

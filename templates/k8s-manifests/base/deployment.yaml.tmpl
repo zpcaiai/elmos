@@ -25,6 +25,13 @@ spec:
         runAsUser: 65534
         runAsGroup: 65534
         fsGroup: 65534
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{.ProjectName}}
       containers:
         - name: {{.ProjectName}}
           image: {{.ProjectName}}:latest
@@ -38,6 +45,14 @@ spec:
                 name: {{.ProjectName}}-config
             - secretRef:
                 name: {{.ProjectName}}-secret
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 10
           livenessProbe:
             httpGet:
               path: /healthz

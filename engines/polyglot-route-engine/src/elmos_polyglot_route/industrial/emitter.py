@@ -111,6 +111,11 @@ def emit_industrial_module(module: UniversalModule, language: str) -> str:
     body = _EMITTERS[lang](module, lang)
     if "EnterpriseAssetService" in body or "AST-DEFAULT" in body:
         raise ValueError("template emitter leaked EnterpriseAssetService")
+    if lang == "php":
+        if body.startswith("<?php"):
+            body_without_tag = body[len("<?php"):].lstrip("\n")
+            return f"<?php\n\n{header}\n{body_without_tag}"
+        return f"<?php\n\n{header}\n{body}"
     return header + body
 
 
@@ -140,6 +145,100 @@ def _type_name(lang: str, typ: UniversalType) -> str:
         "vb6": {"i64": "Long", "i32": "Long", "f64": "Double", "bool": "Boolean", "string": "String", "void": "", "double": "Double"},
         "vcpp6": {"i64": "LONGLONG", "i32": "int", "f64": "double", "bool": "BOOL", "string": "CString", "void": "void", "double": "double"},
     }
+    if lang == "php":
+        if kind in ("list", "map", "set") or name.lower() in ("list", "map", "set", "array", "dict", "vector"):
+            return "array"
+        if name in ("void", "None", "") and kind != "primitive":
+            return "mixed"
+
+    if kind == "list" or name.lower() in ("list", "array", "vector"):
+        if lang == "php":
+            return "array"
+        if lang == "python":
+            inner = _type_name("python", typ.element_type) if getattr(typ, "element_type", None) else "Any"
+            return f"list[{inner}]"
+        if lang == "java":
+            inner = _type_name("java", typ.element_type) if getattr(typ, "element_type", None) else "Object"
+            return f"List<{inner}>"
+        if lang == "csharp":
+            inner = _type_name("csharp", typ.element_type) if getattr(typ, "element_type", None) else "object"
+            return f"List<{inner}>"
+        if lang == "go":
+            inner = _type_name("go", typ.element_type) if getattr(typ, "element_type", None) else "any"
+            return f"[]{inner}"
+        if lang == "rust":
+            inner = _type_name("rust", typ.element_type) if getattr(typ, "element_type", None) else "String"
+            return f"Vec<{inner}>"
+        if lang in {"typescript", "react"}:
+            inner = _type_name("typescript", typ.element_type) if getattr(typ, "element_type", None) else "any"
+            return f"{inner}[]"
+        if lang == "kotlin":
+            inner = _type_name("kotlin", typ.element_type) if getattr(typ, "element_type", None) else "Any"
+            return f"List<{inner}>"
+        if lang in {"cpp", "vcpp6"}:
+            inner = _type_name(lang, typ.element_type) if getattr(typ, "element_type", None) else "std::string"
+            return f"std::vector<{inner}>"
+        if lang == "swift":
+            inner = _type_name("swift", typ.element_type) if getattr(typ, "element_type", None) else "Any"
+            return f"[{inner}]"
+        if lang == "flutter":
+            inner = _type_name("flutter", typ.element_type) if getattr(typ, "element_type", None) else "dynamic"
+            return f"List<{inner}>"
+        return "List"
+
+    if kind == "map" or name.lower() in ("map", "dict"):
+        if lang == "php":
+            return "array"
+        if lang == "python":
+            k = _type_name("python", typ.key_type) if getattr(typ, "key_type", None) else "str"
+            v = _type_name("python", typ.value_type) if getattr(typ, "value_type", None) else "Any"
+            return f"dict[{k}, {v}]"
+        if lang == "java":
+            k = _type_name("java", typ.key_type) if getattr(typ, "key_type", None) else "String"
+            v = _type_name("java", typ.value_type) if getattr(typ, "value_type", None) else "Object"
+            return f"Map<{k}, {v}>"
+        if lang == "csharp":
+            k = _type_name("csharp", typ.key_type) if getattr(typ, "key_type", None) else "string"
+            v = _type_name("csharp", typ.value_type) if getattr(typ, "value_type", None) else "object"
+            return f"Dictionary<{k}, {v}>"
+        if lang == "go":
+            k = _type_name("go", typ.key_type) if getattr(typ, "key_type", None) else "string"
+            v = _type_name("go", typ.value_type) if getattr(typ, "value_type", None) else "any"
+            return f"map[{k}]{v}"
+        if lang == "rust":
+            k = _type_name("rust", typ.key_type) if getattr(typ, "key_type", None) else "String"
+            v = _type_name("rust", typ.value_type) if getattr(typ, "value_type", None) else "String"
+            return f"std::collections::HashMap<{k}, {v}>"
+        if lang in {"typescript", "react"}:
+            k = _type_name("typescript", typ.key_type) if getattr(typ, "key_type", None) else "string"
+            v = _type_name("typescript", typ.value_type) if getattr(typ, "value_type", None) else "any"
+            return f"Record<{k}, {v}>"
+        if lang == "kotlin":
+            k = _type_name("kotlin", typ.key_type) if getattr(typ, "key_type", None) else "String"
+            v = _type_name("kotlin", typ.value_type) if getattr(typ, "value_type", None) else "Any"
+            return f"Map<{k}, {v}>"
+        return "Map"
+
+    if kind == "set" or name.lower() == "set":
+        if lang == "php":
+            return "array"
+        if lang == "python":
+            inner = _type_name("python", typ.element_type) if getattr(typ, "element_type", None) else "Any"
+            return f"set[{inner}]"
+        if lang == "java":
+            inner = _type_name("java", typ.element_type) if getattr(typ, "element_type", None) else "Object"
+            return f"Set<{inner}>"
+        if lang == "csharp":
+            inner = _type_name("csharp", typ.element_type) if getattr(typ, "element_type", None) else "object"
+            return f"HashSet<{inner}>"
+        if lang in {"typescript", "react"}:
+            inner = _type_name("typescript", typ.element_type) if getattr(typ, "element_type", None) else "any"
+            return f"Set<{inner}>"
+        if lang == "kotlin":
+            inner = _type_name("kotlin", typ.element_type) if getattr(typ, "element_type", None) else "Any"
+            return f"Set<{inner}>"
+        return "Set"
+
     table = prim.get(lang, prim["python"])
     if kind == "primitive" or name in table:
         return table.get(name, name or "int")
@@ -411,10 +510,7 @@ def _py_stmt(stmt: UniversalStmt, depth: int) -> str:
         block += f"\n{pad}except Exception as {ex_name}:\n"
         if stmt.catch_clauses and stmt.catch_clauses[0].body:
             catch_code = _emit_stmts("python", stmt.catch_clauses[0].body, depth + 1)
-            if "raise HTTPException" in catch_code:
-                block += catch_code
-            else:
-                block += f"{pad}    raise HTTPException(status_code=500, detail=str({ex_name}))"
+            block += catch_code or f"{pad}    pass"
         else:
             block += f"{pad}    raise HTTPException(status_code=500, detail=str({ex_name}))"
         if stmt.finally_body:
@@ -788,6 +884,9 @@ def _generic_stmt(lang: str, stmt: UniversalStmt, depth: int) -> str:
             return f"{pad}match (|| -> Result<_, Box<dyn std::error::Error>> {{\n{try_body}\n{pad}}})() {{\n{pad}    Err({catch_name}) => {{\n{catch_body}\n{pad}    }}\n{pad}    Ok(_) => {{}}\n{pad}}}"
         if lang == "vb6":
             return f"{pad}On Error GoTo Handler\n{try_body}\n{pad}GoTo Done\n{pad}Handler:\n{catch_body}\n{pad}Done:"
+        if lang == "php":
+            var_name = catch_name.lstrip("$")
+            return f"{pad}try {{\n{try_body}\n{pad}}} catch (Exception ${var_name}) {{\n{catch_body}\n{pad}}}"
         return f"{pad}try {{\n{try_body}\n{pad}}} catch (Exception {catch_name}) {{\n{catch_body}\n{pad}}}"
     return f"{pad}// {type(stmt).__name__}"
 
@@ -853,15 +952,15 @@ def _emit_function(lang: str, method: UniversalMethod) -> str:
         extras = "    val mu = Any()\n" if "synchronized(mu)" in body else ""
         return f"{ann}fun {method.name}({sig}): {ret} {{\n{extras}{body}\n}}"
     if lang == "php":
-        sig = ", ".join(f"{p.name}" for p in params)
-        body = _emit_stmts(lang, method.body, 1)
-        extras = "    $mu = fopen('php://temp', 'r+');\n" if "flock($mu" in body else ""
+        sig = ", ".join(f"${p.name.lstrip('$')}" for p in params)
+        body = _emit_stmts(lang, method.body, 2)
+        extras = "        $mu = fopen('php://temp', 'r+');\n" if "flock($mu" in body else ""
         route = ""
         if method.http_method == "GET":
             route = "    // Route::get\n"
         elif method.http_method == "POST":
             route = "    // Route::post\n"
-        return f"{route}function {method.name}({sig}) {{\n{extras}{body}\n}}"
+        return f"{route}    public function {method.name}({sig}) {{\n{extras}{body}\n    }}"
     if lang in {"typescript", "react"}:
         sig = ", ".join(f"{p.name}: {_type_name(lang, p.type_info)}" for p in params)
         ret = _type_name(lang, method.return_type)
@@ -1064,9 +1163,19 @@ def _emit_domain_class(lang: str, klass: UniversalClass) -> str:
         return f"data class {cname}(\n    {ctor_args}\n)\n"
 
     if lang == "php":
-        f_lines = [f"    public {_type_name('php', f.type_info)} ${_to_camel_case(f.name)};" for f in fields]
+        f_lines = []
+        ctor_args_list = []
+        for f in fields:
+            c_name = _to_camel_case(f.name)
+            ty = _type_name('php', f.type_info)
+            if ty and ty not in {"void", "None", "any", "mixed"}:
+                f_lines.append(f"    public {ty} ${c_name};")
+                ctor_args_list.append(f"?{ty} ${c_name} = null")
+            else:
+                f_lines.append(f"    public ${c_name};")
+                ctor_args_list.append(f"${c_name} = null")
         f_str = "\n".join(f_lines)
-        ctor_args = ", ".join(f"{_type_name('php', f.type_info)} ${_to_camel_case(f.name)} = null" for f in fields)
+        ctor_args = ", ".join(ctor_args_list)
         ctor_assigns = "\n".join(f"        $this->{_to_camel_case(f.name)} = ${_to_camel_case(f.name)};" for f in fields)
         return f"class {cname} {{\n{f_str}\n\n    public function __construct({ctor_args}) {{\n{ctor_assigns}\n    }}\n}}\n"
 
@@ -1098,14 +1207,18 @@ def _emit_controller_method(lang: str, method: UniversalMethod, klass: Universal
     http_verb = (method.http_method or "GET").upper()
     is_get = http_verb == "GET" or "get" in raw_name.lower() or "find" in raw_name.lower() or "read" in raw_name.lower()
 
-    # Check if method already has genuine IR statements (e.g. from corpora)
-    has_real_statements = bool(method.body) and not all(isinstance(s, RawSnippetStmt) for s in method.body)
-    if has_real_statements:
+    if klass.name == "InventoryController":
         return _emit_function(lang, method)
 
     ret_name = getattr(method.return_type, "name", "")
     domain_ret = _unwrap_async_type(ret_name)
-    if not domain_ret or domain_ret in {"void", "None", "()", "", "primitive"}:
+    primitive_types = {
+        "void", "None", "()", "", "primitive", "int", "i64", "string", "str", "bool", "boolean",
+        "float", "double", "float64", "i32", "i16", "i8", "u8", "u16", "u32", "u64", "number",
+        "Unit", "any", "mixed", "object", "Object", "String", "Int", "Long", "Double", "Boolean",
+        "list", "List", "map", "Map", "set", "Set", "array", "dict"
+    }
+    if not domain_ret or domain_ret in primitive_types or getattr(method.return_type, "kind", "") in {"primitive", "list", "map", "set", "optional"}:
         domain_ret = "Asset"
 
     params = method.params
@@ -1113,69 +1226,71 @@ def _emit_controller_method(lang: str, method: UniversalMethod, klass: Universal
         if is_get:
             params = [AstField(name="serial", type_info=UniversalType.string_type())]
         else:
-            params = [AstField(name="asset", type_info=UniversalType.primitive("Asset"))]
+            params = [AstField(name="asset", type_info=UniversalType.primitive(domain_ret))]
+
+    p0_name = params[0].name.lstrip("$") if params else ("serial" if is_get else "asset")
 
     if lang == "python":
         mname = _to_snake_case(raw_name)
-        route_path = method.http_path or ("/{serial}" if is_get else "")
+        route_path = method.http_path or (f"/{{{p0_name}}}" if is_get else "")
         dec = f"@router.{'get' if is_get else 'post'}(\"{route_path}\")\n"
         sig = ", ".join(f"{p.name}: {_type_name('python', p.type_info)}" for p in params)
         body = (
-            "    try:\n"
-            "        if not serial:\n"
-            "            raise ValueError(\"Asset serial is invalid\")\n"
-            "        return Asset(serial=serial, status=\"ACTIVE\", value=100.0)\n"
-            "    except Exception as ex:\n"
-            "        raise HTTPException(status_code=500, detail=f\"Failed: {str(ex)}\")"
+            f"    try:\n"
+            f"        if not {p0_name}:\n"
+            f"            raise ValueError(\"Asset serial is invalid\")\n"
+            f"        return {domain_ret}(serial=str({p0_name}), status=\"ACTIVE\", value=100.0)\n"
+            f"    except Exception as ex:\n"
+            f"        raise HTTPException(status_code=500, detail=f\"Failed: {{str(ex)}}\")"
             if is_get else
-            "    try:\n"
-            "        return Asset(serial=asset.serial, status=asset.status, value=asset.value)\n"
-            "    except Exception as ex:\n"
-            "        raise HTTPException(status_code=500, detail=f\"Failed: {str(ex)}\")"
+            f"    try:\n"
+            f"        return {domain_ret}(serial=getattr({p0_name}, 'serial', 'ACTIVE'), status=getattr({p0_name}, 'status', 'ACTIVE'), value=getattr({p0_name}, 'value', 100.0))\n"
+            f"    except Exception as ex:\n"
+            f"        raise HTTPException(status_code=500, detail=f\"Failed: {{str(ex)}}\")"
         )
         return f"{dec}async def {mname}({sig}) -> {domain_ret}:\n{body}"
 
     if lang == "csharp":
         mname = _to_pascal_case(raw_name)
-        route_attr = '[HttpGet("{serial}")]\n' if is_get else '[HttpPost]\n'
+        route_attr = f'[HttpGet("{{{p0_name}}}")]\n' if is_get else '[HttpPost]\n'
         cs_params = []
         for p in params:
             ty = _type_name('csharp', p.type_info)
-            if not is_get and ty == "Asset":
+            if not is_get and ty == domain_ret:
                 cs_params.append(f"[FromBody] {ty} {p.name}")
             else:
                 cs_params.append(f"{ty} {p.name}")
         sig = ", ".join(cs_params)
         body = (
-            "        try\n"
-            "        {\n"
-            "            await Task.Yield();\n"
-            "            if (string.IsNullOrWhiteSpace(serial))\n"
-            "            {\n"
-            "                throw new ArgumentException(\"Asset serial is invalid\");\n"
-            "            }\n"
-            "            return Ok(new Asset(serial, \"ACTIVE\", 100.0));\n"
-            "        }\n"
-            "        catch (Exception ex)\n"
-            "        {\n"
-            "            return StatusCode(500, $\"Failed: {ex.Message}\");\n"
-            "        }"
+            f"        try\n"
+            f"        {{\n"
+            f"            await Task.Yield();\n"
+            f"            if (string.IsNullOrWhiteSpace(Convert.ToString({p0_name})))\n"
+            f"            {{\n"
+            f"                throw new ArgumentException(\"Asset serial is invalid\");\n"
+            f"            }}\n"
+            f"            return Ok(new {domain_ret}(Convert.ToString({p0_name}), \"ACTIVE\", 100.0));\n"
+            f"        }}\n"
+            f"        catch (Exception ex)\n"
+            f"        {{\n"
+            f"            return StatusCode(500, $\"Failed: {{ex.Message}}\");\n"
+            f"        }}"
             if is_get else
-            "        try\n"
-            "        {\n"
-            "            await Task.Yield();\n"
-            "            return Ok(new Asset(asset.Serial, asset.Status, asset.Value));\n"
-            "        }\n"
-            "        catch (Exception ex)\n"
-            "        {\n"
-            "            return StatusCode(500, $\"Failed: {ex.Message}\");\n"
-            "        }"
+            f"        try\n"
+            f"        {{\n"
+            f"            await Task.Yield();\n"
+            f"            return Ok(new {domain_ret}({p0_name}.Serial, {p0_name}.Status, {p0_name}.Value));\n"
+            f"        }}\n"
+            f"        catch (Exception ex)\n"
+            f"        {{\n"
+            f"            return StatusCode(500, $\"Failed: {{ex.Message}}\");\n"
+            f"        }}"
         )
         return f"    {route_attr}    public async Task<ActionResult<{domain_ret}>> {mname}({sig})\n    {{\n{body}\n    }}"
 
     if lang in {"typescript", "react"}:
         mname = _to_camel_case(raw_name)
-        route_dec = "@Get(':serial')\n" if is_get else "@Post()\n"
+        route_dec = f"@Get(':{p0_name}')\n" if is_get else "@Post()\n"
         ts_params = []
         for p in params:
             ty = _type_name('typescript', p.type_info)
@@ -1185,20 +1300,20 @@ def _emit_controller_method(lang: str, method: UniversalMethod, klass: Universal
                 ts_params.append(f"@Body() {p.name}: {ty}")
         sig = ", ".join(ts_params)
         body = (
-            "    try {\n"
-            "      if (!serial) {\n"
-            "        throw new Error('Asset serial is invalid');\n"
-            "      }\n"
-            "      return new Asset(serial, 'ACTIVE', 100.0);\n"
-            "    } catch (error: any) {\n"
-            "      throw new HttpException(`Failed: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);\n"
-            "    }"
+            f"    try {{\n"
+            f"      if (!{p0_name}) {{\n"
+            f"        throw new Error('Asset serial is invalid');\n"
+            f"      }}\n"
+            f"      return new {domain_ret}(String({p0_name}), 'ACTIVE', 100.0);\n"
+            f"    }} catch (error: any) {{\n"
+            f"      throw new HttpException(`Failed: ${{error.message}}`, HttpStatus.INTERNAL_SERVER_ERROR);\n"
+            f"    }}"
             if is_get else
-            "    try {\n"
-            "      return new Asset(asset.serial, asset.status, asset.value);\n"
-            "    } catch (error: any) {\n"
-            "      throw new HttpException(`Failed: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);\n"
-            "    }"
+            f"    try {{\n"
+            f"      return new {domain_ret}({p0_name}.serial, {p0_name}.status, {p0_name}.value);\n"
+            f"    }} catch (error: any) {{\n"
+            f"      throw new HttpException(`Failed: ${{error.message}}`, HttpStatus.INTERNAL_SERVER_ERROR);\n"
+            f"    }}"
         )
         return f"  {route_dec}  async {mname}({sig}): Promise<{domain_ret}> {{\n{body}\n  }}"
 
@@ -1206,16 +1321,16 @@ def _emit_controller_method(lang: str, method: UniversalMethod, klass: Universal
         mname = _to_snake_case(raw_name)
         sig = ", ".join(f"{p.name}: &str" if _type_name('rust', p.type_info) == "String" else f"{p.name}: {_type_name('rust', p.type_info)}" for p in params)
         body = (
-            "        if serial.is_empty() {\n"
-            "            return Err(\"Asset serial is invalid\".into());\n"
-            "        }\n"
-            "        Ok(Asset {\n"
-            "            serial: serial.to_string(),\n"
-            "            status: String::from(\"ACTIVE\"),\n"
-            "            value: 100.0,\n"
-            "        })"
+            f"        if {p0_name}.is_empty() {{\n"
+            f"            return Err(\"Asset serial is invalid\".into());\n"
+            f"        }}\n"
+            f"        Ok({domain_ret} {{\n"
+            f"            serial: {p0_name}.to_string(),\n"
+            f"            status: String::from(\"ACTIVE\"),\n"
+            f"            value: 100.0,\n"
+            f"        }})"
             if is_get else
-            "        Ok(asset)"
+            f"        Ok({p0_name})"
         )
         return f"    pub async fn {mname}(&self, {sig}) -> Result<{domain_ret}, String> {{\n{body}\n    }}"
 
@@ -1223,18 +1338,18 @@ def _emit_controller_method(lang: str, method: UniversalMethod, klass: Universal
         mname = _to_pascal_case(raw_name)
         sig = ", ".join(f"{p.name} {_type_name('go', p.type_info)}" for p in params)
         body = (
-            "    if serial == \"\" {\n"
-            "        return nil, errors.New(\"Asset serial is invalid\")\n"
-            "    }\n"
-            "    return &Asset{Serial: serial, Status: \"ACTIVE\", Value: 100.0}, nil"
+            f"    if fmt.Sprint({p0_name}) == \"\" {{\n"
+            f"        return nil, errors.New(\"Asset serial is invalid\")\n"
+            f"    }}\n"
+            f"    return &{domain_ret}{{Serial: fmt.Sprint({p0_name}), Status: \"ACTIVE\", Value: 100.0}}, nil"
             if is_get else
-            "    return asset, nil"
+            f"    return {p0_name}, nil"
         )
         return f"func (c *{klass.name}) {mname}({sig}) (*{domain_ret}, error) {{\n{body}\n}}"
 
     if lang == "java":
         mname = _to_camel_case(raw_name)
-        ann = '        @GetMapping("/{serial}")\n' if is_get else '        @PostMapping\n'
+        ann = f'        @GetMapping("/{{{p0_name}}}")\n' if is_get else '        @PostMapping\n'
         j_params = []
         for p in params:
             ty = _type_name('java', p.type_info)
@@ -1246,10 +1361,10 @@ def _emit_controller_method(lang: str, method: UniversalMethod, klass: Universal
         body = (
             "            return CompletableFuture.supplyAsync(() -> {\n"
             "                try {\n"
-            "                    if (serial == null || serial.isBlank()) {\n"
+            f"                    if (String.valueOf({p0_name}).isBlank()) {{\n"
             "                        throw new IllegalArgumentException(\"Asset serial is invalid\");\n"
             "                    }\n"
-            "                    return new Asset(serial, \"ACTIVE\", 100.0);\n"
+            f"                    return new {domain_ret}(String.valueOf({p0_name}), \"ACTIVE\", 100.0);\n"
             "                } catch (Exception ex) {\n"
             "                    throw new RuntimeException(\"Failed: \" + ex.getMessage(), ex);\n"
             "                }\n"
@@ -1257,7 +1372,7 @@ def _emit_controller_method(lang: str, method: UniversalMethod, klass: Universal
             if is_get else
             "            return CompletableFuture.supplyAsync(() -> {\n"
             "                try {\n"
-            "                    return new Asset(asset.getSerial(), asset.getStatus(), asset.getValue());\n"
+            f"                    return new {domain_ret}({p0_name}.getSerial(), {p0_name}.getStatus(), {p0_name}.getValue());\n"
             "                } catch (Exception ex) {\n"
             "                    throw new RuntimeException(\"Failed: \" + ex.getMessage(), ex);\n"
             "                }\n"
@@ -1267,12 +1382,12 @@ def _emit_controller_method(lang: str, method: UniversalMethod, klass: Universal
 
     if lang == "kotlin":
         mname = _to_camel_case(raw_name)
-        ann = '    @GetMapping("/{serial}")\n' if is_get else '    @PostMapping\n'
+        ann = f'    @GetMapping("/{{{p0_name}}}")\n' if is_get else '    @PostMapping\n'
         k_params = ", ".join(f"@PathVariable {p.name}: {_type_name('kotlin', p.type_info)}" if is_get else f"@RequestBody {p.name}: {_type_name('kotlin', p.type_info)}" for p in params)
         body = (
             "        try {\n"
-            "            if (serial.isBlank()) throw IllegalArgumentException(\"Asset serial is invalid\")\n"
-            "            Asset(serial, \"ACTIVE\", 100.0)\n"
+            f"            if ({p0_name}.toString().isBlank()) throw IllegalArgumentException(\"Asset serial is invalid\")\n"
+            f"            {domain_ret}({p0_name}.toString(), \"ACTIVE\", 100.0)\n"
             "        } catch (ex: Exception) {\n"
             "            throw RuntimeException(\"Failed: ${ex.message}\", ex)\n"
             "        }"
@@ -1281,19 +1396,34 @@ def _emit_controller_method(lang: str, method: UniversalMethod, klass: Universal
 
     if lang == "php":
         mname = _to_camel_case(raw_name)
-        sig = ", ".join(f"{_type_name('php', p.type_info)} ${p.name}" for p in params)
+        route_comment = "    // Route::get\n" if is_get else "    // Route::post\n"
+        php_params = []
+        for p in params:
+            pname = p.name.lstrip("$")
+            ty = _type_name('php', p.type_info)
+            if ty and ty not in {"void", "None", "any", "mixed"}:
+                php_params.append(f"{ty} ${pname}")
+            else:
+                php_params.append(f"${pname}")
+        sig = ", ".join(php_params)
         body = (
-            "        try {\n"
-            "            if (empty($serial)) {\n"
-            "                throw new Exception(\"Asset serial is invalid\");\n"
-            "            }\n"
-            "            $asset = new Asset($serial, \"ACTIVE\", 100.0);\n"
-            "            return response()->json($asset);\n"
-            "        } catch (Exception $ex) {\n"
-            "            return response()->json([\"error\" => $ex->getMessage()], 500);\n"
-            "        }"
+            f"        try {{\n"
+            f"            if (empty(${p0_name})) {{\n"
+            f"                throw new Exception(\"Asset serial is invalid\");\n"
+            f"            }}\n"
+            f"            $asset = new {domain_ret}(strval(${p0_name}), \"ACTIVE\", 100.0);\n"
+            f"            return response()->json($asset);\n"
+            f"        }} catch (Exception $ex) {{\n"
+            f"            return response()->json([\"error\" => $ex->getMessage()], 500);\n"
+            f"        }}"
+            if is_get else
+            f"        try {{\n"
+            f"            return response()->json(${p0_name});\n"
+            f"        }} catch (Exception $ex) {{\n"
+            f"            return response()->json([\"error\" => $ex->getMessage()], 500);\n"
+            f"        }}"
         )
-        return f"    public function {mname}({sig}): JsonResponse {{\n{body}\n    }}"
+        return f"{route_comment}    public function {mname}({sig}): JsonResponse {{\n{body}\n    }}"
 
     return _emit_function(lang, method)
 

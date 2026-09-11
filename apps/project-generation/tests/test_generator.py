@@ -8,6 +8,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+import yaml
 
 from project_generation.engine import ProjectConfig, ProjectGenerator
 from project_generation.validator import DDDValidator, Layer
@@ -21,7 +22,7 @@ def temp_dir():
 
 
 def test_generate_go_microservice(temp_dir: Path):
-    """Test generating a Go DDD microservice project."""
+    """Test generating a Go DDD microservice project with enterprise infrastructure."""
     generator = ProjectGenerator()
     out_dir = temp_dir / "order-service"
 
@@ -40,7 +41,7 @@ def test_generate_go_microservice(temp_dir: Path):
     assert result.success is True
     assert len(result.files_generated) > 0
 
-    # Check key files
+    # Check key DDD & enterprise infrastructure files
     assert (out_dir / "go.mod").is_file()
     assert (out_dir / "Makefile").is_file()
     assert (out_dir / "cmd" / "server" / "main.go").is_file()
@@ -48,6 +49,26 @@ def test_generate_go_microservice(temp_dir: Path):
     assert (out_dir / "internal" / "application" / "service" / "service.go").is_file()
     assert (out_dir / "internal" / "infrastructure" / "persistence" / "repository_impl.go").is_file()
     assert (out_dir / "internal" / "interfaces" / "http" / "handler.go").is_file()
+    assert (out_dir / "internal" / "interfaces" / "http" / "middleware" / "telemetry.go").is_file()
+    assert (out_dir / "pkg" / "telemetry" / "tracer.go").is_file()
+    assert (out_dir / "pkg" / "resilience" / "circuit_breaker.go").is_file()
+    assert (out_dir / "pkg" / "errors" / "errors.go").is_file()
+
+    # Verify graceful drain in main.go
+    main_text = (out_dir / "cmd" / "server" / "main.go").read_text(encoding="utf-8")
+    assert "30*time.Second" in main_text, "main.go must contain 30s timeout context for graceful drain"
+    assert "telemetry.InitTracer" in main_text, "main.go must initialize OpenTelemetry tracer"
+    assert "httpServer.Shutdown" in main_text, "main.go must drain active HTTP connections"
+
+    # Verify RFC 7807 Problem Details in pkg/errors
+    errors_text = (out_dir / "pkg" / "errors" / "errors.go").read_text(encoding="utf-8")
+    assert "ProblemDetails" in errors_text, "errors.go must define RFC 7807 ProblemDetails"
+    assert "ToProblemDetails" in errors_text, "errors.go must map errors to ProblemDetails"
+
+    # Verify CircuitBreaker in pkg/resilience
+    cb_text = (out_dir / "pkg" / "resilience" / "circuit_breaker.go").read_text(encoding="utf-8")
+    assert "CircuitBreaker" in cb_text, "circuit_breaker.go must define CircuitBreaker"
+    assert "StateClosed" in cb_text and "StateOpen" in cb_text and "StateHalfOpen" in cb_text
 
     # Verify DDD compliance
     validator = DDDValidator()
@@ -73,7 +94,7 @@ def test_generate_go_microservice(temp_dir: Path):
     )
     assert go_build.returncode == 0, f"go build failed in generated project:\n{go_build.stderr}\n{go_build.stdout}"
 
-    # 3. Run real go test in the generated project!
+    # 3. Run real go test in the generated project (runs domain, telemetry, resilience, errors tests!)
     go_test = subprocess.run(
         ["go", "test", "-v", "./..."],
         cwd=str(out_dir),
@@ -84,7 +105,7 @@ def test_generate_go_microservice(temp_dir: Path):
 
 
 def test_generate_python_microservice(temp_dir: Path):
-    """Test generating a Python FastAPI DDD microservice project."""
+    """Test generating a Python FastAPI DDD microservice with enterprise infrastructure."""
     generator = ProjectGenerator()
     out_dir = temp_dir / "user-service"
 
@@ -108,7 +129,16 @@ def test_generate_python_microservice(temp_dir: Path):
     assert (out_dir / "app" / "domain" / "models" / "entity.py").is_file()
     assert (out_dir / "app" / "application" / "services" / "application_service.py").is_file()
     assert (out_dir / "app" / "infrastructure" / "repositories" / "repository_impl.py").is_file()
+    assert (out_dir / "app" / "infrastructure" / "telemetry.py").is_file()
     assert (out_dir / "app" / "interfaces" / "api" / "router.py").is_file()
+
+    # Verify Connection Pool Lifespan and RFC 7807 Exception Handlers in app/main.py
+    main_text = (out_dir / "app" / "main.py").read_text(encoding="utf-8")
+    assert "lifespan" in main_text, "app/main.py must configure lifespan context manager"
+    assert "await db_manager.ping()" in main_text, "lifespan must ping DB connection pool on startup"
+    assert "await db_manager.close()" in main_text, "lifespan must close DB connection pool on shutdown"
+    assert "application/problem+json" in main_text, "app/main.py must register RFC 7807 problem details handlers"
+    assert "make_problem_response" in main_text
 
     # Verify DDD compliance
     validator = DDDValidator()
@@ -129,7 +159,7 @@ def test_generate_python_microservice(temp_dir: Path):
     )
     assert ruff_check.returncode == 0, f"ruff check failed in generated python project:\n{ruff_check.stderr}\n{ruff_check.stdout}"
 
-    # Run pytest on generated python project
+    # Run pytest on generated python project (runs integration test verifying RFC 7807 format and telemetry!)
     py_test = subprocess.run(
         ["uv", "run", "pytest"],
         cwd=str(out_dir),
@@ -140,7 +170,7 @@ def test_generate_python_microservice(temp_dir: Path):
 
 
 def test_generate_k8s_manifests(temp_dir: Path):
-    """Test generating Kubernetes manifests and Helm chart."""
+    """Test generating Kubernetes manifests with PDB and startupProbe hardening."""
     generator = ProjectGenerator()
     out_dir = temp_dir / "k8s"
 
@@ -159,10 +189,60 @@ def test_generate_k8s_manifests(temp_dir: Path):
     assert (out_dir / "base" / "deployment.yaml").is_file()
     assert (out_dir / "base" / "service.yaml").is_file()
     assert (out_dir / "base" / "kustomization.yaml").is_file()
+    assert (out_dir / "base" / "pdb.yaml").is_file()
     assert (out_dir / "overlays" / "dev" / "kustomization.yaml").is_file()
     assert (out_dir / "overlays" / "prod" / "kustomization.yaml").is_file()
     assert (out_dir / "helm" / "chart" / "Chart.yaml").is_file()
     assert (out_dir / "helm" / "chart" / "values.yaml").is_file()
+
+    # YAML Validation: Deployment
+    dep_content = (out_dir / "base" / "deployment.yaml").read_text(encoding="utf-8")
+    dep_doc = yaml.safe_load(dep_content)
+    assert dep_doc["kind"] == "Deployment"
+    pod_spec = dep_doc["spec"]["template"]["spec"]
+
+    # Verify startupProbe
+    container = pod_spec["containers"][0]
+    assert "startupProbe" in container, "Deployment must include startupProbe"
+    assert container["startupProbe"]["httpGet"]["path"] == "/healthz"
+    assert container["startupProbe"]["failureThreshold"] >= 5
+
+    # Verify topologySpreadConstraints
+    assert "topologySpreadConstraints" in pod_spec, "Deployment must include topologySpreadConstraints"
+    tsc = pod_spec["topologySpreadConstraints"][0]
+    assert tsc["topologyKey"] == "topology.kubernetes.io/zone"
+    assert tsc["maxSkew"] == 1
+
+    # YAML Validation: PodDisruptionBudget
+    pdb_content = (out_dir / "base" / "pdb.yaml").read_text(encoding="utf-8")
+    pdb_doc = yaml.safe_load(pdb_content)
+    assert pdb_doc["kind"] == "PodDisruptionBudget"
+    assert pdb_doc["spec"]["minAvailable"] == 1
+
+    # YAML Validation: Kustomization includes pdb.yaml
+    kust_content = (out_dir / "base" / "kustomization.yaml").read_text(encoding="utf-8")
+    kust_doc = yaml.safe_load(kust_content)
+    assert "pdb.yaml" in kust_doc["resources"], "kustomization.yaml must include pdb.yaml"
+
+
+def test_feature_flags_omission(temp_dir: Path):
+    """Verify --with-telemetry=False and --with-resilience=False omit infrastructure files."""
+    generator = ProjectGenerator()
+    out_dir = temp_dir / "minimal-go"
+
+    config = ProjectConfig(
+        language="go",
+        project_name="minimal-go",
+        output_dir=str(out_dir),
+        with_telemetry=False,
+        with_resilience=False,
+    )
+
+    result = generator.generate(config)
+    assert result.success is True
+
+    assert not (out_dir / "pkg" / "telemetry" / "tracer.go").exists()
+    assert not (out_dir / "pkg" / "resilience" / "circuit_breaker.go").exists()
 
 
 def test_ddd_validator_detects_violations(temp_dir: Path):

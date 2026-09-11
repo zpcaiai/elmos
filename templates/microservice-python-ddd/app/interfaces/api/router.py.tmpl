@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Query, status
+from fastapi.responses import PlainTextResponse
 
 from app.application.dtos.request_dto import (
     EntityCreateRequest,
@@ -31,6 +32,28 @@ async def healthz() -> dict:
 async def readyz() -> dict:
     """Kubernetes readiness probe."""
     return {"status": "ready"}
+
+
+@probe_router.get("/livez", summary="Liveness Probe")
+async def livez() -> dict:
+    """Kubernetes liveness probe."""
+    return {"status": "alive"}
+
+
+@probe_router.get(
+    "/metrics",
+    summary="Prometheus Metrics Endpoint",
+    response_class=PlainTextResponse,
+)
+async def metrics() -> str:
+    """Prometheus metrics scrape endpoint."""
+    lines = [
+        "# HELP service_up Service availability indicator",
+        "# TYPE service_up gauge",
+        "service_up 1",
+        "",
+    ]
+    return "\n".join(lines)
 
 
 # ---------------- Entity REST Endpoints ----------------

@@ -94,6 +94,85 @@ public final class SpringMultiModuleProjectScanner {
     }
 
     /**
+     * Represents a module within a Maven multi-module reactor.
+     */
+    public record ReactorModuleNode(
+            String artifactId,
+            Path pomPath,
+            Path moduleDir,
+            List<String> submodules,
+            int depth
+    ) {}
+
+    private static final Pattern ARTIFACT_ID_PATTERN = Pattern.compile(
+            "<artifactId>\\s*([^<]+)\\s*</artifactId>"
+    );
+
+    /**
+     * Resolves the topological DAG execution order for a multi-module reactor.
+     */
+    public static List<ReactorModuleNode> resolveReactorDag(Path projectRoot) {
+        Objects.requireNonNull(projectRoot, "projectRoot must not be null");
+        Path rootPom = projectRoot.resolve("pom.xml");
+        if (!Files.isRegularFile(rootPom)) {
+            return Collections.emptyList();
+        }
+
+        List<ReactorModuleNode> nodes = new ArrayList<>();
+        Set<Path> visitedPoms = new LinkedHashSet<>();
+        traverseModules(rootPom, 0, nodes, visitedPoms);
+        return Collections.unmodifiableList(nodes);
+    }
+
+    private static void traverseModules(Path currentPom, int depth, List<ReactorModuleNode> nodes, Set<Path> visited) {
+        Path normPom = currentPom.toAbsolutePath().normalize();
+        if (visited.contains(normPom) || !Files.isRegularFile(normPom)) {
+            return;
+        }
+        visited.add(normPom);
+
+        Path moduleDir = normPom.getParent();
+        String artifactId = extractArtifactId(normPom);
+        List<String> submodules = declaredSubmodules(normPom);
+
+        nodes.add(new ReactorModuleNode(artifactId, normPom, moduleDir, submodules, depth));
+
+        for (String sub : submodules) {
+            Path subPom = moduleDir.resolve(sub).resolve("pom.xml");
+            if (Files.isRegularFile(subPom)) {
+                traverseModules(subPom, depth + 1, nodes, visited);
+            }
+        }
+    }
+
+    /**
+     * Extracts artifactId from a pom.xml.
+     */
+    public static String extractArtifactId(Path pomFile) {
+        if (!Files.isRegularFile(pomFile)) {
+            return "unknown";
+        }
+        try {
+            String content = Files.readString(pomFile);
+            Matcher matcher = ARTIFACT_ID_PATTERN.matcher(content);
+            // Skip parent artifactId if present
+            if (content.contains("<parent>")) {
+                int parentEnd = content.indexOf("</parent>");
+                if (parentEnd != -1) {
+                    Matcher afterParent = ARTIFACT_ID_PATTERN.matcher(content.substring(parentEnd));
+                    if (afterParent.find()) {
+                        return afterParent.group(1).trim();
+                    }
+                }
+            }
+            if (matcher.find()) {
+                return matcher.group(1).trim();
+            }
+        } catch (IOException ignored) {}
+        return pomFile.getParent().getFileName().toString();
+    }
+
+    /**
      * Checks whether the given directory represents a Maven multi-module reactor.
      */
     public static boolean isMultiModule(Path projectRoot) {

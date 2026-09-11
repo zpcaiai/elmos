@@ -41,6 +41,8 @@ class Dialect(str, Enum):
     MYSQL = "mysql"
     ORACLE = "oracle"
     TSQL = "tsql"  # SQL Server
+    DM8 = "dm8"
+    OPENGAUSS = "opengauss"
 
 
 class ChinaDbDialect(str, Enum):

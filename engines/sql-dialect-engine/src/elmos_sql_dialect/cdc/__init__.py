@@ -24,6 +24,7 @@ from .event_comparator import (
     EventReconciliationReport,
     EventStreamAnomaly,
 )
+from .pg_logical_cdc import PostgresLogicalReplicationCdc
 from .reporter import CdcReconciliationReport, CdcReporter
 from .schema_comparator import (
     ColumnDiff,
@@ -50,6 +51,7 @@ __all__ = [
     "EventReconciliationReport",
     "EventStreamAnomaly",
     "ForeignKeySpec",
+    "PostgresLogicalReplicationCdc",
     "RowDiff",
     "SchemaComparator",
     "SchemaDiffReport",

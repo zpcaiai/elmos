@@ -126,3 +126,6 @@ survey-engines-mac.sh
 !client-packs/**/source-snapshots/**
 .mimosa/
 **/.mimosa/
+
+# Local benchmark and evaluation fixtures
+fixtures/

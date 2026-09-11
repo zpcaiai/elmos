@@ -155,6 +155,16 @@ public final class SpringDiagnosticAutoRepairer {
             rulesApplied.addAll(testRes.rulesApplied());
         }
 
+        // 11. Enterprise Private Artifact Mock Shim Generator (Package does not exist / unresolvable private SDKs)
+        var shimRes = io.elmos.worker.shim.SpringPrivateArtifactShimGenerator.generateShimsFromDiagnostics(projectRoot, diagnostics);
+        if (shimRes.generated()) {
+            changesCount += shimRes.shimCount();
+            for (var shim : shimRes.shims()) {
+                modifiedFiles.add(projectRoot.relativize(shim.targetFilePath()).toString().replace("\\", "/"));
+            }
+            rulesApplied.add("GENERATE_PRIVATE_ARTIFACT_SHIMS: " + shimRes.shimCount() + " mock shims created");
+        }
+
         return new RepairResult(changesCount > 0, changesCount, Collections.unmodifiableSet(modifiedFiles), Collections.unmodifiableList(rulesApplied));
     }
 

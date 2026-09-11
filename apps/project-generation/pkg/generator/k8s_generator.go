@@ -103,13 +103,57 @@ spec:
       labels:
         app.kubernetes.io/name: %s
     spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: %s
       containers:
         - name: %s
           image: %s
           ports:
             - containerPort: %d
               name: http
-`, spec.Name, spec.Name, spec.Replicas, spec.Name, spec.Name, spec.Name, spec.Image, spec.Port),
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 2
+`, spec.Name, spec.Name, spec.Replicas, spec.Name, spec.Name, spec.Name, spec.Name, spec.Image, spec.Port),
+
+		"base/pdb.yaml": fmt.Sprintf(`apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: %s-pdb
+  labels:
+    app.kubernetes.io/name: %s
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: %s
+`, spec.Name, spec.Name, spec.Name),
 
 		"base/service.yaml": fmt.Sprintf(`apiVersion: v1
 kind: Service
@@ -143,6 +187,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - configmap.yaml
+  - pdb.yaml
 `,
 
 		"overlays/dev/kustomization.yaml": fmt.Sprintf(`apiVersion: kustomize.config.k8s.io/v1beta1

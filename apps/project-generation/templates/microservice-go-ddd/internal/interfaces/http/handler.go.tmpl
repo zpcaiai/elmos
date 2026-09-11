@@ -8,6 +8,7 @@ import (
 
 	"{{.ModuleName}}/internal/application/dto"
 	"{{.ModuleName}}/internal/application/service"
+	"{{.ModuleName}}/internal/interfaces/http/middleware"
 	appErrors "{{.ModuleName}}/pkg/errors"
 	"{{.ModuleName}}/pkg/logger"
 )
@@ -142,9 +143,7 @@ func (h *Handler) Readyz(w http.ResponseWriter, r *http.Request) {
 
 // Metrics handles Prometheus metrics endpoint /metrics
 func (h *Handler) Metrics(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain; version=0.0.4")
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte("# HELP service_up Service availability indicator\n# TYPE service_up gauge\nservice_up 1\n"))
+	middleware.PrometheusHandler(w, r)
 }
 
 func (h *Handler) respondJSON(w http.ResponseWriter, statusCode int, data any) {
@@ -154,15 +153,12 @@ func (h *Handler) respondJSON(w http.ResponseWriter, statusCode int, data any) {
 }
 
 func (h *Handler) respondError(w http.ResponseWriter, r *http.Request, err error) {
-	status := appErrors.HTTPStatusCode(err)
-	h.log.WithContext(r.Context()).Warn("HTTP handler error", "status", status, "error", err)
+	problem := appErrors.ToProblemDetails(err, r.URL.Path)
+	h.log.WithContext(r.Context()).Warn("HTTP handler error", "status", problem.Status, "error", err, "type", problem.Type)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(map[string]any{
-		"error":  err.Error(),
-		"status": status,
-	})
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(problem.Status)
+	_ = json.NewEncoder(w).Encode(problem)
 }
 
 func extractID(path string) string {
