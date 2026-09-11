@@ -169,8 +169,8 @@ chinadb-commercial-migration-skills:
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked python -m mypy src
 .PHONY: database-bigdata-skills
 database-bigdata-skills:
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_database_bigdata_skills.py --check
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/database-bigdata-skills -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --offline --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_database_bigdata_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --offline --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/database-bigdata-skills -p 'test_*.py'
 .PHONY: project-intelligence-skills
 project-intelligence-skills:
 	$(CARGO) build --locked --release --offline --manifest-path native/rust-core/Cargo.toml
