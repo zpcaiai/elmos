@@ -600,7 +600,7 @@ project-synthesis-toolchains:
 	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py --require-all-toolchains
 frontend:
 	CI=true PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir engines/frontend-client-engine install --frozen-lockfile
-	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir engines/frontend-client-engine check
+	PATH="$(CURDIR)/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment:$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir engines/frontend-client-engine check
 sql-transpiler:
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked python -m pytest
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked python -m ruff check src tests
