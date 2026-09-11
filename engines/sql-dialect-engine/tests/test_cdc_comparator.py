@@ -13,10 +13,15 @@ from elmos_sql_dialect.cdc import (
     DataComparator,
     DiffStatus,
     EventComparator,
+    KeysetPaginationReader,
+    MockDatabaseStreamConnector,
     SchemaComparator,
+    StreamingDataComparator,
     TableSchema,
     normalize_cell_value,
     normalize_row_dict,
+    parse_canal_events,
+    parse_debezium_event,
 )
 from elmos_sql_dialect.cdc.reporter import main as reporter_main
 from elmos_sql_dialect.models import CanonicalType
@@ -373,3 +378,158 @@ def test_rust_cdc_core_integration(tmp_path: Path) -> None:
     assert ev_output["out_of_order_count"] == 0
     assert ev_output["duplicate_count"] == 0
     assert ev_output["state_consistent"]
+
+
+def test_streaming_keyset_reader_bounded_memory() -> None:
+    """Test KeysetPaginationReader streaming 10,000 rows in bounded 1,000 row chunks."""
+    total_rows = 10_000
+    chunk_size = 1_000
+
+    raw_data = [
+        {"id": i, "tenant_id": f"tenant_{i % 10}", "balance": float(i * 1.5), "status": "ACTIVE"}
+        for i in range(1, total_rows + 1)
+    ]
+    connector = MockDatabaseStreamConnector({"accounts": raw_data})
+    reader = KeysetPaginationReader(connector, "accounts", pk_col="id", chunk_size=chunk_size)
+
+    chunks = list(reader.iter_chunks())
+    assert len(chunks) == 10
+    assert sum(c.row_count for c in chunks) == total_rows
+
+    # Verify contiguous PK boundaries and deterministic chunk hashes
+    for idx, c in enumerate(chunks):
+        assert c.chunk_index == idx + 1
+        assert c.start_pk == idx * chunk_size + 1
+        assert c.end_pk == (idx + 1) * chunk_size
+        assert len(c.chunk_hash) == 64
+        assert len(c.rows) == chunk_size
+
+
+def test_streaming_data_comparator_bisect_diff() -> None:
+    """Test StreamingDataComparator Fast-Path skip and Bisect Diff on corrupted row."""
+    total_rows = 5_000
+    chunk_size = 1_000
+
+    src_data = [
+        {"id": i, "name": f"Item_{i}", "price": round(i * 0.99, 2)}
+        for i in range(1, total_rows + 1)
+    ]
+    # Target is identical except row 2500 has price corrupted
+    tgt_data = [
+        {"id": i, "name": f"Item_{i}", "price": round(i * 0.99, 2)}
+        for i in range(1, total_rows + 1)
+    ]
+    tgt_data[2499]["price"] = 99999.99
+
+    src_conn = MockDatabaseStreamConnector({"items": src_data})
+    tgt_conn = MockDatabaseStreamConnector({"items": tgt_data})
+
+    comparator = StreamingDataComparator(chunk_size=chunk_size)
+    report = comparator.compare_streams(src_conn, tgt_conn, "items", pk_col="id")
+
+    assert report.total_chunks == 5
+    assert report.matched_chunks == 4  # Chunks 1, 2, 4, 5 matched via fast hash skip!
+    assert report.mismatched_chunks == 1  # Only Chunk 3 mismatched
+    assert report.status == "DIVERGED"
+    assert report.total_source_rows == 5000
+    assert report.total_target_rows == 5000
+
+    # Inspect the mismatched chunk (chunk 3: rows 2001-3000)
+    chunk3_res = report.chunk_results[2]
+    assert not chunk3_res.matched
+    assert 2500 in chunk3_res.mismatched_pks
+    assert len(chunk3_res.diff_samples) == 1
+    sample = chunk3_res.diff_samples[0]
+    assert sample.primary_key == 2500
+    assert sample.diff_type == "MODIFIED"
+    assert "price" in sample.differing_fields
+
+
+def test_debezium_cdc_event_parsing_and_replay() -> None:
+    """Test Debezium CDC event envelope parsing and state reconciliation."""
+    # Debezium messages: create, update, delete
+    deb_records = [
+        {
+            "op": "c",
+            "ts_ms": 1690000001000,
+            "source": {"table": "orders", "lsn": "0/16B3700", "txId": 101},
+            "after": {"id": 1, "sku": "SKU-A", "qty": 10},
+        },
+        {
+            "op": "c",
+            "ts_ms": 1690000002000,
+            "source": {"table": "orders", "lsn": "0/16B3750", "txId": 102},
+            "after": {"id": 2, "sku": "SKU-B", "qty": 20},
+        },
+        {
+            "op": "u",
+            "ts_ms": 1690000003000,
+            "source": {"table": "orders", "lsn": "0/16B3800", "txId": 103},
+            "before": {"id": 1, "sku": "SKU-A", "qty": 10},
+            "after": {"id": 1, "sku": "SKU-A", "qty": 15},
+        },
+        {
+            "op": "d",
+            "ts_ms": 1690000004000,
+            "source": {"table": "orders", "lsn": "0/16B3850", "txId": 104},
+            "before": {"id": 2, "sku": "SKU-B", "qty": 20},
+            "after": None,
+        },
+    ]
+
+    parsed_events = [parse_debezium_event(rec, default_pk_col="id") for rec in deb_records]
+    assert len(parsed_events) == 4
+    assert parsed_events[0].op == CdcOpType.INSERT
+    assert parsed_events[0].primary_key == 1
+    assert parsed_events[2].op == CdcOpType.UPDATE
+    assert parsed_events[3].op == CdcOpType.DELETE
+
+    # LSN Monotonicity check
+    lsns = [e.lsn for e in parsed_events]
+    assert lsns == sorted(lsns), "Debezium LSNs must be strictly monotonic"
+
+    # Replay onto initial state (empty) and compare with expected final target state
+    comparator = EventComparator(pk_col="id")
+    expected_final = [{"id": 1, "sku": "SKU-A", "qty": 15}]
+    report = comparator.replay_and_verify(
+        initial_state=[],
+        events=parsed_events,
+        final_target_state=expected_final,
+        table_name="orders",
+    )
+    assert report.state_consistent
+    assert report.status == "CONSISTENT"
+    assert report.inserts == 2
+    assert report.updates == 1
+    assert report.deletes == 1
+    assert report.out_of_order_count == 0
+
+
+def test_canal_cdc_event_parsing_and_replay() -> None:
+    """Test Canal CDC event envelope parsing and state reconciliation."""
+    canal_payload = {
+        "id": 500,
+        "database": "inventory",
+        "table": "products",
+        "pkNames": ["id"],
+        "isDdl": False,
+        "type": "UPDATE",
+        "es": 1690000010000,
+        "ts": 1690000010100,
+        "data": [{"id": 10, "stock": 88}],
+        "old": [{"id": 10, "stock": 100}],
+    }
+
+    events = parse_canal_events(canal_payload)
+    assert len(events) == 1
+    ev = events[0]
+    assert ev.op == CdcOpType.UPDATE
+    assert ev.primary_key == 10
+    assert ev.table == "products"
+
+    # Verify LSN window filtering
+    filtered = EventComparator.filter_lsn_window(events, min_lsn=400, max_lsn=600)
+    assert len(filtered) == 1
+    out_of_window = EventComparator.filter_lsn_window(events, min_lsn=600, max_lsn=700)
+    assert len(out_of_window) == 0
+

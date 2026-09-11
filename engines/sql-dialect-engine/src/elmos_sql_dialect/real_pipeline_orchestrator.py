@@ -66,8 +66,15 @@ class RealPipelineExecutionDossier:
 class RealMigrationPipelineOrchestrator:
     """Orchestrates genuine execution of all 10 migration business steps."""
 
-    def __init__(self, connection_factory: Callable[[], Any]) -> None:
+    def __init__(
+        self,
+        connection_factory: Callable[[], Any],
+        target_connection_factory: Callable[[], Any] | None = None,
+        use_rust_cdc: bool = True,
+    ) -> None:
         self.connection_factory = connection_factory
+        self.target_connection_factory = target_connection_factory
+        self.use_rust_cdc = use_rust_cdc
 
     def execute_all_10_phases(self, target_schema_prefix: str = "elmos_p10") -> RealPipelineExecutionDossier:
         t_global_start = time.perf_counter()
@@ -75,7 +82,7 @@ class RealMigrationPipelineOrchestrator:
         run_id = f"run-{int(time.time())}"
         receipts: list[PipelinePhaseReceipt] = []
 
-        # Connect to verify PostgreSQL
+        # Connect to verify PostgreSQL (Source)
         test_conn = self.connection_factory()
         server_version = ""
         try:
@@ -84,6 +91,22 @@ class RealMigrationPipelineOrchestrator:
                 server_version = str(cur.fetchone()[0])
         finally:
             test_conn.close()
+
+        # Connect to verify Target database (e.g. openGauss or local loopback)
+        target_engine_name = "PostgreSQL-16 (Loopback)"
+        if self.target_connection_factory:
+            tgt_test = self.target_connection_factory()
+            try:
+                with tgt_test.cursor() as cur:
+                    cur.execute("SELECT version();")
+                    tgt_ver = str(cur.fetchone()[0])
+                    if "openGauss" in tgt_ver or "MogDB" in tgt_ver:
+                        parts = tgt_ver.split()
+                        target_engine_name = f"openGauss-Docker ({parts[0]} {parts[1] if len(parts) > 1 else ''})"
+                    else:
+                        target_engine_name = f"Target-DB ({tgt_ver[:30]})"
+            finally:
+                tgt_test.close()
 
         # ==========================================
         # Phase 1: 静态 SQL DDL 词法/语法解析
@@ -240,23 +263,28 @@ class RealMigrationPipelineOrchestrator:
         schema_pump_tgt = f"{target_schema_prefix}_pump_tgt"
         conn = self.connection_factory()
         conn.autocommit = True
+        tgt_conn = self.target_connection_factory() if self.target_connection_factory else conn
+        tgt_conn.autocommit = True
         try:
             with conn.cursor() as cur:
-                cur.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_pump_src};")
-                cur.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_pump_tgt};")
+                cur.execute(f"DROP SCHEMA IF EXISTS {schema_pump_src} CASCADE;")
+                cur.execute(f"CREATE SCHEMA {schema_pump_src};")
                 cur.execute(f"DROP TABLE IF EXISTS {schema_pump_src}.pump_data CASCADE;")
-                cur.execute(f"DROP TABLE IF EXISTS {schema_pump_tgt}.pump_data CASCADE;")
                 cur.execute(f"CREATE TABLE {schema_pump_src}.pump_data (id INT PRIMARY KEY, name VARCHAR(50));")
-                cur.execute(f"CREATE TABLE {schema_pump_tgt}.pump_data (id INT PRIMARY KEY, name VARCHAR(50));")
                 import psycopg2.extras
                 psycopg2.extras.execute_values(
                     cur,
                     f"INSERT INTO {schema_pump_src}.pump_data (id, name) VALUES %s",
                     [(i, f"Name_{i}") for i in range(1, 1001)],
                 )
+            with tgt_conn.cursor() as cur:
+                cur.execute(f"DROP SCHEMA IF EXISTS {schema_pump_tgt} CASCADE;")
+                cur.execute(f"CREATE SCHEMA {schema_pump_tgt};")
+                cur.execute(f"DROP TABLE IF EXISTS {schema_pump_tgt}.pump_data CASCADE;")
+                cur.execute(f"CREATE TABLE {schema_pump_tgt}.pump_data (id INT PRIMARY KEY, name VARCHAR(50));")
             pump = PhysicalDataPump(
                 source_connection=conn,
-                target_connection=conn,
+                target_connection=tgt_conn,
                 source_schema=schema_pump_src,
                 target_schema=schema_pump_tgt,
                 chunk_size=200,
@@ -270,11 +298,15 @@ class RealMigrationPipelineOrchestrator:
                 "rows_pumped": pump_stat.total_rows,
                 "throughput_rows_sec": round(pump_stat.throughput_rows_sec, 2),
                 "chunks": pump_stat.chunks_count,
+                "target_type": target_engine_name,
             }
         finally:
             with conn.cursor() as cur:
                 cur.execute(f"DROP SCHEMA IF EXISTS {schema_pump_src} CASCADE;")
-                cur.execute(f"DROP SCHEMA IF EXISTS {schema_pump_tgt} CASCADE;")
+            if tgt_conn is not conn:
+                with tgt_conn.cursor() as cur:
+                    cur.execute(f"DROP SCHEMA IF EXISTS {schema_pump_tgt} CASCADE;")
+                tgt_conn.close()
             conn.close()
         d5 = round((time.perf_counter() - t0) * 1000.0, 2)
         p5_dig = hashlib.sha256(json.dumps(p5_det, sort_keys=True).encode()).hexdigest()
@@ -343,37 +375,45 @@ class RealMigrationPipelineOrchestrator:
         # ==========================================
         t0 = time.perf_counter()
         from elmos_sql_dialect.cdc import DataComparator
-        schema_cmp = f"{target_schema_prefix}_cmp"
+        schema_cmp_src = f"{target_schema_prefix}_cmp_src"
+        schema_cmp_tgt = f"{target_schema_prefix}_cmp_tgt"
         conn = self.connection_factory()
         conn.autocommit = True
+        tgt_conn = self.target_connection_factory() if self.target_connection_factory else conn
+        tgt_conn.autocommit = True
         try:
             with conn.cursor() as cur:
-                cur.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_cmp};")
-                cur.execute(f"DROP TABLE IF EXISTS {schema_cmp}.s_tab CASCADE;")
-                cur.execute(f"DROP TABLE IF EXISTS {schema_cmp}.t_tab CASCADE;")
-                cur.execute(f"CREATE TABLE {schema_cmp}.s_tab (id INT PRIMARY KEY, num INT);")
-                cur.execute(f"CREATE TABLE {schema_cmp}.t_tab (id INT PRIMARY KEY, num INT);")
+                cur.execute(f"DROP SCHEMA IF EXISTS {schema_cmp_src} CASCADE;")
+                cur.execute(f"CREATE SCHEMA {schema_cmp_src};")
+                cur.execute(f"DROP TABLE IF EXISTS {schema_cmp_src}.cmp_tab CASCADE;")
+                cur.execute(f"CREATE TABLE {schema_cmp_src}.cmp_tab (id INT PRIMARY KEY, num INT);")
                 import psycopg2.extras
                 psycopg2.extras.execute_values(
                     cur,
-                    f"INSERT INTO {schema_cmp}.s_tab (id, num) VALUES %s",
+                    f"INSERT INTO {schema_cmp_src}.cmp_tab (id, num) VALUES %s",
                     [(i, i * 10) for i in range(1, 301)],
                 )
+            with tgt_conn.cursor() as cur:
+                cur.execute(f"DROP SCHEMA IF EXISTS {schema_cmp_tgt} CASCADE;")
+                cur.execute(f"CREATE SCHEMA {schema_cmp_tgt};")
+                cur.execute(f"DROP TABLE IF EXISTS {schema_cmp_tgt}.cmp_tab CASCADE;")
+                cur.execute(f"CREATE TABLE {schema_cmp_tgt}.cmp_tab (id INT PRIMARY KEY, num INT);")
+                import psycopg2.extras
                 psycopg2.extras.execute_values(
                     cur,
-                    f"INSERT INTO {schema_cmp}.t_tab (id, num) VALUES %s",
+                    f"INSERT INTO {schema_cmp_tgt}.cmp_tab (id, num) VALUES %s",
                     [(i, i * 10 if i != 150 else 99999) for i in range(1, 301)],
                 )
-            comparator = DataComparator(chunk_size=100)
+            comparator = DataComparator(chunk_size=100, use_rust=self.use_rust_cdc)
             cmp_report = comparator.compare_live_tables(
                 source_connection=conn,
-                target_connection=conn,
-                source_table="s_tab",
-                target_table="t_tab",
+                target_connection=tgt_conn,
+                source_table="cmp_tab",
+                target_table="cmp_tab",
                 pk_col="id",
                 columns=["id", "num"],
-                source_schema=schema_cmp,
-                target_schema=schema_cmp,
+                source_schema=schema_cmp_src,
+                target_schema=schema_cmp_tgt,
             )
             assert cmp_report.status == "DIVERGED"
             assert cmp_report.mismatched_chunks == 1
@@ -384,10 +424,15 @@ class RealMigrationPipelineOrchestrator:
                 "matched_chunks": cmp_report.matched_chunks,
                 "mismatched_chunks": cmp_report.mismatched_chunks,
                 "pinpointed_mismatched_pks": mismatched_pks,
+                "execution_engine": cmp_report.execution_engine,
             }
         finally:
             with conn.cursor() as cur:
-                cur.execute(f"DROP SCHEMA IF EXISTS {schema_cmp} CASCADE;")
+                cur.execute(f"DROP SCHEMA IF EXISTS {schema_cmp_src} CASCADE;")
+            if tgt_conn is not conn:
+                with tgt_conn.cursor() as cur:
+                    cur.execute(f"DROP SCHEMA IF EXISTS {schema_cmp_tgt} CASCADE;")
+                tgt_conn.close()
             conn.close()
         d7 = round((time.perf_counter() - t0) * 1000.0, 2)
         p7_dig = hashlib.sha256(json.dumps(p7_det, sort_keys=True).encode()).hexdigest()
@@ -464,7 +509,10 @@ class RealMigrationPipelineOrchestrator:
                 cur.execute(f"DROP TABLE IF EXISTS {schema_heal}.devices CASCADE;")
 
             heal_engine = ClosedLoopSelfHealingEngine(connection=conn, target_dialect="postgresql")
-            bad_syntax_sql = f"CREATE TABLE {schema_heal}.`devices` (`dev_id` INT AUTO_INCREMENT PRIMARY KEY, `specs` VARCHAR2(100));"
+            bad_syntax_sql = (
+                f"CREATE TABLE {schema_heal}.`devices` "
+                "(`dev_id` INT AUTO_INCREMENT PRIMARY KEY, `specs` VARCHAR2(100));"
+            )
             heal_report = heal_engine.execute_with_self_healing(bad_syntax_sql, schema=schema_heal)
             assert heal_report.success is True
             p9_det = {
@@ -499,10 +547,14 @@ class RealMigrationPipelineOrchestrator:
 
         all_ok = all(r.status == "PASSED_LOCAL_EXECUTED" for r in receipts)
 
+        env_desc = (
+            f"Python {platform.python_version()} on {platform.system()} {platform.machine()} "
+            f"(Source: PostgreSQL-16, Target: {target_engine_name})"
+        )
         dossier = RealPipelineExecutionDossier(
             pipeline_run_id=run_id,
-            environment=f"Python {platform.python_version()} on Darwin {platform.machine()}",
-            database_target=server_version,
+            environment=env_desc,
+            database_target=f"Source: {server_version[:30]} | Target: {target_engine_name}",
             start_time=start_iso,
             end_time=end_iso,
             total_duration_seconds=total_sec,

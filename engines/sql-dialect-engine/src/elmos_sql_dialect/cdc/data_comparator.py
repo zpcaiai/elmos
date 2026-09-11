@@ -168,10 +168,11 @@ class DataComparator:
         rust_binary_path: str | None = None,
         use_rust: bool = False,
         enable_rust: bool = False,
+        hash_algorithm: str | None = None,
     ) -> None:
         self.chunk_size = chunk_size
-        self.hasher = hasher
-        self.use_rust = use_rust or enable_rust
+        self.hasher = hash_algorithm or hasher
+        self.use_rust = use_rust or enable_rust or (rust_binary_path is not None)
         self.rust_binary_path = rust_binary_path or self._find_rust_binary()
 
     @staticmethod
@@ -426,8 +427,8 @@ class DataComparator:
         with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as s_file, tempfile.NamedTemporaryFile(
             "w", suffix=".json", delete=False
         ) as t_file:
-            json.dump(chunk_src_rows, s_file)
-            json.dump(chunk_tgt_rows, t_file)
+            json.dump(chunk_src_rows, s_file, default=str)
+            json.dump(chunk_tgt_rows, t_file, default=str)
             s_path = s_file.name
             t_path = t_file.name
 

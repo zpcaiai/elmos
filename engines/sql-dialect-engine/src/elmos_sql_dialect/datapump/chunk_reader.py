@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def _json_serial(obj: Any) -> str:
-    if isinstance(obj, (datetime, date)):
+    if isinstance(obj, datetime | date):
         return obj.isoformat()
     if isinstance(obj, Decimal):
         return str(obj)
@@ -136,7 +136,10 @@ class ChunkReader:
                         query = f"SELECT {col_list_str} FROM {qualified_table} ORDER BY {pk_quoted} ASC LIMIT %s;"
                         cur.execute(query, (self.chunk_size,))
                     else:
-                        query = f"SELECT {col_list_str} FROM {qualified_table} WHERE {pk_quoted} > %s ORDER BY {pk_quoted} ASC LIMIT %s;"
+                        query = (
+                            f"SELECT {col_list_str} FROM {qualified_table} "
+                            f"WHERE {pk_quoted} > %s ORDER BY {pk_quoted} ASC LIMIT %s;"
+                        )
                         cur.execute(query, (last_val, self.chunk_size))
 
                     rows = cur.fetchall()

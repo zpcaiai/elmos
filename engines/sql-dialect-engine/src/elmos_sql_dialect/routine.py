@@ -465,7 +465,9 @@ def _parse_body(
     raw_body = str(body.this).strip()
     try:
         statements = [
-            statement for statement in sqlglot.parse(raw_body, read=sqlglot_read_dialect(source_dialect)) if statement is not None
+            statement
+            for statement in sqlglot.parse(raw_body, read=sqlglot_read_dialect(source_dialect))
+            if statement is not None
         ]
     except sqlglot.errors.SqlglotError as exc:
         raise DialectError(

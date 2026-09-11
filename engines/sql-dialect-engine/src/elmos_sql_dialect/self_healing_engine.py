@@ -170,7 +170,8 @@ class ClosedLoopSelfHealingEngine:
             repairs.append("REPLACED_BRACKETS_WITH_DOUBLE_QUOTES")
 
         # 3. Check for Oracle VARCHAR2 / NUMBER / SYSDATE
-        if "VARCHAR2" in healed.upper() or "NUMBER" in healed.upper() or "SYSDATE" in healed.upper() or "NVL" in healed.upper():
+        oracle_tokens = ("VARCHAR2", "NUMBER", "SYSDATE", "NVL")
+        if any(tok in healed.upper() for tok in oracle_tokens):
             base_res = self.base_repairer.repair_statement(healed)
             if base_res.is_modified:
                 healed = base_res.repaired_sql

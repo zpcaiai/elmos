@@ -199,6 +199,7 @@ class OpenGaussASTTransformer:
         source_dialect: str = "postgres",
         orientation: str = "ROW",
         distribute_by: str | None = None,
+        standalone: bool = False,
     ) -> str:
         """Lower table creation DDL to openGauss with orientation and distribution attributes via AST."""
         read_dialect = "mysql" if "AUTO_INCREMENT" in sql.upper() else source_dialect
@@ -219,6 +220,8 @@ class OpenGaussASTTransformer:
         base_sql = self.generator.generate(transformed).strip().rstrip(";")
 
         orientation_clause = f"WITH (ORIENTATION = {orientation.upper()})"
+        if standalone:
+            return f"{base_sql} {orientation_clause};"
         distribute_clause = f"DISTRIBUTE BY HASH({dist_key})"
 
         return f"{base_sql} {orientation_clause} {distribute_clause};"
@@ -366,6 +369,7 @@ class OpenGaussDialectLowerer:
         source_dialect: str = "postgres",
         orientation: str = "ROW",
         distribute_by: str | None = None,
+        standalone: bool = False,
     ) -> str:
         """Lower table creation DDL to openGauss with orientation and distribution attributes."""
         return self.transformer.lower_ddl(
@@ -373,6 +377,7 @@ class OpenGaussDialectLowerer:
             source_dialect=source_dialect,
             orientation=orientation,
             distribute_by=distribute_by,
+            standalone=standalone,
         )
 
     def lower_create_table(
@@ -429,6 +434,7 @@ def lower_opengauss_ddl(
     source_dialect: str = "postgres",
     orientation: str = "ROW",
     distribute_by: str | None = None,
+    standalone: bool = False,
 ) -> str:
     """Lower DDL statement to openGauss with ORIENTATION and DISTRIBUTE BY attributes."""
     return _DEFAULT_LOWERER.lower_ddl(
@@ -436,6 +442,7 @@ def lower_opengauss_ddl(
         source_dialect=source_dialect,
         orientation=orientation,
         distribute_by=distribute_by,
+        standalone=standalone,
     )
 
 

@@ -45,7 +45,10 @@ def test_real_closed_loop_self_healing():
         engine = ClosedLoopSelfHealingEngine(connection=conn, target_dialect="postgresql")
 
         # Test Case 1: MySQL DDL with backticks, AUTO_INCREMENT, and Oracle VARCHAR2
-        bad_ddl = f"CREATE TABLE {schema_name}.`inventory` (`item_id` INT AUTO_INCREMENT PRIMARY KEY, `description` VARCHAR2(120));"
+        bad_ddl = (
+            f"CREATE TABLE {schema_name}.`inventory` "
+            "(`item_id` INT AUTO_INCREMENT PRIMARY KEY, `description` VARCHAR2(120));"
+        )
 
         report1 = engine.execute_with_self_healing(bad_ddl, schema=schema_name)
 
@@ -57,7 +60,10 @@ def test_real_closed_loop_self_healing():
 
         # Verify table physically exists in PostgreSQL
         with conn.cursor() as cur:
-            cur.execute(f"SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = '{schema_name}' AND table_name = 'inventory';")
+            cur.execute(
+                "SELECT column_name, data_type FROM information_schema.columns "
+                f"WHERE table_schema = '{schema_name}' AND table_name = 'inventory';"
+            )
             cols = {r[0]: r[1] for r in cur.fetchall()}
             assert "item_id" in cols
             assert "description" in cols
@@ -73,7 +79,10 @@ def test_real_closed_loop_self_healing():
 
         # Verify invoices table physically exists
         with conn.cursor() as cur:
-            cur.execute(f"SELECT column_name FROM information_schema.columns WHERE table_schema = '{schema_name}' AND table_name = 'invoices';")
+            cur.execute(
+                "SELECT column_name FROM information_schema.columns "
+                f"WHERE table_schema = '{schema_name}' AND table_name = 'invoices';"
+            )
             cols = [r[0] for r in cur.fetchall()]
             assert "order" in cols
             assert "user" in cols

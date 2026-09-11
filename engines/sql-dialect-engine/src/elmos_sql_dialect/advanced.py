@@ -985,7 +985,9 @@ def parse_table_function(
         query_sql = raw_body
     try:
         statements = [
-            item for item in sqlglot.parse(query_sql, read=sqlglot_read_dialect(source_dialect)) if isinstance(item, exp.Expression)
+            item
+            for item in sqlglot.parse(query_sql, read=sqlglot_read_dialect(source_dialect))
+            if isinstance(item, exp.Expression)
         ]
     except sqlglot.errors.SqlglotError as exc:
         raise DialectError(

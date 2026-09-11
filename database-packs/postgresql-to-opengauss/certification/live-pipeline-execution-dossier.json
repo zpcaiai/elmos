@@ -1,10 +1,10 @@
 {
-  "pipelineRunId": "run-1789122833",
-  "environment": "Python 3.14.5 on Darwin arm64",
-  "databaseTarget": "PostgreSQL 16.15 (Homebrew) on aarch64-apple-darwin25.6.0, compiled by Apple clang version 21.0.0 (clang-2100.1.1.101), 64-bit",
-  "startTime": "2026-09-11T10:33:53Z",
-  "endTime": "2026-09-11T10:34:05Z",
-  "totalDurationSeconds": 11.602,
+  "pipelineRunId": "run-1789125803",
+  "environment": "Python 3.14.5 on Darwin arm64 (Source: PostgreSQL-16, Target: openGauss-Docker ((openGauss 3.0.0))",
+  "databaseTarget": "Source: PostgreSQL 16.15 (Homebrew) on | Target: openGauss-Docker ((openGauss 3.0.0)",
+  "startTime": "2026-09-11T11:23:23Z",
+  "endTime": "2026-09-11T11:23:27Z",
+  "totalDurationSeconds": 3.928,
   "allPhasesPassed": true,
   "gateDecision": "LOCAL_EXECUTED_SELF_ATTESTED",
   "phases": [
@@ -12,7 +12,7 @@
       "phase_id": 1,
       "name": "Static DDL Lexical & Grammar Parsing",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 106.17,
+      "duration_ms": 51.65,
       "details": {
         "parsed_table": "customers",
         "column_count": 3
@@ -23,7 +23,7 @@
       "phase_id": 2,
       "name": "Live Online Metadata Inspection",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 2573.74,
+      "duration_ms": 201.88,
       "details": {
         "schema": "elmos_e2e_inspect",
         "inspected_table": "test_meta",
@@ -39,7 +39,7 @@
       "phase_id": 3,
       "name": "Canonical DB IR & Topological DAG Ordering",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 0.16,
+      "duration_ms": 0.17,
       "details": {
         "tables_sorted": 4,
         "create_order": [
@@ -61,7 +61,7 @@
       "phase_id": 4,
       "name": "ChinaDB Dialect & Procedural Lowering",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 98.6,
+      "duration_ms": 42.2,
       "details": {
         "dm8_lowered_sql": "CREATE TABLE test (id INT IDENTITY(1, 1) PRIMARY KEY, active BIT);",
         "opengauss_lowered_sql": "CREATE TABLE test (id SERIAL PRIMARY KEY, active BOOLEAN) WITH (ORIENTATION = ROW) DISTRIBUTE BY HASH(id);",
@@ -73,19 +73,20 @@
       "phase_id": 5,
       "name": "Physical Data Pump Streaming Transfer",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 1681.48,
+      "duration_ms": 833.06,
       "details": {
         "rows_pumped": 1000,
-        "throughput_rows_sec": 2290.96,
-        "chunks": 5
+        "throughput_rows_sec": 1818.2,
+        "chunks": 5,
+        "target_type": "openGauss-Docker ((openGauss 3.0.0)"
       },
-      "evidence_digest": "7cdf047ef8475b2e68e134050ba8a8b83c07b1bb88c19006a9063cbac8d57ac0"
+      "evidence_digest": "15de96267abae779412f3307f4fae44bcf205ec9f0368eb29aad73b7542c3155"
     },
     {
       "phase_id": 6,
       "name": "Physical PostgreSQL WAL CDC Ingestion",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 1232.34,
+      "duration_ms": 401.86,
       "details": {
         "slot_name": "elmos_e2e_slot",
         "captured_events_count": 4,
@@ -102,7 +103,7 @@
       "phase_id": 7,
       "name": "Heterogeneous Data Chunk Hash & Discrepancy Pinpointing",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 819.5,
+      "duration_ms": 966.44,
       "details": {
         "total_rows": 300,
         "total_chunks": 3,
@@ -110,30 +111,31 @@
         "mismatched_chunks": 1,
         "pinpointed_mismatched_pks": [
           150
-        ]
+        ],
+        "execution_engine": "RUST_CDC_CORE"
       },
-      "evidence_digest": "0e528777e71a4b56a2bd371847872a01ed0475d7ae481ebe7567fe47cadcf38f"
+      "evidence_digest": "64be1501e16e4e440ce8c2a60ffc0050c4d819157eba15db778834f396720884"
     },
     {
       "phase_id": 8,
       "name": "Physical Multi-Worker Transaction Stress & Invariant Audit",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 3357.31,
+      "duration_ms": 1237.13,
       "details": {
         "workers": 8,
         "total_tx": 160,
         "successful_tx": 160,
-        "tps": 56.44536628748753,
-        "p50_ms": 85.5980624910444,
-        "p95_ms": 284.857541002566
+        "tps": 149.42291822995853,
+        "p50_ms": 20.662104507209733,
+        "p95_ms": 106.82583300513215
       },
-      "evidence_digest": "02e251f9402a0a192cd2b2f77ebaf5cf0a5e0187981fd03abe2a7677cb54f6b9"
+      "evidence_digest": "d3d04965f68c2ff916ade0592d26c4e613f535f73e987e75702e28279f50b4c5"
     },
     {
       "phase_id": 9,
       "name": "Closed-Loop AST Diagnostic & Savepoint Self-Healing",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 548.46,
+      "duration_ms": 140.78,
       "details": {
         "initial_sql": "CREATE TABLE elmos_e2e_heal.`devices` (`dev_id` INT AUTO_INCREMENT PRIMARY KEY, `specs` VARCHAR2(100));",
         "final_sql": "CREATE TABLE elmos_e2e_heal.\"devices\" (\"dev_id\" SERIAL PRIMARY KEY, \"specs\" VARCHAR(100));",
@@ -150,7 +152,7 @@
       "phase_id": 10,
       "name": "Real Quality Gate Receipt Assembly & Tamper-Evident Attestation",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 11605.34,
+      "duration_ms": 3927.79,
       "details": {
         "total_phases_verified": 9,
         "gate_decision": "LOCAL_EXECUTED_SELF_ATTESTED",

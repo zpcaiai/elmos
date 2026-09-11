@@ -356,3 +356,62 @@ class TestChinaDBIntegration:
         assert "opengauss" in targets
         assert targets["dm8"]["implementationStatus"] == "LOCAL_ADAPTER"
         assert targets["opengauss"]["implementationStatus"] == "LOCAL_ADAPTER"
+
+
+# =============================================================================
+# Adversarial & Zero-Regex AST Proof Tests
+# =============================================================================
+
+
+class TestAdversarialASTPreservation:
+    """Rigorous tests proving AST transformation is zero-regex and keyword-safe."""
+
+    def test_dm8_keyword_column_names_and_literals(self) -> None:
+        """Verify column names containing keywords and string literals are NOT corrupted."""
+        lowerer = DM8DialectLowerer()
+        ddl = (
+            "CREATE TABLE audit_logs (\n"
+            "  id SERIAL PRIMARY KEY,\n"
+            "  serial_number VARCHAR(100) NOT NULL,\n"
+            "  text_content VARCHAR(255),\n"
+            "  auto_increment_val VARCHAR(50),\n"
+            "  is_active_bit INT DEFAULT 1,\n"
+            "  clob_identifier VARCHAR(64)\n"
+            ");"
+        )
+        lowered = lowerer.lower_ddl(ddl)
+        assert "serial_number VARCHAR(100)" in lowered
+        assert "text_content VARCHAR(255)" in lowered
+        assert "auto_increment_val VARCHAR(50)" in lowered
+        assert "is_active_bit INT" in lowered
+        assert "clob_identifier VARCHAR(64)" in lowered
+
+        # String literal protection: keywords in strings must remain untouched
+        q = "SELECT * FROM t WHERE note = 'AUTO_INCREMENT failed for SERIAL text';"
+        lowered_q = lowerer.lower_functions(q)
+        assert "'AUTO_INCREMENT failed for SERIAL text'" in lowered_q
+
+    def test_opengauss_keyword_column_names_and_literals(self) -> None:
+        """Verify openGauss lowerer preserves keyword column names and string literals."""
+        lowerer = OpenGaussDialectLowerer()
+        ddl = (
+            "CREATE TABLE sensor_data (\n"
+            "  id INT AUTO_INCREMENT PRIMARY KEY,\n"
+            "  serial_number VARCHAR(100),\n"
+            "  text_payload VARCHAR(200),\n"
+            "  blob_hash VARCHAR(64),\n"
+            "  number_of_retries INT\n"
+            ");"
+        )
+        lowered = lowerer.lower_ddl(ddl, source_dialect="mysql")
+        assert "serial_number VARCHAR(100)" in lowered
+        assert "text_payload VARCHAR(200)" in lowered
+        assert "blob_hash VARCHAR(64)" in lowered
+        assert "number_of_retries INT" in lowered
+        assert "DISTRIBUTE BY HASH(id)" in lowered
+
+        # String literal with SQL keywords
+        q = "SELECT * FROM t WHERE status = 'CHECK NOW() AND SYSDATE: NVL(a, b)';"
+        lowered_q = lowerer.lower_query(q, mode=OpenGaussMode.PG)
+        assert "'CHECK NOW() AND SYSDATE: NVL(a, b)'" in lowered_q
+

@@ -79,7 +79,9 @@ class PhysicalStressEngine:
         self.tx_per_worker = transactions_per_worker
         self.max_retries = max_retries
 
-    def setup_stress_table(self, schema: str = "public", table_name: str = "stress_accounts", num_accounts: int = 50) -> None:
+    def setup_stress_table(
+        self, schema: str = "public", table_name: str = "stress_accounts", num_accounts: int = 50
+    ) -> None:
         """Initializes the stress test table with initial balance rows."""
         conn = self.connection_factory()
         conn.autocommit = True
@@ -166,11 +168,13 @@ class PhysicalStressEngine:
 
                             # Transfer balance
                             cur.execute(
-                                f"UPDATE {schema}.{table_name} SET balance = balance - %s, version = version + 1 WHERE account_id = %s;",
+                                f"UPDATE {schema}.{table_name} SET balance = balance - %s, "
+                                "version = version + 1 WHERE account_id = %s;",
                                 (amount, acc_from),
                             )
                             cur.execute(
-                                f"UPDATE {schema}.{table_name} SET balance = balance + %s, version = version + 1 WHERE account_id = %s;",
+                                f"UPDATE {schema}.{table_name} SET balance = balance + %s, "
+                                "version = version + 1 WHERE account_id = %s;",
                                 (amount, acc_to),
                             )
 

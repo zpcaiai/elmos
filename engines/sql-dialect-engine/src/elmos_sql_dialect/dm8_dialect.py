@@ -47,7 +47,7 @@ class DM8ASTTransformer:
 
         for c in col.constraints:
             k = c.kind
-            if isinstance(k, (exp.AutoIncrementColumnConstraint, exp.GeneratedAsIdentityColumnConstraint)):
+            if isinstance(k, exp.AutoIncrementColumnConstraint | exp.GeneratedAsIdentityColumnConstraint):
                 has_identity = True
             elif "IDENTITY" in k.sql().upper():
                 has_identity = True
@@ -102,7 +102,7 @@ class DM8ASTTransformer:
 
     def transform_function_node(self, node: exp.Expression) -> exp.Expression:
         """Transform function and expression AST nodes for DM8."""
-        if isinstance(node, (exp.Anonymous, exp.Func)):
+        if isinstance(node, exp.Anonymous | exp.Func):
             name = node.name.upper()
             if name == "NOW":
                 return exp.var("SYSDATE")
@@ -112,7 +112,8 @@ class DM8ASTTransformer:
             if name in ("GEN_RANDOM_UUID", "UUID", "NEWID"):
                 return exp.Anonymous(this="RAWTOHEX", expressions=[exp.Anonymous(this="SYS_GUID")])
             if name in ("NEXTVAL", "CURRVAL") and node.expressions:
-                seq_name = node.expressions[0].this if isinstance(node.expressions[0], exp.Literal) else node.expressions[0].sql()
+                first_expr = node.expressions[0]
+                seq_name = first_expr.this if isinstance(first_expr, exp.Literal) else first_expr.sql()
                 seq_name = seq_name.strip("'\"")
                 return exp.Column(this=exp.var(name), table=exp.to_identifier(seq_name))
 
