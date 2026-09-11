@@ -85,6 +85,11 @@ from elmos_mature_platform.global_operations_gate_engine import GlobalOperations
 from elmos_mature_platform.supply_chain_compliance_factory_engine import SupplyChainComplianceFactoryEngine
 from elmos_mature_platform.target_stack_recommendation_engine import TargetStackRecommendationEngine
 from elmos_mature_platform.customer_value_certification_engine import CustomerValueCertificationEngine
+from elmos_mature_platform.private_sovereign_cloud_edition_engine import PrivateSovereignCloudEditionEngine
+from elmos_mature_platform.customer_status_communication_engine import CustomerStatusCommunicationEngine
+from elmos_mature_platform.compliance_control_crosswalk_engine import ComplianceControlCrosswalkEngine
+from elmos_mature_platform.effort_duration_cost_prediction_engine import EffortDurationCostPredictionEngine
+from elmos_mature_platform.mature_product_evidence_pack_engine import MatureProductEvidencePackEngine
 from elmos_mature_platform.types import (
     AgentAutonomyLevel,
     AgentDeploymentMode,
@@ -175,6 +180,11 @@ __all__ = [
     "MultiregionActiveActiveEditionEngine",
     "SupplyChainComplianceFactoryEngine",
     "TargetStackRecommendationEngine",
+    "PrivateSovereignCloudEditionEngine",
+    "CustomerStatusCommunicationEngine",
+    "ComplianceControlCrosswalkEngine",
+    "EffortDurationCostPredictionEngine",
+    "MatureProductEvidencePackEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",

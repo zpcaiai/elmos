@@ -1,198 +1,139 @@
-import datetime
-from typing import Dict, List, Optional
+"""Customer Status Communication Engine (Batch 39 - Skill 1357).
+
+Manages SRE customer-facing incident communications, public status page updates,
+multi-channel notifications (Webhook, Email, Slack, SMS), and historical uptime reporting.
+"""
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
+import uuid
+
 from elmos_mature_platform.types import (
-    StatusPageState,
-    CommunicationType,
-    ServiceStatus,
-    StatusCommunication,
-    MaintenanceWindow
+    CustomerStatusReport,
+    IncidentImpactLevel,
+    NotificationChannel,
+    StatusCommunicationMessage,
 )
 
+
 class CustomerStatusCommunicationEngine:
-    def __init__(self) -> None:
-        self._services: Dict[str, ServiceStatus] = {}
-        self._communications: Dict[str, StatusCommunication] = {}
-        self._maintenance_windows: Dict[str, MaintenanceWindow] = {}
-        # Track time intervals to estimate uptime: (service_id, state, timestamp)
-        self._state_history: List[Dict] = []
+    """Industrial engine for incident communications and customer status reporting (B39)."""
 
-    def _now(self) -> str:
-        return datetime.datetime.now(datetime.timezone.utc).isoformat()
+    def __init__(self, initial_uptime_pct: float = 99.99):
+        self._messages: Dict[str, StatusCommunicationMessage] = {}
+        self._incident_timelines: Dict[str, List[str]] = {}  # incident_id -> list of msg_ids
+        self._active_incident_impacts: Dict[str, IncidentImpactLevel] = {}  # incident_id -> impact
+        self._uptime_30d = initial_uptime_pct
+        self._audit_log: List[Dict[str, Any]] = []
 
-    def register_service(self, service: ServiceStatus) -> None:
-        """Register a new service for status tracking."""
-        service.updated_at = self._now()
-        self._services[service.service_id] = service
-        self._state_history.append({
-            "service_id": service.service_id,
-            "state": service.state,
-            "timestamp": service.updated_at
+    def update_30_day_uptime(self, uptime_pct: float) -> None:
+        """Update 30-day trailing availability metric."""
+        if not (0.0 <= uptime_pct <= 100.0):
+            raise ValueError(f"Invalid uptime percentage: {uptime_pct}")
+        self._uptime_30d = uptime_pct
+
+    def broadcast_incident_update(
+        self,
+        incident_id: str,
+        impact_level: IncidentImpactLevel,
+        title: str,
+        body: str,
+        affected_components: List[str],
+        channels: Optional[List[NotificationChannel]] = None,
+        posted_by: str = "incident-commander",
+    ) -> StatusCommunicationMessage:
+        """Publish an incident status communication update across designated channels."""
+        msg_id = f"msg-{uuid.uuid4().hex[:8]}"
+        selected_channels = channels or [NotificationChannel.STATUS_PAGE, NotificationChannel.SLACK_COMMUNITY]
+
+        msg = StatusCommunicationMessage(
+            message_id=msg_id,
+            incident_id=incident_id,
+            impact_level=impact_level,
+            title=title,
+            body=body,
+            affected_components=affected_components,
+            channels=selected_channels,
+            posted_at=datetime.now(timezone.utc).isoformat(),
+            posted_by=posted_by,
+        )
+
+        self._messages[msg_id] = msg
+        self._incident_timelines.setdefault(incident_id, []).append(msg_id)
+
+        if impact_level != IncidentImpactLevel.NONE:
+            self._active_incident_impacts[incident_id] = impact_level
+        else:
+            self._active_incident_impacts.pop(incident_id, None)
+
+        self._record_audit("message_broadcasted", msg_id, {
+            "incident_id": incident_id,
+            "impact": impact_level.value,
+            "channels": [c.value for c in selected_channels],
+        })
+        return msg
+
+    def resolve_incident_communication(
+        self,
+        incident_id: str,
+        resolution_notes: str,
+        affected_components: Optional[List[str]] = None,
+        posted_by: str = "incident-commander",
+    ) -> StatusCommunicationMessage:
+        """Mark an incident communication resolved and post all-clear notification."""
+        components = affected_components or []
+        msg = self.broadcast_incident_update(
+            incident_id=incident_id,
+            impact_level=IncidentImpactLevel.NONE,
+            title=f"Resolved: Incident {incident_id}",
+            body=resolution_notes,
+            affected_components=components,
+            channels=[NotificationChannel.STATUS_PAGE, NotificationChannel.WEBHOOK],
+            posted_by=posted_by,
+        )
+        self._active_incident_impacts.pop(incident_id, None)
+        return msg
+
+    def get_incident_timeline(self, incident_id: str) -> List[StatusCommunicationMessage]:
+        """Fetch all chronological communication updates for an incident."""
+        msg_ids = self._incident_timelines.get(incident_id, [])
+        return [self._messages[mid] for mid in msg_ids if mid in self._messages]
+
+    def get_status_page_report(self) -> CustomerStatusReport:
+        """Generate structured status page report with global health status."""
+        active_count = len(self._active_incident_impacts)
+
+        # Derive global status from highest severity active incident
+        if any(imp == IncidentImpactLevel.CRITICAL for imp in self._active_incident_impacts.values()):
+            global_status = IncidentImpactLevel.CRITICAL
+        elif any(imp == IncidentImpactLevel.MAJOR for imp in self._active_incident_impacts.values()):
+            global_status = IncidentImpactLevel.MAJOR
+        elif any(imp == IncidentImpactLevel.MINOR for imp in self._active_incident_impacts.values()):
+            global_status = IncidentImpactLevel.MINOR
+        elif any(imp == IncidentImpactLevel.SCHEDULED_MAINTENANCE for imp in self._active_incident_impacts.values()):
+            global_status = IncidentImpactLevel.SCHEDULED_MAINTENANCE
+        else:
+            global_status = IncidentImpactLevel.NONE
+
+        recent_messages = list(self._messages.values())[-10:]
+
+        return CustomerStatusReport(
+            report_id=f"stat-rpt-{uuid.uuid4().hex[:6]}",
+            active_incidents_count=active_count,
+            current_global_status=global_status,
+            past_30_days_uptime_pct=self._uptime_30d,
+            messages=recent_messages,
+        )
+
+    def _record_audit(self, action: str, target: str, details: Dict[str, Any]) -> None:
+        self._audit_log.append({
+            "action": action,
+            "target": target,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "details": details,
         })
 
-    def update_service_state(self, service_id: str, state: StatusPageState, message: str) -> ServiceStatus:
-        """Update the state of a registered service."""
-        if service_id not in self._services:
-            raise ValueError(f"Service {service_id} not found.")
-        
-        svc = self._services[service_id]
-        svc.state = state
-        svc.message = message
-        svc.updated_at = self._now()
-        
-        self._state_history.append({
-            "service_id": svc.service_id,
-            "state": svc.state,
-            "timestamp": svc.updated_at
-        })
-        return svc
-
-    def create_communication(self, comm: StatusCommunication) -> str:
-        """Create a new communication item."""
-        if not comm.comm_id:
-            raise ValueError("Communication ID is required.")
-        if comm.comm_id in self._communications:
-            raise ValueError(f"Communication {comm.comm_id} already exists.")
-        
-        self._communications[comm.comm_id] = comm
-        return comm.comm_id
-
-    def publish_communication(self, comm_id: str) -> StatusCommunication:
-        """Publish a drafted communication."""
-        if comm_id not in self._communications:
-            raise ValueError(f"Communication {comm_id} not found.")
-        
-        comm = self._communications[comm_id]
-        if comm.published:
-            return comm
-            
-        comm.published = True
-        comm.published_at = self._now()
-        return comm
-
-    def schedule_maintenance(self, window: MaintenanceWindow) -> str:
-        """Schedule a maintenance window."""
-        if not window.window_id:
-            raise ValueError("Window ID is required.")
-        if window.window_id in self._maintenance_windows:
-            raise ValueError(f"Window {window.window_id} already exists.")
-            
-        window.status = "scheduled"
-        self._maintenance_windows[window.window_id] = window
-        return window.window_id
-
-    def start_maintenance(self, window_id: str) -> MaintenanceWindow:
-        """Start a maintenance window and set associated services to MAINTENANCE state."""
-        if window_id not in self._maintenance_windows:
-            raise ValueError(f"Window {window_id} not found.")
-            
-        window = self._maintenance_windows[window_id]
-        if window.status != "scheduled":
-            raise ValueError(f"Cannot start window with status {window.status}.")
-            
-        window.status = "in_progress"
-        window.actual_start = self._now()
-        
-        for svc_id in window.service_ids:
-            if svc_id in self._services:
-                self.update_service_state(
-                    service_id=svc_id,
-                    state=StatusPageState.MAINTENANCE,
-                    message=f"Maintenance {window.title} in progress"
-                )
-        return window
-
-    def complete_maintenance(self, window_id: str) -> MaintenanceWindow:
-        """Complete a maintenance window and restore associated services to OPERATIONAL state."""
-        if window_id not in self._maintenance_windows:
-            raise ValueError(f"Window {window_id} not found.")
-            
-        window = self._maintenance_windows[window_id]
-        if window.status != "in_progress":
-            raise ValueError(f"Cannot complete window with status {window.status}.")
-            
-        window.status = "completed"
-        window.actual_end = self._now()
-        
-        for svc_id in window.service_ids:
-            if svc_id in self._services:
-                self.update_service_state(
-                    service_id=svc_id,
-                    state=StatusPageState.OPERATIONAL,
-                    message=f"Maintenance {window.title} completed"
-                )
-        return window
-
-    def cancel_maintenance(self, window_id: str) -> MaintenanceWindow:
-        """Cancel a scheduled maintenance window."""
-        if window_id not in self._maintenance_windows:
-            raise ValueError(f"Window {window_id} not found.")
-            
-        window = self._maintenance_windows[window_id]
-        if window.status != "scheduled":
-            raise ValueError(f"Cannot cancel window with status {window.status}.")
-            
-        window.status = "cancelled"
-        return window
-
-    def get_status_page(self) -> Dict:
-        """Get the current status of all services."""
-        return {
-            "services": [
-                {
-                    "service_id": svc.service_id,
-                    "service_name": svc.service_name,
-                    "state": svc.state.value,
-                    "message": svc.message,
-                    "updated_at": svc.updated_at
-                }
-                for svc in self._services.values()
-            ],
-            "active_maintenance": [
-                {
-                    "window_id": w.window_id,
-                    "title": w.title,
-                    "status": w.status
-                }
-                for w in self._maintenance_windows.values()
-                if w.status == "in_progress"
-            ]
-        }
-
-    def get_communication_history(self, service_id: Optional[str] = None) -> List[StatusCommunication]:
-        """Get history of communications, optionally filtered by service_id."""
-        published_comms = [c for c in self._communications.values() if c.published]
-        
-        if service_id:
-            filtered = [
-                c for c in published_comms
-                if not c.affected_services or service_id in c.affected_services
-            ]
-            return sorted(filtered, key=lambda x: x.published_at, reverse=True)
-            
-        return sorted(published_comms, key=lambda x: x.published_at, reverse=True)
-
-    def get_uptime_summary(self) -> Dict:
-        """Get operational vs non-operational time ratio per service."""
-        # Simple simulated uptime summary based on state history frequency
-        # For a real implementation, we would use intervals between timestamps.
-        
-        summary = {}
-        for svc_id in self._services:
-            events = [e for e in self._state_history if e["service_id"] == svc_id]
-            if not events:
-                summary[svc_id] = {"uptime_percentage": 100.0, "total_events": 0}
-                continue
-                
-            op_events = sum(1 for e in events if e["state"] == StatusPageState.OPERATIONAL)
-            total = len(events)
-            
-            # Simple heuristic: treat states as durations if we don't have true timing simulation
-            uptime_percentage = (op_events / total) * 100.0 if total > 0 else 100.0
-            
-            summary[svc_id] = {
-                "uptime_percentage": round(uptime_percentage, 2),
-                "total_events": total,
-                "current_state": self._services[svc_id].state.value
-            }
-            
-        return summary
+    def get_audit_log(self) -> List[Dict[str, Any]]:
+        return list(self._audit_log)

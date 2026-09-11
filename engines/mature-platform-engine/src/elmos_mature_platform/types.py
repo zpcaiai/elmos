@@ -6121,3 +6121,166 @@ class CustomerValueCertificate:
     customer_signoff_date: str = ""
     notes: str = ""
 
+
+# ─── Private Sovereign Cloud Edition Models (B38) ───────────────────
+
+class SovereignJurisdiction(str, Enum):
+    EU_GDPR = "eu_gdpr"
+    US_FEDRAMP = "us_fedramp"
+    CN_MLPS = "cn_mlps"
+    SG_MAS = "sg_mas"
+    GLOBAL_STRICT = "global_strict"
+
+class AirgapEnclaveType(str, Enum):
+    HARDWARE_AIRGAP = "hardware_airgap"
+    LOGICAL_ENCLAVE = "logical_enclave"
+    BASTION_FEDERATED = "bastion_federated"
+    AIRGAP_BUNDLE = "airgap_bundle"
+
+@dataclass
+class SovereignEnclaveSpec:
+    enclave_id: str
+    edition_id: str
+    jurisdiction: SovereignJurisdiction
+    enclave_type: AirgapEnclaveType
+    cryptographic_boundary: str
+    local_kms_endpoint: str
+    allow_egress: bool = False
+    registered_at: str = ""
+
+@dataclass
+class SovereignAuditReceipt:
+    receipt_id: str
+    enclave_id: str
+    data_residency_verified: bool
+    egress_attempt_blocked_count: int
+    signature_digest: str
+    generated_at: str
+
+
+# ─── Customer Status Communication Models (B39) ─────────────────────
+
+class IncidentImpactLevel(str, Enum):
+    NONE = "none"
+    MINOR = "minor"
+    MAJOR = "major"
+    CRITICAL = "critical"
+    SCHEDULED_MAINTENANCE = "scheduled_maintenance"
+
+class NotificationChannel(str, Enum):
+    STATUS_PAGE = "status_page"
+    WEBHOOK = "webhook"
+    EMAIL_PAGER = "email_pager"
+    SLACK_COMMUNITY = "slack_community"
+    SMS = "sms"
+
+@dataclass
+class StatusCommunicationMessage:
+    message_id: str
+    incident_id: str
+    impact_level: IncidentImpactLevel
+    title: str
+    body: str
+    affected_components: List[str] = field(default_factory=list)
+    channels: List[NotificationChannel] = field(default_factory=list)
+    posted_at: str = ""
+    posted_by: str = ""
+
+@dataclass
+class CustomerStatusReport:
+    report_id: str
+    active_incidents_count: int = 0
+    current_global_status: IncidentImpactLevel = IncidentImpactLevel.NONE
+    past_30_days_uptime_pct: float = 99.99
+    messages: List[StatusCommunicationMessage] = field(default_factory=list)
+
+
+# ─── Compliance Control Crosswalk Models (B40) ──────────────────────
+
+class CrosswalkMappingType(str, Enum):
+    EXACT_EQUIVALENT = "exact_equivalent"
+    SUPERSET = "superset"
+    SUBSET = "subset"
+    PARTIAL_OVERLAP = "partial_overlap"
+
+@dataclass
+class ControlCrosswalkRecord:
+    mapping_id: str
+    source_framework: ComplianceFramework
+    source_control_id: str
+    target_framework: ComplianceFramework
+    target_control_id: str
+    mapping_type: CrosswalkMappingType
+    rationale: str = ""
+
+@dataclass
+class CrosswalkGapAnalysis:
+    analysis_id: str
+    from_framework: ComplianceFramework
+    to_framework: ComplianceFramework
+    covered_controls_count: int = 0
+    gap_controls: List[str] = field(default_factory=list)
+    crosswalk_coverage_pct: float = 0.0
+
+
+# ─── Effort Duration Cost Prediction Models (B41) ───────────────────
+
+class MigrationComplexityClass(str, Enum):
+    TRIVIAL = "trivial"
+    MODERATE = "moderate"
+    HIGH = "high"
+    EXTREME = "extreme"
+    UNKNOWN = "unknown"
+
+@dataclass
+class RepoComplexityVector:
+    vector_id: str
+    kloc: float
+    ast_depth: int
+    external_dependency_count: int
+    database_routines_count: int
+    business_rules_count: int
+
+@dataclass
+class EffortPredictionResult:
+    prediction_id: str
+    repo_id: str
+    complexity_class: MigrationComplexityClass
+    predicted_person_months: float
+    predicted_cost_usd: float
+    confidence_interval_low: float
+    confidence_interval_high: float
+    generated_at: str = ""
+
+
+# ─── Mature Product Evidence Pack Models (B45) ──────────────────────
+
+class EvidenceBundleStatus(str, Enum):
+    DRAFT = "draft"
+    SEALED = "sealed"
+    ATTESTED = "attested"
+    EXPIRED = "expired"
+    TAMPERED = "tampered"
+
+@dataclass
+class EvidenceArtifactEntry:
+    entry_id: str
+    category: str
+    artifact_sha256: str
+    size_bytes: int
+    attestation_signer: str = ""
+    verified: bool = True
+
+@dataclass
+class ComprehensiveEvidencePack:
+    pack_id: str
+    product_name: str
+    version: str
+    status: EvidenceBundleStatus = EvidenceBundleStatus.DRAFT
+    merkle_root_sha256: str = ""
+    total_artifacts: int = 0
+    artifacts: List[EvidenceArtifactEntry] = field(default_factory=list)
+    release_gate_passed: bool = False
+    sealed_at: str = ""
+    certified_by: str = ""
+
