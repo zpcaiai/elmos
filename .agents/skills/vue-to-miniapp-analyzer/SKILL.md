@@ -1,8 +1,5 @@
 ---
 name: vue-to-miniapp-analyzer
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Analyze Vue 2/3 projects, including SFCs, Options API, Composition API,
   script setup, Vue Router, Vuex, Pinia, slots, directives, and styles, and emit source
   semantic facts for MiniApp IR. Use only after repository inventory.

@@ -1,8 +1,5 @@
 ---
 name: elmos-ai-optimization
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Optimize an existing Elmos repository using evidence-first retrieval, selective stateful agent workflows and measured caching. Use for Elmos RAG/source teaching/bounded repair/LangGraph/search modernization requests. Inspect existing owners first; do not install all candidate frameworks. Not for ordinary code explanation, production deployment, or changing authorization and certification rules.
 ---
 

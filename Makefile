@@ -375,7 +375,7 @@ modernization-b01-44-run:
 modernization-b01-44-gate: modernization-b01-44-test modernization-b01-44-mutation
 	@echo "modernization B01-44: packages verified, suite green, mutations killed"
 batch27-34-skills:
-	python3 tooling/validate_batch27_34_integration.py
+	$(UV) run --quiet --with pyyaml python tooling/validate_batch27_34_integration.py
 frt-g01-g30-skills:
 	python3 skills/FRT_G01_G30_Complete_Skills_Pack/scripts/validate_package.py
 	python3 tooling/integrate_frt_g01_g30.py --check

@@ -1,8 +1,5 @@
 ---
 name: frontend-to-miniapp-orchestrator
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Orchestrate repository-level conversion from Vue, React, Flutter, H5,
   Taro, uni-app, or an existing miniapp into WeChat, Alipay, Douyin, and Xiaohongshu
   miniapps. Use for end-to-end planning, checkpoints, gates, repair loops, and final

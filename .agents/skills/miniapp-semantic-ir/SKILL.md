@@ -1,8 +1,5 @@
 ---
 name: miniapp-semantic-ir
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Define, validate, version, serialize, and migrate the shared MiniApp
   Semantic IR for components, routes, state, lifecycle, events, styles, capabilities,
   assets, privacy, and traceability. Use whenever source facts or target code cross

@@ -1,8 +1,5 @@
 ---
 name: wechat-miniapp-codegen
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Generate a native WeChat Mini Program project from validated IR and plans,
   including pages, components, styles, app configuration, subpackages, platform APIs,
   tests, and build metadata. Use only for the WeChat target.

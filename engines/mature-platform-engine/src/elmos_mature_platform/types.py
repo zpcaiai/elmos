@@ -5218,3 +5218,238 @@ class CostScenario:
     assumptions: List[str] = field(default_factory=list)
     total_monthly: float = 0.0
     total_annual: float = 0.0
+
+
+# ─── Edition Deployment Upgrade Factory Models ───────────────────────
+
+@dataclass
+class EditionProvisioningSpec:
+    spec_id: str
+    tenant_id: str
+    edition_type: EditionType
+    target_region: RegionId
+    topology_tier: str = "standard"  # standard, ha, multi_region, distributed
+    isolated_network: bool = True
+    dedicated_kms: bool = False
+    custom_domain: str = ""
+    resource_quota: Dict[str, Any] = field(default_factory=dict)
+    compliance_tags: List[str] = field(default_factory=list)
+    created_at: str = ""
+
+@dataclass
+class EditionUpgradeRecord:
+    record_id: str
+    deployment_id: str
+    from_version: str
+    to_version: str
+    phase: UpgradePhase = UpgradePhase.PRE_CHECK
+    started_at: str = ""
+    completed_at: str = ""
+    success: bool = False
+    error_message: str = ""
+    rollback_performed: bool = False
+
+@dataclass
+class EditionUpgradeCampaign:
+    campaign_id: str
+    name: str
+    target_version: str
+    allowed_editions: List[EditionType] = field(default_factory=list)
+    target_deployments: List[str] = field(default_factory=list)
+    max_parallel: int = 5
+    rollback_on_failure: bool = True
+    records: Dict[str, EditionUpgradeRecord] = field(default_factory=dict)
+    status: str = "pending"  # pending, in_progress, completed, failed, paused
+    created_at: str = ""
+    completed_at: str = ""
+
+
+# ─── Global Observability Telemetry Models ───────────────────────────
+
+class TelemetryMetricType(str, Enum):
+    COUNTER = "counter"
+    GAUGE = "gauge"
+    HISTOGRAM = "histogram"
+    SUMMARY = "summary"
+
+class TelemetryAnomalySeverity(str, Enum):
+    CRITICAL = "critical"
+    MAJOR = "major"
+    MINOR = "minor"
+    WARNING = "warning"
+
+@dataclass
+class TelemetryDataPoint:
+    point_id: str
+    metric_name: str
+    metric_type: TelemetryMetricType
+    value: float
+    timestamp: str = ""
+    region: str = "global"
+    tenant_id: str = ""
+    service: str = ""
+    tags: Dict[str, str] = field(default_factory=dict)
+
+@dataclass
+class TelemetryAnomalyAlert:
+    alert_id: str
+    metric_name: str
+    observed_value: float
+    baseline_value: float
+    deviation_pct: float
+    severity: TelemetryAnomalySeverity
+    detected_at: str = ""
+    region: str = ""
+    service: str = ""
+    acknowledged: bool = False
+    resolution_notes: str = ""
+
+@dataclass
+class ObservabilityExportReport:
+    report_id: str
+    generated_at: str
+    time_window_hours: int
+    total_datapoints: int
+    anomalies_detected: int
+    services_monitored: List[str] = field(default_factory=list)
+    regional_breakdown: Dict[str, int] = field(default_factory=dict)
+
+
+# ─── SLSA Provenance Models ──────────────────────────────────────────
+
+class ProvenanceAttestationStatus(str, Enum):
+    DRAFT = "draft"
+    GENERATED = "generated"
+    SIGNED = "signed"
+    VERIFIED = "verified"
+    TAMPERED = "tampered"
+    REJECTED = "rejected"
+
+@dataclass
+class InTotoStatement:
+    statement_id: str
+    predicate_type: str = "https://slsa.dev/provenance/v1"
+    subject_name: str = ""
+    subject_sha256: str = ""
+    slsa_level: SlsaLevel = SlsaLevel.LEVEL_1
+    builder_id: str = "elmos-trusted-builder"
+    build_type: str = "https://elmos.dev/build/v1"
+    invocation_id: str = ""
+    source_repo: str = ""
+    source_commit: str = ""
+    status: ProvenanceAttestationStatus = ProvenanceAttestationStatus.GENERATED
+    signature: str = ""
+    signer_key_id: str = ""
+    created_at: str = ""
+    verified_at: str = ""
+    parameters: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class SlsaVerificationResult:
+    verification_id: str
+    statement_id: str
+    target_slsa_level: SlsaLevel
+    achieved_slsa_level: SlsaLevel
+    passed: bool = False
+    tamper_detected: bool = False
+    verified_at: str = ""
+    verification_details: Dict[str, Any] = field(default_factory=dict)
+    violations: List[str] = field(default_factory=list)
+
+
+# ─── Knowledge Graph Ontology Models ─────────────────────────────────
+
+class OntologyNodeType(str, Enum):
+    LANGUAGE = "language"
+    FRAMEWORK = "framework"
+    LIBRARY = "library"
+    CODE_PATTERN = "code_pattern"
+    MIGRATION_RULE = "migration_rule"
+    FAILURE_SIGNATURE = "failure_signature"
+    ACCEPTANCE_CRITERIA = "acceptance_criteria"
+    PROJECT = "project"
+
+class OntologyEdgeType(str, Enum):
+    DEPENDS_ON = "depends_on"
+    MIGRATES_TO = "migrates_to"
+    REPLACES = "replaces"
+    COMPATIBLE_WITH = "compatible_with"
+    MUTUALLY_EXCLUSIVE = "mutually_exclusive"
+    CAUSES_ERROR = "causes_error"
+    RESOLVED_BY = "resolved_by"
+    EXTENDS = "extends"
+
+@dataclass
+class OntologyNode:
+    node_id: str
+    node_type: OntologyNodeType
+    name: str
+    properties: Dict[str, Any] = field(default_factory=dict)
+    confidence: float = 1.0
+    created_at: str = ""
+    tags: List[str] = field(default_factory=list)
+
+@dataclass
+class OntologyEdge:
+    edge_id: str
+    source_id: str
+    target_id: str
+    edge_type: OntologyEdgeType
+    weight: float = 1.0
+    provenance_doc: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class GraphQueryResult:
+    query_id: str
+    matched_nodes: List[OntologyNode] = field(default_factory=list)
+    matched_edges: List[OntologyEdge] = field(default_factory=list)
+    traversal_depth: int = 1
+    execution_time_ms: float = 0.0
+
+
+# ─── Agent Autonomy Levels Models ────────────────────────────────────
+
+class AutonomyReviewDecision(str, Enum):
+    PROMOTED = "promoted"
+    DEMOTED = "demoted"
+    MAINTAINED = "maintained"
+    RESTRICTED = "restricted"
+
+@dataclass
+class AgentAutonomyProfile:
+    agent_id: str
+    agent_name: str
+    current_tier: AgentAutonomyLevel = AgentAutonomyLevel.L0_MANUAL
+    max_permitted_tier: AgentAutonomyLevel = AgentAutonomyLevel.L2_SUPERVISED
+    evaluation_score: float = 0.0  # 0 - 100
+    successful_runs: int = 0
+    failed_runs: int = 0
+    consecutive_successes: int = 0
+    policy_violations: int = 0
+    intervention_rate: float = 1.0  # human intervention frequency (0.0 - 1.0)
+    allowed_actions: List[str] = field(default_factory=list)
+    last_evaluated_at: str = ""
+
+@dataclass
+class AutonomyLevelTransition:
+    transition_id: str
+    agent_id: str
+    from_tier: AgentAutonomyLevel
+    to_tier: AgentAutonomyLevel
+    decision: AutonomyReviewDecision
+    reason: str
+    reviewer: str
+    evaluated_at: str = ""
+    audit_receipt: str = ""
+
+@dataclass
+class AutonomyEnforcementGate:
+    gate_id: str
+    agent_id: str
+    action_name: str
+    required_level: AgentAutonomyLevel
+    agent_level: AgentAutonomyLevel
+    allowed: bool = False
+    requires_human_approval: bool = False
+    evaluated_at: str = ""

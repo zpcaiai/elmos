@@ -1,8 +1,5 @@
 ---
 name: miniapp-migration-evidence-reporter
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Assemble an auditable evidence graph linking source revisions, IR nodes,
   mapping decisions, generated files, builds, tests, repairs, approvals, costs, and
   release status. Use at every checkpoint and for final migration sign-off.

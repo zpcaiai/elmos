@@ -1,8 +1,5 @@
 ---
 name: miniapp-state-event-lifecycle-converter
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Lower framework state, derived values, effects, events, navigation hooks,
   and component/page/app lifecycles into platform-neutral execution plans and target-specific
   bindings. Use before code generation and during semantic diff repair.

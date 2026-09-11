@@ -1,8 +1,5 @@
 ---
 name: xiaohongshu-miniapp-codegen
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Generate a native Xiaohongshu Mini Program project from validated IR
   and plans, including pages, components, styles, authorization, commerce/content
   adapters, tests, third-party platform metadata, and traceability. Use only for the

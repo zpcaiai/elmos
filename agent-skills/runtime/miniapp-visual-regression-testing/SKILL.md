@@ -1,8 +1,5 @@
 ---
 name: miniapp-visual-regression-testing
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Run deterministic screenshot, layout, typography, safe-area, responsive,
   theme, and interaction-state comparisons between source and target pages. Use after
   semantic tests; visual similarity never overrides functional failures.

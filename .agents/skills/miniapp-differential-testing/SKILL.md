@@ -1,8 +1,5 @@
 ---
 name: miniapp-differential-testing
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Capture and compare source and target behavior traces for routes, state,
   events, network contracts, storage, errors, and key user flows across all generated
   miniapps. Use to prove semantic parity and drive repair.

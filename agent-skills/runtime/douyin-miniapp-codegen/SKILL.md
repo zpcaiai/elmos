@@ -1,8 +1,5 @@
 ---
 name: douyin-miniapp-codegen
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Generate a native Douyin Mini Program project from validated IR and plans,
   including app/page configuration, components, styles, JS APIs, server OpenAPI contracts,
   tests, toolchain metadata, and traceability. Use only for the Douyin target.

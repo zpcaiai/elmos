@@ -52,6 +52,9 @@ ALLOWED_FRONTMATTER = {
     "status",
     "triggers",
     "version",
+    "implementation_state",
+    "external_evidence_status",
+    "production_certification",
 }
 
 

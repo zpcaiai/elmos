@@ -1,8 +1,5 @@
 ---
 name: miniapp-source-framework-detector
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Inventory a frontend repository and detect Vue, React, Flutter, H5, Taro,
   uni-app, or native miniapp frameworks with evidence and confidence. Use before conversion
   planning; do not infer a single framework from filenames alone.

@@ -1,8 +1,5 @@
 ---
 name: react-to-miniapp-analyzer
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Analyze React JavaScript/TypeScript projects, JSX/TSX, hooks, class lifecycles,
   routers, Redux, Zustand, MobX, Context, portals, and styling, then emit source semantic
   facts for MiniApp IR. Use only after repository inventory.

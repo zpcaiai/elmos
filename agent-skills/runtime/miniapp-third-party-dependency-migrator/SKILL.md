@@ -1,8 +1,5 @@
 ---
 name: miniapp-third-party-dependency-migrator
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Classify every frontend dependency and choose retain, replace, rewrite,
   backend-move, isolate, or remove-with-approval actions for each target miniapp.
   Use before generation; never drop a package merely because it lacks a direct equivalent.
