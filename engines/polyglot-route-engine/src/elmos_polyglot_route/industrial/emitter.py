@@ -7,6 +7,8 @@ ownership, I/O and REST primitives for the certified industrial subset.
 
 from __future__ import annotations
 
+import re
+
 from elmos_polyglot_route.ast_compiler.ir import (
     AssignStmt,
     BinaryExpr,
@@ -25,6 +27,7 @@ from elmos_polyglot_route.ast_compiler.ir import (
     LockStmt,
     MethodCallExpr,
     MoveStmt,
+    RawSnippetStmt,
     ReturnStmt,
     SelectStmt,
     SpawnStmt,
@@ -33,7 +36,10 @@ from elmos_polyglot_route.ast_compiler.ir import (
     UnaryExpr,
     UniversalClass,
     UniversalExpr,
+    UniversalField,
+    UniversalField as AstField,
     UniversalMethod,
+    UniversalMethod as AstMethod,
     UniversalModule,
     UniversalStmt,
     UniversalType,
@@ -44,6 +50,37 @@ from elmos_polyglot_route.industrial.framework import framework_runtime
 from elmos_polyglot_route.industrial.io_ops import io_runtime
 
 _SPAWN_COUNTER = 0
+
+
+def _to_snake_case(name: str) -> str:
+    s = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', name)
+    s = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s).lower()
+    return re.sub(r'__+', '_', s)
+
+
+def _to_camel_case(name: str) -> str:
+    parts = _to_snake_case(name).split('_')
+    if not parts:
+        return name
+    return parts[0] + ''.join(p.capitalize() for p in parts[1:])
+
+
+def _to_pascal_case(name: str) -> str:
+    parts = _to_snake_case(name).split('_')
+    return ''.join(p.capitalize() for p in parts)
+
+
+def _unwrap_async_type(name: str) -> str:
+    if not name:
+        return ""
+    prev = ""
+    while prev != name:
+        prev = name
+        name = re.sub(r'^(CompletableFuture|Task|Promise|ActionResult|Future|Result)<(.+)>$', r'\2', name).strip()
+        name = re.sub(r'^(CompletableFuture|Task|Promise|ActionResult|Future|Result)\[(.+)\]$', r'\2', name).strip()
+        if "," in name:
+            name = name.split(",")[0].strip()
+    return name
 
 
 def _next_worker() -> str:
@@ -78,34 +115,48 @@ def emit_industrial_module(module: UniversalModule, language: str) -> str:
 
 
 def _type_name(lang: str, typ: UniversalType) -> str:
+    if typ is None:
+        return "void" if lang != "python" else "None"
+    name = getattr(typ, "name", "") or ""
+    kind = getattr(typ, "kind", "") or ""
+
+    if name == "primitive":
+        name = "string"
+
     prim = {
-        "python": {"i64": "int", "i32": "int", "f64": "float", "bool": "bool", "string": "str", "void": "None"},
-        "java": {"i64": "long", "i32": "int", "f64": "double", "bool": "boolean", "string": "String", "void": "void"},
-        "csharp": {"i64": "long", "i32": "int", "f64": "double", "bool": "bool", "string": "string", "void": "void"},
-        "go": {"i64": "int64", "i32": "int32", "f64": "float64", "bool": "bool", "string": "string", "void": ""},
-        "rust": {"i64": "i64", "i32": "i32", "f64": "f64", "bool": "bool", "string": "String", "void": "()"},
-        "typescript": {"i64": "number", "i32": "number", "f64": "number", "bool": "boolean", "string": "string", "void": "void"},
-        "kotlin": {"i64": "Long", "i32": "Int", "f64": "Double", "bool": "Boolean", "string": "String", "void": "Unit"},
-        "php": {"i64": "int", "i32": "int", "f64": "float", "bool": "bool", "string": "string", "void": "void"},
-        "cpp": {"i64": "long long", "i32": "int", "f64": "double", "bool": "bool", "string": "std::string", "void": "void"},
-        "swift": {"i64": "Int64", "i32": "Int", "f64": "Double", "bool": "Bool", "string": "String", "void": "Void"},
-        "objc": {"i64": "long long", "i32": "int", "f64": "double", "bool": "BOOL", "string": "NSString *", "void": "void"},
-        "react": {"i64": "number", "i32": "number", "f64": "number", "bool": "boolean", "string": "string", "void": "void"},
-        "flutter": {"i64": "int", "i32": "int", "f64": "double", "bool": "bool", "string": "String", "void": "void"},
-        "vb6": {"i64": "Long", "i32": "Long", "f64": "Double", "bool": "Boolean", "string": "String", "void": ""},
-        "vcpp6": {"i64": "LONGLONG", "i32": "int", "f64": "double", "bool": "BOOL", "string": "CString", "void": "void"},
+        "python": {"i64": "int", "i32": "int", "f64": "float", "bool": "bool", "string": "str", "void": "None", "double": "float"},
+        "java": {"i64": "long", "i32": "int", "f64": "double", "bool": "boolean", "string": "String", "void": "void", "double": "double"},
+        "csharp": {"i64": "long", "i32": "int", "f64": "double", "bool": "bool", "string": "string", "void": "void", "double": "double"},
+        "go": {"i64": "int64", "i32": "int32", "f64": "float64", "bool": "bool", "string": "string", "void": "", "double": "float64"},
+        "rust": {"i64": "i64", "i32": "i32", "f64": "f64", "bool": "bool", "string": "String", "void": "()", "double": "f64"},
+        "typescript": {"i64": "number", "i32": "number", "f64": "number", "bool": "boolean", "string": "string", "void": "void", "double": "number"},
+        "kotlin": {"i64": "Long", "i32": "Int", "f64": "Double", "bool": "Boolean", "string": "String", "void": "Unit", "double": "Double"},
+        "php": {"i64": "int", "i32": "int", "f64": "float", "bool": "bool", "string": "string", "void": "void", "double": "float"},
+        "cpp": {"i64": "long long", "i32": "int", "f64": "double", "bool": "bool", "string": "std::string", "void": "void", "double": "double"},
+        "swift": {"i64": "Int64", "i32": "Int", "f64": "Double", "bool": "Bool", "string": "String", "void": "Void", "double": "Double"},
+        "objc": {"i64": "long long", "i32": "int", "f64": "double", "bool": "BOOL", "string": "NSString *", "void": "void", "double": "double"},
+        "react": {"i64": "number", "i32": "number", "f64": "number", "bool": "boolean", "string": "string", "void": "void", "double": "number"},
+        "flutter": {"i64": "int", "i32": "int", "f64": "double", "bool": "bool", "string": "String", "void": "void", "double": "double"},
+        "vb6": {"i64": "Long", "i32": "Long", "f64": "Double", "bool": "Boolean", "string": "String", "void": "", "double": "Double"},
+        "vcpp6": {"i64": "LONGLONG", "i32": "int", "f64": "double", "bool": "BOOL", "string": "CString", "void": "void", "double": "double"},
     }
     table = prim.get(lang, prim["python"])
-    if typ.kind == "primitive":
-        return table.get(typ.name, typ.name or "int")
-    if typ.kind == "pointer" and typ.element_type is not None:
+    if kind == "primitive" or name in table:
+        return table.get(name, name or "int")
+    if kind == "pointer" and typ.element_type is not None:
         inner = _type_name(lang, typ.element_type)
         if lang == "rust":
             return f"Arc<{inner}>"
         if lang in {"cpp", "vcpp6"}:
             return f"std::shared_ptr<{inner}>"
         return inner
-    return typ.name or table.get("i64", "int")
+    if lang == "python":
+        unwrapped = _unwrap_async_type(name)
+        if unwrapped != name:
+            return _type_name("python", UniversalType.primitive(unwrapped))
+        cleaned = name.replace("<", "[").replace(">", "]")
+        return cleaned
+    return name or table.get("i64", "int")
 
 
 def _is_str_expr(expr: UniversalExpr | None) -> bool:
@@ -346,16 +397,26 @@ def _py_stmt(stmt: UniversalStmt, depth: int) -> str:
         return f"{pad}{stmt.target} = {stmt.source}  # unique move"
     if isinstance(stmt, DropStmt):
         return f"{pad}{stmt.name} = None  # drop {stmt.kind}"
+    if isinstance(stmt, RawSnippetStmt):
+        if any(k in stmt.code.lower() for k in ["statuscode", "exception", "failed", "error", "throw", "raise"]):
+            return f"{pad}raise HTTPException(status_code=500, detail='Internal error')"
+        return f"{pad}pass"
     if isinstance(stmt, ThrowStmt):
         return f"{pad}raise ValueError({_expr('python', LiteralExpr(stmt.message, 'string'))})"
     if isinstance(stmt, TryCatchFinallyStmt):
         block = f"{pad}try:\n"
-        block += _emit_stmts("python", stmt.try_body, depth + 1) or f"{pad}    pass"
-        block += f"\n{pad}except Exception as {stmt.catch_clauses[0].variable_name if stmt.catch_clauses else 'ex'}:\n"
-        if stmt.catch_clauses:
-            block += _emit_stmts("python", stmt.catch_clauses[0].body, depth + 1) or f"{pad}    pass"
+        try_code = _emit_stmts("python", stmt.try_body, depth + 1)
+        block += try_code or f"{pad}    pass"
+        ex_name = stmt.catch_clauses[0].variable_name if stmt.catch_clauses and stmt.catch_clauses[0].variable_name else "ex"
+        block += f"\n{pad}except Exception as {ex_name}:\n"
+        if stmt.catch_clauses and stmt.catch_clauses[0].body:
+            catch_code = _emit_stmts("python", stmt.catch_clauses[0].body, depth + 1)
+            if "raise HTTPException" in catch_code:
+                block += catch_code
+            else:
+                block += f"{pad}    raise HTTPException(status_code=500, detail=str({ex_name}))"
         else:
-            block += f"{pad}    raise"
+            block += f"{pad}    raise HTTPException(status_code=500, detail=str({ex_name}))"
         if stmt.finally_body:
             block += f"\n{pad}finally:\n"
             block += _emit_stmts("python", stmt.finally_body, depth + 1)
