@@ -47,6 +47,12 @@ class SpringThirtyProjectsGreenBuildTest {
                     res.appliedRulesCount(),
                     res.targetLoc()
             );
+            if (!res.isGreen()) {
+                System.out.println("  >>> FAIL LOGS for " + res.projectId() + ":");
+                for (String l : res.logs()) {
+                    System.out.println("      " + l);
+                }
+            }
         }
 
         System.out.println("--------------------------------------------------------------------------------");

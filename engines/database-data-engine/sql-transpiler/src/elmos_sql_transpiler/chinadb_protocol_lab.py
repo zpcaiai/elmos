@@ -197,6 +197,9 @@ class ProtocolLabDatabase:
         clean = re.sub(r"\s+TABLESPACE\s+\w+", "", clean, flags=re.I)
         clean = re.sub(r"\s+PCTFREE\s+\d+", "", clean, flags=re.I)
         clean = re.sub(r"\s+COMMENT\s+'[^']*'", "", clean, flags=re.I)
+        # Strip distribution and partition clauses specific to ChinaDB MPP (GBase 8a, GBase 8c, etc.)
+        clean = re.sub(r"\s+DISTRIBUTED?\s+BY\s+.*?(?:;|$)", ";", clean, flags=re.I)
+        clean = re.sub(r"\s+PARTITION\s+BY\s+.*?(?:;|$)", ";", clean, flags=re.I)
         return clean
 
     def _sync_table_def(self, table_name: str) -> None:
@@ -312,14 +315,24 @@ class ProtocolLabDatabase:
         return [], [], affected
 
     def _handle_update(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
-        cur = self._sqlite.execute(sql)
-        affected = cur.rowcount if cur.rowcount >= 0 else 1
-        return [], [], affected
+        try:
+            cur = self._sqlite.execute(sql)
+            affected = cur.rowcount if cur.rowcount >= 0 else 1
+            return [], [], affected
+        except sqlite3.OperationalError as e:
+            if "no such table" in str(e).lower():
+                return [], [], 0
+            raise
 
     def _handle_delete(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
-        cur = self._sqlite.execute(sql)
-        affected = cur.rowcount if cur.rowcount >= 0 else 1
-        return [], [], affected
+        try:
+            cur = self._sqlite.execute(sql)
+            affected = cur.rowcount if cur.rowcount >= 0 else 1
+            return [], [], affected
+        except sqlite3.OperationalError as e:
+            if "no such table" in str(e).lower():
+                return [], [], 0
+            raise
 
     def _handle_select(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
         # Fast path for SELECT 1
@@ -335,10 +348,15 @@ class ProtocolLabDatabase:
                 cnt = len(tbl.rows) if tbl else 0
                 return ["count"], [(cnt,)], 1
 
-        cur = self._sqlite.execute(sql)
-        col_names = [d[0] for d in cur.description] if cur.description else []
-        rows = [tuple(r) for r in cur.fetchall()]
-        return col_names, rows, len(rows)
+        try:
+            cur = self._sqlite.execute(sql)
+            col_names = [d[0] for d in cur.description] if cur.description else []
+            rows = [tuple(r) for r in cur.fetchall()]
+            return col_names, rows, len(rows)
+        except sqlite3.OperationalError as e:
+            if "no such table" in str(e).lower():
+                return [], [], 0
+            raise
 
 
 # -----------------------------------------------------------------------------

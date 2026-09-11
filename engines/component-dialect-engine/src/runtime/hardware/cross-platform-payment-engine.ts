@@ -114,4 +114,20 @@ export class CrossPlatformPaymentEngine {
 
     return { status: 'SUCCESS' };
   }
+
+  /**
+   * Alias for requestPayScore to open WeChat Pay Score business view
+   */
+  public async openBusinessScoreView(params: WeChatPayScoreParams): Promise<{
+    status: 'SUCCESS' | 'CANCEL' | 'FAIL';
+    extraData?: any;
+  }> {
+    return this.requestPayScore(params);
+  }
 }
+
+/**
+ * Backward-compatible alias for CrossPlatformPaymentEngine
+ */
+export { CrossPlatformPaymentEngine as WechatPaymentEngine };
+

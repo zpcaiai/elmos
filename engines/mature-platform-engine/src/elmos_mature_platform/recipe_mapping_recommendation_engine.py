@@ -103,7 +103,7 @@ class RecipeMappingRecommendationEngine:
                 # Calculate pattern overlap
                 if q_patterns and recipe.applicable_patterns:
                     overlap = q_patterns.intersection(set(recipe.applicable_patterns))
-                    pattern_score = len(overlap) / max(len(recipe.applicable_patterns), len(q_patterns))
+                    pattern_score = len(overlap) / len(q_patterns)
                     combined_score = round(0.5 * recipe.match_score + 0.5 * pattern_score, 2)
                 else:
                     combined_score = recipe.match_score

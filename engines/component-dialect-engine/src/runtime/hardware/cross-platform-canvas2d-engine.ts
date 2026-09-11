@@ -87,6 +87,10 @@ export class CrossPlatformCanvas2dEngine {
     return this.ctx;
   }
 
+  public getCanvasContext(): any {
+    return this.ctx;
+  }
+
   public getDimensions(): CanvasDimensions {
     return {
       width: this.width,
@@ -115,6 +119,29 @@ export class CrossPlatformCanvas2dEngine {
     return { x: event.offsetX ?? event.clientX ?? 0, y: event.offsetY ?? event.clientY ?? 0 };
   }
 
+  public normalizeTouchCoordinates(event: any): { x: number; y: number } {
+    return this.normalizeEventCoordinates(event);
+  }
+
+  /**
+   * Draws signature path from recorded touch trajectory points
+   */
+  public drawSignaturePath(
+    points: Array<{ x: number; y: number }>,
+    strokeStyle: string = '#000000',
+    lineWidth: number = 2
+  ): void {
+    if (!this.ctx || points.length === 0) return;
+    this.ctx.beginPath();
+    this.ctx.strokeStyle = strokeStyle;
+    this.ctx.lineWidth = lineWidth;
+    this.ctx.moveTo(points[0]!.x, points[0]!.y);
+    for (let i = 1; i < points.length; i++) {
+      this.ctx.lineTo(points[i]!.x, points[i]!.y);
+    }
+    this.ctx.stroke();
+  }
+
   /**
    * Export to image (wx.canvasToTempFilePath or HTML5 toDataURL)
    */
@@ -134,6 +161,10 @@ export class CrossPlatformCanvas2dEngine {
     }
 
     return 'data:image/png;base64,mock_canvas_export';
+  }
+
+  public async exportAsPngBase64(): Promise<string> {
+    return this.exportToImage();
   }
 
   private createMock2dContext(): any {

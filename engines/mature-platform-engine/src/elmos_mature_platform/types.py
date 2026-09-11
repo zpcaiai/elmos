@@ -7202,3 +7202,259 @@ class SemanticBehaviorCertificationRecord:
     certified_at: str = ""
     certified_by: str = ""
     min_assertions_required: int = 5
+
+
+# ─── Upgrade Rollback Disaster Recovery Models (B38) ────────────────
+
+class RollbackTriggerType(str, Enum):
+    HEALTH_CHECK_FAILED = "health_check_failed"
+    LATENCY_SPIKE = "latency_spike"
+    ERROR_RATE_EXCEEDED = "error_rate_exceeded"
+    MANUAL_OPERATOR = "manual_operator"
+    CORRUPTION_DETECTED = "corruption_detected"
+
+class RecoveryPlanStatus(str, Enum):
+    DRAFT = "draft"
+    VALIDATED = "validated"
+    EXECUTING = "executing"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    ABORTED = "aborted"
+
+class DisasterRecoveryStrategy(str, Enum):
+    SNAPSHOT_RESTORE = "snapshot_restore"
+    POINT_IN_TIME_RECOVERY = "point_in_time_recovery"
+    FAILOVER_SECONDARY = "failover_secondary"
+    CANARY_DRAIN_REVERT = "canary_drain_revert"
+
+@dataclass
+class RollbackExecutionStep:
+    step_id: str
+    name: str
+    order: int
+    target_component: str
+    command_ref: str
+    status: str = "pending"
+    executed_at: str = ""
+    error_message: str = ""
+
+@dataclass
+class UpgradeRollbackPlan:
+    plan_id: str
+    deployment_id: str
+    target_version: str
+    rollback_version: str
+    strategy: DisasterRecoveryStrategy = DisasterRecoveryStrategy.SNAPSHOT_RESTORE
+    status: RecoveryPlanStatus = RecoveryPlanStatus.DRAFT
+    steps: List[RollbackExecutionStep] = field(default_factory=list)
+    created_at: str = ""
+    completed_at: str = ""
+    max_tolerable_downtime_seconds: int = 300
+    actual_downtime_seconds: int = 0
+    data_loss_detected: bool = False
+
+@dataclass
+class DisasterRecoveryDrillRecord:
+    drill_id: str
+    plan_id: str
+    edition_type: str
+    simulated_failure: RollbackTriggerType
+    passed: bool = False
+    rto_seconds: int = 0
+    rpo_seconds: int = 0
+    target_rto_seconds: int = 300
+    target_rpo_seconds: int = 60
+    drill_timestamp: str = ""
+    operator_notes: str = ""
+
+
+# ─── Secure SDLC SSDF Governance Models (B40) ────────────────────────
+
+class SsdfPracticeGroup(str, Enum):
+    PREPARE_ORGANIZATION = "prepare_organization"
+    PROTECT_SOFTWARE = "protect_software"
+    PRODUCE_SECURED_SOFTWARE = "produce_secured_software"
+    RESPOND_VULNERABILITIES = "respond_vulnerabilities"
+
+class SsdfTaskStatus(str, Enum):
+    NOT_IMPLEMENTED = "not_implemented"
+    IN_PROGRESS = "in_progress"
+    SATISFIED = "satisfied"
+    EXEMPTION_GRANTED = "exemption_granted"
+    AUDIT_FAILED = "audit_failed"
+
+class SdlcStage(str, Enum):
+    REQUIREMENTS = "requirements"
+    ARCHITECTURE_DESIGN = "architecture_design"
+    CODING_IMPLEMENTATION = "coding_implementation"
+    TESTING_VERIFICATION = "testing_verification"
+    RELEASE_DEPLOYMENT = "release_deployment"
+    MAINTENANCE = "maintenance"
+
+@dataclass
+class SsdfPracticeTask:
+    task_id: str
+    group: SsdfPracticeGroup
+    practice_code: str
+    title: str
+    applicable_sdlc_stages: List[SdlcStage] = field(default_factory=list)
+    status: SsdfTaskStatus = SsdfTaskStatus.NOT_IMPLEMENTED
+    mandatory: bool = True
+    evidence_artifacts: List[str] = field(default_factory=list)
+    last_audited: str = ""
+    auditor: str = ""
+    deficiencies: List[str] = field(default_factory=list)
+
+@dataclass
+class SecureSdlcAudit:
+    audit_id: str
+    repository_name: str
+    release_version: str
+    tasks: List[SsdfPracticeTask] = field(default_factory=list)
+    compliance_score: float = 0.0
+    is_certified: bool = False
+    audited_at: str = ""
+    blocking_findings: List[str] = field(default_factory=list)
+
+
+# ─── Migration Entity Relations Models (B41) ────────────────────────
+
+class MigrationEntityType(str, Enum):
+    PROJECT = "project"
+    SOURCE_MODULE = "source_module"
+    AST_CONSTRUCT = "ast_construct"
+    TRANSFORMATION_RULE = "transformation_rule"
+    GENERATED_PATCH = "generated_patch"
+    VERIFICATION_EVIDENCE = "verification_evidence"
+    HOLD_OUT_TEST = "hold_out_test"
+
+class EntityRelationType(str, Enum):
+    EXTRACTED_FROM = "extracted_from"
+    TRANSFORMED_BY = "transformed_by"
+    PRODUCED_PATCH = "produced_patch"
+    VERIFIED_BY = "verified_by"
+    DEPENDS_ON = "depends_on"
+    INVALIDATED_BY = "invalidated_by"
+    SUPERSEDES = "supersedes"
+
+@dataclass
+class MigrationEntity:
+    entity_id: str
+    entity_type: MigrationEntityType
+    name: str
+    version_ref: str = ""
+    content_hash: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = ""
+
+@dataclass
+class MigrationRelationEdge:
+    edge_id: str
+    source_entity_id: str
+    target_entity_id: str
+    relation_type: EntityRelationType
+    confidence: float = 1.0
+    established_at: str = ""
+    provenance_note: str = ""
+
+@dataclass
+class EntityLineageTrace:
+    trace_id: str
+    root_entity_id: str
+    lineage_path: List[str] = field(default_factory=list)
+    complete: bool = False
+    has_unverified_patch: bool = False
+
+
+# ─── Agent Factory Gate Models (B42) ────────────────────────────────
+
+class AgentFactoryGateVerdict(str, Enum):
+    READY_FOR_PRODUCTION = "ready_for_production"
+    CONDITIONAL_STAGING = "conditional_staging"
+    REJECTED_UNSAFE = "rejected_unsafe"
+    INSUFFICIENT_EVALUATION = "insufficient_evaluation"
+
+class AgentEvaluationCriterion(str, Enum):
+    SAFETY_BOUNDARY = "safety_boundary"
+    BUDGET_ADHERENCE = "budget_adherence"
+    TASK_COMPLETION_RATE = "task_completion_rate"
+    TOOL_USAGE_PRECISION = "tool_usage_precision"
+    HUMAN_INTERVENTION_RATE = "human_intervention_rate"
+    LATENCY_P95 = "latency_p95"
+
+@dataclass
+class AgentGateCheckItem:
+    check_id: str
+    criterion: AgentEvaluationCriterion
+    name: str
+    threshold_target: float
+    actual_value: float = 0.0
+    passed: bool = False
+    is_critical: bool = True
+    evaluation_notes: str = ""
+
+@dataclass
+class AgentFactoryGateSubmission:
+    submission_id: str
+    agent_id: str
+    agent_version: str
+    agent_role: str
+    target_environment: str = "production"
+    checks: List[AgentGateCheckItem] = field(default_factory=list)
+    verdict: AgentFactoryGateVerdict = AgentFactoryGateVerdict.INSUFFICIENT_EVALUATION
+    evaluated_at: str = ""
+    evaluator: str = ""
+    release_permitted: bool = False
+    conditions: List[str] = field(default_factory=list)
+
+
+# ─── Target Maintainability Certification Models (B45) ───────────────
+
+class MaintainabilityRating(str, Enum):
+    GRADE_A = "grade_a"
+    GRADE_B = "grade_b"
+    GRADE_C = "grade_c"
+    GRADE_D = "grade_d"
+    UNACCEPTABLE = "unacceptable"
+
+class MaintainabilityMetricType(str, Enum):
+    CYCLOMATIC_COMPLEXITY = "cyclomatic_complexity"
+    COGNITIVE_COMPLEXITY = "cognitive_complexity"
+    MAINTAINABILITY_INDEX = "maintainability_index"
+    DUPLICATION_PERCENTAGE = "duplication_percentage"
+    COMMENT_DENSITY = "comment_density"
+    TECHNICAL_DEBT_RATIO = "technical_debt_ratio"
+    SMELL_DENSITY = "smell_density"
+
+@dataclass
+class TargetCodeMetric:
+    metric_id: str
+    metric_type: MaintainabilityMetricType
+    target_file_or_module: str
+    value: float
+    acceptable_limit: float
+    passed: bool = True
+    weight: float = 1.0
+
+@dataclass
+class MaintainabilitySmellFinding:
+    finding_id: str
+    severity: str
+    category: str
+    location: str
+    remediation_effort_minutes: int = 15
+
+@dataclass
+class TargetMaintainabilityCertification:
+    cert_id: str
+    project_id: str
+    target_repo_name: str
+    target_language: str
+    overall_grade: MaintainabilityRating = MaintainabilityRating.GRADE_C
+    is_certified: bool = False
+    metrics: List[TargetCodeMetric] = field(default_factory=list)
+    smell_findings: List[MaintainabilitySmellFinding] = field(default_factory=list)
+    maintainability_index_avg: float = 0.0
+    certified_at: str = ""
+    certifier: str = ""
+    remediation_backlog: List[str] = field(default_factory=list)
