@@ -50,7 +50,12 @@ public final class SpringMyBatisFlexBenchmarkValidator {
             ShimHygieneVerdict link4ShimHygieneVerdict,
             boolean link5RuntimeReadinessPassed,
             MessagingEquivalenceVerdict link6MessagingVerdict,
+            String link6TransportMode,
+            String link6BrokerEvidenceStatus,
             ProjectAuditVerdict link7AuditVerdict,
+            boolean realMavenBuildExecuted,
+            int realMavenExitCode,
+            boolean realMavenBuildPassed,
             double overallMaturityScore,
             List<String> validationLogs
     ) {}
@@ -58,9 +63,23 @@ public final class SpringMyBatisFlexBenchmarkValidator {
     private SpringMyBatisFlexBenchmarkValidator() {}
 
     /**
-     * Executes comprehensive Link 2 to Link 7 evaluation against the real MyBatis-Flex workspace.
+     * Executes Link 2 to Link 7 evaluation against the real MyBatis-Flex workspace.
      */
     public static MyBatisFlexValidationReport evaluate(Path mybatisFlexRoot) {
+        return evaluate(mybatisFlexRoot, Collections.emptyList(), false);
+    }
+
+    /**
+     * Executes evaluation with optional external compiler diagnostics.
+     */
+    public static MyBatisFlexValidationReport evaluate(Path mybatisFlexRoot, List<String> diagnostics) {
+        return evaluate(mybatisFlexRoot, diagnostics, false);
+    }
+
+    /**
+     * Executes evaluation with full real process build verification.
+     */
+    public static MyBatisFlexValidationReport evaluate(Path mybatisFlexRoot, List<String> externalDiagnostics, boolean executeRealMavenBuild) {
         Objects.requireNonNull(mybatisFlexRoot, "mybatisFlexRoot cannot be null");
         List<String> logs = new ArrayList<>();
         logs.add("=== Evaluating Real-World Benchmark: MyBatis-Flex ===");
@@ -95,15 +114,20 @@ public final class SpringMyBatisFlexBenchmarkValidator {
         // ==========================================
         // Link 4: Diagnostic Auto-Repair & Mock Shim Synthesis
         // ==========================================
-        List<String> simulatedDiagnostics = List.of(
-                "[ERROR] cannot find symbol: class LegacyEnterpriseSsoManager location: package com.corp.internal.auth",
-                "[ERROR] package com.corp.internal.auth does not exist",
-                "[ERROR] cannot find symbol: class SsoUserToken location: package com.corp.internal.auth",
-                "[ERROR] cannot find symbol: class SeataDataSourceProxy location: package io.seata.rm.datasource"
-        );
+        List<String> diagnosticsToUse = (externalDiagnostics != null && !externalDiagnostics.isEmpty())
+                ? externalDiagnostics
+                : List.of(
+                    // Enterprise private artifact reference specification
+                    "[ERROR] cannot find symbol: class LegacyEnterpriseSsoManager location: package com.corp.internal.auth",
+                    "[ERROR] package com.corp.internal.auth does not exist",
+                    "[ERROR] cannot find symbol: class SsoUserToken location: package com.corp.internal.auth",
+                    "[ERROR] cannot find symbol: class SeataDataSourceProxy location: package io.seata.rm.datasource"
+                );
+        logs.add("[Link 4: Auto-Repair & Shims] Diagnostic input source: "
+                + (externalDiagnostics != null && !externalDiagnostics.isEmpty() ? "REAL_MAVEN_BUILD_DIAGNOSTICS" : "SYNTHETIC_ENTERPRISE_CAPABILITY_SPEC"));
 
-        var autoRepairResult = SpringDiagnosticAutoRepairer.repair(mybatisFlexRoot, simulatedDiagnostics);
-        var shimResult = SpringPrivateArtifactShimGenerator.generateShimsFromDiagnostics(mybatisFlexRoot, simulatedDiagnostics);
+        var autoRepairResult = SpringDiagnosticAutoRepairer.repair(mybatisFlexRoot, diagnosticsToUse);
+        var shimResult = SpringPrivateArtifactShimGenerator.generateShimsFromDiagnostics(mybatisFlexRoot, diagnosticsToUse);
         ShimHygieneVerdict shimHygiene = SpringEnterpriseModernizationAuditSuite.auditShimHygiene(mybatisFlexRoot);
         logs.add("[Link 4: Auto-Repair & Shims] Synthesized " + shimResult.shimCount() + " mock shims for unresolvable private dependencies");
         logs.add("  - Diagnostic Auto-Repair applied: " + autoRepairResult.changesCount() + " changes across " + autoRepairResult.modifiedFiles().size() + " files");
@@ -116,6 +140,23 @@ public final class SpringMyBatisFlexBenchmarkValidator {
         boolean testHarnessPresent = Files.isDirectory(springBootTestModule);
         boolean runtimeReadiness = testHarnessPresent && Files.isRegularFile(springBootTestModule.resolve("pom.xml"));
         logs.add("[Link 5: Runtime Readiness] Spring Boot test harness detected: " + testHarnessPresent + " -> Loopback Health Probe Ready");
+
+        // Real Maven build verification (if requested)
+        boolean realMavenBuildExecuted = executeRealMavenBuild;
+        int realMavenExitCode = 0;
+        boolean realMavenBuildPassed = true;
+        if (executeRealMavenBuild) {
+            logs.add("[Link 5: Real Process Verification] Invoking external toolchain runner: mvn test-compile -DskipTests");
+            List<String> buildOutput = new ArrayList<>();
+            realMavenExitCode = executeMavenBuild(mybatisFlexRoot, buildOutput);
+            realMavenBuildPassed = (realMavenExitCode == 0);
+            logs.add("  - Maven Process Exit Code: " + realMavenExitCode + " (" + (realMavenBuildPassed ? "SUCCESS" : "FAILURE") + ")");
+            if (!realMavenBuildPassed) {
+                logs.add("  - Build Error Summary: " + buildOutput.stream().filter(l -> l.contains("[ERROR]")).limit(5).toList());
+            }
+        } else {
+            logs.add("[Link 5: Real Process Verification] Real Maven build execution deferred (executeRealMavenBuild=false)");
+        }
 
         // ==========================================
         // Link 6: Asynchronous Event-Driven Differential Comparison
@@ -144,7 +185,10 @@ public final class SpringMyBatisFlexBenchmarkValidator {
         );
 
         MessagingEquivalenceVerdict messagingVerdict = SpringEnterpriseModernizationAuditSuite.auditAsyncMessagingEquivalence(baselineEvents, modernizedEvents);
-        logs.add("[Link 6: Differential Equivalence] RocketMQ / Kafka Event Stream Comparison Verdict: "
+        String link6TransportMode = "IN_MEMORY_SPECIFICATION_MODEL";
+        String link6BrokerEvidenceStatus = "EXTERNAL_BROKER_DEFERRED";
+        logs.add("[Link 6: Differential Equivalence] Transport: " + link6TransportMode + " (Live broker: " + link6BrokerEvidenceStatus + ")");
+        logs.add("  - Event Stream Comparison: "
                 + (messagingVerdict.isEquivalent() ? "EQUIVALENT" : "DIVERGENT")
                 + " (Score: " + messagingVerdict.equivalenceScore() + "%, Mismatches: " + messagingVerdict.mismatches().size() + ")");
 
@@ -156,17 +200,23 @@ public final class SpringMyBatisFlexBenchmarkValidator {
         try {
             auditVerdict = auditSuite.auditModernizedProject(mybatisFlexRoot, "mybatis-flex", "MyBatis-Flex Modernization");
         } catch (IOException e) {
-            auditVerdict = new ProjectAuditVerdict("mybatis-flex", "MyBatis-Flex", true, 100.0, true, 100.0, true, 100.0, true, 100.0, 100.0, true, List.of("Audit fallback"));
+            logs.add("[Link 7: Enterprise Audit Gate] Audit failed with exception: " + e.getMessage());
+            auditVerdict = new ProjectAuditVerdict("mybatis-flex", "MyBatis-Flex", false, 0.0, false, 0.0, false, 0.0, false, 0.0, 0.0, false, List.of("Audit failure: " + e.getMessage()));
         }
 
         double finalScore = Math.min(100.0, (auditVerdict.overallMaturityScore() + messagingVerdict.equivalenceScore()) / 2.0);
+        if (realMavenBuildExecuted && !realMavenBuildPassed) {
+            finalScore = Math.min(finalScore, 49.0); // Fail-closed cap if real compilation failed
+        }
+
         boolean allPassed = reactorVerdict.isMultiModule()
                 && reactorVerdict.allSubmodulesExist()
                 && autoConfigImportsPresent
                 && shimResult.generated()
                 && shimHygiene.isCompliant()
                 && runtimeReadiness
-                && messagingVerdict.isEquivalent();
+                && messagingVerdict.isEquivalent()
+                && (!realMavenBuildExecuted || realMavenBuildPassed);
 
         logs.add("[Link 7: Enterprise Audit Gate] 7-Domain Audit Breakdown:");
         logs.add("  - Security Score: " + auditVerdict.securityScore() + "%");
@@ -193,9 +243,33 @@ public final class SpringMyBatisFlexBenchmarkValidator {
                 shimHygiene,
                 runtimeReadiness,
                 messagingVerdict,
+                link6TransportMode,
+                link6BrokerEvidenceStatus,
                 auditVerdict,
+                realMavenBuildExecuted,
+                realMavenExitCode,
+                realMavenBuildPassed,
                 finalScore,
                 Collections.unmodifiableList(logs)
         );
+    }
+
+    private static int executeMavenBuild(Path projectRoot, List<String> capturedOutput) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("mvn", "test-compile", "-DskipTests");
+            pb.directory(projectRoot.toFile());
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+            try (var reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    capturedOutput.add(line);
+                }
+            }
+            return process.waitFor();
+        } catch (Exception e) {
+            capturedOutput.add("[ERROR] Failed to execute mvn process: " + e.getMessage());
+            return -1;
+        }
     }
 }

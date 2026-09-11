@@ -166,6 +166,14 @@ public final class SpringJUnitModernizer {
         // 3. Assertions method calls
         code = code.replaceAll("\\bAssert\\.", "Assertions.");
 
+        // 4. Swap JUnit 4 (message, condition) to JUnit 5 (condition, message)
+        Pattern messageFirstPattern = Pattern.compile("(?s)Assertions\\.(assertTrue|assertFalse|assertNotNull|assertNull)\\s*\\(\\s*(\"[^\"]*\")\\s*,\\s*(.*?)\\s*\\)");
+        Matcher m = messageFirstPattern.matcher(code);
+        if (m.find()) {
+            code = m.replaceAll("Assertions.$1($3, $2)");
+            rules.add("RULE-JUNIT4-SWAP-ASSERT-MESSAGE-ORDER");
+        }
+
         return code;
     }
 
