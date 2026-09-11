@@ -6284,3 +6284,233 @@ class ComprehensiveEvidencePack:
     sealed_at: str = ""
     certified_by: str = ""
 
+
+# ─── Recipe, Pack and Extension Upgrade Models (B38) ────────────────
+
+class ArtifactPackageType(str, Enum):
+    RECIPE = "recipe"
+    PACK = "pack"
+    EXTENSION = "extension"
+
+class PackageUpgradeStrategy(str, Enum):
+    ROLLING = "rolling"
+    ATOMIC = "atomic"
+    BLUE_GREEN = "blue_green"
+    CANARY = "canary"
+
+class PackageUpgradeStatus(str, Enum):
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    APPLIED = "applied"
+    ROLLED_BACK = "rolled_back"
+    FAILED = "failed"
+
+@dataclass
+class PackageDependency:
+    name: str
+    version_constraint: str
+    package_type: ArtifactPackageType = ArtifactPackageType.PACK
+    mandatory: bool = True
+
+@dataclass
+class PackageArtifact:
+    package_id: str
+    name: str
+    version: str
+    package_type: ArtifactPackageType
+    sha256: str
+    dependencies: List[PackageDependency] = field(default_factory=list)
+    supported_editions: List[str] = field(default_factory=list)
+    deprecated: bool = False
+    created_at: str = ""
+
+@dataclass
+class PackageUpgradePlan:
+    plan_id: str
+    package_name: str
+    package_type: ArtifactPackageType
+    from_version: str
+    to_version: str
+    strategy: PackageUpgradeStrategy = PackageUpgradeStrategy.ROLLING
+    status: PackageUpgradeStatus = PackageUpgradeStatus.PENDING
+    target_deployments: List[str] = field(default_factory=list)
+    applied_deployments: List[str] = field(default_factory=list)
+    rollback_on_failure: bool = True
+    error_message: str = ""
+    started_at: str = ""
+    completed_at: str = ""
+
+# ─── Enterprise Support SLA Models (B39) ────────────────────────────
+
+class SupportTierLevel(str, Enum):
+    COMMUNITY = "community"
+    STANDARD = "standard"
+    PREMIER = "premier"
+    MISSION_CRITICAL = "mission_critical"
+
+class TicketPriority(str, Enum):
+    P1_CRITICAL = "p1_critical"
+    P2_HIGH = "p2_high"
+    P3_MEDIUM = "p3_medium"
+    P4_LOW = "p4_low"
+
+class TicketStatus(str, Enum):
+    OPEN = "open"
+    ASSIGNED = "assigned"
+    IN_PROGRESS = "in_progress"
+    RESOLVED = "resolved"
+    CLOSED = "closed"
+
+@dataclass
+class SupportSlaTarget:
+    tier: SupportTierLevel
+    priority: TicketPriority
+    response_time_minutes: int
+    resolution_time_minutes: int
+    twenty_four_seven: bool = True
+    dedicated_tam: bool = False
+
+@dataclass
+class SupportTicket:
+    ticket_id: str
+    customer_id: str
+    support_tier: SupportTierLevel
+    priority: TicketPriority
+    status: TicketStatus = TicketStatus.OPEN
+    created_at: str = ""
+    first_response_at: str = ""
+    resolved_at: str = ""
+    assigned_engineer: str = ""
+    response_breached: bool = False
+    resolution_breached: bool = False
+    service_credit_eligible: bool = False
+    summary: str = ""
+
+# ─── Independent Security Assessment Models (B40) ───────────────────
+
+class AssessmentType(str, Enum):
+    PENETRATION_TEST = "penetration_test"
+    THIRD_PARTY_CODE_AUDIT = "third_party_code_audit"
+    RED_TEAM_ENGAGEMENT = "red_team_engagement"
+    CRYPTO_REVIEW = "crypto_review"
+
+class AssessorType(str, Enum):
+    EXTERNAL_ACCREDITED = "external_accredited"
+    REGULATORY_BODY = "regulatory_body"
+    INDEPENDENT_AUDITOR = "independent_auditor"
+
+class AssessmentStatus(str, Enum):
+    SCOPING = "scoping"
+    FIELDWORK = "fieldwork"
+    REPORT_DRAFT = "report_draft"
+    REMEDIATION = "remediation"
+    CERTIFIED_CLOSED = "certified_closed"
+
+@dataclass
+class IndependentAuditFinding:
+    finding_id: str
+    assessment_id: str
+    title: str
+    severity: str  # critical, high, medium, low, info
+    cwe_id: str = ""
+    remediation_notes: str = ""
+    verified_closed: bool = False
+    closed_at: str = ""
+    verified_by: str = ""
+
+@dataclass
+class IndependentAssessmentRecord:
+    assessment_id: str
+    target_release: str
+    assessment_type: AssessmentType
+    assessor_firm: str
+    assessor_type: AssessorType = AssessorType.EXTERNAL_ACCREDITED
+    status: AssessmentStatus = AssessmentStatus.SCOPING
+    findings: List[IndependentAuditFinding] = field(default_factory=list)
+    total_findings: int = 0
+    open_blockers: int = 0
+    started_at: str = ""
+    completed_at: str = ""
+    sign_off_attestation: str = ""
+    passed_gate: bool = False
+
+# ─── Migration Run Ingestion Models (B41) ───────────────────────────
+
+class IngestedAssetType(str, Enum):
+    RULE = "rule"
+    PATTERN = "pattern"
+    ERROR_SOLUTION = "error_solution"
+    FIXTURE = "fixture"
+    REGRESSION_TEST = "regression_test"
+
+class IngestionQualityScore(str, Enum):
+    VERIFIED = "verified"
+    HIGH = "high"
+    MEDIUM = "medium"
+    REJECTED = "rejected"
+
+@dataclass
+class RunIngestionArtifact:
+    artifact_id: str
+    run_id: str
+    asset_type: IngestedAssetType
+    source_language: str
+    target_language: str
+    content: str
+    quality: IngestionQualityScore = IngestionQualityScore.HIGH
+    confidence_score: float = 0.8
+    approved_by: str = ""
+    ingested_at: str = ""
+    provenance_run_id: str = ""
+
+@dataclass
+class MigrationRunSummary:
+    run_id: str
+    project_name: str
+    source_tech: str
+    target_tech: str
+    success: bool
+    files_migrated: int = 0
+    transformations_applied: int = 0
+    errors_encountered: List[str] = field(default_factory=list)
+    completed_at: str = ""
+
+# ─── Mature Release Readiness Models (B45) ──────────────────────────
+
+class ReleasePillar(str, Enum):
+    FUNCTIONAL = "functional"
+    SECURITY = "security"
+    SRE_RELIABILITY = "sre_reliability"
+    PERFORMANCE = "performance"
+    COMPLIANCE = "compliance"
+    CUSTOMER_OUTCOME = "customer_outcome"
+    ECONOMICS = "economics"
+
+class PillarStatus(str, Enum):
+    NOT_STARTED = "not_started"
+    IN_REVIEW = "in_review"
+    PASSED = "passed"
+    BLOCKED = "blocked"
+    WAIVED = "waived"
+
+@dataclass
+class PillarEvaluation:
+    pillar: ReleasePillar
+    status: PillarStatus = PillarStatus.NOT_STARTED
+    score: float = 0.0
+    blocking_issues: List[str] = field(default_factory=list)
+    lead_owner: str = ""
+    evidence_hashes: List[str] = field(default_factory=list)
+    notes: str = ""
+
+@dataclass
+class MatureReleaseReadinessRecord:
+    review_id: str
+    target_release: str
+    pillars: Dict[str, PillarEvaluation] = field(default_factory=dict)
+    overall_score: float = 0.0
+    ready_for_general_availability: bool = False
+    sign_off_director: str = ""
+    reviewed_at: str = ""
+
+

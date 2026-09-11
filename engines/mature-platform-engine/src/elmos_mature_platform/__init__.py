@@ -90,6 +90,11 @@ from elmos_mature_platform.customer_status_communication_engine import CustomerS
 from elmos_mature_platform.compliance_control_crosswalk_engine import ComplianceControlCrosswalkEngine
 from elmos_mature_platform.effort_duration_cost_prediction_engine import EffortDurationCostPredictionEngine
 from elmos_mature_platform.mature_product_evidence_pack_engine import MatureProductEvidencePackEngine
+from elmos_mature_platform.recipe_pack_extension_upgrade_engine import RecipePackExtensionUpgradeEngine
+from elmos_mature_platform.enterprise_support_sla_engine import EnterpriseSupportSlaEngine
+from elmos_mature_platform.independent_security_assessment_engine import IndependentSecurityAssessmentEngine
+from elmos_mature_platform.migration_run_ingestion_engine import MigrationRunIngestionEngine
+from elmos_mature_platform.mature_release_readiness_engine import MatureReleaseReadinessEngine
 from elmos_mature_platform.types import (
     AgentAutonomyLevel,
     AgentDeploymentMode,
@@ -185,6 +190,11 @@ __all__ = [
     "ComplianceControlCrosswalkEngine",
     "EffortDurationCostPredictionEngine",
     "MatureProductEvidencePackEngine",
+    "RecipePackExtensionUpgradeEngine",
+    "EnterpriseSupportSlaEngine",
+    "IndependentSecurityAssessmentEngine",
+    "MigrationRunIngestionEngine",
+    "MatureReleaseReadinessEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",
