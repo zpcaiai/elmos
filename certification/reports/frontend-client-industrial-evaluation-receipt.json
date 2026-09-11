@@ -1,11 +1,11 @@
 {
-  "receipt_id": "RCPT-CERT-M32-L5-FRONTEND-18D7E204E300E94A",
+  "receipt_id": "RCPT-CERT-M32-L5-FRONTEND-690CFF94F767AAD3",
   "target": "Business Line 4: 大前端与小程序迁移 (Batch 32 / M32)",
   "verdict": "CERTIFIED",
   "declared_rate": "100.0%",
   "industrial_grade_quality": "100.0%",
   "merkle_root": "03ea65e68b2acc52a363e028d2ce4d15928fc8fc24cd2ac3df0413d308ba232c",
-  "timestamp": "2026-09-11T12:26:22.913982+00:00",
+  "timestamp": "2026-09-11T17:18:11.006148+00:00",
   "total_loc": 81163,
   "automated_tests_passed": true
 }

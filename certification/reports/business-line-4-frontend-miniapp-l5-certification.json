@@ -1,9 +1,9 @@
 {
-  "certification_id": "CERT-M32-L5-FRONTEND-18D7E204E300E94A",
+  "certification_id": "CERT-M32-L5-FRONTEND-690CFF94F767AAD3",
   "business_line": "4. 大前端与小程序迁移 (M32)",
   "batch": "Batch 32 (M32)",
   "specification_level": "L5_INDUSTRIAL_ZERO_HUMAN_AUTONOMOUS",
-  "timestamp_utc": "2026-09-11T12:26:22.913982+00:00",
+  "timestamp_utc": "2026-09-11T17:18:11.006148+00:00",
   "overall_verdict": "CERTIFIED",
   "total_loc": 81163,
   "merkle_root": "03ea65e68b2acc52a363e028d2ce4d15928fc8fc24cd2ac3df0413d308ba232c",
@@ -19,7 +19,7 @@
       "phase": 1,
       "name": "Code Volume & Architectural Integrity Audit",
       "passed": true,
-      "duration_ms": 49384.18,
+      "duration_ms": 5490.02,
       "errors": [],
       "details": {
         "total_loc": 81163,
@@ -37,7 +37,7 @@
       "phase": 2,
       "name": "Dynamic State Management Engine Verification",
       "passed": true,
-      "duration_ms": 153.02,
+      "duration_ms": 8.69,
       "errors": [],
       "details": {
         "saga_effects_verified": 9,
@@ -50,7 +50,7 @@
       "phase": 3,
       "name": "Style Isolation & Dynamic CSS-in-JS Verification",
       "passed": true,
-      "duration_ms": 20.53,
+      "duration_ms": 1.13,
       "errors": [],
       "details": {
         "emotion_features_verified": 4,
@@ -62,7 +62,7 @@
       "phase": 4,
       "name": "Cross-Platform Native SDK & Hardware API Verification",
       "passed": true,
-      "duration_ms": 18.97,
+      "duration_ms": 3.31,
       "errors": [],
       "details": {
         "hardware_subsystems_audited": [
@@ -78,7 +78,7 @@
       "phase": 5,
       "name": "Enterprise Microfrontend Container & Subpackage Optimization",
       "passed": true,
-      "duration_ms": 5.22,
+      "duration_ms": 0.26,
       "errors": [],
       "details": {
         "mfe_components_audited": [
@@ -93,7 +93,7 @@
       "phase": 6,
       "name": "Enterprise Turnkey Benchmark Corpora Verification",
       "passed": true,
-      "duration_ms": 1.58,
+      "duration_ms": 0.13,
       "errors": [],
       "details": {
         "corpora": [
@@ -108,11 +108,11 @@
       "phase": 7,
       "name": "Full Automated Unit & Integration Test Suite",
       "passed": true,
-      "duration_ms": 271541.17,
+      "duration_ms": 108440.52,
       "errors": [],
       "details": {
         "exit_code": 0,
-        "raw_output_snippet": "hould trigger $onAction before/after/error lifecycle hooks (7 ms)\n      ✓ should support $patch both with partial object and mutator function (19 ms)\n      ✓ should connect to MiniApp setData and automatically sync mutations (35 ms)\n    MobX Transparent Reactive Proxy (createObservableProxy, reaction, autorun)\n      ✓ should transparently track property reads and fire autorun on mutation (266 ms)\n      ✓ should fire reaction with new and old value (1 ms)\n      ✓ should automatically compute dirty paths and sync to MiniApp Page instance (32 ms)\n    MiniApp Granular Path-Diffing setData Architecture\n      ✓ should compute minimal dot-delimited and bracket-delimited diff paths (5 ms)\n      ✓ should chunk oversized payloads into multiple setData calls (2 ms)\n\nA worker process has failed to exit gracefully and has been force exited. This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks. Active timers can also cause this, ensure that .unref() was called on them.\nTest Suites: 4 passed, 4 total\nTests:       26 passed, 26 total\nSnapshots:   0 total\nTime:        196.89 s\nRan all test suites matching /tests\\/enterprise-dynamic-state-engine.test.ts|tests\\/css-in-js-and-style-isolation.test.ts|tests\\/cross-platform-hardware-native-sdk.test.ts|tests\\/enterprise-mfe-and-subpackages.test.ts/i.\nForce exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?\n",
+        "raw_output_snippet": "    ✓ should compute minimal dot-delimited and bracket-delimited diff paths (8 ms)\n      ✓ should chunk oversized payloads into multiple setData calls (11 ms)\n\nPASS tests/css-in-js-and-style-isolation.test.ts (69.101 s)\n  CSS-in-JS & Style Isolation Engine (M32)\n    Emotion / styled-components Transpiler\n      ✓ should parse tagged template literals, separate static styles, and extract dynamic bindings (378 ms)\n    CSS Modules Scoped Isolation Engine\n      ✓ should generate deterministic scoped class hashes and rewrite class names (6 ms)\n    Media Query & Pseudo-Class Bridge\n      ✓ should map :hover, :active, and :focus to hover-class and focused classes (3 ms)\n      ✓ should generate responsive viewport observer code for MiniApp (1 ms)\n\nA worker process has failed to exit gracefully and has been force exited. This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks. Active timers can also cause this, ensure that .unref() was called on them.\nTest Suites: 4 passed, 4 total\nTests:       26 passed, 26 total\nSnapshots:   0 total\nTime:        78.267 s, estimated 169 s\nRan all test suites matching /tests\\/enterprise-dynamic-state-engine.test.ts|tests\\/css-in-js-and-style-isolation.test.ts|tests\\/cross-platform-hardware-native-sdk.test.ts|tests\\/enterprise-mfe-and-subpackages.test.ts/i.\nForce exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?\n",
         "passed_tests": 26,
         "total_tests": 26
       }

@@ -6,7 +6,7 @@
   "local_execution_status": "LOCAL_EXECUTED_SELF_ATTESTED",
   "external_evidence_status": "NOT_RUN",
   "certification": "NOT_CERTIFIED",
-  "verified_at": "2026-09-11T10:16:12.029132+00:00",
+  "verified_at": "2026-09-11T17:18:18.826766+00:00",
   "metrics": {
     "total_bl7_loc": 119230,
     "total_new_subsystems_loc": 16577,
@@ -42,67 +42,67 @@
       "name": "Pillar 1: PR Self-Healing Closed Loop (GitHub/GitLab/AST/Sandbox)",
       "passed": true,
       "test_count": 19,
-      "duration_seconds": 9.02
+      "duration_seconds": 0.84
     },
     {
       "name": "Pillar 1: Autonomous QA Industrial Subsystems (17 Subsystem Engines)",
       "passed": true,
       "test_count": 20,
-      "duration_seconds": 7.18
+      "duration_seconds": 0.98
     },
     {
       "name": "Pillar 1: Go Daemon Webhook & Sandboxed Runner Verification (go vet)",
       "passed": true,
       "test_count": 1,
-      "duration_seconds": 12.05
+      "duration_seconds": 1.86
     },
     {
       "name": "Pillar 2: Project Intelligence Deep Analysis (Callgraph/Taint/Architecture/Threats)",
       "passed": true,
       "test_count": 4,
-      "duration_seconds": 4.29
+      "duration_seconds": 0.42
     },
     {
       "name": "Pillar 2: Project Intelligence Subsystems (14 Subsystem Engines)",
       "passed": true,
       "test_count": 15,
-      "duration_seconds": 3.73
+      "duration_seconds": 0.49
     },
     {
       "name": "Pillar 3: Foundry High-Frequency Core Skills & Handlers",
       "passed": true,
       "test_count": 12,
-      "duration_seconds": 180.95
+      "duration_seconds": 18.22
     },
     {
       "name": "Pillar 3: Knowledge-Skill-Model Foundry Subsystems (9 Subsystem Engines)",
       "passed": true,
       "test_count": 9,
-      "duration_seconds": 4.86
+      "duration_seconds": 0.35
     },
     {
       "name": "Pillar 3: LLM API Gateway & Multi-Provider Router (Go Unit & E2E Tests)",
       "passed": true,
       "test_count": 22,
-      "duration_seconds": 21.1
+      "duration_seconds": 0.63
     },
     {
       "name": "Pillar 3: Distributed Task Scheduler & Fencing Worker Pool",
       "passed": true,
       "test_count": 12,
-      "duration_seconds": 3.36
+      "duration_seconds": 0.71
     },
     {
       "name": "Pillar 3: 1,244 Brokered Skills Automated Execution Broker & Handlers",
       "passed": true,
       "test_count": 6,
-      "duration_seconds": 39.73
+      "duration_seconds": 3.04
     },
     {
       "name": "Pillar 2: 500 Intelligence Tasks, 248 Acceptance Scenarios & Subsystems Runner",
       "passed": true,
       "test_count": 10,
-      "duration_seconds": 120.62
+      "duration_seconds": 10.61
     }
   ],
   "anti_cheating": {
@@ -145,5 +145,5 @@
     "certification_authority": "NOT_CERTIFIED"
   },
   "blockers": [],
-  "local_report_digest": "sha256:c60d794b7d329bc1de2782049472ad063248c605501612c1fc4a94a6e1a47a1b"
+  "local_report_digest": "sha256:2d9cec39c3f4ec39d83432448b9f27cefd5bd7de8a79ba001cd5b9c8e4f15548"
 }
