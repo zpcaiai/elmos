@@ -1,17 +1,17 @@
 {
-  "certification_id": "CERT-ELMOS-B31-L5-20260911115829-26618",
+  "certification_id": "CERT-ELMOS-B31-L5-20260911170945-87556",
   "evaluator": "Elmos L5 Industrial Autonomous Gate (Batch 31)",
   "business_line": "Business Line 3: Database & SQL Dialect Migration (including ChinaDB)",
   "autonomy_level": "L5_AUTONOMOUS_ZERO_HUMAN",
   "overall_verdict": "CERTIFIED_L5_AUTONOMOUS",
-  "certified_at": "2026-09-11T11:58:29.406608+00:00",
-  "total_loc": 93167,
-  "python_loc": 81340,
+  "certified_at": "2026-09-11T17:09:45.732500+00:00",
+  "total_loc": 93190,
+  "python_loc": 81363,
   "sql_loc": 11827,
   "total_files": 196,
   "human_review_backlog_count": 0,
-  "p95_latency_ms": 1.6,
-  "merkle_root": "03c1ac5c1b4096db7fe43fcd1d54914ceb330d3931459265ebc86ebe81cc8bbe",
+  "p95_latency_ms": 0.44,
+  "merkle_root": "b555a0b093fda5232cfb1d3c8f4c417e75b02aa7e08f2b85e746c31256914489",
   "system_metadata": {
     "platform": "macOS-26.6.2-arm64-arm-64bit",
     "python_version": "3.12.14 (main, Aug 12 2026, 13:57:54) [Clang 21.0.0 (clang-2100.1.1.101)]",
@@ -23,11 +23,11 @@
       "phase": 1,
       "name": "Codebase Scale & Structural Integrity Audit",
       "passed": true,
-      "duration_ms": 3404.86,
+      "duration_ms": 904.49,
       "errors": [],
       "details": {
-        "total_loc": 93167,
-        "python_loc": 81340,
+        "total_loc": 93190,
+        "python_loc": 81363,
         "sql_loc": 11827,
         "files_scanned": 196,
         "min_loc_threshold": 80000,
@@ -35,14 +35,14 @@
           ".py": 184,
           ".sql": 12
         },
-        "merkle_root": "03c1ac5c1b4096db7fe43fcd1d54914ceb330d3931459265ebc86ebe81cc8bbe"
+        "merkle_root": "b555a0b093fda5232cfb1d3c8f4c417e75b02aa7e08f2b85e746c31256914489"
       }
     },
     {
       "phase": 2,
       "name": "L5 Zero-Human Autonomy Backlog Assertion",
       "passed": true,
-      "duration_ms": 1216.91,
+      "duration_ms": 432.28,
       "errors": [],
       "details": {
         "overall_success": true,
@@ -56,7 +56,7 @@
       "phase": 3,
       "name": "13 Domestic ChinaDB Targets Lowering & Protocol Verification",
       "passed": true,
-      "duration_ms": 241.68,
+      "duration_ms": 23.34,
       "errors": [],
       "details": {
         "total_targets": 13,
@@ -172,14 +172,14 @@
       "phase": 4,
       "name": "Enterprise Business Corpora & Invariant Preservation",
       "passed": true,
-      "duration_ms": 40.42,
+      "duration_ms": 1.11,
       "errors": [],
       "details": {
         "domain_metrics": {
           "banking": {
             "balanced": true,
             "sim_txns": 40,
-            "p95_ms": 0.5590915679931641
+            "p95_ms": 0.011205673217773438
           },
           "insurance": {
             "beneficiary_allocated_pct": 100.0,
@@ -208,7 +208,7 @@
       "phase": 5,
       "name": "L5 AST Self-Healing & Sandbox Closed-Loop Engine",
       "passed": true,
-      "duration_ms": 18.66,
+      "duration_ms": 6.52,
       "errors": [],
       "details": {
         "test_cases_total": 5,
@@ -219,7 +219,7 @@
       "phase": 6,
       "name": "Real-Time CDC Bi-Directional Replication & Reconciliation",
       "passed": true,
-      "duration_ms": 214.11,
+      "duration_ms": 8.06,
       "errors": [],
       "details": {
         "events_replicated": 25,
@@ -230,13 +230,13 @@
       "phase": 7,
       "name": "High-Concurrency Stress & Latency SLO Benchmark",
       "passed": true,
-      "duration_ms": 818.89,
+      "duration_ms": 305.14,
       "errors": [],
       "details": {
         "concurrency_threads": 8,
         "total_transactions": 400,
-        "p95_latency_ms": 1.6,
-        "p99_latency_ms": 8.54,
+        "p95_latency_ms": 0.44,
+        "p99_latency_ms": 0.72,
         "error_rate": 0.0
       }
     }
