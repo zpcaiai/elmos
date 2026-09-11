@@ -160,6 +160,12 @@ from elmos_mature_platform.sdk_compatibility_engine import SdkCompatibilityEngin
 from elmos_mature_platform.support_eol_policy_engine import SupportEolPolicyEngine
 from elmos_mature_platform.assessment_poc_project_quote_engine import AssessmentPocProjectQuoteEngine
 from elmos_mature_platform.cache_incremental_cost_optimization_engine import CacheIncrementalCostOptimizationEngine
+from elmos_mature_platform.cost_taxonomy_economic_model_engine import CostTaxonomyEconomicModelEngine
+from elmos_mature_platform.customer_route_edition_margin_engine import CustomerRouteEditionMarginEngine
+from elmos_mature_platform.economics_maturity_gate_engine import EconomicsMaturityGateEngine
+from elmos_mature_platform.human_expert_cost_engine import HumanExpertCostEngine
+from elmos_mature_platform.provider_resource_routing_engine import ProviderResourceRoutingEngine
+from elmos_mature_platform.resource_metering_engine import ResourceMeteringEngine
 
 
 from elmos_mature_platform.physical import (
@@ -337,6 +343,12 @@ __all__ = [
     "SupportEolPolicyEngine",
     "AssessmentPocProjectQuoteEngine",
     "CacheIncrementalCostOptimizationEngine",
+    "CostTaxonomyEconomicModelEngine",
+    "CustomerRouteEditionMarginEngine",
+    "EconomicsMaturityGateEngine",
+    "HumanExpertCostEngine",
+    "ProviderResourceRoutingEngine",
+    "ResourceMeteringEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",

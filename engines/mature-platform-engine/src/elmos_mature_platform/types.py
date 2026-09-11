@@ -8317,4 +8317,210 @@ class CacheCostOptimizationRecommendation:
     generated_at: str = ""
 
 
+# ─── Cost Taxonomy & Economic Model (Batch 44 - Skill 1456) ──────────
+
+class CostTaxonomyType(str, Enum):
+    COMPUTE = "compute"
+    STORAGE = "storage"
+    NETWORK_EGRESS = "network_egress"
+    MODEL_INFERENCE = "model_inference"
+    LICENSE_TOOLCHAIN = "license_toolchain"
+    HUMAN_ENGINEERING = "human_engineering"
+    OPERATIONS_OVERHEAD = "operations_overhead"
+
+@dataclass
+class CostCenterRecord:
+    center_id: str
+    name: str
+    department: str
+    owner: str
+    budget_allocated_usd: float = 0.0
+    budget_spent_usd: float = 0.0
+    is_active: bool = True
+    created_at: str = ""
+
+@dataclass
+class CostAllocationEntry:
+    entry_id: str
+    center_id: str
+    taxonomy_type: CostTaxonomyType
+    amount_usd: float
+    description: str = ""
+    resource_id: str = ""
+    timestamp: str = ""
+    is_capex: bool = False
+
+@dataclass
+class EconomicModelSummary:
+    total_spend_usd: float
+    capex_total_usd: float
+    opex_total_usd: float
+    by_taxonomy: Dict[str, float] = field(default_factory=dict)
+    by_cost_center: Dict[str, float] = field(default_factory=dict)
+    active_centers_count: int = 0
+    over_budget_centers: List[str] = field(default_factory=list)
+
+
+# ─── Customer Route Edition Margin (Batch 44 - Skill 1467) ───────────
+
+class MarginHealthStatus(str, Enum):
+    HEALTHY = "healthy"          # >= 60%
+    WARNING = "warning"          # 30% - 60%
+    CRITICAL = "critical"        # < 30% or negative
+
+@dataclass
+class CustomerRouteMarginRecord:
+    record_id: str
+    customer_id: str
+    project_id: str
+    route_key: str
+    edition: str
+    contract_revenue_usd: float
+    compute_cogs_usd: float = 0.0
+    model_cogs_usd: float = 0.0
+    storage_cogs_usd: float = 0.0
+    human_cogs_usd: float = 0.0
+    license_cogs_usd: float = 0.0
+    target_margin_pct: float = 65.0
+    recorded_at: str = ""
+
+@dataclass
+class EditionMarginSummary:
+    edition: str
+    total_revenue_usd: float
+    total_cogs_usd: float
+    gross_margin_usd: float
+    gross_margin_pct: float
+    project_count: int
+    health_status: MarginHealthStatus
+
+
+# ─── Economics Maturity Gate (Batch 44 - Skill 1474) ─────────────────
+
+class EconomicsGateCheckType(str, Enum):
+    MINIMUM_GROSS_MARGIN = "minimum_gross_margin"
+    UNIT_ECONOMICS_BOUND = "unit_economics_bound"
+    BILLING_RECONCILIATION_TOLERANCE = "billing_reconciliation_tolerance"
+    COST_ATTRIBUTION_COVERAGE = "cost_attribution_coverage"
+    BUDGET_OVERRUN_GUARDRAIL = "budget_overrun_guardrail"
+    SHOWBACK_COMPLETENESS = "showback_completeness"
+
+class EconomicsGateVerdict(str, Enum):
+    PASS = "pass"
+    FAIL = "fail"
+    CONDITIONAL = "conditional"
+    PENDING = "pending"
+
+@dataclass
+class EconomicsGateCriterion:
+    criterion_id: str
+    check_type: EconomicsGateCheckType
+    target_threshold: float
+    actual_metric: float = 0.0
+    verdict: EconomicsGateVerdict = EconomicsGateVerdict.PENDING
+    evidence_ref: str = ""
+    notes: str = ""
+
+@dataclass
+class EconomicsMaturityGateEvaluation:
+    eval_id: str
+    pack_key: str
+    scope: str
+    criteria: Dict[str, EconomicsGateCriterion] = field(default_factory=dict)
+    overall_verdict: EconomicsGateVerdict = EconomicsGateVerdict.PENDING
+    evaluated_at: str = ""
+    evaluated_by: str = ""
+    sign_off_notes: str = ""
+
+
+# ─── Human Expert Cost (Batch 44 - Skill 1463) ───────────────────────
+
+class ExpertRoleTier(str, Enum):
+    DISTINGUISHED_ARCHITECT = "distinguished_architect"
+    SENIOR_MIGRATION_ENGINEER = "senior_migration_engineer"
+    QA_AUTOMATION_SPECIALIST = "qa_automation_specialist"
+    DOMAIN_SECURITY_EXPERT = "domain_security_expert"
+
+@dataclass
+class HumanExpertEngagement:
+    engagement_id: str
+    project_id: str
+    role_tier: ExpertRoleTier
+    hourly_rate_usd: float
+    hours_logged: float = 0.0
+    billable_hours: float = 0.0
+    tasks_addressed: List[str] = field(default_factory=list)
+    active: bool = True
+    assigned_at: str = ""
+
+@dataclass
+class HumanCostSummary:
+    total_hours: float
+    total_billable_hours: float
+    total_cost_usd: float
+    by_role: Dict[str, float] = field(default_factory=dict)
+    active_engagements_count: int = 0
+
+
+# ─── Provider Resource Routing (Batch 44 - Skill 1470) ───────────────
+
+class RoutingStrategy(str, Enum):
+    LOWEST_COST = "lowest_cost"
+    LOWEST_LATENCY = "lowest_latency"
+    BALANCED_EFFICIENCY = "balanced_efficiency"
+    MAX_CAPACITY = "max_capacity"
+    FAILOVER_PRESERVED = "failover_preserved"
+
+@dataclass
+class ProviderResourceProfile:
+    resource_id: str
+    provider_name: str
+    resource_type: str
+    unit_cost_usd: float
+    average_latency_ms: float = 100.0
+    current_load_pct: float = 0.0
+    is_available: bool = True
+    region: str = "global"
+    tier: str = "standard"
+
+@dataclass
+class ResourceRoutingDecision:
+    decision_id: str
+    workload_type: str
+    strategy: RoutingStrategy
+    selected_resource_id: str
+    provider_name: str
+    estimated_cost_usd: float
+    estimated_latency_ms: float
+    reason: str
+    routed_at: str = ""
+
+
+# ─── Resource Metering (Batch 44 - Skill 1457) ────────────────────────
+
+class MeteredResourceType(str, Enum):
+    RUNNER_COMPUTE_SECONDS = "runner_compute_seconds"
+    MODEL_INPUT_TOKENS = "model_input_tokens"
+    MODEL_OUTPUT_TOKENS = "model_output_tokens"
+    STORAGE_GB_HOURS = "storage_gb_hours"
+    NETWORK_EGRESS_BYTES = "network_egress_bytes"
+
+@dataclass
+class ResourceMeterEvent:
+    event_id: str
+    tenant_id: str
+    project_id: str
+    resource_type: MeteredResourceType
+    units: float
+    recorded_at: str = ""
+    metadata: Dict[str, str] = field(default_factory=dict)
+
+@dataclass
+class TenantUsageRollup:
+    tenant_id: str
+    total_units_by_type: Dict[str, float] = field(default_factory=dict)
+    last_event_at: str = ""
+    total_events_count: int = 0
+
+
 
