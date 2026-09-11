@@ -236,10 +236,10 @@ public final class SpringDiagnosticAutoRepairer {
                 content = ensureImport(content, "org.springframework.security.config.annotation.web.builders.HttpSecurity");
 
                 // Replace protected void configure(HttpSecurity http) throws Exception
-                Pattern configurePattern = Pattern.compile("protected\\s+void\\s+configure\\s*\\(\\s*HttpSecurity\\s+([a-zA-Z0-9_]+)\\s*\\)\\s*throws\\s+Exception\\s*\\{");
+                Pattern configurePattern = Pattern.compile("(@Override\\s+)?(protected|public)\\s+void\\s+configure\\s*\\(\\s*HttpSecurity\\s+([a-zA-Z0-9_]+)\\s*\\)(\\s*throws\\s+[a-zA-Z0-9_,\\s]+)?\\s*\\{");
                 Matcher configureMatcher = configurePattern.matcher(content);
                 if (configureMatcher.find()) {
-                    String httpParam = configureMatcher.group(1);
+                    String httpParam = configureMatcher.group(3);
                     String replacement = "@Bean\n    public SecurityFilterChain securityFilterChain(HttpSecurity " + httpParam + ") throws Exception {";
                     content = configureMatcher.replaceFirst(replacement);
 
@@ -255,18 +255,50 @@ public final class SpringDiagnosticAutoRepairer {
                         }
                     }
                 }
+                content = content.replaceAll("@Override\\s*(@Bean\\s+public\\s+SecurityFilterChain)", "$1");
+                content = content.replaceAll("(@Bean\\s+)@Override\\s*(public\\s+SecurityFilterChain)", "$1$2");
                 rules.add("MODERNIZE_SPRING_SECURITY_6_FILTER_CHAIN");
                 changes++;
             }
 
-            // Rule 2.3: Spring Security 6 - authorizeRequests() -> authorizeHttpRequests()
-            if (content.contains("authorizeRequests()")) {
-                content = content.replace("authorizeRequests()", "authorizeHttpRequests()");
-                rules.add("MIGRATE_AUTHORIZE_HTTP_REQUESTS");
-                changes++;
+            // Rule 2.3: Spring Security 6 - authorizeRequests() -> authorizeHttpRequests() with Lambda DSL
+            if (content.contains("authorizeRequests()") || content.contains("authorizeHttpRequests()")) {
+                Pattern authPattern = Pattern.compile("(?<=[.\\s])authorize(?:Http)?Requests\\(\\)([\\s\\S]*?)(?=(?:\\.and\\(\\)|;|\\.(?:csrf|cors|headers|sessionManagement|formLogin|httpBasic|anonymous|logout|oauth2ResourceServer|exceptionHandling|addFilter)\\())");
+                Matcher authMatcher = authPattern.matcher(content);
+                if (authMatcher.find()) {
+                    StringBuffer sb = new StringBuffer();
+                    do {
+                        String chain = authMatcher.group(1).trim();
+                        if (!chain.isEmpty()) {
+                            String modernizedChain = chain
+                                    .replace(".antMatchers(", ".requestMatchers(")
+                                    .replace(".mvcMatchers(", ".requestMatchers(")
+                                    .replace(".regexMatchers(", ".requestMatchers(");
+                            String replacement = "authorizeHttpRequests(auth -> auth"
+                                    + (modernizedChain.startsWith(".") ? "" : ".")
+                                    + modernizedChain + ")";
+                            authMatcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+                        } else {
+                            authMatcher.appendReplacement(sb, "authorizeHttpRequests()");
+                        }
+                    } while (authMatcher.find());
+                    authMatcher.appendTail(sb);
+                    content = sb.toString();
+                    rules.add("MIGRATE_AUTHORIZE_HTTP_REQUESTS_LAMBDA_DSL");
+                    changes++;
+                } else if (content.contains("authorizeRequests()")) {
+                    content = content.replace("authorizeRequests()", "authorizeHttpRequests()");
+                    rules.add("MIGRATE_AUTHORIZE_HTTP_REQUESTS");
+                    changes++;
+                }
             }
             if (content.contains("antMatchers(")) {
                 content = content.replace("antMatchers(", "requestMatchers(");
+                rules.add("MIGRATE_REQUEST_MATCHERS");
+                changes++;
+            }
+            if (content.contains("mvcMatchers(")) {
+                content = content.replace("mvcMatchers(", "requestMatchers(");
                 rules.add("MIGRATE_REQUEST_MATCHERS");
                 changes++;
             }

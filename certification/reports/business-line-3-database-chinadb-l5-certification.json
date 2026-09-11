@@ -1,20 +1,20 @@
 {
-  "certification_id": "CERT-ELMOS-B31-L5-20260910230722-44435",
+  "certification_id": "CERT-ELMOS-B31-L5-20260911024307-72324",
   "evaluator": "Elmos L5 Industrial Autonomous Gate (Batch 31)",
   "business_line": "Business Line 3: Database & SQL Dialect Migration (including ChinaDB)",
   "autonomy_level": "L5_AUTONOMOUS_ZERO_HUMAN",
   "overall_verdict": "CERTIFIED_L5_AUTONOMOUS",
-  "certified_at": "2026-09-10T23:07:22.481994+00:00",
-  "total_loc": 81777,
-  "python_loc": 70234,
+  "certified_at": "2026-09-11T02:43:07.781521+00:00",
+  "total_loc": 84397,
+  "python_loc": 72854,
   "sql_loc": 11543,
-  "total_files": 156,
+  "total_files": 157,
   "human_review_backlog_count": 0,
-  "p95_latency_ms": 0.12,
-  "merkle_root": "622b9358dac1a7d776801cf769a7c3f5ab0ac7e1867f808d8fcc3f268a89c7b2",
+  "p95_latency_ms": 3.81,
+  "merkle_root": "4ea861d5a59f5b25379251f88997c2600e485194cd862e5fefc4b391918c6b34",
   "system_metadata": {
-    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
-    "python_version": "3.14.6 (main, Jun 10 2026, 10:03:53) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "python_version": "3.12.14 (main, Aug 12 2026, 13:57:54) [Clang 21.0.0 (clang-2100.1.1.101)]",
     "node": "StephendeMacBook-Air.local",
     "strict_mode": true
   },
@@ -23,26 +23,26 @@
       "phase": 1,
       "name": "Codebase Scale & Structural Integrity Audit",
       "passed": true,
-      "duration_ms": 67.57,
+      "duration_ms": 229.66,
       "errors": [],
       "details": {
-        "total_loc": 81777,
-        "python_loc": 70234,
+        "total_loc": 84397,
+        "python_loc": 72854,
         "sql_loc": 11543,
-        "files_scanned": 156,
+        "files_scanned": 157,
         "min_loc_threshold": 80000,
         "extension_counts": {
-          ".py": 151,
+          ".py": 152,
           ".sql": 5
         },
-        "merkle_root": "622b9358dac1a7d776801cf769a7c3f5ab0ac7e1867f808d8fcc3f268a89c7b2"
+        "merkle_root": "4ea861d5a59f5b25379251f88997c2600e485194cd862e5fefc4b391918c6b34"
       }
     },
     {
       "phase": 2,
       "name": "L5 Zero-Human Autonomy Backlog Assertion",
       "passed": true,
-      "duration_ms": 72.19,
+      "duration_ms": 445.05,
       "errors": [],
       "details": {
         "overall_success": true,
@@ -56,7 +56,7 @@
       "phase": 3,
       "name": "13 Domestic ChinaDB Targets Lowering & Protocol Verification",
       "passed": true,
-      "duration_ms": 11.95,
+      "duration_ms": 51.72,
       "errors": [],
       "details": {
         "total_targets": 13,
@@ -172,14 +172,14 @@
       "phase": 4,
       "name": "Enterprise Business Corpora & Invariant Preservation",
       "passed": true,
-      "duration_ms": 1.02,
+      "duration_ms": 7.32,
       "errors": [],
       "details": {
         "domain_metrics": {
           "banking": {
             "balanced": true,
             "sim_txns": 40,
-            "p95_ms": 0.028848648071289062
+            "p95_ms": 0.28705596923828125
           },
           "insurance": {
             "beneficiary_allocated_pct": 100.0,
@@ -208,7 +208,7 @@
       "phase": 5,
       "name": "L5 AST Self-Healing & Sandbox Closed-Loop Engine",
       "passed": true,
-      "duration_ms": 4.68,
+      "duration_ms": 96.89,
       "errors": [],
       "details": {
         "test_cases_total": 5,
@@ -219,7 +219,7 @@
       "phase": 6,
       "name": "Real-Time CDC Bi-Directional Replication & Reconciliation",
       "passed": true,
-      "duration_ms": 2.3,
+      "duration_ms": 268.02,
       "errors": [],
       "details": {
         "events_replicated": 25,
@@ -230,13 +230,13 @@
       "phase": 7,
       "name": "High-Concurrency Stress & Latency SLO Benchmark",
       "passed": true,
-      "duration_ms": 39.41,
+      "duration_ms": 362.54,
       "errors": [],
       "details": {
         "concurrency_threads": 8,
         "total_transactions": 400,
-        "p95_latency_ms": 0.12,
-        "p99_latency_ms": 0.21,
+        "p95_latency_ms": 3.81,
+        "p99_latency_ms": 50.8,
         "error_rate": 0.0
       }
     }

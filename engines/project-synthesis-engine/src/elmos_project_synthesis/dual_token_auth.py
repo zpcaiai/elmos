@@ -291,7 +291,7 @@ class DualTokenAuthManager:
         with self._lock:
             # Check if entire family is already revoked
             if self.blacklist.is_family_revoked(family_id):
-                raise TokenRevokedError(f"Token family [{family_id}] has been revoked")
+                raise TokenRevokedError(f"Token family [{family_id}] has been revoked (Token family compromised)")
 
             record = self._refresh_records.get(jti)
             if record is None:

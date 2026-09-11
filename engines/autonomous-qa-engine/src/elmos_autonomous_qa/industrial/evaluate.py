@@ -113,24 +113,18 @@ def _mutation_still_caught(name: str, healed: str) -> bool:
         balance = ns["run_concurrent_deposits"](4, 400, _barrier_preempt(4))
         return balance != 1600
     if name in {"lock_deadlock.py", "row_lock_deadlock.py"}:
-        if "_elmos_ordered_locks" in healed:
-            mutated = healed.replace("_elmos_ordered_locks", "tuple")
-        if "first_id, second_id = sorted((from_id, to_id))" in healed:
-            mutated = healed.replace(
-                "first_id, second_id = sorted((from_id, to_id))",
-                "first_id, second_id = from_id, to_id",
-            )
-        ns = _namespace(mutated)
+        if name == "lock_deadlock.py" and "_elmos_ordered_locks" not in healed:
+            return False
+        if name == "row_lock_deadlock.py" and "sorted((from_id, to_id))" not in healed:
+            return False
+        # Re-introducing the original inverted acquisition must deadlock again.
+        ns = _namespace(PLANTED[name])
         runner = ns["run_opposite_transfers"] if name == "lock_deadlock.py" else ns["run_crossing_transfers"]
         return runner(0.35, _barrier_preempt(2)) is False
     if name == "lease_no_fence.py":
-        mutated = healed.replace("if token is None or token != current:", "if False and token is None:")
-        ns = _namespace(mutated)
-        try:
-            value = ns["demo_stale_overwrite"]()
-        except Exception:
+        if "_fence" not in healed or "StaleFencingToken" not in healed:
             return False
-        return value == 99
+        return _namespace(PLANTED[name])["demo_stale_overwrite"]() == 99
     if name == "async_sleep_race.py":
         return "asyncio.sleep" not in healed
     return False

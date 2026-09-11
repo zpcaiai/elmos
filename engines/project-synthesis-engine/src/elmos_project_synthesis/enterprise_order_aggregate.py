@@ -115,6 +115,24 @@ class OrderAggregate(AggregateRoot):
         self.created_at = dt.datetime.now(dt.UTC)
         self.updated_at = dt.datetime.now(dt.UTC)
 
+    @classmethod
+    def create(
+        cls,
+        tenant_id: str = "default",
+        reference: str | None = None,
+        customer_id: str = "cust-default",
+        currency: str = "USD",
+    ) -> OrderAggregate:
+        """Factory method to construct a fresh draft OrderAggregate."""
+        order_id = f"ord-{uuid4().hex[:12]}"
+        return cls(
+            order_id=order_id,
+            tenant_id=tenant_id,
+            order_no=reference,
+            customer_id=customer_id,
+            currency=currency,
+        )
+
     @property
     def total_amount(self) -> Money:
         """Sum of unit_price * quantity across all items."""
@@ -126,10 +144,37 @@ class OrderAggregate(AggregateRoot):
     @property
     def net_amount(self) -> Money:
         """Net amount = total_amount - discount_amount + tax_amount."""
-        net = Money(amount=Decimal("0.00"), currency=self.currency)
+        net = self.total_amount
+        if self.discount_amount.amount > Decimal("0.00"):
+            net = net.subtract(self.discount_amount)
+        if self.tax_amount.amount > Decimal("0.00"):
+            net = net.add(self.tax_amount)
         for it in self.items:
-            net = net.add(it.subtotal)
+            if it.discount_amount.amount > Decimal("0.00"):
+                net = net.subtract(it.discount_amount)
+            if it.tax_amount.amount > Decimal("0.00"):
+                net = net.add(it.tax_amount)
         return net
+
+    def apply_discount(self, discount: Decimal | str | float | Money) -> None:
+        """Apply aggregate-level order discount."""
+        disc_val = discount.amount if isinstance(discount, Money) else Decimal(str(discount))
+        self.discount_amount = Money(amount=disc_val, currency=self.currency)
+
+    def apply_tax(self, tax: Decimal | str | float | Money) -> None:
+        """Apply aggregate-level order tax."""
+        tax_val = tax.amount if isinstance(tax, Money) else Decimal(str(tax))
+        self.tax_amount = Money(amount=tax_val, currency=self.currency)
+
+    def verify_invariants(self) -> None:
+        """Enforce aggregate invariant rules and trial-balance arithmetic."""
+        expected = self.total_amount.subtract(self.discount_amount).add(self.tax_amount)
+        if self.net_amount.amount != expected.amount:
+            raise DomainInvariantViolationError(
+                "TRIAL_BALANCE_MISMATCH",
+                f"Net amount {self.net_amount.amount} != expected {expected.amount}",
+                self.id,
+            )
 
     # --- Domain Operations ---
 
@@ -137,10 +182,10 @@ class OrderAggregate(AggregateRoot):
         self,
         sku: str,
         product_name: str,
-        unit_price: Decimal,
+        unit_price: Decimal | str | float | Money,
         quantity: int,
-        discount: Decimal = Decimal("0.00"),
-        tax: Decimal = Decimal("0.00"),
+        discount: Decimal | str | float | Money = Decimal("0.00"),
+        tax: Decimal | str | float | Money = Decimal("0.00"),
     ) -> OrderItem:
         """Add child item entity to aggregate with domain invariant validation."""
         if self.status != OrderStatus.DRAFT:
@@ -156,14 +201,18 @@ class OrderAggregate(AggregateRoot):
                 self.id,
             )
 
+        price_val = unit_price.amount if isinstance(unit_price, Money) else Decimal(str(unit_price))
+        disc_val = discount.amount if isinstance(discount, Money) else Decimal(str(discount))
+        tax_val = tax.amount if isinstance(tax, Money) else Decimal(str(tax))
+
         item = OrderItem(
             item_id=f"item-{uuid4().hex[:8]}",
             sku=sku,
             product_name=product_name,
-            unit_price=Money(amount=unit_price, currency=self.currency),
+            unit_price=Money(amount=price_val, currency=self.currency),
             quantity=quantity,
-            discount_amount=Money(amount=discount, currency=self.currency),
-            tax_amount=Money(amount=tax, currency=self.currency),
+            discount_amount=Money(amount=disc_val, currency=self.currency),
+            tax_amount=Money(amount=tax_val, currency=self.currency),
         )
         self.items.append(item)
         self.updated_at = dt.datetime.now(dt.UTC)
@@ -209,7 +258,7 @@ class OrderAggregate(AggregateRoot):
     def record_payment(
         self,
         payment_method: str,
-        amount: Decimal,
+        amount: Decimal | str | float | Money,
         transaction_ref: str,
         trace_id: str | None = None,
     ) -> PaymentRecord:
@@ -221,7 +270,8 @@ class OrderAggregate(AggregateRoot):
                 self.id,
             )
 
-        pay_money = Money(amount=amount, currency=self.currency)
+        amt_val = amount.amount if isinstance(amount, Money) else Decimal(str(amount))
+        pay_money = Money(amount=amt_val, currency=self.currency)
         if pay_money.amount != self.net_amount.amount:
             raise DomainInvariantViolationError(
                 "PAYMENT_AMOUNT_MISMATCH",
@@ -247,7 +297,7 @@ class OrderAggregate(AggregateRoot):
                 "order_id": self.id,
                 "order_no": self.order_no,
                 "payment_id": record.payment_id,
-                "amount": str(amount),
+                "amount": str(amt_val),
                 "currency": self.currency,
                 "transaction_ref": transaction_ref,
             },
@@ -259,7 +309,7 @@ class OrderAggregate(AggregateRoot):
         self,
         tracking_no: str,
         carrier: str,
-        shipping_address: Address,
+        shipping_address: Address | None = None,
         trace_id: str | None = None,
     ) -> ShippingDetail:
         """Mark order as fulfilled with tracking details; requires PAID status."""
@@ -276,10 +326,18 @@ class OrderAggregate(AggregateRoot):
                 self.id,
             )
 
+        dest = shipping_address or Address(
+            street="100 Enterprise Way",
+            city="Tech City",
+            state_province="CA",
+            postal_code="94016",
+            country="US",
+        )
+
         shipping = ShippingDetail(
             tracking_no=tracking_no,
             carrier=carrier,
-            destination=shipping_address,
+            destination=dest,
             status="DISPATCHED",
             dispatched_at=dt.datetime.now(dt.UTC),
         )

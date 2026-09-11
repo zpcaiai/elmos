@@ -1,8 +1,8 @@
 {
   "metadata": {
     "total_skills": 4669,
-    "audited_at": "2026-09-11T02:20:13Z",
-    "scan_duration_seconds": 15.48,
+    "audited_at": "2026-09-11T02:42:04Z",
+    "scan_duration_seconds": 21.41,
     "tier_summary": {
       "[TEST_READY / BOUNDED]": 457,
       "[VERIFIED / CODE_COMPLETE]": 3495,

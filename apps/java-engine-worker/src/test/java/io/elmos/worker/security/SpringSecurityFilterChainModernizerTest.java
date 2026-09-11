@@ -63,7 +63,7 @@ class SpringSecurityFilterChainModernizerTest {
         assertFalse(updated.contains("@EnableGlobalMethodSecurity"));
         assertTrue(updated.contains("@EnableMethodSecurity"));
         assertTrue(updated.contains("@Bean\n    public SecurityFilterChain securityFilterChain"));
-        assertTrue(updated.contains("authorizeHttpRequests()"));
+        assertTrue(updated.contains("authorizeHttpRequests(auth -> auth"));
         assertTrue(updated.contains("requestMatchers(\"/public/**\")"));
         assertTrue(updated.contains(".csrf(csrf -> csrf.disable())"));
         assertTrue(updated.contains("public WebSecurityCustomizer webSecurityCustomizer()"));

@@ -125,11 +125,11 @@ class RootContext:
 # ============================================================================
 
 
-class LockConflictError(Exception):
+class LockConflictError(RuntimeError):
     """Raised when a branch fails to acquire a global row lock."""
 
 
-class DirtyWriteError(Exception):
+class DirtyWriteError(RuntimeError):
     """Raised when After-Image mismatch indicates an unmanaged dirty write."""
 
 

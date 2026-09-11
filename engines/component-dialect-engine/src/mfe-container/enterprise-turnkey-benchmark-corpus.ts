@@ -61,12 +61,12 @@ export function WmsParcelScanner(props) {
       `,
     },
     {
-      name: 'WmsDeliverySignaturePad',
+      name: 'WmsCanvasSignOff',
       category: 'canvas2d-and-touch',
       sourceCode: `
 import React, { useRef, useEffect } from 'react';
 
-export function WmsDeliverySignaturePad(props) {
+export function WmsCanvasSignOff(props) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -75,20 +75,31 @@ export function WmsDeliverySignaturePad(props) {
     const ctx = canvas.getContext('2d');
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 3;
-    ctx.lineCap = 'round';
   }, []);
-
-  const handleSave = () => {
-    props.onSaveSignature && props.onSaveSignature();
-  };
 
   return (
     <div className="signature-container">
-      <div className="signature-title">Customer Sign-off</div>
-      <canvas id="signatureCanvas" type="2d" className="signature-pad" />
-      <button className="confirm-btn" onClick={handleSave}>Confirm Receipt</button>
+      <div className="signature-title">HTML5 Canvas / MiniApp Canvas 2D</div>
+      <canvas id="signatureCanvas" type="2d" />
     </div>
   );
+}
+      `,
+    },
+    {
+      name: 'WmsSagaRoot',
+      category: 'async-sagas',
+      sourceCode: `
+import { call, put, takeEvery, takeLatest, select, delay } from 'redux-saga/effects';
+
+export function* rootWmsSaga() {
+  yield takeLatest('WMS/FETCH_PARCEL_DETAILS', function* (action) {
+    yield call(fetch, '/api/parcels/' + action.payload.barcode);
+    yield put({ type: 'WMS/FETCH_SUCCESS' });
+  });
+  yield takeEvery('WMS/START_BLE_SCAN', function* () {
+    yield delay(50);
+  });
 }
       `,
     },
@@ -162,6 +173,44 @@ const handlePayScore = async () => {
   await cart.authorizePayScore();
 };
 </script>
+      `,
+    },
+    {
+      name: 'FinancialCartStore',
+      category: 'pinia-store-and-plugins',
+      sourceCode: `
+import { defineStore } from 'pinia';
+
+export const useCartStore = defineStore('cart', {
+  state: () => ({ items: [], totalAmount: 0 }),
+  actions: {
+    $onAction(callback) { return callback; },
+    checkoutWithWeChatPay() {
+      if (typeof wx !== 'undefined' && wx.requestPayment) {
+        return wx.requestPayment({});
+      }
+      return { success: true };
+    },
+    authorizePayScore() {
+      if (typeof wx !== 'undefined' && wx.openBusinessView) {
+        return wx.openBusinessView({});
+      }
+      return { success: true };
+    },
+  },
+});
+      `,
+    },
+    {
+      name: 'MobxRealtimeFxWidget',
+      category: 'mobx-reactive',
+      sourceCode: `
+import { createObservableProxy, autorun } from '../store-engine/mobx-reactive-adapter';
+
+export const fxRateStore = createObservableProxy({
+  rates: { USD: 7.24, EUR: 7.85, GBP: 9.32 },
+  lastUpdated: Date.now(),
+});
       `,
     },
   ],

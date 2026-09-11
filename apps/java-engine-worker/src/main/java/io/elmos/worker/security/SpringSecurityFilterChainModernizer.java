@@ -137,6 +137,8 @@ public final class SpringSecurityFilterChainModernizer {
                             }
                         }
                     }
+                    content = content.replaceAll("@Override\\s*(@Bean\\s+public\\s+SecurityFilterChain)", "$1");
+                    content = content.replaceAll("(@Bean\\s+)@Override\\s*(public\\s+SecurityFilterChain)", "$1$2");
                     rules.add("CONVERT_WEB_SECURITY_ADAPTER_TO_SECURITY_FILTER_CHAIN");
                     changes++;
                 }

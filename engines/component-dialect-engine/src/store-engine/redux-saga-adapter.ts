@@ -357,8 +357,8 @@ export class ReduxSagaAdapter {
     return {
       code: lines.join('\n'),
       fileName: `${storeIR.storeId}Sagas.ts`,
-      framework: 'redux-saga-miniapp',
-      dependencies: ['@elmos/component-dialect-engine'],
+      framework: 'miniapp-store',
+      dependencies: [{ name: '@elmos/component-dialect-engine', version: '^0.1.0', isDev: false }],
       notes: [`Generated MiniApp Saga Coroutines: ${workers.length} workers, ${watchers.length} watchers`],
     };
   }

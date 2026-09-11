@@ -10,6 +10,7 @@ from elmos_project_synthesis.seata_distributed_transactions import (
     DirtyWriteException,
     GlobalLockManager,
     GlobalTransactionStatus,
+    LockConflictError,
     RootContext,
     SeataResourceManager,
     SeataTransactionCoordinator,
@@ -157,8 +158,8 @@ def test_seata_global_lock_conflict():
     b1 = rm.register_branch(xid1, "res-1", BranchType.AT, ["orders:1001"])
     assert b1 is not None
 
-    # Tx2 tries to acquire same lock -> raises RuntimeError (lock conflict)
-    with pytest.raises(RuntimeError) as exc_info:
+    # Tx2 tries to acquire same lock -> raises LockConflictError
+    with pytest.raises((LockConflictError, RuntimeError)) as exc_info:
         rm.register_branch(xid2, "res-1", BranchType.AT, ["orders:1001"])
     assert "Global lock conflict" in str(exc_info.value)
 

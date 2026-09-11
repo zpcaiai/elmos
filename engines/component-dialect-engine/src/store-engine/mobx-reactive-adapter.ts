@@ -167,8 +167,17 @@ export class MobXMiniAppBridge<T extends Record<string, any>> {
    * Automatically schedule microtask setData flush on deep property change
    */
   private handlePathMutation(path: string[], value: any): void {
-    const dotPath = path.join('.');
-    this.pendingPaths[dotPath] = value;
+    let formattedPath = '';
+    for (const segment of path) {
+      if (/^\d+$/.test(segment)) {
+        formattedPath += `[${segment}]`;
+      } else if (formattedPath.length === 0) {
+        formattedPath = segment;
+      } else {
+        formattedPath += `.${segment}`;
+      }
+    }
+    this.pendingPaths[formattedPath] = value;
 
     if (!this.isFlushScheduled) {
       this.isFlushScheduled = true;

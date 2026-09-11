@@ -7004,3 +7004,201 @@ class FunctionalDepthCertificationRecord:
     certified_at: str = ""
     certified_by: str = ""
     min_depth_threshold: float = 95.0
+
+
+# ─── Self-Hosted Edition Models (B38) ───────────────────────────────
+
+class SelfHostedPackagingType(str, Enum):
+    DOCKER_COMPOSE = "docker_compose"
+    HELM = "helm"
+    RPM_DEB = "rpm_deb"
+    BARE_METAL = "bare_metal"
+
+class SelfHostedLicenseCheckStatus(str, Enum):
+    VALID = "valid"
+    EXPIRED = "expired"
+    TAMPERED = "tampered"
+    UNLICENSED = "unlicensed"
+
+@dataclass
+class SelfHostedEditionConfig:
+    install_id: str
+    customer_id: str
+    packaging: SelfHostedPackagingType
+    server_hostname: str
+    license_key: str
+    telemetry_opt_in: bool = False
+    airgap_mode: bool = False
+    installed_version: str = "1.0.0"
+    license_status: SelfHostedLicenseCheckStatus = SelfHostedLicenseCheckStatus.UNLICENSED
+    created_at: str = ""
+
+@dataclass
+class SelfHostedInstallationVerification:
+    verification_id: str
+    install_id: str
+    database_connected: bool = False
+    redis_connected: bool = False
+    workers_healthy: bool = False
+    license_valid: bool = False
+    passed: bool = False
+    verified_at: str = ""
+
+
+# ─── SLA Service Credit Governance Models (B39) ─────────────────────
+
+class SlaBreachTier(str, Enum):
+    TIER_1_MINOR = "tier_1_minor"
+    TIER_2_MODERATE = "tier_2_moderate"
+    TIER_3_SEVERE = "tier_3_severe"
+
+class ServiceCreditStatus(str, Enum):
+    PENDING_CALCULATION = "pending_calculation"
+    CALCULATED = "calculated"
+    APPROVED = "approved"
+    DISBURSED = "disbursed"
+    REJECTED = "rejected"
+
+@dataclass
+class SlaServiceCreditPolicy:
+    policy_id: str
+    tier_1_credit_pct: float = 10.0
+    tier_2_credit_pct: float = 25.0
+    tier_3_credit_pct: float = 50.0
+    requires_executive_approval_over: float = 5000.0
+
+@dataclass
+class CustomerSlaBreachRecord:
+    breach_id: str
+    customer_id: str
+    service_name: str
+    monthly_invoice_amount: float
+    actual_availability_pct: float
+    target_availability_pct: float = 99.9
+    breach_tier: SlaBreachTier = SlaBreachTier.TIER_1_MINOR
+    calculated_credit_amount: float = 0.0
+    status: ServiceCreditStatus = ServiceCreditStatus.PENDING_CALCULATION
+    recorded_at: str = ""
+    approved_by: str = ""
+
+@dataclass
+class ServiceCreditDisbursement:
+    disbursement_id: str
+    breach_id: str
+    customer_id: str
+    amount: float
+    disbursed_at: str = ""
+    disbursement_reference: str = ""
+
+
+# ─── Secure Code Review and Approval Models (B40) ───────────────────
+
+class CodeReviewRiskLevel(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+class ApprovalGateStatus(str, Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    ESCALATED = "escalated"
+
+class ChangeSensitivityFlag(str, Enum):
+    AUTH_CHANGE = "auth_change"
+    CRYPTO_CHANGE = "crypto_change"
+    DATABASE_DDL = "database_ddl"
+    IAM_PERMISSION = "iam_permission"
+    DATA_PIPELINE = "data_pipeline"
+
+@dataclass
+class SecureCodeReviewRequest:
+    request_id: str
+    change_title: str
+    author: str
+    diff_hash: str
+    sensitivity_flags: List[ChangeSensitivityFlag] = field(default_factory=list)
+    risk_level: CodeReviewRiskLevel = CodeReviewRiskLevel.LOW
+    status: ApprovalGateStatus = ApprovalGateStatus.PENDING
+    submitted_at: str = ""
+    approvers: List[str] = field(default_factory=list)
+    comments: List[str] = field(default_factory=list)
+
+@dataclass
+class SecureReviewApprovalVerdict:
+    verdict_id: str
+    request_id: str
+    reviewer: str
+    decision: ApprovalGateStatus
+    rationale: str
+    evaluated_at: str = ""
+
+
+# ─── Recipe and Mapping Recommendation Models (B41) ─────────────────
+
+class RecipeMappingTarget(str, Enum):
+    FRAMEWORK_MIGRATION = "framework_migration"
+    ORM_CONVERSION = "orm_conversion"
+    API_TRANSFORMATION = "api_transformation"
+    CONFIG_MODERNIZATION = "config_modernization"
+
+class RecipeMatchConfidence(str, Enum):
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+@dataclass
+class RecipeCandidateRecommendation:
+    recipe_id: str
+    name: str
+    target: RecipeMappingTarget
+    confidence: RecipeMatchConfidence
+    match_score: float
+    applicable_patterns: List[str] = field(default_factory=list)
+    estimated_automation_pct: float = 0.0
+
+@dataclass
+class RecipeRecommendationQuery:
+    query_id: str
+    source_tech: str
+    target_tech: str
+    project_type: str
+    source_patterns: List[str] = field(default_factory=list)
+
+
+# ─── Semantic Behavior Certification Models (B45) ───────────────────
+
+class SemanticEquivalenceTier(str, Enum):
+    STRICT_EQUIVALENT = "strict_equivalent"
+    OBSERVABLE_EQUIVALENT = "observable_equivalent"
+    PERMISSIBLE_DELTA = "permissible_delta"
+    NON_EQUIVALENT = "non_equivalent"
+
+class DifferentialBehaviorDimension(str, Enum):
+    OUTPUT_PAYLOAD = "output_payload"
+    SIDE_EFFECT = "side_effect"
+    LATENCY_PROFILE = "latency_profile"
+    ERROR_RECOVERY = "error_recovery"
+    EVENT_STREAM = "event_stream"
+
+@dataclass
+class SemanticBehaviorAssertionResult:
+    assertion_id: str
+    dimension: DifferentialBehaviorDimension
+    name: str
+    equivalent: bool
+    drift_details: str = ""
+    confidence: float = 1.0
+
+@dataclass
+class SemanticBehaviorCertificationRecord:
+    cert_id: str
+    source_system_ref: str
+    target_system_ref: str
+    tier: SemanticEquivalenceTier = SemanticEquivalenceTier.NON_EQUIVALENT
+    is_certified: bool = False
+    assertions: List[SemanticBehaviorAssertionResult] = field(default_factory=list)
+    certified_at: str = ""
+    certified_by: str = ""
+    min_assertions_required: int = 5
