@@ -155,6 +155,11 @@ from elmos_mature_platform.policy_enforcement_agent_engine import PolicyEnforcem
 from elmos_mature_platform.recipe_candidate_agent_engine import RecipeCandidateAgentEngine
 from elmos_mature_platform.supervisor_coordination_agent_engine import SupervisorCoordinationAgentEngine
 from elmos_mature_platform.version_specification_engine import VersionSpecificationEngine
+from elmos_mature_platform.release_documentation_engine import ReleaseDocumentationEngine
+from elmos_mature_platform.sdk_compatibility_engine import SdkCompatibilityEngine
+from elmos_mature_platform.support_eol_policy_engine import SupportEolPolicyEngine
+from elmos_mature_platform.assessment_poc_project_quote_engine import AssessmentPocProjectQuoteEngine
+from elmos_mature_platform.cache_incremental_cost_optimization_engine import CacheIncrementalCostOptimizationEngine
 
 
 from elmos_mature_platform.physical import (
@@ -327,6 +332,11 @@ __all__ = [
     "RecipeCandidateAgentEngine",
     "SupervisorCoordinationAgentEngine",
     "VersionSpecificationEngine",
+    "ReleaseDocumentationEngine",
+    "SdkCompatibilityEngine",
+    "SupportEolPolicyEngine",
+    "AssessmentPocProjectQuoteEngine",
+    "CacheIncrementalCostOptimizationEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",
