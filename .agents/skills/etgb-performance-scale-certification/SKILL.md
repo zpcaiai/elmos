@@ -1,13 +1,7 @@
 ---
 name: etgb-performance-scale-certification
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: Certify large-repository, data-volume, concurrency, soak, stress, resource, cost and latency scalability. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.
 metadata:
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
-  production_certification: "NOT_CERTIFIED"
   source_package: elmos-etgb-full-product-assurance-skills-package-v2.0.0
   source_archive_sha256: b11a487b63a0aee7ffb03a247d9439e8c6b9ee19f10c22aca2f7a3dd8bf0072e
   source_skill: performance-scale-certification

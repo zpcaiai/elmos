@@ -80,6 +80,11 @@ from elmos_mature_platform.operations_evidence_reporting_engine import Operation
 from elmos_mature_platform.public_api_compatibility_engine import PublicApiCompatibilityEngine
 from elmos_mature_platform.route_breadth_certification_engine import RouteBreadthCertificationEngine
 from elmos_mature_platform.similar_project_retrieval_engine import SimilarProjectRetrievalEngine
+from elmos_mature_platform.multiregion_active_active_edition_engine import MultiregionActiveActiveEditionEngine
+from elmos_mature_platform.global_operations_gate_engine import GlobalOperationsGateEngine
+from elmos_mature_platform.supply_chain_compliance_factory_engine import SupplyChainComplianceFactoryEngine
+from elmos_mature_platform.target_stack_recommendation_engine import TargetStackRecommendationEngine
+from elmos_mature_platform.customer_value_certification_engine import CustomerValueCertificationEngine
 from elmos_mature_platform.types import (
     AgentAutonomyLevel,
     AgentDeploymentMode,
@@ -165,6 +170,11 @@ __all__ = [
     "RunnerVersionCompatibilityEngine",
     "SimilarProjectRetrievalEngine",
     "UsageBillingReconciliationEngine",
+    "CustomerValueCertificationEngine",
+    "GlobalOperationsGateEngine",
+    "MultiregionActiveActiveEditionEngine",
+    "SupplyChainComplianceFactoryEngine",
+    "TargetStackRecommendationEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",

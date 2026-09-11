@@ -5922,3 +5922,202 @@ class BillingReconciliationStatement:
     audit_hash: str = ""
     reconciled_at: str = ""
 
+
+# ─── Multiregion Active-Active Edition Models (B38) ──────────────────
+
+class SyncReplicationState(str, Enum):
+    IN_SYNC = "in_sync"
+    SYNCING = "syncing"
+    DEGRADED = "degraded"
+    SPLIT_BRAIN = "split_brain"
+    DESYNCHRONIZED = "desynchronized"
+
+class QuorumStrategy(str, Enum):
+    MAJORITY = "majority"
+    WEIGHTED = "weighted"
+    STRICT_LOCAL = "strict_local"
+    OBSERVER_ASSISTED = "observer_assisted"
+
+@dataclass
+class ActiveActiveRegionNode:
+    region_id: str
+    cluster_name: str
+    endpoint: str
+    weight: float = 1.0
+    is_leader: bool = False
+    sync_state: SyncReplicationState = SyncReplicationState.IN_SYNC
+    latency_p99_ms: float = 20.0
+    replication_lag_bytes: int = 0
+    last_sync_time: str = ""
+
+@dataclass
+class ActiveActiveTopologyPlan:
+    plan_id: str
+    edition_id: str
+    quorum_strategy: QuorumStrategy = QuorumStrategy.MAJORITY
+    nodes: Dict[str, ActiveActiveRegionNode] = field(default_factory=dict)
+    max_tolerable_lag_ms: float = 100.0
+    split_brain_detected: bool = False
+    created_at: str = ""
+
+
+# ─── Global Operations Gate Models (B39) ────────────────────────────
+
+class GateCheckCategory(str, Enum):
+    SLO_HEALTH = "slo_health"
+    CHANGE_FREEZE = "change_freeze"
+    ONCALL_ROSTER = "oncall_roster"
+    PENDING_INCIDENTS = "pending_incidents"
+    DR_COMPLIANCE = "dr_compliance"
+    CAPACITY_MARGIN = "capacity_margin"
+
+class GateVerdict(str, Enum):
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    CONDITIONAL_APPROVAL = "conditional_approval"
+    OVERRIDE_APPROVED = "override_approved"
+
+@dataclass
+class OperationsGateCheck:
+    check_id: str
+    category: GateCheckCategory
+    name: str
+    passed: bool = False
+    current_value: float = 0.0
+    threshold_value: float = 0.0
+    details: str = ""
+    blocking: bool = True
+
+@dataclass
+class GlobalOperationsGateDecision:
+    decision_id: str
+    release_id: str
+    target_environment: str
+    overall_verdict: GateVerdict = GateVerdict.REJECTED
+    checks: List[OperationsGateCheck] = field(default_factory=list)
+    approved_by: str = ""
+    emergency_override: bool = False
+    override_reason: str = ""
+    timestamp: str = ""
+
+
+# ─── Supply Chain Compliance Factory Models (B40) ───────────────────
+
+class ComplianceStandard(str, Enum):
+    SLSA_LEVEL_3 = "slsa_level_3"
+    NIST_SP_800_218 = "nist_sp_800_218"
+    CIS_BENCHMARK = "cis_benchmark"
+    OPENSSF_SCORECARD = "openssf_scorecard"
+    SOC2_TYPE2 = "soc2_type2"
+
+class PolicyEnforcementMode(str, Enum):
+    AUDIT_ONLY = "audit_only"
+    WARN = "warn"
+    BLOCK = "block"
+    STRICT = "strict"
+
+@dataclass
+class SupplyChainComplianceRule:
+    rule_id: str
+    standard: ComplianceStandard
+    name: str
+    description: str
+    enforcement_mode: PolicyEnforcementMode = PolicyEnforcementMode.BLOCK
+    required_attestations: List[str] = field(default_factory=list)
+    max_cve_severity: str = "medium"
+    enabled: bool = True
+
+@dataclass
+class ComplianceEvaluationReport:
+    report_id: str
+    artifact_id: str
+    target_standard: ComplianceStandard
+    passed: bool = False
+    score_pct: float = 0.0
+    satisfied_rules: List[str] = field(default_factory=list)
+    violated_rules: List[str] = field(default_factory=list)
+    remediations: List[str] = field(default_factory=list)
+    evaluated_at: str = ""
+
+
+# ─── Target Stack Recommendation Extensions (B41) ───────────────────
+
+class StackArchitectureTier(str, Enum):
+    MONOLITH = "monolith"
+    MODULAR_MONOLITH = "modular_monolith"
+    MICROSERVICES = "microservices"
+    SERVERLESS = "serverless"
+    EDGE = "edge"
+
+class ModernizationStrategy(str, Enum):
+    REHOST = "rehost"
+    REPLATFORM = "replatform"
+    REFACTOR = "refactor"
+    REARCHITECT = "rearchitect"
+    RETIRE = "retire"
+
+@dataclass
+class StackFeasibilityScore:
+    score_id: str
+    source_tech: str
+    target_tech: str
+    syntactic_overlap_pct: float = 0.0
+    library_parity_pct: float = 0.0
+    complexity_discount_factor: float = 1.0
+    total_score: float = 0.0
+
+@dataclass
+class ComprehensiveStackRecommendation:
+    recommendation_id: str
+    project_name: str
+    source_stack: List[str] = field(default_factory=list)
+    recommended_target: Optional[TargetStackRecommendation] = None
+    architecture_tier: StackArchitectureTier = StackArchitectureTier.MODULAR_MONOLITH
+    strategy: ModernizationStrategy = ModernizationStrategy.REFACTOR
+    estimated_effort_months: float = 3.0
+    risk_factors: List[str] = field(default_factory=list)
+    evaluated_at: str = ""
+
+
+# ─── Customer Value Certification Models (B45) ──────────────────────
+
+class ValueMetricCategory(str, Enum):
+    TCO_REDUCTION = "tco_reduction"
+    LATENCY_IMPROVEMENT = "latency_improvement"
+    CODE_QUALITY_SCORE = "code_quality_score"
+    LICENSING_SAVINGS = "licensing_savings"
+    DEVELOPER_VELOCITY = "developer_velocity"
+
+class MilestoneStatus(str, Enum):
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    ACHIEVED = "achieved"
+    MISSED = "missed"
+    WAIVED = "waived"
+
+@dataclass
+class ValueMilestone:
+    milestone_id: str
+    category: ValueMetricCategory
+    name: str
+    baseline_value: float = 0.0
+    target_value: float = 0.0
+    actual_value: float = 0.0
+    achieved: bool = False
+    unit: str = ""
+    status: MilestoneStatus = MilestoneStatus.PENDING
+
+@dataclass
+class CustomerValueCertificate:
+    certificate_id: str
+    customer_id: str
+    project_name: str
+    contract_reference: str
+    certified_at: str = ""
+    certifier: str = ""
+    milestones: List[ValueMilestone] = field(default_factory=list)
+    overall_roi_pct: float = 0.0
+    customer_signoff: bool = False
+    customer_signoff_date: str = ""
+    notes: str = ""
+
