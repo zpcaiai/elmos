@@ -1,28 +1,15 @@
-"""Shared fixtures for the production semantic-assurance runtime tests."""
+"""Shared fixtures and helper functions for semantic-assurance tests."""
 
 from __future__ import annotations
 
-import sys
 from copy import deepcopy
-from pathlib import Path
 from typing import Any
 
-import pytest
-
-ENGINE_SRC = Path(__file__).resolve().parents[1] / "src"
-if str(ENGINE_SRC) not in sys.path:
-    sys.path.insert(0, str(ENGINE_SRC))
-
-from elmos_semantic_assurance.contracts import (  # noqa: E402
-    AssuranceScope,
-    TrustedIdentity,
-)
-from elmos_semantic_assurance.store import SemanticAssuranceStore  # noqa: E402
+from elmos_semantic_assurance.contracts import AssuranceScope, TrustedIdentity
 
 
 def sha(character: str) -> str:
     """Return a readable, valid SHA-256 identifier for a fixture."""
-
     assert len(character) == 1 and character in "0123456789abcdef"
     return "sha256:" + character * 64
 
@@ -56,19 +43,24 @@ def scope_document(
     }
 
 
-@pytest.fixture
-def identity() -> TrustedIdentity:
+def make_identity(
+    *,
+    tenant_id: str = "tenant-a",
+    project_id: str = "project-a",
+    actor_id: str = "actor-a",
+    roles: tuple[str, ...] = ("semantic-assurance-runner",),
+    authorization_ref: str | None = "authorization-001",
+) -> TrustedIdentity:
     return TrustedIdentity(
-        tenant_id="tenant-a",
-        project_id="project-a",
-        actor_id="actor-a",
-        roles=("semantic-assurance-runner",),
-        authorization_ref="authorization-001",
+        tenant_id=tenant_id,
+        project_id=project_id,
+        actor_id=actor_id,
+        roles=roles,
+        authorization_ref=authorization_ref,
     )
 
 
-@pytest.fixture
-def request_document() -> dict[str, Any]:
+def make_request_document() -> dict[str, Any]:
     return {
         "schemaVersion": "1.0",
         "subjectId": "subject-001",
@@ -82,17 +74,12 @@ def request_document() -> dict[str, Any]:
     }
 
 
-@pytest.fixture
-def request_copy(request_document: dict[str, Any]):
-    def factory() -> dict[str, Any]:
-        return deepcopy(request_document)
-
-    return factory
+def make_request_copy() -> dict[str, Any]:
+    return deepcopy(make_request_document())
 
 
-@pytest.fixture
-def scope() -> AssuranceScope:
-    value = scope_document()
+def make_scope(*, tenant_id: str = "tenant-a", project_id: str = "project-a") -> AssuranceScope:
+    value = scope_document(tenant_id=tenant_id, project_id=project_id)
     return AssuranceScope(
         tenant_id=value["tenantId"],
         project_id=value["projectId"],
@@ -114,12 +101,3 @@ def scope() -> AssuranceScope:
         target_dialect=value["targetDialect"],
         target_runtime=value["targetRuntime"],
     )
-
-
-@pytest.fixture
-def store():
-    value = SemanticAssuranceStore()
-    try:
-        yield value
-    finally:
-        value.close()
