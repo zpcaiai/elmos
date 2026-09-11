@@ -8019,3 +8019,154 @@ class SpecialistDispatchDecision:
     rationale: str = ""
     dispatched_at: str = ""
 
+
+# ─── Model Routing & Provider Failover Models (Batch 42 - Skill 1425) ─
+
+class ModelProviderType(str, Enum):
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    GEMINI = "gemini"
+    DEEPSEEK = "deepseek"
+    LOCAL_AIRGAP = "local_airgap"
+
+class ProviderCircuitState(str, Enum):
+    CLOSED = "closed"
+    OPEN = "open"
+    HALF_OPEN = "half_open"
+
+@dataclass
+class ModelProviderEndpoint:
+    provider_id: str
+    provider_type: ModelProviderType
+    model_name: str
+    cost_per_1k_tokens: float = 0.002
+    avg_latency_ms: float = 250.0
+    error_rate_pct: float = 0.0
+    circuit_state: ProviderCircuitState = ProviderCircuitState.CLOSED
+    consecutive_failures: int = 0
+    priority: int = 1
+    active: bool = True
+
+@dataclass
+class ModelRoutingDecision:
+    routing_id: str
+    task_class: str
+    selected_provider_id: str
+    model_name: str
+    fallback_chain: List[str] = field(default_factory=list)
+    routed_at: str = ""
+
+
+# ─── Policy Enforcement Agent Models (Batch 42 - Skill 1419) ─────────
+
+class PolicyAgentDecision(str, Enum):
+    ALLOW = "allow"
+    BLOCK = "block"
+    FLAG = "flag"
+    OVERRIDE = "override"
+
+@dataclass
+class PolicyViolationFinding:
+    violation_id: str
+    rule_id: str
+    severity: str = "high"
+    file_path: str = ""
+    message: str = ""
+    remediation_hint: str = ""
+
+@dataclass
+class PolicyAuditEvaluation:
+    eval_id: str
+    agent_id: str
+    task_id: str
+    decision: PolicyAgentDecision = PolicyAgentDecision.ALLOW
+    violations: List[PolicyViolationFinding] = field(default_factory=list)
+    evaluated_at: str = ""
+
+
+# ─── Recipe Candidate Agent Models (Batch 42 - Skill 1431) ───────────
+
+class RecipeCandidateStatus(str, Enum):
+    DISCOVERED = "discovered"
+    SYNTHESIZED = "synthesized"
+    VALIDATING = "validating"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+@dataclass
+class SynthesizedRecipeCandidate:
+    candidate_id: str
+    name: str
+    source_pattern: str
+    target_transformation: str
+    status: RecipeCandidateStatus = RecipeCandidateStatus.DISCOVERED
+    confidence_score: float = 0.0
+    occurrence_count: int = 1
+    approver: str = ""
+    created_at: str = ""
+
+
+# ─── Supervisor Coordination Agent Models (Batch 42 - Skill 1420) ─────
+
+class CoordinationStatus(str, Enum):
+    IDLE = "idle"
+    COORDINATING = "coordinating"
+    DEADLOCKED = "deadlocked"
+    RESOLVED = "resolved"
+    COMPLETED = "completed"
+
+@dataclass
+class WorkerAgentLease:
+    lease_id: str
+    agent_id: str
+    assigned_subtask: str
+    allocated_tokens: int = 50000
+    granted_at: str = ""
+    expires_at: str = ""
+    is_active: bool = True
+
+@dataclass
+class SupervisorSession:
+    session_id: str
+    goal: str
+    status: CoordinationStatus = CoordinationStatus.COORDINATING
+    active_leases: Dict[str, WorkerAgentLease] = field(default_factory=dict)
+    completed_subtasks: List[str] = field(default_factory=list)
+    started_at: str = ""
+    completed_at: str = ""
+
+
+# ─── Version Specification Models (Batch 43 - Skill 1436) ─────────────
+
+class VersionChangeType(str, Enum):
+    MAJOR = "major"
+    MINOR = "minor"
+    PATCH = "patch"
+    PRERELEASE = "prerelease"
+    NO_CHANGE = "no_change"
+
+@dataclass
+class SemanticVersion:
+    major: int
+    minor: int
+    patch: int
+    prerelease: str = ""
+    build_metadata: str = ""
+
+    def __str__(self) -> str:
+        s = f"{self.major}.{self.minor}.{self.patch}"
+        if self.prerelease:
+            s += f"-{self.prerelease}"
+        if self.build_metadata:
+            s += f"+{self.build_metadata}"
+        return s
+
+@dataclass
+class VersionRangeSpec:
+    spec_id: str
+    expression: str
+    min_version: str = ""
+    max_version: str = ""
+    include_prerelease: bool = False
+
+

@@ -150,6 +150,12 @@ from elmos_mature_platform.sbom_component_identity_engine import SbomComponentId
 from elmos_mature_platform.agent_red_team_engine import AgentRedTeamEngine
 from elmos_mature_platform.agent_migration_factory_engine import AgentMigrationFactoryEngine
 from elmos_mature_platform.language_framework_specialist_agent_engine import LanguageFrameworkSpecialistAgentEngine
+from elmos_mature_platform.model_routing_provider_failover_engine import ModelRoutingProviderFailoverEngine
+from elmos_mature_platform.policy_enforcement_agent_engine import PolicyEnforcementAgentEngine
+from elmos_mature_platform.recipe_candidate_agent_engine import RecipeCandidateAgentEngine
+from elmos_mature_platform.supervisor_coordination_agent_engine import SupervisorCoordinationAgentEngine
+from elmos_mature_platform.version_specification_engine import VersionSpecificationEngine
+
 
 from elmos_mature_platform.physical import (
     CloudVendorControlPlaneDriver,
@@ -316,6 +322,11 @@ __all__ = [
     "AgentRedTeamEngine",
     "AgentMigrationFactoryEngine",
     "LanguageFrameworkSpecialistAgentEngine",
+    "ModelRoutingProviderFailoverEngine",
+    "PolicyEnforcementAgentEngine",
+    "RecipeCandidateAgentEngine",
+    "SupervisorCoordinationAgentEngine",
+    "VersionSpecificationEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",
