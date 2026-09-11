@@ -253,7 +253,7 @@ test("local test account rejects non-loopback requests", () => {
   });
 });
 
-test("local registration persists a hashed account and can sign it in", () => {
+test("local registration persists safely or fails closed without owner-only modes", () => {
   const root = mkdtempSync(path.join(tmpdir(), "elmos-account-session-test-"));
   try {
     withEnvironment({
@@ -263,6 +263,19 @@ test("local registration persists a hashed account and can sign it in", () => {
       ELMOS_LOCAL_CREDENTIALS_STORE_PATH: path.join(root, "accounts.json"),
     }, () => {
       assert.equal(localRegistrationConfigured(), true);
+      if (process.platform === "win32") {
+        assert.throws(
+          () => registerLocalAccount({
+            username: "alice",
+            displayName: "Alice",
+            email: "alice@example.com",
+            password: "correct-horse-battery",
+            passwordConfirmation: "correct-horse-battery",
+          }),
+          (error) => error?.code === "LOCAL_REGISTRATION_STORE_INVALID" && error?.status === 503,
+        );
+        return;
+      }
       registerLocalAccount({
         username: "alice",
         displayName: "Alice",
@@ -287,7 +300,7 @@ test("local registration persists a hashed account and can sign it in", () => {
   }
 });
 
-test("legacy local stores remain readable without treating legacy email as verified", () => {
+test("legacy local stores remain safe and never infer a verified email", () => {
   const root = mkdtempSync(path.join(tmpdir(), "elmos-legacy-account-store-test-"));
   const storePath = path.join(root, "accounts.json");
   try {
@@ -297,6 +310,13 @@ test("legacy local stores remain readable without treating legacy email as verif
       ELMOS_SESSION_SECRET: "local-test-session-secret-at-least-32-characters",
       ELMOS_LOCAL_CREDENTIALS_STORE_PATH: storePath,
     }, () => {
+      if (process.platform === "win32") {
+        assert.throws(
+          () => authenticateLocalCredentials("test@example.test", "test"),
+          (error) => error?.code === "LOCAL_REGISTRATION_STORE_INVALID" && error?.status === 503,
+        );
+        return;
+      }
       authenticateLocalCredentials("test@example.test", "test");
       const store = JSON.parse(readFileSync(storePath, "utf8"));
       store.accounts[0].email = "test@localhost";

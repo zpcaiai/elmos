@@ -135,7 +135,13 @@ def _read_bound_pack_file(pack: Path, reference: object) -> tuple[bytes | None, 
         return None, "path does not exist"
     if not resolved.is_relative_to(root):
         return None, "path escapes the framework pack"
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    # Preserve byte-addressed evidence on Windows; text-mode os.read would
+    # translate CRLF and falsely report a stable file as truncated.
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
     try:
         descriptor = os.open(resolved, flags)
         try:

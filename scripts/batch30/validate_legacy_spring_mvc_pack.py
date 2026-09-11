@@ -1149,7 +1149,7 @@ def main() -> int:
             item.get("id") in LOCAL_FCM_STATUSES
             and (
                 local_evidence_index is None
-                or item.get("evidence_refs") != [str(local_evidence_index)]
+                or item.get("evidence_refs") != [local_evidence_index.as_posix()]
             )
         ):
             errors.append(f"locally exercised FCM capability lacks exact evidence: {item.get('id')}")

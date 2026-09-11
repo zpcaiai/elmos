@@ -153,7 +153,7 @@ public final class SpringCloudMicroservicesModernizer {
 
             if (changes > 0 && !content.equals(original)) {
                 Files.writeString(pom, content, StandardCharsets.UTF_8);
-                String relPath = projectRoot.relativize(pom).toString();
+                String relPath = projectRoot.relativize(pom).toString().replace('\\', '/');
                 return new CloudModernizationResult(true, changes, Set.of(relPath), rules);
             }
         } catch (IOException ignored) {}
@@ -309,7 +309,7 @@ public final class SpringCloudMicroservicesModernizer {
 
             if (changes > 0 && !content.equals(original)) {
                 Files.writeString(file, content, StandardCharsets.UTF_8);
-                String relPath = projectRoot.relativize(file).toString();
+                String relPath = projectRoot.relativize(file).toString().replace('\\', '/');
                 return new CloudModernizationResult(true, changes, Set.of(relPath), rules);
             }
         } catch (IOException ignored) {}
@@ -341,7 +341,7 @@ public final class SpringCloudMicroservicesModernizer {
                 Files.deleteIfExists(config);
                 rules.add("CONFIG_BOOTSTRAP_TO_SPRING_CONFIG_IMPORT");
                 changes++;
-                String relPath = projectRoot.relativize(appConfig).toString();
+                String relPath = projectRoot.relativize(appConfig).toString().replace('\\', '/');
                 return new CloudModernizationResult(true, changes, Set.of(relPath), rules);
             }
 
@@ -362,7 +362,7 @@ public final class SpringCloudMicroservicesModernizer {
 
             if (changes > 0 && !content.equals(original)) {
                 Files.writeString(config, content, StandardCharsets.UTF_8);
-                String relPath = projectRoot.relativize(config).toString();
+                String relPath = projectRoot.relativize(config).toString().replace('\\', '/');
                 return new CloudModernizationResult(true, changes, Set.of(relPath), rules);
             }
         } catch (IOException ignored) {}

@@ -8,11 +8,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -59,6 +62,11 @@ class SpringHmacProtocolTest {
     void readsSecretBytesWithoutNormalization() throws Exception {
         Path secret = temporary.resolve("secret");
         Files.write(secret, SECRET);
+        assertArrayEquals(SECRET, SpringHmacProtocol.requireSecret(SECRET, "runtime"));
+        if (!supportsPosixAttributes()) {
+            assertPosixMetadataRequired(secret, "runtime");
+            return;
+        }
         ownerOnly(secret);
 
         assertArrayEquals(SECRET, SpringHmacProtocol.readSecret(secret, "runtime"));
@@ -68,22 +76,30 @@ class SpringHmacProtocolTest {
     void rejectsAsciiAndUnicodeBoundaryWhitespaceInsteadOfTrimmingIt() throws Exception {
         Path ascii = temporary.resolve("ascii-secret");
         Files.writeString(ascii, " " + "a".repeat(40), StandardCharsets.UTF_8);
-        ownerOnly(ascii);
-
         assertThrows(IllegalStateException.class,
-                () -> SpringHmacProtocol.readSecret(ascii, "verifier"));
+                () -> SpringHmacProtocol.requireSecret(Files.readAllBytes(ascii), "verifier"));
         for (String suffix : new String[]{"\u0085", "\u2003", "\uFEFF"}) {
             Path unicode = temporary.resolve(
                     "unicode-secret-" + Integer.toHexString(suffix.codePointAt(0)));
             Files.writeString(unicode, "b".repeat(40) + suffix, StandardCharsets.UTF_8);
-            ownerOnly(unicode);
             assertThrows(IllegalStateException.class,
-                    () -> SpringHmacProtocol.readSecret(unicode, "transformer"));
+                    () -> SpringHmacProtocol.requireSecret(
+                            Files.readAllBytes(unicode), "transformer"));
         }
     }
 
     @Test
     void rejectsRelativeParentSymlinkHardlinkAndGroupReadableSecrets() throws Exception {
+        assertThrows(IllegalStateException.class,
+                () -> SpringHmacProtocol.readSecret(Path.of("relative-secret"), "runtime"));
+
+        if (!supportsPosixAttributes()) {
+            Path unsupported = temporary.resolve("unsupported-secret");
+            Files.write(unsupported, SECRET);
+            assertPosixMetadataRequired(unsupported, "runtime");
+            return;
+        }
+
         Path insecure = temporary.resolve("insecure");
         Files.write(insecure, SECRET);
         Files.setPosixFilePermissions(insecure, Set.of(
@@ -110,9 +126,6 @@ class SpringHmacProtocolTest {
         Files.createSymbolicLink(linkedParent, realParent);
         assertThrows(IllegalStateException.class,
                 () -> SpringHmacProtocol.readSecret(linkedParent.resolve("secret"), "runtime"));
-
-        assertThrows(IllegalStateException.class,
-                () -> SpringHmacProtocol.readSecret(Path.of("relative-secret"), "runtime"));
     }
 
     @Test
@@ -120,6 +133,10 @@ class SpringHmacProtocolTest {
         Path secret = temporary.resolve("raced-secret");
         Path displaced = temporary.resolve("displaced-secret");
         Files.write(secret, SECRET);
+        if (!supportsPosixAttributes()) {
+            assertRejectedBeforeOpenHook(secret, "runtime");
+            return;
+        }
         ownerOnly(secret);
 
         assertThrows(IllegalStateException.class, () -> SpringHmacProtocol.readSecret(
@@ -144,6 +161,10 @@ class SpringHmacProtocolTest {
         Files.createDirectory(parent);
         Path secret = parent.resolve("secret");
         Files.write(secret, SECRET);
+        if (!supportsPosixAttributes()) {
+            assertRejectedBeforeOpenHook(secret, "runtime");
+            return;
+        }
         ownerOnly(secret);
 
         assertThrows(IllegalStateException.class, () -> SpringHmacProtocol.readSecret(
@@ -177,5 +198,27 @@ class SpringHmacProtocolTest {
         Files.setPosixFilePermissions(path, Set.of(
                 PosixFilePermission.OWNER_READ,
                 PosixFilePermission.OWNER_WRITE));
+    }
+
+    private boolean supportsPosixAttributes() throws Exception {
+        return Files.getFileStore(temporary)
+                .supportsFileAttributeView(PosixFileAttributeView.class);
+    }
+
+    private static void assertPosixMetadataRequired(Path secret, String label) {
+        IllegalStateException error = assertThrows(IllegalStateException.class,
+                () -> SpringHmacProtocol.readSecret(secret, label));
+        assertTrue(error.getMessage().contains(
+                "HMAC secret requires POSIX ownership and mode checks"));
+    }
+
+    private static void assertRejectedBeforeOpenHook(Path secret, String label) {
+        AtomicBoolean opened = new AtomicBoolean(false);
+        IllegalStateException error = assertThrows(IllegalStateException.class,
+                () -> SpringHmacProtocol.readSecret(
+                        secret, label, () -> opened.set(true)));
+        assertTrue(error.getMessage().contains(
+                "HMAC secret requires POSIX ownership and mode checks"));
+        assertFalse(opened.get());
     }
 }

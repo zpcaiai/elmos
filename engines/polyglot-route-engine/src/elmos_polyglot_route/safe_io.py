@@ -30,12 +30,29 @@ def _validate_destination(path: Path, error_code: str) -> None:
 
 
 def _fsync_directory(path: Path) -> None:
+    # CPython cannot open directory handles through os.open on Windows.  The
+    # file itself is flushed before the atomic replace and the published file
+    # is revalidated below; retain the namespace durability barrier wherever
+    # the platform exposes directory descriptors.
+    if os.name == "nt":
+        return
     flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
     descriptor = os.open(path, flags)
     try:
         os.fsync(descriptor)
     finally:
         os.close(descriptor)
+
+
+def _set_private_mode(descriptor: int, path: Path) -> None:
+    file_descriptor_chmod = getattr(os, "fchmod", None)
+    if file_descriptor_chmod is not None:
+        file_descriptor_chmod(descriptor, 0o600)
+        return
+    # Windows does not expose POSIX owner/group mode bits through CPython.
+    # chmod still applies the platform's writable/read-only mapping; mkstemp's
+    # exclusive creation and the open descriptor preserve race safety.
+    os.chmod(path, 0o600)
 
 
 @contextmanager
@@ -59,7 +76,7 @@ def atomic_output_file(
     handle = os.fdopen(descriptor, "w+b")
     published = False
     try:
-        os.fchmod(handle.fileno(), 0o600)
+        _set_private_mode(handle.fileno(), temporary)
         yield handle
         handle.flush()
         os.fsync(handle.fileno())
@@ -110,7 +127,7 @@ def atomic_write_bytes(
 
 
 def _open_stable(path: Path, *, max_bytes: int, unsafe_error: str, limit_error: str) -> tuple[int, os.stat_result]:
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0)
     try:
         descriptor = os.open(path, flags)
     except OSError as error:

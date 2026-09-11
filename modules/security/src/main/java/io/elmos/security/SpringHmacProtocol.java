@@ -264,9 +264,11 @@ public final class SpringHmacProtocol {
     }
 
     /**
-     * macOS' default NIO provider has no SecureDirectoryStream. This development-only branch
+     * Some non-Linux POSIX providers have no SecureDirectoryStream. This development-only branch
      * checks every parent and the final inode both before and after a no-follow channel read. A
-     * Linux production runtime never reaches this weaker compatibility branch.
+     * Linux production runtime never reaches this weaker compatibility branch. Filesystems that
+     * cannot expose POSIX ownership and mode fail closed instead of throwing an untyped provider
+     * exception or silently substituting a weaker ACL check.
      */
     private static byte[] readSecretDevelopmentFallback(
             Path path,
@@ -274,8 +276,7 @@ public final class SpringHmacProtocol {
             Runnable afterOpen
     ) throws IOException {
         Map<Path, BasicFileAttributes> parents = parentAttributes(path, description);
-        PosixFileAttributes before = Files.readAttributes(
-                path, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+        PosixFileAttributes before = posixPathAttributes(path, description);
         UnixPathIdentity beforeIdentity = unixPathIdentity(path, before.fileKey(), description);
         validateSecretMetadata(before, beforeIdentity, description);
         byte[] raw;
@@ -284,8 +285,7 @@ public final class SpringHmacProtocol {
             afterOpen.run();
             raw = readBounded(channel, before.size(), description);
         }
-        PosixFileAttributes after = Files.readAttributes(
-                path, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+        PosixFileAttributes after = posixPathAttributes(path, description);
         UnixPathIdentity afterIdentity = unixPathIdentity(path, after.fileKey(), description);
         validateSecretMetadata(after, afterIdentity, description);
         validateStable(before, after, beforeIdentity, afterIdentity, description);
@@ -302,6 +302,19 @@ public final class SpringHmacProtocol {
             }
         }
         return requireSecret(raw, description);
+    }
+
+    private static PosixFileAttributes posixPathAttributes(
+            Path path,
+            String description
+    ) throws IOException {
+        PosixFileAttributeView view = Files.getFileAttributeView(
+                path, PosixFileAttributeView.class, LinkOption.NOFOLLOW_LINKS);
+        if (view == null) {
+            throw new IllegalStateException(
+                    description + " HMAC secret requires POSIX ownership and mode checks");
+        }
+        return view.readAttributes();
     }
 
     private static Map<Path, BasicFileAttributes> parentAttributes(

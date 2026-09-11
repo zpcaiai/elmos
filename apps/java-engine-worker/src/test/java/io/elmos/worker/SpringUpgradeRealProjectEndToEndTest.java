@@ -9,6 +9,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -38,12 +39,21 @@ class SpringUpgradeRealProjectEndToEndTest {
                         "MATERIALIZED", "legacy-orders", "legacy-orders", "main",
                         "0123456789abcdef0123456789abcdef01234567",
                         "0".repeat(40));
-        DeterministicSnapshotArchiver.SnapshotArchive archive1 =
-                new DeterministicSnapshotArchiver().archive(source, context);
-        DeterministicSnapshotArchiver.SnapshotArchive archive2 =
-                new DeterministicSnapshotArchiver().archive(source, context);
-        assertEquals(archive1.archiveSha256(), archive2.archiveSha256());
-        assertEquals(64, archive1.archiveSha256().length());
+        BasicFileAttributes sourceAttributes = Files.readAttributes(
+                source, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+        if (sourceAttributes.fileKey() == null) {
+            SecurityException rejected = assertThrows(
+                    SecurityException.class,
+                    () -> new DeterministicSnapshotArchiver().archive(source, context));
+            assertTrue(rejected.getMessage().contains("stable filesystem identity"));
+        } else {
+            DeterministicSnapshotArchiver.SnapshotArchive archive1 =
+                    new DeterministicSnapshotArchiver().archive(source, context);
+            DeterministicSnapshotArchiver.SnapshotArchive archive2 =
+                    new DeterministicSnapshotArchiver().archive(source, context);
+            assertEquals(archive1.archiveSha256(), archive2.archiveSha256());
+            assertEquals(64, archive1.archiveSha256().length());
+        }
 
         // 2. Static fingerprinting & non-standard component detection
         SpringUpgradeModels.Fingerprint fingerprint =

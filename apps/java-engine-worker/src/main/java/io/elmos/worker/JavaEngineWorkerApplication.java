@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
         DataSourceAutoConfiguration.class,
         HibernateJpaAutoConfiguration.class,
         org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration.class,
+        org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration.class,
         org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration.class,
         org.springframework.cloud.gateway.config.GatewayAutoConfiguration.class
 })

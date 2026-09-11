@@ -78,10 +78,19 @@ test.describe("Spring production OIDC authorization boundary", () => {
         runtimeRunnerConfigured: false,
       },
     });
-    expect(capabilities.body.routes.length).toBeGreaterThan(0);
+    expect(capabilities.body.routes).toHaveLength(39);
     expect(capabilities.body.routes.filter(
       (route: { evidenceStatus: string }) => route.evidenceStatus === "PASSED_LOCAL",
-    )).toHaveLength(4);
+    )).toHaveLength(14);
+    expect(capabilities.body.routes.filter(
+      (route: { evidenceStatus: string }) => route.evidenceStatus === "NOT_RUN",
+    )).toHaveLength(25);
+    expect(capabilities.body.routes).toContainEqual(expect.objectContaining({
+      routeId: "boot-2.7-maven-to-boot-3.5.3-java-21",
+      packKey: "spring-boot-2-7-18-to-3-5-3",
+      evidenceStatus: "PASSED_LOCAL",
+      launchStatus: "DESIGN_PARTNER",
+    }));
     await expect(page.getByText(`${capabilities.body.routes.length} 条`, { exact: true })).toBeVisible();
     await expect(realSpringRead(page)).resolves.toMatchObject({
       status: 404,

@@ -72,67 +72,45 @@ try {
   writeFileSync(secretFile, secret, { mode: 0o600, flag: "wx" });
   process.env.ELMOS_SPRING_ENGINE_AUTH_ENABLED = "true";
   process.env.ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE = secretFile;
-  const headers = authenticateSpringEngineRequest(
-    "POST",
-    input.requestPath,
-    {
-      "X-ELMOS-Organization-ID": input.organizationId,
-      "X-ELMOS-Actor-ID": input.actorId,
-    },
-    input.body,
-  );
-  assert.match(headers.get("X-ELMOS-Engine-Timestamp") ?? "", /^[0-9]+$/);
-  assert.match(
-    headers.get("X-ELMOS-Engine-Nonce") ?? "",
-    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
-  );
-  assert.equal(headers.get("X-ELMOS-Engine-Body-SHA256"), signed.bodySha256);
-  assert.match(headers.get("X-ELMOS-Engine-Signature") ?? "", /^[0-9a-f]{64}$/);
-
-  chmodSync(secretFile, 0o644);
-  assert.throws(
-    () => authenticateSpringEngineRequest(
+  const authenticate = () => authenticateSpringEngineRequest(
       "POST", input.requestPath,
       { "X-ELMOS-Organization-ID": input.organizationId, "X-ELMOS-Actor-ID": input.actorId },
       input.body,
-    ),
-    /SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED/,
   );
-
-  chmodSync(secretFile, 0o600);
-  const hardlink = path.join(directory, "secret-hardlink");
-  linkSync(secretFile, hardlink);
-  assert.throws(
-    () => authenticateSpringEngineRequest(
-      "POST", input.requestPath,
-      { "X-ELMOS-Organization-ID": input.organizationId, "X-ELMOS-Actor-ID": input.actorId },
-      input.body,
-    ),
-    /SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED/,
-  );
-  unlinkSync(hardlink);
-
-  chmodSync(secretFile, 0o000);
-  assert.throws(
-    () => authenticateSpringEngineRequest(
-      "POST", input.requestPath,
-      { "X-ELMOS-Organization-ID": input.organizationId, "X-ELMOS-Actor-ID": input.actorId },
-      input.body,
-    ),
-    /SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED/,
-  );
-
-  chmodSync(secretFile, 0o600);
-  for (const whitespace of ["\u0085", "\u2003", "\ufeff"]) {
-    writeFileSync(secretFile, Buffer.concat([secret, Buffer.from(whitespace, "utf8")]));
+  if (process.platform === "win32") {
+    // Windows mode bits do not prove an ACL equivalent to 0400/0600. Exercise the
+    // production contract by proving that authentication fails closed before signing.
     assert.throws(
-      () => authenticateSpringEngineRequest(
-        "POST", input.requestPath,
-        { "X-ELMOS-Organization-ID": input.organizationId, "X-ELMOS-Actor-ID": input.actorId },
-        input.body,
-      ),
-      /SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED/,
+      authenticate,
+      /SPRING_ENGINE_AUTH_SECRET_FILE_PERMISSIONS_UNSUPPORTED/,
     );
+  } else {
+    const headers = authenticate();
+    assert.match(headers.get("X-ELMOS-Engine-Timestamp") ?? "", /^[0-9]+$/);
+    assert.match(
+      headers.get("X-ELMOS-Engine-Nonce") ?? "",
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+    );
+    assert.equal(headers.get("X-ELMOS-Engine-Body-SHA256"), signed.bodySha256);
+    assert.match(headers.get("X-ELMOS-Engine-Signature") ?? "", /^[0-9a-f]{64}$/);
+
+    chmodSync(secretFile, 0o644);
+    assert.throws(authenticate, /SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED/);
+
+    chmodSync(secretFile, 0o600);
+    const hardlink = path.join(directory, "secret-hardlink");
+    linkSync(secretFile, hardlink);
+    assert.throws(authenticate, /SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED/);
+    unlinkSync(hardlink);
+
+    chmodSync(secretFile, 0o000);
+    assert.throws(authenticate, /SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED/);
+
+    chmodSync(secretFile, 0o600);
+    for (const whitespace of ["\u0085", "\u2003", "\ufeff"]) {
+      writeFileSync(secretFile, Buffer.concat([secret, Buffer.from(whitespace, "utf8")]));
+      assert.throws(authenticate, /SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED/);
+    }
   }
 
   process.env.ELMOS_SPRING_ENGINE_AUTH_ENABLED = "false";

@@ -231,7 +231,15 @@ def read_regular_file_snapshot(
 ) -> RegularFileSnapshot:
     """Read bytes and descriptor identity without following the final symlink."""
 
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    # O_BINARY is required on Windows: without it os.read translates CRLF to LF,
+    # so the descriptor byte count no longer matches st_size and every legitimate
+    # JSON or evidence file is misclassified as a concurrent truncation.
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
     descriptor = os.open(path, flags)
     try:
         observed = os.fstat(descriptor)

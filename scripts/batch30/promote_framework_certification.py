@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import argparse
 import copy
-import fcntl
 import hashlib
 import json
 import os
@@ -21,6 +20,11 @@ import sys
 import tempfile
 from pathlib import Path
 from typing import Any, Iterable
+
+try:
+    import fcntl
+except ModuleNotFoundError:  # Windows: the read-only gate remains available.
+    fcntl = None  # type: ignore[assignment]
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -121,6 +125,11 @@ def _atomic_remove(path: Path) -> None:
 
 def _promotion_lock(pack: Path) -> int:
     """Open a persistent per-pack lock without the classic unlink race."""
+
+    if fcntl is None or not hasattr(os, "getuid"):
+        raise PromotionError(
+            "certification promotion requires POSIX ownership checks and flock"
+        )
 
     lock_root = Path(tempfile.gettempdir()) / f"elmos-batch30-promotion-locks-{os.getuid()}"
     lock_root.mkdir(mode=0o700, exist_ok=True)
@@ -321,6 +330,7 @@ def promote(
 
     lock_descriptor = _promotion_lock(pack)
     try:
+        assert fcntl is not None
         fcntl.flock(lock_descriptor, fcntl.LOCK_EX)
         campaign_result, documents = evaluate_and_build()
         before: dict[str, bytes | None] = {}
@@ -370,6 +380,7 @@ def promote(
             raise
     finally:
         try:
+            assert fcntl is not None
             fcntl.flock(lock_descriptor, fcntl.LOCK_UN)
         finally:
             os.close(lock_descriptor)

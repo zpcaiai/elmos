@@ -75,7 +75,7 @@ final class SpringEngineRequestAuthenticationFilter extends OncePerRequestFilter
                         readSecret(Path.of(secretFile)),
                         clock,
                         windowSeconds,
-                        new FileNonceStore(replayRoot(replayRoot), clock))
+                        new FileNonceStore(replayRoot(replayRoot), clock)::claim)
                 : null);
     }
 
@@ -234,16 +234,27 @@ final class SpringEngineRequestAuthenticationFilter extends OncePerRequestFilter
     }
 
     static final class Authentication {
+        @FunctionalInterface
+        interface NonceClaimer {
+            boolean claim(
+                    String protocol,
+                    String role,
+                    String signer,
+                    String nonce,
+                    Instant expiresAt
+            );
+        }
+
         private final byte[] secret;
         private final Clock clock;
         private final long windowSeconds;
-        private final FileNonceStore nonces;
+        private final NonceClaimer nonces;
 
         Authentication(
                 byte[] secret,
                 Clock clock,
                 long windowSeconds,
-                FileNonceStore nonces
+                NonceClaimer nonces
         ) {
             this.secret = SpringHmacProtocol.requireSecret(secret, "Spring engine ingress");
             this.clock = Objects.requireNonNull(clock);
