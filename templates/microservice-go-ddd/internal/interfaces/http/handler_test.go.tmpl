@@ -1,0 +1,269 @@
+package http_test
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"sync"
+	"testing"
+
+	"{{.ModuleName}}/internal/application/dto"
+	"{{.ModuleName}}/internal/application/service"
+	"{{.ModuleName}}/internal/domain/model"
+	"{{.ModuleName}}/internal/domain/repository"
+	httpInterface "{{.ModuleName}}/internal/interfaces/http"
+	appErrors "{{.ModuleName}}/pkg/errors"
+	"{{.ModuleName}}/pkg/logger"
+)
+
+// mockRepository implements repository.Repository in-memory for testing,
+// adhering strictly to DDD Rule 3 (Interfaces must not import Infrastructure).
+type mockRepository struct {
+	mu    sync.RWMutex
+	items map[string]*model.Entity
+}
+
+var _ repository.Repository = (*mockRepository)(nil)
+
+func newMockRepository() *mockRepository {
+	return &mockRepository{
+		items: make(map[string]*model.Entity),
+	}
+}
+
+func (m *mockRepository) FindByID(ctx context.Context, id string) (*model.Entity, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	ent, exists := m.items[id]
+	if !exists {
+		return nil, nil
+	}
+	return model.Reconstitute(
+		ent.ID(),
+		ent.Name(),
+		ent.Description(),
+		ent.Status(),
+		ent.CreatedAt(),
+		ent.UpdatedAt(),
+	), nil
+}
+
+func (m *mockRepository) Save(ctx context.Context, entity *model.Entity) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if _, exists := m.items[entity.ID()]; exists {
+		return fmt.Errorf("entity %s already exists", entity.ID())
+	}
+	m.items[entity.ID()] = entity
+	return nil
+}
+
+func (m *mockRepository) Update(ctx context.Context, entity *model.Entity) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if _, exists := m.items[entity.ID()]; !exists {
+		return fmt.Errorf("entity %s not found", entity.ID())
+	}
+	m.items[entity.ID()] = entity
+	return nil
+}
+
+func (m *mockRepository) Delete(ctx context.Context, id string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if _, exists := m.items[id]; !exists {
+		return fmt.Errorf("entity %s not found", id)
+	}
+	delete(m.items, id)
+	return nil
+}
+
+func (m *mockRepository) List(ctx context.Context, offset, limit int) ([]*model.Entity, int64, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	total := int64(len(m.items))
+	var result []*model.Entity
+	for _, ent := range m.items {
+		result = append(result, ent)
+	}
+	return result, total, nil
+}
+
+func setupTestRouter() http.Handler {
+	repo := newMockRepository()
+	log := logger.New("error", "json")
+	svc := service.NewEntityService(repo, log)
+	handler := httpInterface.NewHandler(svc, log)
+	return httpInterface.NewRouter(handler, log)
+}
+
+func TestHandler_Probes(t *testing.T) {
+	router := setupTestRouter()
+
+	tests := []struct {
+		name       string
+		path       string
+		wantStatus int
+		wantBody   string
+	}{
+		{
+			name:       "healthz probe",
+			path:       "/healthz",
+			wantStatus: http.StatusOK,
+			wantBody:   `"status":"healthy"`,
+		},
+		{
+			name:       "livez probe",
+			path:       "/livez",
+			wantStatus: http.StatusOK,
+			wantBody:   `"status":"alive"`,
+		},
+		{
+			name:       "readyz probe",
+			path:       "/readyz",
+			wantStatus: http.StatusOK,
+			wantBody:   `"status":"ready"`,
+		},
+		{
+			name:       "metrics endpoint",
+			path:       "/metrics",
+			wantStatus: http.StatusOK,
+			wantBody:   "http_requests_total",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, tt.path, nil)
+			rec := httptest.NewRecorder()
+			router.ServeHTTP(rec, req)
+
+			if rec.Code != tt.wantStatus {
+				t.Errorf("%s returned status %d, want %d", tt.path, rec.Code, tt.wantStatus)
+			}
+			if !strings.Contains(rec.Body.String(), tt.wantBody) {
+				t.Errorf("%s body %q does not contain %q", tt.path, rec.Body.String(), tt.wantBody)
+			}
+		})
+	}
+}
+
+func TestHandler_EntityCRUD(t *testing.T) {
+	router := setupTestRouter()
+
+	// 1. Create Entity (Success)
+	createBody := `{"name":"test-item","description":"a test item"}`
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/entities", bytes.NewBufferString(createBody))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusCreated {
+		t.Fatalf("POST /api/v1/entities status = %d, want %d; body = %s", rec.Code, http.StatusCreated, rec.Body.String())
+	}
+
+	var created dto.EntityResponse
+	if err := json.NewDecoder(rec.Body).Decode(&created); err != nil {
+		t.Fatalf("failed to decode create response: %v", err)
+	}
+	if created.ID == "" || created.Name != "test-item" {
+		t.Fatalf("unexpected entity response: %+v", created)
+	}
+
+	// 2. Get Entity by ID (Success)
+	getReq := httptest.NewRequest(http.MethodGet, "/api/v1/entities/"+created.ID, nil)
+	getRec := httptest.NewRecorder()
+	router.ServeHTTP(getRec, getReq)
+
+	if getRec.Code != http.StatusOK {
+		t.Fatalf("GET /api/v1/entities/%s status = %d, want %d", created.ID, getRec.Code, http.StatusOK)
+	}
+
+	// 3. List Entities (Success)
+	listReq := httptest.NewRequest(http.MethodGet, "/api/v1/entities?limit=10&offset=0", nil)
+	listRec := httptest.NewRecorder()
+	router.ServeHTTP(listRec, listReq)
+
+	if listRec.Code != http.StatusOK {
+		t.Fatalf("GET /api/v1/entities status = %d, want %d", listRec.Code, http.StatusOK)
+	}
+
+	// 4. Update Entity (Success)
+	updateBody := `{"name":"updated-item","description":"updated description"}`
+	updateReq := httptest.NewRequest(http.MethodPut, "/api/v1/entities/"+created.ID, bytes.NewBufferString(updateBody))
+	updateReq.Header.Set("Content-Type", "application/json")
+	updateRec := httptest.NewRecorder()
+	router.ServeHTTP(updateRec, updateReq)
+
+	if updateRec.Code != http.StatusOK {
+		t.Fatalf("PUT /api/v1/entities/%s status = %d, want %d", created.ID, updateRec.Code, http.StatusOK)
+	}
+
+	// 5. Delete Entity (Success)
+	delReq := httptest.NewRequest(http.MethodDelete, "/api/v1/entities/"+created.ID, nil)
+	delRec := httptest.NewRecorder()
+	router.ServeHTTP(delRec, delReq)
+
+	if delRec.Code != http.StatusNoContent {
+		t.Fatalf("DELETE /api/v1/entities/%s status = %d, want %d", created.ID, delRec.Code, http.StatusNoContent)
+	}
+
+	// 6. Get Entity (After Delete -> Not Found with RFC 7807)
+	getDelReq := httptest.NewRequest(http.MethodGet, "/api/v1/entities/"+created.ID, nil)
+	getDelRec := httptest.NewRecorder()
+	router.ServeHTTP(getDelRec, getDelReq)
+
+	if getDelRec.Code != http.StatusNotFound {
+		t.Fatalf("GET deleted entity status = %d, want %d", getDelRec.Code, http.StatusNotFound)
+	}
+	contentType := getDelRec.Header().Get("Content-Type")
+	if !strings.Contains(contentType, "application/problem+json") {
+		t.Errorf("expected Content-Type application/problem+json, got %q", contentType)
+	}
+
+	var problem appErrors.ProblemDetails
+	if err := json.NewDecoder(getDelRec.Body).Decode(&problem); err != nil {
+		t.Fatalf("failed to decode problem details: %v", err)
+	}
+	if problem.Status != http.StatusNotFound {
+		t.Errorf("problem status = %d, want %d", problem.Status, http.StatusNotFound)
+	}
+}
+
+func TestHandler_ValidationRFC7807(t *testing.T) {
+	router := setupTestRouter()
+
+	// Malformed JSON body
+	badReq := httptest.NewRequest(http.MethodPost, "/api/v1/entities", bytes.NewBufferString("{invalid-json"))
+	badReq.Header.Set("Content-Type", "application/json")
+	badRec := httptest.NewRecorder()
+	router.ServeHTTP(badRec, badReq)
+
+	if badRec.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, want %d", badRec.Code, http.StatusBadRequest)
+	}
+	contentType := badRec.Header().Get("Content-Type")
+	if !strings.Contains(contentType, "application/problem+json") {
+		t.Errorf("expected Content-Type application/problem+json, got %q", contentType)
+	}
+
+	var problem appErrors.ProblemDetails
+	if err := json.NewDecoder(badRec.Body).Decode(&problem); err != nil {
+		t.Fatalf("failed to decode problem details: %v", err)
+	}
+	if problem.Status != http.StatusBadRequest {
+		t.Errorf("problem status = %d, want %d", problem.Status, http.StatusBadRequest)
+	}
+	if problem.Type != "urn:problem-type:validation-error" {
+		t.Errorf("problem type = %q, want urn:problem-type:validation-error", problem.Type)
+	}
+}
