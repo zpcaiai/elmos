@@ -4,7 +4,7 @@
   "decision": "BLOCKED",
   "certification_authority": false,
   "maximum_success_decision": "READY_FOR_EXTERNAL_GATE",
-  "evaluated_at": "2026-09-10T09:27:08.859439Z",
+  "evaluated_at": "2026-09-11T00:54:06.649199Z",
   "field_evidence_status": "INCOMPLETE",
   "metrics": {
     "batches": 55,
@@ -37,5 +37,5 @@
   ],
   "control_manifest_digest": "sha256:fdc9b6a3f1e83f08fdf26c975a7baa9f9124921f58aaaa29554a8423c66d1517",
   "result_catalog_digest": "sha256:10fdb16a6568fb8aa2c023ac0fdfd86c06fc19a2488943f4078b7c23ec65f454",
-  "gate_digest": "sha256:0eb6a8b1712e33ec92d6fdcd992a352bbe4a9fb0e32f9312891fb9e7d65199ea"
+  "gate_digest": "sha256:4ecc627c331a02d1df9a63870f0471d79f057181b421776aee068c793467f927"
 }
