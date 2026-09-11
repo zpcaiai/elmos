@@ -419,7 +419,7 @@
     "environment-manifest.schema.json": "sha256:cc6b2ffed844463d110cc8577c6bbd286da631372caae7444c4de554e47e6446",
     "evidence-manifest.schema.json": "sha256:f154ae052ad9a8ac7e3fd25b945cba5aba99a8444d2e73ce3cfbf9d9ad966514",
     "release-gate.schema.json": "sha256:31c72af6094f4a249eec50d6abf49e6726754f40ae35e9e1ebb43a5d0be477b3",
-    "result.schema.json": "sha256:1604885a3074ad28978bfed91b9e42492236c94b000c33063ff231fdcb0bdee8",
+    "result.schema.json": "sha256:f058b6c58854d3aa76808d909a37d169c352b77c836a8c63bc2fd0b2ac224780",
     "strict-profile.schema.json": "sha256:6692e32396232af35d3c3814693dbf8c1beb3ff2d3f646cb436c31776dd1e6a4",
     "suite.schema.json": "sha256:96a65c82070df905c0bcfe6fd0c3b28fcf1ca89f7ef7c11bbaec9388d5a0482b",
     "trust-store.schema.json": "sha256:9f30c24d124ca2b88a1cfdaef157562f5fab6619b88887f87518fc0a479e3598"
