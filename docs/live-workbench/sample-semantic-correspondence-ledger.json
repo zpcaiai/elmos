@@ -1,0 +1,208 @@
+{
+  "schema_version": "semantic-correspondence.v1",
+  "fixture_repository": "engines/legacy-web-modernization-engine/fixtures/sample_struts_spring_ecommerce",
+  "generation_result": {
+    "mode": "staged-only",
+    "target": {
+      "springBoot": "4.x",
+      "springFramework": "7.x",
+      "jakartaEE": "11",
+      "servlet": "6.1",
+      "java": 21
+    },
+    "files": {
+      "src/main/java/org/elmos/legacyweb/generated/ActionServletController.java": "package org.elmos.legacyweb.generated;\n\nimport org.springframework.stereotype.Controller;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RequestMethod;\nimport org.springframework.web.bind.annotation.RequestParam;\n\n@Controller\n@RequestMapping(path = \"/*.do\", method = RequestMethod.GET)\npublic final class ActionServletController {\n    // Generated from org.apache.struts.action.ActionServlet using STRUTS1_CONTROLLERS_GENERATED.\n    // Every recovered scalar binding is explicit; unresolved nested conversion remains a verification gate.\n    public String handle() {\n        return \"forward: /WEB-INF/jsp/legacy-preserved.jsp\";\n    }\n}\n",
+      "src/main/java/org/elmos/legacyweb/generated/CreateOrderActionController.java": "package org.elmos.legacyweb.generated;\n\nimport org.springframework.stereotype.Controller;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RequestMethod;\nimport org.springframework.web.bind.annotation.RequestParam;\n\n@Controller\n@RequestMapping(path = \"/order/create\", method = RequestMethod.GET)\npublic final class CreateOrderActionController {\n    // Generated from com.corp.ecommerce.action.CreateOrderAction using STRUTS1_CONTROLLERS_GENERATED.\n    // Every recovered scalar binding is explicit; unresolved nested conversion remains a verification gate.\n    public String handle() {\n        return \"forward: /WEB-INF/jsp/order_success.jsp\";\n    }\n}\n",
+      "src/main/java/org/elmos/legacyweb/generated/LoginActionController.java": "package org.elmos.legacyweb.generated;\n\nimport org.springframework.stereotype.Controller;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RequestMethod;\nimport org.springframework.web.bind.annotation.RequestParam;\n\n@Controller\n@RequestMapping(path = \"/user/login\", method = RequestMethod.GET)\npublic final class LoginActionController {\n    // Generated from com.corp.ecommerce.action.LoginAction using STRUTS1_CONTROLLERS_GENERATED.\n    // Every recovered scalar binding is explicit; unresolved nested conversion remains a verification gate.\n    public String handle() {\n        return \"forward: /WEB-INF/jsp/home.jsp\";\n    }\n}\n"
+    },
+    "sourceSnapshotDigest": "sha256:90152358c0f22996173170efc8db6241d801f5bc6933a02677684597df57548e",
+    "targetBuild": "NOT_RUN",
+    "gitMutation": false
+  },
+  "correspondence_ledger": {
+    "mapVersion": "1.0.0",
+    "repositorySnapshotId": "sha256:90152358c0f22996173170efc8db6241d801f5bc6933a02677684597df57548e",
+    "targetDigest": "sha256:ce0091fad1d4ccd8bd9bc9ed0a9e16c2cb8d15e376961d3f6b59b8ff54e3757a",
+    "mappings": [
+      {
+        "id": "map:376e15e1a99cdd99",
+        "legacyEvidenceRefs": [
+          "ev:7c1302953188b071:src/main/webapp/WEB-INF/web.xml:1"
+        ],
+        "irNodeRefs": [
+          "endpoint:376e15e1a99cdd99",
+          "pipeline:376e15e1a99cdd99"
+        ],
+        "decisionRefs": [
+          "decision:preserve-first"
+        ],
+        "targetLocations": [
+          {
+            "uri": "target://src/main/java/org/elmos/legacyweb/generated/ActionServletController.java",
+            "lineStart": 1,
+            "lineEnd": 80
+          }
+        ],
+        "testRefs": [
+          "scenario:376e15e1a99cdd99"
+        ],
+        "verificationRefs": [],
+        "recipe": {
+          "id": "org.elmos.legacyweb.IRDrivenController",
+          "version": "1.0.0"
+        },
+        "modelGeneration": null
+      },
+      {
+        "id": "map:81b260f61580a240",
+        "legacyEvidenceRefs": [
+          "ev:ec6a74657a90e96e:src/main/webapp/WEB-INF/struts-config.xml:1"
+        ],
+        "irNodeRefs": [
+          "endpoint:81b260f61580a240",
+          "pipeline:81b260f61580a240"
+        ],
+        "decisionRefs": [
+          "decision:preserve-first"
+        ],
+        "targetLocations": [
+          {
+            "uri": "target://src/main/java/org/elmos/legacyweb/generated/CreateOrderActionController.java",
+            "lineStart": 1,
+            "lineEnd": 80
+          }
+        ],
+        "testRefs": [
+          "scenario:81b260f61580a240"
+        ],
+        "verificationRefs": [],
+        "recipe": {
+          "id": "org.elmos.legacyweb.IRDrivenController",
+          "version": "1.0.0"
+        },
+        "modelGeneration": null
+      },
+      {
+        "id": "map:38e7b60775a1e45c",
+        "legacyEvidenceRefs": [
+          "ev:ec6a74657a90e96e:src/main/webapp/WEB-INF/struts-config.xml:1"
+        ],
+        "irNodeRefs": [
+          "endpoint:38e7b60775a1e45c",
+          "pipeline:38e7b60775a1e45c"
+        ],
+        "decisionRefs": [
+          "decision:preserve-first"
+        ],
+        "targetLocations": [
+          {
+            "uri": "target://src/main/java/org/elmos/legacyweb/generated/LoginActionController.java",
+            "lineStart": 1,
+            "lineEnd": 80
+          }
+        ],
+        "testRefs": [
+          "scenario:38e7b60775a1e45c"
+        ],
+        "verificationRefs": [],
+        "recipe": {
+          "id": "org.elmos.legacyweb.IRDrivenController",
+          "version": "1.0.0"
+        },
+        "modelGeneration": null
+      }
+    ]
+  },
+  "source_snapshot_digest": "sha256:90152358c0f22996173170efc8db6241d801f5bc6933a02677684597df57548e",
+  "target_digest": "sha256:ce0091fad1d4ccd8bd9bc9ed0a9e16c2cb8d15e376961d3f6b59b8ff54e3757a",
+  "mappings": [
+    {
+      "id": "map:376e15e1a99cdd99",
+      "legacyEvidenceRefs": [
+        "ev:7c1302953188b071:src/main/webapp/WEB-INF/web.xml:1"
+      ],
+      "irNodeRefs": [
+        "endpoint:376e15e1a99cdd99",
+        "pipeline:376e15e1a99cdd99"
+      ],
+      "decisionRefs": [
+        "decision:preserve-first"
+      ],
+      "targetLocations": [
+        {
+          "uri": "target://src/main/java/org/elmos/legacyweb/generated/ActionServletController.java",
+          "lineStart": 1,
+          "lineEnd": 80
+        }
+      ],
+      "testRefs": [
+        "scenario:376e15e1a99cdd99"
+      ],
+      "verificationRefs": [],
+      "recipe": {
+        "id": "org.elmos.legacyweb.IRDrivenController",
+        "version": "1.0.0"
+      },
+      "modelGeneration": null
+    },
+    {
+      "id": "map:81b260f61580a240",
+      "legacyEvidenceRefs": [
+        "ev:ec6a74657a90e96e:src/main/webapp/WEB-INF/struts-config.xml:1"
+      ],
+      "irNodeRefs": [
+        "endpoint:81b260f61580a240",
+        "pipeline:81b260f61580a240"
+      ],
+      "decisionRefs": [
+        "decision:preserve-first"
+      ],
+      "targetLocations": [
+        {
+          "uri": "target://src/main/java/org/elmos/legacyweb/generated/CreateOrderActionController.java",
+          "lineStart": 1,
+          "lineEnd": 80
+        }
+      ],
+      "testRefs": [
+        "scenario:81b260f61580a240"
+      ],
+      "verificationRefs": [],
+      "recipe": {
+        "id": "org.elmos.legacyweb.IRDrivenController",
+        "version": "1.0.0"
+      },
+      "modelGeneration": null
+    },
+    {
+      "id": "map:38e7b60775a1e45c",
+      "legacyEvidenceRefs": [
+        "ev:ec6a74657a90e96e:src/main/webapp/WEB-INF/struts-config.xml:1"
+      ],
+      "irNodeRefs": [
+        "endpoint:38e7b60775a1e45c",
+        "pipeline:38e7b60775a1e45c"
+      ],
+      "decisionRefs": [
+        "decision:preserve-first"
+      ],
+      "targetLocations": [
+        {
+          "uri": "target://src/main/java/org/elmos/legacyweb/generated/LoginActionController.java",
+          "lineStart": 1,
+          "lineEnd": 80
+        }
+      ],
+      "testRefs": [
+        "scenario:38e7b60775a1e45c"
+      ],
+      "verificationRefs": [],
+      "recipe": {
+        "id": "org.elmos.legacyweb.IRDrivenController",
+        "version": "1.0.0"
+      },
+      "modelGeneration": null
+    }
+  ],
+  "ledger_digest": "sha256:fb6b615373dbee307e04b2c20fe572d13b5d5a79e6da07adffeb155039ca754d"
+}

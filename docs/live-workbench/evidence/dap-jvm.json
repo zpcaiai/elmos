@@ -1,0 +1,12 @@
+{
+  "adapter": "jdwp",
+  "breakpointsHit": 1,
+  "callStackDepth": 4,
+  "commands": [
+    "next",
+    "stepIn",
+    "stackTrace"
+  ],
+  "runtime": "temurin-21",
+  "timestamp": 1789126352
+}

@@ -54,6 +54,7 @@ logger = logging.getLogger("elmos.ast_compiler.native_bridge")
 
 ENGINE_ROOT = Path(__file__).resolve().parents[4]
 NATIVE_DIR = ENGINE_ROOT / "native"
+DEFAULT_SUBPROCESS_TIMEOUT = 30
 
 
 class NativeBridge:
@@ -88,7 +89,7 @@ class NativeBridge:
                 "-std=c++20",
                 temp_path,
             ]
-            res = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT)
             if res.returncode != 0 and not res.stdout:
                 logger.debug("Clang AST dump failed: %s", res.stderr)
                 return None
@@ -351,7 +352,7 @@ class NativeBridge:
 
         try:
             # 1. Run inventory to get all declared items
-            inv_res = subprocess.run([str(bin_path), temp_path, "--inventory"], capture_output=True, text=True, timeout=10)
+            inv_res = subprocess.run([str(bin_path), temp_path, "--inventory"], capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT)
             if inv_res.returncode != 0:
                 logger.debug("Rust syn inventory failed: %s", inv_res.stderr)
                 return None
@@ -373,7 +374,7 @@ class NativeBridge:
                     ))
                 elif kind == "function":
                     # Analyze specific function body
-                    fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=10)
+                    fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT)
                     if fn_res.returncode == 0:
                         fn_data = json.loads(fn_res.stdout)
                         for fn_item in fn_data.get("functions", []):
@@ -540,7 +541,7 @@ class NativeBridge:
 
         try:
             # 1. Run inventory to get all functions
-            inv_res = subprocess.run([str(bin_path), temp_path, "--inventory"], capture_output=True, text=True, timeout=10)
+            inv_res = subprocess.run([str(bin_path), temp_path, "--inventory"], capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT)
             if inv_res.returncode != 0:
                 logger.debug("Go analyzer inventory failed: %s", inv_res.stderr)
                 return None
@@ -562,7 +563,7 @@ class NativeBridge:
                     ))
                 elif kind in ("function", "method"):
                     u_meth = UniversalMethod(name=name)
-                    fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=10)
+                    fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT)
                     if fn_res.returncode == 0:
                         fn_data = json.loads(fn_res.stdout)
                         for fn_item in fn_data.get("functions", []):
@@ -601,7 +602,7 @@ class NativeBridge:
             try:
                 inv_res = subprocess.run(
                     ["java", "-cp", str(class_dir), "Analyzer", file_path, "--inventory"],
-                    capture_output=True, text=True, timeout=10
+                    capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT
                 )
                 if inv_res.returncode != 0:
                     return None
@@ -631,7 +632,7 @@ class NativeBridge:
                         if subj.get("analyzable"):
                             fn_res = subprocess.run(
                                 ["java", "-cp", str(class_dir), "Analyzer", file_path, name],
-                                capture_output=True, text=True, timeout=10
+                                capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT
                             )
                             if fn_res.returncode == 0:
                                 fn_data = json.loads(fn_res.stdout)
@@ -682,7 +683,7 @@ class NativeBridge:
             for m_name in m_names:
                 res = subprocess.run(
                     ["dotnet", str(dll_path), temp_path, m_name, "--emitted-target"],
-                    capture_output=True, text=True, timeout=10
+                    capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT
                 )
                 if res.returncode == 0:
                     data = json.loads(res.stdout)
@@ -722,7 +723,7 @@ class NativeBridge:
         try:
             inv_res = subprocess.run(
                 [node_path, str(analyzer_mjs), str(ts_lib), temp_path, "--inventory"],
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT
             )
             if inv_res.returncode != 0:
                 logger.debug("TypeScript analyzer inventory failed: %s", inv_res.stderr)
@@ -745,7 +746,7 @@ class NativeBridge:
                     continue
                 fn_res = subprocess.run(
                     [node_path, str(analyzer_mjs), str(ts_lib), temp_path, name],
-                    capture_output=True, text=True, timeout=30
+                    capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT
                 )
                 if fn_res.returncode == 0:
                     fn_data = json.loads(fn_res.stdout)
@@ -792,7 +793,7 @@ class NativeBridge:
             temp_path = f.name
 
         try:
-            inv_res = subprocess.run([str(bin_path), temp_path, "--inventory"], capture_output=True, text=True, timeout=10)
+            inv_res = subprocess.run([str(bin_path), temp_path, "--inventory"], capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT)
             if inv_res.returncode != 0:
                 logger.debug("Swift analyzer inventory failed: %s", inv_res.stderr)
                 return None
@@ -806,7 +807,7 @@ class NativeBridge:
                 name = subj.get("name")
                 if not name or not subj.get("analyzable"):
                     continue
-                fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=10)
+                fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT)
                 if fn_res.returncode == 0:
                     fn_data = json.loads(fn_res.stdout)
                     for fn_item in fn_data.get("functions", []):

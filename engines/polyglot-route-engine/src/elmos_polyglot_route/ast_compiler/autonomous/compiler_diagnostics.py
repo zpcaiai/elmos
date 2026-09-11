@@ -97,7 +97,7 @@ class CompilerDiagnosticParser:
                 src_file = tmppath / "test.cpp"
                 src_file.write_text(code, encoding="utf-8")
                 clang_bin = shutil.which("clang++") or "/usr/bin/clang++"
-                cmd = [clang_bin, "-std=c++20", "-fsyntax-only", "-I.", str(src_file)]
+                cmd = [clang_bin, "-std=c++20", "-fsyntax-only", str(src_file)]
 
             elif lang in ("vcpp6", "mfc"):
                 src_file = tmppath / "test.cpp"
@@ -196,7 +196,7 @@ class CompilerDiagnosticParser:
                 return 0, [], f"Unsupported language: {lang}"
 
             try:
-                proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+                proc = subprocess.run(cmd, cwd=str(tmppath), capture_output=True, text=True, timeout=60)
                 raw_out = proc.stdout + proc.stderr
                 diags = cls._parse_raw_output(raw_out, lang, ret_code=proc.returncode)
                 return proc.returncode, diags, raw_out

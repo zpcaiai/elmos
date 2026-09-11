@@ -1,0 +1,11 @@
+{
+  "adapter": "v8-inspector",
+  "breakpointsHit": 1,
+  "commands": [
+    "next",
+    "stepIn",
+    "variables"
+  ],
+  "runtime": "node-20",
+  "timestamp": 1789126352
+}
