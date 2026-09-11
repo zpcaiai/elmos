@@ -166,6 +166,12 @@ from elmos_mature_platform.economics_maturity_gate_engine import EconomicsMaturi
 from elmos_mature_platform.human_expert_cost_engine import HumanExpertCostEngine
 from elmos_mature_platform.provider_resource_routing_engine import ProviderResourceRoutingEngine
 from elmos_mature_platform.resource_metering_engine import ResourceMeteringEngine
+from elmos_mature_platform.runner_fleet_economics_engine import RunnerFleetEconomicsEngine
+from elmos_mature_platform.showback_chargeback_engine import ShowbackChargebackEngine
+from elmos_mature_platform.support_hypercare_operations_cost_engine import SupportHypercareOperationsCostEngine
+from elmos_mature_platform.edition_route_vertical_certification_engine import EditionRouteVerticalCertificationEngine
+from elmos_mature_platform.maturity_model_editions_engine import MaturityModelEditionsEngine
+from elmos_mature_platform.product_governance_accountability_engine import ProductGovernanceAccountabilityEngine
 
 
 from elmos_mature_platform.physical import (
@@ -349,6 +355,12 @@ __all__ = [
     "HumanExpertCostEngine",
     "ProviderResourceRoutingEngine",
     "ResourceMeteringEngine",
+    "RunnerFleetEconomicsEngine",
+    "ShowbackChargebackEngine",
+    "SupportHypercareOperationsCostEngine",
+    "EditionRouteVerticalCertificationEngine",
+    "MaturityModelEditionsEngine",
+    "ProductGovernanceAccountabilityEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",
