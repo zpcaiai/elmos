@@ -17,7 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         properties = {
                 "elmos.worker.spring-upgrade.enabled=false",
                 "elmos.worker.spring-upgrade.ingress-auth-enabled=false",
-                "management.endpoints.web.exposure.include=health,info,prometheus"
+                "management.endpoints.web.exposure.include=health,info,prometheus",
+                "spring.cloud.compatibility-verifier.enabled=false"
         }
 )
 @AutoConfigureObservability

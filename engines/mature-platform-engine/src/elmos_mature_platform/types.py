@@ -7458,3 +7458,204 @@ class TargetMaintainabilityCertification:
     certified_at: str = ""
     certifier: str = ""
     remediation_backlog: List[str] = field(default_factory=list)
+
+
+# ─── Dedicated SaaS Edition Models (B38) ─────────────────────────────
+
+class DedicatedSaasIsolationLevel(str, Enum):
+    VPC_PEERED = "vpc_peered"
+    DEDICATED_CLUSTER = "dedicated_cluster"
+    SINGLE_TENANT_DB = "single_tenant_db"
+    HARDWARE_ISOLATED = "hardware_isolated"
+
+class DedicatedSaasStatus(str, Enum):
+    PROVISIONING = "provisioning"
+    ACTIVE = "active"
+    SUSPENDED = "suspended"
+    DRAINING = "draining"
+    DECOMMISSIONED = "decommissioned"
+
+@dataclass
+class DedicatedSaasConfig:
+    edition_id: str
+    customer_id: str
+    customer_name: str
+    custom_domain: str
+    isolation_level: DedicatedSaasIsolationLevel = DedicatedSaasIsolationLevel.SINGLE_TENANT_DB
+    status: DedicatedSaasStatus = DedicatedSaasStatus.PROVISIONING
+    byok_key_arn: str = ""
+    vpc_peering_id: str = ""
+    allocated_cores: int = 8
+    allocated_memory_gb: int = 32
+    created_at: str = ""
+    maintenance_window: str = "Sun 02:00-04:00 UTC"
+
+@dataclass
+class DedicatedSaasAuditRecord:
+    audit_id: str
+    edition_id: str
+    audit_type: str
+    passed: bool = True
+    details: str = ""
+    checked_at: str = ""
+
+
+# ─── Deployment Upgrade Gate Models (B38) ────────────────────────────
+
+class UpgradeGateCheckType(str, Enum):
+    SCHEMA_COMPATIBILITY = "schema_compatibility"
+    TRAFFIC_DRAIN_SAFETY = "traffic_drain_safety"
+    CANARY_ERROR_BUDGET = "canary_error_budget"
+    BACKUP_SNAPSHOT_FRESHNESS = "backup_snapshot_freshness"
+    ROLLBACK_PLAN_READY = "rollback_plan_ready"
+
+class UpgradeGateVerdict(str, Enum):
+    APPROVED = "approved"
+    BLOCKED = "blocked"
+    CONDITIONAL_OVERRIDE = "conditional_override"
+
+@dataclass
+class DeploymentUpgradeGateCheck:
+    check_id: str
+    check_type: UpgradeGateCheckType
+    description: str
+    is_blocking: bool = True
+    passed: bool = False
+    actual_metrics: Dict[str, Any] = field(default_factory=dict)
+    evaluated_at: str = ""
+
+@dataclass
+class DeploymentUpgradeGateAssessment:
+    gate_id: str
+    deployment_id: str
+    from_version: str
+    to_version: str
+    verdict: UpgradeGateVerdict = UpgradeGateVerdict.BLOCKED
+    checks: List[DeploymentUpgradeGateCheck] = field(default_factory=list)
+    evaluated_at: str = ""
+    operator: str = ""
+    override_reason: str = ""
+
+
+# ─── Edge Plant Restricted Edition Models (B38) ──────────────────────
+
+class EdgeConnectivityState(str, Enum):
+    ONLINE = "online"
+    INTERMITTENT = "intermittent"
+    ISOLATED_AIRGAP = "isolated_airgap"
+    OFFLINE = "offline"
+
+class PlantProtocolSupport(str, Enum):
+    OPC_UA = "opc_ua"
+    MODBUS_TCP = "modbus_tcp"
+    PROFINET = "profinet"
+    MQTT_SPARKPLUG = "mqtt_sparkplug"
+    REST_LOCAL = "rest_local"
+
+@dataclass
+class EdgeNodeConfig:
+    node_id: str
+    plant_id: str
+    site_name: str
+    connectivity_state: EdgeConnectivityState = EdgeConnectivityState.ONLINE
+    supported_protocols: List[PlantProtocolSupport] = field(default_factory=list)
+    local_storage_limit_gb: int = 100
+    used_storage_gb: float = 0.0
+    last_heartbeat: str = ""
+    is_quarantined: bool = False
+
+@dataclass
+class EdgeSyncEvent:
+    node_id: str
+    sync_id: str = ""
+    records_buffered: int = 0
+    records_synced: int = 0
+    conflict_count: int = 0
+    sync_duration_ms: int = 0
+    status: str = "success"
+    synced_at: str = ""
+
+
+# ─── Global SRE Operations Factory Models (B39) ──────────────────────
+
+class SreShiftRegion(str, Enum):
+    APAC = "apac"
+    EMEA = "emea"
+    AMER = "amer"
+
+class EscalationTier(str, Enum):
+    TIER_1_ONCALL = "tier_1_oncall"
+    TIER_2_TECH_LEAD = "tier_2_tech_lead"
+    TIER_3_DOMAIN_EXPERT = "tier_3_domain_expert"
+    INCIDENT_COMMANDER = "incident_commander"
+
+@dataclass
+class SreOncallShift:
+    shift_id: str
+    region: SreShiftRegion
+    start_time: str
+    end_time: str
+    primary_engineer: str
+    secondary_engineer: str
+    is_active: bool = False
+
+@dataclass
+class SrePlaybook:
+    playbook_id: str
+    title: str
+    service_tag: str
+    steps: List[str] = field(default_factory=list)
+    automated_remediation_command: str = ""
+    verified_at: str = ""
+
+@dataclass
+class GlobalSreIncidentEscalation:
+    escalation_id: str
+    incident_ref: str
+    severity: str
+    current_tier: EscalationTier = EscalationTier.TIER_1_ONCALL
+    assigned_shift: SreShiftRegion = SreShiftRegion.AMER
+    assigned_engineer: str = ""
+    escalated_at: str = ""
+    acknowledged: bool = False
+    acknowledged_at: str = ""
+    response_sla_minutes: int = 15
+
+
+# ─── Security Architecture Review Models (B40) ───────────────────────
+
+class StrideCategory(str, Enum):
+    SPOOFING = "spoofing"
+    TAMPERING = "tampering"
+    REPUDIATION = "repudiation"
+    INFORMATION_DISCLOSURE = "information_disclosure"
+    DENIAL_OF_SERVICE = "denial_of_service"
+    ELEVATION_OF_PRIVILEGE = "elevation_of_privilege"
+
+class SecurityReviewVerdict(str, Enum):
+    APPROVED = "approved"
+    CONDITIONAL_APPROVAL = "conditional_approval"
+    REJECTED = "rejected"
+
+@dataclass
+class SecurityThreatModel:
+    threat_id: str
+    component_name: str
+    category: StrideCategory
+    severity: ThreatSeverity
+    description: str
+    mitigation_control: str = ""
+    is_mitigated: bool = False
+    residual_risk_accepted: bool = False
+
+@dataclass
+class SecurityArchitectureReviewRecord:
+    review_id: str
+    system_name: str
+    architecture_version: str
+    verdict: SecurityReviewVerdict = SecurityReviewVerdict.REJECTED
+    threats: List[SecurityThreatModel] = field(default_factory=list)
+    trust_boundaries_defined: bool = True
+    reviewed_by: str = ""
+    reviewed_at: str = ""
+    action_items: List[str] = field(default_factory=list)

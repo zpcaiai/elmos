@@ -120,6 +120,11 @@ from elmos_mature_platform.secure_sdlc_ssdf_engine import SecureSdlcSsdfEngine
 from elmos_mature_platform.migration_entity_relations_engine import MigrationEntityRelationsEngine
 from elmos_mature_platform.agent_factory_gate_engine import AgentFactoryGateEngine
 from elmos_mature_platform.target_maintainability_certification_engine import TargetMaintainabilityCertificationEngine
+from elmos_mature_platform.dedicated_saas_edition_engine import DedicatedSaasEditionEngine
+from elmos_mature_platform.deployment_upgrade_gate_engine import DeploymentUpgradeGateEngine
+from elmos_mature_platform.edge_plant_restricted_edition_engine import EdgePlantRestrictedEditionEngine
+from elmos_mature_platform.global_sre_operations_factory_engine import GlobalSreOperationsFactoryEngine
+from elmos_mature_platform.security_architecture_review_engine import SecurityArchitectureReviewEngine
 from elmos_mature_platform.physical import (
     CloudVendorControlPlaneDriver,
     IndustrialLoopback,
@@ -255,6 +260,11 @@ __all__ = [
     "MigrationEntityRelationsEngine",
     "AgentFactoryGateEngine",
     "TargetMaintainabilityCertificationEngine",
+    "DedicatedSaasEditionEngine",
+    "DeploymentUpgradeGateEngine",
+    "EdgePlantRestrictedEditionEngine",
+    "GlobalSreOperationsFactoryEngine",
+    "SecurityArchitectureReviewEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",
