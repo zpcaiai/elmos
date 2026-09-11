@@ -8,15 +8,21 @@
           "name": "pytest",
           "kind": "pytest",
           "timeout_seconds": 1800,
-          "project": "engines/ai-capability-engine",
+          "project": null,
           "tests": [
             "engines/ai-capability-engine/tests"
           ],
           "uv_args": [
-            "--extra",
-            "dev"
+            "--with",
+            "pytest==8.4.2",
+            "--with",
+            "pyyaml==6.0.2",
+            "--with",
+            "jsonschema==4.25.1"
           ],
-          "pythonpath": [],
+          "pythonpath": [
+            "engines/ai-capability-engine/src"
+          ],
           "environment": {}
         }
       ]
