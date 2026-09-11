@@ -71,15 +71,12 @@ func TestMetricsMiddleware_AndPrometheusHandler(t *testing.T) {
 
 	body := metricsRec.Body.String()
 	if !strings.Contains(body, "http_requests_total") {
-		t.Fatalf("expected 'http_requests_total' in metrics output, got:
-%s", body)
+		t.Fatalf("expected 'http_requests_total' in metrics output, got:\n%s", body)
 	}
 	if !strings.Contains(body, "http_request_duration_seconds") {
-		t.Fatalf("expected 'http_request_duration_seconds' in metrics output, got:
-%s", body)
+		t.Fatalf("expected 'http_request_duration_seconds' in metrics output, got:\n%s", body)
 	}
 	if !strings.Contains(body, "service_up 1") {
-		t.Fatalf("expected 'service_up 1' in metrics output, got:
-%s", body)
+		t.Fatalf("expected 'service_up 1' in metrics output, got:\n%s", body)
 	}
 }

@@ -7,15 +7,67 @@ from unittest.mock import patch, MagicMock
 # ── Pre-import mocks for external modules that dispatcher lazily imports ──────
 _EXTERNAL_MODS = [
     'yaml',
-    'elmos_polyglot_compiler', 'elmos_polyglot_compiler.service',
+    'elmos_polyglot_compiler',
+    'elmos_polyglot_compiler.service',
     'elmos_polyglot_compiler.self_healing',
-    'elmos_formal_assurance', 'elmos_formal_assurance.lean_bridge',
-    'elmos_sql_dialect', 'elmos_sql_dialect.sql_transpiler_gateway',
-    'elmos_security_engine', 'elmos_security_engine.iam_policy_transpiler',
+    'elmos_formal_assurance',
+    'elmos_formal_assurance.lean_bridge',
+    'elmos_formal_assurance.lean_dafny_bridge',
+    'elmos_formal_assurance.hermetic_environment_builder',
+    'elmos_sql_dialect',
+    'elmos_sql_dialect.sql_transpiler_gateway',
+    'elmos_security_engine',
+    'elmos_security_engine.iam_policy_transpiler',
 ]
 for _mod in _EXTERNAL_MODS:
     if _mod not in sys.modules:
         sys.modules[_mod] = MagicMock()
+
+# Setup specific return values on mock functions so dispatcher serialization works
+sys.modules['elmos_formal_assurance.lean_dafny_bridge'].generate_lean4_proof.return_value = {
+    "status": "SAT_PROVED",
+    "obligation": "test_obligation",
+    "proof_artifact": "theorem t1 : True := trivial",
+}
+sys.modules['elmos_polyglot_compiler.service'].get_polyglot_service_status.return_value = {
+    "status": "HEALTHY",
+    "supported_routes": 784,
+}
+sys.modules['elmos_polyglot_compiler.service'].list_active_routes.return_value = [
+    {"source": "java", "target": "csharp", "certified": True}
+]
+sys.modules['elmos_polyglot_compiler.service'].transform_code.return_value = {
+    "status": "SUCCESS",
+    "target_code": "class Target {}",
+}
+sys.modules['elmos_polyglot_compiler.service'].check_smt_formula.return_value = {
+    "sat": True,
+    "model": {},
+}
+sys.modules['elmos_polyglot_compiler.service'].run_differential_fuzzing.return_value = {
+    "status": "PASS",
+    "mutants_tested": 100,
+}
+sys.modules['elmos_polyglot_compiler.service'].certify_language_route.return_value = {
+    "verdict": "CERTIFIED",
+    "route": "java->csharp",
+}
+sys.modules['elmos_polyglot_compiler.service'].diff_api_contracts.return_value = {
+    "status": "COMPATIBLE",
+    "breaking_changes": [],
+}
+
+# Mock sql transpiler gateway
+_sql_gw = sys.modules['elmos_sql_dialect.sql_transpiler_gateway']
+_sql_gw.SUPPORTED_DIALECTS = ["oracle", "postgresql", "mysql", "tsql"]
+_sql_gw.transpile_sql.return_value = {"status": "SUCCESS", "transpiled_sql": "SELECT 1"}
+_sql_gw.diff_ddl_schemas.return_value = {"status": "IDENTICAL", "differences": []}
+
+# Mock security transpiler
+_sec_mod = sys.modules['elmos_security_engine.iam_policy_transpiler']
+_sec_mock_inst = MagicMock()
+_sec_mock_inst.transpile_policy.return_value = {"status": "SUCCESS", "policy": {}}
+_sec_mod.IamPolicyTranspiler.return_value = _sec_mock_inst
 
 from elmos_cli.dispatcher import main, _get_global_status
 
@@ -25,8 +77,9 @@ class TestDispatcher(unittest.TestCase):
 
     def setUp(self):
         self.patches = [
-            patch('elmos_cli.composite_pipeline.run_composite_pipeline', return_value={}),
+            patch('elmos_cli.composite_pipeline.run_composite_pipeline', return_value={"status": "SUCCESS"}),
             patch('elmos_cli.interactive.run_interactive_wizard', return_value=0),
+            patch('elmos_cli.dispatcher.run_interactive_wizard', return_value=0),
             patch('elmos_cli.daemon.run_daemon', return_value=0),
             patch('elmos_cli.lsp_server.run_lsp_server', return_value=0),
         ]
@@ -150,7 +203,7 @@ class TestDispatcher(unittest.TestCase):
     def test_cache_purge(self):
         self.assertEqual(self.call_main(['cache', 'purge']), 0)
 
-    # ── SQL (requires mocked elmos_sql_dialect) ───────────────────────────
+    # ── SQL ───────────────────────────────────────────────────────────────
 
     def test_sql_dialects(self):
         self.assertEqual(self.call_main(['sql', 'dialects']), 0)
@@ -161,7 +214,7 @@ class TestDispatcher(unittest.TestCase):
     def test_sql_diff_ddl(self):
         self.assertEqual(self.call_main(['sql', 'diff-ddl']), 0)
 
-    # ── Security (requires mocked elmos_security_engine) ──────────────────
+    # ── Security ──────────────────────────────────────────────────────────
 
     def test_security_transpile_policy(self):
         self.assertEqual(self.call_main(['security', 'transpile-policy']), 0)
@@ -174,13 +227,13 @@ class TestDispatcher(unittest.TestCase):
     def test_config_show(self):
         self.assertEqual(self.call_main(['config', 'show']), 0)
 
-    def test_config_init(self):
-        self.assertEqual(self.call_main(['config', 'init']), 0)
+    def test_config_init_force(self):
+        self.assertEqual(self.call_main(['config', 'init', '--force']), 0)
 
     def test_interactive(self):
         self.assertEqual(self.call_main(['interactive']), 0)
 
-    # ── Completion (default is bash, positional arg for shell) ──────────
+    # ── Completion (positional arg for shell) ─────────────────────────────
 
     def test_completion_bash(self):
         self.assertEqual(self.call_main(['completion']), 0)
@@ -219,4 +272,3 @@ class TestDispatcher(unittest.TestCase):
         status = _get_global_status()
         self.assertIn("ready_capabilities", status)
         self.assertIsInstance(status["ready_capabilities"], list)
-

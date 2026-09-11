@@ -133,15 +133,37 @@ class DDDValidator:
 
     def _detect_import_layer(self, import_str: str) -> Layer:
         clean = import_str.replace(".", "/")
-        if "domain" in clean:
+        # Explicit internal layer boundaries to prevent false positives from 3rd party packages
+        # (e.g. 'fastapi.applications', 'google.cloud.application_default_credentials')
+        if (
+            clean.startswith("app/domain/")
+            or clean == "app/domain"
+            or "/internal/domain" in clean
+            or clean.startswith("internal/domain")
+        ):
             return Layer.DOMAIN
-        if "application" in clean:
+        if (
+            clean.startswith("app/application/")
+            or clean == "app/application"
+            or "/internal/application" in clean
+            or clean.startswith("internal/application")
+        ):
             return Layer.APPLICATION
-        if "infrastructure" in clean:
+        if (
+            clean.startswith("app/infrastructure/")
+            or clean == "app/infrastructure"
+            or "/internal/infrastructure" in clean
+            or clean.startswith("internal/infrastructure")
+        ):
             return Layer.INFRASTRUCTURE
-        if "interfaces" in clean:
+        if (
+            clean.startswith("app/interfaces/")
+            or clean == "app/interfaces"
+            or "/internal/interfaces" in clean
+            or clean.startswith("internal/interfaces")
+        ):
             return Layer.INTERFACES
-        if "pkg" in clean:
+        if clean.startswith("pkg/") or "/pkg" in clean or clean == "pkg":
             return Layer.PKG
         return Layer.UNKNOWN
 
@@ -170,8 +192,21 @@ class DDDValidator:
                     if v:
                         violations.append(v)
             elif isinstance(node, ast.ImportFrom):
-                if node.module:
-                    import_path = node.module
+                raw_module = node.module or ""
+                if node.level and node.level > 0:
+                    # Resolve relative import to canonical package path
+                    pkg_parts = list(rel_path.parent.parts)
+                    if node.level <= len(pkg_parts):
+                        base_parts = pkg_parts[: len(pkg_parts) - node.level + 1]
+                        if raw_module:
+                            base_parts.extend(raw_module.split("."))
+                        import_path = ".".join(base_parts)
+                    elif raw_module:
+                        import_path = raw_module
+                else:
+                    import_path = raw_module
+
+                if import_path:
                     v = self._check_rule(rel_path, lineno, source_layer, import_path, is_di_factory)
                     if v:
                         violations.append(v)

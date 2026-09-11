@@ -138,7 +138,7 @@ func (v *DDDValidator) Validate(projectDir string) (*ValidationReport, error) {
 
 func (v *DDDValidator) detectGoLayer(relPath string) Layer {
 	clean := filepath.ToSlash(relPath)
-	if strings.HasPrefix(clean, "cmd/") || clean == "main.go" {
+	if strings.HasPrefix(clean, "cmd/") || clean == "main.go" || strings.HasPrefix(clean, "tests/") || strings.HasPrefix(clean, "test/") {
 		return LayerComposition
 	}
 	if strings.Contains(clean, "internal/domain/") {

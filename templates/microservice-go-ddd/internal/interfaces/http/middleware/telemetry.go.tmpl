@@ -143,42 +143,30 @@ func PrometheusHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	var sb strings.Builder
-	sb.WriteString("# HELP service_up Service availability indicator
-")
-	sb.WriteString("# TYPE service_up gauge
-")
-	sb.WriteString("service_up 1
+	sb.WriteString("# HELP service_up Service availability indicator\n")
+	sb.WriteString("# TYPE service_up gauge\n")
+	sb.WriteString("service_up 1\n\n")
 
-")
-
-	sb.WriteString("# HELP http_requests_total Total number of HTTP requests received.
-")
-	sb.WriteString("# TYPE http_requests_total counter
-")
+	sb.WriteString("# HELP http_requests_total Total number of HTTP requests received.\n")
+	sb.WriteString("# TYPE http_requests_total counter\n")
 
 	DefaultMetrics.mu.RLock()
 	for key, count := range DefaultMetrics.requestTotal {
 		parts := strings.Split(key, "|")
 		if len(parts) == 3 {
 			method, path, statusStr := parts[0], parts[1], parts[2]
-			sb.WriteString(fmt.Sprintf("http_requests_total{method=%q,path=%q,status=%q} %d
-", method, path, statusStr, count))
+			sb.WriteString(fmt.Sprintf("http_requests_total{method=%q,path=%q,status=%q} %d\n", method, path, statusStr, count))
 		}
 	}
 
-	sb.WriteString("
-# HELP http_request_duration_seconds Latency of HTTP requests in seconds.
-")
-	sb.WriteString("# TYPE http_request_duration_seconds summary
-")
+	sb.WriteString("\n# HELP http_request_duration_seconds Latency of HTTP requests in seconds.\n")
+	sb.WriteString("# TYPE http_request_duration_seconds summary\n")
 	for key, sample := range DefaultMetrics.duration {
 		parts := strings.Split(key, "|")
 		if len(parts) == 2 {
 			method, path := parts[0], parts[1]
-			sb.WriteString(fmt.Sprintf("http_request_duration_seconds_sum{method=%q,path=%q} %.6f
-", method, path, sample.Sum))
-			sb.WriteString(fmt.Sprintf("http_request_duration_seconds_count{method=%q,path=%q} %d
-", method, path, sample.Count))
+			sb.WriteString(fmt.Sprintf("http_request_duration_seconds_sum{method=%q,path=%q} %.6f\n", method, path, sample.Sum))
+			sb.WriteString(fmt.Sprintf("http_request_duration_seconds_count{method=%q,path=%q} %d\n", method, path, sample.Count))
 		}
 	}
 	DefaultMetrics.mu.RUnlock()

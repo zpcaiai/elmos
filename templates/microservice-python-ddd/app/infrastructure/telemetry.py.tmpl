@@ -3,7 +3,7 @@
 import logging
 import re
 import uuid
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
@@ -100,7 +100,8 @@ def instrument_app(app: FastAPI, service_name: str = "{{.ServiceName}}") -> None
 
         if traceparent:
             # W3C format: version-trace_id-parent_id-trace_flags
-            match = re.match(r"^00-([0-9a-fA-F]{32})-([0-9a-fA-F]{16})-[0-9a-fA-F]{2}$", traceparent)
+            pattern = r"^00-([0-9a-fA-F]{32})-([0-9a-fA-F]{16})-[0-9a-fA-F]{2}$"
+            match = re.match(pattern, traceparent)
             if match:
                 trace_id = match.group(1).lower()
                 parent_id = match.group(2).lower()

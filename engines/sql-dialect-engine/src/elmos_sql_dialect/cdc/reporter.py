@@ -146,7 +146,7 @@ class CdcReconciliationReport:
         return bool(actual == expected)
 
 
-type CdcReporter = CdcReconciliationReport
+CdcReporter = CdcReconciliationReport
 
 
 def main(argv: list[str] | None = None) -> int:

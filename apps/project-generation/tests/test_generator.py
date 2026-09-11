@@ -224,6 +224,33 @@ def test_generate_k8s_manifests(temp_dir: Path):
     kust_doc = yaml.safe_load(kust_content)
     assert "pdb.yaml" in kust_doc["resources"], "kustomization.yaml must include pdb.yaml"
 
+    # Real Kubernetes Client Schema Validation via kubectl dry-run
+    if shutil.which("kubectl"):
+        for target in ["base", "overlays/dev", "overlays/staging", "overlays/prod"]:
+            k_run = subprocess.run(
+                ["kubectl", "apply", "--dry-run=client", "-k", str(out_dir / target)],
+                capture_output=True,
+                text=True,
+            )
+            assert k_run.returncode == 0, f"kubectl dry-run failed for {target}:\n{k_run.stderr}\n{k_run.stdout}"
+
+    # Real Helm Chart Validation via helm lint --strict and helm template
+    if shutil.which("helm"):
+        chart_dir = out_dir / "helm" / "chart"
+        helm_lint = subprocess.run(
+            ["helm", "lint", "--strict", str(chart_dir)],
+            capture_output=True,
+            text=True,
+        )
+        assert helm_lint.returncode == 0, f"helm lint failed:\n{helm_lint.stderr}\n{helm_lint.stdout}"
+
+        helm_tmpl = subprocess.run(
+            ["helm", "template", "test-release", str(chart_dir)],
+            capture_output=True,
+            text=True,
+        )
+        assert helm_tmpl.returncode == 0, f"helm template failed:\n{helm_tmpl.stderr}\n{helm_tmpl.stdout}"
+
 
 def test_feature_flags_omission(temp_dir: Path):
     """Verify --with-telemetry=False and --with-resilience=False omit infrastructure files."""
@@ -264,3 +291,40 @@ def test_ddd_validator_detects_violations(temp_dir: Path):
     assert len(report.violations) >= 1
     assert report.violations[0].source_layer == Layer.DOMAIN.value
     assert report.violations[0].target_layer == Layer.INFRASTRUCTURE.value
+
+
+def test_ddd_validator_relative_import_and_thirdparty(temp_dir: Path):
+    """Verify relative import violations are caught and 3rd party packages are not falsely flagged."""
+    project_dir = temp_dir / "precision-test-project"
+    domain_dir = project_dir / "app" / "domain" / "models"
+    domain_dir.mkdir(parents=True, exist_ok=True)
+
+    # 1. Benign file importing 3rd-party packages with matching substrings (e.g. 'application', 'interfaces')
+    good_file = domain_dir / "good_entity.py"
+    good_file.write_text(
+        "import fastapi.applications\n"
+        "from google.cloud import application_default_credentials\n"
+        "import third_party_interfaces\n"
+        "class GoodEntity:\n    pass\n",
+        encoding="utf-8",
+    )
+
+    validator = DDDValidator()
+    report = validator.validate(str(project_dir))
+    assert report.valid is True, f"3rd party packages caused false positive violations: {report.violations}"
+
+    # 2. Malicious file using relative import from domain targeting infrastructure
+    bad_rel_file = domain_dir / "bad_relative_entity.py"
+    bad_rel_file.write_text(
+        "from ...infrastructure.repositories import repository_impl\n"
+        "class BadRelativeEntity:\n    pass\n",
+        encoding="utf-8",
+    )
+
+    report2 = validator.validate(str(project_dir))
+    assert report2.valid is False, "Relative import into infrastructure was not detected!"
+    assert any(
+        v.source_layer == Layer.DOMAIN.value and v.target_layer == Layer.INFRASTRUCTURE.value
+        for v in report2.violations
+    )
+

@@ -1,19 +1,19 @@
 {
   "metadata": {
-    "total_skills": 4669,
-    "audited_at": "2026-09-11T02:42:04Z",
-    "scan_duration_seconds": 21.41,
+    "total_skills": 4677,
+    "audited_at": "2026-09-11T09:57:14Z",
+    "scan_duration_seconds": 85.95,
     "tier_summary": {
       "[TEST_READY / BOUNDED]": 457,
       "[VERIFIED / CODE_COMPLETE]": 3495,
-      "[DECLARED / SPEC_ONLY]": 244,
+      "[DECLARED / SPEC_ONLY]": 252,
       "[PRODUCTION_CONTRACT]": 473
     },
     "status_summary": {
       "LOCAL_CONTROL_PLANE": 102,
       "RUNTIME_BOUND_NOT_EXECUTED": 87,
       "VERIFIED": 3495,
-      "DECLARED": 241,
+      "DECLARED": 249,
       "test-ready-not-run": 75,
       "LOCAL_IMPLEMENTED_BOUNDED": 1,
       "BLUEPRINT_IMPORTED": 101,
@@ -109,7 +109,7 @@
       "durable": 5,
       "dynamic": 2,
       "e0": 3,
-      "elmos": 1416,
+      "elmos": 1424,
       "a2a": 1,
       "abap": 1,
       "acceptance": 1,
@@ -22921,6 +22921,17 @@
       "size_bytes": 1739
     },
     {
+      "name": "elmos-cross-language-verification",
+      "path": ".agents/skills/elmos-cross-language-verification/SKILL.md",
+      "category": "elmos",
+      "description": "Verify behavioral equivalence between source and target code in different languages through automated test generation, multi-language execution, and output comparison.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
+      "size_bytes": 2086
+    },
+    {
       "name": "cross-repo-consumer-compatibility",
       "path": ".agents/skills/elmos-cross-repo-consumer-compatibility/SKILL.md",
       "category": "cross",
@@ -25058,6 +25069,17 @@
       "status": "PARTIAL_LOCAL_IMPLEMENTED",
       "tier": "[TEST_READY / BOUNDED]",
       "size_bytes": 6370
+    },
+    {
+      "name": "elmos-diagram-generation",
+      "path": ".agents/skills/elmos-diagram-generation/SKILL.md",
+      "category": "elmos",
+      "description": "Generate architecture diagrams, data flow diagrams, ER diagrams, sequence diagrams, module dependency graphs, threat model diagrams, and mindmaps from project analysis.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
+      "size_bytes": 2544
     },
     {
       "name": "elmos-diagram-rendering",
@@ -29603,6 +29625,17 @@
       "status": "VERIFIED",
       "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 2788
+    },
+    {
+      "name": "elmos-guided-project-tour",
+      "path": ".agents/skills/elmos-guided-project-tour/SKILL.md",
+      "category": "elmos",
+      "description": "Create interactive guided tours of codebases for onboarding, architecture review, security audit, and custom walkthroughs.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
+      "size_bytes": 1851
     },
     {
       "name": "ha-replication-failover",
@@ -34607,6 +34640,19 @@
       "size_bytes": 12662
     },
     {
+      "name": "elmos-multilang-project-generation",
+      "path": ".agents/skills/elmos-multilang-project-generation/SKILL.md",
+      "category": "elmos",
+      "description": "Generate complete, buildable projects from a unified Project Specification IR (PSIR) in Java/Spring Boot, Python/FastAPI, TypeScript/NestJS, C#/ASP.NET, and Go/Gin.",
+      "tasks": [],
+      "dependencies": [
+        "package.json"
+      ],
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
+      "size_bytes": 2209
+    },
+    {
       "name": "elmos-multilanguage-parsing",
       "path": ".agents/skills/elmos-multilanguage-parsing/SKILL.md",
       "category": "elmos",
@@ -37895,6 +37941,17 @@
       "status": "VERIFIED",
       "tier": "[VERIFIED / CODE_COMPLETE]",
       "size_bytes": 5734
+    },
+    {
+      "name": "elmos-project-structure-analysis",
+      "path": ".agents/skills/elmos-project-structure-analysis/SKILL.md",
+      "category": "elmos",
+      "description": "Analyze project architecture patterns, technology stacks, technical debt hotspots, code ownership, API surfaces, and dependency inventories.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
+      "size_bytes": 2152
     },
     {
       "name": "elmos-project-synthesis",
@@ -43785,6 +43842,17 @@
       "size_bytes": 2711
     },
     {
+      "name": "elmos-spring-modernization",
+      "path": ".agents/skills/elmos-spring-modernization/SKILL.md",
+      "category": "elmos",
+      "description": "Modernize Spring Boot projects through version upgrades (Boot 2→3→4), namespace migration (javax→jakarta), security config modernization, and automated fix-retry loops.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
+      "size_bytes": 2323
+    },
+    {
       "name": "spring-mvc-webflux-target-selection",
       "path": ".agents/skills/elmos-spring-mvc-webflux-target-selection/SKILL.md",
       "category": "spring",
@@ -45870,6 +45938,30 @@
       "status": "production-contract",
       "tier": "[PRODUCTION_CONTRACT]",
       "size_bytes": 12770
+    },
+    {
+      "name": "elmos-teaching-scenarios",
+      "path": ".agents/skills/elmos-teaching-scenarios/SKILL.md",
+      "category": "elmos",
+      "description": "Create and run structured teaching scenarios for developer onboarding, architecture review, security audit, and performance review.",
+      "tasks": [],
+      "dependencies": [],
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
+      "size_bytes": 2056
+    },
+    {
+      "name": "elmos-teaching-subsystem",
+      "path": ".agents/skills/elmos-teaching-subsystem/SKILL.md",
+      "category": "elmos",
+      "description": "Generate diagrams, analyze project structure, create guided tours, manage code annotations, run teaching scenarios, and export reports using the teaching subsystem engine.",
+      "tasks": [],
+      "dependencies": [
+        "elmos-teaching tour create --target <module> --output tour.json"
+      ],
+      "status": "DECLARED",
+      "tier": "[DECLARED / SPEC_ONLY]",
+      "size_bytes": 2472
     },
     {
       "name": "telemetry-command-control-channel",
