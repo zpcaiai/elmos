@@ -125,6 +125,26 @@ from elmos_mature_platform.deployment_upgrade_gate_engine import DeploymentUpgra
 from elmos_mature_platform.edge_plant_restricted_edition_engine import EdgePlantRestrictedEditionEngine
 from elmos_mature_platform.global_sre_operations_factory_engine import GlobalSreOperationsFactoryEngine
 from elmos_mature_platform.security_architecture_review_engine import SecurityArchitectureReviewEngine
+from elmos_mature_platform.agent_incident_killswitch_engine import AgentIncidentKillswitchEngine
+from elmos_mature_platform.security_fix_backport_engine import SecurityFixBackportEngine
+from elmos_mature_platform.artifact_retention_economics_engine import ArtifactRetentionEconomicsEngine
+from elmos_mature_platform.scheduled_restore_dr_exercise_engine import ScheduledRestoreDrExerciseEngine
+from elmos_mature_platform.vulnerability_patch_sla_engine import VulnerabilityPatchSlaEngine
+from elmos_mature_platform.mature_product_final_gate_engine import MatureProductFinalGateEngine
+from elmos_mature_platform.sre_reliability_dr_certification_engine import SreReliabilityDrCertificationEngine
+from elmos_mature_platform.cost_scenario_forecast_engine import CostScenarioForecastEngine
+from elmos_mature_platform.agent_tool_permissions_engine import AgentToolPermissionsEngine
+from elmos_mature_platform.customer_upgrade_readiness_engine import CustomerUpgradeReadinessEngine
+from elmos_mature_platform.enterprise_deployment_upgrade_factory_engine import EnterpriseDeploymentUpgradeFactoryEngine
+from elmos_mature_platform.global_observability_telemetry_engine import GlobalObservabilityTelemetryEngine
+from elmos_mature_platform.slsa_provenance_engine import SlsaProvenanceEngine
+from elmos_mature_platform.knowledge_graph_ontology_engine import KnowledgeGraphOntologyEngine
+from elmos_mature_platform.agent_autonomy_levels_engine import AgentAutonomyLevelsEngine
+from elmos_mature_platform.security_supply_chain_gate_engine import SecuritySupplyChainGateEngine
+from elmos_mature_platform.vex_applicability_engine import VexApplicabilityEngine
+from elmos_mature_platform.holdout_feedback_calibration_engine import HoldoutFeedbackCalibrationEngine
+from elmos_mature_platform.migration_knowledge_factory_engine import MigrationKnowledgeFactoryEngine
+from elmos_mature_platform.agent_memory_state_governance_engine import AgentMemoryStateGovernanceEngine
 from elmos_mature_platform.physical import (
     CloudVendorControlPlaneDriver,
     IndustrialLoopback,
@@ -265,6 +285,26 @@ __all__ = [
     "EdgePlantRestrictedEditionEngine",
     "GlobalSreOperationsFactoryEngine",
     "SecurityArchitectureReviewEngine",
+    "AgentIncidentKillswitchEngine",
+    "SecurityFixBackportEngine",
+    "ArtifactRetentionEconomicsEngine",
+    "ScheduledRestoreDrExerciseEngine",
+    "VulnerabilityPatchSlaEngine",
+    "MatureProductFinalGateEngine",
+    "SreReliabilityDrCertificationEngine",
+    "CostScenarioForecastEngine",
+    "AgentToolPermissionsEngine",
+    "CustomerUpgradeReadinessEngine",
+    "EnterpriseDeploymentUpgradeFactoryEngine",
+    "GlobalObservabilityTelemetryEngine",
+    "SlsaProvenanceEngine",
+    "KnowledgeGraphOntologyEngine",
+    "AgentAutonomyLevelsEngine",
+    "AgentMemoryStateGovernanceEngine",
+    "HoldoutFeedbackCalibrationEngine",
+    "MigrationKnowledgeFactoryEngine",
+    "SecuritySupplyChainGateEngine",
+    "VexApplicabilityEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",

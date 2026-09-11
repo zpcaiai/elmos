@@ -7657,3 +7657,168 @@ class SecurityArchitectureReviewRecord:
     reviewed_by: str = ""
     reviewed_at: str = ""
     action_items: List[str] = field(default_factory=list)
+
+
+# ─── Security Supply Chain Gate Models (B40) ─────────────────────────
+
+class SupplyChainGateVerdict(str, Enum):
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    CONDITIONAL_WAIVER = "conditional_waiver"
+
+class SupplyChainCheckType(str, Enum):
+    SLSA_LEVEL = "slsa_level"
+    SBOM_VALIDITY = "sbom_validity"
+    SECRET_FREE = "secret_free"
+    VULNERABILITY_THRESHOLD = "vulnerability_threshold"
+    SIGNATURE_VERIFIED = "signature_verified"
+
+@dataclass
+class SupplyChainGateCheck:
+    check_id: str
+    check_type: SupplyChainCheckType
+    name: str
+    passed: bool = False
+    blocking: bool = True
+    details: str = ""
+    evaluated_at: str = ""
+
+@dataclass
+class SupplyChainGateAssessment:
+    assessment_id: str
+    release_id: str
+    artifact_hash: str
+    verdict: SupplyChainGateVerdict = SupplyChainGateVerdict.REJECTED
+    checks: List[SupplyChainGateCheck] = field(default_factory=list)
+    evaluated_by: str = ""
+    evaluated_at: str = ""
+    waiver_justification: str = ""
+
+
+# ─── VEX Applicability Models (B40) ──────────────────────────────────
+
+class VexStatus(str, Enum):
+    NOT_AFFECTED = "not_affected"
+    AFFECTED = "affected"
+    FIXED = "fixed"
+    UNDER_INVESTIGATION = "under_investigation"
+
+@dataclass
+class VexAssessmentResult:
+    assessment_id: str
+    product_id: str
+    total_cves: int = 0
+    actionable_cves: int = 0
+    suppressed_cves: int = 0
+    statements: List[VexStatement] = field(default_factory=list)
+
+
+# ─── Holdout Feedback Calibration Models (B41) ───────────────────────
+
+class CalibrationMetric(str, Enum):
+    BRIER_SCORE = "brier_score"
+    EXPECTED_CALIBRATION_ERROR = "expected_calibration_error"
+    LOG_LOSS = "log_loss"
+    CONFIDENCE_ACCURACY_CORRELATION = "confidence_accuracy_correlation"
+
+@dataclass
+class PredictionOutcomeRecord:
+    record_id: str
+    prediction_id: str
+    predicted_confidence: float
+    actual_success: bool
+    task_type: str
+    model_id: str
+    recorded_at: str = ""
+    holdout_set_id: str = ""
+
+@dataclass
+class CalibrationBucket:
+    bucket_id: int
+    min_conf: float
+    max_conf: float
+    count: int = 0
+    accuracy: float = 0.0
+    avg_confidence: float = 0.0
+
+@dataclass
+class CalibrationAssessment:
+    assessment_id: str
+    model_id: str
+    total_samples: int = 0
+    brier_score: float = 0.0
+    expected_calibration_error: float = 0.0
+    is_well_calibrated: bool = False
+    calculated_at: str = ""
+
+
+# ─── Migration Knowledge Factory Models (B41) ────────────────────────
+
+class KnowledgeItemType(str, Enum):
+    RECIPE_SNIPPET = "recipe_snippet"
+    ANTIPATTERN_RULE = "antipattern_rule"
+    ERROR_REPAIR_STRATEGY = "error_repair_strategy"
+    SCHEMA_TRANSLATION_MAP = "schema_translation_map"
+    PERFORMANCE_HINT = "performance_hint"
+
+@dataclass
+class MigrationKnowledgeUnit:
+    unit_id: str
+    source_language_or_framework: str
+    target_language_or_framework: str
+    item_type: KnowledgeItemType
+    title: str
+    description: str
+    transformation_template: str = ""
+    anti_pattern_pattern: str = ""
+    confidence_level: KnowledgeConfidenceLevel = KnowledgeConfidenceLevel.EXPERIMENTAL
+    usage_count: int = 0
+    success_rate: float = 0.0
+    created_at: str = ""
+    tags: List[str] = field(default_factory=list)
+
+@dataclass
+class KnowledgeIngestionReceipt:
+    receipt_id: str
+    unit_id: str
+    source_project_ref: str
+    status: str = "ingested"
+    ingested_at: str = ""
+
+
+# ─── Agent Memory State Governance Models (B42) ──────────────────────
+
+class MemoryScope(str, Enum):
+    EPISODIC = "episodic"
+    WORKING_SESSION = "working_session"
+    LONG_TERM_SEMANTIC = "long_term_semantic"
+    SYSTEM_PROMPT = "system_prompt"
+
+class MemoryStateStatus(str, Enum):
+    ACTIVE = "active"
+    EVICTED_LRU = "evicted_lru"
+    PURGED_EXPIRATION = "purged_expiration"
+    SCRUBBED_SECURITY = "scrubbed_security"
+    ARCHIVED = "archived"
+
+@dataclass
+class AgentMemoryEntry:
+    entry_id: str
+    agent_id: str
+    tenant_id: str
+    scope: MemoryScope
+    key: str
+    value: str
+    status: MemoryStateStatus = MemoryStateStatus.ACTIVE
+    created_at: str = ""
+    ttl_seconds: int = 86400
+    last_accessed: str = ""
+    contains_redacted_pii: bool = False
+    size_bytes: int = 0
+
+@dataclass
+class MemoryGovernanceQuota:
+    tenant_id: str
+    max_entries_per_agent: int = 1000
+    max_bytes_per_agent: int = 10485760
+    default_ttl_seconds: int = 86400
