@@ -100,6 +100,11 @@ from elmos_mature_platform.production_readiness_review_engine import ProductionR
 from elmos_mature_platform.customer_audit_evidence_engine import CustomerAuditEvidenceEngine
 from elmos_mature_platform.knowledge_confidence_provenance_engine import KnowledgeConfidenceProvenanceEngine
 from elmos_mature_platform.design_partner_reference_validation_engine import DesignPartnerReferenceValidationEngine
+from elmos_mature_platform.multitenant_saas_edition_engine import MultitenantSaasEditionEngine
+from elmos_mature_platform.oncall_follow_the_sun_engine import OncallFollowTheSunEngine
+from elmos_mature_platform.runner_update_supply_chain_engine import RunnerUpdateSupplyChainEngine
+from elmos_mature_platform.automation_buildgreen_prediction_engine import AutomationBuildgreenPredictionEngine
+from elmos_mature_platform.ecosystem_certification_engine import EcosystemCertificationEngine
 from elmos_mature_platform.physical import (
     CloudVendorControlPlaneDriver,
     IndustrialLoopback,
@@ -215,6 +220,11 @@ __all__ = [
     "CustomerAuditEvidenceEngine",
     "KnowledgeConfidenceProvenanceEngine",
     "DesignPartnerReferenceValidationEngine",
+    "MultitenantSaasEditionEngine",
+    "OncallFollowTheSunEngine",
+    "RunnerUpdateSupplyChainEngine",
+    "AutomationBuildgreenPredictionEngine",
+    "EcosystemCertificationEngine",
     "AutoscalingCapacityEngine",
     "BackupRestoreEngine",
     "ChangeManagementEngine",

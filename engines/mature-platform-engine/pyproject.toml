@@ -18,6 +18,7 @@ dev = [
 
 [project.scripts]
 elmos-mature-platform = "elmos_mature_platform.cli:main"
+elmos-mature-platform-industrial = "elmos_mature_platform.industrial_certification:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

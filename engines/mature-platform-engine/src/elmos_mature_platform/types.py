@@ -6675,4 +6675,169 @@ class DesignPartnerValidationStudy:
     signed_at: str = ""
 
 
+# ─── Multitenant SaaS Edition Models (B38) ──────────────────────────
+
+class SaasTenantTier(str, Enum):
+    FREE = "free"
+    STANDARD = "standard"
+    PREMIUM = "premium"
+    ENTERPRISE = "enterprise"
+
+class TenantIsolationMode(str, Enum):
+    POOLED = "pooled"
+    SILOED = "siloed"
+    HYBRID = "hybrid"
+
+@dataclass
+class SaasTenantConfig:
+    tenant_id: str
+    name: str
+    tier: SaasTenantTier = SaasTenantTier.STANDARD
+    isolation_mode: TenantIsolationMode = TenantIsolationMode.POOLED
+    storage_quota_gb: float = 50.0
+    rps_limit: int = 100
+    enabled_features: List[str] = field(default_factory=list)
+    custom_domain: str = ""
+    is_suspended: bool = False
+    created_at: str = ""
+
+@dataclass
+class SaasClusterResourceQuota:
+    cluster_id: str
+    max_tenants: int = 500
+    allocated_storage_gb: float = 0.0
+    total_storage_gb: float = 10000.0
+    active_tenant_count: int = 0
+
+
+# ─── On-Call Follow-The-Sun Models (B39) ─────────────────────────────
+
+class SunRegion(str, Enum):
+    APAC = "apac"
+    EMEA = "emea"
+    AMER = "amer"
+
+class HandoverStatus(str, Enum):
+    SCHEDULED = "scheduled"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    MISSED = "missed"
+
+@dataclass
+class HandoverBriefing:
+    handover_id: str
+    outgoing_region: SunRegion
+    incoming_region: SunRegion
+    outgoing_engineer: str
+    incoming_engineer: str
+    active_incidents: List[str] = field(default_factory=list)
+    watch_items: List[str] = field(default_factory=list)
+    status: HandoverStatus = HandoverStatus.SCHEDULED
+    handover_time: str = ""
+    acknowledged_at: str = ""
+    notes: str = ""
+
+@dataclass
+class FollowTheSunSchedule:
+    schedule_id: str
+    date: str
+    region_shifts: Dict[str, str] = field(default_factory=dict)
+
+
+# ─── Runner Update Supply Chain Models (B40) ─────────────────────────
+
+class RunnerChannel(str, Enum):
+    CANARY = "canary"
+    STABLE = "stable"
+    LTS = "lts"
+
+class RunnerUpdateStatus(str, Enum):
+    DRAFT = "draft"
+    SIGNED = "signed"
+    STAGED = "staged"
+    DEPLOYED = "deployed"
+    REVOKED = "revoked"
+
+@dataclass
+class RunnerReleasePackage:
+    release_id: str
+    version: str
+    channel: RunnerChannel
+    binary_digest_sha256: str
+    signature: str = ""
+    cosign_attestation_ref: str = ""
+    status: RunnerUpdateStatus = RunnerUpdateStatus.DRAFT
+    released_at: str = ""
+    minimum_agent_version: str = "1.0.0"
+    revocation_reason: str = ""
+
+@dataclass
+class RunnerNodeFleetStatus:
+    node_id: str
+    current_version: str
+    target_version: str
+    update_in_progress: bool = False
+    last_heartbeat: str = ""
+    update_failed: bool = False
+
+
+# ─── Automation Buildgreen Prediction Models (B41) ───────────────────
+
+class BuildPredictionVerdict(str, Enum):
+    HIGH_CONFIDENCE_GREEN = "high_confidence_green"
+    PROBABLE_GREEN = "probable_green"
+    RISKY_RED = "risky_red"
+    HIGH_RISK_RED = "high_risk_red"
+
+@dataclass
+class CommitRiskFactor:
+    factor_name: str
+    weight: float
+    score: float
+    detail: str = ""
+
+@dataclass
+class BuildgreenPrediction:
+    prediction_id: str
+    commit_sha: str
+    branch: str
+    author: str
+    predicted_verdict: BuildPredictionVerdict
+    green_probability: float
+    risk_factors: List[CommitRiskFactor] = field(default_factory=list)
+    actual_build_passed: Optional[bool] = None
+    predicted_at: str = ""
+
+
+# ─── Ecosystem Certification Models (B45) ────────────────────────────
+
+class EcosystemPartnerTier(str, Enum):
+    COMMUNITY = "community"
+    VERIFIED_INTEGRATOR = "verified_integrator"
+    STRATEGIC_PARTNER = "strategic_partner"
+    GLOBAL_ALLIANCE = "global_alliance"
+
+class EcosystemCertificationScope(str, Enum):
+    PLUGIN_ADAPTER = "plugin_adapter"
+    RUNTIME_CONNECTOR = "runtime_connector"
+    DATA_PLATFORM_PACK = "data_platform_pack"
+    SOLUTION_BLUEPRINT = "solution_blueprint"
+
+@dataclass
+class EcosystemCertificationRecord:
+    cert_id: str
+    partner_id: str
+    extension_name: str
+    version: str
+    scope: EcosystemCertificationScope
+    tier: EcosystemPartnerTier
+    is_certified: bool = False
+    compliance_score: float = 0.0
+    certified_at: str = ""
+    expires_at: str = ""
+    signature: str = ""
+    badges: List[str] = field(default_factory=list)
+
+
+
 
