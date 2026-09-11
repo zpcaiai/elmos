@@ -30,6 +30,8 @@ TestResults/
 **/.venv/
 venv/
 **/venv/
+test_env/
+**/test_env/
 __pycache__/
 **/__pycache__/
 .pytest_cache/
