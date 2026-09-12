@@ -34,7 +34,9 @@ production_certification: NOT_CERTIFIED
   回调确认后入账、组织余额、冻结余额、本人订单和本人 Credit 流水。
 - 本次结果：`PASS_LOCAL`。
 - 生产就绪：`no`。定价目录仍为 `DRAFT`，实时计费开关默认关闭。
-- 明确不声明：未执行真实支付宝/微信资金、退款、结算文件、税务、开票、生产迁移、
+- 数据库部署：`PASS_EXTERNAL`。主线合并触发的 `commercial-production` 工作流 run
+  `34713508064` 已在批准的 Neon PostgreSQL 17.11 把 V86 升到 V87，完成迁移前后校验和运行角色授权。
+- 明确不声明：未执行真实支付宝/微信资金、退款、结算文件、税务、开票、应用生产部署、
   独立安全复核或生产认证。
 - Skill 输入缺口：Skill 引用的 `.elmos-billing-kit/` 未安装；本报告以仓库内 V49、
   V73、V74、V83、V84、商业 API、价格目录与运行手册为当前权威实现。
@@ -145,6 +147,10 @@ PASS
 
 python -m pytest -q engines/project-synthesis-engine/tests/test_project_documentation.py
 PASS: 3/3
+
+GitHub Actions / commercial-production / run 34713508064
+PASS_EXTERNAL: approved Neon PostgreSQL 17.11, V86 -> V87, pre/post Flyway validation,
+runtime grants applied
 ```
 
 完整 `pnpm check` 在隔离 sparse worktree 的两个非本功能环境测试上没有形成通过证据：
@@ -164,6 +170,6 @@ Credit 测试失败，也不得把分段通过描述为一次完整 `pnpm check`
 
 ## 发布决定
 
-`NO_GO_PRODUCTION`。合并代码不会开启收款。只有目录发布门禁要求的真实商户、法务、税务、
-开票、成本、生产数据库、退款/对账、监控、回滚与独立验证证据全部到位后，才能发布新的
+`NO_GO_PRODUCTION`。合并代码和已完成的 V87 数据库迁移都不会开启收款。只有目录发布门禁要求的
+真实商户、法务、税务、开票、成本、生产数据对账、退款/结算、监控、回滚与独立验证证据全部到位后，才能发布新的
 `PUBLISHED` 目录版本并设置 `ELMOS_BILLING_LIVE_ENABLED=true`。
