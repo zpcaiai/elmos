@@ -139,6 +139,13 @@ public class CommercialOrderController {
                 principal.organizationId(), principal.actorId(), limit, offset, organization);
     }
 
+    @GetMapping("/credits/reconciliation")
+    CommercialOrderPort.CreditReconciliation creditReconciliation(
+            @AuthenticationPrincipal Jwt jwt) {
+        var principal = principal(jwt, "commercial:usage:admin");
+        return orders.creditReconciliation(principal.organizationId());
+    }
+
     @PostMapping("/generation/reservations")
     CommercialOrderPort.GenerationReservation reserveGeneration(
             @AuthenticationPrincipal Jwt jwt,

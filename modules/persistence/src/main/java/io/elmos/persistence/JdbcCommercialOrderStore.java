@@ -132,12 +132,33 @@ public final class JdbcCommercialOrderStore implements CommercialOrderPort {
     }
 
     @Override
+    public CreditReconciliation creditReconciliation(String organizationId) {
+        return inTenant(organizationId, () -> jdbc.sql(
+                        "select * from elmos_commercial_credit_reconcile()")
+                .query((rs, row) -> new CreditReconciliation(
+                        rs.getString("organization_id"),
+                        rs.getBigDecimal("projected_balance"),
+                        rs.getBigDecimal("journal_balance"),
+                        rs.getBigDecimal("projected_reserved"),
+                        rs.getBigDecimal("journal_reserved"),
+                        rs.getBigDecimal("balance_drift"),
+                        rs.getBigDecimal("reserved_drift"),
+                        rs.getLong("unbalanced_transactions")))
+                .optional().orElse(new CreditReconciliation(
+                        organizationId, BigDecimal.ZERO, BigDecimal.ZERO,
+                        BigDecimal.ZERO, BigDecimal.ZERO,
+                        BigDecimal.ZERO, BigDecimal.ZERO, 0)));
+    }
+
+    @Override
     public GenerationReservation reserveGeneration(String reservationId, String organizationId,
                                                    String actorId, String projectId, String jobId,
                                                    BigDecimal requestedCredits,
                                                    String idempotencyKey, int ttlSeconds) {
         return inTenant(organizationId, () -> {
             expireGenerationReservations();
+            bindCreditPostingContext("RESERVE", actorId, "GENERATION_RESERVATION",
+                    reservationId, idempotencyKey, jobId);
             return jdbc.sql("""
                 select * from elmos_commercial_reserve_generation(
                     :reservation, :actor, :project, :job, :credits, :idempotency, :ttl)
@@ -156,6 +177,8 @@ public final class JdbcCommercialOrderStore implements CommercialOrderPort {
                                    String reservationId, BigDecimal actualCredits) {
         return inTenant(organizationId, () -> {
             expireGenerationReservations();
+            bindCreditPostingContext("CAPTURE", actorId, "GENERATION_RESERVATION",
+                    reservationId, "capture:" + reservationId, reservationId);
             return jdbc.sql(
                 "select elmos_commercial_settle_generation(:reservation, :actor, :credits)")
                 .param("reservation", reservationId).param("actor", actorId)
@@ -167,6 +190,8 @@ public final class JdbcCommercialOrderStore implements CommercialOrderPort {
     public String releaseGeneration(String organizationId, String actorId, String reservationId) {
         return inTenant(organizationId, () -> {
             expireGenerationReservations();
+            bindCreditPostingContext("RELEASE", actorId, "GENERATION_RESERVATION",
+                    reservationId, "release:" + reservationId, reservationId);
             return jdbc.sql(
                 "select elmos_commercial_release_generation(:reservation, :actor)")
                 .param("reservation", reservationId).param("actor", actorId)
@@ -175,8 +200,27 @@ public final class JdbcCommercialOrderStore implements CommercialOrderPort {
     }
 
     private void expireGenerationReservations() {
+        bindCreditPostingContext("EXPIRY", "system:credit-expiry", "EXPIRY_SWEEP",
+                "commercial-credit", "expiry-sweep", "expiry-sweep");
         jdbc.sql("select elmos_commercial_expire_generation_reservations(1000)")
                 .query(Integer.class).single();
+    }
+
+    private void bindCreditPostingContext(String operation, String actorId, String sourceType,
+                                          String sourceRef, String idempotencyKey,
+                                          String correlationId) {
+        jdbc.sql("""
+                select set_config('app.commercial_credit_operation', :operation, true),
+                       set_config('app.commercial_credit_actor', :actor, true),
+                       set_config('app.commercial_credit_source_type', :sourceType, true),
+                       set_config('app.commercial_credit_source_ref', :sourceRef, true),
+                       set_config('app.commercial_credit_idempotency', :idempotency, true),
+                       set_config('app.commercial_credit_correlation', :correlation, true),
+                       set_config('app.commercial_credit_causation', :correlation, true)
+                """).param("operation", operation).param("actor", actorId)
+                .param("sourceType", sourceType).param("sourceRef", sourceRef)
+                .param("idempotency", idempotencyKey).param("correlation", correlationId)
+                .query((rs, row) -> rs.getString(1)).single();
     }
 
     private Order order(java.sql.ResultSet rs, int row) throws java.sql.SQLException {

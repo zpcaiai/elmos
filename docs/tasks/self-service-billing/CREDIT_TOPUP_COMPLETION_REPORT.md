@@ -14,6 +14,20 @@ completed_at: 2026-09-09
 operator: Codex
 ```
 
+## 2026-09-13 技术闭环续作
+
+```yaml
+branch: codex/credit-ledger-closure-20260913
+baseline_commit: c14ab52d02e32f8d5ee3837f6f77b0ebcff5d17a
+scope: Credit double-entry journal, transactional outbox, projection reconciliation/rebuild
+result: PASS_LOCAL
+production_certification: NOT_CERTIFIED
+```
+
+本次续作按照 Credit Wallet/Ledger 与 Payments Reconciliation Skill 的不变量补齐了双分录、
+可靠事件和可重建投影。Skill 引用的 `.elmos-billing-kit/` 仍未安装，因此仓库实现、迁移、
+运行手册和本报告构成当前本地证据；缺失的外部包、真实支付方和独立审查证据没有被推断或补造。
+
 ## 执行结果
 
 - 本次范围：用户购买固定 Credit 包后的可见闭环，包括安全下单、支付交接、订单终态轮询、
@@ -40,13 +54,13 @@ operator: Codex
 
 | Requirement | 状态 | Source / symbol | 测试与运行证据 | 说明 |
 |---|---|---|---|---|
-| EB-04-001 | `PARTIAL` | `V83__commercial_credit_and_one_time_orders.sql` / `elmos_commercial_fulfill_order` | `JdbcCommercialOrderStoreLiveTest` | Credit 事实为追加式单边流水与余额批次；Skill 要求的通用双分录 Credit 总账尚未建立。 |
+| EB-04-001 | `IMPLEMENTED` | V87 `commercial_credit_journal_transactions` / `commercial_credit_journal_entries` | PostgreSQL 17.5 全迁移链；提交时不平衡拒绝测试 | 每次余额/冻结额变化自动生成不可变且平衡的双分录；旧流水继续服务用户历史。 |
 | EB-04-002 | `PARTIAL` | V83 `commercial_credit_lots`, `commercial_credit_reservations` | V83 live integration | 已覆盖 paid、reserved、consumed、expired；promotional/refunded 尚无完整 Credit 生命周期。 |
 | EB-04-003 | `PARTIAL` | V83 reserve/settle/release functions | V83 live integration | 生成场景 reserve、partial capture、release 已有；Credit refund/双人 adjustment 未闭环。 |
 | EB-04-004 | `IMPLEMENTED` | `CommercialOrderController.buyCredits`, `elmos_commercial_create_order` | BFF 4/4；V83 幂等重放 | 租户内稳定幂等键，内容冲突失败关闭。 |
 | EB-04-005 | `IMPLEMENTED` | V83 account/lot CHECK 与行锁函数 | 并发硬停止、负向数据库测试 | 非授信 Credit 不允许负余额。 |
-| EB-04-006 | `PARTIAL` | `payment_provider_events`, callback receipt | callback 重放测试 | 支付事实已持久化；商业 Credit 账本尚无独立事务性 outbox。 |
-| EB-04-007 | `PARTIAL` | `JdbcCommercialOrderStore.creditBalance` | PostgreSQL live readback | 投影可由批次汇总读取，但没有正式全量重建命令与证据。 |
+| EB-04-006 | `IMPLEMENTED` | V87 outbox events/delivery attempts / claim / complete functions | PostgreSQL 失败、同 ID 重试、发布一次和尝试历史测试 | 总账与 outbox 同一事务写入；publisher 通过租约和 `SKIP LOCKED` 领取，无直接表写权限。 |
+| EB-04-007 | `IMPLEMENTED` | V87 reconcile/rebuild functions；`CommercialOrderController.creditReconciliation` | PostgreSQL 漂移检测、幂等重建与审计；API 授权测试 | 账户是可重建投影；只有 reconciler 角色可按本组织、actor、reason、idempotency 重建。 |
 | EB-04-008 | `MISSING` | — | — | Credit 人工调整的双人审批未实现。 |
 | EB-04-009 | `PARTIAL` | V83 FIFO lot expiry | PostgreSQL expiry scenario | 购买 Credit 到期已隔离；促销 Credit 分类尚未实现。 |
 | EB-04-010 | `PARTIAL` | payment reconciliation cases | 管理端对账策略 17 checks | 已有异常案件；日终 Credit 总账与外部结算四方核对未运行。 |
@@ -74,6 +88,15 @@ operator: Codex
 - 定价页：挂载 Credit 面板。
 - 测试：路径穿越/非法订单 ID；付款前不入账、履约后余额与流水同时出现；桌面和移动端。
 
+续作新增：
+
+- V87 Credit 双分录事务/posting、提交时守恒约束、历史余额 opening transaction 和 FORCE RLS。
+- V87 后每次账户变化的事务性 outbox、稳定 event ID、租约领取、失败退避与发布完成控制；
+  opening transaction 不发布，避免制造历史余额新增事件。
+- 只读对账 API，以及仅 reconciler 角色可执行的按组织幂等投影重建和不可变审计。
+- 购买、预留、部分结算、释放和到期动作的 actor/source/idempotency/correlation 上下文绑定。
+- 1000 个并发预留、余额不超支、每笔事务平衡、outbox 重试、漂移重建和权限负向测试。
+
 ## 验证
 
 ```text
@@ -100,9 +123,29 @@ engines/project-synthesis-engine/.venv/bin/python -m pytest -q \
 PASS: 3/3
 ```
 
-当前隔离环境的 PostgreSQL Testcontainers 复验未形成新通过证据：OrbStack Docker 的
-`localhost:2375` 无响应。历史 V83 实库证据仍保留在 `TEST_EVIDENCE.md`，但本报告不把
-该历史结果冒充为本次复跑成功。
+2026-09-09 的隔离环境曾因错误的 `localhost:2375` Docker 地址未形成 Testcontainers
+复验证据。2026-09-13 续作已改用当前 OrbStack Unix socket，在真实 PostgreSQL 17.5
+容器两次执行 V1–V87 全量 Flyway；最终版 `JdbcCommercialOrderStoreLiveTest` 为
+`11/11`、0 skipped、0 failure。容器在测试结束后已清理。该结果替代旧环境说明，但仍只是
+本地自证明工程证据，不等同生产或独立认证。
+
+```text
+mvn ... CommercialCreditDoubleEntryMigrationContractTest,...
+PASS: 29/29
+
+DOCKER_HOST=unix:///Users/stephen/.orbstack/run/docker.sock ... \
+  mvn -q -pl modules/persistence -am -Dtest=JdbcCommercialOrderStoreLiveTest ... test
+PASS: 11/11; PostgreSQL 17.5; Flyway V1-V87; 0 skipped
+
+pnpm --dir apps/web-console run test:commercial-billing-routes
+PASS: 4/4
+
+pnpm --dir apps/web-console exec tsc --noEmit
+PASS
+
+python -m pytest -q engines/project-synthesis-engine/tests/test_project_documentation.py
+PASS: 3/3
+```
 
 完整 `pnpm check` 在隔离 sparse worktree 的两个非本功能环境测试上没有形成通过证据：
 翻译报告首次 Python 工具下载超过固定 120 秒，ChinaDB/多模态/生成测试最初缺 sparse 资源。

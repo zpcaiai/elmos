@@ -8,6 +8,8 @@
 - [迁移与发布](MIGRATION_GUIDE.md)
 - [运行手册](OPERATIONS_RUNBOOK.md)
 - [测试证据](TEST_EVIDENCE.md)
+- [Credit 充值完成报告](CREDIT_TOPUP_COMPLETION_REPORT.md)
+- [Credit/支付需求追踪矩阵](REQUIREMENTS_TRACEABILITY.csv)
 - [修改历史](CHANGE_HISTORY.md)
 
 目录中的 `DONE_LOCAL` 表示本地真实 PostgreSQL/代码路径证据，不代表生产部署。
