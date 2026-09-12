@@ -268,14 +268,38 @@ public final class JdbcOrderPorts {
     public static PaymentCallbackPipeline.CommercialOrderFulfiller commercialOrderFulfiller(
             DataSource source, String actorId) {
         return (order, callback) -> {
-            try (Connection connection = source.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(
-                         "SELECT elmos_commercial_fulfill_order(?, ?, ?, ?)")) {
-                statement.setString(1, order.organizationId());
-                statement.setString(2, order.orderId());
-                statement.setString(3, callback.providerEventId());
-                statement.setString(4, actorId);
-                statement.execute();
+            try (Connection connection = source.getConnection()) {
+                connection.setAutoCommit(false);
+                try {
+                    try (PreparedStatement context = connection.prepareStatement("""
+                            SELECT set_config('app.commercial_credit_operation', 'PURCHASE', true),
+                                   set_config('app.commercial_credit_actor', ?, true),
+                                   set_config('app.commercial_credit_source_type', 'COMMERCIAL_ORDER', true),
+                                   set_config('app.commercial_credit_source_ref', ?, true),
+                                   set_config('app.commercial_credit_idempotency', ?, true),
+                                   set_config('app.commercial_credit_correlation', ?, true),
+                                   set_config('app.commercial_credit_causation', ?, true)
+                            """)) {
+                        context.setString(1, actorId);
+                        context.setString(2, order.orderId());
+                        context.setString(3, "purchase:" + order.orderId());
+                        context.setString(4, callback.providerEventId());
+                        context.setString(5, callback.providerEventId());
+                        context.execute();
+                    }
+                    try (PreparedStatement statement = connection.prepareStatement(
+                            "SELECT elmos_commercial_fulfill_order(?, ?, ?, ?)")) {
+                        statement.setString(1, order.organizationId());
+                        statement.setString(2, order.orderId());
+                        statement.setString(3, callback.providerEventId());
+                        statement.setString(4, actorId);
+                        statement.execute();
+                    }
+                    connection.commit();
+                } catch (SQLException failure) {
+                    connection.rollback();
+                    throw failure;
+                }
             } catch (SQLException failure) {
                 throw new IllegalStateException(
                         "商业商品订单履约失败: " + order.orderId(), failure);
