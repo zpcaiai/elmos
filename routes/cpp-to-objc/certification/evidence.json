@@ -46,11 +46,13 @@
     "boolean"
   ],
   "execution_status": "PASSED_LOCAL",
+  "external_certification_status": "NOT_RUN",
   "formal_equivalence": {
     "bytes": 298376,
     "path": "certification/formal-equivalence.json",
     "sha256": "sha256:5eb5fccd20bc96d31addad2784204b0dc6233921523e61705554e5cfad78a12a"
   },
+  "independent_verification_status": "NOT_RUN",
   "input_domain": "canonical-finite-no-error-input-domain",
   "metrics": {
     "build_green_rate": 1.0,

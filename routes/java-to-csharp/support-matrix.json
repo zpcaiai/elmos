@@ -5,8 +5,8 @@
         "certification/evidence.json"
       ],
       "id": "typed-pure-function-v1",
-      "reason": "Certified under typed-pure-function-v1 with validated native compilation, separate holdout, representative behavior replay, and absorbed independent verification.",
-      "status": "certified",
+      "reason": "Bounded local evidence supports typed-pure-function-v1 with validated native compilation, separate holdout, representative behavior replay, and absorbed independent verification.",
+      "status": "supported",
       "strategy": "compiler-backed-semantic-ir"
     },
     {
