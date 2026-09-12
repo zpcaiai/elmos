@@ -21,7 +21,8 @@
 | Credit 双分录与可靠事件 | 每次账户变化写平衡 journal 和同事务 outbox；账户可按 journal 对账/重建 | PostgreSQL 提交时守恒、1000 并发、同 ID 重试和幂等重建 | `DONE_LOCAL` |
 | 生产商户收款 | 商户号、证书、回调域名、真实资金与退款/对账 | 尚无提供方/资金凭证 | `NOT_RUN` |
 | 法务税务开票 | 中国大陆主体、协议、隐私、发票、税率 | 尚无责任人签核证据 | `NOT_RUN` |
-| 生产发布 | 生产数据库迁移、密钥注入、域名、监控、回滚演练 | 尚未获得部署授权 | `NOT_RUN` |
+| 生产数据库迁移 | `commercial-production` 严格目标绑定、V86→V87、前后校验和运行角色授权 | GitHub Actions run `34713508064` | `PASS_EXTERNAL` |
+| 应用与 live billing 发布 | 密钥注入、域名、监控、回滚演练、真实资金 smoke | 尚无完整发布证据 | `NOT_RUN` |
 | 独立认证 | 独立人员/机构复验真实资金闭环 | 无独立证据 | `NOT_CERTIFIED` |
 
 ## 失败关闭规则
