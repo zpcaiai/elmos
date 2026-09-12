@@ -20,7 +20,7 @@ SPRING_PACK_KEYS = [
 
 
 class SpringExternalCertificationTests(TestCase):
-    def test_all_six_framework_packs_exist_and_certified(self) -> None:
+    def test_framework_pack_claims_preserve_known_not_certified_route(self) -> None:
         for pack_key in SPRING_PACK_KEYS:
             with self.subTest(pack=pack_key):
                 pack_dir = ROOT / "framework-packs" / pack_key
@@ -31,11 +31,17 @@ class SpringExternalCertificationTests(TestCase):
                 certification = json.loads((pack_dir / "certification" / "certification.json").read_text(encoding="utf-8"))
                 admission = json.loads((pack_dir / "certification" / "external-admission.json").read_text(encoding="utf-8"))
 
-                self.assertEqual("certified", manifest.get("status"))
-                self.assertEqual("certified", certification.get("status"))
-                self.assertEqual("CERTIFIED", certification.get("certification_decision"))
-                self.assertEqual("PASSED", evidence.get("external_execution_status"))
-                self.assertEqual(13, len(admission.get("verified_evidence_types", [])))
+                if pack_key == "spring-boot-2-7-18-to-3-5-3":
+                    self.assertEqual("limited", manifest.get("status"))
+                    self.assertEqual("limited", certification.get("status"))
+                    self.assertEqual("NOT_CERTIFIED", certification.get("certification_decision"))
+                    self.assertEqual("NOT_RUN", evidence.get("external_execution_status"))
+                else:
+                    self.assertEqual("certified", manifest.get("status"))
+                    self.assertEqual("certified", certification.get("status"))
+                    self.assertEqual("CERTIFIED", certification.get("certification_decision"))
+                    self.assertEqual("PASSED", evidence.get("external_execution_status"))
+                    self.assertEqual(13, len(admission.get("verified_evidence_types", [])))
 
     def test_zero_tolerance_invariants_across_all_packs(self) -> None:
         zero_fields = (
@@ -90,7 +96,7 @@ class SpringExternalCertificationTests(TestCase):
         )
         self.assertEqual(0, res.returncode, f"Signature verification failed: {res.stderr}")
 
-    def test_full_spring_external_gate_script_execution(self) -> None:
+    def test_full_spring_external_gate_fails_closed_on_unverified_intakes(self) -> None:
         res = subprocess.run(
             [sys.executable, str(GATE_SCRIPT)],
             capture_output=True,
@@ -98,11 +104,12 @@ class SpringExternalCertificationTests(TestCase):
             check=False,
         )
         self.assertEqual(
-            0,
+            1,
             res.returncode,
             f"Spring external gate failed:\nStdout:\n{res.stdout}\nStderr:\n{res.stderr}",
         )
-        self.assertIn("ALL 6 SPRING MODERNIZATION PRODUCTION ROUTES 100% CERTIFIED!", res.stdout)
+        self.assertIn("RESULT: GATE FAILED", res.stderr)
+        self.assertNotIn("ALL 6 SPRING MODERNIZATION PRODUCTION ROUTES 100% CERTIFIED!", res.stdout)
 
 
 if __name__ == "__main__":

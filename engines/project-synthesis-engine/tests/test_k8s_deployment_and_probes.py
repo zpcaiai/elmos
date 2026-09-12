@@ -58,7 +58,10 @@ def test_k8s_manifest_dry_run_validation():
         app_name="payment-service",
         namespace="default",
     )
-    controller = K8sDeploymentController()
+    # Keep this unit test independent of whether the hosted image happens to
+    # preinstall kubectl or configure a cluster. Real-cluster behavior is
+    # exercised only by the separately authorized acceptance path.
+    controller = K8sDeploymentController(kubectl_bin="/elmos/test/missing-kubectl")
     valid, msg = controller.dry_run_validate(manifest_yaml)
 
     assert valid is True

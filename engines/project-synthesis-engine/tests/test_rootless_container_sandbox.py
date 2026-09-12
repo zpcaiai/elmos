@@ -42,6 +42,10 @@ def test_hermetic_path_jail_safe_execution():
         test_file.write_text("secure content", encoding="utf-8")
 
         runner = LinuxRootlessSandboxRunner()
+        # This test covers the deterministic host path-jail backend. Container
+        # execution has a distinct image/toolchain acceptance path and must not
+        # depend on whether a hosted runner happens to have Podman installed.
+        runner.available_backends = ["hermetic_path_jail"]
         # Run standard python command reading local file
         cmd = [sys.executable, "-c", "print(open('hello.txt').read().strip())"]
         result: SandboxExecutionResult = runner.run(cmd, host_workspace_path=tmp_path)

@@ -61,21 +61,21 @@ The exact launch tuples are machine-readable in `sql-line-launch-scope.json` wit
 
 ## P2 implementation boundary & Verification
 
-- **Full lifecycle qualification**: Dual-engine reference workloads execute
+- **Full lifecycle qualification for the currently evidenced release-ready packs**: Dual-engine reference workloads execute
   checkpointed initial loads, offline delta reconciliations, constraint/transaction
   negatives, source read-only enforcement, target backup/restore, CDC stream verification,
   and cutover execution across synthetic and representative customer corpora.
-- **Performance qualification**: The 75 ms p95 SLO is satisfied on dedicated runners:
+- **Performance qualification**: The 75 ms p95 SLO is satisfied on dedicated runners only where retained evidence exists:
   - SQLite -> PostgreSQL: measured p95 12.4 ms (<= 75 ms), pass rate 1.0.
   - PostgreSQL Billing -> Neon: measured p95 14.2 ms (<= 75 ms), pass rate 1.0.
-  - ChinaDB Dedicated Runners: measured source/target p95 <= 25.0 ms (<= 75 ms), pass rate 1.0.
-- **Independent multi-role verification & Ethan sign-offs**: Three-party segregation
+  - PostgreSQL 17.5 -> DM8 8.1.3.140: `NOT_RUN`; no licensed DM8 dedicated-runner evidence is retained.
+- **Independent multi-role verification & sign-offs**: Three-party segregation
   is established with distinct `executor`, `independent_verifier`, and `certification_authority`
-  principals. Ethan has executed independent verification (`PASSED_INDEPENDENT`) and issued
-  formal certification authority approvals across all packs and ChinaDB qualification receipts.
-- **Production release gate**: All database packs pass with `derived_status=certified release_eligible=true`:
+  principals is required. PostgreSQL 17.5 -> DM8 8.1.3.140 remains `NOT_RUN` for
+  independent verification and `NOT_CERTIFIED` for production certification.
+- **Production release gate**: Release-ready status is pack-specific:
   - `sqlite-3-53-3-to-postgresql-17-5`
-  - `postgresql-to-dm8`
+  - `postgresql-to-dm8`: `derived_status=research release_eligible=false`, production `NOT_CERTIFIED`
   - `postgresql-17-5-self-service-billing`
 
 ## Release commands
@@ -87,5 +87,6 @@ make b31-release-gate PACK=postgresql-to-dm8
 make b31-release-gate PACK=postgresql-17-5-self-service-billing
 ```
 
-Both the engineering gate and the production release gate pass cleanly under the
-Batch 31 evidence-derived framework, confirming unrestricted `certified` status.
+The engineering gate validates all pack contracts. The production release gate
+fails closed for PostgreSQL -> DM8 until the external and independent evidence
+listed in its gap inventory is supplied.

@@ -91,7 +91,7 @@ class SpringBoot4ExternalCertificationTests(TestCase):
         )
         self.assertEqual(0, res.returncode, f"Signature verification failed: {res.stderr}")
 
-    def test_full_spring_boot_4_external_gate_script_execution(self) -> None:
+    def test_full_spring_boot_4_external_gate_fails_closed_on_unverified_intakes(self) -> None:
         res = subprocess.run(
             [sys.executable, str(GATE_SCRIPT)],
             capture_output=True,
@@ -99,11 +99,12 @@ class SpringBoot4ExternalCertificationTests(TestCase):
             check=False,
         )
         self.assertEqual(
-            0,
+            1,
             res.returncode,
             f"Spring Boot 4 external gate failed:\nStdout:\n{res.stdout}\nStderr:\n{res.stderr}",
         )
-        self.assertIn("ALL 7 SPRING BOOT 4.X MODERNIZATION PRODUCTION ROUTES 100% CERTIFIED!", res.stdout)
+        self.assertIn("RESULT: GATE FAILED", res.stderr)
+        self.assertNotIn("ALL 7 SPRING BOOT 4.X MODERNIZATION PRODUCTION ROUTES 100% CERTIFIED!", res.stdout)
 
 
 if __name__ == "__main__":

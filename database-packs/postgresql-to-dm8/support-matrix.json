@@ -5,9 +5,9 @@
     {
       "id": "schema",
       "domain": "schema",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Schema DDL emission verified and certified on DM8 target.",
+      "reason": "DM8 target execution and independent schema equivalence evidence are NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -17,9 +17,9 @@
     {
       "id": "types",
       "domain": "types",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Data type equivalence verified and certified.",
+      "reason": "DM8 type-boundary execution and equivalence evidence are NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -29,9 +29,9 @@
     {
       "id": "constraints-indexes-partitions",
       "domain": "schema",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Constraints, indexes, and partition mapping verified and certified.",
+      "reason": "DM8 constraint, index, and partition execution evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -41,9 +41,9 @@
     {
       "id": "generators",
       "domain": "schema",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Identity and sequence generators verified and certified.",
+      "reason": "DM8 identity and sequence generator execution evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -53,9 +53,9 @@
     {
       "id": "views",
       "domain": "schema",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Views and materialized views verified and certified.",
+      "reason": "DM8 view and materialized-view execution evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -65,9 +65,9 @@
     {
       "id": "routines-triggers",
       "domain": "routines",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Routines and trigger procedures verified and certified.",
+      "reason": "DM8 routine and trigger execution evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -77,9 +77,9 @@
     {
       "id": "queries",
       "domain": "queries",
-      "status": "certified",
+      "status": "experimental",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Parameterized queries and execution verified and certified.",
+      "reason": "Only local query translation and target-dialect reparse ran; source and target execution are NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -89,9 +89,9 @@
     {
       "id": "transactions-locking",
       "domain": "transactions",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Transaction boundaries, isolation levels, and locking semantics certified.",
+      "reason": "DM8 transaction, isolation, and locking execution evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -101,9 +101,9 @@
     {
       "id": "orm-contract",
       "domain": "application",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Application ORM contracts and dialect integration certified.",
+      "reason": "Application ORM and live DM8 driver integration evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -113,9 +113,9 @@
     {
       "id": "etl-elt-discovery",
       "domain": "pipelines",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "ETL/ELT pipeline discovery and metadata verified and certified.",
+      "reason": "Representative ETL and ELT discovery evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -125,9 +125,9 @@
     {
       "id": "data-pipelines",
       "domain": "pipelines",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Data pipelines and transform jobs verified and certified.",
+      "reason": "Representative pipeline and transform-job execution evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -137,9 +137,9 @@
     {
       "id": "data-quality",
       "domain": "data",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Data quality and reconciliation rules verified and certified.",
+      "reason": "Detail-level data quality and reconciliation evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -149,9 +149,9 @@
     {
       "id": "contracts-lineage",
       "domain": "governance",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Data contract catalogs and column lineage verified and certified.",
+      "reason": "Representative data-contract and lineage verification evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -161,9 +161,9 @@
     {
       "id": "warehouse-lakehouse",
       "domain": "analytics",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "OLAP analytics and target table format verified and certified.",
+      "reason": "DM8 analytics and target table-format execution evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -173,9 +173,9 @@
     {
       "id": "backfill-cdc",
       "domain": "migration",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Initial historical backfill and CDC replication stream verified and certified.",
+      "reason": "Initial backfill and CDC stream execution evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -185,9 +185,9 @@
     {
       "id": "reconciliation-cutover",
       "domain": "migration",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Detail-level row checksum reconciliation and live cutover verified and certified.",
+      "reason": "Detail-level reconciliation and cutover evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -197,9 +197,9 @@
     {
       "id": "performance",
       "domain": "performance",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Independent representative p95 <= 75 ms workload verified and certified on DM8.",
+      "reason": "Independent representative performance evidence on DM8 is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
@@ -209,9 +209,9 @@
     {
       "id": "security-grants",
       "domain": "security",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "ELMOS ChinaDB Adapter Maintainers",
-      "reason": "Roles, grants, RLS, audit policies, and encryption verified and certified.",
+      "reason": "DM8 roles, grants, RLS, audit, and encryption execution evidence is NOT_RUN.",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],

@@ -19,14 +19,14 @@ def test_apple_host_profiles_select_only_exact_complete_tuples() -> None:
         xcode="Xcode 26.6\nBuild version 17F113",
     )
     current = toolchains._select_apple_route_host_profile(
-        image_version="20260831.0337.3",
+        image_version="20260907.0351.1",
         product_version="26.6.2",
         build_version="25G83",
         xcode="Xcode 26.6\nBuild version 17F113",
     )
 
     assert legacy.profile_id == "github-macos26-20260728.0273.1"
-    assert current.profile_id == "github-macos26-20260831.0337.3"
+    assert current.profile_id == "github-macos26-20260907.0351.1"
     assert legacy.swiftc_sha256 == current.swiftc_sha256
     assert legacy.apple_git_sha256 == current.apple_git_sha256
     assert legacy.sandbox_exec_sha256 != current.sandbox_exec_sha256
@@ -54,7 +54,7 @@ def test_apple_host_profiles_select_only_exact_complete_tuples() -> None:
     [
         ("20260728.0273.1", "26.6.2", "25G83"),
         ("20260831.0337.3", "26.5.2", "25F84"),
-        ("20260905.0000.0", "26.6.2", "25G83"),
+        ("20260908.0000.0", "26.6.2", "25G83"),
     ],
 )
 def test_apple_host_profiles_reject_hybrid_and_unknown_tuples(

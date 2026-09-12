@@ -300,7 +300,6 @@ class ToolkitTests(unittest.TestCase):
     def test_release_gate_accepts_release_ready_pack(self):
         for pack_name in (
             "sqlite-3-53-3-to-postgresql-17-5",
-            "postgresql-to-dm8",
             "postgresql-17-5-self-service-billing",
         ):
             pack = ROOT / "database-packs" / pack_name
@@ -314,6 +313,22 @@ class ToolkitTests(unittest.TestCase):
                 check=False,
             )
             self.assertEqual(result.returncode, 0)
+
+    def test_release_gate_blocks_postgresql_to_dm8_without_external_evidence(self):
+        pack = ROOT / "database-packs" / "postgresql-to-dm8"
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPTS / "run_database_gate.py"),
+                str(pack),
+                "--require-release-ready",
+            ],
+            check=False,
+        )
+        self.assertEqual(result.returncode, 3)
+        gate = json.loads((pack / "certification" / "gate-result.json").read_text())
+        self.assertEqual(gate["certification_decision"], "NOT_CERTIFIED")
+        self.assertFalse(gate["release_eligible"])
 
     def test_validator_executes_formal_support_schema(self):
         with tempfile.TemporaryDirectory() as td:

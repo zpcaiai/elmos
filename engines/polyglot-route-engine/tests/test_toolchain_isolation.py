@@ -499,12 +499,13 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         build_version="25F84",
     )
     current_hosted = toolchains._select_homebrew_route_bundle_profile(
-        image_version="20260831.0337.3",
+        image_version="20260907.0351.1",
         product_version="26.6.2",
         build_version="25G83",
     )
 
     assert local.profile_id == "local-macos26-20260904"
+    assert current_hosted.profile_id == "github-macos26-20260907.0351.1"
     dotnet_fields = (
         "dotnet_muxer_sha256",
         "dotnet_muxer_bytes",

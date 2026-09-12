@@ -482,7 +482,9 @@ def main() -> int:
 
     try:
         print("=" * 80)
-        print("ELMOS BUSINESS LINE 3: DATABASE & SQL DIALECT (CHINADB) INDUSTRIAL EVALUATION")
+        print(
+            "ELMOS BUSINESS LINE 3: DATABASE & SQL DIALECT (CHINADB) INDUSTRIAL EVALUATION"
+        )
         print("=" * 80)
 
         # 1. Procedural AST Lowering across 52 Industrial Benchmarks
