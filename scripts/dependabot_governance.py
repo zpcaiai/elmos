@@ -29,6 +29,7 @@ IMMUTABLE_SOURCE_PREFIXES = (
     "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/",
     "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/",
     "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/",
+    "skills/subskills/sub/elmos-assurance-skills-v4.0.0/",
 )
 IMMUTABLE_CERTIFICATION_PREFIXES = (
     "routes/cpp-to-java/certification/formal-artifacts/",

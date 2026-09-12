@@ -103,6 +103,15 @@ class DependabotGovernanceTest(unittest.TestCase):
             MODULE.classify(alert(330, "fast-xml-parser", manifest)),
         )
 
+    def test_assurance_source_package_is_immutable_source(self) -> None:
+        manifest = (
+            "skills/subskills/sub/elmos-assurance-skills-v4.0.0/"
+            "requirements-reference.txt"
+        )
+        self.assertEqual(
+            "immutable_source", MODULE.classify(alert(480, "cryptography", manifest))
+        )
+
     def test_runtime_manifest_is_never_eligible(self) -> None:
         value = alert(999, "vite", "apps/web-console/package.json")
         self.assertIsNone(MODULE.classify(value))

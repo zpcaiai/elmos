@@ -12,12 +12,8 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
       - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-      - org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration
-      - org.springframework.cloud.gateway.config.GatewayAutoConfiguration
   cloud:
     compatibility-verifier:
-      enabled: false
-    gateway:
       enabled: false
   lifecycle:
     timeout-per-shutdown-phase: ${ELMOS_SHUTDOWN_TIMEOUT:30s}
