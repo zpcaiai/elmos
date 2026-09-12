@@ -1,8 +1,5 @@
 ---
 name: pm-b23-sqlserver-indexed-view
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "迁移 Indexed View、Schema binding、限制和优化器使用. Precision Migration B23 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

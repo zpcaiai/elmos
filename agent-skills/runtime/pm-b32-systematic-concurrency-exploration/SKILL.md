@@ -1,8 +1,5 @@
 ---
 name: pm-b32-systematic-concurrency-exploration
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "接管调度点并探索关键线程、任务、Future、goroutine 和消息交错. Precision Migration B32 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

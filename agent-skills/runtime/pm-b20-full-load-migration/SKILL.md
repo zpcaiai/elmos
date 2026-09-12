@@ -1,8 +1,5 @@
 ---
 name: pm-b20-full-load-migration
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "规划和执行可恢复、可分片、可校验的全量数据迁移. Precision Migration B20 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

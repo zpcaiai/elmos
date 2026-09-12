@@ -1,8 +1,5 @@
 ---
 name: pm-b05-symbol-and-type-indexer
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "建立跨文件符号、类型、引用、泛型实例化和源码位置索引. Precision Migration B05 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

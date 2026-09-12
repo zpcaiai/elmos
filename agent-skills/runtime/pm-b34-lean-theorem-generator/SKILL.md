@@ -1,8 +1,5 @@
 ---
 name: pm-b34-lean-theorem-generator
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "从证明义务生成 Lean 定理陈述、上下文、前置条件和辅助结构. Precision Migration B34 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

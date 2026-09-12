@@ -1,8 +1,5 @@
 ---
 name: pm-b07-artifact-signing-and-provenance
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "为源码、规则、模型输出、构建产物和证据生成签名与来源链. Precision Migration B07 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

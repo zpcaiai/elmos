@@ -1,8 +1,5 @@
 ---
 name: pm-b36-byok-provider-adapter
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: "支持客户自带 OpenAI、Anthropic、Gemini、国产或 OpenAI兼容模型凭证. Precision Migration B36 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 
