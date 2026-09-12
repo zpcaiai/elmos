@@ -1,6 +1,9 @@
 ---
 name: b30-fastapi-migration
-description: "Implement or certify a FastAPI source or target framework pack, covering route and dependency graphs, Pydantic schemas, async behavior, validation, middleware, lifespan, security dependencies, OpenAPI, exception handling, background tasks, and provider integrations."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement or certify a FastAPI source or target framework pack, covering route and dependency graphs, Pydantic schemas, async behavior, validation, middleware, lifespan, security dependencies, OpenAPI, exception handling, background tasks, and provider integrations.
 ---
 
 ## Operating mode

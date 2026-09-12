@@ -2,7 +2,7 @@
   "schema_version": 1,
   "pack_key": "frt-g01-g30-platform",
   "repository": "zpcaiai/elmos",
-  "repository_revision": "4fc2678d7c411c54ae8f35e35ad7a25e6e9644aa",
+  "repository_revision": "a0170dde12aa3241f62edf358d3ba63bb06b27d5",
   "status": "LOCAL_CONTENT_BOUND",
   "external_verification": "NOT_RUN",
   "production_operation_authorized": false,
@@ -30,13 +30,13 @@
       "bytes": 53577
     },
     {
-      "artifact_id": "artifact:sha256:c1cb6341b1d5297635ad65a11ec9cb06199952162a205b3bfcc911fbb659f5fd",
+      "artifact_id": "artifact:sha256:11f807c37b1a39a122e3d7e1c1c0d16630a8c439264c2d7ea204268b23d5b0d4",
       "role": "web-browser-journey-source",
       "source_path": "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
       "path": "repository-evidence/files/apps/web-console/e2e/frt-frontend-transformation.spec.ts",
-      "sha256": "sha256:c1cb6341b1d5297635ad65a11ec9cb06199952162a205b3bfcc911fbb659f5fd",
-      "bytes": 7893
+      "sha256": "sha256:11f807c37b1a39a122e3d7e1c1c0d16630a8c439264c2d7ea204268b23d5b0d4",
+      "bytes": 7906
     }
   ],
-  "aggregate_sha256": "sha256:44201ea4321a0f5f7793f3da07a66f0abb8012db258a39dccaab54dc9e9e61a9"
+  "aggregate_sha256": "sha256:850e48e6ce44729a86d25c5c5ce6ef0bdb6dde272df22f97b8167fb847efc1fe"
 }

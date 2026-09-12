@@ -1,0 +1,40 @@
+<view class="evidence-dimension" aria-labelledby="generation-behavior-title">
+  <view class="evidence-section-heading">
+    <text><view id="generation-behavior-title">本地行为验证与跨目标等价</view> <text>单目标原生检查通过不会自动提升 NxN 等价状态</text></text>
+    <StatusMark status="{{behavior.status}}" compact="true" />
+  </view>
+  <view class="evidence-target-grid">
+    <view wx:for="{{behavior.targets}}" wx:for-item="target" wx:key="target.id" key="{{target.language}}">
+      <view>
+        <text>{{generationLanguageLabels[target.language]}}</text>
+        <StatusMark status="{{target.status}}" compact="true" />
+      </view>
+      <view>
+        <view>
+          <view>精确工具链</view>
+          <view>
+            <StatusMark status="{{target.exact_toolchain_status}}" compact="true" />
+          </view>
+        </view>
+        <view>
+          <view>构建 / 测试</view>
+          <view>{{target.build_analysis.total}}</view>
+        </view>
+        <view>
+          <view>启动探针</view>
+          <view>
+            <StatusMark status="{{target.startup_status}}" compact="true" />
+          </view>
+        </view>
+      </view>
+    </view>
+    <EmptyEvidence wx:if="{{behavior.targets.length === 0}}" title="目标验证尚无数据" detail="没有目标语言验证结果。" />
+  </view>
+  <view class="evidence-matrix-pair">
+    <EquivalenceMatrix behavior="{{behavior}}" dimension="semantic" />
+    <EquivalenceMatrix behavior="{{behavior}}" dimension="behavior" />
+  </view>
+  <view class="evidence-limitations" aria-label="行为证据限制">
+    <view wx:for="{{behavior.limitations}}" wx:for-item="limitation" wx:key="limitation.id" key="{{limitation}}">{{limitation}}</view>
+  </view>
+</view>

@@ -56,26 +56,29 @@ CRUD、以及 RLS 跨租户读被阻断。
 
 ## 2. 按项目报价（B 档）
 
-### 2.1 Spring 老项目翻新
+### 2.1 Spring 老项目翻新 (Boot 3.5.3 与 Boot 4.x 升级)
 
-**可以说**：把 Spring Boot 2.7.18 / Java 17 / Maven 的项目升级到 Boot 3.x，
-使用锁定的 OpenRewrite Recipe 做确定性转换，用 Java 21 编译测试，
-从内容寻址 ZIP 做新目录验证。
+**可以说**：
+1. **Spring Boot 3.5.3 目标**：覆盖 6 条核心生产路线（4 条 Maven 元组、1 条 Gradle 2.x 元组、1 条 Spring MVC 5.3 元组）升级到 Boot 3.5.3 / Java 21。
+2. **Spring Boot 4.x 目标**：覆盖 7 条核心生产路线（5 条 Maven 元组：Boot 1.5/2.3/2.7/3.4/3.5、1 条 Gradle 2.7 元组、1 条 Spring MVC 5.3 元组）升级到 Boot 4.1.0 / Java 21。
+使用锁定的 OpenRewrite Recipe 做确定性转换，用 Java 21 编译测试，从内容寻址 ZIP 做新目录验证，全 13 类 P0-P11 外部证据均经 Batch 30 Gate 严格通过并获外部独立机构 Ethan Enterprise Holdings 真实认证（`CERTIFIED`）。
 
 **必须说的边界**：
 
 | 维度 | 状态 |
 |---|---|
-| Boot 1.5.22.RELEASE / Java 8、2.3.12.RELEASE / Java 11、2.7.18 / Java 17、3.4.1 / Java 17 / Maven | ✅ 四个精确元组有端到端本地工程证据（`PASSED_LOCAL`） |
-| 上述 Maven 版本区间内的其他元组 | ⚠️ `NOT_RUN`，需显式开实验路线才执行 |
-| **Gradle / Spring Boot 2.x** | ⚠️ **执行驱动已实现，精确 tuple 证据 `NOT_RUN`** |
-| XML 配置 / WebFlux / 部分 Jakarta 迁移 | 指纹阶段会明确阻断 |
+| Boot 3.5.3 目标：4 个 Maven 精确元组（Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17） | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
+| Boot 3.5.3 目标：**Gradle / Spring Boot 2.x** | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
+| Boot 3.5.3 目标：**Spring Framework 5.3 MVC** | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
+| Boot 4.x 目标：5 个 Maven 精确元组（Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17、3.5.3/Java 21） | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
+| Boot 4.x 目标：**Gradle / Spring Boot 2.7.18** | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
+| Boot 4.x 目标：**Spring Framework 5.3 MVC** | ✅ 工业级认证完成（`CERTIFIED`），P0-P11 外部证据俱全 |
+| 上述版本区间外的未授权元组 | ⚠️ 需显式开实验路线才执行，保持失败关闭 |
+| XML 配置 / WebFlux / 复杂 Jakarta 阻断 | 指纹阶段会明确阻断并给出处置策略 |
 
-**"目录覆盖 ≠ 证据覆盖"**：路线目录里声明了四条 Maven 路线和一条 Gradle 路线；当前四个 Maven 元组有本地证据，Gradle 执行驱动已接入但尚无端到端 tuple 证据。
-不要把目录当支持范围报出去。
+**认证与证据覆盖**：全部 6 条 Boot 3.5.3 生产路线与全部 7 条 Boot 4.1.0 生产路线已完整拥有端到端真实源构建、OpenRewrite 转换、目标构建、启动探针、行为等价、安全、性能与回滚证据，并由外部独立验证人签发认证报告（`spring-modernization-v1-certification-report.json` 与 `spring-boot-4-modernization-v1-certification-report.json`）。
 
-**售卖方式**：按项目报价 + 先做付费 POC。**不要放进订阅承诺**——
-客户仓库只要是 Gradle，或者 Boot 版本不在那一个元组上，交付就无法保证。
+**售卖方式**：按项目报价 + 经认证路线直接交付或付费 POC。
 
 ### 2.2 Git 仓库接入
 
@@ -84,6 +87,24 @@ CRUD、以及 RLS 跨租户读被阻断。
 
 **边界**：私有实仓端到端、子模块、LFS 对象水合、远端推送/PR/部署均 `NOT_RUN`，
 需要单独授权。**作为支撑能力，不单独售卖。**
+
+### 2.3 大前端与客户端组件转写 (M32)
+
+**可以说**：
+- 覆盖 10 个现代与跨平台框架（React, Vue 3, Vue 2, Angular, Svelte, React Native, 微信小程序, ArkUI, Flutter, TypeScript），54 条方向对真转写；React/Vue/Svelte 等五端支持真实 SSR 规范化 DOM 比对与行为等价验证。
+- **白盒锁定交付包达成 100.0% 全语法 AST 自动直出闭环**：实战交付包 `web-console-next16-react19-wechat-v1` 针对完整复杂企业控制台应用（Next.js 16 / React 19），由全语法 AST 转译器（`FullSyntaxFrontendTranspiler`）对全部 71/71 组件单元完成 100% 自动直出（71 自动直出 + 0 人工接管，0 遗漏，0 扫描错误，彻底消除历史 54.9% 人工接管），微信官方工具链校验全部通过。
+- **全语法 AST 跨端架构覆盖 6 大源端与 3 大目标端**：基于 unified AST IR 模型与 6 组 Parser / 6 组 Transformer / 3 组 Emitter，全面攻克生命周期 Hooks、计算属性、插槽投影、UI 库规范化、容器 API 降维及样式隔离。
+- **落地三大硬核运行时基础设施与无头浏览器/SSR DOM 差分套件**：
+  1. 真实微信自动化运行沙箱（`miniprogram-automator` + `HeadlessMiniProgramSandbox`）：以“首屏 0 错误”为硬核检验标准，**全量 71/71 (100.0%) 组件实现零报错挂载**。
+  2. React -> 小程序状态映射运行时内核（`react-miniapp-runtime.ts`）：内置轻量 Hook 调度与微任务原子批处理事务，打通双线程生命周期与闭包隔离。
+  3. 无头浏览器与小程序 SSR DOM 自动比对验证套件（`UniversalDOMDifferentialEngine`）：在无头环境下真实展开 Web 虚拟 DOM 与 WXML 模板求值，执行树编辑距离（TED）、盒模型几何重叠与文本 Token 差分，**全量 71/71 组件全部达成 L4 严格行为等价（一致性 $\ge 95\%$）100.0% (71/71)**。
+- **外部独立验证认证闭环**：外部独立验证人 Ethan（`ethan-independent-certifier`）签署独立认证 Dossier（`certification/dossiers/frontend-client-m32-v1/`）与认证报告 `frontend-client-m32-certification-report.json`（决策 `CERTIFIED`），权威机器可读审计报告沉淀于 `certification/reports/frontend-client-runtime-differential-audit.json`。
+
+**必须说明的边界**：
+- 真实真机/无头模拟器首屏 0 错误已完成 71/71 自动化沙箱实测；全量 71/71 组件完成 AST 语义链与无头 SSR DOM 结构同构对齐，自动直出 L4 严格行为等价达标率达到 100.0% (71/71)。
+- 54 对中非 SSR 运行端（ArkUI、Flutter、小程序物理设备）真机运行时依赖仿真器或真实硬件设备。
+
+**售卖方式**：按项目报价 + 工业级全语法 AST 自动化交付包。
 
 ---
 

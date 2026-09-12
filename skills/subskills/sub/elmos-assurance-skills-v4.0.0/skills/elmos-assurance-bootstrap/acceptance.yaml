@@ -1,0 +1,36 @@
+skill: elmos-assurance-bootstrap
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-bootstrap-A01
+  given: 发现既有K8签署器
+  when: 在真实集成模块执行对应测试或负例
+  then: 复用其接口并提交最小扩展，不新建绕过入口
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-bootstrap-A02
+  given: 未读取源码或缺少数据库
+  when: 在真实集成模块执行对应测试或负例
+  then: 相关实现状态必须unknown/NOT_RUN，不能标completed
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-bootstrap-A03
+  given: 旧E5含义与本包不同
+  when: 在真实集成模块执行对应测试或负例
+  then: 生成显式profile迁移映射，历史证书不变
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

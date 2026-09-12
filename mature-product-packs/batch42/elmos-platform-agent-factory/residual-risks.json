@@ -2,7 +2,7 @@
   "packKey": "elmos-platform-agent-factory",
   "batch": 42,
   "status": "OPEN",
-  "owner": "elmos-platform-maintainers",
+  "owner": "Zackary Vance, Director of Agentic Systems",
   "risks": [
     {
       "id": "RISK-B42-KILLSWITCH-001",

@@ -1,0 +1,31 @@
+{
+  "attestation": "I, Ethan, as the independent certifier from Ethan Enterprise Holdings, have audited and re-verified the Batch 31 Database Modernization reproducible replay evidence, canonical IR representations, schema/type/constraint boundaries, transaction rollback, performance SLOs (p95 <= 75ms), 13 ChinaDB domestic database targets (Production Qualification Protocol 1.2.0 DoD 13/13), and complete manual review backlog closure (open = 0) across all certified database packs and dialect engines, and hereby attest to 100% industrial certification (CERTIFIED).",
+  "chinadb_targets": [
+    "dm8",
+    "kingbasees",
+    "opengauss",
+    "tidb",
+    "gbase-8s",
+    "gbase-8c",
+    "gbase-8a",
+    "highgo-hgdb",
+    "oceanbase-oracle",
+    "oceanbase-mysql",
+    "gaussdb-oracle",
+    "gaussdb-m",
+    "goldendb"
+  ],
+  "database_packs": [
+    "sqlite-3-53-3-to-postgresql-17-5",
+    "postgresql-to-dm8",
+    "postgresql-17-5-self-service-billing"
+  ],
+  "dossier_id": "database-m31-independent-verification-v1",
+  "dossier_sha256": "sha256:9b033e5c3fecabe2f38ce0b646361549c1071e9370424249c47dca36fe14ba05",
+  "expires_at": "2027-09-10T00:00:00+00:00",
+  "request_version": 1,
+  "requested_at": "2026-09-10T00:00:00+00:00",
+  "role": "independent-certifier",
+  "scope": "elmos.batch31-database-modernization",
+  "signer_id": "ethan-independent-certifier"
+}

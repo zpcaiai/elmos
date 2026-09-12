@@ -1,0 +1,34 @@
+{
+  "schema_version": "elmos.strict-test-suite.compiled-skill-contract.v1",
+  "package_id": "elmos.migration-platform-strict-tests",
+  "package_version": "1.0.0",
+  "installed_alias": "tst-b27-incremental-production-factory",
+  "namespace": "elmos-strict-test-suite",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute",
+    "skill_name": "tst-b27-incremental-production-factory",
+    "title": "Batch 27：持续增量迁移、生产上线与工厂运营严格测试",
+    "suite_source": "batch1-37-strict",
+    "case_count": 8,
+    "case_ids": [
+      "B27-001",
+      "B27-002",
+      "B27-003",
+      "B27-004",
+      "B27-005",
+      "B27-006",
+      "B27-007",
+      "B27-008"
+    ],
+    "module_path": "scripts/test-suite/tst_skill_runtime.py",
+    "runtime_class": "TstSkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

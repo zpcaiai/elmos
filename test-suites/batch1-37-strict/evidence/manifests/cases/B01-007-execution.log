@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B01-007 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [1]
+Title: Batch 1 迁移Manifest：改变工具链、Schema、Provider、配置或依赖版本并重放
+Capability: 迁移Manifest
+Test Type: version_drift
+Skill: tst-b01-secure-repository-intake
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

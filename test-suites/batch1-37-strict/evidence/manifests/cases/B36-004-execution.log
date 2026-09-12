@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B36-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [36]
+Title: Batch 36 PR Bot：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: PR Bot
+Test Type: dependency_failure
+Skill: tst-b36-ide-cli-pr-experience
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

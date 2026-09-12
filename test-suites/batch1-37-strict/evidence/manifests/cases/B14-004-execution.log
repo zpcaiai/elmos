@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B14-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [14]
+Title: Batch 14 开发者社区：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: 开发者社区
+Test Type: dependency_failure
+Skill: tst-b14-plg-community-localization
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

@@ -1,5 +1,8 @@
 ---
 name: pm-b37-agentic-migration-harness
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "把迁移拆分为可暂停、可恢复、可重试、可审计的任务图，并让多个隔离Agent在客观门禁下协作. Precision Migration B37 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

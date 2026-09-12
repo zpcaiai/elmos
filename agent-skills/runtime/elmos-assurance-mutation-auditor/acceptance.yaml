@@ -1,0 +1,36 @@
+skill: elmos-assurance-mutation-auditor
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-mutation-auditor-A01
+  given: 移除权限检查但suite绿
+  when: 在真实集成模块执行对应测试或负例
+  then: critical survivor阻断
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-mutation-auditor-A02
+  given: mutant timeout
+  when: 在真实集成模块执行对应测试或负例
+  then: 不得自动计为killed
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-mutation-auditor-A03
+  given: 100个mutant中10个unknown
+  when: 在真实集成模块执行对应测试或负例
+  then: unknown显式报告并影响门禁
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

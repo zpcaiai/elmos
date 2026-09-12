@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "route": {
+    "source": "java-ee-servlet-2.5-jsp",
+    "target": "spring-boot-3.5.3",
+    "directional": true,
+    "targetJava": 21
+  },
+  "httpContracts": {
+    "catalog": ["/books"],
+    "purchasedBooks": ["/booklist"],
+    "login": ["/user"],
+    "session": ["/sessionlogin", "/SessionLoginServlet"],
+    "registration": ["/register", "/RegisterServlet"],
+    "ratings": ["/rating", "/RatingServlet"],
+    "logout": ["/logout", "/LogoutServlet"],
+    "recommendations": ["/userrecmd", "/itemrecmd", "/sloperecmd", "/chinapub", "/ChinapubRecommanderServlet"]
+  },
+  "state": {
+    "sessionIdentity": "server-created userId",
+    "sessionTimeout": "5m",
+    "crossUserWrites": "forbidden",
+    "ratingBatch": "validate-all then transactional upsert"
+  },
+  "persistence": {
+    "access": "Spring JdbcTemplate prepared statements",
+    "local": "H2 in MySQL mode",
+    "productionProfile": "externally configured MySQL",
+    "money": "DECIMAL(12,2)",
+    "rating": "DECIMAL(3,2), range 1..5, unique user/book"
+  },
+  "security": {
+    "newPasswordHash": "BCrypt cost 12",
+    "legacyPassword": "MD5 verify once then BCrypt upgrade",
+    "credentialDisclosure": "prohibited",
+    "sqlInjection": "bound parameters"
+  },
+  "algorithms": ["user-based Pearson", "item-based Pearson", "Slope One", "combined average"],
+  "removed": ["JSP runtime", "Prototype.js", "Axis 1.4 wildcard mapping", "Mahout 0.8 runtime", "vendored JARs", "hard-coded database credentials"]
+}
+

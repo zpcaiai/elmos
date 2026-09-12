@@ -1,5 +1,8 @@
 ---
 name: pm-b36-cost-aware-model-routing
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在发布门槛不变的前提下最小化每个验收模块的模型与计算成本. Precision Migration B36 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

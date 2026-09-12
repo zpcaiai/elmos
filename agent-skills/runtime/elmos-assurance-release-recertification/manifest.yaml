@@ -1,0 +1,22 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-release-recertification
+title: 发布、持续验证与撤销链
+priority: P1
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-commercial-control
+- elmos-assurance-calibration-holdout
+inputs:
+- 签署attestation
+- 部署版本/环境
+- 运行时反馈
+outputs:
+- ReleaseGate
+- ReverificationTriggers
+- RollbackAndRevocationEvidence
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

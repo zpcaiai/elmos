@@ -1,0 +1,1194 @@
+{
+  "batch": {
+    "id": "B08",
+    "title": "Performance, QA, UX, AI and FinOps audits",
+    "dependsOn": [
+      "B06"
+    ],
+    "skills": [
+      "performance-reliability-observability-audit",
+      "test-ci-cd-developer-experience-audit",
+      "ux-accessibility-i18n-audit",
+      "ai-agent-system-audit",
+      "cost-finops-sustainability-audit"
+    ],
+    "tasks": [
+      "B08-T001",
+      "B08-T002",
+      "B08-T003",
+      "B08-T004",
+      "B08-T005",
+      "B08-T006",
+      "B08-T007",
+      "B08-T008",
+      "B08-T009",
+      "B08-T010",
+      "B08-T011",
+      "B08-T012",
+      "B08-T013",
+      "B08-T014",
+      "B08-T015",
+      "B08-T016",
+      "B08-T017",
+      "B08-T018",
+      "B08-T019",
+      "B08-T020",
+      "B08-T021",
+      "B08-T022",
+      "B08-T023",
+      "B08-T024",
+      "B08-T025",
+      "B08-T026",
+      "B08-T027",
+      "B08-T028",
+      "B08-T029",
+      "B08-T030",
+      "B08-T031",
+      "B08-T032",
+      "B08-T033",
+      "B08-T034",
+      "B08-T035",
+      "B08-T036",
+      "B08-T037",
+      "B08-T038",
+      "B08-T039",
+      "B08-T040",
+      "B08-T041",
+      "B08-T042",
+      "B08-T043",
+      "B08-T044",
+      "B08-T045",
+      "B08-T046",
+      "B08-T047",
+      "B08-T048",
+      "B08-T049",
+      "B08-T050"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B08-T001",
+      "batch": "B08",
+      "title": "performance-reliability-observability-audit: Bind canonical ownership and model domain contracts",
+      "skillId": "performance-reliability-observability-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B06-T010",
+        "B04-T030"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for performance-reliability-observability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T002",
+      "batch": "B08",
+      "title": "performance-reliability-observability-audit: Implement persistence projections and append-only ledger events",
+      "skillId": "performance-reliability-observability-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T001"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for performance-reliability-observability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T003",
+      "batch": "B08",
+      "title": "performance-reliability-observability-audit: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "performance-reliability-observability-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T002"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for performance-reliability-observability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T004",
+      "batch": "B08",
+      "title": "performance-reliability-observability-audit: Implement service and durable workflow",
+      "skillId": "performance-reliability-observability-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T003"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for performance-reliability-observability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T005",
+      "batch": "B08",
+      "title": "performance-reliability-observability-audit: Implement replaceable ports and first reference Adapter",
+      "skillId": "performance-reliability-observability-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T004"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for performance-reliability-observability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T006",
+      "batch": "B08",
+      "title": "performance-reliability-observability-audit: Implement APIs, events and query projections",
+      "skillId": "performance-reliability-observability-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T005"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for performance-reliability-observability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T007",
+      "batch": "B08",
+      "title": "performance-reliability-observability-audit: Implement product UI or operator surface",
+      "skillId": "performance-reliability-observability-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T006"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for performance-reliability-observability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T008",
+      "batch": "B08",
+      "title": "performance-reliability-observability-audit: Add deterministic tests, negative controls and failure injection",
+      "skillId": "performance-reliability-observability-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T007"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for performance-reliability-observability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T009",
+      "batch": "B08",
+      "title": "performance-reliability-observability-audit: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "performance-reliability-observability-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T008"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for performance-reliability-observability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T010",
+      "batch": "B08",
+      "title": "performance-reliability-observability-audit: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "performance-reliability-observability-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T009"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for performance-reliability-observability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T011",
+      "batch": "B08",
+      "title": "test-ci-cd-developer-experience-audit: Bind canonical ownership and model domain contracts",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B06-T010",
+        "B04-T010",
+        "B05-T020"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for test-ci-cd-developer-experience-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T012",
+      "batch": "B08",
+      "title": "test-ci-cd-developer-experience-audit: Implement persistence projections and append-only ledger events",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B08-T011"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for test-ci-cd-developer-experience-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T013",
+      "batch": "B08",
+      "title": "test-ci-cd-developer-experience-audit: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B08-T012"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for test-ci-cd-developer-experience-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T014",
+      "batch": "B08",
+      "title": "test-ci-cd-developer-experience-audit: Implement service and durable workflow",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B08-T013"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for test-ci-cd-developer-experience-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T015",
+      "batch": "B08",
+      "title": "test-ci-cd-developer-experience-audit: Implement replaceable ports and first reference Adapter",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B08-T014"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for test-ci-cd-developer-experience-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T016",
+      "batch": "B08",
+      "title": "test-ci-cd-developer-experience-audit: Implement APIs, events and query projections",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B08-T015"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for test-ci-cd-developer-experience-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T017",
+      "batch": "B08",
+      "title": "test-ci-cd-developer-experience-audit: Implement product UI or operator surface",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B08-T016"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for test-ci-cd-developer-experience-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T018",
+      "batch": "B08",
+      "title": "test-ci-cd-developer-experience-audit: Add deterministic tests, negative controls and failure injection",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B08-T017"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for test-ci-cd-developer-experience-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T019",
+      "batch": "B08",
+      "title": "test-ci-cd-developer-experience-audit: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B08-T018"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for test-ci-cd-developer-experience-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T020",
+      "batch": "B08",
+      "title": "test-ci-cd-developer-experience-audit: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B08-T019"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for test-ci-cd-developer-experience-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T021",
+      "batch": "B08",
+      "title": "ux-accessibility-i18n-audit: Bind canonical ownership and model domain contracts",
+      "skillId": "ux-accessibility-i18n-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B06-T010",
+        "B05-T020"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for ux-accessibility-i18n-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T022",
+      "batch": "B08",
+      "title": "ux-accessibility-i18n-audit: Implement persistence projections and append-only ledger events",
+      "skillId": "ux-accessibility-i18n-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T021"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for ux-accessibility-i18n-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T023",
+      "batch": "B08",
+      "title": "ux-accessibility-i18n-audit: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "ux-accessibility-i18n-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T022"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for ux-accessibility-i18n-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T024",
+      "batch": "B08",
+      "title": "ux-accessibility-i18n-audit: Implement service and durable workflow",
+      "skillId": "ux-accessibility-i18n-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T023"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for ux-accessibility-i18n-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T025",
+      "batch": "B08",
+      "title": "ux-accessibility-i18n-audit: Implement replaceable ports and first reference Adapter",
+      "skillId": "ux-accessibility-i18n-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T024"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for ux-accessibility-i18n-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T026",
+      "batch": "B08",
+      "title": "ux-accessibility-i18n-audit: Implement APIs, events and query projections",
+      "skillId": "ux-accessibility-i18n-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T025"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for ux-accessibility-i18n-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T027",
+      "batch": "B08",
+      "title": "ux-accessibility-i18n-audit: Implement product UI or operator surface",
+      "skillId": "ux-accessibility-i18n-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T026"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for ux-accessibility-i18n-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T028",
+      "batch": "B08",
+      "title": "ux-accessibility-i18n-audit: Add deterministic tests, negative controls and failure injection",
+      "skillId": "ux-accessibility-i18n-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T027"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for ux-accessibility-i18n-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T029",
+      "batch": "B08",
+      "title": "ux-accessibility-i18n-audit: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "ux-accessibility-i18n-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T028"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for ux-accessibility-i18n-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T030",
+      "batch": "B08",
+      "title": "ux-accessibility-i18n-audit: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "ux-accessibility-i18n-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T029"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for ux-accessibility-i18n-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T031",
+      "batch": "B08",
+      "title": "ai-agent-system-audit: Bind canonical ownership and model domain contracts",
+      "skillId": "ai-agent-system-audit",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B06-T010",
+        "B05-T030",
+        "B08-T020"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for ai-agent-system-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T032",
+      "batch": "B08",
+      "title": "ai-agent-system-audit: Implement persistence projections and append-only ledger events",
+      "skillId": "ai-agent-system-audit",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T031"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for ai-agent-system-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T033",
+      "batch": "B08",
+      "title": "ai-agent-system-audit: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "ai-agent-system-audit",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T032"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for ai-agent-system-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T034",
+      "batch": "B08",
+      "title": "ai-agent-system-audit: Implement service and durable workflow",
+      "skillId": "ai-agent-system-audit",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T033"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for ai-agent-system-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T035",
+      "batch": "B08",
+      "title": "ai-agent-system-audit: Implement replaceable ports and first reference Adapter",
+      "skillId": "ai-agent-system-audit",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T034"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for ai-agent-system-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T036",
+      "batch": "B08",
+      "title": "ai-agent-system-audit: Implement APIs, events and query projections",
+      "skillId": "ai-agent-system-audit",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T035"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for ai-agent-system-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T037",
+      "batch": "B08",
+      "title": "ai-agent-system-audit: Implement product UI or operator surface",
+      "skillId": "ai-agent-system-audit",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T036"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for ai-agent-system-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T038",
+      "batch": "B08",
+      "title": "ai-agent-system-audit: Add deterministic tests, negative controls and failure injection",
+      "skillId": "ai-agent-system-audit",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T037"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for ai-agent-system-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T039",
+      "batch": "B08",
+      "title": "ai-agent-system-audit: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "ai-agent-system-audit",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T038"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for ai-agent-system-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T040",
+      "batch": "B08",
+      "title": "ai-agent-system-audit: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "ai-agent-system-audit",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B08-T039"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for ai-agent-system-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T041",
+      "batch": "B08",
+      "title": "cost-finops-sustainability-audit: Bind canonical ownership and model domain contracts",
+      "skillId": "cost-finops-sustainability-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B02-T040",
+        "B08-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for cost-finops-sustainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T042",
+      "batch": "B08",
+      "title": "cost-finops-sustainability-audit: Implement persistence projections and append-only ledger events",
+      "skillId": "cost-finops-sustainability-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T041"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for cost-finops-sustainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T043",
+      "batch": "B08",
+      "title": "cost-finops-sustainability-audit: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "cost-finops-sustainability-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T042"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for cost-finops-sustainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T044",
+      "batch": "B08",
+      "title": "cost-finops-sustainability-audit: Implement service and durable workflow",
+      "skillId": "cost-finops-sustainability-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T043"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for cost-finops-sustainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T045",
+      "batch": "B08",
+      "title": "cost-finops-sustainability-audit: Implement replaceable ports and first reference Adapter",
+      "skillId": "cost-finops-sustainability-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T044"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for cost-finops-sustainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T046",
+      "batch": "B08",
+      "title": "cost-finops-sustainability-audit: Implement APIs, events and query projections",
+      "skillId": "cost-finops-sustainability-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T045"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for cost-finops-sustainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T047",
+      "batch": "B08",
+      "title": "cost-finops-sustainability-audit: Implement product UI or operator surface",
+      "skillId": "cost-finops-sustainability-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T046"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for cost-finops-sustainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T048",
+      "batch": "B08",
+      "title": "cost-finops-sustainability-audit: Add deterministic tests, negative controls and failure injection",
+      "skillId": "cost-finops-sustainability-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T047"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for cost-finops-sustainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T049",
+      "batch": "B08",
+      "title": "cost-finops-sustainability-audit: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "cost-finops-sustainability-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T048"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for cost-finops-sustainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B08-T050",
+      "batch": "B08",
+      "title": "cost-finops-sustainability-audit: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "cost-finops-sustainability-audit",
+      "priority": "P2",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B08-T049"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for cost-finops-sustainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

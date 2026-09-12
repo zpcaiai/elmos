@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: stakeholder-workflow-discovery
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: StakeholderWorkflowDiscoveryService
+    workflow: StakeholderWorkflowDiscoveryWorkflow
+    policyGate: StakeholderWorkflowDiscoveryPolicyGate
+    evidenceProducer: StakeholderWorkflowDiscoveryEvidenceProducer
+    repositoryPort: StakeholderWorkflowDiscoveryRepositoryPort
+  requiredPorts:
+  - id: repository.read
+    direction: outbound
+  - id: artifact.write
+    direction: outbound
+  - id: schema.validate
+    direction: inbound
+  - id: policy.evaluate
+    direction: outbound
+  - id: evidence.append
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/stakeholder-workflow-discovery/runs
+  - GET /api/v1/skills/stakeholder-workflow-discovery/runs/{runId}
+  - POST /api/v1/skills/stakeholder-workflow-discovery/runs/{runId}/cancel
+  - POST /api/v1/skills/stakeholder-workflow-discovery/runs/{runId}/resume
+  events:
+  - elmos.skill.stakeholder-workflow-discovery.requested.v1
+  - elmos.skill.stakeholder-workflow-discovery.checkpointed.v1
+  - elmos.skill.stakeholder-workflow-discovery.completed.v1
+  - elmos.skill.stakeholder-workflow-discovery.failed.v1
+  workflowSteps:
+  - Collect available interviews, notes, tickets, process documents, and system traces.
+  - Build a stakeholder and decision-rights map.
+  - Reconstruct current-state workflows including exceptions and shadow processes.
+  - Quantify pains, delays, errors, cost, risk, and adoption friction where evidence exists.
+  - Register contradictions and unknowns instead of resolving them by assumption.
+  - Produce a discovery brief and candidate opportunity map for approval.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

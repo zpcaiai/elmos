@@ -1,5 +1,8 @@
 ---
 name: b34-portfolio-dr-replay
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement portfolio-level disaster recovery and deterministic replay for inventory graphs indexes workflow state queues leases caches artifacts manifests campaigns pull requests budgets and audit without duplicate external effects.
 ---
 

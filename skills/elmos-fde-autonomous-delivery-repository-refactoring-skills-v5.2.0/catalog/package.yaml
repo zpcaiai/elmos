@@ -1,0 +1,42 @@
+apiVersion: elmos.ai/v1
+kind: SkillPackage
+metadata:
+  name: elmos-fde-autonomous-delivery-repository-refactoring-skills
+  version: 5.2.0
+  releaseDate: '2026-08-31'
+spec:
+  role: capability-extension
+  baseline: Elmos v5.1.0
+  requiresElmos: '>=5.1.0'
+  atomicSkillCount: 45
+  codexWorkflowSkillCount: 12
+  customAgentCount: 15
+  adapterCount: 26
+  goldenRouteCount: 10
+  uiSurfaceCount: 12
+  routableEntryPointsAdded: 0
+  canonicalKernelsPreserved:
+    K1: Intent, Engagement and Goal Authority
+    K2: Repository Facts and Native Runtime Authority
+    K3: Semantic Truth and System Graph Authority
+    K4: Reasoning, Planning and Decision Support
+    K5: Transformation and Artifact Production
+    K6: Verification and Evidence Production
+    K7: Durable Execution, Effects and Lifecycle
+    K8: Independent Completion and Certification Authority
+  completionBoundary: E3
+  e4e5Companion: elmos-functional-assurance-certification-skills
+  executionIdentityContract: Identity + Ownership + Environment + Authority + Timeline + Artifacts + Lifecycle + Effects +
+    Evidence
+  claims:
+  - implementation-ready specification
+  - Codex workflow package
+  - machine-readable contracts
+  - reference semantics
+  nonClaims:
+  - implemented in target Elmos repository
+  - native toolchain conformance
+  - customer acceptance
+  - production readiness
+  - E4/E5/P05
+  - regulatory certification

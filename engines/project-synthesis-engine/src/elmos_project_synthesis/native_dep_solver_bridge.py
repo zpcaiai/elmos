@@ -56,10 +56,12 @@ def native_solve_dependencies(
     if lib is None:
         return None
     try:
-        payload = json.dumps({
-            "root_dependencies": root_dependencies,
-            "available_packages": available_packages,
-        }).encode("utf-8")
+        payload = json.dumps(
+            {
+                "root_dependencies": root_dependencies,
+                "available_packages": available_packages,
+            }
+        ).encode("utf-8")
         ptr = lib.elmos_solve_dependencies(payload)
         if not ptr:
             return None

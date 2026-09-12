@@ -1,5 +1,8 @@
 ---
 name: pm-b34-leanstral-proof-synthesis
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "使用 Leanstral 生成证明、辅助引理和策略候选. Precision Migration B34 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

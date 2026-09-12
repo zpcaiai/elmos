@@ -1,0 +1,64 @@
+package http
+
+import (
+	"net/http"
+	"strings"
+
+	"{{.ModuleName}}/internal/interfaces/http/middleware"
+	"{{.ModuleName}}/pkg/logger"
+)
+
+// NewRouter constructs an http.Handler with registered routes and middleware chain.
+func NewRouter(h *Handler, log logger.Logger) http.Handler {
+	mux := http.NewServeMux()
+
+	// Probes & Observability
+	mux.HandleFunc("/healthz", h.Healthz)
+	mux.HandleFunc("/livez", h.Livez)
+	mux.HandleFunc("/readyz", h.Readyz)
+	mux.HandleFunc("/metrics", middleware.PrometheusHandler)
+
+	// REST API v1 routing dispatcher
+	mux.HandleFunc("/api/v1/entities", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			h.CreateEntity(w, r)
+		case http.MethodGet:
+			h.ListEntities(w, r)
+		default:
+			w.Header().Set("Allow", "GET, POST")
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	mux.HandleFunc("/api/v1/entities/", func(w http.ResponseWriter, r *http.Request) {
+		// Check that the path has an ID segment
+		path := strings.TrimPrefix(r.URL.Path, "/api/v1/entities/")
+		if path == "" {
+			http.NotFound(w, r)
+			return
+		}
+
+		switch r.Method {
+		case http.MethodGet:
+			h.GetEntity(w, r)
+		case http.MethodPut:
+			h.UpdateEntity(w, r)
+		case http.MethodDelete:
+			h.DeleteEntity(w, r)
+		default:
+			w.Header().Set("Allow", "GET, PUT, DELETE")
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	// Wrap middleware chain (outermost first)
+	handler := CORSMiddleware(mux)
+	handler = LoggingMiddleware(log)(handler)
+	handler = RecoveryMiddleware(log)(handler)
+	handler = middleware.MetricsMiddleware(handler)
+	handler = middleware.TelemetryMiddleware("{{.ServiceName}}")(handler)
+	handler = RequestIDMiddleware(handler)
+
+	return handler
+}

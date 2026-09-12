@@ -1,0 +1,78 @@
+package client
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"time"
+
+	"{{.ModuleName}}/pkg/logger"
+)
+
+// ExternalClient provides an HTTP client stub for communicating with external downstream services.
+type ExternalClient struct {
+	httpClient *http.Client
+	baseURL    string
+	log        logger.Logger
+}
+
+// NewExternalClient instantiates an ExternalClient with connection pooling.
+func NewExternalClient(baseURL string, timeout time.Duration, log logger.Logger) *ExternalClient {
+	return &ExternalClient{
+		baseURL: baseURL,
+		log:     log,
+		httpClient: &http.Client{
+			Timeout: timeout,
+			Transport: &http.Transport{
+				MaxIdleConns:        100,
+				MaxIdleConnsPerHost: 20,
+				IdleConnTimeout:     90 * time.Second,
+			},
+		},
+	}
+}
+
+// DoRequest performs an HTTP request with context propagation and structured error handling.
+func (c *ExternalClient) DoRequest(ctx context.Context, method, endpoint string, body any, target any) error {
+	url := fmt.Sprintf("%s%s", c.baseURL, endpoint)
+
+	var reqBody io.Reader
+	if body != nil {
+		buf, err := json.Marshal(body)
+		if err != nil {
+			return fmt.Errorf("failed to marshal request body: %w", err)
+		}
+		reqBody = bytes.NewBuffer(buf)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, url, reqBody)
+	if err != nil {
+		return fmt.Errorf("failed to create http request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		c.log.Error("External service call failed", "url", url, "error", err)
+		return fmt.Errorf("external request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		respBytes, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("external call returned error status %d: %s", resp.StatusCode, string(respBytes))
+	}
+
+	if target != nil {
+		if err := json.NewDecoder(resp.Body).Decode(target); err != nil {
+			return fmt.Errorf("failed to decode response payload: %w", err)
+		}
+	}
+
+	return nil
+}

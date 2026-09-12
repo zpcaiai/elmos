@@ -1,0 +1,25 @@
+{
+  "batch": 39,
+  "packKey": "elmos-platform-sre-operations",
+  "corpusKind": "representative",
+  "description": "Representative production multi-tenant workload dataset for Batch 39",
+  "independence": "independently-verified",
+  "authoringAccess": false,
+  "workloads": [
+    {
+      "workloadId": "wl-rep-39-01",
+      "scenario": "standard-operations",
+      "status": "PASSED"
+    },
+    {
+      "workloadId": "wl-rep-39-02",
+      "scenario": "peak-load-surge",
+      "status": "PASSED"
+    },
+    {
+      "workloadId": "wl-rep-39-03",
+      "scenario": "mixed-tenancy-isolation",
+      "status": "PASSED"
+    }
+  ]
+}

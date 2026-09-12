@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "skill_name": "b42-recipe-candidate-agent",
+  "batch": 42,
+  "batch_title": "Governed Agent Factory",
+  "implementation_state": "VERIFIED",
+  "external_evidence_status": "LOCAL_EXECUTED",
+  "production_certification": "NOT_CERTIFIED",
+  "runtime_handler": "scripts.batch42.b42_skill_runtime.B42SkillRuntime._handle_recipe_candidate_agent",
+  "fail_closed_policy": "FAIL_CLOSED_ON_UNKNOWN_STATUS",
+  "metrics_thresholds": {
+    "agentEvalPassRate": 1.0,
+    "policyViolationCount": 0.0,
+    "killSwitchPassRate": 1.0
+  }
+}

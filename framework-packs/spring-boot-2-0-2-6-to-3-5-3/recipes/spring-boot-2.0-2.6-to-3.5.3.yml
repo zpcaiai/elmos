@@ -1,0 +1,51 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot3_5_3Java21
+displayName: Migrate Spring Boot 2.0-2.6 to Spring Boot 3.5.3 on Java 21
+description: >-
+  Steps a Spring Boot 2.0 through 2.6 Maven project to the 2.7 line first so the
+  intermediate deprecations are applied in order, then applies the Spring Boot
+  3.5 and Java 21 migrations and binds the supported Spring Boot parent and Java
+  property to the exact ELMOS route tuple.
+recipeList:
+  - org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
+  - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.maven.ChangeParentPom:
+      oldGroupId: org.springframework.boot
+      oldArtifactId: spring-boot-starter-parent
+      newGroupId: org.springframework.boot
+      newArtifactId: spring-boot-starter-parent
+      newVersion: 3.5.3
+      allowVersionDowngrades: true
+  - org.openrewrite.maven.UpgradeParentVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      newVersion: 3.5.3
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: spring-boot.version
+      newValue: "3.5.3"
+      addIfMissing: false
+      trustParent: false
+  - org.openrewrite.java.dependencies.ChangeDependency:
+      oldGroupId: io.github.resilience4j
+      oldArtifactId: resilience4j-spring-boot2
+      newGroupId: io.github.resilience4j
+      newArtifactId: resilience4j-spring-boot3
+      newVersion: "2.4.0"
+      overrideManagedVersion: true
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "21"
+      addIfMissing: true
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: maven.compiler.source
+      newValue: "21"
+      addIfMissing: false
+      trustParent: false
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: maven.compiler.target
+      newValue: "21"
+      addIfMissing: false
+      trustParent: false

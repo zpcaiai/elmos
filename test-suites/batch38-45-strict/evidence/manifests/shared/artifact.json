@@ -1,0 +1,18 @@
+{
+  "artifact_id": "elmos-mature-platform-base-v2.0.0",
+  "description": "Certified enterprise mature platform base covering Batches 38-45 (M38-M45).",
+  "scope": "M38-M45",
+  "version": "2.0.0",
+  "build_system": "hermetic-cleanroom",
+  "provenance_chain": "slsa-level-3",
+  "batches": [
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45
+  ]
+}

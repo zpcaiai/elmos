@@ -1,0 +1,77 @@
+{
+  "schema_version": "4.0",
+  "contract_id": "demo-orders",
+  "tenant_id": "demo-tenant",
+  "project_id": "demo-project",
+  "source_kind": "inferred",
+  "requirement_ids": [
+    "REQ-ORDER-001"
+  ],
+  "interfaces": [
+    {
+      "id": "orders.create",
+      "protocol": "http",
+      "operation": "POST /orders",
+      "source_locations": [
+        "requirements/demo-order.md#REQ-ORDER-001"
+      ],
+      "preconditions": [
+        "Authenticated buyer; accepted currency and precision policy"
+      ],
+      "auth_roles": [
+        "buyer"
+      ],
+      "outcomes": [
+        {
+          "id": "created",
+          "condition": "valid authorized order and available inventory",
+          "assertions": [
+            "201 and response schema matches",
+            "One committed order, stock decrement and outbox event in transaction"
+          ]
+        },
+        {
+          "id": "forbidden",
+          "condition": "authenticated buyer references another tenant resource",
+          "assertions": [
+            "403 or approved non-disclosing404",
+            "No order, stock, outbox or idempotency-record leak"
+          ]
+        }
+      ],
+      "state_transitions": [
+        "cart->placed only after atomic commit"
+      ],
+      "side_effects": [
+        "DB order+stock+outbox atomic",
+        "Idempotency duplicate returns prior result without repeated effects"
+      ],
+      "invariants": [
+        "No negative stock",
+        "Tenant isolation",
+        "Exact decimal amount per approved currency scale"
+      ],
+      "oracle_ids": [
+        "approved-requirement-order-001"
+      ],
+      "risk": "critical",
+      "wire_schema_bindings": {
+        "request_schema_digest": "61e39e397b5eba59e70b872e4bbd5147386be5320636b63eadf2ae4639035726",
+        "response_schema_digest": "c30640acea53255bf2323e21a027649216447ba7fd826b8d5ced9d99a4787c6f",
+        "error_schema_digests": [
+          "be49bd4be6fbcc06ea21533e5e99ff2eabb1dff2e4079094af87e933ec91d9a9"
+        ],
+        "schema_format": "json-schema-2020-12",
+        "content_types": [
+          "application/json"
+        ]
+      },
+      "assertion_program_digest": "ce5d0f4c802eede9a9beebddc23a314dffb543b7a01456fdcc703a8696cba9c6"
+    }
+  ],
+  "known_blind_spots": [
+    "Demo contract is not yet approved",
+    "No actual project discovered"
+  ],
+  "approval_digest": null
+}

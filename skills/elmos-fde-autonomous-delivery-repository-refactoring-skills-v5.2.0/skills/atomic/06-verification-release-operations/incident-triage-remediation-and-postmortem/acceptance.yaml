@@ -1,0 +1,81 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: incident-triage-remediation-and-postmortem
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Bad rollout causes cross-tenant responses
+  - Queue retry storm overloads database
+  - Emergency hotfix lacks full regression window
+  negativeControls:
+  - make destructive production change without incident authority
+  - assign blame
+  - close incident from agent confidence
+  checks:
+  - id: incident-triage-remediation-and-postmortem-AC-01
+    requirement: Prioritize safety, containment, service restoration, data integrity, and communication before structural
+      improvement.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: incident-triage-remediation-and-postmortem-AC-02
+    requirement: Use verified security context, incident-specific authority, and explicit command or write approvals.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: incident-triage-remediation-and-postmortem-AC-03
+    requirement: Build a time-ordered evidence timeline across users, releases, telemetry, dependencies, and side effects.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: incident-triage-remediation-and-postmortem-AC-04
+    requirement: Separate trigger, root cause, contributing conditions, detection gaps, and recovery gaps.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: incident-triage-remediation-and-postmortem-AC-05
+    requirement: Convert material lessons into repository rules, skills, scripts, tests, policies, or no change according
+      to ownership.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

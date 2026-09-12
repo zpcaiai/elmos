@@ -1,6 +1,9 @@
 ---
 name: b29-certify-csharp-to-java
-description: "Implement or certify the directed C#-to-Java migration route, including source semantics, target lowering, compatibility strategy, corpus, real builds, behavior evidence, and route manifest. Use only for C# source and Java target work."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement or certify the directed C#-to-Java migration route, including source semantics, target lowering, compatibility strategy, corpus, real builds, behavior evidence, and route manifest. Use only for C# source and Java target work.
 ---
 
 ## Operating mode

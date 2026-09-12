@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/assurance/v4/auditor-config.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "4.0"
+    },
+    "display_name": {
+      "const": "Ethen"
+    },
+    "auditor_kind": {
+      "enum": [
+        "human",
+        "organization",
+        "external_system"
+      ]
+    },
+    "subject_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "organization_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "control_domain": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "independence_level": {
+      "enum": [
+        "self-reviewed",
+        "separate-agent",
+        "separate-control-domain",
+        "independent-organization"
+      ]
+    },
+    "identity_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "signing_key_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "authorized_tenant_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "expires_at": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "conflict_disclosures": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4096
+      },
+      "minItems": 0
+    },
+    "status": {
+      "enum": [
+        "UNCONFIGURED",
+        "PENDING_REVIEW",
+        "ACTIVE",
+        "SUSPENDED",
+        "REVOKED"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "display_name",
+    "auditor_kind",
+    "subject_id",
+    "organization_id",
+    "control_domain",
+    "independence_level",
+    "identity_ref",
+    "signing_key_ref",
+    "authorized_tenant_ids",
+    "expires_at",
+    "conflict_disclosures",
+    "status"
+  ]
+}

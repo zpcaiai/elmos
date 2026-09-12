@@ -1,6 +1,9 @@
 ---
 name: b32-client-modernization-factory
-description: "Implement and certify a directional version-specific frontend desktop or mobile modernization pack with runtime discovery typed UI interaction IR real builds browser or device execution holdout journeys and evidence."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement and certify a directional version-specific frontend desktop or mobile modernization pack with runtime discovery typed UI interaction IR real builds browser or device execution holdout journeys and evidence.
 ---
 
 ## Operating mode

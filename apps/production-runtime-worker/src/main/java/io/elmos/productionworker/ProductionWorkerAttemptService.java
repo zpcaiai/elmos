@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Bounded worker inbox and exact downstream workload execution protocol. */
-final class ProductionWorkerAttemptService {
+final class ProductionWorkerAttemptService implements AutoCloseable {
     private static final int MAX_ENGINE_RESPONSE_BYTES = 1_048_576;
     private static final Duration CLOSE_TIMEOUT = Duration.ofSeconds(5);
     enum LocalStatus {
@@ -1036,7 +1036,8 @@ final class ProductionWorkerAttemptService {
     }
 
     @PreDestroy
-    void close() {
+    @Override
+    public void close() {
         if (!closed.compareAndSet(false, true)) return;
         List<ExecutorService> ownedExecutors = List.of(
                 heartbeatScheduler,

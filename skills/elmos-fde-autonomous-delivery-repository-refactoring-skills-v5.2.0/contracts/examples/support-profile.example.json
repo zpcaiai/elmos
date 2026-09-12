@@ -1,0 +1,21 @@
+{
+  "revisionSetId": "revset-001",
+  "components": [
+    {
+      "component": "python-service",
+      "supportDepth": "S4",
+      "evidenceLevel": "E2",
+      "reason": "Build and tests available"
+    }
+  ],
+  "coverageSummary": {
+    "observed": 12,
+    "verifiedAbsent": 2,
+    "unknown": 1,
+    "unsupported": 0
+  },
+  "unknowns": [
+    "Production traffic shape"
+  ],
+  "unsupported": []
+}

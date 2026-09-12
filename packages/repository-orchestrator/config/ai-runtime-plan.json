@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "gate_id": "elmos-ai-control-plane-runner-v1",
+  "control_plane": {
+    "base_url_env": "ELMOS_CONTROL_PLANE_BASE_URL",
+    "operations_key_env": "ELMOS_OPERATIONS_API_KEY",
+    "tenant_env": "ELMOS_OPERATIONS_TENANT_ID",
+    "actor_env": "ELMOS_OPERATIONS_ACTOR_ID",
+    "readiness_path": "/actuator/health/readiness",
+    "liveness_path": "/actuator/health/liveness",
+    "reaper_path": "/runner/v1/reaper/last-run",
+    "runner_inventory_path": "/api/v1/operations-observability/runners?limit=100"
+  },
+  "runner": {
+    "node_id_env": "ELMOS_RUNNER_NODE_ID",
+    "pool_id_env": "ELMOS_RUNNER_POOL_ID",
+    "capabilities_env": "ELMOS_RUNNER_CAPABILITIES",
+    "agent_version_env": "ELMOS_RUNNER_AGENT_VERSION",
+    "agent_image_env": "ELMOS_RUNNER_AGENT_IMAGE",
+    "workload_image_env": "ELMOS_RUNNER_IMAGE_GENERATION",
+    "allowlist_version_env": "ELMOS_RUNNER_IMAGE_ALLOWLIST_VERSION",
+    "max_heartbeat_age_seconds": 180,
+    "required_status": "READY",
+    "attestation_required": true
+  },
+  "execution_ack_env": "ELMOS_RUNTIME_PROBE_ACK",
+  "external_evidence": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED"
+}

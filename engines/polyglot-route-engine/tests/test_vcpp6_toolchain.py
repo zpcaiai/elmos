@@ -11,7 +11,6 @@ from jsonschema import Draft202012Validator
 from elmos_polyglot_route.models import RouteError
 from elmos_polyglot_route.vcpp6_toolchain import resolve_vcpp6_toolchain
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 
 

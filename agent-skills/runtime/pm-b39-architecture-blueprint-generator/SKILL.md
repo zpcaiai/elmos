@@ -1,5 +1,8 @@
 ---
 name: pm-b39-architecture-blueprint-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从 Skills、非功能要求和部署目标生成模块、边界、数据流和技术选型蓝图. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

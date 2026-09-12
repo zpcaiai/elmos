@@ -1,6 +1,9 @@
 ---
 name: b32-state-management-lifecycle
-description: "Migrate local shared server persisted derived and asynchronous client state plus lifecycle and effect semantics without stale data leaks invalid ordering or duplicated side effects."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Migrate local shared server persisted derived and asynchronous client state plus lifecycle and effect semantics without stale data leaks invalid ordering or duplicated side effects.
 ---
 
 ## Operating mode

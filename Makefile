@@ -31,7 +31,7 @@ EXTERNAL_GATE_OUTPUT ?= .elmos/production-runtime/external-gate-report.json
 EXTERNAL_GATE_AUTHORIZATION ?= .elmos/production-runtime/external-gate-authorization.json
 ENGINE_TEST_OUTPUT_ROOT ?= $(HOME)/.cache/elmos-engine-tests
 
-.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification chinadb-commercial-migration-skills batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills production-runtime production-runtime-local production-runtime-external-plan production-runtime-external test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-synthesis-toolchains frontend sql-transpiler sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down operations-scripts-test test-suite-certification-rehearsal repository-autonomy-kernel openhands-absorption ai-capability-enhancement-skills functional-assurance-skills knowledge-skill-model-foundry-skills pricing-billing-skills commercial-capability-expansion-skills semantic-assurance-expansion-skills polyglot-semantic-assurance-skills
+.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification chinadb-commercial-migration-skills batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills production-runtime production-runtime-local production-runtime-external-plan production-runtime-external test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-generation project-synthesis-toolchains frontend sql-transpiler sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down operations-scripts-test test-suite-certification-rehearsal repository-autonomy-kernel openhands-absorption ai-capability-enhancement-skills functional-assurance-skills knowledge-skill-model-foundry-skills pricing-billing-skills commercial-capability-expansion-skills semantic-assurance-expansion-skills polyglot-semantic-assurance-skills assurance-v4-skills fde-autonomous-delivery-skills proof-driven-harness-skills proof-driven-harness-intelligence-skills
 
 .PHONY: frt-g01-g30-skills frt-g01-g30-check
 .PHONY: test-engine test-engines-check test-engines-list test-engines-all
@@ -169,8 +169,8 @@ chinadb-commercial-migration-skills:
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked python -m mypy src
 .PHONY: database-bigdata-skills
 database-bigdata-skills:
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_database_bigdata_skills.py --check
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/database-bigdata-skills -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --offline --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_database_bigdata_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --offline --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/database-bigdata-skills -p 'test_*.py'
 .PHONY: project-intelligence-skills
 project-intelligence-skills:
 	$(CARGO) build --locked --release --offline --manifest-path native/rust-core/Cargo.toml
@@ -212,6 +212,12 @@ knowledge-skill-model-foundry-external-gate:
 	@test -n "$(FOUNDRY_EXTERNAL_DECISION)" || (echo "FOUNDRY_EXTERNAL_DECISION is required" >&2; exit 2)
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src:packages/pi-harness/src $(UV) run --quiet --with 'cryptography>=45,<47' python tooling/run_foundry_external_qualification.py --bundle "$(FOUNDRY_EXTERNAL_BUNDLE)" --trust-store "$(FOUNDRY_EXTERNAL_TRUST_STORE)" --output "$(FOUNDRY_EXTERNAL_DECISION)"
 
+.PHONY: elmos-7plus1-commercial-skills
+elmos-7plus1-commercial-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet python tooling/integrate_elmos_7plus1_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/software-factory-engine/src $(UV) run --quiet python -m unittest discover -s tests/elmos-7plus1-commercial-skills -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/software-factory-engine/src $(UV) run --quiet python -m unittest discover -s engines/software-factory-engine/tests -p 'test_*.py'
+
 .PHONY: pricing-billing-skills
 pricing-billing-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet python tooling/integrate_pricing_billing_skills.py --check
@@ -234,6 +240,34 @@ semantic-assurance-expansion-skills:
 polyglot-semantic-assurance-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_polyglot_semantic_assurance_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/polyglot-semantic-compiler-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest tests/polyglot-semantic-assurance-skills/ -v
+
+.PHONY: assurance-v4-skills
+assurance-v4-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' python tooling/integrate_assurance_skills_v4.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' --with pytest python -m pytest skills/subskills/sub/elmos-assurance-skills-v4.0.0/tests -v
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/assurance-engine/src $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with 'cryptography>=42.0,<47.0' --with pytest python -m pytest engines/assurance-engine/tests -v
+
+.PHONY: fde-autonomous-delivery-skills
+fde-autonomous-delivery-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_fde_autonomous_delivery_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 env PYTHONPATH=skills/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/reference python -m unittest discover -s skills/elmos-fde-autonomous-delivery-repository-refactoring-skills-v5.2.0/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/fde-autonomous-delivery/src $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest packages/fde-autonomous-delivery/tests/ -v
+
+.PHONY: proof-driven-harness-skills
+proof-driven-harness-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_proof_driven_harness_v3.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_harness_runtime_assurance_delta.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/proof-driven-harness-v3 -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/proof-driven-harness-engine/src $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest engines/proof-driven-harness-engine/tests -rfE -o addopts=
+
+.PHONY: proof-driven-harness-intelligence-skills
+proof-driven-harness-intelligence-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_proof_driven_harness_intelligence_v1.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/proof-driven-harness-intelligence-engine/src $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest tests/proof-driven-harness-intelligence -rfE -o addopts=
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/proof-driven-harness-intelligence-engine/src $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest engines/proof-driven-harness-intelligence-engine/tests -rfE -o addopts=
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/proof-driven-harness-intelligence-engine/src $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python engines/proof-driven-harness-intelligence-engine/tools/validate_installation.py
+
+
 
 .PHONY: unified-cli-gateway
 unified-cli-gateway:
@@ -297,7 +331,7 @@ multimodal-intake-skills:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_multimodal_intake_skills.py --write
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_multimodal_intake_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/multimodal-intake-engine/src python3 engines/multimodal-intake-engine/tools/render_operation_input_schema.py --check
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pytest==8.4.1 python -m pytest -q -p no:cacheprovider tests/multimodal-intake/test_integration.py
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. $(UV) run --quiet --with pytest==8.4.1 python -m pytest -q -p no:cacheprovider tests/multimodal-intake/test_integration.py
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/multimodal-intake-engine/src $(UV) run --quiet --with pytest==8.4.1 python -m pytest -q -p no:cacheprovider engines/multimodal-intake-engine/tests
 	PYTHONDONTWRITEBYTECODE=1 python3 engines/multimodal-intake-engine/tools/verify_sdks.py --check
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" node apps/web-console/app/lib/server/multimodalIntakeRunner.verify.mjs
@@ -313,9 +347,12 @@ ai-optimization-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --offline --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_ai_optimization_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/ai-optimization-engine/src $(UV) run --offline --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/ai-optimization-skills -p 'test_*.py'
 
-.PHONY: repository-task-router-skills ai-external-gate-preflight
+.PHONY: repository-task-router-skills ai-external-gate-preflight ai-runtime-preflight
 ai-external-gate-preflight:
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src $(UV) run --quiet --project packages/repository-orchestrator --locked --group test elmos-repository-orchestrator external-preflight --plan packages/repository-orchestrator/config/ai-external-gate-plan.json --expect-blocked
+
+ai-runtime-preflight:
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src $(UV) run --quiet --project packages/repository-orchestrator --locked --group test elmos-repository-orchestrator runtime-preflight --plan packages/repository-orchestrator/config/ai-runtime-plan.json --expect-blocked
 
 repository-task-router-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --project packages/repository-orchestrator --locked --group test python tooling/integrate_repository_task_router_skills.py --check
@@ -338,7 +375,7 @@ modernization-b01-44-run:
 modernization-b01-44-gate: modernization-b01-44-test modernization-b01-44-mutation
 	@echo "modernization B01-44: packages verified, suite green, mutations killed"
 batch27-34-skills:
-	python3 tooling/validate_batch27_34_integration.py
+	$(UV) run --quiet --with pyyaml python tooling/validate_batch27_34_integration.py
 frt-g01-g30-skills:
 	python3 skills/FRT_G01_G30_Complete_Skills_Pack/scripts/validate_package.py
 	python3 tooling/integrate_frt_g01_g30.py --check
@@ -542,6 +579,8 @@ project-synthesis:
 	$(UV) --directory engines/project-synthesis-engine run --locked mypy src
 	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py
 	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_production_matrix.py
+project-generation:
+	$(MAKE) -C apps/project-generation test
 toolchains-validate:
 	python3 scripts/toolchains/runtime_environment.py validate
 toolchains-doctor: toolchains-validate
@@ -563,7 +602,7 @@ project-synthesis-toolchains:
 	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py --require-all-toolchains
 frontend:
 	CI=true PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir engines/frontend-client-engine install --frozen-lockfile
-	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir engines/frontend-client-engine check
+	PATH="$(CURDIR)/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment:$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir engines/frontend-client-engine check
 sql-transpiler:
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked python -m pytest
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked python -m ruff check src tests
@@ -721,3 +760,19 @@ etgb-full-product-skills:
 functional-assurance-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python3 tooling/integrate_functional_assurance_certification_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/functional-assurance-engine/src $(UV) run --no-project --quiet --with pytest --with pyyaml==6.0.2 --with jsonschema==4.25.1 python3 -m pytest engines/functional-assurance-engine/tests -v
+
+.PHONY: router-industrial-skills
+router-industrial-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 python tooling/integrate_router_industrial_skillpack.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/router-industrial-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s engines/router-industrial-engine/tests -p 'test_*.py'
+
+
+-include Makefile.teaching-subsystem
+-include Makefile.cross-language
+-include Makefile.spring-modernization
+-include Makefile.multilang-generation
+-include Makefile.uir-java-typescript
+-include Makefile.uir-java-csharp
+
+four-subsystem-check: teaching-subsystem-check cross-language-check spring-modernization-check multilang-generation-check uir-java-typescript-check uir-java-csharp-check
+	@echo "All four subsystem engines and UIR routes verified."

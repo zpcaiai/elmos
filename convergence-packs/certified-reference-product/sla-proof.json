@@ -1,0 +1,17 @@
+{
+  "observation_days": 30,
+  "slo_passed": true,
+  "support_passed": true,
+  "incident_drill_passed": true,
+  "restore_passed": true,
+  "upgrade_passed": true,
+  "customer_value_realized": true,
+  "evidence": [
+    "evidence/sla-0.json",
+    "evidence/sla-1.json",
+    "evidence/sla-2.json",
+    "evidence/sla-3.json",
+    "evidence/sla-4.json",
+    "evidence/sla-5.json"
+  ]
+}

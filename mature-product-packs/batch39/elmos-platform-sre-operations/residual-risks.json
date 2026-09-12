@@ -2,7 +2,7 @@
   "packKey": "elmos-platform-sre-operations",
   "batch": 39,
   "status": "OPEN",
-  "owner": "elmos-platform-maintainers",
+  "owner": "Liam O'Connor, Principal Site Reliability Engineer",
   "risks": [
     {
       "id": "RISK-B39-DR-001",

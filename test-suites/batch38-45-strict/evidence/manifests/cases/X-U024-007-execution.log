@@ -1,0 +1,11 @@
+[2026-09-10T08:26:29.107600Z][X-U024-007] Starting execution of X-U024-007 (计量、账单与毛利对账 / version-drift / 场景7) [Category=version-drift, Priority=P1]
+[2026-09-10T08:26:29.107606Z][X-U024-007] Bound Skill: tst-metering-billing-margin-reconciliation | Product Skill IDs: []
+[2026-09-10T08:26:29.107610Z][X-U024-007] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:29.124451Z][X-U024-007] Security: Minted RS256 token (JTI=c2692b08..., Exp=1789032389)
+[2026-09-10T08:26:29.165760Z][X-U024-007] KMS: Envelope encrypted 37 bytes under key key-x-u024-007 v1 (DEK wrapped)
+[2026-09-10T08:26:29.187610Z][X-U024-007] [CROSS-DELIVERY] Initializing X-U024-007 (U024) Category=version-drift
+[2026-09-10T08:26:29.187616Z][X-U024-007] FinOps Economics: Reconciling usage metering to customer invoices with gross margin analysis
+[2026-09-10T08:26:29.187620Z][X-U024-007] Validating rate card version migration (rate-card-2025 -> rate-card-2026)...
+[2026-09-10T08:26:29.187637Z][X-U024-007] Completed execution of X-U024-007 in 80.0ms: Status=PASSED
+[2026-09-10T08:26:29.187639Z][X-U024-007] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:29.187652Z][X-U024-007] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -1,0 +1,32 @@
+{
+  "schema_version": "elmos.strict-test-suite.compiled-skill-contract.v1",
+  "package_id": "elmos.migration-platform-strict-tests",
+  "package_version": "1.0.0",
+  "installed_alias": "tst-environment-fixture-data-factory",
+  "namespace": "elmos-strict-test-suite",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute",
+    "skill_name": "tst-environment-fixture-data-factory",
+    "title": "测试环境、Fixture与数据工厂",
+    "suite_source": "batch1-37-strict",
+    "case_count": 6,
+    "case_ids": [
+      "TS-GOV-03-001",
+      "TS-GOV-03-002",
+      "TS-GOV-03-003",
+      "TS-GOV-03-004",
+      "TS-GOV-03-005",
+      "TS-GOV-03-006"
+    ],
+    "module_path": "scripts/test-suite/tst_skill_runtime.py",
+    "runtime_class": "TstSkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

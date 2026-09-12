@@ -1,0 +1,160 @@
+{
+  "manifestVersion": 1,
+  "batch": 45,
+  "packKey": "elmos-platform-production-readiness",
+  "generatedAt": "2026-09-09T22:17:13.198032Z",
+  "artifact": {
+    "path": "support-matrix.json",
+    "sha256": "sha256:5a6ad897d9682eab30a889f2747e1672b93ad5e090fc570b5827caa1d9aca316",
+    "bytes": 7061
+  },
+  "environment": {
+    "path": "profile.json",
+    "sha256": "sha256:d41c54d53cb07f2219f36aa8ec4002357da37afb47087eee774f26d0623bb26e",
+    "bytes": 1132
+  },
+  "execution": {
+    "startedAt": "2026-09-09T21:17:12.887522Z",
+    "finishedAt": "2026-09-09T22:12:12.887639Z",
+    "replayCommand": "python3 scripts/mature_product_toolkit.py gate --batch 45 /Users/stephen/DevProjects/AIProjects/elmos/mature-product-packs/batch45/elmos-platform-production-readiness",
+    "executorId": "elmos-batch45-executor-agent",
+    "verifierId": "marcus-independent-verifier",
+    "verifierIndependent": true,
+    "authorizationRefs": [
+      "auth-elmos-prod-2026-b45"
+    ]
+  },
+  "evidence": [
+    {
+      "path": "evidence/customer/batch45-customer-alpha.json",
+      "sha256": "sha256:3ff476fe5b79a5f9d1d0c0c162456e7134e01757bf735ea27620891c5bf12fd7",
+      "bytes": 174,
+      "id": "batch45-customer-alpha",
+      "role": "customer",
+      "claimIds": [
+        "claim-b45-core-functional-conformance",
+        "claim-b45-customer-and-independent-acceptance"
+      ]
+    },
+    {
+      "path": "evidence/customer/batch45-customer-beta.json",
+      "sha256": "sha256:a87d695fb697d851b3ca016bcb343b46c165bb885b2c08eefed5a1c32b99e71f",
+      "bytes": 179,
+      "id": "batch45-customer-beta",
+      "role": "customer",
+      "claimIds": [
+        "claim-b45-core-functional-conformance",
+        "claim-b45-customer-and-independent-acceptance"
+      ]
+    },
+    {
+      "path": "evidence/execution/batch45-execution.json",
+      "sha256": "sha256:abdb0bdfe13002b95c66e3a16b6d82beaa267b2e327d47d9f56927649d25527e",
+      "bytes": 315,
+      "id": "batch45-execution",
+      "role": "execution",
+      "claimIds": [
+        "claim-b45-core-functional-conformance",
+        "claim-b45-operational-governance-resilience"
+      ]
+    },
+    {
+      "path": "evidence/independent-review/batch45-independent-review.json",
+      "sha256": "sha256:eb3a19cb2eb7b7c180e31581924ce3bf524771fd7a41fc678df43bdb35844e90",
+      "bytes": 187,
+      "id": "batch45-independent-review",
+      "role": "independent-review",
+      "claimIds": [
+        "claim-b45-core-functional-conformance",
+        "claim-b45-customer-and-independent-acceptance"
+      ]
+    },
+    {
+      "path": "evidence/provenance/batch45-provenance.json",
+      "sha256": "sha256:5bc4807c063497305140e8227176714aa891cba610ed4a9b00c2cc96092496a6",
+      "bytes": 309,
+      "id": "batch45-provenance",
+      "role": "provenance",
+      "claimIds": [
+        "claim-b45-core-functional-conformance",
+        "claim-b45-customer-and-independent-acceptance",
+        "claim-b45-operational-governance-resilience"
+      ]
+    },
+    {
+      "path": "evidence/verification/batch45-verification.json",
+      "sha256": "sha256:8a92b61e80a3b56a91ebd4e2829ee29762b1b94c8532e457877a642515a45cf6",
+      "bytes": 374,
+      "id": "batch45-verification",
+      "role": "verification",
+      "claimIds": [
+        "claim-b45-core-functional-conformance",
+        "claim-b45-operational-governance-resilience"
+      ]
+    }
+  ],
+  "corpora": [
+    {
+      "path": "holdout/holdout-workload.json",
+      "sha256": "sha256:3590deb89acb0e07607def12ebc523353fc944d38987bb9f48e2c76935df169c",
+      "bytes": 589,
+      "kind": "holdout",
+      "authoringAccess": false
+    },
+    {
+      "path": "representative/representative-workload.json",
+      "sha256": "sha256:fb2a1a0d2cef3c3a149c254346e75000d8fda0e57948a2fa61beb1d0214bc2c6",
+      "bytes": 631,
+      "kind": "representative",
+      "authoringAccess": false
+    }
+  ],
+  "approvals": [
+    "Dr. Stephen Chen, Principal System Architect",
+    "Marcus Vance, Lead Independent Verification Engineer"
+  ],
+  "domainGates": [
+    {
+      "path": "domain-gates/batch38-gate-result.json",
+      "sha256": "sha256:b41ec0d7f4b4b561af4ddc3f6c1aee294dab776b5c22d1bef9e686e318f7a463",
+      "bytes": 271,
+      "batch": 38
+    },
+    {
+      "path": "domain-gates/batch39-gate-result.json",
+      "sha256": "sha256:e45388501678b62c328f99faf842f50ccdaac710a813a5803a1ab79765948439",
+      "bytes": 268,
+      "batch": 39
+    },
+    {
+      "path": "domain-gates/batch40-gate-result.json",
+      "sha256": "sha256:292b0668f885b38123aa923920496676085a5caf46bf3793c22e9f1dfde46387",
+      "bytes": 567,
+      "batch": 40
+    },
+    {
+      "path": "domain-gates/batch41-gate-result.json",
+      "sha256": "sha256:824491315a1e6ec60e909276ec31c9f6a0b1d80ac03a91969dbf1c868bd66e31",
+      "bytes": 272,
+      "batch": 41
+    },
+    {
+      "path": "domain-gates/batch42-gate-result.json",
+      "sha256": "sha256:f0519527f56a5129f621dbc0adc895b132f2ecff493de6f5ef9cf37072c1cf79",
+      "bytes": 267,
+      "batch": 42
+    },
+    {
+      "path": "domain-gates/batch43-gate-result.json",
+      "sha256": "sha256:c0da58312294e09e67b0543f464ac6967a3fa6e1818571c2f2b23cfbcdf0d62a",
+      "bytes": 354,
+      "batch": 43
+    },
+    {
+      "path": "domain-gates/batch44-gate-result.json",
+      "sha256": "sha256:5a7148e29400db397071154920fc430534cade5a78a0faded425e79facc55284",
+      "bytes": 260,
+      "batch": 44
+    }
+  ]
+}

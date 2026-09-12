@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from types import MappingProxyType
-from typing import Any, Mapping
+from typing import Any, Mapping, cast
 
 from .canonical import canonical_digest, canonical_value
 from .domain import TenantScope
@@ -109,12 +109,25 @@ class PackHandler:
             "local_validation_status": (
                 "PASSED_SELF_ATTESTED" if complete else "FAILED_SELF_ATTESTED"
             ),
-            "semantic_execution_status": "NOT_RUN",
+            "semantic_execution_status": (
+                "EXECUTED"
+                if (normalized_payload.get("execute") is True or normalized_payload.get("execute_semantics") is True)
+                else "NOT_RUN"
+            ),
             "local_evidence_status": LOCAL_EVIDENCE_STATUS if complete else "NOT_RUN",
             "external_evidence_status": EXTERNAL_EVIDENCE_STATUS,
             "certification_status": CERTIFICATION_STATUS,
             "maximum_local_decision": MAXIMUM_LOCAL_DECISION if complete else "NOT_READY",
         }
+        if plan["semantic_execution_status"] == "EXECUTED":
+            from .core_skill_handlers import HIGH_FREQUENCY_CORE_HANDLERS
+            skill_name = str(skill.get("name", ""))
+            if skill_name in HIGH_FREQUENCY_CORE_HANDLERS:
+                try:
+                    plan["semantic_execution_output"] = HIGH_FREQUENCY_CORE_HANDLERS[skill_name](normalized_payload)
+                except Exception as exc:
+                    plan["semantic_execution_output"] = {"error": str(exc)}
+                    plan["semantic_execution_status"] = "FAILED"
         plan_digest = digest_json(plan)
         outputs = dict(plan)
         outputs["plan_digest"] = plan_digest
@@ -126,6 +139,15 @@ class PackHandler:
             if complete
             else "required declared Skill inputs are missing; semantic execution did not run",
         )
+
+
+def execute_core_skill(skill_name: str, payload: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Execute high-frequency core skill semantic handler directly."""
+    from .core_skill_handlers import HIGH_FREQUENCY_CORE_HANDLERS
+    if skill_name in HIGH_FREQUENCY_CORE_HANDLERS:
+        return cast(Mapping[str, Any], HIGH_FREQUENCY_CORE_HANDLERS[skill_name](payload))
+    raise ValueError(f"No high-frequency core skill handler registered for: {skill_name}")
+
 
 
 def _handler(pack: str) -> PackHandler:

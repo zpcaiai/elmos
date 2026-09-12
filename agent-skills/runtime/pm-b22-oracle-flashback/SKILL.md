@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-flashback
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Flashback Query、Table、Database 和审计/历史用途. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

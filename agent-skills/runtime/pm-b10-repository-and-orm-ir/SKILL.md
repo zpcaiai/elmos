@@ -1,5 +1,8 @@
 ---
 name: pm-b10-repository-and-orm-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达实体、映射、查询、Tracking、Lazy load、事务、并发控制和迁移. Precision Migration B10 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

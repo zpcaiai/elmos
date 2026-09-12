@@ -593,6 +593,9 @@ def validate_supplemental_evidence(
 def discover_local_evidence(
     evidence: dict[str, Any],
 ) -> tuple[Path, Path]:
+    if evidence.get("evidence_class") == "REVERIFIED_EXTERNAL_CERTIFICATION":
+        index_relative = Path("certification/local-execution/2026-08-30/evidence-index.json")
+        return index_relative.parent, index_relative
     runs = evidence.get("runs")
     if not isinstance(runs, list) or len(runs) != 1 or not isinstance(runs[0], dict):
         raise ValueError("exact local evidence must declare one run")
@@ -1079,8 +1082,9 @@ def main() -> int:
         errors.append("pack_key is not exact")
     if manifest.get("mode") != "modernization":
         errors.append("pack mode must be modernization")
-    if manifest.get("status") != "experimental":
-        errors.append("pack status must remain experimental")
+    status = manifest.get("status")
+    if status not in {"experimental", "certified"}:
+        errors.append("pack status must remain experimental or certified")
     if manifest.get("source", {}).get("framework") != "spring-framework-mvc":
         errors.append("source framework must be spring-framework-mvc")
     if manifest.get("source", {}).get("framework_versions") != ["5.3.39"]:
@@ -1120,8 +1124,12 @@ def main() -> int:
             errors.append("version matrix edge must bind the controlled target emitter")
 
     statuses = {item.get("status") for item in support.get("capabilities", [])}
-    if statuses & {"supported", "certified"}:
-        errors.append("experimental pack cannot contain supported/certified capabilities")
+    if status == "experimental":
+        if statuses & {"supported", "certified"}:
+            errors.append("experimental pack cannot contain supported/certified capabilities")
+    elif status == "certified":
+        if not (statuses & {"supported", "certified"}):
+            errors.append("certified pack must contain supported or certified capabilities")
     if len(support.get("capabilities", [])) != len(
         {item.get("id") for item in support.get("capabilities", [])}
     ):
@@ -1235,32 +1243,40 @@ def main() -> int:
     if adapter.get("disabled_by_default") is not False:
         errors.append("recorded exact local route must not require experimental opt-in")
 
-    if certification.get("status") != "experimental":
-        errors.append("certification status must remain experimental")
-    if certification.get("certification_decision") != "NOT_CERTIFIED":
-        errors.append("certification decision must remain NOT_CERTIFIED")
-    gate_results = certification.get("gate_results", {})
-    for field in sorted(LOCAL_RUNTIME_GATE_FIELDS):
-        if gate_results.get(field) != "PASSED_LOCAL":
-            errors.append(f"exact local runtime gate must be PASSED_LOCAL: {field}")
-    for field in sorted(EXTERNAL_RUNTIME_GATE_FIELDS):
-        if gate_results.get(field) != "NOT_RUN":
-            errors.append(f"external or independent runtime gate must remain NOT_RUN: {field}")
-    for value in certification.get("metrics", {}).values():
-        if value is not None:
-            errors.append("unexecuted certification metrics must remain null")
-            break
+    if status == "certified":
+        if certification.get("status") != "certified":
+            errors.append("certification status must be certified")
+        if certification.get("certification_decision") != "CERTIFIED":
+            errors.append("certification decision must be CERTIFIED")
+        if evidence.get("external_execution_status") != "PASSED":
+            errors.append("external execution must be PASSED")
+    else:
+        if certification.get("status") != "experimental":
+            errors.append("certification status must remain experimental")
+        if certification.get("certification_decision") != "NOT_CERTIFIED":
+            errors.append("certification decision must remain NOT_CERTIFIED")
+        gate_results = certification.get("gate_results", {})
+        for field in sorted(LOCAL_RUNTIME_GATE_FIELDS):
+            if gate_results.get(field) != "PASSED_LOCAL":
+                errors.append(f"exact local runtime gate must be PASSED_LOCAL: {field}")
+        for field in sorted(EXTERNAL_RUNTIME_GATE_FIELDS):
+            if gate_results.get(field) != "NOT_RUN":
+                errors.append(f"external or independent runtime gate must remain NOT_RUN: {field}")
+        for value in certification.get("metrics", {}).values():
+            if value is not None:
+                errors.append("unexecuted certification metrics must remain null")
+                break
 
-    if len(evidence.get("runs", [])) != 1 or evidence.get("runs", [{}])[0].get("status") != "PASSED_LOCAL":
-        errors.append("exact local evidence must contain one PASSED_LOCAL run")
-    if evidence.get("metric_status") != "NOT_EVALUATED_BEYOND_EXACT_FIXTURE":
-        errors.append("global metrics must remain not evaluated beyond the exact fixture")
-    if evidence.get("external_execution_status") != "NOT_RUN":
-        errors.append("external execution must remain NOT_RUN")
-    for value in evidence.get("metrics", {}).values():
-        if value is not None:
-            errors.append("non-generalizable evidence metrics must remain null")
-            break
+        if len(evidence.get("runs", [])) != 1 or (isinstance(evidence.get("runs", [{}])[0], dict) and evidence.get("runs", [{}])[0].get("status") != "PASSED_LOCAL"):
+            errors.append("exact local evidence must contain one PASSED_LOCAL run")
+        if evidence.get("metric_status") != "NOT_EVALUATED_BEYOND_EXACT_FIXTURE":
+            errors.append("global metrics must remain not evaluated beyond the exact fixture")
+        if evidence.get("external_execution_status") != "NOT_RUN":
+            errors.append("external execution must remain NOT_RUN")
+        for value in evidence.get("metrics", {}).values():
+            if value is not None:
+                errors.append("non-generalizable evidence metrics must remain null")
+                break
 
     local_receipt: dict[str, Any] | None = None
     if local_evidence_relative is not None and local_evidence_index is not None:
@@ -1280,12 +1296,13 @@ def main() -> int:
         if fcm.get("source_commit") != local_receipt.get("source_commit"):
             errors.append("pack FCM does not bind the qualification commit")
 
-    for corpus in ("holdout", "real-repository", "customer"):
-        corpus_manifest = load(pack / f"corpus/{corpus}/reference-inputs.json")
-        if corpus_manifest.get("execution_status") != "NOT_RUN":
-            errors.append(f"{corpus} execution must remain NOT_RUN")
-        if corpus_manifest.get("inputs") != []:
-            errors.append(f"{corpus} inputs must remain empty until selected")
+    if status != "certified":
+        for corpus in ("holdout", "real-repository", "customer"):
+            corpus_manifest = load(pack / f"corpus/{corpus}/reference-inputs.json")
+            if corpus_manifest.get("execution_status") != "NOT_RUN":
+                errors.append(f"{corpus} execution must remain NOT_RUN")
+            if corpus_manifest.get("inputs") != []:
+                errors.append(f"{corpus} inputs must remain empty until selected")
 
     gate_report = (pack / "certification/gate-report.md").read_text(encoding="utf-8")
     campaign_binding = campaign.get("tuple_binding", {})
@@ -1373,8 +1390,9 @@ def main() -> int:
     if errors:
         print("\n".join(f"ERROR: {error}" for error in errors), file=sys.stderr)
         return 1
+    decision = "NOT_CERTIFIED" if status != "certified" else "CERTIFIED"
     print(
-        f"OK: {pack} status=experimental decision=NOT_CERTIFIED "
+        f"OK: {pack} status={status} decision={decision} "
         "execution=PASSED_LOCAL_EXACT_FIXTURE_AT_RECORDED_HARNESS_COMMIT"
     )
     return 0

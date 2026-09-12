@@ -1,5 +1,8 @@
 ---
 name: pm-b24-mysql-partition
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移分区类型、分区裁剪、唯一键限制和维护操作. Precision Migration B24 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

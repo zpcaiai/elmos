@@ -1,5 +1,8 @@
 ---
 name: pm-b06-build-command-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "根据仓库结构和工具链生成可复现的解析、构建、打包和产物定位命令. Precision Migration B06 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

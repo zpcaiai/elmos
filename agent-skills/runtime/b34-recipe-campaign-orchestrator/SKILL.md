@@ -1,6 +1,9 @@
 ---
 name: b34-recipe-campaign-orchestrator
-description: "Execute large-scale recipe campaigns across repository cohorts using exact scope dry runs canaries dependency ordering budgets approvals exceptions pull requests rollback and outcome evidence."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Execute large-scale recipe campaigns across repository cohorts using exact scope dry runs canaries dependency ordering budgets approvals exceptions pull requests rollback and outcome evidence.
 ---
 
 ## Operating mode

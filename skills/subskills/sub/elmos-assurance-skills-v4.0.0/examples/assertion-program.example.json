@@ -1,0 +1,26 @@
+{
+  "schema_version": "4.0",
+  "program_id": "demo-order-assertions",
+  "approved_oracle_digest": "8d5517b2c4fede30229faa372757b90528ff39e219481bc6f168bb778be3bde9",
+  "combiner": "all",
+  "assertions": [
+    {
+      "id": "response-created",
+      "path": "/data/status",
+      "op": "equals",
+      "expected": 201
+    },
+    {
+      "id": "amount-preserved",
+      "path": "/data/total",
+      "op": "decimal_equals",
+      "expected": "10.00"
+    },
+    {
+      "id": "one-observed-effect",
+      "path": "/side_effects",
+      "op": "count_equals",
+      "expected": 1
+    }
+  ]
+}

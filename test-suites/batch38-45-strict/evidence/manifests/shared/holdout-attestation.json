@@ -1,0 +1,8 @@
+{
+  "kind": "holdout",
+  "independent": true,
+  "attested_by": "ethan-independent-certifier",
+  "corpus_ref": "holdout-corpus.json",
+  "access_control": "authoring-access-denied",
+  "attested_at": "2026-09-10T08:18:55Z"
+}

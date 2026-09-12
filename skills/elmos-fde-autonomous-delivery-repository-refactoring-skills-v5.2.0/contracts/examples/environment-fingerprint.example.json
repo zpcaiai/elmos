@@ -1,0 +1,20 @@
+{
+  "environmentId": "env-demo",
+  "os": "linux",
+  "architecture": "arm64",
+  "toolchains": [
+    {
+      "name": "python",
+      "version": "3.12.4",
+      "digest": "sha256:python-demo"
+    }
+  ],
+  "dependencies": [
+    "postgresql:17"
+  ],
+  "services": [
+    "database"
+  ],
+  "networkPolicy": "deny-by-default",
+  "hash": "sha256:env-demo"
+}

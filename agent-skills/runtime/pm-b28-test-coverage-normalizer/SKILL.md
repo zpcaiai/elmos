@@ -1,5 +1,8 @@
 ---
 name: pm-b28-test-coverage-normalizer
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "统一语句、分支、路径、接口、状态、Effect、Journey 和风险覆盖指标. Precision Migration B28 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,157 @@
+from fastapi import APIRouter, HTTPException, Query, status
+from fastapi.responses import PlainTextResponse
+
+from app.application.dtos.request_dto import (
+    EntityCreateRequest,
+    EntityListResponse,
+    EntityResponse,
+    EntityUpdateRequest,
+    PaginationParams,
+)
+from app.domain.exceptions.domain_exceptions import (
+    BusinessRuleViolationException,
+    DomainValidationException,
+    EntityAlreadyExistsException,
+    EntityNotFoundException,
+)
+from app.interfaces.api.dependencies import ServiceDep
+
+api_router = APIRouter(prefix="/api/v1/entities", tags=["Entities"])
+probe_router = APIRouter(tags=["Health & Probes"])
+
+
+# ---------------- Health & Probes ----------------
+
+@probe_router.get("/healthz", summary="Liveness Probe")
+async def healthz() -> dict:
+    """Kubernetes liveness probe."""
+    return {"status": "healthy", "service": "{{.ServiceName}}"}
+
+
+@probe_router.get("/readyz", summary="Readiness Probe")
+async def readyz() -> dict:
+    """Kubernetes readiness probe."""
+    return {"status": "ready"}
+
+
+@probe_router.get("/livez", summary="Liveness Probe")
+async def livez() -> dict:
+    """Kubernetes liveness probe."""
+    return {"status": "alive"}
+
+
+@probe_router.get(
+    "/metrics",
+    summary="Prometheus Metrics Endpoint",
+    response_class=PlainTextResponse,
+)
+async def metrics() -> str:
+    """Prometheus metrics scrape endpoint."""
+    lines = [
+        "# HELP service_up Service availability indicator",
+        "# TYPE service_up gauge",
+        "service_up 1",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+# ---------------- Entity REST Endpoints ----------------
+
+@api_router.post(
+    "",
+    response_model=EntityResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Create a new entity",
+)
+async def create_entity(
+    payload: EntityCreateRequest,
+    service: ServiceDep,
+) -> EntityResponse:
+    try:
+        return await service.create_entity(payload)
+    except DomainValidationException as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    except EntityAlreadyExistsException as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+
+
+@api_router.get(
+    "/{entity_id}",
+    response_model=EntityResponse,
+    summary="Retrieve an entity by ID",
+)
+async def get_entity(
+    entity_id: str,
+    service: ServiceDep,
+) -> EntityResponse:
+    try:
+        return await service.get_entity(entity_id)
+    except EntityNotFoundException as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+
+
+@api_router.put(
+    "/{entity_id}",
+    response_model=EntityResponse,
+    summary="Update an existing entity",
+)
+async def update_entity(
+    entity_id: str,
+    payload: EntityUpdateRequest,
+    service: ServiceDep,
+) -> EntityResponse:
+    try:
+        return await service.update_entity(entity_id, payload)
+    except EntityNotFoundException as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except DomainValidationException as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+
+@api_router.delete(
+    "/{entity_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete an entity by ID",
+)
+async def delete_entity(
+    entity_id: str,
+    service: ServiceDep,
+) -> None:
+    try:
+        await service.delete_entity(entity_id)
+    except EntityNotFoundException as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+
+
+@api_router.get(
+    "",
+    response_model=EntityListResponse,
+    summary="List entities with pagination",
+)
+async def list_entities(
+    service: ServiceDep,
+    offset: int = Query(default=0, ge=0),
+    limit: int = Query(default=20, ge=1, le=100),
+) -> EntityListResponse:
+    pagination = PaginationParams(offset=offset, limit=limit)
+    return await service.list_entities(pagination)
+
+
+@api_router.post(
+    "/{entity_id}/activate",
+    response_model=EntityResponse,
+    summary="Activate entity",
+)
+async def activate_entity(
+    entity_id: str,
+    service: ServiceDep,
+) -> EntityResponse:
+    try:
+        return await service.activate_entity(entity_id)
+    except EntityNotFoundException as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except BusinessRuleViolationException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+        ) from exc

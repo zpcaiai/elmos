@@ -5,135 +5,223 @@
   "capabilities": [
     {
       "capabilityId": "b38-air-gapped-edition",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-customer-vpc-edition",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-database-expand-contract-upgrade",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-dedicated-saas-edition",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-deployment-upgrade-gate",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-edge-plant-restricted-edition",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-edition-responsibility-matrix",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-enterprise-deployment-upgrade-factory",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-multiregion-active-active-edition",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-multitenant-saas-edition",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-offline-signed-update-bundle",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-plane-topology-governance",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-platform-version-compatibility",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-portable-control-plane",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-private-sovereign-cloud-edition",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-recipe-pack-extension-upgrade",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-runner-version-compatibility",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-self-hosted-edition",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-tenant-edition-migration",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-upgrade-rollback-disaster-recovery",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-workflow-version-long-run-recovery",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b38-zero-downtime-upgrade",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     }
   ],
   "packKey": "elmos-platform-deployment-matrix"

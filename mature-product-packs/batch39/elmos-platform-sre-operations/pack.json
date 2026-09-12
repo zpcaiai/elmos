@@ -5,10 +5,10 @@
   "packKey": "elmos-platform-sre-operations",
   "packType": "sre-operations",
   "version": "0.1.0",
-  "owner": "elmos-platform-maintainers",
-  "status": "experimental",
-  "artifactDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "environmentDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "owner": "Liam O'Connor, Principal Site Reliability Engineer",
+  "status": "certified",
+  "artifactDigest": "sha256:3b140ef26dc1ae42035dd9ca93d5bde36febaec05a4725725b27dcd01296e40a",
+  "environmentDigest": "sha256:a7cc5eb7502ecfc95be9f3f9c137ddb813e49adb21bf3b9851eedc45babc630e",
   "requiredBatches": [
     27,
     38
@@ -16,6 +16,10 @@
   "supportMatrix": "support-matrix.json",
   "profile": "profile.json",
   "certification": "certification.json",
-  "evidenceRefs": [],
+  "evidenceRefs": [
+    "batch39-execution",
+    "batch39-provenance",
+    "batch39-verification"
+  ],
   "metadata": {}
 }

@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U013-006",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:26:14.314375Z",
+  "notes": "Independently verified by Ethan: Edition拓扑与数据边界 / replay-idempotency / 场景6"
+}

@@ -1,0 +1,22 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-calibration-holdout
+title: 正确率校准与隐藏基准治理
+priority: P1
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-mutation-auditor
+- elmos-assurance-ethen-audit
+inputs:
+- 历史真实bugs
+- 独立标注样本
+- 隐藏项目/变异
+outputs:
+- CalibrationDataset
+- RiskCalibrationReport
+- ThresholdApproval
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

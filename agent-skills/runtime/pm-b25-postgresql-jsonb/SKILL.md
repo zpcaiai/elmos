@@ -1,5 +1,8 @@
 ---
 name: pm-b25-postgresql-jsonb
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 JSONB 存储、操作符、路径、GIN/GiST 索引和更新语义. Precision Migration B25 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b39-documentation-and-runbook-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成 README、架构、API、操作、故障、恢复和发布 Runbook. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

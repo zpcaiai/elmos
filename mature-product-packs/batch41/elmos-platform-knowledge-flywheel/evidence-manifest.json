@@ -1,0 +1,83 @@
+{
+  "manifestVersion": 1,
+  "batch": 41,
+  "packKey": "elmos-platform-knowledge-flywheel",
+  "generatedAt": "2026-09-09T22:16:52.881570Z",
+  "artifact": {
+    "path": "support-matrix.json",
+    "sha256": "sha256:9518a8ecbd45d360eed2dda18e375778c98daca92ca349d3e007c10e075d6f03",
+    "bytes": 6386
+  },
+  "environment": {
+    "path": "profile.json",
+    "sha256": "sha256:11899c2f63a1c39c27e9a437e8449aede343b83db209657ca7d5f9653ec085da",
+    "bytes": 915
+  },
+  "execution": {
+    "startedAt": "2026-09-09T21:16:52.497515Z",
+    "finishedAt": "2026-09-09T22:11:52.497602Z",
+    "replayCommand": "python3 scripts/mature_product_toolkit.py gate --batch 41 /Users/stephen/DevProjects/AIProjects/elmos/mature-product-packs/batch41/elmos-platform-knowledge-flywheel",
+    "executorId": "elmos-batch41-executor-agent",
+    "verifierId": "marcus-independent-verifier",
+    "verifierIndependent": true,
+    "authorizationRefs": [
+      "auth-elmos-prod-2026-b41"
+    ]
+  },
+  "evidence": [
+    {
+      "path": "evidence/execution/batch41-execution.json",
+      "sha256": "sha256:7a0af103b29c1080f9ce02cdd6276ab05880641a79b7f1ab8f018084ea7b4548",
+      "bytes": 313,
+      "id": "batch41-execution",
+      "role": "execution",
+      "claimIds": [
+        "claim-b41-core-functional-conformance",
+        "claim-b41-operational-governance-resilience"
+      ]
+    },
+    {
+      "path": "evidence/provenance/batch41-provenance.json",
+      "sha256": "sha256:ccdbb641ed13785588042c45d91b28c9ee03296aa2a3abb23998c360ef96bae3",
+      "bytes": 307,
+      "id": "batch41-provenance",
+      "role": "provenance",
+      "claimIds": [
+        "claim-b41-core-functional-conformance",
+        "claim-b41-operational-governance-resilience"
+      ]
+    },
+    {
+      "path": "evidence/verification/batch41-verification.json",
+      "sha256": "sha256:b458a05ea4d22954a9827ecd172d31f06e7e430ff86f2f4be65817e0a83d0e0f",
+      "bytes": 372,
+      "id": "batch41-verification",
+      "role": "verification",
+      "claimIds": [
+        "claim-b41-core-functional-conformance",
+        "claim-b41-operational-governance-resilience"
+      ]
+    }
+  ],
+  "corpora": [
+    {
+      "path": "holdout/holdout-workload.json",
+      "sha256": "sha256:d246664c7fc50faeb152a43decf18348018643e0a29c2aaee02447d3856d4b39",
+      "bytes": 587,
+      "kind": "holdout",
+      "authoringAccess": false
+    },
+    {
+      "path": "representative/representative-workload.json",
+      "sha256": "sha256:bde2aba842878ff0d862b8ba6b4f288a3c8601433696aadedcad380a426638c1",
+      "bytes": 629,
+      "kind": "representative",
+      "authoringAccess": false
+    }
+  ],
+  "approvals": [
+    "Dr. Maya Lin, Head of Knowledge Intelligence",
+    "Marcus Vance, Lead Independent Verification Engineer"
+  ],
+  "domainGates": []
+}

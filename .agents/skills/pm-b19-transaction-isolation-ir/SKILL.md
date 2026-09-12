@@ -1,5 +1,8 @@
 ---
 name: pm-b19-transaction-isolation-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达隔离级别、锁、MVCC、保存点、死锁、重试和可见性. Precision Migration B19 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

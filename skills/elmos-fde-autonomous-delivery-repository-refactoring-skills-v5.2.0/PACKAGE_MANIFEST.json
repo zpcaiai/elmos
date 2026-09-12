@@ -1,0 +1,33 @@
+{
+  "package": "elmos-fde-autonomous-delivery-repository-refactoring-skills",
+  "version": "5.2.0",
+  "releaseDate": "2026-08-31",
+  "inventory": {
+    "atomicSkills": 45,
+    "perSkillContractFiles": 225,
+    "codexSkills": 12,
+    "customAgents": 15,
+    "requirements": 305,
+    "scenarios": 279,
+    "issueDomains": 21,
+    "issueTypes": 200,
+    "adapters": 26,
+    "goldenRoutes": 10,
+    "uiSurfaces": 12,
+    "schemas": 24,
+    "implementationBatches": 19,
+    "implementationTasks": 506,
+    "filesBeforeManifest": 555
+  },
+  "compatibility": {
+    "elmos": ">=5.1.0",
+    "canonicalKernels": "K1-K8 preserved",
+    "routableEntriesAdded": 0,
+    "standaloneBoundary": "E3"
+  },
+  "validation": {
+    "command": "./validate.sh --strict",
+    "releaseCommand": "python3 scripts/build_release.py . --output-dir ../release"
+  },
+  "claimBoundary": "Package integrity and implementation specification only; no target runtime, customer, production, E4/E5/P05 or regulatory claim."
+}

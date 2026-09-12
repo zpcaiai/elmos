@@ -1,5 +1,8 @@
 ---
 name: pm-b42-production-shadow-run
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "复制真实请求到目标系统并隔离副作用，比较响应、意图、Trace 和性能. Precision Migration B42 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

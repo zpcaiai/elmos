@@ -1,0 +1,33 @@
+{
+  "schema_version": "elmos.precision-migration.compiled-skill-contract.v1",
+  "package_id": "elmos.precision-migration.b01-44",
+  "package_version": "1.0.0",
+  "installed_alias": "pm-b34-lean-theorem-generator",
+  "namespace": "precision-migration-b01-44",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "scripts/batch35",
+    "schemas/batch35",
+    "scripts/precision_migration/contracts.py",
+    "scripts/precision_migration/exact.py",
+    "scripts/precision_migration/native.py",
+    "scripts/precision_migration/generated_handlers.py",
+    "docs/precision-migration-b01-44/handler-implementations.json"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "handler_id": "exact-skill-v4:lean-theorem-generator",
+    "handler_entrypoint": "scripts.precision_migration.generated_handlers:execute_pm_b34_lean_theorem_generator",
+    "supported_modes": [
+      "validate",
+      "repair",
+      "certify"
+    ],
+    "timeout_seconds": 120,
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

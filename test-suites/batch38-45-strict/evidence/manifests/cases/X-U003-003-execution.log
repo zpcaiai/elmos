@@ -1,0 +1,13 @@
+[2026-09-10T08:26:09.552008Z][X-U003-003] Starting execution of X-U003-003 (环境、Fixture与Chaos工厂 / negative / 场景3) [Category=negative, Priority=P1]
+[2026-09-10T08:26:09.552013Z][X-U003-003] Bound Skill: tst-b38-45-environment-fixture-chaos-factory | Product Skill IDs: []
+[2026-09-10T08:26:09.552015Z][X-U003-003] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:09.636788Z][X-U003-003] Security: Minted RS256 token (JTI=05871928..., Exp=1789032369)
+[2026-09-10T08:26:09.827620Z][X-U003-003] KMS: Envelope encrypted 37 bytes under key key-x-u003-003 v1 (DEK wrapped)
+[2026-09-10T08:26:09.872385Z][X-U003-003] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U003-003 (U003)
+[2026-09-10T08:26:09.872392Z][X-U003-003] Executing category=negative on U003
+[2026-09-10T08:26:09.872396Z][X-U003-003] Environment & Chaos Factory: Provisioning isolated hermetic test environment...
+[2026-09-10T08:26:09.872398Z][X-U003-003] Attempting to inject fault without blast-radius approval...
+[2026-09-10T08:26:09.872399Z][X-U003-003] Safety Gate: Blocked unapproved fault injection target (production-db)
+[2026-09-10T08:26:09.872440Z][X-U003-003] Completed execution of X-U003-003 in 320.4ms: Status=PASSED
+[2026-09-10T08:26:09.872443Z][X-U003-003] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:09.872465Z][X-U003-003] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

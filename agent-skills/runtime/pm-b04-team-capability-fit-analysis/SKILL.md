@@ -1,5 +1,8 @@
 ---
 name: pm-b04-team-capability-fit-analysis
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "评估团队对目标语言、框架、工具链、运维和长期维护的能力匹配与培训成本. Precision Migration B04 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,83 @@
+{
+  "manifestVersion": 1,
+  "batch": 44,
+  "packKey": "elmos-platform-finops",
+  "generatedAt": "2026-09-09T22:17:08.295355Z",
+  "artifact": {
+    "path": "support-matrix.json",
+    "sha256": "sha256:a67b3d06d766621c1a1ebd86967bbcded2be26ac7d604b74ba05abd362b62aa3",
+    "bytes": 6320
+  },
+  "environment": {
+    "path": "profile.json",
+    "sha256": "sha256:01babb09e40492b12e5cba25bb009fb16b27b86acdba3dff106371fe41ed331a",
+    "bytes": 931
+  },
+  "execution": {
+    "startedAt": "2026-09-09T21:17:07.765302Z",
+    "finishedAt": "2026-09-09T22:12:07.765380Z",
+    "replayCommand": "python3 scripts/mature_product_toolkit.py gate --batch 44 /Users/stephen/DevProjects/AIProjects/elmos/mature-product-packs/batch44/elmos-platform-finops",
+    "executorId": "elmos-batch44-executor-agent",
+    "verifierId": "marcus-independent-verifier",
+    "verifierIndependent": true,
+    "authorizationRefs": [
+      "auth-elmos-prod-2026-b44"
+    ]
+  },
+  "evidence": [
+    {
+      "path": "evidence/execution/batch44-execution.json",
+      "sha256": "sha256:8af5a391eabcb73aacfa89137cae4bebabae4b675089f785b2e365f7f1eb382f",
+      "bytes": 301,
+      "id": "batch44-execution",
+      "role": "execution",
+      "claimIds": [
+        "claim-b44-core-functional-conformance",
+        "claim-b44-operational-governance-resilience"
+      ]
+    },
+    {
+      "path": "evidence/provenance/batch44-provenance.json",
+      "sha256": "sha256:71c63430ade6eb72f7c6c8f58b8abb048464adc3752831d05945e28e3ed67dee",
+      "bytes": 295,
+      "id": "batch44-provenance",
+      "role": "provenance",
+      "claimIds": [
+        "claim-b44-core-functional-conformance",
+        "claim-b44-operational-governance-resilience"
+      ]
+    },
+    {
+      "path": "evidence/verification/batch44-verification.json",
+      "sha256": "sha256:71171a43d40b60073991c480bcb190574f7ff599f06ff5981ce933c49481f2ac",
+      "bytes": 360,
+      "id": "batch44-verification",
+      "role": "verification",
+      "claimIds": [
+        "claim-b44-core-functional-conformance",
+        "claim-b44-operational-governance-resilience"
+      ]
+    }
+  ],
+  "corpora": [
+    {
+      "path": "holdout/holdout-workload.json",
+      "sha256": "sha256:37ce20d3e88d7d04d234a10b4dffd05cd93467e5b3e5a11a0ddcc6178d9ff6a6",
+      "bytes": 575,
+      "kind": "holdout",
+      "authoringAccess": false
+    },
+    {
+      "path": "representative/representative-workload.json",
+      "sha256": "sha256:d03292c003da56a369d1597249d69cfb6a551e6a7a3b33946ba37a3e7ad81e75",
+      "bytes": 617,
+      "kind": "representative",
+      "authoringAccess": false
+    }
+  ],
+  "approvals": [
+    "David Sterling, Head of Cloud FinOps & Economics",
+    "Marcus Vance, Lead Independent Verification Engineer"
+  ],
+  "domainGates": []
+}

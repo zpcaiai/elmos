@@ -1,6 +1,9 @@
 ---
 name: b29-route-certification-gate
-description: "Run the Batch 29 certification gate for a directed language route and emit pass, limited, experimental, or blocked status from machine-readable evidence. Use only after route implementation and independent holdout evaluation."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Run the Batch 29 certification gate for a directed language route and emit pass, limited, experimental, or blocked status from machine-readable evidence. Use only after route implementation and independent holdout evaluation.
 ---
 
 ## Operating mode

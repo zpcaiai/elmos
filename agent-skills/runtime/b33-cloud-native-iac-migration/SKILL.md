@@ -1,6 +1,9 @@
 ---
 name: b33-cloud-native-iac-migration
-description: "Migrate and certify CloudFormation Bicep ARM templates deployment stacks and other cloud-native IaC into exact targets while preserving conditions dependencies lifecycle policies identities and deployment state."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Migrate and certify CloudFormation Bicep ARM templates deployment stacks and other cloud-native IaC into exact targets while preserving conditions dependencies lifecycle policies identities and deployment state.
 ---
 
 ## Operating mode

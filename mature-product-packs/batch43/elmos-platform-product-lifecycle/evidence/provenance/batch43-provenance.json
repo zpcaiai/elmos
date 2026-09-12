@@ -1,0 +1,9 @@
+{
+  "id": "batch43-provenance",
+  "batch": 43,
+  "packKey": "elmos-platform-product-lifecycle",
+  "role": "provenance",
+  "origin": "elmos-reproducible-build-system-b43",
+  "sha256": "sha256:2b7386baef7710fe766bc50050287c8ba3fe586f119fae042010bafaff82334c",
+  "recordedAt": "2026-09-09T22:17:02.400007Z"
+}

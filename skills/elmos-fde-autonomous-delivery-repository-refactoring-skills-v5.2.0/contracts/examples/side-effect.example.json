@@ -1,0 +1,11 @@
+{
+  "effectId": "FX-001",
+  "invocationId": "exec-001",
+  "kind": "repository-commit",
+  "target": "workspace://repo-demo",
+  "idempotencyKey": "tenant-demo:exec-001:S1",
+  "status": "committed",
+  "authorityRef": "lease-demo",
+  "resultHash": "sha256:result",
+  "compensationRef": "git-revert:CS-001"
+}

@@ -1,0 +1,10 @@
+{
+  "artifact_sha256": "27c9d2fd75777c10648e7cce7087dde8c60a56b87fd8e35ba329b6860a0184e0",
+  "environment_sha256": "48c4d7d904d5084392510ba05d0ae103ff649cde47bd2c2b78ad9be5e060817b",
+  "files": [
+    {
+      "path": "evidence/framework-contract.log",
+      "sha256": "8ec7d0092657d510d82a10b72eb7af53e7c813f0ad224ab486796cfe6870d6da"
+    }
+  ]
+}

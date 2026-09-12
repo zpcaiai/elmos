@@ -14,7 +14,6 @@ from enum import StrEnum
 from types import MappingProxyType
 from typing import Final
 
-
 PACKAGE_NAME: Final = "elmos-fde-autonomous-delivery-repository-refactoring-skills"
 PACKAGE_VERSION: Final = "5.2.0"
 ARCHIVE_SHA256: Final = "4dbd6f20b0d27dbacf12ed432f0486f9e59151c2b138c6e7d8a9f60f395b1428"

@@ -1,0 +1,21 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-workbench-ui
+title: 接口覆盖、审计和证据工作台
+priority: P1
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-commercial-control
+inputs:
+- Assurance API
+- 权限矩阵
+- 设计系统
+outputs:
+- ContractReviewUI
+- CoverageAndRunUI
+- EthenAndCertificateUI
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

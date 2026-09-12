@@ -1,5 +1,8 @@
 ---
 name: pm-b32-resource-leak-validation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "检测线程、任务、连接、文件、内存、句柄、订阅和设备资源泄漏. Precision Migration B32 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -8,10 +8,21 @@
           "name": "pytest",
           "kind": "pytest",
           "timeout_seconds": 1800,
-          "project": "engines/ai-capability-engine",
-          "tests": ["engines/ai-capability-engine/tests"],
-          "uv_args": ["--extra", "dev"],
-          "pythonpath": [],
+          "project": null,
+          "tests": [
+            "engines/ai-capability-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2",
+            "--with",
+            "pyyaml==6.0.2",
+            "--with",
+            "jsonschema==4.25.1"
+          ],
+          "pythonpath": [
+            "engines/ai-capability-engine/src"
+          ],
           "environment": {}
         }
       ]
@@ -23,9 +34,21 @@
           "name": "pytest",
           "kind": "pytest",
           "timeout_seconds": 1800,
-          "tests": ["tests/ai-optimization-skills"],
-          "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
-          "pythonpath": [".", "engines/ai-optimization-engine/src"],
+          "tests": [
+            "tests/ai-optimization-skills"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2",
+            "--with",
+            "pyyaml==6.0.2",
+            "--with",
+            "jsonschema==4.25.1"
+          ],
+          "pythonpath": [
+            ".",
+            "engines/ai-optimization-engine/src"
+          ],
           "environment": {}
         }
       ]
@@ -38,8 +61,38 @@
           "kind": "maven",
           "timeout_seconds": 2400,
           "module": "engines/ai-platform-engine",
-          "goals": ["verify"],
+          "goals": [
+            "verify"
+          ],
           "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "assurance-engine": {
+      "description": "Elmos assurance engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/assurance-engine",
+          "tests": [
+            "engines/assurance-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2",
+            "--with",
+            "pyyaml==6.0.2",
+            "--with",
+            "jsonschema==4.25.1",
+            "--with",
+            "cryptography>=42.0,<47.0"
+          ],
+          "pythonpath": [
+            "engines/assurance-engine/src"
+          ],
           "environment": {}
         }
       ]
@@ -52,8 +105,13 @@
           "kind": "pytest",
           "timeout_seconds": 3600,
           "project": "engines/autonomous-qa-engine",
-          "tests": ["engines/autonomous-qa-engine/tests"],
-          "uv_args": ["--with", "pytest==8.4.2"],
+          "tests": [
+            "engines/autonomous-qa-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -67,8 +125,14 @@
           "kind": "pytest",
           "timeout_seconds": 7200,
           "project": "engines/build-cache-engine",
-          "tests": ["engines/build-cache-engine/tests"],
-          "uv_args": ["--locked", "--group", "dev"],
+          "tests": [
+            "engines/build-cache-engine/tests"
+          ],
+          "uv_args": [
+            "--locked",
+            "--group",
+            "dev"
+          ],
           "pythonpath": [],
           "environment": {
             "ELMOS_MAX_P95_DECISION_MICROS": "2000.0"
@@ -83,10 +147,17 @@
           "name": "pytest",
           "kind": "pytest",
           "timeout_seconds": 1800,
-          "project": "engines/commercial-capability-expansion-engine",
-          "tests": ["engines/commercial-capability-expansion-engine/tests"],
-          "uv_args": ["--extra", "dev"],
-          "pythonpath": [],
+          "project": null,
+          "tests": [
+            "engines/commercial-capability-expansion-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2"
+          ],
+          "pythonpath": [
+            "engines/commercial-capability-expansion-engine/src"
+          ],
           "environment": {}
         }
       ]
@@ -98,7 +169,13 @@
           "name": "npm-check",
           "kind": "command",
           "timeout_seconds": 2400,
-          "argv": ["npm", "--prefix", "engines/component-dialect-engine", "run", "check"],
+          "argv": [
+            "npm",
+            "--prefix",
+            "engines/component-dialect-engine",
+            "run",
+            "check"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -112,8 +189,32 @@
           "kind": "maven",
           "timeout_seconds": 2400,
           "module": "modules/composite-modernization",
-          "goals": ["verify"],
+          "goals": [
+            "verify"
+          ],
           "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "cross-language-verification-engine": {
+      "description": "Cross-language verification runtime tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/cross-language-verification-engine",
+          "tests": [
+            "engines/cross-language-verification-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2"
+          ],
+          "pythonpath": [
+            "engines/cross-language-verification-engine/src"
+          ],
           "environment": {}
         }
       ]
@@ -126,9 +227,21 @@
           "kind": "pytest",
           "timeout_seconds": 3600,
           "project": null,
-          "tests": ["tests/database-bigdata-skills"],
-          "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
-          "pythonpath": ["engines/database-bigdata-engine/src", "tooling"],
+          "tests": [
+            "tests/database-bigdata-skills"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2",
+            "--with",
+            "pyyaml==6.0.2",
+            "--with",
+            "jsonschema==4.25.1"
+          ],
+          "pythonpath": [
+            "engines/database-bigdata-engine/src",
+            "tooling"
+          ],
           "environment": {
             "PYTHONDONTWRITEBYTECODE": "1"
           }
@@ -143,7 +256,9 @@
           "kind": "maven",
           "timeout_seconds": 2400,
           "module": "engines/database-data-engine",
-          "goals": ["verify"],
+          "goals": [
+            "verify"
+          ],
           "pythonpath": [],
           "environment": {}
         },
@@ -152,8 +267,14 @@
           "kind": "pytest",
           "timeout_seconds": 3600,
           "project": "engines/database-data-engine/sql-transpiler",
-          "tests": ["engines/database-data-engine/sql-transpiler/tests"],
-          "uv_args": ["--locked", "--group", "dev"],
+          "tests": [
+            "engines/database-data-engine/sql-transpiler/tests"
+          ],
+          "uv_args": [
+            "--locked",
+            "--group",
+            "dev"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -181,7 +302,9 @@
           "kind": "maven",
           "timeout_seconds": 2400,
           "module": "engines/edge-iot-industrial-engine",
-          "goals": ["verify"],
+          "goals": [
+            "verify"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -195,7 +318,9 @@
           "kind": "maven",
           "timeout_seconds": 2400,
           "module": "engines/enterprise-architecture-engine",
-          "goals": ["verify"],
+          "goals": [
+            "verify"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -209,7 +334,9 @@
           "kind": "maven",
           "timeout_seconds": 2400,
           "module": "engines/enterprise-integration-engine",
-          "goals": ["verify"],
+          "goals": [
+            "verify"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -223,7 +350,9 @@
           "kind": "maven",
           "timeout_seconds": 2400,
           "module": "engines/enterprise-suite-engine",
-          "goals": ["verify"],
+          "goals": [
+            "verify"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -237,8 +366,13 @@
           "kind": "pytest",
           "timeout_seconds": 7200,
           "project": "engines/etgb-engine",
-          "tests": ["engines/etgb-engine/tests"],
-          "uv_args": ["--with", "pytest==8.4.2"],
+          "tests": [
+            "engines/etgb-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -252,8 +386,13 @@
           "kind": "pytest",
           "timeout_seconds": 3600,
           "project": "engines/formal-assurance-engine",
-          "tests": ["engines/formal-assurance-engine/tests"],
-          "uv_args": ["--with", "pytest==8.4.2"],
+          "tests": [
+            "engines/formal-assurance-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -266,7 +405,13 @@
           "name": "pnpm-check",
           "kind": "command",
           "timeout_seconds": 2400,
-          "argv": ["pnpm", "--dir", "engines/frontend-client-engine", "run", "check"],
+          "argv": [
+            "pnpm",
+            "--dir",
+            "engines/frontend-client-engine",
+            "run",
+            "check"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -280,8 +425,14 @@
           "kind": "pytest",
           "timeout_seconds": 1800,
           "project": "engines/functional-assurance-engine",
-          "tests": ["engines/functional-assurance-engine/tests"],
-          "uv_args": ["--locked", "--with", "pytest==9.0.3"],
+          "tests": [
+            "engines/functional-assurance-engine/tests"
+          ],
+          "uv_args": [
+            "--locked",
+            "--with",
+            "pytest==9.0.3"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -295,7 +446,9 @@
           "kind": "maven",
           "timeout_seconds": 2400,
           "module": "engines/infrastructure-engine",
-          "goals": ["verify"],
+          "goals": [
+            "verify"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -309,8 +462,13 @@
           "kind": "pytest",
           "timeout_seconds": 3600,
           "project": "engines/knowledge-skill-model-foundry-engine",
-          "tests": ["engines/knowledge-skill-model-foundry-engine/tests"],
-          "uv_args": ["--extra", "dev"],
+          "tests": [
+            "engines/knowledge-skill-model-foundry-engine/tests"
+          ],
+          "uv_args": [
+            "--extra",
+            "dev"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -324,8 +482,13 @@
           "kind": "pytest",
           "timeout_seconds": 1800,
           "project": "engines/legacy-web-modernization-engine",
-          "tests": ["engines/legacy-web-modernization-engine/tests"],
-          "uv_args": ["--with", "pytest==8.4.2"],
+          "tests": [
+            "engines/legacy-web-modernization-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -339,8 +502,62 @@
           "kind": "maven",
           "timeout_seconds": 2400,
           "module": "engines/mainframe-engine",
-          "goals": ["verify"],
+          "goals": [
+            "verify"
+          ],
           "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "mature-platform-engine": {
+      "description": "Mature platform engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 7200,
+          "project": "engines/mature-platform-engine",
+          "tests": [
+            "engines/mature-platform-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2",
+            "--with",
+            "pyyaml==6.0.2",
+            "--with",
+            "jsonschema==4.25.1",
+            "--with",
+            "cryptography>=42.0,<47.0"
+          ],
+          "pythonpath": [
+            "engines/mature-platform-engine/src"
+          ],
+          "environment": {}
+        }
+      ]
+    },
+    "multilang-project-generation-engine": {
+      "description": "Multi-language project generation engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/multilang-project-generation-engine",
+          "tests": [
+            "engines/multilang-project-generation-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2",
+            "--with",
+            "pyyaml==6.0.2"
+          ],
+          "pythonpath": [
+            "engines/multilang-project-generation-engine/src"
+          ],
           "environment": {}
         }
       ]
@@ -353,9 +570,17 @@
           "kind": "pytest",
           "timeout_seconds": 3600,
           "project": "engines/multimodal-intake-engine",
-          "tests": ["engines/multimodal-intake-engine/tests", "tests/multimodal-intake/test_integration.py"],
-          "uv_args": ["--with", "pytest==8.4.1"],
-          "pythonpath": ["engines/multimodal-intake-engine/src"],
+          "tests": [
+            "engines/multimodal-intake-engine/tests",
+            "tests/multimodal-intake/test_integration.py"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.1"
+          ],
+          "pythonpath": [
+            "engines/multimodal-intake-engine/src"
+          ],
           "environment": {}
         }
       ]
@@ -368,8 +593,14 @@
           "kind": "pytest",
           "timeout_seconds": 3600,
           "project": "engines/openhands-absorption-engine",
-          "tests": ["engines/openhands-absorption-engine/tests"],
-          "uv_args": ["--locked", "--with", "pytest==9.0.3"],
+          "tests": [
+            "engines/openhands-absorption-engine/tests"
+          ],
+          "uv_args": [
+            "--locked",
+            "--with",
+            "pytest==9.0.3"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -383,7 +614,9 @@
           "kind": "maven",
           "timeout_seconds": 2400,
           "module": "engines/operations-sre-itsm-engine",
-          "goals": ["verify"],
+          "goals": [
+            "verify"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -397,8 +630,14 @@
           "kind": "pytest",
           "timeout_seconds": 21600,
           "project": "engines/polyglot-route-engine",
-          "tests": ["engines/polyglot-route-engine/tests"],
-          "uv_args": ["--locked", "--group", "dev"],
+          "tests": [
+            "engines/polyglot-route-engine/tests"
+          ],
+          "uv_args": [
+            "--locked",
+            "--group",
+            "dev"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -412,9 +651,20 @@
           "kind": "pytest",
           "timeout_seconds": 3600,
           "project": "engines/polyglot-semantic-compiler-engine",
-          "tests": ["tests/polyglot-semantic-assurance-skills"],
-          "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
-          "pythonpath": ["engines/polyglot-semantic-compiler-engine/src"],
+          "tests": [
+            "tests/polyglot-semantic-assurance-skills"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2",
+            "--with",
+            "pyyaml==6.0.2",
+            "--with",
+            "jsonschema==4.25.1"
+          ],
+          "pythonpath": [
+            "engines/polyglot-semantic-compiler-engine/src"
+          ],
           "environment": {}
         }
       ]
@@ -427,8 +677,15 @@
           "kind": "pytest",
           "timeout_seconds": 1800,
           "project": "engines/pricing-billing-engine",
-          "tests": ["engines/pricing-billing-engine/tests", "tests/pricing-billing-skills"],
-          "uv_args": ["--locked", "--group", "dev"],
+          "tests": [
+            "engines/pricing-billing-engine/tests",
+            "tests/pricing-billing-skills"
+          ],
+          "uv_args": [
+            "--locked",
+            "--group",
+            "dev"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -442,8 +699,14 @@
           "kind": "pytest",
           "timeout_seconds": 1800,
           "project": "engines/project-intelligence-engine",
-          "tests": ["engines/project-intelligence-engine/tests"],
-          "uv_args": ["--locked", "--with", "pytest==9.0.3"],
+          "tests": [
+            "engines/project-intelligence-engine/tests"
+          ],
+          "uv_args": [
+            "--locked",
+            "--with",
+            "pytest==9.0.3"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -457,8 +720,14 @@
           "kind": "pytest",
           "timeout_seconds": 7200,
           "project": "engines/project-synthesis-engine",
-          "tests": ["engines/project-synthesis-engine/tests"],
-          "uv_args": ["--locked", "--group", "dev"],
+          "tests": [
+            "engines/project-synthesis-engine/tests"
+          ],
+          "uv_args": [
+            "--locked",
+            "--group",
+            "dev"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -472,8 +741,14 @@
           "kind": "pytest",
           "timeout_seconds": 7200,
           "project": "engines/proof-driven-harness-engine",
-          "tests": ["engines/proof-driven-harness-engine/tests"],
-          "uv_args": ["--locked", "--with", "pytest==9.0.3"],
+          "tests": [
+            "engines/proof-driven-harness-engine/tests"
+          ],
+          "uv_args": [
+            "--locked",
+            "--with",
+            "pytest==9.0.3"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -487,8 +762,13 @@
           "kind": "pytest",
           "timeout_seconds": 3600,
           "project": "engines/proof-driven-harness-intelligence-engine",
-          "tests": ["engines/proof-driven-harness-intelligence-engine/tests"],
-          "uv_args": ["--with", "pytest==8.4.2"],
+          "tests": [
+            "engines/proof-driven-harness-intelligence-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -502,9 +782,41 @@
           "kind": "pytest",
           "timeout_seconds": 2400,
           "project": "engines/python-engine",
-          "tests": ["engines/python-engine/tests"],
-          "uv_args": ["--locked", "--group", "dev"],
+          "tests": [
+            "engines/python-engine/tests"
+          ],
+          "uv_args": [
+            "--locked",
+            "--group",
+            "dev"
+          ],
           "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "router-industrial-engine": {
+      "description": "Industrial model router engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/router-industrial-engine",
+          "tests": [
+            "engines/router-industrial-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2",
+            "--with",
+            "pyyaml==6.0.2",
+            "--with",
+            "jsonschema==4.25.1"
+          ],
+          "pythonpath": [
+            "engines/router-industrial-engine/src"
+          ],
           "environment": {}
         }
       ]
@@ -517,7 +829,9 @@
           "kind": "maven",
           "timeout_seconds": 2400,
           "module": "engines/security-compliance-engine",
-          "goals": ["verify"],
+          "goals": [
+            "verify"
+          ],
           "pythonpath": [],
           "environment": {}
         },
@@ -526,9 +840,16 @@
           "kind": "pytest",
           "timeout_seconds": 1800,
           "project": "engines/security-compliance-engine",
-          "tests": ["engines/security-compliance-engine/tests"],
-          "uv_args": ["--with", "pytest"],
-          "pythonpath": ["engines/security-compliance-engine/src"],
+          "tests": [
+            "engines/security-compliance-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest"
+          ],
+          "pythonpath": [
+            "engines/security-compliance-engine/src"
+          ],
           "environment": {}
         }
       ]
@@ -541,9 +862,22 @@
           "kind": "pytest",
           "timeout_seconds": 1800,
           "project": "engines/semantic-assurance-engine",
-          "tests": ["engines/semantic-assurance-engine/tests", "tests/semantic-assurance-expansion-skills"],
-          "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
-          "pythonpath": ["engines/semantic-assurance-engine/src", "."],
+          "tests": [
+            "engines/semantic-assurance-engine/tests",
+            "tests/semantic-assurance-expansion-skills"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2",
+            "--with",
+            "pyyaml==6.0.2",
+            "--with",
+            "jsonschema==4.25.1"
+          ],
+          "pythonpath": [
+            "engines/semantic-assurance-engine/src",
+            "."
+          ],
           "environment": {}
         }
       ]
@@ -556,7 +890,9 @@
           "kind": "maven",
           "timeout_seconds": 2400,
           "module": "engines/software-delivery-platform-engine",
-          "goals": ["verify"],
+          "goals": [
+            "verify"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -570,8 +906,13 @@
           "kind": "pytest",
           "timeout_seconds": 3600,
           "project": "engines/software-factory-engine",
-          "tests": ["engines/software-factory-engine/tests"],
-          "uv_args": ["--with", "pytest==8.4.2"],
+          "tests": [
+            "engines/software-factory-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2"
+          ],
           "pythonpath": [],
           "environment": {}
         }
@@ -585,9 +926,36 @@
           "kind": "pytest",
           "timeout_seconds": 3600,
           "project": "engines/spring-golden-route-engine",
-          "tests": ["engines/spring-golden-route-engine/tests"],
-          "uv_args": ["--with", "pytest==8.4.2"],
+          "tests": [
+            "engines/spring-golden-route-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2"
+          ],
           "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "spring-modernization-engine": {
+      "description": "Spring legacy project modernization engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/spring-modernization-engine",
+          "tests": [
+            "engines/spring-modernization-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2"
+          ],
+          "pythonpath": [
+            "engines/spring-modernization-engine/src"
+          ],
           "environment": {}
         }
       ]
@@ -600,9 +968,41 @@
           "kind": "pytest",
           "timeout_seconds": 3600,
           "project": "engines/sql-dialect-engine",
-          "tests": ["engines/sql-dialect-engine/tests"],
-          "uv_args": ["--locked", "--group", "dev"],
+          "tests": [
+            "engines/sql-dialect-engine/tests"
+          ],
+          "uv_args": [
+            "--locked",
+            "--group",
+            "dev"
+          ],
           "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "teaching-subsystem-engine": {
+      "description": "Bounded local runtime for ELMOS Teaching Subsystem Skills",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/teaching-subsystem-engine",
+          "tests": [
+            "engines/teaching-subsystem-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2",
+            "--with",
+            "pyyaml==6.0.2",
+            "--with",
+            "jsonschema==4.25.1"
+          ],
+          "pythonpath": [
+            "engines/teaching-subsystem-engine/src"
+          ],
           "environment": {}
         }
       ]
@@ -615,8 +1015,32 @@
           "kind": "maven",
           "timeout_seconds": 2400,
           "module": "engines/test-quality-engine",
-          "goals": ["verify"],
+          "goals": [
+            "verify"
+          ],
           "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "uir-java-csharp": {
+      "description": "Java-to-CSharp UIR compiler and pattern lowering tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/uir-java-csharp",
+          "tests": [
+            "engines/uir-java-csharp/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2"
+          ],
+          "pythonpath": [
+            "engines/uir-java-csharp/src"
+          ],
           "environment": {}
         }
       ]
@@ -628,9 +1052,42 @@
           "name": "pytest",
           "kind": "pytest",
           "timeout_seconds": 3600,
-          "tests": ["engines/uir-java-python/tests"],
-          "uv_args": ["--with", "pytest==8.4.2", "--with", "tree_sitter>=0.23,<1.0", "--with", "tree_sitter_java>=0.23,<1.0"],
-          "pythonpath": ["engines/uir-java-python"],
+          "tests": [
+            "engines/uir-java-python/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2",
+            "--with",
+            "tree_sitter>=0.23,<1.0",
+            "--with",
+            "tree_sitter_java>=0.23,<1.0"
+          ],
+          "pythonpath": [
+            "engines/uir-java-python"
+          ],
+          "environment": {}
+        }
+      ]
+    },
+    "uir-java-typescript": {
+      "description": "Java-to-TypeScript UIR compiler and pattern lowering tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/uir-java-typescript",
+          "tests": [
+            "engines/uir-java-typescript/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2"
+          ],
+          "pythonpath": [
+            "engines/uir-java-typescript/src"
+          ],
           "environment": {}
         }
       ]
@@ -643,8 +1100,18 @@
           "kind": "pytest",
           "timeout_seconds": 3600,
           "project": "engines/database-data-engine/sql-transpiler",
-          "tests": ["tests/unified-cli-gateway"],
-          "uv_args": ["--locked", "--group", "dev", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
+          "tests": [
+            "tests/unified-cli-gateway"
+          ],
+          "uv_args": [
+            "--locked",
+            "--group",
+            "dev",
+            "--with",
+            "pyyaml==6.0.2",
+            "--with",
+            "jsonschema==4.25.1"
+          ],
           "pythonpath": [
             "engines/unified-cli-gateway/src",
             "engines/polyglot-semantic-compiler-engine/src",

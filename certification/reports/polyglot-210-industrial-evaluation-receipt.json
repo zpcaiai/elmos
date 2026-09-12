@@ -1,0 +1,9 @@
+{
+  "campaign": {
+    "pairs_passed": 1050,
+    "pairs_total": 1050
+  },
+  "decision": "CERTIFIED_L5_AUTONOMOUS",
+  "industrial_quality_percent": 100.0,
+  "merkle_root": "fcafb05ad6dc5daa04a27822c1d9c5faed48b2a6c121d613ae99583c8464df58"
+}

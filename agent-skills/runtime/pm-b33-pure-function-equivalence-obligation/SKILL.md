@@ -1,5 +1,8 @@
 ---
 name: pm-b33-pure-function-equivalence-obligation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成纯函数在前置条件下对所有输入结果等价的关系义务. Precision Migration B33 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

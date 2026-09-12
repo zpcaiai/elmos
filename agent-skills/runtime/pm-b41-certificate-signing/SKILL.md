@@ -1,5 +1,8 @@
 ---
 name: pm-b41-certificate-signing
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "对证据、产物、规则、环境和审批生成不可篡改签名. Precision Migration B41 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

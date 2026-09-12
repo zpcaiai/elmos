@@ -1,5 +1,8 @@
 ---
 name: pm-b02-application-architecture-recovery
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从静态代码、配置、部署文件和运行 Trace 中恢复应用模块、边界、调用、数据与部署架构. Precision Migration B02 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

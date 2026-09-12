@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "profile_key": "postgresql-to-opengauss-target",
+  "version": "1.0.0",
+  "owner": "ELMOS ChinaDB Adapter Maintainers",
+  "engine": "opengauss",
+  "versions": [
+    "5.0.0"
+  ],
+  "edition": "enterprise",
+  "dialect": "opengauss-pg-compatible",
+  "driver_versions": [
+    "opengauss-jdbc:5.0.0"
+  ],
+  "charset": "UTF-8",
+  "collation": "en_US.UTF-8",
+  "timezone": "Asia/Shanghai",
+  "extensions": [],
+  "provision": {
+    "commands": [
+      "gaussdb --version",
+      "gsql -d postgres -c 'SELECT version();'"
+    ],
+    "image_digests": []
+  },
+  "health_check": {
+    "query": "SELECT 1"
+  },
+  "security": {
+    "credential_mode": "ephemeral",
+    "tls": "required"
+  },
+  "migration": {
+    "ddl_strategy": "typed-ir-then-opengauss-render",
+    "data_strategy": "disabled-until-authorized"
+  },
+  "providers": {
+    "compatibility_mode": "pg-compatible-explicit",
+    "adapter_id": "chinadb.opengauss.target-adapter.v1",
+    "licensed_disposable_sandbox": "NOT_PROVISIONED"
+  }
+}

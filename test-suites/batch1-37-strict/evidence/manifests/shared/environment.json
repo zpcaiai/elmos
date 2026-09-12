@@ -1,0 +1,9 @@
+{
+  "environment_id": "elmos-enterprise-isolated-runtime-v2",
+  "scope": "B01-B37",
+  "isolation_level": "microvm-rootless",
+  "os": "linux-x86_64",
+  "kernel_conformance": "strict",
+  "network_egress": "deny-all-except-loopback",
+  "recorded_at": "2026-09-10T08:55:52Z"
+}

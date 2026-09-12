@@ -1,0 +1,21 @@
+{
+  "format": "elmos-demo-envelope-v1",
+  "key_id": "demo-runner",
+  "payload": {
+    "schema_version": "4.0",
+    "evidence_id": "e-build",
+    "tenant_id": "demo-tenant",
+    "project_id": "demo-project",
+    "run_id": "demo-run",
+    "request_digest": "701ed3870c855252f1ef1f5e152cd0b399d9c2f3123ddb220d0666dc2a54c19c",
+    "kind": "build",
+    "obligation_ids": [
+      "o-build"
+    ],
+    "status": "PASS",
+    "issued_at": 1788942590,
+    "expires_at": 1788942700,
+    "report_digest": "78a69119a065aaad27c7885ed8848a757168492e55c5c664c9cb4bdac6200fd1"
+  },
+  "signature": "5ygEc9N6MX1PJ0dsYCjLIPd5CXOJCtpqawMtEesmq4frmiAAwKpPkn/jzNpHc1ym+TUm+hQ0e7v74gO7uzczDQ=="
+}

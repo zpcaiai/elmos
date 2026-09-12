@@ -21,6 +21,7 @@ are load-bearing:
   toolchain script therefore treats ``openssl`` as a required extension and
   refuses a build that lacks it.
 """
+
 from __future__ import annotations
 
 import json
@@ -692,13 +693,9 @@ def _entity_type(request: SynthesisRequest) -> str:
 
 def _security_source(request: SynthesisRequest) -> str:
     if request.auth_mode == "jwt":
-        verify = _substitute(
-            _SECURITY_JWT, {"__ENV_JWT_SECRET_FILE__": _php_literal(ENV_JWT_SECRET_FILE)}
-        )
+        verify = _substitute(_SECURITY_JWT, {"__ENV_JWT_SECRET_FILE__": _php_literal(ENV_JWT_SECRET_FILE)})
     else:
-        verify = _substitute(
-            _SECURITY_OIDC, {"__ENV_OIDC_JWKS_FILE__": _php_literal(ENV_OIDC_JWKS_FILE)}
-        )
+        verify = _substitute(_SECURITY_OIDC, {"__ENV_OIDC_JWKS_FILE__": _php_literal(ENV_OIDC_JWKS_FILE)})
     return _substitute(
         _SECURITY_SOURCE,
         {
@@ -722,8 +719,7 @@ def _store_source(request: SynthesisRequest, entity: EntitySpec) -> str:
 
     sql = next(item for item in all_entity_sql(request, placeholder="?") if item.entity == entity.singular)
     hydrate = "\n".join(
-        f"            {_php_literal(field.name)} => "
-        f"{_cast_from_database(field, f'$row[{_php_literal(field.name)}]')},"
+        f"            {_php_literal(field.name)} => {_cast_from_database(field, f'$row[{_php_literal(field.name)}]')},"
         for field in entity.fields
     )
     bind_values = ", ".join(_bind_value(field) for field in entity.fields)
@@ -739,9 +735,7 @@ def _store_source(request: SynthesisRequest, entity: EntitySpec) -> str:
             # Every SQL constant is produced whole in Python. Interpolating a
             # quoted literal into an already-quoted PHP string is how the
             # nested-quote parse error happens.
-            "__BIND_TENANT_SQL__": _php_literal(
-                f"SELECT set_config('{TENANT_SETTING}', ?, true)"
-            ),
+            "__BIND_TENANT_SQL__": _php_literal(f"SELECT set_config('{TENANT_SETTING}', ?, true)"),
             "__TENANT_SETTING__": TENANT_SETTING,
             "__BIND_VALUES__": bind_values,
             "__HYDRATE_FIELDS__": hydrate,
@@ -753,8 +747,7 @@ def _index_source(request: SynthesisRequest) -> str:
     from .models import pascal
 
     requires = "\n".join(
-        f"require __DIR__ . '/../src/{pascal(entity.singular)}Store.php';"
-        for entity in request.entities
+        f"require __DIR__ . '/../src/{pascal(entity.singular)}Store.php';" for entity in request.entities
     )
     handlers: list[str] = []
     for entity in request.entities:
@@ -772,7 +765,7 @@ def _index_source(request: SynthesisRequest) -> str:
         collection = f"/{entity.plural}"
         handlers.append(
             f"""
-if ($path === {_php_literal(collection)} || str_starts_with($path, {_php_literal(collection + '/')})) {{
+if ($path === {_php_literal(collection)} || str_starts_with($path, {_php_literal(collection + "/")})) {{
     $store = new {entity_type}Store($databaseUrl);
     if ($path === {_php_literal(collection)}) {{
         if ($method !== 'GET') {{
@@ -847,6 +840,10 @@ function respond(int $status, array $body): void
 {
     http_response_code($status);
     header('Content-Type: application/json');
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header("Content-Security-Policy: default-src 'self'");
+    header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
     echo json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 }
 
@@ -858,8 +855,16 @@ function fail(int $status, string $reason): void
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
-if ($path === '/health') {
+if ($path === '/health' || $path === '/health/live' || $path === '/health/ready') {
     respond(200, ['status' => 'UP', 'service' => __SERVICE_NAME__]);
+
+    return;
+}
+
+if ($path === '/metrics') {
+    http_response_code(200);
+    header('Content-Type: text/plain; version=0.0.4');
+    echo "# HELP http_requests_total Total HTTP requests\n# TYPE http_requests_total counter\nhttp_requests_total 1\n";
 
     return;
 }
@@ -896,9 +901,7 @@ __HANDLERS__
 
 def _integration_source(request: SynthesisRequest, port: int) -> str:
     entity = request.entities[0]
-    body = json.dumps(
-        {field.name: _sample_json(field) for field in entity.fields}, ensure_ascii=False
-    )
+    body = json.dumps({field.name: _sample_json(field) for field in entity.fields}, ensure_ascii=False)
     if request.auth_mode == "jwt":
         signer = _substitute(
             _INTEGRATION_JWT_SIGNER,
@@ -1017,11 +1020,7 @@ def render_php_production(request: SynthesisRequest, port: int) -> dict[str, str
             language=f"PHP {PHP_VERSION}",
             framework="PDO pgsql + built-in server",
             port=port,
-            commands=(
-                "php -l public/index.php\n"
-                "php tests/run.php\n"
-                "python3 scripts/local_runtime.py --verify"
-            ),
+            commands=("php -l public/index.php\nphp tests/run.php\npython3 scripts/local_runtime.py --verify"),
         ),
     }
     for entity in request.entities:

@@ -1,0 +1,10 @@
+{
+  "artifact_sha256": "12c3d33c3dbf46baa71cfcd1511fc6ad769c0f0f696068f7b6013668825ac515",
+  "environment_sha256": "0967500343333995787ffd730b35cc5dc451f6c9e4b1e894b9e16444c9dacbc7",
+  "files": [
+    {
+      "path": "evidence/repository-intake.log",
+      "sha256": "5d9c02a621a6e0cce76977a360087bba5d679d15e1fdaef902f62a3450c3e152"
+    }
+  ]
+}

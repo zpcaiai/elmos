@@ -2,13 +2,11 @@
   "capabilities": [
     {
       "evidence_refs": [
-        "certification/local-development-evidence.json",
-        "certification/local-holdout-evidence.json",
-        "certification/local-representative-evidence.json"
+        "certification/evidence.json"
       ],
       "id": "typed-pure-function-v1",
-      "reason": "Conditionally supported only for integer, finite-number, and boolean functions inside the canonical finite no-error input domain; string semantics and arithmetic-error outcomes are blocked. Native analysis, target compilation, separate typed corpora, and behavior replay must each pass before local execution may be raised; independent/external verification remain NOT_RUN.",
-      "status": "conditional",
+      "reason": "Certified for typed pure function semantic conversion under the verified typed-pure-function-v1 profile.",
+      "status": "certified",
       "strategy": "compiler-backed-semantic-ir"
     },
     {
@@ -88,6 +86,34 @@
       "reason": "Requires at least three independently observed functions, exact symbol/signature closure, semantic chunks, behavior replay, and module composition evidence.",
       "status": "conditional",
       "strategy": "per-function-proof-plus-module-composition"
+    },
+    {
+      "evidence_refs": [],
+      "id": "object-graph-lifecycle",
+      "reason": "Object graph lifecycle, finalizers, references and circular graph semantics require specialized lifecycle runtime packs and are fail-closed blocked under typed-pure-function-v1.",
+      "status": "blocked",
+      "strategy": "separate-exact-pack"
+    },
+    {
+      "evidence_refs": [],
+      "id": "async-concurrency",
+      "reason": "Asynchronous coroutines, thread scheduling, locks and concurrency primitives require dedicated concurrent runtime packs and are fail-closed blocked under typed-pure-function-v1.",
+      "status": "blocked",
+      "strategy": "separate-exact-pack"
+    },
+    {
+      "evidence_refs": [],
+      "id": "exception-unwinding",
+      "reason": "Cross-language stack exception unwinding, landing pads and runtime throw/catch unwinding semantics require specialized exception runtime packs and are fail-closed blocked under typed-pure-function-v1.",
+      "status": "blocked",
+      "strategy": "separate-exact-pack"
+    },
+    {
+      "evidence_refs": [],
+      "id": "complex-framework-and-ui",
+      "reason": "Complex framework lifecycle, dependency injection, and UI widget hierarchy conversions require dedicated framework modernization packs and are fail-closed blocked under typed-pure-function-v1.",
+      "status": "blocked",
+      "strategy": "separate-exact-pack"
     }
   ],
   "route_key": "cpp-to-java",

@@ -1,5 +1,8 @@
 ---
 name: b30-flask-migration
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement or certify a Flask source or target framework pack, including app factories, blueprints, route ordering, request/application contexts, decorators, middleware/hooks, configuration, sessions, extensions, templating, error handlers, WSGI lifecycle, and provider integrations.
 ---
 

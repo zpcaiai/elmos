@@ -1,0 +1,36 @@
+{
+  "schema_version": "elmos.strict-test-suite.compiled-skill-contract.v1",
+  "package_id": "elmos.migration-platform-strict-tests",
+  "package_version": "1.0.0",
+  "installed_alias": "tst-airgap-offline-update-revocation",
+  "namespace": "elmos-strict-test-suite",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute",
+    "skill_name": "tst-airgap-offline-update-revocation",
+    "title": "Air-gap离线更新撤销 / success / 场景1",
+    "suite_source": "batch38-45-strict",
+    "case_count": 10,
+    "case_ids": [
+      "X-U015-001",
+      "X-U015-002",
+      "X-U015-003",
+      "X-U015-004",
+      "X-U015-005",
+      "X-U015-006",
+      "X-U015-007",
+      "X-U015-008",
+      "X-U015-009",
+      "X-U015-010"
+    ],
+    "module_path": "scripts/test-suite/tst_skill_runtime.py",
+    "runtime_class": "TstSkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

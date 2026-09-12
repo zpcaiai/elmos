@@ -1,0 +1,11 @@
+[2026-09-10T08:25:54.159821Z][B44-006] Starting execution of B44-006 (Batch 44 FinOps / replay-idempotency / 场景6) [Category=replay-idempotency, Priority=P0]
+[2026-09-10T08:25:54.159825Z][B44-006] Bound Skill: tst-b44-finops-economics | Product Skill IDs: [1460]
+[2026-09-10T08:25:54.159826Z][B44-006] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:54.171867Z][B44-006] Security: Minted RS256 token (JTI=89bbc630..., Exp=1789032354)
+[2026-09-10T08:25:54.203410Z][B44-006] KMS: Envelope encrypted 34 bytes under key key-b44-006 v1 (DEK wrapped)
+[2026-09-10T08:25:54.225265Z][B44-006] [B44-FINOPS-ECONOMICS] Initializing cloud financial operations for B44-006
+[2026-09-10T08:25:54.225276Z][B44-006] Executing Batch 44 FinOps scenario B44-006 [Category=replay-idempotency]...
+[2026-09-10T08:25:54.225279Z][B44-006] Unit Cost Model: Verified verified-workload-unit-cost formula and currency conversion
+[2026-09-10T08:25:54.225298Z][B44-006] Completed execution of B44-006 in 65.5ms: Status=PASSED
+[2026-09-10T08:25:54.225301Z][B44-006] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:54.225314Z][B44-006] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

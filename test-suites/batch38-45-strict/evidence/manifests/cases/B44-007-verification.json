@@ -1,0 +1,8 @@
+{
+  "case_id": "B44-007",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:25:54.292754Z",
+  "notes": "Independently verified by Ethan: Batch 44 FinOps / version-drift / 场景7"
+}

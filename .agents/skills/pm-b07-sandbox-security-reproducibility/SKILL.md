@@ -1,5 +1,8 @@
 ---
 name: pm-b07-sandbox-security-reproducibility
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将客户代码、AI生成代码、构建脚本和测试视为不可信工作负载，确保隔离、最小权限、审计和可重现. Precision Migration B07 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

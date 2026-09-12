@@ -1,5 +1,8 @@
 ---
 name: b30-python-background-jobs
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement or certify Celery, RQ, and Python background-job migration, including task registration, serialization, queues, routing, retries, acknowledgement, schedules, result backends, groups/chords, idempotency, worker lifecycle, and target provider profiles.
 ---
 

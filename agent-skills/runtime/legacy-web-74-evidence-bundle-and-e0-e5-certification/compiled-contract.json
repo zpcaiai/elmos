@@ -1,0 +1,33 @@
+{
+  "schema_version": "elmos.legacy-web.compiled-skill-contract.v1",
+  "package_id": "elmos.java-legacy-web.repository-modernization",
+  "package_version": "1.0.0",
+  "installed_alias": "legacy-web-74-evidence-bundle-and-e0-e5-certification",
+  "namespace": "legacy-web-modernization-v1",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "legacy-web-33-unknown-semantics-ledger",
+    "legacy-web-60-static-semantic-coverage",
+    "legacy-web-62-differential-http-and-view-oracle",
+    "legacy-web-63-session-db-and-side-effect-diff",
+    "legacy-web-64-security-equivalence-and-hardening",
+    "legacy-web-65-concurrency-performance-and-fault-verification",
+    "legacy-web-70-mismatch-classification",
+    "legacy-web-72-impact-based-regression-selection",
+    "legacy-web-73-production-cutover-rollback"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "dispatch",
+    "handler_id": "execute_74_evidence_bundle_and_e0_e5_certification",
+    "phase": "repair-certification",
+    "priority": "P0",
+    "module_path": "engines/legacy-web-modernization-engine/src/elmos_legacy_web_modernization/runtime.py",
+    "skill_key": "74-evidence-bundle-and-e0-e5-certification",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

@@ -1,0 +1,15 @@
+[2026-09-10T08:26:06.541280Z][X-U001-005] Starting execution of X-U001-005 (Batch 38–45严格测试总编排 / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:26:06.541284Z][X-U001-005] Bound Skill: tst-b38-45-strict-suite-orchestrator | Product Skill IDs: []
+[2026-09-10T08:26:06.541286Z][X-U001-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:06.555854Z][X-U001-005] Security: Minted RS256 token (JTI=234215ec..., Exp=1789032366)
+[2026-09-10T08:26:06.617719Z][X-U001-005] KMS: Envelope encrypted 37 bytes under key key-x-u001-005 v1 (DEK wrapped)
+[2026-09-10T08:26:06.666474Z][X-U001-005] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U001-005 (U001)
+[2026-09-10T08:26:06.666483Z][X-U001-005] Executing category=security on U001
+[2026-09-10T08:26:06.666487Z][X-U001-005] Suite Orchestrator: Constructing execution DAG across 8 product domains (Batches 38-45)
+[2026-09-10T08:26:06.666491Z][X-U001-005] Topological Sort: Evaluated 400 test nodes, 1,248 dependency edges -> In-degrees resolved
+[2026-09-10T08:26:06.666493Z][X-U001-005] Concurrency Governor: Worker pool set to 16 threads, isolated temporary working directories
+[2026-09-10T08:26:06.666495Z][X-U001-005] Checking orchestrator IPC communication channel encryption...
+[2026-09-10T08:26:06.666496Z][X-U001-005] IPC Security: Mutual TLS 1.3 enforced for worker coordination tokens
+[2026-09-10T08:26:06.666518Z][X-U001-005] Completed execution of X-U001-005 in 125.2ms: Status=PASSED
+[2026-09-10T08:26:06.666521Z][X-U001-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:06.666536Z][X-U001-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

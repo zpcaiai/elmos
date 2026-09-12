@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B22-003 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [22]
+Title: Batch 22 Numeric/Decimal：提供畸形、缺失、冲突、未知或明确不支持的输入
+Capability: Numeric/Decimal
+Test Type: negative
+Skill: tst-b22-semantic-hardening
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

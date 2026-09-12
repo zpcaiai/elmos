@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U021-004",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:26:26.185770Z",
+  "notes": "Independently verified by Ethan: Agent对抗、权限与失控 / dependency-failure / 场景4"
+}

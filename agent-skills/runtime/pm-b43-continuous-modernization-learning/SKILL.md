@@ -1,5 +1,8 @@
 ---
 name: pm-b43-continuous-modernization-learning
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "持续扫描技术债和框架漂移，把真实失败、成功修复和证据反馈沉淀为更强的规则、方向包和黄金回归. Precision Migration B43 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

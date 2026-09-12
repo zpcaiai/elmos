@@ -1,0 +1,4 @@
+interface:
+  display_name: "B94 Beam Property Concurrency Fault Test Generator"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b94-beam-property-concurrency-fault-test-generator to execute this ELMOS Language Pack Skill with fail-closed evidence."

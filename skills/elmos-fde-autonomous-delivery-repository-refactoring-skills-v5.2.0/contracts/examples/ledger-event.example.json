@@ -1,0 +1,11 @@
+{
+  "eventId": "LE-001",
+  "ledger": "evidence",
+  "sequence": 1,
+  "timestamp": "2026-08-31T00:00:00Z",
+  "payload": {
+    "evidenceId": "EV-001"
+  },
+  "previousHash": "GENESIS",
+  "hash": "sha256:computed-by-ledger"
+}

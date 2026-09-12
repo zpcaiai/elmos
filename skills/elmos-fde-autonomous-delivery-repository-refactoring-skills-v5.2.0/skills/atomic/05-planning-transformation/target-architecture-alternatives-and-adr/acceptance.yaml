@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: target-architecture-alternatives-and-adr
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Modular monolith versus microservices
+  - Framework upgrade versus strangler replacement
+  - Shared database must be separated gradually
+  negativeControls:
+  - single unqualified rewrite recommendation
+  - technology choice without constraints
+  checks:
+  - id: target-architecture-alternatives-and-adr-AC-01
+    requirement: Generate at least conservative, balanced, and strategic alternatives when material architecture change is
+      proposed.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: target-architecture-alternatives-and-adr-AC-02
+    requirement: Define module and service boundaries, data ownership, APIs, events, identity, deployment, observability,
+      and operational ownership.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: target-architecture-alternatives-and-adr-AC-03
+    requirement: Map every design decision to root causes, invariants, acceptance criteria, and constraints.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: target-architecture-alternatives-and-adr-AC-04
+    requirement: Quantify reversibility, migration risk, machine wall-clock, cost, and organizational impact.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: target-architecture-alternatives-and-adr-AC-05
+    requirement: Document assumptions, rejected alternatives, review date, and exit triggers in ADRs.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

@@ -16,6 +16,7 @@ import { ProjectEvidenceCharts } from "../components/ProjectEvidenceCharts";
 import { RuntimeDeploymentGuide } from "../components/RuntimeDeploymentGuide";
 import { StatusChip } from "../components/StatusChip";
 import { useAccountSession } from "../components/AccountSessionProvider";
+import { triggerBrowserDownload } from "../lib/browserDownload";
 
 type GenerationIntent = {
   name: string;
@@ -901,13 +902,10 @@ export function ProjectGenerationStudio() {
       ) {
         throw new Error("ARTIFACT_INTEGRITY_MISMATCH");
       }
-      const blob = new Blob([artifactBytes], { type: "application/zip" });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = `${draft?.name ?? "generated-project"}.zip`;
-      anchor.click();
-      URL.revokeObjectURL(url);
+      triggerBrowserDownload(
+        new Blob([artifactBytes], { type: "application/zip" }),
+        `${draft?.name ?? "generated-project"}.zip`,
+      );
       announce(
         job.status === "COMPLETED"
           ? "归档摘要已复算并下载；本次目标构建与启动探针均通过。"
@@ -1022,12 +1020,10 @@ export function ProjectGenerationStudio() {
         certification_status: "NOT_CERTIFIED",
       },
     };
-    const url = URL.createObjectURL(new Blob([JSON.stringify(intent, null, 2)], { type: "application/json" }));
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = "project-intent.json";
-    anchor.click();
-    URL.revokeObjectURL(url);
+    triggerBrowserDownload(
+      new Blob([JSON.stringify(intent, null, 2)], { type: "application/json" }),
+      "project-intent.json",
+    );
     announce("project-intent.json 已导出；请在受控终端从 Analyze 阶段开始。");
   }
 

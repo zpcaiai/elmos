@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U016-009",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:26:18.848104Z",
+  "notes": "Independently verified by Ethan: SLO、Chaos与多区域DR / recovery / 场景9"
+}

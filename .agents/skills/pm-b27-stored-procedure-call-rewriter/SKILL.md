@@ -1,5 +1,8 @@
 ---
 name: pm-b27-stored-procedure-call-rewriter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移过程调用、IN/OUT 参数、结果集、返回码、事务和异常. Precision Migration B27 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

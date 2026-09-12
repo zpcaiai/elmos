@@ -4,9 +4,8 @@ from __future__ import annotations
 
 import ctypes
 import json
-import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Optional
 
 from .canonical import canonical_digest
 from .contracts import EntryKind, RepositorySnapshot, Result, SecretFingerprint, SnapshotEntry, SnapshotRequest, SnapshotResult

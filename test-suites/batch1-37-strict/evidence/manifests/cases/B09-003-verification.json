@@ -1,0 +1,8 @@
+{
+  "case_id": "B09-003",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:55:52Z",
+  "notes": "Independently verified by Ethan: Batch 9 Canonical Observation：提供畸形、缺失、冲突、未知或明确不支持的输入"
+}

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "example-sre-operations-capacity-plan",
+  "batch": 39,
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "NOT_RUN",
+  "evidenceRefs": [],
+  "records": [],
+  "metadata": {}
+}

@@ -1,5 +1,8 @@
 ---
 name: pm-b09-resource-lifecycle-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达文件、连接、锁、内存、线程、任务和设备资源的获取、使用与释放. Precision Migration B09 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

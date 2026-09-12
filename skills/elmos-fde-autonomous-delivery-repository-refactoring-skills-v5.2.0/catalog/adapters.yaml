@@ -1,0 +1,111 @@
+apiVersion: elmos.ai/v1
+kind: AdapterCatalog
+metadata:
+  version: 5.2.0
+  count: 26
+spec:
+  adapters:
+  - id: git-provider-adapter
+    providers: GitHub/GitLab/Gitea/Azure Repos
+    scope: repository source, pull requests, reviews, webhooks
+    path: adapters/git-provider-adapter/descriptor.yaml
+  - id: artifact-storage-adapter
+    providers: S3/GCS/Azure Blob/MinIO
+    scope: content-addressed artifacts, evidence, retention and legal hold
+    path: adapters/artifact-storage-adapter/descriptor.yaml
+  - id: issue-tracker-adapter
+    providers: Jira/Linear/Azure Boards/GitHub Issues
+    scope: requirements, risks, actions, findings and delivery status
+    path: adapters/issue-tracker-adapter/descriptor.yaml
+  - id: documentation-adapter
+    providers: Confluence/Notion/SharePoint/Google Drive
+    scope: discovery evidence, specifications, ADRs and handoff documents
+    path: adapters/documentation-adapter/descriptor.yaml
+  - id: communication-adapter
+    providers: Slack/Teams/Email
+    scope: approved notifications, status, escalations and incident collaboration
+    path: adapters/communication-adapter/descriptor.yaml
+  - id: calendar-meeting-adapter
+    providers: Google Calendar/Microsoft 365/meeting systems
+    scope: interviews, reviews, milestones and meeting evidence
+    path: adapters/calendar-meeting-adapter/descriptor.yaml
+  - id: crm-commercial-adapter
+    providers: Salesforce/HubSpot
+    scope: engagement context, qualification, account outcomes and product feedback
+    path: adapters/crm-commercial-adapter/descriptor.yaml
+  - id: identity-directory-adapter
+    providers: OIDC/SAML/SCIM/LDAP
+    scope: identity, groups, authorization context and provisioning
+    path: adapters/identity-directory-adapter/descriptor.yaml
+  - id: secrets-kms-adapter
+    providers: Vault/KMS/Secrets Manager
+    scope: brokered secrets, signing keys and customer-managed encryption
+    path: adapters/secrets-kms-adapter/descriptor.yaml
+  - id: policy-engine-adapter
+    providers: OPA/Cedar/custom PDP
+    scope: authorization, data use, release and evidence policy decisions
+    path: adapters/policy-engine-adapter/descriptor.yaml
+  - id: workflow-engine-adapter
+    providers: Temporal/Cadence/Durable Functions
+    scope: durable workflows, retries, timers, signals and compensation
+    path: adapters/workflow-engine-adapter/descriptor.yaml
+  - id: sandbox-executor-adapter
+    providers: container/microVM/WASI/remote runner
+    scope: isolated build, analysis, tests and transformations
+    path: adapters/sandbox-executor-adapter/descriptor.yaml
+  - id: model-provider-adapter
+    providers: OpenAI/compatible/private model endpoints
+    scope: reasoning, generation, embeddings and judge candidates
+    path: adapters/model-provider-adapter/descriptor.yaml
+  - id: compiler-lsp-adapter
+    providers: compiler/LSP/tree-sitter/native parser
+    scope: syntax, symbols, types, diagnostics and semantic edits
+    path: adapters/compiler-lsp-adapter/descriptor.yaml
+  - id: static-analysis-adapter
+    providers: CodeQL/Semgrep/Sonar/native analyzers
+    scope: rules, dataflow, taint, architecture and quality findings
+    path: adapters/static-analysis-adapter/descriptor.yaml
+  - id: dependency-sbom-adapter
+    providers: Syft/Trivy/OSV/Dependency-Track
+    scope: SBOM, vulnerabilities, license and provenance inputs
+    path: adapters/dependency-sbom-adapter/descriptor.yaml
+  - id: test-runner-adapter
+    providers: JUnit/pytest/dotnet test/go test/cargo test
+    scope: test discovery, execution, coverage and result normalization
+    path: adapters/test-runner-adapter/descriptor.yaml
+  - id: fuzz-mutation-adapter
+    providers: property/fuzz/mutation engines
+    scope: oracle strength, counterexamples and robustness evidence
+    path: adapters/fuzz-mutation-adapter/descriptor.yaml
+  - id: database-adapter
+    providers: PostgreSQL/MySQL/Oracle/SQL Server/NoSQL
+    scope: schema, plans, routines, snapshots, migration and reconciliation
+    path: adapters/database-adapter/descriptor.yaml
+  - id: messaging-stream-adapter
+    providers: Kafka/Pulsar/RabbitMQ/cloud queues
+    scope: topics, schemas, replay, ordering, delivery and side effects
+    path: adapters/messaging-stream-adapter/descriptor.yaml
+  - id: observability-adapter
+    providers: OpenTelemetry/Prometheus/Grafana/APM
+    scope: traces, metrics, logs, profiles, SLOs and incidents
+    path: adapters/observability-adapter/descriptor.yaml
+  - id: cloud-kubernetes-adapter
+    providers: AWS/Azure/GCP/Kubernetes
+    scope: inventory, IAM, network, deployment, scaling and cost
+    path: adapters/cloud-kubernetes-adapter/descriptor.yaml
+  - id: iac-gitops-adapter
+    providers: Terraform/Pulumi/Helm/ArgoCD/Flux
+    scope: infrastructure semantics, drift, plans and controlled rollout
+    path: adapters/iac-gitops-adapter/descriptor.yaml
+  - id: security-scanner-adapter
+    providers: SAST/DAST/IaC/container/secret scanners
+    scope: security signals and remediation verification
+    path: adapters/security-scanner-adapter/descriptor.yaml
+  - id: service-virtualization-adapter
+    providers: WireMock/MockServer/Testcontainers/custom
+    scope: external dependency simulation and deterministic replay
+    path: adapters/service-virtualization-adapter/descriptor.yaml
+  - id: billing-metering-adapter
+    providers: usage ledger/invoice/credits
+    scope: cost attribution, quotas, budgets and commercial metering
+    path: adapters/billing-metering-adapter/descriptor.yaml

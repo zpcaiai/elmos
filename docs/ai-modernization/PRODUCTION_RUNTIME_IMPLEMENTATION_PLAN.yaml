@@ -1,0 +1,105 @@
+schema_version: "1.0"
+plan_id: plan-20260908-elasticsearch-dify-control-runner
+repository: zpcaiai/elmos
+scope: >-
+  Complete the repository-owned Elasticsearch and Dify execution adapters and
+  bind them to a deployable, fail-closed Control Plane and isolated Runner
+  topology without manufacturing provider, production, or certification evidence.
+status: LOCAL_IMPLEMENTATION_COMPLETE_EXTERNAL_BLOCKED
+selected_skills:
+  - elmos-infrastructure-program-orchestrator
+  - elasticsearch-opensearch-adapter
+  - dify-agent-platform-adapter
+  - elmos-production-control-plane
+  - elmos-runner-scheduler-execution
+tasks:
+  - id: ELMOS-AI-EXT-001
+    status: LOCAL_ENGINEERING_VALIDATED
+    description: Add environment-bound, sanitized real execution and qualification for Elasticsearch and Dify.
+    dependencies: []
+  - id: ELMOS-AI-EXT-002
+    status: LOCAL_ENGINEERING_VALIDATED
+    description: Add version, mapping, lifecycle, isolation, idempotency, timeout, and rollback verification.
+    dependencies: [ELMOS-AI-EXT-001]
+  - id: ELMOS-RUNTIME-001
+    status: LOCAL_ENGINEERING_VALIDATED
+    description: Define and validate the exact production Control Plane and Runner deployment contract.
+    dependencies: []
+  - id: ELMOS-RUNTIME-002
+    status: LOCAL_ENGINEERING_VALIDATED
+    description: Probe Control Plane readiness and independently verified Runner registration without exposing credentials.
+    dependencies: [ELMOS-RUNTIME-001]
+  - id: ELMOS-RUNTIME-003
+    status: BLOCKED_EXTERNAL
+    description: Deploy the exact images to an authorized production cluster and bind the public Vercel deployment.
+    dependencies: [ELMOS-RUNTIME-002]
+runtime_estimate:
+  estimate_id: estimate-20260908-elasticsearch-dify-control-runner
+  as_of: "2026-09-08T16:00:00Z"
+  system_runtime:
+    p50_seconds: 1800
+    p80_seconds: 3600
+    p95_seconds: 7200
+    confidence: low
+    queue_seconds_p50: 0
+    execution_seconds_p50: 1800
+    critical_path:
+      - provider and runtime contract implementation
+      - focused integration validation
+      - production-shaped local topology validation
+  human_equivalent:
+    engineering_hours_p50: 24
+    review_hours_p50: 8
+    notes: Comparison only; excluded from autonomous eLMOS runtime.
+  human_in_loop_delay:
+    excluded_from_system_runtime: true
+    risks:
+      - Elastic and Dify credentials are not configured.
+      - No authorized public production Kubernetes cluster or DNS endpoint is bound.
+      - Runner attestation requires an independent verifier.
+  assumptions:
+    source_revision: 4c2928873
+    local_container_runtime: OrbStack Docker
+    local_kubernetes_context: orbstack
+    provider_calls_authorized_only_when_explicit_execute_flag_is_present: true
+  coverage:
+    historical_runs: 1
+    segment_match: 0.6
+    calibration_date: "2026-09-08"
+validation:
+  - command: uv run --project packages/repository-orchestrator --locked --group test pytest packages/repository-orchestrator/tests
+    expected: All repository-orchestrator integration and gate tests pass with zero skips.
+  - command: mvn -B -pl apps/control-plane,apps/runner-agent -am test
+    expected: Control Plane, persistence, workflow, and Runner tests pass.
+  - command: >-
+      PYTHONPATH=packages/repository-orchestrator/src python3 -m
+      elmos_repository_orchestrator.cli runtime-preflight --plan
+      packages/repository-orchestrator/config/ai-runtime-plan.json --expect-blocked
+    expected: Missing external bindings fail closed with sanitized blocker codes.
+production_claim: >-
+  This plan and its local validation are engineering evidence only. Real provider
+  execution, target-cluster deployment, independent Runner attestation, and
+  certification remain NOT_RUN or NOT_CERTIFIED until separately executed.
+rollback:
+  boundary: Provider projections are disposable; PostgreSQL source facts and existing execution queues remain authoritative.
+  procedure: Delete only the versioned disposable Elastic index, revoke the Dify app key, drain Runner nodes, and roll back images by digest.
+  point_of_no_return: None for this slice.
+evidence:
+  expected:
+    - sanitized Elasticsearch qualification receipt
+    - sanitized Dify workflow receipt
+    - Control Plane readiness receipt
+    - independently verified Runner heartbeat receipt
+  produced:
+    - focused Python integration tests: 13 passed, 0 skipped
+    - repository-orchestrator unit tests: 46 passed, 0 skipped
+    - Control Plane tests: 216 passed, 0 failed, 0 skipped
+    - Runner self-test: 112 checks passed; real container round trip remains NOT_RUN
+    - Maven Control Plane and Runner reactor: BUILD SUCCESS
+    - Elasticsearch and Dify preflight: BLOCKED on missing external bindings
+    - Control Plane and Runner preflight: BLOCKED on missing external bindings
+residual_risks:
+  - Production provider and cluster credentials are absent.
+  - Local OrbStack is not a production or independent environment.
+  - Local Podman container round trip is NOT_RUN because the host data volume has insufficient free space for a stable VM start.
+next_task: ELMOS-RUNTIME-003

@@ -8,6 +8,7 @@ blocked statement and reports what it actually is.
 """
 
 from __future__ import annotations
+
 import argparse
 import contextlib
 import io

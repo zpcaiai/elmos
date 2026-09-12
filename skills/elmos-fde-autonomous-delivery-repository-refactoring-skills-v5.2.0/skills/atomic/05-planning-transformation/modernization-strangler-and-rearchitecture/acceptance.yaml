@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: modernization-strangler-and-rearchitecture
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Struts and Servlet migration to Spring Boot
+  - Shared library framework major upgrade
+  - Monolith capability extraction with shared database
+  negativeControls:
+  - big-bang rewrite by default
+  - remove legacy path before equivalence evidence
+  checks:
+  - id: modernization-strangler-and-rearchitecture-AC-01
+    requirement: Classify work as repair, refactor, modernization, rearchitecture, or rewrite and apply the matching proof
+      burden.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: modernization-strangler-and-rearchitecture-AC-02
+    requirement: Preserve external contracts through adapters, façades, dual routes, feature flags, or compatibility layers.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: modernization-strangler-and-rearchitecture-AC-03
+    requirement: Migrate by business capability and observable traffic rather than arbitrary file groups.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: modernization-strangler-and-rearchitecture-AC-04
+    requirement: Plan data ownership, backfill, dual-write, event, and rollback semantics before cutover.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: modernization-strangler-and-rearchitecture-AC-05
+    requirement: Retire legacy components only after usage, equivalence, and recovery evidence satisfy policy.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

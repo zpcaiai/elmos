@@ -1,5 +1,8 @@
 ---
 name: pm-b36-model-routing-review
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "按方向、风险、成本、私有化和历史表现动态选择模型，并用不同模型家族独立审查以降低共因错误. Precision Migration B36 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

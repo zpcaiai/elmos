@@ -1,0 +1,14 @@
+[2026-09-10T08:26:07.587644Z][X-U002-003] Starting execution of X-U002-003 (能力追踪与覆盖矩阵 / negative / 场景3) [Category=negative, Priority=P1]
+[2026-09-10T08:26:07.587655Z][X-U002-003] Bound Skill: tst-b38-45-capability-traceability | Product Skill IDs: []
+[2026-09-10T08:26:07.587657Z][X-U002-003] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:07.709371Z][X-U002-003] Security: Minted RS256 token (JTI=f4ff80e4..., Exp=1789032367)
+[2026-09-10T08:26:07.957002Z][X-U002-003] KMS: Envelope encrypted 37 bytes under key key-x-u002-003 v1 (DEK wrapped)
+[2026-09-10T08:26:08.030623Z][X-U002-003] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U002-003 (U002)
+[2026-09-10T08:26:08.030637Z][X-U002-003] Executing category=negative on U002
+[2026-09-10T08:26:08.030643Z][X-U002-003] Capability Traceability: Loading canonical catalog of 172 Skills (1325-1496)
+[2026-09-10T08:26:08.030647Z][X-U002-003] Traceability Engine: Cross-referencing requirements, architectural contracts, test cases
+[2026-09-10T08:26:08.030651Z][X-U002-003] Testing detection of unmapped orphaned skill in test suite...
+[2026-09-10T08:26:08.030653Z][X-U002-003] Coverage Gate: Correctly identified simulated unmapped skill ID 9999 as blocker
+[2026-09-10T08:26:08.030683Z][X-U002-003] Completed execution of X-U002-003 in 443.0ms: Status=PASSED
+[2026-09-10T08:26:08.030687Z][X-U002-003] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:08.030708Z][X-U002-003] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -1,0 +1,12 @@
+[2026-09-10T08:26:28.025979Z][X-U023-006] Starting execution of X-U023-006 (全协议兼容矩阵 / replay-idempotency / 场景6) [Category=replay-idempotency, Priority=P0]
+[2026-09-10T08:26:28.025982Z][X-U023-006] Bound Skill: tst-api-event-sdk-runner-compatibility | Product Skill IDs: []
+[2026-09-10T08:26:28.025984Z][X-U023-006] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:28.036476Z][X-U023-006] Security: Minted RS256 token (JTI=892a821b..., Exp=1789032388)
+[2026-09-10T08:26:28.061699Z][X-U023-006] KMS: Envelope encrypted 37 bytes under key key-x-u023-006 v1 (DEK wrapped)
+[2026-09-10T08:26:28.076488Z][X-U023-006] [CROSS-SEC-GOV] Initializing X-U023-006 (U023) Category=replay-idempotency
+[2026-09-10T08:26:28.076492Z][X-U023-006] API & SDK Compatibility: Verifying public API contracts, event schema evolution, and runner compatibility
+[2026-09-10T08:26:28.076496Z][X-U023-006] Dispatching identical event with same UUID twice...
+[2026-09-10T08:26:28.076499Z][X-U023-006] Deduplicator: Second event recognized via idempotency key; skipped consumer execution
+[2026-09-10T08:26:28.076515Z][X-U023-006] Completed execution of X-U023-006 in 50.5ms: Status=PASSED
+[2026-09-10T08:26:28.076517Z][X-U023-006] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:28.076529Z][X-U023-006] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

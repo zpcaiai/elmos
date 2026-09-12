@@ -1,0 +1,11 @@
+[2026-09-10T08:25:43.831922Z][B40-017] Starting execution of B40-017 (Batch 40供应链与合规 / security / 场景17) [Category=security, Priority=P0]
+[2026-09-10T08:25:43.831925Z][B40-017] Bound Skill: tst-b40-supply-chain-compliance | Product Skill IDs: [1377, 1385]
+[2026-09-10T08:25:43.831926Z][B40-017] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:43.840845Z][B40-017] Security: Minted RS256 token (JTI=4e6e45d1..., Exp=1789032343)
+[2026-09-10T08:25:43.864294Z][B40-017] KMS: Envelope encrypted 34 bytes under key key-b40-017 v1 (DEK wrapped)
+[2026-09-10T08:25:43.878989Z][B40-017] [B40-SUPPLY-CHAIN] Initializing security & compliance assessment for B40-017
+[2026-09-10T08:25:43.878993Z][B40-017] Executing Cryptographic SBOM & Dependency Verification...
+[2026-09-10T08:25:43.879017Z][B40-017] SBOM Ingestion: Verified 3 components against cryptographic inventory
+[2026-09-10T08:25:43.879030Z][B40-017] Completed execution of B40-017 in 47.1ms: Status=PASSED
+[2026-09-10T08:25:43.879032Z][B40-017] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:43.879043Z][B40-017] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

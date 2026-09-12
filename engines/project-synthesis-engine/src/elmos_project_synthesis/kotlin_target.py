@@ -20,9 +20,7 @@ from .rendering import (
 
 def _gradle_lock() -> str:
     lock = (
-        files("elmos_project_synthesis")
-        .joinpath("templates", "kotlin", "gradle.lockfile")
-        .read_text(encoding="utf-8")
+        files("elmos_project_synthesis").joinpath("templates", "kotlin", "gradle.lockfile").read_text(encoding="utf-8")
     )
     if "io.ktor:ktor-server-core:3.2.3=" not in lock or "empty=" not in lock:
         raise ValueError("KOTLIN_LOCK_TEMPLATE_INVALID")

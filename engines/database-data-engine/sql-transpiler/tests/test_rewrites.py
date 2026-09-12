@@ -46,9 +46,7 @@ class TestGroupConcatAggregateOrder:
         assert result.target_sql is not None
         assert "GROUP_CONCAT(name, ',' ORDER BY name)" in " ".join(result.target_sql.split())
         assert "SQLITE_AGGREGATE_ORDER_LOWERED" in result.statements[0].obligations
-        assert SQLITE_LOWERING_RULE in {
-            trace["ruleId"] for trace in result.metadata["ruleTrace"]
-        }
+        assert SQLITE_LOWERING_RULE in {trace["ruleId"] for trace in result.metadata["ruleTrace"]}
 
     def test_multi_term_descending_order_and_custom_separator_survive(self) -> None:
         result = _transpile(
@@ -91,9 +89,7 @@ class TestGroupConcatAggregateOrder:
         flattened = " ".join(result.target_sql.split())
         assert "ORDER BY name SEPARATOR ','" in flattened
         assert "AGGREGATE_ORDER_CANONICALIZED" in result.statements[0].obligations
-        assert AGGREGATE_ORDER_RULE in {
-            trace["ruleId"] for trace in result.metadata["ruleTrace"]
-        }
+        assert AGGREGATE_ORDER_RULE in {trace["ruleId"] for trace in result.metadata["ruleTrace"]}
 
     def test_sqlite_source_to_sqlserver_uses_within_group(self) -> None:
         result = _transpile(
@@ -175,9 +171,7 @@ class TestRealSqliteExecution:
 
     def _connection(self) -> sqlite3.Connection:
         if _sqlite_version() < _SQLITE_AGGREGATE_ORDER_MIN:
-            pytest.skip(
-                f"host sqlite {sqlite3.sqlite_version} predates 3.44 aggregate ORDER BY"
-            )
+            pytest.skip(f"host sqlite {sqlite3.sqlite_version} predates 3.44 aggregate ORDER BY")
         connection = sqlite3.connect(":memory:")
         connection.execute("CREATE TABLE customers (tenant TEXT, name TEXT)")
         connection.executemany(
@@ -212,8 +206,7 @@ class TestRealSqliteExecution:
         connection = self._connection()
         try:
             target_sql = self._emit(
-                "SELECT GROUP_CONCAT(name ORDER BY tenant, name DESC SEPARATOR '|') "
-                "FROM customers"
+                "SELECT GROUP_CONCAT(name ORDER BY tenant, name DESC SEPARATOR '|') FROM customers"
             )
             rows = connection.execute(target_sql).fetchall()
             assert rows == [("charlie|bravo|delta|alpha",)]
@@ -322,3 +315,41 @@ class TestOracleTruncDateFormats:
         assert result.state == "SYNTAX_READY"
         assert result.target_sql is not None
         assert "date_trunc('quarter'" in " ".join(result.target_sql.split()).lower()
+
+
+class TestOptimizerHints:
+    def test_plan_hint_is_stripped_with_obligation(self) -> None:
+        result = _transpile(
+            "mysql-8.4.10-lts",
+            "postgresql-17.5",
+            "SELECT /*+ INDEX(orders idx_tenant) */ id FROM orders ORDER BY id",
+        )
+
+        assert result.state == "SYNTAX_READY", result.diagnostics
+        assert result.target_sql is not None
+        assert "INDEX(orders" not in result.target_sql
+        assert "OPTIMIZER_HINT_STRIPPED" in result.statements[0].obligations
+        assert any(item.code == "OPTIMIZER_HINT_STRIPPED" for item in result.diagnostics)
+
+    def test_use_index_is_stripped(self) -> None:
+        result = _transpile(
+            "mysql-8.4.10-lts",
+            "sqlite-3.53.3",
+            "SELECT id FROM orders USE INDEX (idx_tenant) ORDER BY id",
+        )
+
+        assert result.state == "SYNTAX_READY", result.diagnostics
+        assert result.target_sql is not None
+        assert "USE INDEX" not in result.target_sql.upper()
+        assert "OPTIMIZER_HINT_STRIPPED" in result.statements[0].obligations
+
+    def test_nolock_stays_fail_closed(self) -> None:
+        result = _transpile(
+            "sqlserver-2022-cu26",
+            "postgresql-17.5",
+            "SELECT id FROM orders WITH (NOLOCK)",
+        )
+
+        assert result.state == "BLOCKED"
+        assert result.target_sql is None
+        assert "LOCKING_HINT_NOT_PORTABLE" in {item.code for item in result.diagnostics}

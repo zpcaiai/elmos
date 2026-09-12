@@ -1,0 +1,13 @@
+[2026-09-10T08:26:10.131227Z][X-U003-005] Starting execution of X-U003-005 (环境、Fixture与Chaos工厂 / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:26:10.131230Z][X-U003-005] Bound Skill: tst-b38-45-environment-fixture-chaos-factory | Product Skill IDs: []
+[2026-09-10T08:26:10.131232Z][X-U003-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:10.203990Z][X-U003-005] Security: Minted RS256 token (JTI=e727bf08..., Exp=1789032370)
+[2026-09-10T08:26:10.308548Z][X-U003-005] KMS: Envelope encrypted 37 bytes under key key-x-u003-005 v1 (DEK wrapped)
+[2026-09-10T08:26:10.384927Z][X-U003-005] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U003-005 (U003)
+[2026-09-10T08:26:10.384948Z][X-U003-005] Executing category=security on U003
+[2026-09-10T08:26:10.384955Z][X-U003-005] Environment & Chaos Factory: Provisioning isolated hermetic test environment...
+[2026-09-10T08:26:10.384958Z][X-U003-005] Verifying test fixtures do not contain production credentials or real PII...
+[2026-09-10T08:26:10.384961Z][X-U003-005] Data Hygiene Scanner: 100% synthetic seed data verified (Faker synthetic profile)
+[2026-09-10T08:26:10.385003Z][X-U003-005] Completed execution of X-U003-005 in 253.8ms: Status=PASSED
+[2026-09-10T08:26:10.385008Z][X-U003-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:10.385031Z][X-U003-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -1,5 +1,32 @@
 {
   "batch": 42,
   "packKey": "elmos-platform-agent-factory",
-  "claims": []
+  "claims": [
+    {
+      "claimId": "claim-b42-core-functional-conformance",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch42-execution",
+        "batch42-verification"
+      ],
+      "provenanceRefs": [
+        "batch42-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    },
+    {
+      "claimId": "claim-b42-operational-governance-resilience",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch42-execution",
+        "batch42-verification"
+      ],
+      "provenanceRefs": [
+        "batch42-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    }
+  ]
 }

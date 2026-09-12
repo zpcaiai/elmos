@@ -1,0 +1,12 @@
+[2026-09-10T08:26:24.709230Z][X-U020-004] Starting execution of X-U020-004 (知识隔离、投毒与校准 / dependency-failure / 场景4) [Category=dependency-failure, Priority=P2]
+[2026-09-10T08:26:24.709287Z][X-U020-004] Bound Skill: tst-knowledge-isolation-poisoning-calibration | Product Skill IDs: []
+[2026-09-10T08:26:24.709293Z][X-U020-004] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:24.785333Z][X-U020-004] Security: Minted RS256 token (JTI=d4bea71d..., Exp=1789032384)
+[2026-09-10T08:26:24.843935Z][X-U020-004] KMS: Envelope encrypted 37 bytes under key key-x-u020-004 v1 (DEK wrapped)
+[2026-09-10T08:26:24.869920Z][X-U020-004] [CROSS-SEC-GOV] Initializing X-U020-004 (U020) Category=dependency-failure
+[2026-09-10T08:26:24.869930Z][X-U020-004] Knowledge Isolation & Anti-Poisoning: Verifying tenant vector space and RAG protections
+[2026-09-10T08:26:24.869936Z][X-U020-004] Simulating vector database primary replica failover...
+[2026-09-10T08:26:24.869938Z][X-U020-004] High Availability: Read traffic routed to read-replica with 1.2ms latency increase
+[2026-09-10T08:26:24.869955Z][X-U020-004] Completed execution of X-U020-004 in 161.0ms: Status=PASSED
+[2026-09-10T08:26:24.869958Z][X-U020-004] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:24.869970Z][X-U020-004] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -1,0 +1,35 @@
+apiVersion: elmos.ai/v1
+kind: DurableWorkflow
+metadata:
+  id: refactor-execution
+  version: 5.2.0
+spec:
+  engine: canonical-K7-adapter
+  steps:
+  - id: approve-plan
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: lease-workspace
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: checkpoint
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: execute-atomic-change
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: intercept-result
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: verify
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: commit-or-reject
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: update-ledgers
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  authority: environment-owned
+  cancellation: bounded
+  completionAuthority: K8

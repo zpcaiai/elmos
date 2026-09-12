@@ -1,0 +1,4 @@
+interface:
+  display_name: "B83 Dynamic SQL Injection Safety Analyzer"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b83-dynamic-sql-injection-safety-analyzer to execute this ELMOS Language Pack Skill with fail-closed evidence."

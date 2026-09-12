@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: security-privacy-supply-chain-audit
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: SecurityPrivacySupplyChainAuditService
+    workflow: SecurityPrivacySupplyChainAuditWorkflow
+    policyGate: SecurityPrivacySupplyChainAuditPolicyGate
+    evidenceProducer: SecurityPrivacySupplyChainAuditEvidenceProducer
+    repositoryPort: SecurityPrivacySupplyChainAuditRepositoryPort
+  requiredPorts:
+  - id: sast.execute
+    direction: outbound
+  - id: sca.execute
+    direction: outbound
+  - id: secret.scan
+    direction: inbound
+  - id: iac.scan
+    direction: inbound
+  - id: policy.test
+    direction: inbound
+  - id: sbom.generate
+    direction: outbound
+  - id: finding.append
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/security-privacy-supply-chain-audit/runs
+  - GET /api/v1/skills/security-privacy-supply-chain-audit/runs/{runId}
+  - POST /api/v1/skills/security-privacy-supply-chain-audit/runs/{runId}/cancel
+  - POST /api/v1/skills/security-privacy-supply-chain-audit/runs/{runId}/resume
+  events:
+  - elmos.skill.security-privacy-supply-chain-audit.requested.v1
+  - elmos.skill.security-privacy-supply-chain-audit.checkpointed.v1
+  - elmos.skill.security-privacy-supply-chain-audit.completed.v1
+  - elmos.skill.security-privacy-supply-chain-audit.failed.v1
+  workflowSteps:
+  - Confirm authorized assessment scope and prohibited techniques.
+  - Build the threat and data-flow model from system evidence.
+  - Run deterministic SAST, SCA, secret, IaC, container, and policy checks.
+  - Perform targeted runtime or adversarial tests in approved environments.
+  - Validate high-severity paths and cluster control failures.
+  - Publish findings, control ownership, residual risk, and remediation gates.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

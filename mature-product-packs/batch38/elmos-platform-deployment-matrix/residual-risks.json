@@ -2,7 +2,7 @@
   "packKey": "elmos-platform-deployment-matrix",
   "batch": 38,
   "status": "OPEN",
-  "owner": "elmos-platform-maintainers",
+  "owner": "Elena Rostova, Principal Deployment Architect",
   "risks": [
     {
       "id": "RISK-B38-EDITION-001",

@@ -1,5 +1,8 @@
 ---
 name: pm-b05-repository-semantic-recovery
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将源仓库从文件集合恢复为可查询的 Repository Semantic Graph，并产出可供转换、测试和证明复用的语义资产. Precision Migration B05 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

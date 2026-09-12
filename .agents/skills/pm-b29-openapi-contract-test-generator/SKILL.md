@@ -1,5 +1,8 @@
 ---
 name: pm-b29-openapi-contract-test-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从 OpenAPI 生成正常、边界、错误、权限和兼容性契约测试. Precision Migration B29 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

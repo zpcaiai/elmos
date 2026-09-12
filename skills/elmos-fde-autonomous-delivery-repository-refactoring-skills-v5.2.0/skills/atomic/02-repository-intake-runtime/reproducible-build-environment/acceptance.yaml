@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: reproducible-build-environment
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Documentation build command is stale
+  - Private dependency registry is unavailable
+  - Multiple incompatible SDK versions are required
+  negativeControls:
+  - declare project broken before environment diagnosis
+  - run untrusted code outside sandbox
+  checks:
+  - id: reproducible-build-environment-AC-01
+    requirement: Resolve language runtimes, compilers, SDKs, system packages, build tools, private registries, and environment
+      variables.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: reproducible-build-environment-AC-02
+    requirement: Pin exact versions and immutable images or digests before evidence is reusable.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: reproducible-build-environment-AC-03
+    requirement: Distinguish source defects from environment, network, credential, and dependency failures.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: reproducible-build-environment-AC-04
+    requirement: Capture commands, logs, artifacts, resource limits, and environment hashes for replay.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: reproducible-build-environment-AC-05
+    requirement: Use environment-owned authority and reject inherited thread-global privileges.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

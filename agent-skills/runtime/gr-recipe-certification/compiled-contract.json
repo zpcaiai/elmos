@@ -1,0 +1,33 @@
+{
+  "schema_version": "elmos.spring-golden-route.compiled-skill-contract.v2",
+  "package_id": "elmos-spring-golden-route-commercial-skills",
+  "package_version": "2.0.0",
+  "installed_alias": "gr-recipe-certification",
+  "namespace": "spring-golden-route-commercial-v2",
+  "source_id": "ELMOS-GR-094",
+  "batch": "22",
+  "dependencies": [
+    "gr-patch-mining",
+    "gr-benchmark-corpus"
+  ],
+  "effective_dependencies": [
+    "gr-patch-mining",
+    "gr-benchmark-corpus"
+  ],
+  "critical_dependencies": [],
+  "required_outputs": [
+    "recipe-cert-report.json",
+    "certified-recipe-package"
+  ],
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "handler_id": "handle_gr_recipe_certification",
+    "dispatcher": "dispatch_skill",
+    "module_path": "engines/spring-golden-route-engine/src/elmos_spring_golden_route/runtime.py",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

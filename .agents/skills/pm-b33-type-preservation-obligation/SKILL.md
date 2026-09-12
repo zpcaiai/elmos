@@ -1,5 +1,8 @@
 ---
 name: pm-b33-type-preservation-obligation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成源表达式有类型则目标表达式具有映射类型的类型保持义务. Precision Migration B33 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

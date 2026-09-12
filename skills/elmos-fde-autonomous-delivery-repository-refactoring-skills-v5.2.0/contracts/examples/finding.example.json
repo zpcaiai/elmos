@@ -1,0 +1,40 @@
+{
+  "findingId": "F-001",
+  "domain": "concurrency-distributed",
+  "title": "Duplicate order creation on retry",
+  "locations": [
+    "src/orders/service.py:42"
+  ],
+  "affectedCapabilities": [
+    "Create order"
+  ],
+  "evidence": [
+    "ev-trace-001",
+    "ev-test-001"
+  ],
+  "reproductionSteps": [
+    "Send the same idempotency key twice after timeout"
+  ],
+  "severity": "high",
+  "likelihood": "likely",
+  "businessImpact": "Duplicate financial and fulfillment side effects",
+  "confidence": 0.94,
+  "falsePositiveRisk": "low",
+  "rootCause": "No idempotency record around the side-effect boundary",
+  "relatedFindings": [],
+  "remediationOptions": [
+    "Add transactional idempotency record"
+  ],
+  "recommendedFix": "Introduce request key and side-effect ledger",
+  "verificationPlan": [
+    "Run duplicate and timeout tests"
+  ],
+  "rollbackPlan": [
+    "Revert atomic ChangeSet"
+  ],
+  "automationLevel": "supervised",
+  "requiredApprovals": [
+    "service-owner"
+  ],
+  "status": "open"
+}

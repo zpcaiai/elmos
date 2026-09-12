@@ -1,0 +1,81 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: shadow-dual-run-canary-rollback-preparation
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Shadow order processing must not charge customers
+  - Canary schema change must remain backward compatible
+  - Rollback requires compensating events
+  negativeControls:
+  - perform unapproved production cutover
+  - claim E4 or E5
+  - duplicate real side effects during shadow
+  checks:
+  - id: shadow-dual-run-canary-rollback-preparation-AC-01
+    requirement: Define cohorts, traffic percentages, observation windows, success metrics, error budgets, and automatic rollback
+      triggers.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: shadow-dual-run-canary-rollback-preparation-AC-02
+    requirement: Prevent shadow or dual runs from duplicating external side effects unless an approved idempotent isolation
+      method exists.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: shadow-dual-run-canary-rollback-preparation-AC-03
+    requirement: Reconcile behavior, data, events, latency, cost, and user outcomes between old and new paths.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: shadow-dual-run-canary-rollback-preparation-AC-04
+    requirement: Test rollback, compensation, feature-flag failure, and data compatibility before authorized production use.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: shadow-dual-run-canary-rollback-preparation-AC-05
+    requirement: Produce a handoff packet for independent E4/E5 execution rather than self-certifying.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

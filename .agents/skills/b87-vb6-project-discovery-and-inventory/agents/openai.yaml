@@ -1,0 +1,4 @@
+interface:
+  display_name: "B87 Vb6 Project Discovery and Inventory"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b87-vb6-project-discovery-and-inventory to execute this ELMOS Language Pack Skill with fail-closed evidence."

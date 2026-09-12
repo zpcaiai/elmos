@@ -65,6 +65,30 @@
       ],
       "sql": "SELECT GROUP_CONCAT(DISTINCT name ORDER BY name) FROM customers",
       "expected": "BLOCKED"
+    },
+    {
+      "id": "NEG-PG-PLPGSQL",
+      "sourceProfile": "postgresql-17.5",
+      "targets": [
+        "mysql-8.4.10-lts"
+      ],
+      "sql": "CREATE FUNCTION guarded(p INTEGER) RETURNS INTEGER LANGUAGE plpgsql AS $$ BEGIN RETURN p; END; $$",
+      "expected": "BLOCKED"
+    },
+    {
+      "id": "NEG-MS-NOLOCK",
+      "sourceProfile": "sqlserver-2022-cu26",
+      "sql": "SELECT id FROM orders WITH (NOLOCK)",
+      "expected": "BLOCKED"
+    },
+    {
+      "id": "NEG-PG-FN-SQLITE",
+      "sourceProfile": "postgresql-17.5",
+      "targets": [
+        "sqlite-3.53.3"
+      ],
+      "sql": "CREATE FUNCTION add_one(x INTEGER) RETURNS INTEGER LANGUAGE SQL AS $$ SELECT x + 1 $$",
+      "expected": "BLOCKED"
     }
   ]
 }

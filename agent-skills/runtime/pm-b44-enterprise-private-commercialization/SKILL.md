@@ -1,5 +1,8 @@
 ---
 name: pm-b44-enterprise-private-commercialization
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "支持企业内网、完全离线、多租户、SSO、审计、授权、白标、SLA 和客户私有规则包的商业交付. Precision Migration B44 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

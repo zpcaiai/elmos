@@ -1,0 +1,4 @@
+<view class="{{'empty'}}">
+  <Icon name="database" size="{{22}}" />
+  <text>{{label}}</text>
+</view>

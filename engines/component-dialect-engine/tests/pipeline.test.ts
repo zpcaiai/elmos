@@ -1,8 +1,8 @@
 /**
  * Real repository-pipeline tests, including an actual `vite build` of the
  * generated project. The build test is what turns "the output runs" from a
- * claim into evidence; it is skipped only when network install is
- * unavailable, and says so rather than passing silently.
+ * claim into evidence, so the normal suite always executes it and fails
+ * explicitly when its required registry access is unavailable.
  */
 import { execFileSync } from "child_process";
 import * as fs from "fs";
@@ -121,23 +121,18 @@ describe("repository pipeline", () => {
    * The real end-to-end proof that the generated project runs: a genuine
    * `npm install` + `vite build` of the pipeline's own output.
    *
-   * It is opt-in via ELMOS_CDE_VERIFY_BUILD=1 because it needs network
-   * access and several minutes of disk-heavy installation, which makes it
-   * unsuitable for the default suite. It is NOT a stub -- when enabled it
-   * really builds, and it fails loudly if the output does not compile.
-   * Run it with:
-   *
-   *   ELMOS_CDE_VERIFY_BUILD=1 npm test
+   * This is intentionally part of the default suite: a missing registry,
+   * failed install, or failed compiler invocation is a real failed gate,
+   * never a skipped result.
    */
-  const buildIt = process.env["ELMOS_CDE_VERIFY_BUILD"] === "1" ? it : it.skip;
-  buildIt("BUILDS the generated Vue 3 project for real with vite", async () => {
+  it("BUILDS the generated Vue 3 project for real with vite", async () => {
     const destination = makeDestination();
     await runRepository({ repository: repo, sourceFramework: "react", targetFramework: "vue3", destination, skipExecution: true });
 
     try {
       execFileSync("npm", ["ping"], { cwd: destination, stdio: "ignore", timeout: 30000 });
     } catch {
-      throw new Error("ELMOS_CDE_VERIFY_BUILD=1 was set but the npm registry is unreachable");
+      throw new Error("the required npm registry is unreachable");
     }
 
     const verification = verifyBuild(destination, "vue3");

@@ -1,5 +1,8 @@
 ---
 name: pm-b17-lifecycle-semantic-mapping
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "映射 Vue、React、小程序、ArkUI 和 Flutter 生命周期及清理语义. Precision Migration B17 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

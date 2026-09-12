@@ -1,5 +1,8 @@
 ---
 name: pm-b30-http-differential-comparator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "比较状态码、Header、Body、错误、顺序、流、超时和重试. Precision Migration B30 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

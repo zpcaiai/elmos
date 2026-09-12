@@ -130,7 +130,10 @@ class SpringRouteCatalogTest {
                         () -> SpringRouteCatalog.select("1.5.22", "17", "maven")).code());
         var gradle = SpringRouteCatalog.select("2.7.18", "17", "gradle");
         assertEquals("boot-2.x-gradle-to-boot-3.5.3-java-21", gradle.route().routeId());
-        assertEquals(EvidenceStatus.NOT_RUN, gradle.evidence());
+        // The exact tuple 2.7.18 / Java 17 recorded baseline, rewrite, target
+        // build and loopback startup evidence on the pinned Gradle 8.14.3
+        // driver. Other Gradle tuples inside the 2.x range stay NOT_RUN.
+        assertEquals(EvidenceStatus.PASSED_LOCAL, gradle.evidence());
         assertTrue(gradle.requiresExperimentalOptIn());
     }
 
@@ -344,14 +347,34 @@ class SpringRouteCatalogTest {
         for (SpringRoute route : SpringRouteCatalog.routes()) {
             if (!route.targetBoot().equals("4.1.0")) continue;
             assertTrue(route.implemented(), route.routeId());
-            if (route.routeId().equals("boot-2.7-maven-to-boot-4.1.0-java-21")) {
+            if (route.routeId().equals("boot-1.5-maven-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("1.5.22.RELEASE", route.verifiedSourceBoot());
+                assertEquals("8", route.verifiedSourceJava());
+            } else if (route.routeId().equals("boot-2.0-2.6-maven-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("2.3.12.RELEASE", route.verifiedSourceBoot());
+                assertEquals("11", route.verifiedSourceJava());
+            } else if (route.routeId().equals("boot-2.7-maven-to-boot-4.1.0-java-21")) {
                 assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
                 assertEquals("2.7.18", route.verifiedSourceBoot());
+                assertEquals("17", route.verifiedSourceJava());
+            } else if (route.routeId().equals("boot-3.0-3.4-maven-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("3.4.1", route.verifiedSourceBoot());
                 assertEquals("17", route.verifiedSourceJava());
             } else if (route.routeId().equals("boot-3.5-maven-to-boot-4.1.0-java-21")) {
                 assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
                 assertEquals("3.5.3", route.verifiedSourceBoot());
                 assertEquals("21", route.verifiedSourceJava());
+            } else if (route.routeId().equals("boot-2.x-gradle-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("2.7.18", route.verifiedSourceBoot());
+                assertEquals("17", route.verifiedSourceJava());
+            } else if (route.routeId().equals("spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("5.3.39", route.verifiedSourceBoot());
+                assertEquals("11", route.verifiedSourceJava());
             } else {
                 assertEquals(EvidenceStatus.NOT_RUN, route.routeEvidence(), route.routeId());
             }
@@ -561,5 +584,22 @@ class SpringRouteCatalogTest {
         assertEquals("21", SpringRouteCatalog.normalizeJava("1.21"));
         assertEquals("1.8x", SpringRouteCatalog.normalizeJava("1.8x"));
         assertEquals("1.", SpringRouteCatalog.normalizeJava("1."));
+    }
+
+    @Test void javaEeServletRouteSelectionAndDiagnostics() {
+        var selection = SpringRouteCatalog.selectJavaEeServlet("2.5.0", "17", "maven", "3.5.3", "21");
+        assertEquals("servlet-2.5-jsp-maven-to-boot-3.5.3-java-21", selection.route().routeId());
+        assertEquals(EvidenceStatus.PASSED_LOCAL, selection.evidence());
+        assertEquals(SpringRouteCatalog.SourceFamily.JAVA_EE_SERVLET, selection.route().sourceFamily());
+        assertEquals(EvidenceStatus.NOT_RUN, selection.route().evidenceFor("2.5.0", "11"));
+
+        assertEquals("SERVLET_VERSION_UNRESOLVED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.selectJavaEeServlet(
+                                "", "17", "maven", "3.5.3", "21")).code());
+        assertEquals("UNSUPPORTED_SOURCE_SERVLET_VERSION",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.selectJavaEeServlet(
+                                "2.3.0", "17", "maven", "3.5.3", "21")).code());
     }
 }

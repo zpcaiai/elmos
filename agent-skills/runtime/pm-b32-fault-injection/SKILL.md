@@ -1,5 +1,8 @@
 ---
 name: pm-b32-fault-injection
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "注入网络、数据库、消息、磁盘、依赖、权限和资源故障. Precision Migration B32 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

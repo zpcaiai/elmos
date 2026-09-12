@@ -1,5 +1,8 @@
 ---
 name: pm-b36-language-pair-model-ranking
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "按具体语言/框架/数据库方向排名模型，而非依赖通用榜单. Precision Migration B36 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

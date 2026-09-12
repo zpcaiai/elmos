@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B04-003 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [4]
+Title: Batch 4 依赖Bootstrap：提供畸形、缺失、冲突、未知或明确不支持的输入
+Capability: 依赖Bootstrap
+Test Type: negative
+Skill: tst-b04-target-skeleton
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

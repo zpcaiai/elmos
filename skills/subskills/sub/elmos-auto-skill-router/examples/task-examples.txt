@@ -1,0 +1,6 @@
+continue
+继续 Spring 老项目迁移
+implement the next proof-driven certification work package
+fix SQL routine conversion differential tests
+harden Temporal worker idempotency and evidence commit
+review repository conversion security boundaries

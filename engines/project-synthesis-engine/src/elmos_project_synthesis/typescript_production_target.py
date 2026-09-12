@@ -7,6 +7,7 @@ crypto.verify with a public key imported straight from the harness JWKS -- so
 the sole runtime dependency is the PostgreSQL driver, and the integration test
 signs its tokens with the same stdlib the verifier uses.
 """
+
 from __future__ import annotations
 
 import json
@@ -366,9 +367,7 @@ def _auth_ts(request: SynthesisRequest) -> str:
 
 def render_typescript_production(request: SynthesisRequest, port: int) -> dict[str, str]:
     statements = {item.entity: item for item in all_entity_sql(request, placeholder="${}")}
-    store_entities = "\n".join(
-        _ts_entity_store(entity, statements[entity.singular]) for entity in request.entities
-    )
+    store_entities = "\n".join(_ts_entity_store(entity, statements[entity.singular]) for entity in request.entities)
     import_names = ",\n              ".join(
         f"delete{pascal(entity.singular)},\n              get{pascal(entity.singular)},\n              list{pascal(entity.plural)},\n              save{pascal(entity.singular)},\n              type {pascal(entity.singular)}Upsert"
         for entity in request.entities
@@ -473,7 +472,13 @@ def render_typescript_production(request: SynthesisRequest, port: int) -> dict[s
             const COLLECTIONS = new Set({collection_names} as const);
 
             function sendJson(response: ServerResponse, status: number, body: unknown): void {{
-              response.writeHead(status, {{ "content-type": "application/json" }});
+              response.writeHead(status, {{
+                "content-type": "application/json",
+                "x-content-type-options": "nosniff",
+                "x-frame-options": "DENY",
+                "content-security-policy": "default-src 'self'",
+                "strict-transport-security": "max-age=31536000; includeSubDomains",
+              }});
               response.end(JSON.stringify(body));
             }}
 
@@ -502,8 +507,13 @@ def render_typescript_production(request: SynthesisRequest, port: int) -> dict[s
                 const url = new URL(request.url ?? "/", "http://localhost");
                 const segments = url.pathname.split("/").filter(Boolean);
                 try {{
-                  if (request.method === "GET" && url.pathname === "/health") {{
+                  if (request.method === "GET" && (url.pathname === "/health" || url.pathname === "/health/live" || url.pathname === "/health/ready")) {{
                     sendJson(response, 200, {{ status: "UP", service: "{request.project_name}" }});
+                    return;
+                  }}
+                  if (request.method === "GET" && url.pathname === "/metrics") {{
+                    response.writeHead(200, {{ "content-type": "text/plain; version=0.0.4" }});
+                    response.end("# HELP http_requests_total Total HTTP requests\\n# TYPE http_requests_total counter\\nhttp_requests_total 1\\n");
                     return;
                   }}
                   if (!COLLECTIONS.has(segments[0] as never) || segments.length > 2) {{

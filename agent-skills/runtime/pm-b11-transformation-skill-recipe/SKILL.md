@@ -1,5 +1,8 @@
 ---
 name: pm-b11-transformation-skill-recipe
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "把自然语言、参考文档、代码样例和专家知识编译为可版本化、可组合、可测试和可审计的 Transformation Skill. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

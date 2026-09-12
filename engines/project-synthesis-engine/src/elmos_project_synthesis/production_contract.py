@@ -10,6 +10,7 @@ descriptors and only supplies syntax, so "does Go enforce tenant isolation the
 same way Java does" becomes a property of shared data rather than a matter of
 reading two emitters side by side.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -62,27 +63,80 @@ class EntitySql:
         return len(self.columns)
 
 
-def _quoted(columns: tuple[str, ...]) -> str:
-    return ", ".join(f'"{column}"' for column in columns)
+def _quoted(columns: tuple[str, ...], is_mysql: bool = False) -> str:
+    quote = "`" if is_mysql else '"'
+    return ", ".join(f"{quote}{column}{quote}" for column in columns)
 
 
-def entity_sql(entity: EntitySpec, *, placeholder: str = "?") -> EntitySql:
+def entity_sql(
+    entity: EntitySpec,
+    *,
+    placeholder: str = "?",
+    is_sqlite: bool = False,
+    is_mysql: bool = False,
+) -> EntitySql:
     """Build the four statements for an entity in a placeholder style.
 
     ``placeholder`` is a format string receiving the 1-based parameter index so
     both positional (``?``) and ordinal (``$1``, ``%s``) dialects are covered.
     """
     columns = tuple(field.name for field in entity.fields)
-    quoted = _quoted(columns)
-    table = f'"app"."{entity.plural}"'
+    quoted = _quoted(columns, is_mysql=is_mysql)
+    if is_mysql:
+        table = f"`{entity.plural}`"
+    elif is_sqlite:
+        table = f'"{entity.plural}"'
+    else:
+        table = f'"app"."{entity.plural}"'
 
     def mark(index: int) -> str:
         return placeholder.format(index) if "{" in placeholder else placeholder
 
     insert_values = ", ".join(mark(index) for index in range(3, 3 + len(columns)))
-    assignments = ", ".join(f'"{column}" = EXCLUDED."{column}"' for column in columns)
     # noqa: S608 below - every identifier here is produced by the strict entity
     # and field validators, and every value is bound as a parameter.
+    if is_mysql:
+        # MySQL 8.0.20 deprecated VALUES(col) in ON DUPLICATE KEY UPDATE.
+        # The 8.0.19+ row alias is the replacement the 8.0.41 image accepts.
+        if columns:
+            assignments = ", ".join(f"`{column}` = new_row.`{column}`" for column in columns)
+            insert_columns = f"`tenant_id`, `id`, {quoted}"
+            insert_row = f"{mark(1)}, {mark(2)}, {insert_values}"
+            select_columns = f"`id`, {quoted}"
+        else:
+            assignments = "`id` = new_row.`id`"
+            insert_columns = "`tenant_id`, `id`"
+            insert_row = f"{mark(1)}, {mark(2)}"
+            select_columns = "`id`"
+        return EntitySql(
+            entity=entity.singular,
+            plural=entity.plural,
+            columns=columns,
+            list_sql=f"SELECT {select_columns} FROM {table} WHERE `tenant_id` = {mark(1)} ORDER BY `id`",  # noqa: S608
+            get_sql=f"SELECT {select_columns} FROM {table} WHERE `tenant_id` = {mark(1)} AND `id` = {mark(2)}",  # noqa: S608
+            upsert_sql=(
+                f"INSERT INTO {table} ({insert_columns}) "  # noqa: S608
+                f"VALUES ({insert_row}) AS new_row "
+                f"ON DUPLICATE KEY UPDATE {assignments}"
+            ),
+            delete_sql=f"DELETE FROM {table} WHERE `tenant_id` = {mark(1)} AND `id` = {mark(2)}",  # noqa: S608
+        )
+    assignments = ", ".join(f'"{column}" = EXCLUDED."{column}"' for column in columns)
+    if is_sqlite:
+        return EntitySql(
+            entity=entity.singular,
+            plural=entity.plural,
+            columns=columns,
+            list_sql=f'SELECT "id", {quoted} FROM {table} WHERE "tenant_id" = {mark(1)} ORDER BY "id"',  # noqa: S608
+            get_sql=f'SELECT "id", {quoted} FROM {table} WHERE "tenant_id" = {mark(1)} AND "id" = {mark(2)}',  # noqa: S608
+            upsert_sql=(
+                f'INSERT INTO {table} ("tenant_id", "id", {quoted}) '  # noqa: S608
+                f"VALUES ({mark(1)}, {mark(2)}, {insert_values}) "
+                f'ON CONFLICT ("tenant_id", "id") DO UPDATE SET {assignments} '
+                f'RETURNING "id", {quoted}'
+            ),
+            delete_sql=f'DELETE FROM {table} WHERE "tenant_id" = {mark(1)} AND "id" = {mark(2)}',  # noqa: S608
+        )
     return EntitySql(
         entity=entity.singular,
         plural=entity.plural,
@@ -100,7 +154,15 @@ def entity_sql(entity: EntitySpec, *, placeholder: str = "?") -> EntitySql:
 
 
 def all_entity_sql(request: SynthesisRequest, *, placeholder: str = "?") -> list[EntitySql]:
-    return [entity_sql(entity, placeholder=placeholder) for entity in request.entities]
+    return [
+        entity_sql(
+            entity,
+            placeholder=placeholder,
+            is_sqlite=request.is_sqlite,
+            is_mysql=request.is_mysql,
+        )
+        for entity in request.entities
+    ]
 
 
 def uuid_relation_fields(request: SynthesisRequest) -> set[tuple[str, str]]:
@@ -119,9 +181,7 @@ def relation_parents(request: SynthesisRequest, entity_name: str) -> list[tuple[
     return [
         (relation.source_field, relation.target)
         for relation in request.canonical_relations
-        if relation.source == entity_name
-        and relation.source_field is not None
-        and relation.target_field == "id"
+        if relation.source == entity_name and relation.source_field is not None and relation.target_field == "id"
     ]
 
 
@@ -164,6 +224,9 @@ def routes(entity: EntitySpec) -> list[RouteSpec]:
 
 
 HEALTH_ROUTE = RouteSpec("GET", "/health", False, "Unauthenticated liveness and readiness probe")
+LIVENESS_ROUTE = RouteSpec("GET", "/health/live", False, "Unauthenticated liveness probe")
+READINESS_ROUTE = RouteSpec("GET", "/health/ready", False, "Unauthenticated readiness probe")
+METRICS_ROUTE = RouteSpec("GET", "/metrics", False, "Unauthenticated Prometheus metrics probe")
 
 
 @dataclass(frozen=True)
@@ -224,7 +287,13 @@ def production_contract(request: SynthesisRequest) -> dict[str, object]:
         "tenant_claim": TENANT_CLAIM,
         "tenant_setting": TENANT_SETTING,
         "database_role": DATABASE_ROLE,
-        "isolation": "postgresql-row-level-security-forced",
+        "isolation": (
+            "sqlite-tenant-scoped-queries"
+            if request.is_sqlite
+            else "mysql-tenant-scoped-queries"
+            if request.is_mysql
+            else "postgresql-row-level-security-forced"
+        ),
         "environment": {
             "database_url_file": ENV_DATABASE_URL_FILE,
             "auth_issuer": ENV_AUTH_ISSUER,
@@ -237,11 +306,35 @@ def production_contract(request: SynthesisRequest) -> dict[str, object]:
             for entity in request.entities
             for route in routes(entity)
         ]
-        + [{"method": HEALTH_ROUTE.method, "path": HEALTH_ROUTE.path, "authenticated": False}],
-        "http_status": http_status_contract(),
-        "integration_scenario": [
-            {"id": step.id, "description": step.description} for step in INTEGRATION_SCENARIO
+        + [
+            {"method": HEALTH_ROUTE.method, "path": HEALTH_ROUTE.path, "authenticated": False},
+            {"method": LIVENESS_ROUTE.method, "path": LIVENESS_ROUTE.path, "authenticated": False},
+            {"method": READINESS_ROUTE.method, "path": READINESS_ROUTE.path, "authenticated": False},
+            {"method": METRICS_ROUTE.method, "path": METRICS_ROUTE.path, "authenticated": False},
         ],
+        "http_status": http_status_contract(),
+        "production_nfrs": {
+            "observability": {
+                "metrics_endpoint": "/metrics",
+                "tracing_headers": ["traceparent", "x-request-id", "x-tenant-id"],
+            },
+            "probes": {
+                "health": "/health",
+                "liveness": "/health/live",
+                "readiness": "/health/ready",
+            },
+            "security_headers": {
+                "X-Content-Type-Options": "nosniff",
+                "X-Frame-Options": "DENY",
+                "Content-Security-Policy": "default-src 'self'",
+                "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+            },
+            "lifecycle": {
+                "graceful_shutdown": True,
+                "shutdown_signals": ["SIGTERM", "SIGINT"],
+            },
+        },
+        "integration_scenario": [{"id": step.id, "description": step.description} for step in INTEGRATION_SCENARIO],
         "external_evidence_status": "NOT_RUN",
         "certification_status": "NOT_CERTIFIED",
     }

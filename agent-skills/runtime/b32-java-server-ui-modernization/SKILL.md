@@ -1,6 +1,9 @@
 ---
 name: b32-java-server-ui-modernization
-description: "Modernize JSP JSF Thymeleaf tag libraries server helpers session-bound views postbacks and Java web UI flows into a certified modern web target without losing server contracts or security."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Modernize JSP JSF Thymeleaf tag libraries server helpers session-bound views postbacks and Java web UI flows into a certified modern web target without losing server contracts or security.
 ---
 
 ## Operating mode

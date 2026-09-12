@@ -1,0 +1,17 @@
+{
+  "verificationId": "VR-001",
+  "subjectRef": "CS-001",
+  "revisionSetId": "revset-001",
+  "checks": [
+    {
+      "id": "unit-tests",
+      "status": "pass",
+      "evidenceRefs": [
+        "EV-001"
+      ],
+      "notes": "All tests passed"
+    }
+  ],
+  "blockers": [],
+  "recommendation": "E3"
+}

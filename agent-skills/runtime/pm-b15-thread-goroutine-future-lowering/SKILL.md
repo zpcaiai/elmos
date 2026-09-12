@@ -1,5 +1,8 @@
 ---
 name: pm-b15-thread-goroutine-future-lowering
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "映射线程、goroutine、Task、Future、channel、锁、取消和调度语义. Precision Migration B15 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

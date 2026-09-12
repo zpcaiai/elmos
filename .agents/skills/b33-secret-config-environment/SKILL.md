@@ -1,5 +1,8 @@
 ---
 name: b33-secret-config-environment
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Migrate and certify secrets configuration environment overlays feature flags certificates and promotion semantics using references short-lived credentials encryption validation rotation and no plaintext leakage.
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b23-sqlserver-query-hint-and-plan
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "处理 NOLOCK、UPDLOCK、INDEX、RECOMPILE、Plan Guide 和目标执行计划. Precision Migration B23 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

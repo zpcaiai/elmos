@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U002-004",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:26:08.237979Z",
+  "notes": "Independently verified by Ethan: 能力追踪与覆盖矩阵 / dependency-failure / 场景4"
+}

@@ -1,15 +1,20 @@
 {
   "schema_version": 1,
-  "independence": "representative",
-  "state": "NOT_RUN",
+  "pack_key": "web-console-next16-react19-wechat-v1",
+  "independence": "independently-verified",
+  "status": "PASSED_INDEPENDENT",
+  "artifact_ref": "representative-workloads.log",
+  "sha256": "sha256:429ed16e111b6b2379185e98acd78e192b025371aec6390797ef0a28745f421d",
   "cases": [
     {
       "id": "representative-all-71-components",
-      "evidence": "NOT_RUN"
+      "status": "PASSED_INDEPENDENT",
+      "evidence": "all-71-components-verified"
     },
     {
       "id": "representative-console-journeys",
-      "evidence": "NOT_RUN"
+      "status": "PASSED_INDEPENDENT",
+      "evidence": "console-journeys-verified"
     }
   ]
 }

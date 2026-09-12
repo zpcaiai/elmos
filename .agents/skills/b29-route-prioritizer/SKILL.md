@@ -1,5 +1,8 @@
 ---
 name: b29-route-prioritizer
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Score and rank candidate language migration directions using customer demand, revenue potential, technical feasibility, corpus availability, maintenance cost, and strategic fit. Use before approving a new Batch 29 route.
 ---
 

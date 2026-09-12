@@ -2,7 +2,7 @@
   "packKey": "elmos-platform-finops",
   "batch": 44,
   "status": "OPEN",
-  "owner": "elmos-platform-maintainers",
+  "owner": "David Sterling, Head of Cloud FinOps & Economics",
   "risks": [
     {
       "id": "RISK-B44-RECONCILE-001",

@@ -1,0 +1,129 @@
+<view class="{{'container'}}">
+  <view class="{{'header'}}">
+    <view class="{{'titleRow'}}">
+      <text class="{{'badge'}}">ELMOS Governance &amp; Assurance OS</text>
+      <view class="{{'title'}}">契约治理、变异测试与多级缓存中心</view>
+    </view>
+    <view class="{{'subtitle'}}">展示变异、API 差分和缓存治理的交互形态；本页面未连接真实 Runner，所有示例均不构成执行证据。</view>
+    <view class="{{'notice'}}" role="status">SAMPLE_ONLY · Runner execution NOT_RUN · Independent verification NOT_RUN · Certification NOT_CERTIFIED</view>
+    <view class="{{'tabBar'}}">
+      <button type="button" class="{{`${'tabBtn'} ${activeTab === &quot;mutation&quot; ? 'activeTab' : &quot;&quot;}`}}" aria-pressed="{{activeTab === &quot;mutation&quot;}}" bindtap="onTap">
+        <Icon name="test" size="{{16}}" />
+        <text>变异测试充分性分析 (Mutation Testing)</text>
+      </button>
+      <button type="button" class="{{`${'tabBtn'} ${activeTab === &quot;api-diff&quot; ? 'activeTab' : &quot;&quot;}`}}" aria-pressed="{{activeTab === &quot;api-diff&quot;}}" bindtap="onTap">
+        <Icon name="route" size="{{16}}" />
+        <text>API 契约向后兼容漂移差分 (API Diff)</text>
+      </button>
+      <button type="button" class="{{`${'tabBtn'} ${activeTab === &quot;cas-cache&quot; ? 'activeTab' : &quot;&quot;}`}}" aria-pressed="{{activeTab === &quot;cas-cache&quot;}}" bindtap="onTap">
+        <Icon name="database" size="{{16}}" />
+        <text>多级 CAS 缓存网络 (CAS Cache &amp; Bloom)</text>
+      </button>
+    </view>
+  </view>
+  <view wx:if="{{activeTab === 'mutation'}}" class="{{'mainGrid'}}">
+    <view class="{{'panel'}}">
+      <view class="{{'panelHeader'}}">
+        <view>待测业务逻辑 (Source Code)</view>
+        <button type="button" class="{{'runBtn'}}" disabled="{{isAnalyzing}}" bindtap="handleRunMutation">
+          <Icon name="play" size="{{14}}" />
+          <text>{{isAnalyzing ? "生成示例中..." : "生成变异结果示例（不执行 Runner）"}}</text>
+        </button>
+      </view>
+      <textarea aria-label="待测业务逻辑示例" class="{{'editor'}}" value="{{codeSnippet}}" rows="{{8}}" bindchange="onChange" />
+      <view class="{{'scoreBoard'}}" aria-label="变异测试示例状态">
+        <view class="{{'scoreItem'}}">
+          <text class="{{'scoreVal'}}">{{mutationResults ? "75.0%" : "NOT_RUN"}}</text>
+          <text class="{{'scoreLbl'}}">变异杀伤率 (Kill Score)</text>
+        </view>
+        <view class="{{'scoreItem'}}">
+          <text class="{{'scoreVal'}}">{{mutationResults ? "3 / 4" : "—"}}</text>
+          <text class="{{'scoreLbl'}}">已击杀变异体 (Killed Mutants)</text>
+        </view>
+        <view class="{{'scoreItem'}}">
+          <text class="{{'scoreVal'}}">{{mutationResults ? "1" : "—"}}</text>
+          <text class="{{'scoreLbl'}}">存活变异体 (Survived)</text>
+        </view>
+      </view>
+    </view>
+    <view class="{{'panel'}}">
+      <view class="{{'panelHeader'}}">
+        <view>变异体示例 (Illustrative Mutants)</view>
+        <text class="{{'metaTag'}}">{{mutationResults ? "SAMPLE_ONLY" : "NOT_RUN"}}</text>
+      </view>
+      <view class="{{'mutantList'}}">
+        <view wx:if="{{!mutationResults}}" class="{{'emptyState'}}">尚未生成示例；真实变异测试、编译与测试回放均为 NOT_RUN。</view>
+        <block wx:else>
+          <view wx:for="{{mutationResults}}" wx:for-item="m" wx:key="m.id" key="{{m.id}}" class="{{'mutantCard'}}">
+            <view class="{{'mutantHeader'}}">
+              <text class="{{'mutantId'}}">{{m.id}}</text>
+              <text class="{{'mutantOp'}}">{{m.operator}}</text>
+              <text class="{{`${'statusBadge'} ${
+                        m.status === &quot;KILLED&quot; ? 'statusKilled' : 'statusSurvived'
+                      }`}}">{{m.status === "KILLED" ? "✓ KILLED" : "⚠ SURVIVED"}}</text>
+            </view>
+            <view class="{{'diffSnippet'}}">
+              <view class="{{'diffOrig'}}">- Line {{m.line}} : {{m.original}}</view>
+              <view class="{{'diffMut'}}">+ Line {{m.line}} : {{m.mutated}}</view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+  <view wx:if="{{activeTab === 'api-diff'}}" class="{{'fullPanel'}}">
+    <view class="{{'panelHeader'}}">
+      <view>API 契约差分静态示例</view>
+      <text class="{{'dangerTag'}}">SAMPLE_ONLY · NOT_RUN</text>
+    </view>
+    <view class="{{'diffList'}}">
+      <view wx:for="{{sampleDiffs}}" wx:for-item="d" wx:for-index="i" wx:key="d.id" key="{{i}}" class="{{'diffCard'}}">
+        <view class="{{'diffCardHeader'}}">
+          <text class="{{'endpointName'}}">{{d.endpoint}}</text>
+          <text class="{{`${'sevBadge'} ${
+                      d.severity === &quot;BREAKING&quot;
+                        ? 'sevBreaking'
+                        : d.severity === &quot;WARNING&quot;
+                        ? 'sevWarning'
+                        : 'sevNonBreaking'
+                    }`}}">{{d.severity}}</text>
+        </view>
+        <view class="{{'diffCardBody'}}">
+          <text class="{{'catLabel'}}">{{d.category}}</text>
+          <text>: {{d.description}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view wx:if="{{activeTab === 'cas-cache'}}" class="{{'fullPanel'}}">
+    <view class="{{'panelHeader'}}">
+      <view>浏览器内缓存状态示例</view>
+      <button type="button" class="{{'purgeBtn'}}" bindtap="handlePurgeL1">
+        <Icon name="refresh" size="{{14}}" />
+        <text>清空页面示例 L1 状态</text>
+      </button>
+    </view>
+    <view class="{{'metricsGrid'}}">
+      <view class="{{'metricCard'}}">
+        <text class="{{'mValue'}}">{{cacheStats.l1Items}}</text>
+        <text class="{{'mLabel'}}">L1 Memory Items</text>
+        <text class="{{'mDesc'}}">高速内存 LRU 缓存条目数</text>
+      </view>
+      <view class="{{'metricCard'}}">
+        <text class="{{'mValue'}}">{{cacheStats.totalEntries}}</text>
+        <text class="{{'mLabel'}}">Total Cached DAG Units</text>
+        <text class="{{'mDesc'}}">多级缓存持久化总单元</text>
+      </view>
+      <view class="{{'metricCard'}}">
+        <text class="{{'mValue'}}">{{(cacheStats.hitRatio * 100).toFixed(1)}} %</text>
+        <text class="{{'mLabel'}}">Cache Hit Ratio</text>
+        <text class="{{'mDesc'}}">CAS 命中加速比</text>
+      </view>
+      <view class="{{'metricCard'}}">
+        <text class="{{'mValue'}}">{{cacheStats.bloomFilterBits}} bits</text>
+        <text class="{{'mLabel'}}">Bloom Filter Active</text>
+        <text class="{{'mDesc'}}">布隆过滤器极速预检</text>
+      </view>
+    </view>
+  </view>
+</view>

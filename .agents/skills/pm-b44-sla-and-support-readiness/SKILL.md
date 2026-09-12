@@ -1,5 +1,8 @@
 ---
 name: pm-b44-sla-and-support-readiness
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "定义监控、值班、升级、响应、恢复、版本支持和客户沟通机制. Precision Migration B44 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

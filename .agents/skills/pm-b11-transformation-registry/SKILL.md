@@ -1,5 +1,8 @@
 ---
 name: pm-b11-transformation-registry
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "登记、发现、签名、授权、发布和撤回转换技能与方向包. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

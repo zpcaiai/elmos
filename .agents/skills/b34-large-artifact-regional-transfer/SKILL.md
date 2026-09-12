@@ -1,5 +1,8 @@
 ---
 name: b34-large-artifact-regional-transfer
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement secure resumable large-artifact transfer with chunk manifests digests encryption compression deduplication region policy bandwidth budgets relays and cleanup across private runners and control planes.
 ---
 

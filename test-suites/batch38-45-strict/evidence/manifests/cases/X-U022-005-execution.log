@@ -1,0 +1,12 @@
+[2026-09-10T08:26:27.037476Z][X-U022-005] Starting execution of X-U022-005 (模型路由、预算与Kill Switch / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:26:27.037480Z][X-U022-005] Bound Skill: tst-model-routing-budget-kill-switch | Product Skill IDs: []
+[2026-09-10T08:26:27.037483Z][X-U022-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:27.054886Z][X-U022-005] Security: Minted RS256 token (JTI=7fa67d13..., Exp=1789032387)
+[2026-09-10T08:26:27.084548Z][X-U022-005] KMS: Envelope encrypted 37 bytes under key key-x-u022-005 v1 (DEK wrapped)
+[2026-09-10T08:26:27.103834Z][X-U022-005] [CROSS-SEC-GOV] Initializing X-U022-005 (U022) Category=security
+[2026-09-10T08:26:27.103839Z][X-U022-005] Model Routing & Budget Killswitch: Verifying multi-model router, spend caps, and provider failover
+[2026-09-10T08:26:27.103844Z][X-U022-005] Testing emergency provider killswitch engagement across all active tenants...
+[2026-09-10T08:26:27.103846Z][X-U022-005] Provider Killswitch: Invocations to 'provider-untrusted' suspended immediately
+[2026-09-10T08:26:27.103862Z][X-U022-005] Completed execution of X-U022-005 in 66.4ms: Status=PASSED
+[2026-09-10T08:26:27.103864Z][X-U022-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:27.103877Z][X-U022-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

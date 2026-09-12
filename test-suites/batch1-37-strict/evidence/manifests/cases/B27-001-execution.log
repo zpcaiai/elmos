@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B27-001 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [27]
+Title: Batch 27 Semantic Diff：在精确版本、不可变Artifact和批准环境中执行完整成功路径
+Capability: Semantic Diff
+Test Type: happy_path
+Skill: tst-b27-incremental-production-factory
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

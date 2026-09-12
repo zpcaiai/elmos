@@ -1,0 +1,13 @@
+[2026-09-10T08:26:12.209950Z][X-U004-004] Starting execution of X-U004-004 (Evidence完整性与防伪 / dependency-failure / 场景4) [Category=dependency-failure, Priority=P2]
+[2026-09-10T08:26:12.209954Z][X-U004-004] Bound Skill: tst-b38-45-evidence-integrity-anti-cheating | Product Skill IDs: []
+[2026-09-10T08:26:12.209955Z][X-U004-004] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:12.231033Z][X-U004-004] Security: Minted RS256 token (JTI=65f1c3d1..., Exp=1789032372)
+[2026-09-10T08:26:12.274239Z][X-U004-004] KMS: Envelope encrypted 37 bytes under key key-x-u004-004 v1 (DEK wrapped)
+[2026-09-10T08:26:12.303985Z][X-U004-004] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U004-004 (U004)
+[2026-09-10T08:26:12.303991Z][X-U004-004] Executing category=dependency-failure on U004
+[2026-09-10T08:26:12.303995Z][X-U004-004] Evidence Integrity & Anti-Cheating: Validating non-repudiation controls...
+[2026-09-10T08:26:12.304000Z][X-U004-004] Simulating timestamp authority (TSA) network failure...
+[2026-09-10T08:26:12.304001Z][X-U004-004] TSA Fallback: Fallback to local monotonic hardware counter with signed witness
+[2026-09-10T08:26:12.304027Z][X-U004-004] Completed execution of X-U004-004 in 94.1ms: Status=PASSED
+[2026-09-10T08:26:12.304030Z][X-U004-004] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:12.304043Z][X-U004-004] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -1,5 +1,8 @@
 ---
 name: pm-b23-sqlserver-linked-server
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Linked Server、四段名、OPENQUERY、权限和分布式事务. Precision Migration B23 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

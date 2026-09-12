@@ -1,0 +1,5621 @@
+{
+  "schemaVersion": 1,
+  "timestamp": "2026-09-10T16:08:24.959Z",
+  "evaluationLevel": "L5_PHYSICAL_VISUAL_AND_INTERACTION",
+  "packKey": "web-console-full-syntax-wechat",
+  "viewport": {
+    "device": "iPhone 14 Pro",
+    "width": 393,
+    "height": 852,
+    "pixelRatio": 3,
+    "colResolution": 100,
+    "rowResolution": 200
+  },
+  "thresholds": {
+    "visualMatchRatePercentMin": 99,
+    "structuralSimilarityIndexMin": 0.98,
+    "interactiveLifecycleRequired": [
+      "MOUNT",
+      "TAP",
+      "SET_DATA",
+      "TEARDOWN"
+    ]
+  },
+  "totals": {
+    "totalComponents": 71,
+    "l5CertifiedCount": 71,
+    "l5CertificationPassRatePercent": 100,
+    "averageVisualMatchRatePercent": 100,
+    "averageSSIMScore": 0.9998,
+    "dispositionBreakdown": {
+      "automatic": {
+        "total": 71,
+        "l5Certified": 71,
+        "l5PassRatePercent": 100
+      },
+      "handPorted": {
+        "total": 0,
+        "l5Certified": 0,
+        "l5PassRatePercent": 0
+      }
+    },
+    "lifecycleCoverage": {
+      "mountPassRatePercent": 100,
+      "tapPassRatePercent": 100,
+      "setDataPassRatePercent": 100,
+      "teardownPassRatePercent": 100
+    }
+  },
+  "components": [
+    {
+      "componentName": "AccountOrganizationStudio",
+      "sourcePath": "app/account/AccountOrganizationStudio.tsx",
+      "targetPath": "target-project/components/AccountOrganizationStudio",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "organizations": [],
+            "selectedId": "",
+            "members": [],
+            "name": "",
+            "region": "cn-north",
+            "inviteEmail": "",
+            "inviteRole": "MEMBER",
+            "invitationToken": "",
+            "acceptToken": "",
+            "feedback": "",
+            "busy": false,
+            "embedded": false
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "organizations": [],
+            "selectedId": "",
+            "members": [],
+            "name": "",
+            "region": "cn-north",
+            "inviteEmail": "",
+            "inviteRole": "MEMBER",
+            "invitationToken": "",
+            "acceptToken": "",
+            "feedback": "",
+            "busy": false,
+            "embedded": false
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "organizations": [],
+            "selectedId": "",
+            "members": [],
+            "name": "",
+            "region": "cn-north",
+            "inviteEmail": "",
+            "inviteRole": "MEMBER",
+            "invitationToken": "",
+            "acceptToken": "",
+            "feedback": "",
+            "busy": false,
+            "embedded": false,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "AccountWalletPanel",
+      "sourcePath": "app/account/AccountWalletPanel.tsx",
+      "targetPath": "target-project/components/AccountWalletPanel",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "wallet": null,
+            "ledger": [],
+            "handoff": null,
+            "amountYuan": "",
+            "feedback": "",
+            "failure": "",
+            "busy": false,
+            "idempotencyKey": {
+              "current": null
+            },
+            "keyAmount": {
+              "current": null
+            }
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "wallet": null,
+            "ledger": [],
+            "handoff": null,
+            "amountYuan": "",
+            "feedback": "",
+            "failure": "",
+            "busy": false,
+            "idempotencyKey": {
+              "current": null
+            },
+            "keyAmount": {
+              "current": null
+            }
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "wallet": null,
+            "ledger": [],
+            "handoff": null,
+            "amountYuan": "",
+            "feedback": "",
+            "failure": "",
+            "busy": false,
+            "idempotencyKey": {
+              "current": null
+            },
+            "keyAmount": {
+              "current": null
+            },
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "AccountPage",
+      "sourcePath": "app/account/page.tsx",
+      "targetPath": "target-project/components/AccountPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "Empty",
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "target-project/components/Empty",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "label": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "label": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "label": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "EventTable",
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "target-project/components/EventTable",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "events": null,
+            "empty": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "events": null,
+            "empty": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "events": null,
+            "empty": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "IncidentCard",
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "target-project/components/IncidentCard",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "incident": null,
+            "businessLineLabel": null,
+            "disabled": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "incident": null,
+            "businessLineLabel": null,
+            "disabled": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "incident": null,
+            "businessLineLabel": null,
+            "disabled": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "OperationsAdmin",
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "target-project/components/OperationsAdmin",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "hours": "24",
+            "businessLine": "ALL",
+            "result": "ALL",
+            "state": "LOCKED",
+            "view": null,
+            "error": "",
+            "notice": "",
+            "busyAction": "",
+            "exportDays": "7",
+            "exportBusy": false,
+            "exportError": "",
+            "exportNotice": "",
+            "replayRunId": "",
+            "replayBusy": false,
+            "replayError": "",
+            "replay": null,
+            "quota": null,
+            "quotaBusy": false,
+            "quotaError": "",
+            "quotaNotice": "",
+            "quotaTokenLimit": "",
+            "quotaCreditLimit": "",
+            "quotaReason": "",
+            "operationsJobs": [],
+            "operationsJobsLoaded": false,
+            "operationsJobsBusy": false,
+            "operationsJobsError": "",
+            "operationsJobsNotice": "",
+            "operationsJobBusinessLine": "ALL",
+            "operationsJobStatus": "ALL",
+            "operationsJobCancelBusy": "",
+            "runnerFleet": [],
+            "runnerFleetLoaded": false,
+            "runnerFleetBusy": false,
+            "runnerFleetStatus": "ALL",
+            "runnerFleetActionBusy": "",
+            "runnerFleetError": "",
+            "runnerFleetNotice": "",
+            "adminSection": "USERS",
+            "systemReadiness": null,
+            "systemReadinessBusy": false,
+            "systemReadinessError": "",
+            "financialStatus": "OPEN",
+            "financialCases": [],
+            "financialLoaded": false,
+            "financialLoadBusy": false,
+            "financialBusyAction": "",
+            "financialError": "",
+            "financialNotice": "",
+            "financialUnknown": "",
+            "financialResolutionRefs": {},
+            "financialIdempotencyKeys": {
+              "current": null
+            },
+            "periodLabel": null,
+            "taskEvents": null,
+            "repositoryEvents": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "hours": "24",
+            "businessLine": "ALL",
+            "result": "ALL",
+            "state": "LOCKED",
+            "view": null,
+            "error": "",
+            "notice": "",
+            "busyAction": "",
+            "exportDays": "7",
+            "exportBusy": false,
+            "exportError": "",
+            "exportNotice": "",
+            "replayRunId": "",
+            "replayBusy": false,
+            "replayError": "",
+            "replay": null,
+            "quota": null,
+            "quotaBusy": false,
+            "quotaError": "",
+            "quotaNotice": "",
+            "quotaTokenLimit": "",
+            "quotaCreditLimit": "",
+            "quotaReason": "",
+            "operationsJobs": [],
+            "operationsJobsLoaded": false,
+            "operationsJobsBusy": false,
+            "operationsJobsError": "",
+            "operationsJobsNotice": "",
+            "operationsJobBusinessLine": "ALL",
+            "operationsJobStatus": "ALL",
+            "operationsJobCancelBusy": "",
+            "runnerFleet": [],
+            "runnerFleetLoaded": false,
+            "runnerFleetBusy": false,
+            "runnerFleetStatus": "ALL",
+            "runnerFleetActionBusy": "",
+            "runnerFleetError": "",
+            "runnerFleetNotice": "",
+            "adminSection": "USERS",
+            "systemReadiness": null,
+            "systemReadinessBusy": false,
+            "systemReadinessError": "",
+            "financialStatus": "OPEN",
+            "financialCases": [],
+            "financialLoaded": false,
+            "financialLoadBusy": false,
+            "financialBusyAction": "",
+            "financialError": "",
+            "financialNotice": "",
+            "financialUnknown": "",
+            "financialResolutionRefs": {},
+            "financialIdempotencyKeys": {
+              "current": null
+            },
+            "periodLabel": null,
+            "taskEvents": null,
+            "repositoryEvents": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "hours": "24",
+            "businessLine": "ALL",
+            "result": "ALL",
+            "state": "LOCKED",
+            "view": null,
+            "error": "",
+            "notice": "",
+            "busyAction": "",
+            "exportDays": "7",
+            "exportBusy": false,
+            "exportError": "",
+            "exportNotice": "",
+            "replayRunId": "",
+            "replayBusy": false,
+            "replayError": "",
+            "replay": null,
+            "quota": null,
+            "quotaBusy": false,
+            "quotaError": "",
+            "quotaNotice": "",
+            "quotaTokenLimit": "",
+            "quotaCreditLimit": "",
+            "quotaReason": "",
+            "operationsJobs": [],
+            "operationsJobsLoaded": false,
+            "operationsJobsBusy": false,
+            "operationsJobsError": "",
+            "operationsJobsNotice": "",
+            "operationsJobBusinessLine": "ALL",
+            "operationsJobStatus": "ALL",
+            "operationsJobCancelBusy": "",
+            "runnerFleet": [],
+            "runnerFleetLoaded": false,
+            "runnerFleetBusy": false,
+            "runnerFleetStatus": "ALL",
+            "runnerFleetActionBusy": "",
+            "runnerFleetError": "",
+            "runnerFleetNotice": "",
+            "adminSection": "USERS",
+            "systemReadiness": null,
+            "systemReadinessBusy": false,
+            "systemReadinessError": "",
+            "financialStatus": "OPEN",
+            "financialCases": [],
+            "financialLoaded": false,
+            "financialLoadBusy": false,
+            "financialBusyAction": "",
+            "financialError": "",
+            "financialNotice": "",
+            "financialUnknown": "",
+            "financialResolutionRefs": {},
+            "financialIdempotencyKeys": {
+              "current": null
+            },
+            "periodLabel": null,
+            "taskEvents": null,
+            "repositoryEvents": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "RemediationCard",
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "target-project/components/RemediationCard",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 19994,
+        "diffPixels": 6,
+        "pixelDiffRatePercent": 0.03,
+        "visualMatchRatePercent": 99.97,
+        "ssimScore": 0.998,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "proposal": null,
+            "disabled": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "proposal": null,
+            "disabled": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "proposal": null,
+            "disabled": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "AdminPage",
+      "sourcePath": "app/admin/page.tsx",
+      "targetPath": "target-project/components/AdminPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "PlatformJobsPanel",
+      "sourcePath": "app/admin/PlatformJobsPanel.tsx",
+      "targetPath": "target-project/components/PlatformJobsPanel",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "rows": [],
+            "loaded": false,
+            "status": "ALL",
+            "organization": "",
+            "denial": "",
+            "busy": false
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "rows": [],
+            "loaded": false,
+            "status": "ALL",
+            "organization": "",
+            "denial": "",
+            "busy": false
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "rows": [],
+            "loaded": false,
+            "status": "ALL",
+            "organization": "",
+            "denial": "",
+            "busy": false,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "PlatformWalletPanel",
+      "sourcePath": "app/admin/PlatformWalletPanel.tsx",
+      "targetPath": "target-project/components/PlatformWalletPanel",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 19992,
+        "diffPixels": 8,
+        "pixelDiffRatePercent": 0.04,
+        "visualMatchRatePercent": 99.96,
+        "ssimScore": 0.997,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "wallets": [],
+            "topups": [],
+            "loaded": false,
+            "expanded": "",
+            "ledger": [],
+            "ledgerBusy": false,
+            "denial": "",
+            "notice": "",
+            "busy": false,
+            "target": "",
+            "amountYuan": "",
+            "direction": "CREDIT",
+            "reason": "",
+            "idempotencyKey": {
+              "current": null
+            },
+            "keySignature": {
+              "current": null
+            },
+            "canAdjust": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "wallets": [],
+            "topups": [],
+            "loaded": false,
+            "expanded": "",
+            "ledger": [],
+            "ledgerBusy": false,
+            "denial": "",
+            "notice": "",
+            "busy": false,
+            "target": "",
+            "amountYuan": "",
+            "direction": "CREDIT",
+            "reason": "",
+            "idempotencyKey": {
+              "current": null
+            },
+            "keySignature": {
+              "current": null
+            },
+            "canAdjust": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "wallets": [],
+            "topups": [],
+            "loaded": false,
+            "expanded": "",
+            "ledger": [],
+            "ledgerBusy": false,
+            "denial": "",
+            "notice": "",
+            "busy": false,
+            "target": "",
+            "amountYuan": "",
+            "direction": "CREDIT",
+            "reason": "",
+            "idempotencyKey": {
+              "current": null
+            },
+            "keySignature": {
+              "current": null
+            },
+            "canAdjust": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "CommercializationConsole",
+      "sourcePath": "app/commercialization/CommercializationConsole.tsx",
+      "targetPath": "target-project/components/CommercializationConsole",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "payload": {},
+            "selected": "B37",
+            "refreshing": false
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "payload": {},
+            "selected": "B37",
+            "refreshing": false
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "payload": {},
+            "selected": "B37",
+            "refreshing": false,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "CommercializationPage",
+      "sourcePath": "app/commercialization/page.tsx",
+      "targetPath": "target-project/components/CommercializationPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "AccountSessionProvider",
+      "sourcePath": "app/components/AccountSessionProvider.tsx",
+      "targetPath": "target-project/components/AccountSessionProvider",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "status": "loading",
+            "principal": null,
+            "expiresAt": null,
+            "value": null,
+            "children": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "status": "loading",
+            "principal": null,
+            "expiresAt": null,
+            "value": null,
+            "children": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "status": "loading",
+            "principal": null,
+            "expiresAt": null,
+            "value": null,
+            "children": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "AppShell",
+      "sourcePath": "app/components/AppShell.tsx",
+      "targetPath": "target-project/components/AppShell",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "mobileOpen": false,
+            "commandOpen": false,
+            "commandQuery": "",
+            "commandActive": 0,
+            "showBackToTop": false,
+            "telemetryEnabled": true,
+            "profileOpen": false,
+            "commandPanel": {
+              "current": null
+            },
+            "commandInput": {
+              "current": null
+            },
+            "returnFocus": {
+              "current": null
+            },
+            "visibleCommands": [],
+            "children": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "mobileOpen": false,
+            "commandOpen": false,
+            "commandQuery": "",
+            "commandActive": 0,
+            "showBackToTop": false,
+            "telemetryEnabled": true,
+            "profileOpen": false,
+            "commandPanel": {
+              "current": null
+            },
+            "commandInput": {
+              "current": null
+            },
+            "returnFocus": {
+              "current": null
+            },
+            "visibleCommands": [],
+            "children": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "mobileOpen": false,
+            "commandOpen": false,
+            "commandQuery": "",
+            "commandActive": 0,
+            "showBackToTop": false,
+            "telemetryEnabled": true,
+            "profileOpen": false,
+            "commandPanel": {
+              "current": null
+            },
+            "commandInput": {
+              "current": null
+            },
+            "returnFocus": {
+              "current": null
+            },
+            "visibleCommands": [],
+            "children": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "Icon",
+      "sourcePath": "app/components/Icon.tsx",
+      "targetPath": "target-project/components/Icon",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "name": null,
+            "size": 20,
+            "className": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "name": null,
+            "size": 20,
+            "className": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "name": null,
+            "size": 20,
+            "className": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "BehaviorChart",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/BehaviorChart",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "behavior": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "behavior": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "behavior": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "CoverageMeter",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/CoverageMeter",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "label": null,
+            "status": null,
+            "passed": null,
+            "total": null,
+            "counts": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "label": null,
+            "status": null,
+            "passed": null,
+            "total": null,
+            "counts": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "label": null,
+            "status": null,
+            "passed": null,
+            "total": null,
+            "counts": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "EmptyEvidence",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/EmptyEvidence",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "title": null,
+            "detail": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "title": null,
+            "detail": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "title": null,
+            "detail": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "EquivalenceMatrix",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/EquivalenceMatrix",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "behavior": null,
+            "dimension": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "behavior": null,
+            "dimension": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "behavior": null,
+            "dimension": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "EvidenceGraph",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/EvidenceGraph",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "title": null,
+            "description": null,
+            "nodes": null,
+            "edges": null,
+            "status": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "title": null,
+            "description": null,
+            "nodes": null,
+            "edges": null,
+            "status": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "title": null,
+            "description": null,
+            "nodes": null,
+            "edges": null,
+            "status": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "ProjectEvidenceCharts",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/ProjectEvidenceCharts",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "insights": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "insights": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "insights": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "SemanticMappingChart",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/SemanticMappingChart",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "semantic": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "semantic": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "semantic": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "StatusMark",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/StatusMark",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "status": null,
+            "compact": false
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "status": null,
+            "compact": false
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "status": null,
+            "compact": false,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "TranslationEvidenceCharts",
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "target-project/components/TranslationEvidenceCharts",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "semanticCoverage": null,
+            "behaviorCoverage": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "semanticCoverage": null,
+            "behaviorCoverage": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "semanticCoverage": null,
+            "behaviorCoverage": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "RuntimeDeploymentGuide",
+      "sourcePath": "app/components/RuntimeDeploymentGuide.tsx",
+      "targetPath": "target-project/components/RuntimeDeploymentGuide",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "guidance": null,
+            "selectedTargets": null,
+            "id": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "guidance": null,
+            "selectedTargets": null,
+            "id": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "guidance": null,
+            "selectedTargets": null,
+            "id": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "SmokeRunButton",
+      "sourcePath": "app/components/SmokeRunButton.tsx",
+      "targetPath": "target-project/components/SmokeRunButton",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "capability": null,
+            "pack": null,
+            "session": null,
+            "evidence": null,
+            "entry": "",
+            "error": null,
+            "busy": false,
+            "remaining": 0,
+            "extendOpen": false,
+            "extendSeconds": 300,
+            "extendReason": "",
+            "extendActor": "",
+            "expiresAtRef": {
+              "current": null
+            },
+            "selectedEntry": null,
+            "projectRef": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "capability": null,
+            "pack": null,
+            "session": null,
+            "evidence": null,
+            "entry": "",
+            "error": null,
+            "busy": false,
+            "remaining": 0,
+            "extendOpen": false,
+            "extendSeconds": 300,
+            "extendReason": "",
+            "extendActor": "",
+            "expiresAtRef": {
+              "current": null
+            },
+            "selectedEntry": null,
+            "projectRef": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "capability": null,
+            "pack": null,
+            "session": null,
+            "evidence": null,
+            "entry": "",
+            "error": null,
+            "busy": false,
+            "remaining": 0,
+            "extendOpen": false,
+            "extendSeconds": 300,
+            "extendReason": "",
+            "extendActor": "",
+            "expiresAtRef": {
+              "current": null
+            },
+            "selectedEntry": null,
+            "projectRef": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "StatusChip",
+      "sourcePath": "app/components/StatusChip.tsx",
+      "targetPath": "target-project/components/StatusChip",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "status": null,
+            "compact": false
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "status": null,
+            "compact": false
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "status": null,
+            "compact": false,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "UiPreferencesProvider",
+      "sourcePath": "app/components/UiPreferencesProvider.tsx",
+      "targetPath": "target-project/components/UiPreferencesProvider",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "locale": "zh-CN",
+            "theme": "light",
+            "value": null,
+            "children": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "locale": "zh-CN",
+            "theme": "light",
+            "value": null,
+            "children": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "locale": "zh-CN",
+            "theme": "light",
+            "value": null,
+            "children": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "FrontendTransformationStudio",
+      "sourcePath": "app/frontend/FrontendTransformationStudio.tsx",
+      "targetPath": "target-project/components/FrontendTransformationStudio",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "batch": "ALL",
+            "query": "",
+            "source": "Vue 3",
+            "target": "React",
+            "selectedSkillId": "FRT-1305",
+            "workspaceId": "workspace-frt-console",
+            "projectId": "project-frt-console",
+            "environmentId": "development",
+            "releaseId": "local-review",
+            "policyVersion": "frt-policy-1.0.0",
+            "risk": "R4",
+            "tenantId": "",
+            "actorId": "",
+            "runnerToken": "",
+            "sourceFiles": {},
+            "inputJson": "{}",
+            "run": null,
+            "audit": [],
+            "operationError": "",
+            "busy": false,
+            "filteredSkills": []
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "batch": "ALL",
+            "query": "",
+            "source": "Vue 3",
+            "target": "React",
+            "selectedSkillId": "FRT-1305",
+            "workspaceId": "workspace-frt-console",
+            "projectId": "project-frt-console",
+            "environmentId": "development",
+            "releaseId": "local-review",
+            "policyVersion": "frt-policy-1.0.0",
+            "risk": "R4",
+            "tenantId": "",
+            "actorId": "",
+            "runnerToken": "",
+            "sourceFiles": {},
+            "inputJson": "{}",
+            "run": null,
+            "audit": [],
+            "operationError": "",
+            "busy": false,
+            "filteredSkills": []
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "batch": "ALL",
+            "query": "",
+            "source": "Vue 3",
+            "target": "React",
+            "selectedSkillId": "FRT-1305",
+            "workspaceId": "workspace-frt-console",
+            "projectId": "project-frt-console",
+            "environmentId": "development",
+            "releaseId": "local-review",
+            "policyVersion": "frt-policy-1.0.0",
+            "risk": "R4",
+            "tenantId": "",
+            "actorId": "",
+            "runnerToken": "",
+            "sourceFiles": {},
+            "inputJson": "{}",
+            "run": null,
+            "audit": [],
+            "operationError": "",
+            "busy": false,
+            "filteredSkills": [],
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "FrontendTransformationPage",
+      "sourcePath": "app/frontend/page.tsx",
+      "targetPath": "target-project/components/FrontendTransformationPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "GenerationPage",
+      "sourcePath": "app/generation/page.tsx",
+      "targetPath": "target-project/components/GenerationPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "ProjectGenerationStudio",
+      "sourcePath": "app/generation/ProjectGenerationStudio.tsx",
+      "targetPath": "target-project/components/ProjectGenerationStudio",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "name": "order-service",
+            "namespace": "io.elmos.orders",
+            "description": "提供订单创建、查询与状态管理的服务",
+            "entity": "order",
+            "reviewer": "user:reviewer",
+            "targets": [
+              "java",
+              "python"
+            ],
+            "persistence": "in-memory",
+            "authMode": "none",
+            "sourceUrl": "",
+            "sourceSkills": "",
+            "repositoryWorkspaceId": "",
+            "repositoryPaths": "",
+            "sourceFiles": [],
+            "sourceBundle": null,
+            "sourceBusy": false,
+            "draft": null,
+            "savedDrafts": [],
+            "draftsReady": true,
+            "capability": null,
+            "capabilityError": "",
+            "runnerReadiness": null,
+            "tenantId": "local-dev",
+            "runnerToken": "",
+            "analysis": null,
+            "approved": false,
+            "job": null,
+            "recoveryJobId": "",
+            "runnerBusy": false,
+            "runtimeLanguage": "java",
+            "runtimePreviewPayload": null,
+            "githubOwner": "",
+            "githubRepositoryName": "order-service",
+            "githubToken": "",
+            "githubConfirmed": false,
+            "githubBusy": false,
+            "githubIdempotencyKey": null,
+            "feedback": "",
+            "targetError": "",
+            "feedbackTimer": {
+              "current": null
+            },
+            "sourceFileInput": {
+              "current": null
+            },
+            "jobRequestEpoch": {
+              "current": null
+            },
+            "artifactGroups": null,
+            "runtimeRemainingSeconds": null,
+            "selectedProfiles": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "name": "order-service",
+            "namespace": "io.elmos.orders",
+            "description": "提供订单创建、查询与状态管理的服务",
+            "entity": "order",
+            "reviewer": "user:reviewer",
+            "targets": [
+              "java",
+              "python"
+            ],
+            "persistence": "in-memory",
+            "authMode": "none",
+            "sourceUrl": "",
+            "sourceSkills": "",
+            "repositoryWorkspaceId": "",
+            "repositoryPaths": "",
+            "sourceFiles": [],
+            "sourceBundle": null,
+            "sourceBusy": false,
+            "draft": null,
+            "savedDrafts": [],
+            "draftsReady": true,
+            "capability": null,
+            "capabilityError": "",
+            "runnerReadiness": null,
+            "tenantId": "local-dev",
+            "runnerToken": "",
+            "analysis": null,
+            "approved": false,
+            "job": null,
+            "recoveryJobId": "",
+            "runnerBusy": false,
+            "runtimeLanguage": "java",
+            "runtimePreviewPayload": null,
+            "githubOwner": "",
+            "githubRepositoryName": "order-service",
+            "githubToken": "",
+            "githubConfirmed": false,
+            "githubBusy": false,
+            "githubIdempotencyKey": null,
+            "feedback": "",
+            "targetError": "",
+            "feedbackTimer": {
+              "current": null
+            },
+            "sourceFileInput": {
+              "current": null
+            },
+            "jobRequestEpoch": {
+              "current": null
+            },
+            "artifactGroups": null,
+            "runtimeRemainingSeconds": null,
+            "selectedProfiles": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "name": "order-service",
+            "namespace": "io.elmos.orders",
+            "description": "提供订单创建、查询与状态管理的服务",
+            "entity": "order",
+            "reviewer": "user:reviewer",
+            "targets": [
+              "java",
+              "python"
+            ],
+            "persistence": "in-memory",
+            "authMode": "none",
+            "sourceUrl": "",
+            "sourceSkills": "",
+            "repositoryWorkspaceId": "",
+            "repositoryPaths": "",
+            "sourceFiles": [],
+            "sourceBundle": null,
+            "sourceBusy": false,
+            "draft": null,
+            "savedDrafts": [],
+            "draftsReady": true,
+            "capability": null,
+            "capabilityError": "",
+            "runnerReadiness": null,
+            "tenantId": "local-dev",
+            "runnerToken": "",
+            "analysis": null,
+            "approved": false,
+            "job": null,
+            "recoveryJobId": "",
+            "runnerBusy": false,
+            "runtimeLanguage": "java",
+            "runtimePreviewPayload": null,
+            "githubOwner": "",
+            "githubRepositoryName": "order-service",
+            "githubToken": "",
+            "githubConfirmed": false,
+            "githubBusy": false,
+            "githubIdempotencyKey": null,
+            "feedback": "",
+            "targetError": "",
+            "feedbackTimer": {
+              "current": null
+            },
+            "sourceFileInput": {
+              "current": null
+            },
+            "jobRequestEpoch": {
+              "current": null
+            },
+            "artifactGroups": null,
+            "runtimeRemainingSeconds": null,
+            "selectedProfiles": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "GovernanceWorkspace",
+      "sourcePath": "app/governance/GovernanceWorkspace.tsx",
+      "targetPath": "target-project/components/GovernanceWorkspace",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "activeTab": "mutation",
+            "codeSnippet": "public int calculateDiscount(int price) {\n  if (price > 100) {\n    return price - 20;\n  }\n  return price;\n}",
+            "isAnalyzing": false,
+            "mutationResults": null,
+            "cacheStats": {
+              "l1Items": 14,
+              "totalEntries": 240,
+              "totalSizeBytes": 3145728,
+              "hitRatio": 0.8842,
+              "bloomFilterBits": 2048
+            }
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "activeTab": "mutation",
+            "codeSnippet": "public int calculateDiscount(int price) {\n  if (price > 100) {\n    return price - 20;\n  }\n  return price;\n}",
+            "isAnalyzing": false,
+            "mutationResults": null,
+            "cacheStats": {
+              "l1Items": 14,
+              "totalEntries": 240,
+              "totalSizeBytes": 3145728,
+              "hitRatio": 0.8842,
+              "bloomFilterBits": 2048
+            }
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "activeTab": "mutation",
+            "codeSnippet": "public int calculateDiscount(int price) {\n  if (price > 100) {\n    return price - 20;\n  }\n  return price;\n}",
+            "isAnalyzing": false,
+            "mutationResults": null,
+            "cacheStats": {
+              "l1Items": 14,
+              "totalEntries": 240,
+              "totalSizeBytes": 3145728,
+              "hitRatio": 0.8842,
+              "bloomFilterBits": 2048
+            },
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "GovernancePage",
+      "sourcePath": "app/governance/page.tsx",
+      "targetPath": "target-project/components/GovernancePage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "HelpCenter",
+      "sourcePath": "app/help/HelpCenter.tsx",
+      "targetPath": "target-project/components/HelpCenter",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "HelpPage",
+      "sourcePath": "app/help/page.tsx",
+      "targetPath": "target-project/components/HelpPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "MultimodalIntakeWorkbench",
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "targetPath": "target-project/components/MultimodalIntakeWorkbench",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "projectId": "default-project",
+            "directText": "",
+            "assets": [],
+            "recoveryRecordCount": 0,
+            "legacyRecoveryCount": 0,
+            "recoveryStoreReady": false,
+            "recoveryStoreError": "",
+            "busy": false,
+            "reviewBusy": false,
+            "feedback": "",
+            "treeQuery": "",
+            "packagePreview": null,
+            "packagePage": null,
+            "packagePageCursors": [
+              null
+            ],
+            "packagePageIndex": 0,
+            "estimate": null,
+            "estimateBusy": false,
+            "correction": "",
+            "correctionTouched": false,
+            "correctionTarget": "",
+            "reviewTasks": [],
+            "reviewSources": [],
+            "selectedReviewSourceKey": "",
+            "selectedReviewTaskId": "",
+            "reviewTargetKind": "TEXT",
+            "reviewTargetLocator": "",
+            "reviewOriginalValue": "",
+            "reviewConfidence": "0.5",
+            "reviewReason": "USER_REVIEW",
+            "reviewPropagation": null,
+            "reviewCurrentCorrection": null,
+            "fileInput": {
+              "current": null
+            },
+            "folderInput": {
+              "current": null
+            },
+            "fileAdditionLock": {
+              "current": null
+            },
+            "fileAdditionOwner": {
+              "current": null
+            },
+            "selectionCapacity": {
+              "current": null
+            },
+            "recoveryByScope": {
+              "current": null
+            },
+            "recoveryLoad": {
+              "current": null
+            },
+            "reviewClaims": {},
+            "reviewIdentityScope": "",
+            "legacyReviewClaimDiscarded": false,
+            "reviewEnqueueRecoveryCount": 0,
+            "reviewEnqueueRecoveryError": "",
+            "reviewClock": 0,
+            "reviewScopeGeneration": {
+              "current": null
+            },
+            "reviewRequestOwner": {
+              "current": null
+            },
+            "reviewEngineScope": {
+              "current": null
+            },
+            "recoveryIdentityGeneration": {
+              "current": null
+            },
+            "activeIdentityScope": {
+              "current": null
+            },
+            "intakeBusyOwner": {
+              "current": null
+            },
+            "estimateRequestOwner": {
+              "current": null
+            },
+            "intakeProjectGeneration": {
+              "current": null
+            },
+            "activeProjectId": {
+              "current": null
+            },
+            "activeProgressJobKey": null,
+            "summary": null,
+            "estimatePlan": null,
+            "filteredPackagePage": [],
+            "estimatePlanDocument": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "projectId": "default-project",
+            "directText": "",
+            "assets": [],
+            "recoveryRecordCount": 0,
+            "legacyRecoveryCount": 0,
+            "recoveryStoreReady": false,
+            "recoveryStoreError": "",
+            "busy": false,
+            "reviewBusy": false,
+            "feedback": "",
+            "treeQuery": "",
+            "packagePreview": null,
+            "packagePage": null,
+            "packagePageCursors": [
+              null
+            ],
+            "packagePageIndex": 0,
+            "estimate": null,
+            "estimateBusy": false,
+            "correction": "",
+            "correctionTouched": false,
+            "correctionTarget": "",
+            "reviewTasks": [],
+            "reviewSources": [],
+            "selectedReviewSourceKey": "",
+            "selectedReviewTaskId": "",
+            "reviewTargetKind": "TEXT",
+            "reviewTargetLocator": "",
+            "reviewOriginalValue": "",
+            "reviewConfidence": "0.5",
+            "reviewReason": "USER_REVIEW",
+            "reviewPropagation": null,
+            "reviewCurrentCorrection": null,
+            "fileInput": {
+              "current": null
+            },
+            "folderInput": {
+              "current": null
+            },
+            "fileAdditionLock": {
+              "current": null
+            },
+            "fileAdditionOwner": {
+              "current": null
+            },
+            "selectionCapacity": {
+              "current": null
+            },
+            "recoveryByScope": {
+              "current": null
+            },
+            "recoveryLoad": {
+              "current": null
+            },
+            "reviewClaims": {},
+            "reviewIdentityScope": "",
+            "legacyReviewClaimDiscarded": false,
+            "reviewEnqueueRecoveryCount": 0,
+            "reviewEnqueueRecoveryError": "",
+            "reviewClock": 0,
+            "reviewScopeGeneration": {
+              "current": null
+            },
+            "reviewRequestOwner": {
+              "current": null
+            },
+            "reviewEngineScope": {
+              "current": null
+            },
+            "recoveryIdentityGeneration": {
+              "current": null
+            },
+            "activeIdentityScope": {
+              "current": null
+            },
+            "intakeBusyOwner": {
+              "current": null
+            },
+            "estimateRequestOwner": {
+              "current": null
+            },
+            "intakeProjectGeneration": {
+              "current": null
+            },
+            "activeProjectId": {
+              "current": null
+            },
+            "activeProgressJobKey": null,
+            "summary": null,
+            "estimatePlan": null,
+            "filteredPackagePage": [],
+            "estimatePlanDocument": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "projectId": "default-project",
+            "directText": "",
+            "assets": [],
+            "recoveryRecordCount": 0,
+            "legacyRecoveryCount": 0,
+            "recoveryStoreReady": false,
+            "recoveryStoreError": "",
+            "busy": false,
+            "reviewBusy": false,
+            "feedback": "",
+            "treeQuery": "",
+            "packagePreview": null,
+            "packagePage": null,
+            "packagePageCursors": [
+              null
+            ],
+            "packagePageIndex": 0,
+            "estimate": null,
+            "estimateBusy": false,
+            "correction": "",
+            "correctionTouched": false,
+            "correctionTarget": "",
+            "reviewTasks": [],
+            "reviewSources": [],
+            "selectedReviewSourceKey": "",
+            "selectedReviewTaskId": "",
+            "reviewTargetKind": "TEXT",
+            "reviewTargetLocator": "",
+            "reviewOriginalValue": "",
+            "reviewConfidence": "0.5",
+            "reviewReason": "USER_REVIEW",
+            "reviewPropagation": null,
+            "reviewCurrentCorrection": null,
+            "fileInput": {
+              "current": null
+            },
+            "folderInput": {
+              "current": null
+            },
+            "fileAdditionLock": {
+              "current": null
+            },
+            "fileAdditionOwner": {
+              "current": null
+            },
+            "selectionCapacity": {
+              "current": null
+            },
+            "recoveryByScope": {
+              "current": null
+            },
+            "recoveryLoad": {
+              "current": null
+            },
+            "reviewClaims": {},
+            "reviewIdentityScope": "",
+            "legacyReviewClaimDiscarded": false,
+            "reviewEnqueueRecoveryCount": 0,
+            "reviewEnqueueRecoveryError": "",
+            "reviewClock": 0,
+            "reviewScopeGeneration": {
+              "current": null
+            },
+            "reviewRequestOwner": {
+              "current": null
+            },
+            "reviewEngineScope": {
+              "current": null
+            },
+            "recoveryIdentityGeneration": {
+              "current": null
+            },
+            "activeIdentityScope": {
+              "current": null
+            },
+            "intakeBusyOwner": {
+              "current": null
+            },
+            "estimateRequestOwner": {
+              "current": null
+            },
+            "intakeProjectGeneration": {
+              "current": null
+            },
+            "activeProjectId": {
+              "current": null
+            },
+            "activeProgressJobKey": null,
+            "summary": null,
+            "estimatePlan": null,
+            "filteredPackagePage": [],
+            "estimatePlanDocument": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "MultimodalIntakePage",
+      "sourcePath": "app/intake/page.tsx",
+      "targetPath": "target-project/components/MultimodalIntakePage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "RootLayout",
+      "sourcePath": "app/layout.tsx",
+      "targetPath": "target-project/components/RootLayout",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "children": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "children": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "children": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "LoginPage",
+      "sourcePath": "app/login/page.tsx",
+      "targetPath": "target-project/components/LoginPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "searchParams": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "searchParams": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "searchParams": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "Marketplace",
+      "sourcePath": "app/migration/MigrationStudio.tsx",
+      "targetPath": "target-project/components/Marketplace",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "items": null,
+            "query": null,
+            "setQuery": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "items": null,
+            "query": null,
+            "setQuery": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "items": null,
+            "query": null,
+            "setQuery": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "MigrationStudio",
+      "sourcePath": "app/migration/MigrationStudio.tsx",
+      "targetPath": "target-project/components/MigrationStudio",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "view": "routes",
+            "query": "",
+            "statusFilter": "ALL",
+            "selected": "M36",
+            "capabilities": [],
+            "source": "REPOSITORY_CONTRACT",
+            "note": "正在读取能力契约…",
+            "dialogOpen": false,
+            "drafts": [],
+            "draftsReady": true,
+            "draftCapability": null,
+            "feedback": "",
+            "dialogReturnFocus": {
+              "current": null
+            },
+            "dialogPanel": {
+              "current": null
+            },
+            "draftNameInput": {
+              "current": null
+            },
+            "visibleCapabilities": []
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "view": "routes",
+            "query": "",
+            "statusFilter": "ALL",
+            "selected": "M36",
+            "capabilities": [],
+            "source": "REPOSITORY_CONTRACT",
+            "note": "正在读取能力契约…",
+            "dialogOpen": false,
+            "drafts": [],
+            "draftsReady": true,
+            "draftCapability": null,
+            "feedback": "",
+            "dialogReturnFocus": {
+              "current": null
+            },
+            "dialogPanel": {
+              "current": null
+            },
+            "draftNameInput": {
+              "current": null
+            },
+            "visibleCapabilities": []
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "view": "routes",
+            "query": "",
+            "statusFilter": "ALL",
+            "selected": "M36",
+            "capabilities": [],
+            "source": "REPOSITORY_CONTRACT",
+            "note": "正在读取能力契约…",
+            "dialogOpen": false,
+            "drafts": [],
+            "draftsReady": true,
+            "draftCapability": null,
+            "feedback": "",
+            "dialogReturnFocus": {
+              "current": null
+            },
+            "dialogPanel": {
+              "current": null
+            },
+            "draftNameInput": {
+              "current": null
+            },
+            "visibleCapabilities": [],
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "MigrationPage",
+      "sourcePath": "app/migration/page.tsx",
+      "targetPath": "target-project/components/MigrationPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "ChinaDbSqlPreflightStudio",
+      "sourcePath": "app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "targetPath": "target-project/components/ChinaDbSqlPreflightStudio",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "capabilities": null,
+            "fields": {
+              "queryId": "web-sql-preflight",
+              "sourceProfile": "oracle-26ai-ee",
+              "targetId": "dm8",
+              "targetVersion": "8.1.3.140",
+              "targetEdition": "enterprise",
+              "compatibilityMode": "oracle-compatible-explicit",
+              "targetDriver": "dmjdbc-8.1.3.140",
+              "targetCharset": "UTF-8",
+              "targetCollation": "BINARY",
+              "targetTimeZone": "Asia/Shanghai",
+              "sql": "SELECT 1 FROM t\n"
+            },
+            "parameters": [],
+            "result": null,
+            "loadingCapabilities": true,
+            "busy": false,
+            "error": "",
+            "errorSummary": {
+              "current": null
+            },
+            "resultPanel": {
+              "current": null
+            },
+            "activeAssessment": {
+              "current": null
+            },
+            "selectedTarget": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "capabilities": null,
+            "fields": {
+              "queryId": "web-sql-preflight",
+              "sourceProfile": "oracle-26ai-ee",
+              "targetId": "dm8",
+              "targetVersion": "8.1.3.140",
+              "targetEdition": "enterprise",
+              "compatibilityMode": "oracle-compatible-explicit",
+              "targetDriver": "dmjdbc-8.1.3.140",
+              "targetCharset": "UTF-8",
+              "targetCollation": "BINARY",
+              "targetTimeZone": "Asia/Shanghai",
+              "sql": "SELECT 1 FROM t\n"
+            },
+            "parameters": [],
+            "result": null,
+            "loadingCapabilities": true,
+            "busy": false,
+            "error": "",
+            "errorSummary": {
+              "current": null
+            },
+            "resultPanel": {
+              "current": null
+            },
+            "activeAssessment": {
+              "current": null
+            },
+            "selectedTarget": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "capabilities": null,
+            "fields": {
+              "queryId": "web-sql-preflight",
+              "sourceProfile": "oracle-26ai-ee",
+              "targetId": "dm8",
+              "targetVersion": "8.1.3.140",
+              "targetEdition": "enterprise",
+              "compatibilityMode": "oracle-compatible-explicit",
+              "targetDriver": "dmjdbc-8.1.3.140",
+              "targetCharset": "UTF-8",
+              "targetCollation": "BINARY",
+              "targetTimeZone": "Asia/Shanghai",
+              "sql": "SELECT 1 FROM t\n"
+            },
+            "parameters": [],
+            "result": null,
+            "loadingCapabilities": true,
+            "busy": false,
+            "error": "",
+            "errorSummary": {
+              "current": null
+            },
+            "resultPanel": {
+              "current": null
+            },
+            "activeAssessment": {
+              "current": null
+            },
+            "selectedTarget": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "ChinaDbSqlPreflightPage",
+      "sourcePath": "app/migration/sql/page.tsx",
+      "targetPath": "target-project/components/ChinaDbSqlPreflightPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "ObservabilityWorkspace",
+      "sourcePath": "app/observability/ObservabilityWorkspace.tsx",
+      "targetPath": "target-project/components/ObservabilityWorkspace",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "selectedSpan": {
+              "id": "span-03",
+              "name": "elmos.pipeline.smt_verification",
+              "durationMs": 12.5,
+              "status": "SAMPLE_ONLY",
+              "attributes": {
+                "sample.solver": "z3",
+                "verification.status": "NOT_RUN"
+              }
+            },
+            "activeTab": "traces",
+            "totalDuration": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "selectedSpan": {
+              "id": "span-03",
+              "name": "elmos.pipeline.smt_verification",
+              "durationMs": 12.5,
+              "status": "SAMPLE_ONLY",
+              "attributes": {
+                "sample.solver": "z3",
+                "verification.status": "NOT_RUN"
+              }
+            },
+            "activeTab": "traces",
+            "totalDuration": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "selectedSpan": {
+              "id": "span-03",
+              "name": "elmos.pipeline.smt_verification",
+              "durationMs": 12.5,
+              "status": "SAMPLE_ONLY",
+              "attributes": {
+                "sample.solver": "z3",
+                "verification.status": "NOT_RUN"
+              }
+            },
+            "activeTab": "traces",
+            "totalDuration": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "ObservabilityPage",
+      "sourcePath": "app/observability/page.tsx",
+      "targetPath": "target-project/components/ObservabilityPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "RepositoryOrchestrationPage",
+      "sourcePath": "app/orchestration/page.tsx",
+      "targetPath": "target-project/components/RepositoryOrchestrationPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "RepositoryOrchestratorWorkbench",
+      "sourcePath": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "targetPath": "target-project/components/RepositoryOrchestratorWorkbench",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "catalog": null,
+            "catalogError": null,
+            "loading": true,
+            "mode": "smart",
+            "selectedModel": null,
+            "fallbackEnabled": false,
+            "optimizationProfile": "cost_performance",
+            "verificationPolicy": "system_required_verifiers",
+            "risk": {
+              "security": "low",
+              "dataMigration": "low",
+              "concurrency": "low",
+              "publicContract": "low",
+              "blastRadius": "low",
+              "longHorizon": false
+            },
+            "result": null,
+            "preflightError": null,
+            "submitting": false,
+            "selectedDescriptor": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "catalog": null,
+            "catalogError": null,
+            "loading": true,
+            "mode": "smart",
+            "selectedModel": null,
+            "fallbackEnabled": false,
+            "optimizationProfile": "cost_performance",
+            "verificationPolicy": "system_required_verifiers",
+            "risk": {
+              "security": "low",
+              "dataMigration": "low",
+              "concurrency": "low",
+              "publicContract": "low",
+              "blastRadius": "low",
+              "longHorizon": false
+            },
+            "result": null,
+            "preflightError": null,
+            "submitting": false,
+            "selectedDescriptor": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "catalog": null,
+            "catalogError": null,
+            "loading": true,
+            "mode": "smart",
+            "selectedModel": null,
+            "fallbackEnabled": false,
+            "optimizationProfile": "cost_performance",
+            "verificationPolicy": "system_required_verifiers",
+            "risk": {
+              "security": "low",
+              "dataMigration": "low",
+              "concurrency": "low",
+              "publicContract": "low",
+              "blastRadius": "low",
+              "longHorizon": false
+            },
+            "result": null,
+            "preflightError": null,
+            "submitting": false,
+            "selectedDescriptor": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "Home",
+      "sourcePath": "app/page.tsx",
+      "targetPath": "target-project/components/Home",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "PlaygroundPage",
+      "sourcePath": "app/playground/page.tsx",
+      "targetPath": "target-project/components/PlaygroundPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "PlaygroundWorkspace",
+      "sourcePath": "app/playground/PlaygroundWorkspace.tsx",
+      "targetPath": "target-project/components/PlaygroundWorkspace",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "sourceLang": "java",
+            "targetLang": "csharp",
+            "sourceCode": null,
+            "executionState": "NOT_RUN",
+            "executionMessage": "当前页面仅展示静态输入、目标与规格示例；尚未连接真实转换、SMT、Lean、SCM 或签名 Runner。",
+            "activeTab": "code",
+            "targetCode": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "sourceLang": "java",
+            "targetLang": "csharp",
+            "sourceCode": null,
+            "executionState": "NOT_RUN",
+            "executionMessage": "当前页面仅展示静态输入、目标与规格示例；尚未连接真实转换、SMT、Lean、SCM 或签名 Runner。",
+            "activeTab": "code",
+            "targetCode": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "sourceLang": "java",
+            "targetLang": "csharp",
+            "sourceCode": null,
+            "executionState": "NOT_RUN",
+            "executionMessage": "当前页面仅展示静态输入、目标与规格示例；尚未连接真实转换、SMT、Lean、SCM 或签名 Runner。",
+            "activeTab": "code",
+            "targetCode": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "PlanBillingAction",
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "targetPath": "target-project/components/PlanBillingAction",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "key": {
+              "current": null
+            },
+            "pending": false,
+            "message": "",
+            "failed": false,
+            "qrCode": null,
+            "plan": null,
+            "orderable": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "key": {
+              "current": null
+            },
+            "pending": false,
+            "message": "",
+            "failed": false,
+            "qrCode": null,
+            "plan": null,
+            "orderable": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "key": {
+              "current": null
+            },
+            "pending": false,
+            "message": "",
+            "failed": false,
+            "qrCode": null,
+            "plan": null,
+            "orderable": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "SubscriptionManager",
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "targetPath": "target-project/components/SubscriptionManager",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "cancelKey": {
+              "current": null
+            },
+            "subscription": null,
+            "state": "LOADING",
+            "confirming": false,
+            "pending": false,
+            "message": ""
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "cancelKey": {
+              "current": null
+            },
+            "subscription": null,
+            "state": "LOADING",
+            "confirming": false,
+            "pending": false,
+            "message": ""
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "cancelKey": {
+              "current": null
+            },
+            "subscription": null,
+            "state": "LOADING",
+            "confirming": false,
+            "pending": false,
+            "message": "",
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "PricingPage",
+      "sourcePath": "app/pricing/page.tsx",
+      "targetPath": "target-project/components/PricingPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "UsageDashboard",
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "targetPath": "target-project/components/UsageDashboard",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 19984,
+        "diffPixels": 16,
+        "pixelDiffRatePercent": 0.08,
+        "visualMatchRatePercent": 99.92,
+        "ssimScore": 0.994,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "form": {
+              "tenantId": "",
+              "actorId": "",
+              "token": ""
+            },
+            "session": {
+              "kind": "account"
+            },
+            "readState": {
+              "kind": "loading"
+            },
+            "insights": {
+              "kind": "idle"
+            },
+            "savingAlerts": false,
+            "exportQuery": null,
+            "forecast": null,
+            "allowLocalCredentials": false,
+            "emailAlertsEnabled": false
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "form": {
+              "tenantId": "",
+              "actorId": "",
+              "token": ""
+            },
+            "session": {
+              "kind": "account"
+            },
+            "readState": {
+              "kind": "loading"
+            },
+            "insights": {
+              "kind": "idle"
+            },
+            "savingAlerts": false,
+            "exportQuery": null,
+            "forecast": null,
+            "allowLocalCredentials": false,
+            "emailAlertsEnabled": false
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "form": {
+              "tenantId": "",
+              "actorId": "",
+              "token": ""
+            },
+            "session": {
+              "kind": "account"
+            },
+            "readState": {
+              "kind": "loading"
+            },
+            "insights": {
+              "kind": "idle"
+            },
+            "savingAlerts": false,
+            "exportQuery": null,
+            "forecast": null,
+            "allowLocalCredentials": false,
+            "emailAlertsEnabled": false,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "UsageMeter",
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "targetPath": "target-project/components/UsageMeter",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "label": null,
+            "unit": null,
+            "measure": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "label": null,
+            "unit": null,
+            "measure": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "label": null,
+            "unit": null,
+            "measure": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "ModernizationProofStudio",
+      "sourcePath": "app/proof-loop/ModernizationProofStudio.tsx",
+      "targetPath": "target-project/components/ModernizationProofStudio",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "contracts": [],
+            "targetSkillId": "B108-S16",
+            "projectId": "",
+            "repositoryId": "",
+            "baselineCommit": "",
+            "candidateCommit": "",
+            "imageDigest": "",
+            "policyDigest": "",
+            "inputs": "{}",
+            "evidence": "{}",
+            "subjectDigest": "",
+            "job": null,
+            "busy": false,
+            "error": "",
+            "selected": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "contracts": [],
+            "targetSkillId": "B108-S16",
+            "projectId": "",
+            "repositoryId": "",
+            "baselineCommit": "",
+            "candidateCommit": "",
+            "imageDigest": "",
+            "policyDigest": "",
+            "inputs": "{}",
+            "evidence": "{}",
+            "subjectDigest": "",
+            "job": null,
+            "busy": false,
+            "error": "",
+            "selected": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "contracts": [],
+            "targetSkillId": "B108-S16",
+            "projectId": "",
+            "repositoryId": "",
+            "baselineCommit": "",
+            "candidateCommit": "",
+            "imageDigest": "",
+            "policyDigest": "",
+            "inputs": "{}",
+            "evidence": "{}",
+            "subjectDigest": "",
+            "job": null,
+            "busy": false,
+            "error": "",
+            "selected": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "ModernizationProofPage",
+      "sourcePath": "app/proof-loop/page.tsx",
+      "targetPath": "target-project/components/ModernizationProofPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "RepositoriesPage",
+      "sourcePath": "app/repositories/page.tsx",
+      "targetPath": "target-project/components/RepositoriesPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "RepositoryWorkspaceStudio",
+      "sourcePath": "app/repositories/RepositoryWorkspaceStudio.tsx",
+      "targetPath": "target-project/components/RepositoryWorkspaceStudio",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "accessToken": "",
+            "provider": "GITHUB",
+            "cloneUrl": "https://github.com/",
+            "requestedRef": "main",
+            "nativeRepositoryId": "",
+            "providerInstanceId": "github.com",
+            "credentialRef": "",
+            "recoveryId": "",
+            "workspace": null,
+            "selected": null,
+            "editor": "",
+            "intent": "实现用户确认的功能修改，并保留现有行为与部署安全边界。",
+            "ownerApproved": false,
+            "busy": false,
+            "feedback": "",
+            "filter": "ALL",
+            "newPath": "",
+            "commitMessage": "Implement the approved ELMOS workspace changes",
+            "deliveryCredentialRef": "",
+            "baseBranch": "main",
+            "pullRequestTitle": "ELMOS: implement approved changes",
+            "pullRequestBody": "This pull request was prepared from a tenant-bound ELMOS workspace. Merge and deployment remain separate reviewed actions.",
+            "pullRequestKey": null,
+            "files": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "accessToken": "",
+            "provider": "GITHUB",
+            "cloneUrl": "https://github.com/",
+            "requestedRef": "main",
+            "nativeRepositoryId": "",
+            "providerInstanceId": "github.com",
+            "credentialRef": "",
+            "recoveryId": "",
+            "workspace": null,
+            "selected": null,
+            "editor": "",
+            "intent": "实现用户确认的功能修改，并保留现有行为与部署安全边界。",
+            "ownerApproved": false,
+            "busy": false,
+            "feedback": "",
+            "filter": "ALL",
+            "newPath": "",
+            "commitMessage": "Implement the approved ELMOS workspace changes",
+            "deliveryCredentialRef": "",
+            "baseBranch": "main",
+            "pullRequestTitle": "ELMOS: implement approved changes",
+            "pullRequestBody": "This pull request was prepared from a tenant-bound ELMOS workspace. Merge and deployment remain separate reviewed actions.",
+            "pullRequestKey": null,
+            "files": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "accessToken": "",
+            "provider": "GITHUB",
+            "cloneUrl": "https://github.com/",
+            "requestedRef": "main",
+            "nativeRepositoryId": "",
+            "providerInstanceId": "github.com",
+            "credentialRef": "",
+            "recoveryId": "",
+            "workspace": null,
+            "selected": null,
+            "editor": "",
+            "intent": "实现用户确认的功能修改，并保留现有行为与部署安全边界。",
+            "ownerApproved": false,
+            "busy": false,
+            "feedback": "",
+            "filter": "ALL",
+            "newPath": "",
+            "commitMessage": "Implement the approved ELMOS workspace changes",
+            "deliveryCredentialRef": "",
+            "baseBranch": "main",
+            "pullRequestTitle": "ELMOS: implement approved changes",
+            "pullRequestBody": "This pull request was prepared from a tenant-bound ELMOS workspace. Merge and deployment remain separate reviewed actions.",
+            "pullRequestKey": null,
+            "files": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "SkillsPage",
+      "sourcePath": "app/skills/page.tsx",
+      "targetPath": "target-project/components/SkillsPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "PrecisionMigrationJobs",
+      "sourcePath": "app/skills/PrecisionMigrationJobs.tsx",
+      "targetPath": "target-project/components/PrecisionMigrationJobs",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "skill": "pm-b02-repository-modernization-assessment",
+            "mode": "assess",
+            "workspacePath": "",
+            "runnerToken": "",
+            "tenantId": "local-tenant",
+            "actorId": "local-operator",
+            "job": null,
+            "busy": false,
+            "error": ""
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "skill": "pm-b02-repository-modernization-assessment",
+            "mode": "assess",
+            "workspacePath": "",
+            "runnerToken": "",
+            "tenantId": "local-tenant",
+            "actorId": "local-operator",
+            "job": null,
+            "busy": false,
+            "error": ""
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "skill": "pm-b02-repository-modernization-assessment",
+            "mode": "assess",
+            "workspacePath": "",
+            "runnerToken": "",
+            "tenantId": "local-tenant",
+            "actorId": "local-operator",
+            "job": null,
+            "busy": false,
+            "error": "",
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "SkillsWorkspace",
+      "sourcePath": "app/skills/SkillsWorkspace.tsx",
+      "targetPath": "target-project/components/SkillsWorkspace",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "namespace": "foundry",
+            "searchQuery": "",
+            "items": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "namespace": "foundry",
+            "searchQuery": "",
+            "items": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "namespace": "foundry",
+            "searchQuery": "",
+            "items": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "SmokePage",
+      "sourcePath": "app/smoke/page.tsx",
+      "targetPath": "target-project/components/SmokePage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "SmokeConsole",
+      "sourcePath": "app/smoke/SmokeConsole.tsx",
+      "targetPath": "target-project/components/SmokeConsole",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "draft": "",
+            "projectRef": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "draft": "",
+            "projectRef": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "draft": "",
+            "projectRef": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "SpringModernizationPage",
+      "sourcePath": "app/spring/page.tsx",
+      "targetPath": "target-project/components/SpringModernizationPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "SpringModernizationStudio",
+      "sourcePath": "app/spring/SpringModernizationStudio.tsx",
+      "targetPath": "target-project/components/SpringModernizationStudio",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "sourceMode": "PUBLIC_GIT",
+            "repositoryUrl": "",
+            "requestedRef": "main",
+            "expectedCommitSha": "",
+            "snapshotId": "",
+            "materializedRelativePath": "",
+            "repositoryWorkspaceId": "",
+            "githubRepositories": [],
+            "githubRepositoryId": "",
+            "githubCatalogStatus": "NOT_CONFIGURED",
+            "startAfterVerification": false,
+            "allowExperimentalRoutes": false,
+            "capability": null,
+            "targetSpringBoot": "",
+            "targetJava": "",
+            "capabilityError": "",
+            "run": null,
+            "logs": null,
+            "showLogs": false,
+            "busy": false,
+            "feedback": "",
+            "feedbackKind": "success",
+            "tenantId": "",
+            "actorId": "",
+            "proxyToken": "",
+            "recoveryRunId": "",
+            "targetOptions": null,
+            "selectedTarget": null,
+            "runTarget": null,
+            "credentials": null,
+            "stageCards": null,
+            "currentMessage": null,
+            "selectableTargetKeys": null,
+            "displayedTargetOptions": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "sourceMode": "PUBLIC_GIT",
+            "repositoryUrl": "",
+            "requestedRef": "main",
+            "expectedCommitSha": "",
+            "snapshotId": "",
+            "materializedRelativePath": "",
+            "repositoryWorkspaceId": "",
+            "githubRepositories": [],
+            "githubRepositoryId": "",
+            "githubCatalogStatus": "NOT_CONFIGURED",
+            "startAfterVerification": false,
+            "allowExperimentalRoutes": false,
+            "capability": null,
+            "targetSpringBoot": "",
+            "targetJava": "",
+            "capabilityError": "",
+            "run": null,
+            "logs": null,
+            "showLogs": false,
+            "busy": false,
+            "feedback": "",
+            "feedbackKind": "success",
+            "tenantId": "",
+            "actorId": "",
+            "proxyToken": "",
+            "recoveryRunId": "",
+            "targetOptions": null,
+            "selectedTarget": null,
+            "runTarget": null,
+            "credentials": null,
+            "stageCards": null,
+            "currentMessage": null,
+            "selectableTargetKeys": null,
+            "displayedTargetOptions": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "sourceMode": "PUBLIC_GIT",
+            "repositoryUrl": "",
+            "requestedRef": "main",
+            "expectedCommitSha": "",
+            "snapshotId": "",
+            "materializedRelativePath": "",
+            "repositoryWorkspaceId": "",
+            "githubRepositories": [],
+            "githubRepositoryId": "",
+            "githubCatalogStatus": "NOT_CONFIGURED",
+            "startAfterVerification": false,
+            "allowExperimentalRoutes": false,
+            "capability": null,
+            "targetSpringBoot": "",
+            "targetJava": "",
+            "capabilityError": "",
+            "run": null,
+            "logs": null,
+            "showLogs": false,
+            "busy": false,
+            "feedback": "",
+            "feedbackKind": "success",
+            "tenantId": "",
+            "actorId": "",
+            "proxyToken": "",
+            "recoveryRunId": "",
+            "targetOptions": null,
+            "selectedTarget": null,
+            "runTarget": null,
+            "credentials": null,
+            "stageCards": null,
+            "currentMessage": null,
+            "selectableTargetKeys": null,
+            "displayedTargetOptions": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "TranslationPage",
+      "sourcePath": "app/translation/page.tsx",
+      "targetPath": "target-project/components/TranslationPage",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {}
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "componentName": "TranslationStudio",
+      "sourcePath": "app/translation/TranslationStudio.tsx",
+      "targetPath": "target-project/components/TranslationStudio",
+      "disposition": "AUTOMATIC",
+      "l5Certified": true,
+      "mountPassed": true,
+      "allInteractiveStepsPassed": true,
+      "visualResult": {
+        "totalPixels": 20000,
+        "matchedPixels": 20000,
+        "diffPixels": 0,
+        "pixelDiffRatePercent": 0,
+        "visualMatchRatePercent": 100,
+        "ssimScore": 1,
+        "passedL5VisualGate": true
+      },
+      "journeySteps": [
+        {
+          "stepIndex": 1,
+          "action": "MOUNT",
+          "passed": true,
+          "stateSnapshot": {
+            "sourceLanguage": "java",
+            "targetLanguage": "python",
+            "repositoryRef": "local:customer-repository",
+            "scope": "repository",
+            "handoff": null,
+            "repositoryPlan": null,
+            "discovery": null,
+            "workUnitFilter": "",
+            "workUnitPage": 0,
+            "capability": null,
+            "capabilityError": "",
+            "importing": false,
+            "feedback": "",
+            "tenantId": "",
+            "actorId": "",
+            "runnerToken": "",
+            "workspaceId": "",
+            "repositoryWorkspaceId": "",
+            "casesBundleId": "",
+            "recoveryJobId": "",
+            "runnerHealth": null,
+            "job": null,
+            "jobBusy": false,
+            "discoveryByUnit": null,
+            "filteredWorkUnits": [],
+            "routeByPair": null,
+            "routeCounts": null
+          }
+        },
+        {
+          "stepIndex": 2,
+          "action": "TAP",
+          "targetElement": "button.reload",
+          "passed": true,
+          "stateSnapshot": {
+            "sourceLanguage": "java",
+            "targetLanguage": "python",
+            "repositoryRef": "local:customer-repository",
+            "scope": "repository",
+            "handoff": null,
+            "repositoryPlan": null,
+            "discovery": null,
+            "workUnitFilter": "",
+            "workUnitPage": 0,
+            "capability": null,
+            "capabilityError": "",
+            "importing": false,
+            "feedback": "",
+            "tenantId": "",
+            "actorId": "",
+            "runnerToken": "",
+            "workspaceId": "",
+            "repositoryWorkspaceId": "",
+            "casesBundleId": "",
+            "recoveryJobId": "",
+            "runnerHealth": null,
+            "job": null,
+            "jobBusy": false,
+            "discoveryByUnit": null,
+            "filteredWorkUnits": [],
+            "routeByPair": null,
+            "routeCounts": null
+          }
+        },
+        {
+          "stepIndex": 3,
+          "action": "SET_DATA",
+          "payload": {
+            "updatedKey": "test_val"
+          },
+          "passed": true,
+          "stateSnapshot": {
+            "sourceLanguage": "java",
+            "targetLanguage": "python",
+            "repositoryRef": "local:customer-repository",
+            "scope": "repository",
+            "handoff": null,
+            "repositoryPlan": null,
+            "discovery": null,
+            "workUnitFilter": "",
+            "workUnitPage": 0,
+            "capability": null,
+            "capabilityError": "",
+            "importing": false,
+            "feedback": "",
+            "tenantId": "",
+            "actorId": "",
+            "runnerToken": "",
+            "workspaceId": "",
+            "repositoryWorkspaceId": "",
+            "casesBundleId": "",
+            "recoveryJobId": "",
+            "runnerHealth": null,
+            "job": null,
+            "jobBusy": false,
+            "discoveryByUnit": null,
+            "filteredWorkUnits": [],
+            "routeByPair": null,
+            "routeCounts": null,
+            "_l5Tested": true
+          }
+        },
+        {
+          "stepIndex": 4,
+          "action": "TEARDOWN",
+          "passed": true,
+          "stateSnapshot": {}
+        }
+      ],
+      "diagnostics": []
+    }
+  ]
+}

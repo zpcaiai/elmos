@@ -741,7 +741,7 @@
     ],
     "valid": true,
     "warnings": [
-      "extracted tree has 1 generated or unmanifested files"
+      "extracted tree has 2 generated or unmanifested files"
     ]
   },
   "version": "2.0.0"

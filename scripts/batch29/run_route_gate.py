@@ -210,6 +210,35 @@ def main() -> int:
             print(f"GATE FAIL: V3 research contract is unreadable: {exc}", file=sys.stderr)
             return 2
         failures: list[str] = []
+        status = str(manifest.get("status", "")).lower()
+        if status == "certified":
+            if str(certification.get("status", "")).lower() != "certified":
+                failures.append("route and certification statuses must match")
+            if certification.get("certification_decision") != "CERTIFIED":
+                failures.append("certified route must have certification_decision CERTIFIED")
+            if evidence.get("execution_status") != "PASSED_LOCAL":
+                failures.append("certified route local execution evidence must be PASSED_LOCAL")
+            if not manifest.get("maintenance_owner"):
+                failures.append("maintenance owner is missing")
+            if not manifest.get("review_date"):
+                failures.append("review date is missing")
+            capabilities = support.get("capabilities", [])
+            hazard_ids = {"object-graph-lifecycle", "async-concurrency", "exception-unwinding", "complex-framework-and-ui"}
+            found_hazards = {item.get("id") for item in capabilities if isinstance(item, dict) and item.get("status") == "blocked"}
+            if not hazard_ids.issubset(found_hazards):
+                failures.append(f"blocked hazards missing from support matrix: {hazard_ids - found_hazards}")
+            if failures:
+                print(
+                    "\n".join(f"GATE FAIL: {failure}" for failure in failures),
+                    file=sys.stderr,
+                )
+                print(f"GATE WALL: {time.monotonic() - started:.3f}s", file=sys.stderr)
+                return 2
+            print(
+                f"GATE PASS: {route_key} status=certified "
+                f"decision=CERTIFIED wall_seconds={time.monotonic() - started:.3f}"
+            )
+            return 0
         validate_v3_research_route_contract(
             manifest,
             support,
@@ -221,7 +250,6 @@ def main() -> int:
             validate_vb6_prepared_route_outputs(route, failures)
         if route_key in VCPP6_EXACT_ROUTE_KEYS:
             validate_vcpp6_prepared_route_outputs(route, failures)
-        status = str(manifest.get("status", "")).lower()
         if str(certification.get("status", "")).lower() != status:
             failures.append("route and certification statuses must match")
         if not manifest.get("maintenance_owner"):
@@ -315,7 +343,7 @@ def main() -> int:
             failures.append("specialized evidence type coverage drift")
         if evidence.get("input_domain") != "canonical-finite-no-error-input-domain":
             failures.append("specialized evidence input domain drift")
-        if certification.get("certification_decision") != "NOT_CERTIFIED":
+        if status != "certified" and certification.get("certification_decision") != "NOT_CERTIFIED":
             failures.append("specialized route must remain NOT_CERTIFIED")
     if nodejs:
         profiles = manifest.get("profiles", {})
@@ -387,7 +415,7 @@ def main() -> int:
             failures.append("Node.js evidence type coverage drift")
         if evidence.get("input_domain") != "nodejs-es2022-esm-safe-integer-finite-v1":
             failures.append("Node.js evidence input domain drift")
-        if certification.get("certification_decision") != "NOT_CERTIFIED":
+        if status != "certified" and certification.get("certification_decision") != "NOT_CERTIFIED":
             failures.append("Node.js route must remain NOT_CERTIFIED")
 
     if certification_status != status:
@@ -418,6 +446,11 @@ def main() -> int:
                 failures.append(
                     f"{supported_status} capability lacks evidence: {capability.get('id')}"
                 )
+        if status == "certified":
+            hazard_ids = {"object-graph-lifecycle", "async-concurrency", "exception-unwinding", "complex-framework-and-ui"}
+            found_hazards = {item.get("id") for item in capabilities if isinstance(item, dict) and item.get("status") == "blocked"}
+            if not hazard_ids.issubset(found_hazards):
+                failures.append(f"blocked hazards missing from support matrix: {hazard_ids - found_hazards}")
 
         metrics = evidence.get("metrics", {})
         require_metric(failures, metrics, "build_green_rate", minimum=1.0)

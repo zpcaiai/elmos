@@ -198,8 +198,13 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
 
     def test_boot_4_1_local_records_are_exact_and_contract_validated(self) -> None:
         expected = {
+            "boot-1.5-maven-to-boot-4.1.0-java-21": ("1.5.22.RELEASE", "8"),
+            "boot-2.0-2.6-maven-to-boot-4.1.0-java-21": ("2.3.12.RELEASE", "11"),
             "boot-2.7-maven-to-boot-4.1.0-java-21": ("2.7.18", "17"),
+            "boot-3.0-3.4-maven-to-boot-4.1.0-java-21": ("3.4.1", "17"),
             "boot-3.5-maven-to-boot-4.1.0-java-21": ("3.5.3", "21"),
+            "boot-2.x-gradle-to-boot-4.1.0-java-21": ("2.7.18", "17"),
+            "spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21": ("5.3.39", "11"),
         }
         for route_id, (source_boot, source_java) in expected.items():
             record = json.loads(

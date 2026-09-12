@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/fde/5.2.0/DeploymentPlan.schema.json",
+  "title": "DeploymentPlan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "deploymentId",
+    "revisionSetId",
+    "mode",
+    "stages",
+    "rollbackTriggers",
+    "authorityRequired",
+    "status"
+  ],
+  "properties": {
+    "deploymentId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revisionSetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "shadow",
+        "dual-run",
+        "canary-preparation",
+        "offline-package"
+      ]
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "trafficPercent",
+          "entry",
+          "exit"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "trafficPercent": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "entry": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          },
+          "exit": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "rollbackTriggers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "authorityRequired": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "draft",
+        "rehearsal-ready",
+        "rehearsed",
+        "externally-executed"
+      ]
+    }
+  }
+}

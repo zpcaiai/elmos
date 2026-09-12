@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U028-004",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:26:33.267311Z",
+  "notes": "Independently verified by Ethan: 性能、容量与成本回归 / dependency-failure / 场景4"
+}

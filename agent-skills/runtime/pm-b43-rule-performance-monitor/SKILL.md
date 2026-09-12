@@ -1,5 +1,8 @@
 ---
 name: pm-b43-rule-performance-monitor
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "跟踪规则命中、构建、验证、误报、漏报、修复轮数和成本. Precision Migration B43 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

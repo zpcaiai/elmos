@@ -1,0 +1,494 @@
+{
+  "batch": {
+    "id": "B06",
+    "title": "Finding ontology, coverage and assessment orchestration",
+    "dependsOn": [
+      "B05"
+    ],
+    "skills": [
+      "issue-ontology-and-finding-normalization",
+      "root-cause-risk-prioritization"
+    ],
+    "tasks": [
+      "B06-T001",
+      "B06-T002",
+      "B06-T003",
+      "B06-T004",
+      "B06-T005",
+      "B06-T006",
+      "B06-T007",
+      "B06-T008",
+      "B06-T009",
+      "B06-T010",
+      "B06-T011",
+      "B06-T012",
+      "B06-T013",
+      "B06-T014",
+      "B06-T015",
+      "B06-T016",
+      "B06-T017",
+      "B06-T018",
+      "B06-T019",
+      "B06-T020"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B06-T001",
+      "batch": "B06",
+      "title": "issue-ontology-and-finding-normalization: Bind canonical ownership and model domain contracts",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B05-T050",
+        "B03-T030"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for issue-ontology-and-finding-normalization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T002",
+      "batch": "B06",
+      "title": "issue-ontology-and-finding-normalization: Implement persistence projections and append-only ledger events",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T001"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for issue-ontology-and-finding-normalization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T003",
+      "batch": "B06",
+      "title": "issue-ontology-and-finding-normalization: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T002"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for issue-ontology-and-finding-normalization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T004",
+      "batch": "B06",
+      "title": "issue-ontology-and-finding-normalization: Implement service and durable workflow",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T003"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for issue-ontology-and-finding-normalization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T005",
+      "batch": "B06",
+      "title": "issue-ontology-and-finding-normalization: Implement replaceable ports and first reference Adapter",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T004"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for issue-ontology-and-finding-normalization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T006",
+      "batch": "B06",
+      "title": "issue-ontology-and-finding-normalization: Implement APIs, events and query projections",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T005"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for issue-ontology-and-finding-normalization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T007",
+      "batch": "B06",
+      "title": "issue-ontology-and-finding-normalization: Implement product UI or operator surface",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T006"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for issue-ontology-and-finding-normalization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T008",
+      "batch": "B06",
+      "title": "issue-ontology-and-finding-normalization: Add deterministic tests, negative controls and failure injection",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T007"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for issue-ontology-and-finding-normalization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T009",
+      "batch": "B06",
+      "title": "issue-ontology-and-finding-normalization: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T008"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for issue-ontology-and-finding-normalization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T010",
+      "batch": "B06",
+      "title": "issue-ontology-and-finding-normalization: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T009"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for issue-ontology-and-finding-normalization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T011",
+      "batch": "B06",
+      "title": "root-cause-risk-prioritization: Bind canonical ownership and model domain contracts",
+      "skillId": "root-cause-risk-prioritization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B07-T010",
+        "B07-T020",
+        "B07-T030",
+        "B07-T040",
+        "B08-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for root-cause-risk-prioritization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T012",
+      "batch": "B06",
+      "title": "root-cause-risk-prioritization: Implement persistence projections and append-only ledger events",
+      "skillId": "root-cause-risk-prioritization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T011"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for root-cause-risk-prioritization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T013",
+      "batch": "B06",
+      "title": "root-cause-risk-prioritization: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "root-cause-risk-prioritization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T012"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for root-cause-risk-prioritization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T014",
+      "batch": "B06",
+      "title": "root-cause-risk-prioritization: Implement service and durable workflow",
+      "skillId": "root-cause-risk-prioritization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T013"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for root-cause-risk-prioritization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T015",
+      "batch": "B06",
+      "title": "root-cause-risk-prioritization: Implement replaceable ports and first reference Adapter",
+      "skillId": "root-cause-risk-prioritization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T014"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for root-cause-risk-prioritization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T016",
+      "batch": "B06",
+      "title": "root-cause-risk-prioritization: Implement APIs, events and query projections",
+      "skillId": "root-cause-risk-prioritization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T015"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for root-cause-risk-prioritization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T017",
+      "batch": "B06",
+      "title": "root-cause-risk-prioritization: Implement product UI or operator surface",
+      "skillId": "root-cause-risk-prioritization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T016"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for root-cause-risk-prioritization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T018",
+      "batch": "B06",
+      "title": "root-cause-risk-prioritization: Add deterministic tests, negative controls and failure injection",
+      "skillId": "root-cause-risk-prioritization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T017"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for root-cause-risk-prioritization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T019",
+      "batch": "B06",
+      "title": "root-cause-risk-prioritization: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "root-cause-risk-prioritization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T018"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for root-cause-risk-prioritization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B06-T020",
+      "batch": "B06",
+      "title": "root-cause-risk-prioritization: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "root-cause-risk-prioritization",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B06-T019"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for root-cause-risk-prioritization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from elmos_polyglot_route.emitter import emit
 from elmos_polyglot_route.discovery import Verdict, discover_repository
+from elmos_polyglot_route.emitter import emit
 from elmos_polyglot_route.models import RouteError, SemanticIR
 from elmos_polyglot_route.repository import plan_repository
 from elmos_polyglot_route.source_analyzer import analyze, inventory_module

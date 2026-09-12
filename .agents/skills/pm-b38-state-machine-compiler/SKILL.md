@@ -1,5 +1,8 @@
 ---
 name: pm-b38-state-machine-compiler
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "把业务和 UI 状态机编译为生成器、运行时检查和形式义务. Precision Migration B38 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

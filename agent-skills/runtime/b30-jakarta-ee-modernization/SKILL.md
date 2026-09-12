@@ -1,6 +1,9 @@
 ---
 name: b30-jakarta-ee-modernization
-description: "Modernize Java EE or Jakarta EE applications from application-server runtimes into a certified target profile, preserving Servlet/JAX-RS, CDI/EJB, JPA, JTA, JMS, security, naming, packaging, lifecycle, and operational behavior."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Modernize Java EE or Jakarta EE applications from application-server runtimes into a certified target profile, preserving Servlet/JAX-RS, CDI/EJB, JPA, JTA, JMS, security, naming, packaging, lifecycle, and operational behavior.
 ---
 
 ## Operating mode

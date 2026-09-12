@@ -1,5 +1,8 @@
 ---
 name: pm-b02-modernization-option-comparator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "比较保留、升级、重新平台化、重构、重写、包装和退役等现代化路径. Precision Migration B02 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

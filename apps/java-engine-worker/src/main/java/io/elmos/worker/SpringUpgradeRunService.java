@@ -1330,6 +1330,14 @@ final class SpringUpgradeRunService {
                     request.targetSpringBoot(),
                     request.targetJava());
         }
+        if ("java-ee-servlet".equals(fingerprint.sourceFrameworkFamily())) {
+            return SpringRouteCatalog.selectJavaEeServlet(
+                    fingerprint.sourceFrameworkVersion(),
+                    fingerprint.javaVersion(),
+                    fingerprint.buildTool(),
+                    request.targetSpringBoot(),
+                    request.targetJava());
+        }
         return SpringRouteCatalog.select(
                 fingerprint.springBootVersion(),
                 fingerprint.javaVersion(),

@@ -1,5 +1,8 @@
 ---
 name: pm-b03-feasibility-estimation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "基于项目特征、方向包成熟度、测试资产和代表切片试点，给出有区间、有置信度、可校准的转换预测. Precision Migration B03 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

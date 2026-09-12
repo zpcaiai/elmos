@@ -1,0 +1,36 @@
+{
+  "schema_version": "elmos.strict-test-suite.compiled-skill-contract.v1",
+  "package_id": "elmos.migration-platform-strict-tests",
+  "package_version": "1.0.0",
+  "installed_alias": "tst-slo-chaos-multiregion-dr",
+  "namespace": "elmos-strict-test-suite",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute",
+    "skill_name": "tst-slo-chaos-multiregion-dr",
+    "title": "SLO、Chaos与多区域DR / success / 场景1",
+    "suite_source": "batch38-45-strict",
+    "case_count": 10,
+    "case_ids": [
+      "X-U016-001",
+      "X-U016-002",
+      "X-U016-003",
+      "X-U016-004",
+      "X-U016-005",
+      "X-U016-006",
+      "X-U016-007",
+      "X-U016-008",
+      "X-U016-009",
+      "X-U016-010"
+    ],
+    "module_path": "scripts/test-suite/tst_skill_runtime.py",
+    "runtime_class": "TstSkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

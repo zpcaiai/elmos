@@ -1,5 +1,8 @@
 ---
 name: pm-b42-migration-wave-planner
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "按依赖、风险、价值、团队和维护窗口组织迁移波次. Precision Migration B42 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

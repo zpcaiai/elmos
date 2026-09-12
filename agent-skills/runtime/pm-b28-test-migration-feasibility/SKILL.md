@@ -1,5 +1,8 @@
 ---
 name: pm-b28-test-migration-feasibility
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "判断哪些测试可直接迁移、需重写、需双运行或不可复用. Precision Migration B28 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

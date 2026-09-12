@@ -6,6 +6,7 @@ import { TranslationEvidenceCharts } from "../components/ProjectEvidenceCharts";
 import { StatusChip } from "../components/StatusChip";
 import { useAccountSession } from "../components/AccountSessionProvider";
 import { directedLanguageRoutes, translationLanguages } from "../lib/businessLines";
+import { triggerBrowserDownload } from "../lib/browserDownload";
 import { Sha256Accumulator } from "../lib/sha256Accumulator";
 import type {
   DirectedLanguageRoute,
@@ -114,19 +115,6 @@ function routeCellIcon(route: DirectedLanguageRoute | undefined) {
   if (!route) return "close" as const;
   if (route.localExecution === "PASSED") return "check" as const;
   return "lock" as const;
-}
-
-function triggerVerifiedDownload(blob: Blob, filename: string): void {
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
-  anchor.rel = "noopener";
-  anchor.hidden = true;
-  document.body.append(anchor);
-  anchor.click();
-  anchor.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
 }
 
 async function verifiedDownloadBlob(
@@ -625,7 +613,7 @@ export function TranslationStudio() {
         MAX_TRANSLATION_ARTIFACT_BYTES,
         "TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH",
       );
-      triggerVerifiedDownload(
+      triggerBrowserDownload(
         blob,
         `${job.sourceLanguage}-to-${job.targetLanguage}-${job.status.toLowerCase()}.zip`,
       );
@@ -670,7 +658,7 @@ export function TranslationStudio() {
         format === "bundle" ? MAX_REPORT_BUNDLE_BYTES : MAX_REPORT_BYTES,
         "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
       );
-      triggerVerifiedDownload(blob, descriptor.path);
+      triggerBrowserDownload(blob, descriptor.path);
       setFeedback(
         `已在浏览器复算 ${format === "bundle" ? "完整 ZIP" : format === "markdown" ? "Markdown" : "JSON"} 报告摘要并下载；`
         + "报告状态不代表独立验证或认证。",
@@ -701,12 +689,10 @@ export function TranslationStudio() {
       commands: [routeCommand, ...validationCommands],
       repositoryPlan: handoff.scope === "repository" ? repositoryPlan : undefined,
     };
-    const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `${handoff.routeId}-handoff.json`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    triggerBrowserDownload(
+      new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }),
+      `${handoff.routeId}-handoff.json`,
+    );
     setFeedback("路线交接已导出，所有执行与认证状态保持 NOT_RUN / NOT_CERTIFIED。");
   }
 
@@ -721,12 +707,10 @@ export function TranslationStudio() {
       unit.execution_status,
       unit.unsupported_until_discovered.join(" | "),
     ].map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
-    const url = URL.createObjectURL(new Blob([header + rows + "\n"], { type: "text/csv" }));
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `${repositoryPlan.route_id}-work-units.csv`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    triggerBrowserDownload(
+      new Blob([header + rows + "\n"], { type: "text/csv" }),
+      `${repositoryPlan.route_id}-work-units.csv`,
+    );
     setFeedback("工作单元清单已导出为 CSV；每个单元的执行状态仍为 NOT_RUN。");
   }
 
@@ -861,7 +845,7 @@ export function TranslationStudio() {
             </div>
           )}
           <div className="route-command-stack"><span>{scope === "repository" ? "整库三段式命令：清单 → 发现 → 批量执行" : "精确 Profile 执行模板"}</span><code>{scope === "repository" ? repositoryCommands.join("\n\n") : routeCommand}</code><small>{scope === "single-module" ? "命令只接受 typed-pure-function-v1；任何越界语义都会失败关闭。" : scope === "repository" ? "清单只读取受支持源文件；discover 用真实编译器分析器逐单元判定；batch 只执行 READY 且有独立行为语料的单元，可断点续跑，任何跳过或失败都让批次保持 PARTIAL。" : "多仓组合必须先逐仓生成清单并形成显式依赖图；当前不会把单函数证据扩张成组合成功。"}</small></div>
-          <div className="route-handoff-actions"><button type="button" className="button button-primary" onClick={saveHandoff} disabled={!selectedRouteExecutable}><Icon name="file" size={15} />保存路线交接</button><button type="button" className="button button-secondary" onClick={exportHandoff}><Icon name="external" size={15} />导出 JSON</button><button type="button" className="button button-secondary" onClick={() => copyText([...(scope === "repository" ? repositoryCommands : [routeCommand]), ...validationCommands].join("\n"), "精确执行模板与保守门禁命令已复制。")}><Icon name="copy" size={15} />复制命令</button></div>
+          <div className="route-handoff-actions"><button type="button" className="button button-primary" onClick={saveHandoff} disabled={!selectedRouteExecutable}><Icon name="file" size={15} />保存路线交接</button><button type="button" className="button button-secondary" onClick={exportHandoff} disabled={!handoff || !selectedRoute || (handoff.scope === "repository" && !repositoryPlan)}><Icon name="external" size={15} />导出 JSON</button><button type="button" className="button button-secondary" onClick={() => copyText([...(scope === "repository" ? repositoryCommands : [routeCommand]), ...validationCommands].join("\n"), "精确执行模板与保守门禁命令已复制。")}><Icon name="copy" size={15} />复制命令</button></div>
         </div>
       </section>
 

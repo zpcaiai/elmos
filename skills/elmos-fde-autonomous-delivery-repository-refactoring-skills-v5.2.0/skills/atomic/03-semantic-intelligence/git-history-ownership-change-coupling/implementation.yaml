@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: git-history-ownership-change-coupling
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: GitHistoryOwnershipChangeCouplingService
+    workflow: GitHistoryOwnershipChangeCouplingWorkflow
+    policyGate: GitHistoryOwnershipChangeCouplingPolicyGate
+    evidenceProducer: GitHistoryOwnershipChangeCouplingEvidenceProducer
+    repositoryPort: GitHistoryOwnershipChangeCouplingRepositoryPort
+  requiredPorts:
+  - id: scm.history.read
+    direction: outbound
+  - id: graph.write
+    direction: outbound
+  - id: privacy.evaluate
+    direction: outbound
+  - id: statistics.compute
+    direction: inbound
+  - id: evidence.append
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/git-history-ownership-change-coupling/runs
+  - GET /api/v1/skills/git-history-ownership-change-coupling/runs/{runId}
+  - POST /api/v1/skills/git-history-ownership-change-coupling/runs/{runId}/cancel
+  - POST /api/v1/skills/git-history-ownership-change-coupling/runs/{runId}/resume
+  events:
+  - elmos.skill.git-history-ownership-change-coupling.requested.v1
+  - elmos.skill.git-history-ownership-change-coupling.checkpointed.v1
+  - elmos.skill.git-history-ownership-change-coupling.completed.v1
+  - elmos.skill.git-history-ownership-change-coupling.failed.v1
+  workflowSteps:
+  - Assess history completeness and branch topology.
+  - Normalize commits, renames, generated changes, and bot activity.
+  - Compute churn, co-change, defect, revert, and ownership signals.
+  - Correlate with architecture and issue findings.
+  - Validate material hotspots against current behavior.
+  - Publish risk-oriented ownership and coupling views.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

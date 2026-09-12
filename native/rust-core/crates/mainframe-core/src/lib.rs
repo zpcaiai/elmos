@@ -81,6 +81,7 @@ pub fn decode_comp3(bytes: &[u8], scale: u32) -> Result<String, String> {
     // Strip leading zeros but keep at least one digit
     let trimmed = digits.trim_start_matches('0');
     let mut core_digits = if trimmed.is_empty() { "0" } else { trimmed }.to_string();
+    let is_zero = core_digits == "0";
 
     let result = if scale == 0 {
         core_digits
@@ -93,7 +94,7 @@ pub fn decode_comp3(bytes: &[u8], scale: u32) -> Result<String, String> {
         format!("{}.{}", &core_digits[..split_pos], &core_digits[split_pos..])
     };
 
-    if is_negative && result != "0" && !result.starts_with("0.0") {
+    if is_negative && !is_zero {
         Ok(format!("-{}", result))
     } else {
         Ok(result)

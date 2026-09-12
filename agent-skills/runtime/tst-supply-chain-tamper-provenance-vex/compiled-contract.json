@@ -1,0 +1,36 @@
+{
+  "schema_version": "elmos.strict-test-suite.compiled-skill-contract.v1",
+  "package_id": "elmos.migration-platform-strict-tests",
+  "package_version": "1.0.0",
+  "installed_alias": "tst-supply-chain-tamper-provenance-vex",
+  "namespace": "elmos-strict-test-suite",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute",
+    "skill_name": "tst-supply-chain-tamper-provenance-vex",
+    "title": "供应链篡改与Provenance / success / 场景1",
+    "suite_source": "batch38-45-strict",
+    "case_count": 10,
+    "case_ids": [
+      "X-U018-001",
+      "X-U018-002",
+      "X-U018-003",
+      "X-U018-004",
+      "X-U018-005",
+      "X-U018-006",
+      "X-U018-007",
+      "X-U018-008",
+      "X-U018-009",
+      "X-U018-010"
+    ],
+    "module_path": "scripts/test-suite/tst_skill_runtime.py",
+    "runtime_class": "TstSkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

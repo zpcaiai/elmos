@@ -1,0 +1,12 @@
+[2026-09-10T08:26:18.415297Z][X-U016-004] Starting execution of X-U016-004 (SLO、Chaos与多区域DR / dependency-failure / 场景4) [Category=dependency-failure, Priority=P2]
+[2026-09-10T08:26:18.415300Z][X-U016-004] Bound Skill: tst-slo-chaos-multiregion-dr | Product Skill IDs: []
+[2026-09-10T08:26:18.415303Z][X-U016-004] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:18.425071Z][X-U016-004] Security: Minted RS256 token (JTI=d7c52e75..., Exp=1789032378)
+[2026-09-10T08:26:18.455358Z][X-U016-004] KMS: Envelope encrypted 37 bytes under key key-x-u016-004 v1 (DEK wrapped)
+[2026-09-10T08:26:18.486851Z][X-U016-004] [CROSS-RESILIENCE] Starting X-U016-004 (U016) Category=dependency-failure
+[2026-09-10T08:26:18.486860Z][X-U016-004] Multi-Region Chaos DR: Inducing wide-area network partitions and validating SLO compliance
+[2026-09-10T08:26:18.486864Z][X-U016-004] Injecting 500ms cross-region latency spike between US and EU...
+[2026-09-10T08:26:18.486924Z][X-U016-004] Latency Spike Injected: Adaptive client timeouts engaged without cascade failures
+[2026-09-10T08:26:18.486948Z][X-U016-004] Completed execution of X-U016-004 in 71.6ms: Status=PASSED
+[2026-09-10T08:26:18.486950Z][X-U016-004] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:18.486962Z][X-U016-004] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

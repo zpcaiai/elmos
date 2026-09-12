@@ -1,6 +1,15 @@
 ---
 name: b31-transaction-isolation-locking
-description: "Migrate and verify autocommit, transaction boundaries, isolation, savepoints, locking, MVCC, deadlocks, retries, DDL transactions, and concurrency error contracts across database engines. Use for transactional correctness."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
+description: Migrate and verify autocommit, transaction boundaries, isolation, savepoints, locking, MVCC, deadlocks, retries, DDL transactions, and concurrency error contracts across database engines. Use for transactional correctness.
 ---
 
 ## Operating mode

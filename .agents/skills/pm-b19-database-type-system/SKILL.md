@@ -1,5 +1,8 @@
 ---
 name: pm-b19-database-type-system
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "统一数据库数值、字符、日期、布尔、LOB、JSON、数组、空间和自定义类型. Precision Migration B19 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

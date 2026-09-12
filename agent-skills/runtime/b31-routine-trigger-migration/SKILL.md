@@ -1,6 +1,15 @@
 ---
 name: b31-routine-trigger-migration
-description: "Migrate database functions, procedures, packages, triggers, dynamic SQL, cursors, exceptions, transactions, security context, and side effects to target routines, application services, or retained sidecars. Use for procedural database logic."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
+description: Migrate database functions, procedures, packages, triggers, dynamic SQL, cursors, exceptions, transactions, security context, and side effects to target routines, application services, or retained sidecars. Use for procedural database logic.
 ---
 
 ## Operating mode

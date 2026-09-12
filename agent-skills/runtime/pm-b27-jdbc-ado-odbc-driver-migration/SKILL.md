@@ -1,5 +1,8 @@
 ---
 name: pm-b27-jdbc-ado-odbc-driver-migration
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 JDBC、ADO.NET、ODBC、驱动配置、连接串、参数和类型绑定. Precision Migration B27 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

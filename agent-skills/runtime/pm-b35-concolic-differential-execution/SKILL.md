@@ -1,5 +1,8 @@
 ---
 name: pm-b35-concolic-differential-execution
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "结合具体执行与符号约束扩展源目标差分路径覆盖. Precision Migration B35 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

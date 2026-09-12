@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: transformation-dag-estimation
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Database change must precede application cutover
+  - Parallel agents would edit overlapping modules
+  - Plan invalidated by upstream commit
+  negativeControls:
+  - one giant patch
+  - human-day estimate presented as machine runtime
+  - plan without rollback
+  checks:
+  - id: transformation-dag-estimation-AC-01
+    requirement: Represent every step with preconditions, scope, expected changes, tools, authority, checkpoint, tests, evidence,
+      side effects, and rollback.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: transformation-dag-estimation-AC-02
+    requirement: Order contract, characterization, data, compatibility, and observability work before risky replacement steps.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: transformation-dag-estimation-AC-03
+    requirement: Identify safe parallel read work and isolate write work through worktrees or non-overlapping scopes.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: transformation-dag-estimation-AC-04
+    requirement: Calculate critical-path machine wall-clock separately from queue and human-review time.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: transformation-dag-estimation-AC-05
+    requirement: Re-plan when evidence, revisions, failures, or approvals change.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

@@ -1,5 +1,8 @@
 ---
 name: pm-b14-python-type-adapter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "提取并规范化 Python 类型、泛型、可空性、联合类型和类型约束. Precision Migration B14 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

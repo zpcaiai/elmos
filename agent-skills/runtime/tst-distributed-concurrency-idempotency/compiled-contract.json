@@ -1,0 +1,34 @@
+{
+  "schema_version": "elmos.strict-test-suite.compiled-skill-contract.v1",
+  "package_id": "elmos.migration-platform-strict-tests",
+  "package_version": "1.0.0",
+  "installed_alias": "tst-distributed-concurrency-idempotency",
+  "namespace": "elmos-strict-test-suite",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute",
+    "skill_name": "tst-distributed-concurrency-idempotency",
+    "title": "分布式并发、幂等与副作用测试",
+    "suite_source": "batch1-37-strict",
+    "case_count": 8,
+    "case_ids": [
+      "X43-001",
+      "X43-002",
+      "X43-003",
+      "X43-004",
+      "X43-005",
+      "X43-006",
+      "X43-007",
+      "X43-008"
+    ],
+    "module_path": "scripts/test-suite/tst_skill_runtime.py",
+    "runtime_class": "TstSkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

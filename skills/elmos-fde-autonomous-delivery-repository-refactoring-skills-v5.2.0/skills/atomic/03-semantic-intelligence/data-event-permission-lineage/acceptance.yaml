@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: data-event-permission-lineage
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Tenant ID dropped in async job
+  - PII copied into logs and embeddings
+  - Duplicate event may cause repeated payment
+  negativeControls:
+  - assume framework annotations guarantee authorization
+  - ignore batch and offline paths
+  checks:
+  - id: data-event-permission-lineage-AC-01
+    requirement: Track sources, transformations, stores, caches, exports, logs, models, and deletion paths for sensitive and
+      critical data.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: data-event-permission-lineage-AC-02
+    requirement: Trace events from producer through broker, retries, consumers, databases, and external effects.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: data-event-permission-lineage-AC-03
+    requirement: Trace identity, role, policy, tenant, delegation, and service-account context through each hop.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: data-event-permission-lineage-AC-04
+    requirement: Detect context loss, cross-tenant paths, authorization gaps, and untracked side effects.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: data-event-permission-lineage-AC-05
+    requirement: Bind lineage edges to static and runtime evidence with confidence and retention classification.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

@@ -1,5 +1,8 @@
 ---
 name: pm-b21-procedure-cfg-builder
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "构建过程代码控制流、调用图、数据流、事务和副作用图. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

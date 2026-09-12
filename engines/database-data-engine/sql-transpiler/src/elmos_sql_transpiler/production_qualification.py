@@ -438,9 +438,7 @@ def production_qualification_requirements() -> dict[str, Any]:
             "requiredArtifactDigests": list(REQUIRED_EXECUTION_ARTIFACT_DIGESTS),
             "requiredEvidenceDigests": list(REQUIRED_EXECUTION_EVIDENCE_DIGESTS),
             "performanceContract": dict(PERFORMANCE_CONTRACT),
-            "rolloutPrerequisiteTargetId": None
-            if target["targetId"] == "dm8"
-            else "dm8",
+            "rolloutPrerequisiteTargetId": None if target["targetId"] == "dm8" else "dm8",
             "currentState": "BLOCKED_EXTERNAL_INPUT",
         }
         for target in _catalog_targets()
@@ -1793,9 +1791,7 @@ def merge_target_qualification_input(
     if not isinstance(targets, list):
         raise ValueError("qualification request.targets must be an array")
     matches = [
-        item
-        for item in targets
-        if isinstance(item, dict) and item.get("targetId") == target_id
+        item for item in targets if isinstance(item, dict) and item.get("targetId") == target_id
     ]
     if len(matches) != 1:
         raise ValueError("qualification request must contain exactly one matching target slot")

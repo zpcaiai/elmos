@@ -1,5 +1,8 @@
 ---
 name: pm-b12-transformation-result-set
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "以统一结果集表达修改、跳过、警告、需人工、失败和证据. Precision Migration B12 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

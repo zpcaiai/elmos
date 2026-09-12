@@ -1,6 +1,9 @@
 ---
 name: b30-spring-boot-upgrade
-description: "Implement and certify a Spring Boot major or minor version upgrade pack, including Java/runtime changes, Jakarta namespace transitions, configuration properties, auto-configuration, Spring Security, Hibernate/JPA, Actuator, build plugins, tests, and behavior evidence."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement and certify a Spring Boot major or minor version upgrade pack, including Java/runtime changes, Jakarta namespace transitions, configuration properties, auto-configuration, Spring Security, Hibernate/JPA, Actuator, build plugins, tests, and behavior evidence.
 ---
 
 ## Operating mode

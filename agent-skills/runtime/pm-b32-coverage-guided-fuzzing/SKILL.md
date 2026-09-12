@@ -1,5 +1,8 @@
 ---
 name: pm-b32-coverage-guided-fuzzing
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "利用覆盖反馈扩展输入，发现新路径、崩溃、超时和不等价. Precision Migration B32 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B35-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [35]
+Title: Batch 35 Model/State Machine：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: Model/State Machine
+Test Type: dependency_failure
+Skill: tst-b35-advanced-formal-verification
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

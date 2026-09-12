@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: business-baseline-roi
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: BusinessBaselineRoiService
+    workflow: BusinessBaselineRoiWorkflow
+    policyGate: BusinessBaselineRoiPolicyGate
+    evidenceProducer: BusinessBaselineRoiEvidenceProducer
+    repositoryPort: BusinessBaselineRoiRepositoryPort
+  requiredPorts:
+  - id: repository.read
+    direction: outbound
+  - id: artifact.write
+    direction: outbound
+  - id: schema.validate
+    direction: inbound
+  - id: policy.evaluate
+    direction: outbound
+  - id: evidence.append
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/business-baseline-roi/runs
+  - GET /api/v1/skills/business-baseline-roi/runs/{runId}
+  - POST /api/v1/skills/business-baseline-roi/runs/{runId}/cancel
+  - POST /api/v1/skills/business-baseline-roi/runs/{runId}/resume
+  events:
+  - elmos.skill.business-baseline-roi.requested.v1
+  - elmos.skill.business-baseline-roi.checkpointed.v1
+  - elmos.skill.business-baseline-roi.completed.v1
+  - elmos.skill.business-baseline-roi.failed.v1
+  workflowSteps:
+  - Select business outcomes from the approved discovery brief.
+  - Identify authoritative baseline sources and time windows.
+  - Normalize units, volumes, seasonality, and confidence.
+  - Model conservative, expected, and upside value scenarios.
+  - Estimate machine execution and operating cost separately from human review.
+  - Publish a measurable value contract with stop conditions.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

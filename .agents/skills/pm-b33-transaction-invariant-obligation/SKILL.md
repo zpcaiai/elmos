@@ -1,5 +1,8 @@
 ---
 name: pm-b33-transaction-invariant-obligation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成原子性、守恒、幂等、回滚和状态可见性的事务义务. Precision Migration B33 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

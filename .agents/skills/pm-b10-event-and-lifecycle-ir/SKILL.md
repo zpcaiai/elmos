@@ -1,5 +1,8 @@
 ---
 name: pm-b10-event-and-lifecycle-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达挂载、更新、销毁、Effect、订阅、焦点、键盘和前后台生命周期. Precision Migration B10 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

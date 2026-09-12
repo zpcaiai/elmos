@@ -1,5 +1,8 @@
 ---
 name: pm-b43-transformation-quality-learning
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "用真实验收结果校准模型、路由、估计、规则优先级和风险评分. Precision Migration B43 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

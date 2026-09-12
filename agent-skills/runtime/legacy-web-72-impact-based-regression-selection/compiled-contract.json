@@ -1,0 +1,27 @@
+{
+  "schema_version": "elmos.legacy-web.compiled-skill-contract.v1",
+  "package_id": "elmos.java-legacy-web.repository-modernization",
+  "package_version": "1.0.0",
+  "installed_alias": "legacy-web-72-impact-based-regression-selection",
+  "namespace": "legacy-web-modernization-v1",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "legacy-web-32-behavioral-contract-and-sequence-mining",
+    "legacy-web-57-source-map-change-provenance",
+    "legacy-web-71-bounded-semantic-auto-repair"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "dispatch",
+    "handler_id": "execute_72_impact_based_regression_selection",
+    "phase": "repair-certification",
+    "priority": "P1",
+    "module_path": "engines/legacy-web-modernization-engine/src/elmos_legacy_web_modernization/runtime.py",
+    "skill_key": "72-impact-based-regression-selection",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

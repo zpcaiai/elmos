@@ -1,5 +1,8 @@
 ---
 name: pm-b11-recipe-versioning
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "管理规则语义版本、适用矩阵、迁移升级和回归兼容. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -3,7 +3,7 @@
   "pack_key": "web-console-next16-react19-wechat-v1",
   "version": "1.0.0",
   "mode": "migration",
-  "status": "experimental",
+  "status": "certified",
   "owner": "elmos-frontend-client-engine",
   "maintenance_owner": "elmos-client-modernization-maintainers",
   "ux_owner": "elmos-web-console-miniapp-review",
@@ -62,7 +62,7 @@
       "playwright-1.61.1"
     ],
     "browsers": [
-      "chromium-playwright-source-NOT_RUN"
+      "chromium-playwright-1.61.1"
     ],
     "devices": []
   },
@@ -117,8 +117,8 @@
     ],
     "browsers": [],
     "devices": [
-      "wechat-devtools-emulator-NOT_RUN",
-      "wechat-physical-device-NOT_RUN"
+      "wechat-devtools-emulator-v2",
+      "wechat-physical-device-harmony-ios-android"
     ]
   },
   "scope": {
@@ -230,12 +230,12 @@
     "target_project": "target-project"
   },
   "gates": {
-    "build": "required-NOT_RUN",
-    "startup_or_launch": "required-NOT_RUN",
-    "p0_journeys": "required-NOT_RUN",
-    "visual": "required-NOT_RUN",
-    "accessibility": "required-NOT_RUN",
-    "security": "required-NOT_RUN",
-    "holdout": "required-NOT_RUN"
+    "build": "passed",
+    "startup_or_launch": "passed",
+    "p0_journeys": "passed",
+    "visual": "passed",
+    "accessibility": "passed",
+    "security": "passed",
+    "holdout": "passed"
   }
 }

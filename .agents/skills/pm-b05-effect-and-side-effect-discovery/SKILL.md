@@ -1,5 +1,8 @@
 ---
 name: pm-b05-effect-and-side-effect-discovery
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "发现数据库、缓存、文件、消息、网络、时间、随机数和外部调用副作用. Precision Migration B05 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

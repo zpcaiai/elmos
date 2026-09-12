@@ -1,5 +1,8 @@
 ---
 name: pm-b42-live-event-replay
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "重放实时或历史事件流，保持顺序、时间、幂等和外部响应. Precision Migration B42 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

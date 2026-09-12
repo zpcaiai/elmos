@@ -1,5 +1,8 @@
 ---
 name: pm-b09-async-cancellation-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达异步任务、取消传播、Latest-wins、超时、悬挂任务和完成顺序. Precision Migration B09 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

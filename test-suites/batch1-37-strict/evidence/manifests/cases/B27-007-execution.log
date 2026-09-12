@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B27-007 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [27]
+Title: Batch 27 Canary/Rollback：改变工具链、Schema、Provider、配置或依赖版本并重放
+Capability: Canary/Rollback
+Test Type: version_drift
+Skill: tst-b27-incremental-production-factory
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

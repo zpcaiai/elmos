@@ -1,5 +1,8 @@
 ---
 name: pm-b29-production-trace-test-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将脱敏生产 Trace 转换为可复现、参数化和可审计测试. Precision Migration B29 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

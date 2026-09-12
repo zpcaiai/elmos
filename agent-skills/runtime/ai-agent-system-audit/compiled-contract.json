@@ -1,0 +1,19 @@
+{
+  "package": "elmos-fde-autonomous-delivery-repository-refactoring-skills",
+  "version": "5.2.0",
+  "source_id": "ai-agent-system-audit",
+  "alias": "elmos-fde-ai-agent-system-audit",
+  "pack": "04-unified-assessment",
+  "is_workflow": false,
+  "dependencies": [
+    "issue-ontology-and-finding-normalization",
+    "data-event-permission-lineage",
+    "test-ci-cd-developer-experience-audit"
+  ],
+  "effect_boundary": "E3",
+  "routable": false,
+  "implementation_state": "LOCAL_CONTROL_PLANE",
+  "external_evidence": "NOT_RUN",
+  "independent_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

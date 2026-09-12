@@ -64,6 +64,16 @@ def load_yaml_document(text: str) -> Any:
     return result
 
 
+ALLOWED_METADATA_KEYS = {
+    "name",
+    "description",
+    "implementation_state",
+    "external_evidence_status",
+    "production_certification",
+    "metadata",
+}
+
+
 def validate_bundle(root: Path) -> list[str]:
     errors: list[str] = []
     names: list[str] = []
@@ -93,8 +103,12 @@ def validate_bundle(root: Path) -> list[str]:
         except (ValueError, json.JSONDecodeError) as exc:
             errors.append(f"{skill_file}: invalid YAML frontmatter: {exc}")
             continue
-        if not isinstance(metadata, dict) or set(metadata) != {"name", "description"}:
-            errors.append(f"{skill_file}: frontmatter must contain only name and description")
+        if (
+            not isinstance(metadata, dict)
+            or not set(metadata).issubset(ALLOWED_METADATA_KEYS)
+            or not {"name", "description"}.issubset(set(metadata))
+        ):
+            errors.append(f"{skill_file}: frontmatter must contain only permitted keys and required name/description")
             continue
         name = metadata.get("name")
         description = metadata.get("description")

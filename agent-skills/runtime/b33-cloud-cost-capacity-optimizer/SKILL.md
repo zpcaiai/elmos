@@ -1,6 +1,9 @@
 ---
 name: b33-cloud-cost-capacity-optimizer
-description: "Model validate and optimize cloud capacity availability quotas performance and recurring cost without weakening security durability recovery observability or workload contracts."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Model validate and optimize cloud capacity availability quotas performance and recurring cost without weakening security durability recovery observability or workload contracts.
 ---
 
 ## Operating mode

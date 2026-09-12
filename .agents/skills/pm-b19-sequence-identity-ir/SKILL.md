@@ -1,5 +1,8 @@
 ---
 name: pm-b19-sequence-identity-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达 Sequence、Identity、Auto Increment、缓存、回退和并发生成. Precision Migration B19 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

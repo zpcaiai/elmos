@@ -1,0 +1,5 @@
+{
+  "role": "replay-script",
+  "case_id": "TS-GOV-04-002",
+  "ref": "shared/replay.sh"
+}

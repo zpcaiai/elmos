@@ -1,0 +1,17 @@
+{
+  "package": "elmos-fde-autonomous-delivery-repository-refactoring-skills",
+  "version": "5.2.0",
+  "source_id": "changeset-commit-and-provenance-governance",
+  "alias": "elmos-fde-changeset-commit-and-provenance-governance",
+  "pack": "05-planning-transformation",
+  "is_workflow": false,
+  "dependencies": [
+    "transformation-dag-estimation"
+  ],
+  "effect_boundary": "E3",
+  "routable": false,
+  "implementation_state": "LOCAL_CONTROL_PLANE",
+  "external_evidence": "NOT_RUN",
+  "independent_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

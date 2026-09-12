@@ -128,6 +128,22 @@ BOOT_4_1_1_ROUTE_COMPOSITIONS = {
     for route_id, steps in BOOT_4_1_ROUTE_COMPOSITIONS.items()
 }
 BOOT_4_1_LOCAL_EVIDENCE = {
+    "boot-1.5-maven-to-boot-4.1.0-java-21": {
+        "source_boot": "1.5.22.RELEASE",
+        "source_java": "8",
+        "target_boot": "4.1.0",
+        "target_java": "21",
+        "evidence_path": "evidence/spring-routes/boot-1.5-maven-to-boot-4.1.0-java-21.json",
+        "matrix_evidence_path": "evidence/spring-routes/boot-1.5-maven-to-boot-4.1.0-java-21.json",
+    },
+    "boot-2.0-2.6-maven-to-boot-4.1.0-java-21": {
+        "source_boot": "2.3.12.RELEASE",
+        "source_java": "11",
+        "target_boot": "4.1.0",
+        "target_java": "21",
+        "evidence_path": "evidence/spring-routes/boot-2.0-2.6-maven-to-boot-4.1.0-java-21.json",
+        "matrix_evidence_path": "evidence/spring-routes/boot-2.0-2.6-maven-to-boot-4.1.0-java-21.json",
+    },
     "boot-2.7-maven-to-boot-4.1.0-java-21": {
         "source_boot": "2.7.18",
         "source_java": "17",
@@ -135,6 +151,14 @@ BOOT_4_1_LOCAL_EVIDENCE = {
         "target_java": "21",
         "evidence_path": "evidence/spring-routes/boot-2.7-maven-to-boot-4.1.0-java-21.json",
         "matrix_evidence_path": "evidence/spring-routes/boot-2.7-maven-to-boot-4.1.0-java-21.json",
+    },
+    "boot-3.0-3.4-maven-to-boot-4.1.0-java-21": {
+        "source_boot": "3.4.1",
+        "source_java": "17",
+        "target_boot": "4.1.0",
+        "target_java": "21",
+        "evidence_path": "evidence/spring-routes/boot-3.0-3.4-maven-to-boot-4.1.0-java-21.json",
+        "matrix_evidence_path": "evidence/spring-routes/boot-3.0-3.4-maven-to-boot-4.1.0-java-21.json",
     },
     "boot-3.5-maven-to-boot-4.1.0-java-21": {
         "source_boot": "3.5.3",
@@ -144,6 +168,22 @@ BOOT_4_1_LOCAL_EVIDENCE = {
         "evidence_path": "evidence/spring-routes/boot-3.5-maven-to-boot-4.1.0-java-21.json",
         "matrix_evidence_path": "certification/local-reference-evidence.json",
         "matrix_evidence_file": "framework-packs/spring-to-boot-4-1-0/certification/local-reference-evidence.json",
+    },
+    "boot-2.x-gradle-to-boot-4.1.0-java-21": {
+        "source_boot": "2.7.18",
+        "source_java": "17",
+        "target_boot": "4.1.0",
+        "target_java": "21",
+        "evidence_path": "evidence/spring-routes/boot-2.x-gradle-to-boot-4.1.0-java-21.json",
+        "matrix_evidence_path": "evidence/spring-routes/boot-2.x-gradle-to-boot-4.1.0-java-21.json",
+    },
+    "spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21": {
+        "source_boot": "5.3.39",
+        "source_java": "11",
+        "target_boot": "4.1.0",
+        "target_java": "21",
+        "evidence_path": "evidence/spring-routes/spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21.json",
+        "matrix_evidence_path": "evidence/spring-routes/spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21.json",
     },
 }
 BOOT_3_5_LOCAL_EVIDENCE = {
@@ -380,7 +420,7 @@ def parse_catalog() -> list[dict[str, object]]:
         require(source_family is not None, f"CATALOG_ROUTE_SOURCE_FAMILY_MISSING:{route_id}")
         assert source_family is not None
         require(
-            source_family.group(1) in {"SPRING_BOOT", "SPRING_MVC", "SPRING_FRAMEWORK"},
+            source_family.group(1) in {"SPRING_BOOT", "SPRING_MVC", "SPRING_FRAMEWORK", "JAVA_EE_SERVLET"},
             f"CATALOG_ROUTE_SOURCE_FAMILY_INVALID:{route_id}:{source_family.group(1)}",
         )
         exact_source = re.search(
@@ -399,6 +439,7 @@ def parse_catalog() -> list[dict[str, object]]:
                 "SPRING_BOOT": "spring-boot",
                 "SPRING_MVC": "spring-mvc",
                 "SPRING_FRAMEWORK": "spring-framework",
+                "JAVA_EE_SERVLET": "java-ee-servlet",
             }[source_family.group(1)],
             "build_tool": build_tools[directed_fields.group(1)],
             "target_boot": constant_or_string(directed_fields.group(2), route_id, "target_boot"),

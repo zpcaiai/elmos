@@ -1,5 +1,8 @@
 ---
 name: pm-b44-license-and-entitlement
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "管理版本、方向包、席位、并发、容量、离线授权和许可证合规. Precision Migration B44 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

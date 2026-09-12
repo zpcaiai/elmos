@@ -1,5 +1,8 @@
 ---
 name: pm-b09-external-call-effect-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达外部调用参数、次数、顺序、超时、重试、幂等和不可逆副作用. Precision Migration B09 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

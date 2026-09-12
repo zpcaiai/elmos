@@ -1,0 +1,36 @@
+skill: elmos-assurance-interface-discovery
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-interface-discovery-A01
+  given: 两个scanner各发现327项但一项不同
+  when: 在真实集成模块执行对应测试或负例
+  then: 集合差异必须阻断完整性断言
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-interface-discovery-A02
+  given: 接口只在feature flag下存在
+  when: 在真实集成模块执行对应测试或负例
+  then: 清单记录该条件及scope是否覆盖
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-interface-discovery-A03
+  given: 外部OpenAPI引用指向metadata endpoint
+  when: 在真实集成模块执行对应测试或负例
+  then: resolver拒绝且不发起SSRF请求
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

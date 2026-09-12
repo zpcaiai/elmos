@@ -1,5 +1,8 @@
 ---
 name: pm-b40-generate-from-skills
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "输入可执行Skills、业务配置、目标栈和部署要求，生成完整可运行项目并验收. Precision Migration B40 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

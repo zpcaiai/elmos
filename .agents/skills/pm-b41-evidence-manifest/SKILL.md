@@ -1,5 +1,8 @@
 ---
 name: pm-b41-evidence-manifest
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "索引本次迁移的规则、模型、工具链、测试、证明、差异、审批和产物. Precision Migration B41 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

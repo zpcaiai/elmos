@@ -138,11 +138,7 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     if not isinstance(config.get("memory"), str) or not MEMORY_RE.fullmatch(config["memory"]):
         errors.append("memory must use an exact Mi or Gi value")
     timeout_seconds = config.get("timeout_seconds", 300)
-    if (
-        not isinstance(timeout_seconds, int)
-        or isinstance(timeout_seconds, bool)
-        or not 1 <= timeout_seconds <= 3600
-    ):
+    if not isinstance(timeout_seconds, int) or isinstance(timeout_seconds, bool) or not 1 <= timeout_seconds <= 3600:
         errors.append("timeout_seconds must be an integer in [1, 3600]")
     health = config.get("health")
     if (
@@ -210,9 +206,7 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         for key, value in environment.items():
             key_is_valid = isinstance(key, str) and ENV_KEY_RE.fullmatch(key) is not None
             value_is_valid = isinstance(value, str) and ENV_VALUE_RE.fullmatch(value) is not None
-            sensitive_name = key_is_valid and any(
-                marker in key for marker in ("PASSWORD", "SECRET", "TOKEN", "KEY")
-            )
+            sensitive_name = key_is_valid and any(marker in key for marker in ("PASSWORD", "SECRET", "TOKEN", "KEY"))
             file_reference = key_is_valid and key.endswith("_FILE")
             if (
                 not key_is_valid
@@ -233,22 +227,33 @@ def deploy_command(config: dict[str, Any]) -> list[str]:
     if errors:
         raise ControlError("CONFIG_INVALID:" + "; ".join(errors))
     command = [
-        "gcloud", "run", "deploy", config["service_name"],
-        f"--project={config['project_id']}", f"--region={config['region']}",
-        "--platform=managed", f"--image={config['image']}",
+        "gcloud",
+        "run",
+        "deploy",
+        config["service_name"],
+        f"--project={config['project_id']}",
+        f"--region={config['region']}",
+        "--platform=managed",
+        f"--image={config['image']}",
         f"--service-account={config['runtime_service_account']}",
-        f"--port={config['port']}", f"--cpu={config['cpu']}", f"--memory={config['memory']}",
-        f"--concurrency={config['concurrency']}", f"--min-instances={config['min_instances']}",
-        f"--max-instances={config['max_instances']}", f"--ingress={config['ingress']}",
+        f"--port={config['port']}",
+        f"--cpu={config['cpu']}",
+        f"--memory={config['memory']}",
+        f"--concurrency={config['concurrency']}",
+        f"--min-instances={config['min_instances']}",
+        f"--max-instances={config['max_instances']}",
+        f"--ingress={config['ingress']}",
         f"--timeout={config.get('timeout_seconds', 300)}s",
-        f"--revision-suffix={config['release_id']}", f"--tag=candidate-{config['release_id']}",
-        "--no-allow-unauthenticated", "--no-traffic", "--quiet", "--format=json",
+        f"--revision-suffix={config['release_id']}",
+        f"--tag=candidate-{config['release_id']}",
+        "--no-allow-unauthenticated",
+        "--no-traffic",
+        "--quiet",
+        "--format=json",
     ]
     secrets = config.get("secrets", [])
     if secrets:
-        references = ",".join(
-            f"{item['mount_path']}={item['name']}:{item['version']}" for item in secrets
-        )
+        references = ",".join(f"{item['mount_path']}={item['name']}:{item['version']}" for item in secrets)
         command.append(f"--set-secrets={references}")
     environment = config.get("environment", {})
     if environment:
@@ -264,18 +269,38 @@ def plan(config: dict[str, Any]) -> dict[str, Any]:
         "config_digest": _canonical_digest(config),
         "deploy": deploy_command(config),
         "promote": [
-            "gcloud", "run", "services", "update-traffic", config["service_name"],
-            f"--project={config['project_id']}", f"--region={config['region']}",
-            "--to-revisions=DEPLOYED_REVISION=100", "--quiet", "--format=json",
+            "gcloud",
+            "run",
+            "services",
+            "update-traffic",
+            config["service_name"],
+            f"--project={config['project_id']}",
+            f"--region={config['region']}",
+            "--to-revisions=DEPLOYED_REVISION=100",
+            "--quiet",
+            "--format=json",
         ],
         "rollback": [
-            "gcloud", "run", "services", "update-traffic", config["service_name"],
-            f"--project={config['project_id']}", f"--region={config['region']}",
-            "--to-revisions=PREVIOUS_REVISION=100", "--quiet", "--format=json",
+            "gcloud",
+            "run",
+            "services",
+            "update-traffic",
+            config["service_name"],
+            f"--project={config['project_id']}",
+            f"--region={config['region']}",
+            "--to-revisions=PREVIOUS_REVISION=100",
+            "--quiet",
+            "--format=json",
         ],
         "destroy": [
-            "gcloud", "run", "services", "delete", config["service_name"],
-            f"--project={config['project_id']}", f"--region={config['region']}", "--quiet",
+            "gcloud",
+            "run",
+            "services",
+            "delete",
+            config["service_name"],
+            f"--project={config['project_id']}",
+            f"--region={config['region']}",
+            "--quiet",
         ],
         "external_execution_evidence": "NOT_RUN",
     }
@@ -343,10 +368,18 @@ def _run(command: list[str], *, timeout: int = PROVIDER_COMMAND_TIMEOUT_SECONDS)
 
 
 def _describe(config: dict[str, Any]) -> dict[str, Any]:
-    return _run([
-        "gcloud", "run", "services", "describe", config["service_name"],
-        f"--project={config['project_id']}", f"--region={config['region']}", "--format=json",
-    ])
+    return _run(
+        [
+            "gcloud",
+            "run",
+            "services",
+            "describe",
+            config["service_name"],
+            f"--project={config['project_id']}",
+            f"--region={config['region']}",
+            "--format=json",
+        ]
+    )
 
 
 def _describe_optional(config: dict[str, Any]) -> dict[str, Any] | None:
@@ -362,9 +395,7 @@ def _describe_optional(config: dict[str, Any]) -> dict[str, Any] | None:
 def _traffic_is_exact(service: dict[str, Any], revision: str) -> bool:
     traffic = service.get("status", {}).get("traffic", [])
     return isinstance(traffic, list) and any(
-        isinstance(item, dict)
-        and item.get("revisionName") == revision
-        and item.get("percent") == 100
+        isinstance(item, dict) and item.get("revisionName") == revision and item.get("percent") == 100
         for item in traffic
     )
 
@@ -438,9 +469,7 @@ def _write_receipt(path: Path, receipt: dict[str, Any]) -> None:
     if path.is_symlink() or (path.exists() and not path.is_file()):
         raise ControlError("RECEIPT_OUTPUT_UNSAFE")
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    descriptor, temporary_name = tempfile.mkstemp(
-        prefix=f".{path.name}.", suffix=".tmp", dir=path.parent
-    )
+    descriptor, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
     temporary = Path(temporary_name)
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as handle:
@@ -534,21 +563,38 @@ def execute_deploy(config: dict[str, Any], authorization: Path, executor: str, r
     candidate = _wait_for_candidate(config, tag)
     _private_health_probe(config, candidate, tag)
     promote = [
-        "gcloud", "run", "services", "update-traffic", config["service_name"],
-        f"--project={config['project_id']}", f"--region={config['region']}",
-        f"--to-revisions={revision}=100", "--quiet", "--format=json",
+        "gcloud",
+        "run",
+        "services",
+        "update-traffic",
+        config["service_name"],
+        f"--project={config['project_id']}",
+        f"--region={config['region']}",
+        f"--to-revisions={revision}=100",
+        "--quiet",
+        "--format=json",
     ]
     _run(promote)
     _wait_for_traffic(config, revision)
     _private_service_health_probe(config, _describe(config))
-    _write_receipt(receipt_path, {
-        "schema_version": 1, "action": "deploy", "status": "passed",
-        "executed_at": dt.datetime.now(dt.UTC).isoformat(), "executor": executor,
-        "approver": auth["approver"], "config_digest": _canonical_digest(config),
-        "image": config["image"], "previous_revision": previous, "deployed_revision": revision,
-        "private_health_probe": "passed", "traffic": {revision: 100},
-        "certification_effect": "NONE_REQUIRES_INDEPENDENT_GATE",
-    })
+    _write_receipt(
+        receipt_path,
+        {
+            "schema_version": 1,
+            "action": "deploy",
+            "status": "passed",
+            "executed_at": dt.datetime.now(dt.UTC).isoformat(),
+            "executor": executor,
+            "approver": auth["approver"],
+            "config_digest": _canonical_digest(config),
+            "image": config["image"],
+            "previous_revision": previous,
+            "deployed_revision": revision,
+            "private_health_probe": "passed",
+            "traffic": {revision: 100},
+            "certification_effect": "NONE_REQUIRES_INDEPENDENT_GATE",
+        },
+    )
 
 
 def execute_rollback(
@@ -566,36 +612,70 @@ def execute_rollback(
     revision = prior.get("previous_revision")
     if not isinstance(revision, str) or not NAME_RE.fullmatch(revision):
         raise ControlError("PREVIOUS_REVISION_REQUIRED")
-    _run([
-        "gcloud", "run", "services", "update-traffic", config["service_name"],
-        f"--project={config['project_id']}", f"--region={config['region']}",
-        f"--to-revisions={revision}=100", "--quiet", "--format=json",
-    ])
+    _run(
+        [
+            "gcloud",
+            "run",
+            "services",
+            "update-traffic",
+            config["service_name"],
+            f"--project={config['project_id']}",
+            f"--region={config['region']}",
+            f"--to-revisions={revision}=100",
+            "--quiet",
+            "--format=json",
+        ]
+    )
     _wait_for_traffic(config, revision)
     _private_service_health_probe(config, _describe(config))
-    _write_receipt(receipt_path, {
-        "schema_version": 1, "action": "rollback", "status": "passed",
-        "executed_at": dt.datetime.now(dt.UTC).isoformat(), "executor": executor,
-        "approver": auth["approver"], "config_digest": _canonical_digest(config),
-        "restored_revision": revision, "certification_effect": "NONE_REQUIRES_INDEPENDENT_GATE",
-    })
+    _write_receipt(
+        receipt_path,
+        {
+            "schema_version": 1,
+            "action": "rollback",
+            "status": "passed",
+            "executed_at": dt.datetime.now(dt.UTC).isoformat(),
+            "executor": executor,
+            "approver": auth["approver"],
+            "config_digest": _canonical_digest(config),
+            "restored_revision": revision,
+            "certification_effect": "NONE_REQUIRES_INDEPENDENT_GATE",
+        },
+    )
 
 
 def execute_destroy(config: dict[str, Any], authorization: Path, executor: str, receipt_path: Path) -> None:
     preflight(config)
     auth = _authorization(authorization, "destroy", config, executor)
-    _run([
-        "gcloud", "run", "services", "delete", config["service_name"],
-        f"--project={config['project_id']}", f"--region={config['region']}", "--quiet", "--format=json",
-    ])
+    _run(
+        [
+            "gcloud",
+            "run",
+            "services",
+            "delete",
+            config["service_name"],
+            f"--project={config['project_id']}",
+            f"--region={config['region']}",
+            "--quiet",
+            "--format=json",
+        ]
+    )
     _wait_until_deleted(config)
-    _write_receipt(receipt_path, {
-        "schema_version": 1, "action": "destroy", "status": "passed",
-        "executed_at": dt.datetime.now(dt.UTC).isoformat(), "executor": executor,
-        "approver": auth["approver"], "config_digest": _canonical_digest(config),
-        "service_deleted": True, "orphan_and_billing_review": "REQUIRED",
-        "certification_effect": "NONE_REQUIRES_INDEPENDENT_GATE",
-    })
+    _write_receipt(
+        receipt_path,
+        {
+            "schema_version": 1,
+            "action": "destroy",
+            "status": "passed",
+            "executed_at": dt.datetime.now(dt.UTC).isoformat(),
+            "executor": executor,
+            "approver": auth["approver"],
+            "config_digest": _canonical_digest(config),
+            "service_deleted": True,
+            "orphan_and_billing_review": "REQUIRED",
+            "certification_effect": "NONE_REQUIRES_INDEPENDENT_GATE",
+        },
+    )
 
 
 def main() -> int:

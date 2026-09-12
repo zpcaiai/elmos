@@ -1,0 +1,11 @@
+[2026-09-10T08:25:55.947158Z][B44-017] Starting execution of B44-017 (Batch 44 FinOps / security / 场景17) [Category=security, Priority=P0]
+[2026-09-10T08:25:55.947163Z][B44-017] Bound Skill: tst-b44-finops-economics | Product Skill IDs: [1463, 1471]
+[2026-09-10T08:25:55.947165Z][B44-017] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:55.972175Z][B44-017] Security: Minted RS256 token (JTI=52aed8f3..., Exp=1789032355)
+[2026-09-10T08:25:56.042539Z][B44-017] KMS: Envelope encrypted 34 bytes under key key-b44-017 v1 (DEK wrapped)
+[2026-09-10T08:25:56.094017Z][B44-017] [B44-FINOPS-ECONOMICS] Initializing cloud financial operations for B44-017
+[2026-09-10T08:25:56.094031Z][B44-017] Executing Multi-Resource Metering & Granular Telemetry Ingestion...
+[2026-09-10T08:25:56.094105Z][B44-017] Telemetry Recorded: Total spend for tenant-finops-global = $458.75
+[2026-09-10T08:25:56.094126Z][B44-017] Completed execution of B44-017 in 147.0ms: Status=PASSED
+[2026-09-10T08:25:56.094130Z][B44-017] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:56.094151Z][B44-017] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

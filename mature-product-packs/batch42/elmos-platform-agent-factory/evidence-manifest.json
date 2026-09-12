@@ -1,0 +1,83 @@
+{
+  "manifestVersion": 1,
+  "batch": 42,
+  "packKey": "elmos-platform-agent-factory",
+  "generatedAt": "2026-09-09T22:16:58.237739Z",
+  "artifact": {
+    "path": "support-matrix.json",
+    "sha256": "sha256:db6f45c02c18a2a0063b653ad8c91219b283d264e9390ea5b4ad140f08d265ca",
+    "bytes": 6934
+  },
+  "environment": {
+    "path": "profile.json",
+    "sha256": "sha256:465eda4047b18104c82d93c1201a9a94415fd5095f3221318d93c32e4ee84d40",
+    "bytes": 894
+  },
+  "execution": {
+    "startedAt": "2026-09-09T21:16:57.906514Z",
+    "finishedAt": "2026-09-09T22:11:57.906580Z",
+    "replayCommand": "python3 scripts/mature_product_toolkit.py gate --batch 42 /Users/stephen/DevProjects/AIProjects/elmos/mature-product-packs/batch42/elmos-platform-agent-factory",
+    "executorId": "elmos-batch42-executor-agent",
+    "verifierId": "marcus-independent-verifier",
+    "verifierIndependent": true,
+    "authorizationRefs": [
+      "auth-elmos-prod-2026-b42"
+    ]
+  },
+  "evidence": [
+    {
+      "path": "evidence/execution/batch42-execution.json",
+      "sha256": "sha256:3bce6f274a5f148d8e49eafb99325fedb44c1a1239ce78f1676cb47ab0ea05d1",
+      "bytes": 308,
+      "id": "batch42-execution",
+      "role": "execution",
+      "claimIds": [
+        "claim-b42-core-functional-conformance",
+        "claim-b42-operational-governance-resilience"
+      ]
+    },
+    {
+      "path": "evidence/provenance/batch42-provenance.json",
+      "sha256": "sha256:e1b1ddde03930db4a862bdb0dd272709e9d64b9ea32e6cb1398f596eb8646090",
+      "bytes": 302,
+      "id": "batch42-provenance",
+      "role": "provenance",
+      "claimIds": [
+        "claim-b42-core-functional-conformance",
+        "claim-b42-operational-governance-resilience"
+      ]
+    },
+    {
+      "path": "evidence/verification/batch42-verification.json",
+      "sha256": "sha256:f23fda3b9e282e9b926f6f811dcc16e5fbfceb80c3c729396faa1412275b8583",
+      "bytes": 367,
+      "id": "batch42-verification",
+      "role": "verification",
+      "claimIds": [
+        "claim-b42-core-functional-conformance",
+        "claim-b42-operational-governance-resilience"
+      ]
+    }
+  ],
+  "corpora": [
+    {
+      "path": "holdout/holdout-workload.json",
+      "sha256": "sha256:83db64d4cb80cde4b90cb720063639ebb483905d01e7c1bb9ebf513e16c32746",
+      "bytes": 582,
+      "kind": "holdout",
+      "authoringAccess": false
+    },
+    {
+      "path": "representative/representative-workload.json",
+      "sha256": "sha256:4a8c90bf27e0c12ff79df1c7bbe9eef76ce1b7d38b27a2373629ed695f8a6e9e",
+      "bytes": 624,
+      "kind": "representative",
+      "authoringAccess": false
+    }
+  ],
+  "approvals": [
+    "Marcus Vance, Lead Independent Verification Engineer",
+    "Zackary Vance, Director of Agentic Systems"
+  ],
+  "domainGates": []
+}

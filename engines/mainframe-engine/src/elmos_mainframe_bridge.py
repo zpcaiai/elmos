@@ -58,6 +58,11 @@ def ebcdic_to_ascii(ebcdic_bytes: bytes) -> str:
     return ebcdic_bytes.decode("cp037", errors="replace")
 
 
+def ascii_to_ebcdic(ascii_str: str) -> bytes:
+    """Transcodes ASCII string to EBCDIC bytes."""
+    return ascii_str.encode("cp037", errors="replace")
+
+
 def comp3_decode(hex_str: str, scale: int = 0) -> str:
     """Decodes COMP-3 packed decimal hex representation e.g. '12345C' with scale 2 -> '123.45'."""
     lib = _get_native_lib()
@@ -68,7 +73,7 @@ def comp3_decode(hex_str: str, scale: int = 0) -> str:
             if "value" in data:
                 return str(data["value"])
 
-    # Fallback
+    # Python fallback
     raw = bytes.fromhex(hex_str)
     digits = []
     is_neg = False
@@ -90,7 +95,7 @@ def comp3_decode(hex_str: str, scale: int = 0) -> str:
     return f"-{res}" if is_neg and res != "0" else res
 
 
-def comp3_encode(num_str: str, scale: int, total_bytes: usize) -> str:
+def comp3_encode(num_str: str, scale: int, total_bytes: int) -> str:
     """Encodes decimal string e.g. '123.45' into COMP-3 hex string."""
     lib = _get_native_lib()
     if lib:
@@ -100,4 +105,42 @@ def comp3_encode(num_str: str, scale: int, total_bytes: usize) -> str:
             if "hex" in data:
                 return data["hex"]
 
-    raise NotImplementedError("comp3_encode fallback requires native core")
+    # Python fallback
+    is_neg = False
+    s = num_str.strip()
+    if s.startswith("-"):
+        is_neg = True
+        s = s[1:]
+    elif s.startswith("+"):
+        s = s[1:]
+    if "." in s:
+        parts = s.split(".", 1)
+        int_part = parts[0]
+        frac_part = parts[1]
+        if len(frac_part) < scale:
+            frac_part = frac_part.ljust(scale, "0")
+        else:
+            frac_part = frac_part[:scale]
+        digits = int_part + frac_part
+    else:
+        digits = s + ("0" * scale)
+    digits = digits.lstrip("0") or "0"
+    capacity = total_bytes * 2 - 1
+    if len(digits) > capacity:
+        raise ValueError(f"Value '{num_str}' exceeds capacity of {total_bytes} bytes ({capacity} digits)")
+    padded = digits.zfill(capacity)
+    sign = "D" if is_neg and digits != "0" else "C"
+    return padded + sign
+
+
+def parse_comp3_field(raw_bytes: bytes, offset: int, length: int, scale: int = 0) -> str:
+    """Extracts and decodes a COMP-3 field from a byte buffer."""
+    field_bytes = raw_bytes[offset : offset + length]
+    return comp3_decode(field_bytes.hex().upper(), scale=scale)
+
+
+def format_comp3_field(num_str: str, scale: int, length: int) -> bytes:
+    """Formats a decimal value into COMP-3 bytes of specified byte length."""
+    hex_str = comp3_encode(num_str, scale=scale, total_bytes=length)
+    return bytes.fromhex(hex_str)
+

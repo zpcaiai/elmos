@@ -1,5 +1,8 @@
 ---
 name: pm-b21-transaction-boundary-converter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "映射隐式/显式提交、自治事务、保存点、传播和失败可见性. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

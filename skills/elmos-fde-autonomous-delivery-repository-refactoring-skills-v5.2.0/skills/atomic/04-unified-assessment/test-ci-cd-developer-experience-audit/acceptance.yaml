@@ -1,0 +1,81 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: test-ci-cd-developer-experience-audit
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Line coverage high but mutations survive
+  - CI takes hours and produces non-reproducible artifacts
+  - Integration fixtures hide authorization failures
+  negativeControls:
+  - equate line coverage with correctness
+  - disable failing tests to pass
+  checks:
+  - id: test-ci-cd-developer-experience-audit-AC-01
+    requirement: Map business-critical behaviors to unit, integration, contract, end-to-end, property, mutation, performance,
+      and security tests.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: test-ci-cd-developer-experience-audit-AC-02
+    requirement: Detect weak assertions, overmocking, shared-state pollution, non-determinism, flaky timing, and unrealistic
+      fixtures.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: test-ci-cd-developer-experience-audit-AC-03
+    requirement: Assess build graph efficiency, caching, parallelism, hermeticity, artifact promotion, branch protection,
+      and rollback readiness.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: test-ci-cd-developer-experience-audit-AC-04
+    requirement: Track developer feedback latency and repeated failure causes.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: test-ci-cd-developer-experience-audit-AC-05
+    requirement: Recommend hard enforcement for deterministic rules and review guidance for judgment-based rules.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

@@ -10,9 +10,14 @@ def main():
  if len(files)!=36: errors.append(f'expected 36 Batch 37 skills, found {len(files)}')
  numeric_ids=[]; supplemental_ids=[]
  for p in files:
-  text=p.read_text(); m=re.match(r'---\nname: ([^\n]+)\ndescription: ([^\n]+)\n---',text)
+  text=p.read_text(); m=re.match(r'---\n(.*?)\n---',text,re.DOTALL)
   if not m: errors.append(f'invalid front matter: {p}'); continue
-  name,desc=m.groups(); names.append(name)
+  meta={}
+  for line in m.group(1).splitlines():
+   if ':' in line: k,v=line.split(':',1); meta[k.strip()]=v.strip().strip('"\'')
+  name=meta.get('name',''); desc=meta.get('description','')
+  if not name or not desc: errors.append(f'invalid front matter: {p}'); continue
+  names.append(name)
   if name!=p.parent.name: errors.append(f'name mismatch: {p}')
   if len(desc)<80: errors.append(f'description too short: {name}')
   for h in ['## Workflow','## Verification','## Stop and escalate when','## Definition of done']:

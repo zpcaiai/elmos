@@ -1,0 +1,34 @@
+{
+  "schema": "elmos.batch46.runtime-lease/1",
+  "lease_id": "smoke-<epoch>-<pid>",
+  "entry": "script|compose|make|zero-dep",
+  "state": "active|released|expired",
+  "started_at": "<utc-timestamp>",
+  "free_quota_seconds": 600,
+  "ttl_seconds": 600,
+  "grace_seconds": 30,
+  "expires_at_epoch": 0,
+  "extensions": [
+    {
+      "granted_at": "<utc-timestamp>",
+      "seconds": 300,
+      "reason": "<why>",
+      "actor": "<who>",
+      "beyond_free_quota": true
+    }
+  ],
+  "billable_seconds": 0,
+  "extend_policy": "explicit-only",
+  "auto_renew": false,
+  "on_expiry": [
+    "stop_application_processes",
+    "stop_and_remove_containers_and_volumes",
+    "delete_ephemeral_data",
+    "release_ports",
+    "write_lease_result"
+  ],
+  "managed_processes": [],
+  "managed_compose_files": [],
+  "managed_paths": [],
+  "teardown_complete": true
+}

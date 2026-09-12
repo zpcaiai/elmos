@@ -1,5 +1,8 @@
 ---
 name: pm-b34-leanstral-lean-proof
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "使用 Leanstral 自动化 Lean 4 定理、引理和证明修复，由 Lean Kernel 对证明证书作最终可信裁决. Precision Migration B34 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,491 @@
+{
+  "batch": {
+    "id": "B10",
+    "title": "Proof-guided ChangeSet execution",
+    "dependsOn": [
+      "B09",
+      "B01"
+    ],
+    "skills": [
+      "changeset-commit-and-provenance-governance",
+      "proof-guided-atomic-refactor-execution"
+    ],
+    "tasks": [
+      "B10-T001",
+      "B10-T002",
+      "B10-T003",
+      "B10-T004",
+      "B10-T005",
+      "B10-T006",
+      "B10-T007",
+      "B10-T008",
+      "B10-T009",
+      "B10-T010",
+      "B10-T011",
+      "B10-T012",
+      "B10-T013",
+      "B10-T014",
+      "B10-T015",
+      "B10-T016",
+      "B10-T017",
+      "B10-T018",
+      "B10-T019",
+      "B10-T020"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B10-T001",
+      "batch": "B10",
+      "title": "changeset-commit-and-provenance-governance: Bind canonical ownership and model domain contracts",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B09-T030"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for changeset-commit-and-provenance-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T002",
+      "batch": "B10",
+      "title": "changeset-commit-and-provenance-governance: Implement persistence projections and append-only ledger events",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T001"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for changeset-commit-and-provenance-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T003",
+      "batch": "B10",
+      "title": "changeset-commit-and-provenance-governance: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T002"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for changeset-commit-and-provenance-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T004",
+      "batch": "B10",
+      "title": "changeset-commit-and-provenance-governance: Implement service and durable workflow",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T003"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for changeset-commit-and-provenance-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T005",
+      "batch": "B10",
+      "title": "changeset-commit-and-provenance-governance: Implement replaceable ports and first reference Adapter",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T004"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for changeset-commit-and-provenance-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T006",
+      "batch": "B10",
+      "title": "changeset-commit-and-provenance-governance: Implement APIs, events and query projections",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T005"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for changeset-commit-and-provenance-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T007",
+      "batch": "B10",
+      "title": "changeset-commit-and-provenance-governance: Implement product UI or operator surface",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T006"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for changeset-commit-and-provenance-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T008",
+      "batch": "B10",
+      "title": "changeset-commit-and-provenance-governance: Add deterministic tests, negative controls and failure injection",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T007"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for changeset-commit-and-provenance-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T009",
+      "batch": "B10",
+      "title": "changeset-commit-and-provenance-governance: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T008"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for changeset-commit-and-provenance-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T010",
+      "batch": "B10",
+      "title": "changeset-commit-and-provenance-governance: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T009"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for changeset-commit-and-provenance-governance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T011",
+      "batch": "B10",
+      "title": "proof-guided-atomic-refactor-execution: Bind canonical ownership and model domain contracts",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B10-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for proof-guided-atomic-refactor-execution are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T012",
+      "batch": "B10",
+      "title": "proof-guided-atomic-refactor-execution: Implement persistence projections and append-only ledger events",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T011"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for proof-guided-atomic-refactor-execution are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T013",
+      "batch": "B10",
+      "title": "proof-guided-atomic-refactor-execution: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T012"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for proof-guided-atomic-refactor-execution are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T014",
+      "batch": "B10",
+      "title": "proof-guided-atomic-refactor-execution: Implement service and durable workflow",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T013"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for proof-guided-atomic-refactor-execution are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T015",
+      "batch": "B10",
+      "title": "proof-guided-atomic-refactor-execution: Implement replaceable ports and first reference Adapter",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T014"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for proof-guided-atomic-refactor-execution are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T016",
+      "batch": "B10",
+      "title": "proof-guided-atomic-refactor-execution: Implement APIs, events and query projections",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T015"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for proof-guided-atomic-refactor-execution are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T017",
+      "batch": "B10",
+      "title": "proof-guided-atomic-refactor-execution: Implement product UI or operator surface",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T016"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for proof-guided-atomic-refactor-execution are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T018",
+      "batch": "B10",
+      "title": "proof-guided-atomic-refactor-execution: Add deterministic tests, negative controls and failure injection",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T017"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for proof-guided-atomic-refactor-execution are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T019",
+      "batch": "B10",
+      "title": "proof-guided-atomic-refactor-execution: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T018"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for proof-guided-atomic-refactor-execution are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B10-T020",
+      "batch": "B10",
+      "title": "proof-guided-atomic-refactor-execution: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B10-T019"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for proof-guided-atomic-refactor-execution are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+<view class="evidence-matrix-panel" open="true">
+  <view>{{label}} NxN · {{finiteCount(counts.PASSED ?? 0)}} / {{expectedEligible}}</view>
+  <CoverageMeter label="{{`${label}有向目标对`}}" status="{{finiteCount(counts.FAILED ?? 0) &gt; 0 ? &quot;FAILED&quot; : finiteCount(counts.PASSED ?? 0) === expectedEligible &amp;&amp; expectedEligible &gt; 0 ? &quot;PASSED&quot; : &quot;NOT_RUN&quot;}}" passed="{{finiteCount(counts.PASSED ?? 0)}}" total="{{expectedEligible}}" counts="{{counts}}" />
+  <EmptyEvidence wx:if="{{languages.length === 0}}" title="{{`${label}矩阵尚无数据`}}" detail="没有可验证的目标语言集合。" />
+  <view wx:else class="evidence-matrix-scroll" tabIndex="{{0}}" role="region" aria-label="{{`${label}矩阵，可横向滚动`}}">
+    <view class="evidence-matrix">
+      <caption class="sr-only">{{label}} NxN 状态矩阵，共 {{languages.length}} 个目标语言</caption>
+      <view>
+        <view>
+          <view scope="col">源 \ 目标</view>
+          <view wx:for="{{languages}}" wx:for-item="language" wx:key="language.id" scope="col" key="{{language}}">{{generationLanguageLabels[language]}}</view>
+        </view>
+      </view>
+      <view>
+        <view wx:for="{{languages}}" wx:for-item="source" wx:key="source.id" key="{{source}}">
+          <view scope="row">{{generationLanguageLabels[source]}}</view>
+          <view wx:for="{{languages}}" wx:for-item="target" wx:key="target.id" key="{{target}}">
+            <text class="{{`evidence-matrix-status evidence-status-${statusPresentation[status].tone}`}}" aria-label="{{`${generationLanguageLabels[source]} 到 ${generationLanguageLabels[target]}，${label}${statusPresentation[status].label}，${reason}`}}" title="{{reason}}">{{statusPresentation[status].short}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,5 +1,8 @@
 ---
 name: pm-b09-observable-behavior-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "统一返回值、异常、HTTP、状态变更、消息、Trace、UI、导航和性能观察. Precision Migration B09 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

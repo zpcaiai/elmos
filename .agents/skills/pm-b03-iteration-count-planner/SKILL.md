@@ -1,5 +1,8 @@
 ---
 name: pm-b03-iteration-count-planner
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "根据风险和预期失败类型规划转换、构建修复、差分修复和升级模型的轮次. Precision Migration B03 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

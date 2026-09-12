@@ -1,0 +1,9 @@
+{
+  "id": "batch44-provenance",
+  "batch": 44,
+  "packKey": "elmos-platform-finops",
+  "role": "provenance",
+  "origin": "elmos-reproducible-build-system-b44",
+  "sha256": "sha256:8af5a391eabcb73aacfa89137cae4bebabae4b675089f785b2e365f7f1eb382f",
+  "recordedAt": "2026-09-09T22:17:07.251113Z"
+}

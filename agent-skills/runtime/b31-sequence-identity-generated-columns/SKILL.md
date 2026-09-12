@@ -1,6 +1,15 @@
 ---
 name: b31-sequence-identity-generated-columns
-description: "Migrate sequences, identity/auto-increment keys, generated and computed columns, defaults, allocation caches, and key-generation contracts without collisions or semantic drift. Use for key and server-generated value migration."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
+description: Migrate sequences, identity/auto-increment keys, generated and computed columns, defaults, allocation caches, and key-generation contracts without collisions or semantic drift. Use for key and server-generated value migration.
 ---
 
 ## Operating mode

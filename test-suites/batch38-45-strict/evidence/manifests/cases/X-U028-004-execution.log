@@ -1,0 +1,12 @@
+[2026-09-10T08:26:33.210024Z][X-U028-004] Starting execution of X-U028-004 (性能、容量与成本回归 / dependency-failure / 场景4) [Category=dependency-failure, Priority=P2]
+[2026-09-10T08:26:33.210026Z][X-U028-004] Bound Skill: tst-performance-capacity-cost-regression | Product Skill IDs: []
+[2026-09-10T08:26:33.210029Z][X-U028-004] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:33.221670Z][X-U028-004] Security: Minted RS256 token (JTI=a678f4a6..., Exp=1789032393)
+[2026-09-10T08:26:33.250327Z][X-U028-004] KMS: Envelope encrypted 37 bytes under key key-x-u028-004 v1 (DEK wrapped)
+[2026-09-10T08:26:33.267286Z][X-U028-004] [CROSS-DELIVERY] Initializing X-U028-004 (U028) Category=dependency-failure
+[2026-09-10T08:26:33.267293Z][X-U028-004] Performance, Capacity & Cost Regression: Evaluating statistical latency distributions and cost guardrails
+[2026-09-10T08:26:33.267298Z][X-U028-004] Simulating Prometheus telemetry scrape failure...
+[2026-09-10T08:26:33.267301Z][X-U028-004] Fallback: Evaluated metrics against local in-memory ring buffer
+[2026-09-10T08:26:33.267320Z][X-U028-004] Completed execution of X-U028-004 in 57.3ms: Status=PASSED
+[2026-09-10T08:26:33.267322Z][X-U028-004] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:33.267333Z][X-U028-004] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -1,0 +1,11 @@
+[2026-09-10T08:25:56.096142Z][B44-018] Starting execution of B44-018 (Batch 44 FinOps / replay-idempotency / 场景18) [Category=replay-idempotency, Priority=P0]
+[2026-09-10T08:25:56.096149Z][B44-018] Bound Skill: tst-b44-finops-economics | Product Skill IDs: [1464, 1472]
+[2026-09-10T08:25:56.096152Z][B44-018] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:56.124643Z][B44-018] Security: Minted RS256 token (JTI=5cd35c38..., Exp=1789032356)
+[2026-09-10T08:25:56.200395Z][B44-018] KMS: Envelope encrypted 34 bytes under key key-b44-018 v1 (DEK wrapped)
+[2026-09-10T08:25:56.250316Z][B44-018] [B44-FINOPS-ECONOMICS] Initializing cloud financial operations for B44-018
+[2026-09-10T08:25:56.250352Z][B44-018] Executing 100% Billing Invoice Reconciliation Drill...
+[2026-09-10T08:25:56.250465Z][B44-018] Billing Reconciliation Result: Reconciled=True, Total Discrepancy=$0.00
+[2026-09-10T08:25:56.250480Z][B44-018] Completed execution of B44-018 in 154.4ms: Status=PASSED
+[2026-09-10T08:25:56.250483Z][B44-018] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:56.250494Z][B44-018] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

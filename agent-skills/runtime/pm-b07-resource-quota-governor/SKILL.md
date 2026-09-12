@@ -1,5 +1,8 @@
 ---
 name: pm-b07-resource-quota-governor
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "限制 CPU、内存、磁盘、进程、文件句柄、GPU、网络和执行时长. Precision Migration B07 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

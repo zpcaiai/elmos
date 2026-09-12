@@ -1,0 +1,10 @@
+{
+  "component": "LiveWorkbenchStudio.tsx",
+  "rendering": "OK",
+  "routesVerified": [
+    "/workbench",
+    "/api/live-workbench/sessions"
+  ],
+  "test": "web-console-workbench-route",
+  "timestamp": 1789145845
+}

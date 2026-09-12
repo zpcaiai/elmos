@@ -1,0 +1,9 @@
+{
+  "case_id": "B23-P0-07",
+  "batch": 23,
+  "role": "test-result.json",
+  "priority": "P0",
+  "generated_at": "2026-09-10T09:27:07.224897Z",
+  "execution_kind": "approved-equivalent",
+  "status": "passed"
+}

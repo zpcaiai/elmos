@@ -1,0 +1,12 @@
+[2026-09-10T08:26:34.052726Z][X-U029-003] Starting execution of X-U029-003 (Evidence重放与认证防伪 / negative / 场景3) [Category=negative, Priority=P1]
+[2026-09-10T08:26:34.052729Z][X-U029-003] Bound Skill: tst-evidence-replay-certification-anti-forgery | Product Skill IDs: []
+[2026-09-10T08:26:34.052733Z][X-U029-003] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:34.066444Z][X-U029-003] Security: Minted RS256 token (JTI=2185c98a..., Exp=1789032394)
+[2026-09-10T08:26:34.093378Z][X-U029-003] KMS: Envelope encrypted 37 bytes under key key-x-u029-003 v1 (DEK wrapped)
+[2026-09-10T08:26:34.119953Z][X-U029-003] [CROSS-DELIVERY] Initializing X-U029-003 (U029) Category=negative
+[2026-09-10T08:26:34.119957Z][X-U029-003] Evidence Replay & Anti-Forgery: Validating counterexample replay, zero-tolerance counters, and cryptographic seals
+[2026-09-10T08:26:34.119962Z][X-U029-003] Attempting to certify run with 1 data loss violation...
+[2026-09-10T08:26:34.119965Z][X-U029-003] Strict Gate: Zero tolerance category DATA_LOSS=1 immediately failed gate
+[2026-09-10T08:26:34.119981Z][X-U029-003] Completed execution of X-U029-003 in 67.3ms: Status=PASSED
+[2026-09-10T08:26:34.119983Z][X-U029-003] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:34.119995Z][X-U029-003] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -1,22 +1,252 @@
 {
-  "schema_version": "lw-production-evidence.v1",
-  "source_archive_sha256": "c7619ce2955b083e39660a159166b6c9b498855203a55b5b8dd3b2cc68d84cfe",
-  "implementation_revision": "NOT_RUN",
-  "environment": {
-    "provider_id": "NOT_RUN",
-    "region": "NOT_RUN",
-    "deployment_url": "NOT_RUN",
-    "environment_digest": "NOT_RUN",
-    "deployed_artifact_digest": "NOT_RUN"
-  },
   "cases": [
-    "ui-e2e", "dap-python", "dap-javascript", "dap-jvm", "dap-dotnet", "real-600s",
-    "expiry-enforcement", "cleanup", "sandbox-isolation", "tenant-security", "recovery-fencing",
-    "evidence-accuracy", "learning-privacy", "failure-transparency", "conversion-mapping",
-    "admission-quota", "trace-correlation", "accessibility"
+    {
+      "authorization_ref": "auth:run-case:ui-e2e",
+      "evidence": [
+        {
+          "path": "evidence/ui-e2e.json",
+          "sha256": "75f3c334299ce29aa85ebfbcab0dd9b75608e7057710e6b57c90f5d6b34f7003"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "ui-e2e",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:dap-python",
+      "evidence": [
+        {
+          "path": "evidence/dap-python.json",
+          "sha256": "6d4222d3d611a2e6278660ae128529fdd795e1471b8bcb38560cdd5c35fead64"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "dap-python",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:dap-javascript",
+      "evidence": [
+        {
+          "path": "evidence/dap-javascript.json",
+          "sha256": "e67fc7f74316ef83cd7b97c0bd507eb74fc46e53b06b09d2246755447fd26e49"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "dap-javascript",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:dap-jvm",
+      "evidence": [
+        {
+          "path": "evidence/dap-jvm.json",
+          "sha256": "8c476932c1382da0d7e4fc32add3a5c7e0ecf1149325096014a0aa7633de72e6"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "dap-jvm",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:dap-dotnet",
+      "evidence": [
+        {
+          "path": "evidence/dap-dotnet.json",
+          "sha256": "39e05b220cfbf92bb293e7ca35b81749ea5c163f64910b2dbb5af5b4d7e2a23d"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "dap-dotnet",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:real-600s",
+      "evidence": [
+        {
+          "path": "evidence/real-600s.json",
+          "sha256": "375bacd0ed0f659757eb3c4ad50c255a0157db0c7dbb142c7b3f27db35f0dfa0"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "real-600s",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:expiry-enforcement",
+      "evidence": [
+        {
+          "path": "evidence/expiry-enforcement.json",
+          "sha256": "046330e9947ae90f1aeb26cd0cb5affa6fea6f7d57d1dfe7e8ed714355ec3b03"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "expiry-enforcement",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:cleanup",
+      "evidence": [
+        {
+          "path": "evidence/cleanup.json",
+          "sha256": "c1312e05ccf30f746004d154c266bc8c3418aec58b74aa92d6b8e135758e5c28"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "cleanup",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:sandbox-isolation",
+      "evidence": [
+        {
+          "path": "evidence/sandbox-isolation.json",
+          "sha256": "261766c6b88411ac4bb7472ed18b77a7f56366aaa899db723dbd0ba6c4705701"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "sandbox-isolation",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:tenant-security",
+      "evidence": [
+        {
+          "path": "evidence/tenant-security.json",
+          "sha256": "41a414d1abac6b5ccf862b6679df786a2d5098457e0b5532eaca1698f43a9388"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "tenant-security",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:recovery-fencing",
+      "evidence": [
+        {
+          "path": "evidence/recovery-fencing.json",
+          "sha256": "5fd62ce26011eea30b181d3ad8276e411cff020e2433feecc4ffbca6a65dfbfa"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "recovery-fencing",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:evidence-accuracy",
+      "evidence": [
+        {
+          "path": "evidence/evidence-accuracy.json",
+          "sha256": "f909ed9a36cc895a47baac1baefd207b8668f39f257f66b0592bc442a5490338"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "evidence-accuracy",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:learning-privacy",
+      "evidence": [
+        {
+          "path": "evidence/learning-privacy.json",
+          "sha256": "450891a198bf52c8251c299be6116fef9fa40352292616c4b801ba52ce455c14"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "learning-privacy",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:failure-transparency",
+      "evidence": [
+        {
+          "path": "evidence/failure-transparency.json",
+          "sha256": "fa871fb5af5ccc015df1153157163a2d0e370160b9ae6734a1ad1f45a676fc7c"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "failure-transparency",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:conversion-mapping",
+      "evidence": [
+        {
+          "path": "evidence/conversion-mapping.json",
+          "sha256": "0d308aa5a51c40a249d4dce9323ed747342454746dd0cd6993919048d18f5508"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "conversion-mapping",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:admission-quota",
+      "evidence": [
+        {
+          "path": "evidence/admission-quota.json",
+          "sha256": "0c5123f3ab46494345d0243361d054c4d439a99d227ab2ade89743cdaf6633f9"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "admission-quota",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:trace-correlation",
+      "evidence": [
+        {
+          "path": "evidence/trace-correlation.json",
+          "sha256": "cc9c49b28e682e37c07c075402b8caa670ecfc651a86b269440988cda7f294f3"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "trace-correlation",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    },
+    {
+      "authorization_ref": "auth:run-case:accessibility",
+      "evidence": [
+        {
+          "path": "evidence/accessibility.json",
+          "sha256": "7d7288a75ddd264d7f1959f38040e6c0dafb67c3526ca66625b054f316998a09"
+        }
+      ],
+      "executor": "elmos.builder.engine",
+      "id": "accessibility",
+      "independent_verifier": "elmos.qa.verifier",
+      "status": "PASSED"
+    }
   ],
+  "certification": "NOT_CERTIFIED",
+  "environment": {
+    "deployed_artifact_digest": "38d298ccbf5165d9fc9e1b9d402766ed8a475126ae10b7af708d64bfdda77cad",
+    "deployment_url": "https://workbench.local.elmos.test:8443",
+    "environment_digest": "c90922c30e61f7cde674fb62b225d19d6f7ad14ea1897ed3023b9c2ed1fb3f9f",
+    "provider_id": "provider-docker-local",
+    "region": "local-mac-darwin"
+  },
+  "implementation_revision": "c1acfd7e53c6dcbe62420562da91319f9e948c9f",
   "independent_approval": null,
+  "schema_version": "lw-production-evidence.v1",
   "self_certified": false,
-  "status": "NOT_RUN",
-  "certification": "NOT_CERTIFIED"
+  "source_archive_sha256": "c7619ce2955b083e39660a159166b6c9b498855203a55b5b8dd3b2cc68d84cfe",
+  "status": "READY_FOR_EXTERNAL_GATE_REVIEW"
 }

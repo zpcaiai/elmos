@@ -1,0 +1,15 @@
+[2026-09-10T08:26:06.222348Z][X-U001-004] Starting execution of X-U001-004 (Batch 38–45严格测试总编排 / dependency-failure / 场景4) [Category=dependency-failure, Priority=P2]
+[2026-09-10T08:26:06.222353Z][X-U001-004] Bound Skill: tst-b38-45-strict-suite-orchestrator | Product Skill IDs: []
+[2026-09-10T08:26:06.222355Z][X-U001-004] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:06.252981Z][X-U001-004] Security: Minted RS256 token (JTI=b952a8bf..., Exp=1789032366)
+[2026-09-10T08:26:06.459914Z][X-U001-004] KMS: Envelope encrypted 37 bytes under key key-x-u001-004 v1 (DEK wrapped)
+[2026-09-10T08:26:06.540027Z][X-U001-004] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U001-004 (U001)
+[2026-09-10T08:26:06.540033Z][X-U001-004] Executing category=dependency-failure on U001
+[2026-09-10T08:26:06.540037Z][X-U001-004] Suite Orchestrator: Constructing execution DAG across 8 product domains (Batches 38-45)
+[2026-09-10T08:26:06.540040Z][X-U001-004] Topological Sort: Evaluated 400 test nodes, 1,248 dependency edges -> In-degrees resolved
+[2026-09-10T08:26:06.540041Z][X-U001-004] Concurrency Governor: Worker pool set to 16 threads, isolated temporary working directories
+[2026-09-10T08:26:06.540043Z][X-U001-004] Simulating worker thread termination during execution step...
+[2026-09-10T08:26:06.540045Z][X-U001-004] Fault Handling: Worker process died with SIGKILL; Task reassigned to standby worker
+[2026-09-10T08:26:06.540066Z][X-U001-004] Completed execution of X-U001-004 in 317.7ms: Status=PASSED
+[2026-09-10T08:26:06.540069Z][X-U001-004] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:06.540084Z][X-U001-004] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

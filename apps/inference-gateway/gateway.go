@@ -145,6 +145,7 @@ type InferenceGateway struct {
 	limiter        *RateLimiter
 	circuitBreaker *CircuitBreaker
 	metrics        Metrics
+	upstreamRouter *UpstreamRouter
 }
 
 func NewInferenceGateway(rateLimitCapacity, refillRate float64, cbThreshold int, cbCooldown time.Duration) *InferenceGateway {
@@ -152,6 +153,7 @@ func NewInferenceGateway(rateLimitCapacity, refillRate float64, cbThreshold int,
 		mux:            http.NewServeMux(),
 		limiter:        NewRateLimiter(rateLimitCapacity, refillRate),
 		circuitBreaker: NewCircuitBreaker(cbThreshold, cbCooldown),
+		upstreamRouter: NewUpstreamRouter(),
 	}
 	gw.registerRoutes()
 	return gw
@@ -237,6 +239,28 @@ func (gw *InferenceGateway) handleChatCompletions(w http.ResponseWriter, r *http
 	if err := json.Unmarshal(bodyBytes, &req); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
+	}
+
+	// Forward to live upstream if available and configured
+	provider, upstreamCfg := gw.upstreamRouter.ResolveProvider(req.Model, r.Header.Get("Authorization"))
+	if provider != ProviderRehearsal && upstreamCfg.APIKey != "" {
+		upResp, err := gw.upstreamRouter.ForwardChatRequest(r.Context(), provider, upstreamCfg, bodyBytes, req.Stream)
+		if err == nil {
+			defer upResp.Body.Close()
+			if upResp.StatusCode >= 200 && upResp.StatusCode < 300 {
+				for k, v := range upResp.Header {
+					w.Header()[k] = v
+				}
+				w.WriteHeader(upResp.StatusCode)
+				io.Copy(w, upResp.Body)
+				gw.metrics.SuccessRequests.Add(1)
+				gw.circuitBreaker.RecordSuccess()
+				return
+			}
+			gw.circuitBreaker.RecordFailure()
+		} else {
+			gw.circuitBreaker.RecordFailure()
+		}
 	}
 
 	// Simulate/Handle streaming SSE vs non-streaming

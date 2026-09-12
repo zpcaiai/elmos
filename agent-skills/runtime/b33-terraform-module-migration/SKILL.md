@@ -1,6 +1,9 @@
 ---
 name: b33-terraform-module-migration
-description: "Migrate and certify Terraform modules providers state addresses imports moves lifecycle expressions backends locks plans applies upgrades drift and destroy with exact provider and CLI versions."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Migrate and certify Terraform modules providers state addresses imports moves lifecycle expressions backends locks plans applies upgrades drift and destroy with exact provider and CLI versions.
 ---
 
 ## Operating mode

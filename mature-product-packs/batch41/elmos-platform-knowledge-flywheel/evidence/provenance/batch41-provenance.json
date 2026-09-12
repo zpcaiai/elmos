@@ -1,0 +1,9 @@
+{
+  "id": "batch41-provenance",
+  "batch": 41,
+  "packKey": "elmos-platform-knowledge-flywheel",
+  "role": "provenance",
+  "origin": "elmos-reproducible-build-system-b41",
+  "sha256": "sha256:7a0af103b29c1080f9ce02cdd6276ab05880641a79b7f1ab8f018084ea7b4548",
+  "recordedAt": "2026-09-09T22:16:51.595929Z"
+}

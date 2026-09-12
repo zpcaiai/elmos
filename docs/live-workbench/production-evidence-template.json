@@ -1,0 +1,17 @@
+{
+  "schema_version": "lw-production-evidence.v1",
+  "source_archive_sha256": "c7619ce2955b083e39660a159166b6c9b498855203a55b5b8dd3b2cc68d84cfe",
+  "implementation_revision": "NOT_RUN",
+  "environment": {
+    "deployment_url": "NOT_RUN",
+    "provider_id": "NOT_RUN",
+    "region": "NOT_RUN",
+    "environment_digest": "NOT_RUN",
+    "deployed_artifact_digest": "NOT_RUN"
+  },
+  "cases": [],
+  "independent_approval": null,
+  "self_certified": false,
+  "status": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

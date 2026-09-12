@@ -1,5 +1,8 @@
 ---
 name: pm-b11-declarative-recipe-dsl
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "定义模式匹配、类型条件、重写、证明义务、测试和版本兼容的声明式 DSL. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

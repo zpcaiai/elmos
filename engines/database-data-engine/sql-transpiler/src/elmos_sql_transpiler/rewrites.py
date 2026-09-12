@@ -30,7 +30,11 @@ pinned parser happens to raise:
   provides. It fails closed. Numeric ``TRUNC(x, d)`` parses to a typed
   ``Trunc`` node and is not touched.
 """
+
 from __future__ import annotations
+
+import re
+from dataclasses import dataclass
 
 from sqlglot import exp
 from sqlglot.errors import UnsupportedError
@@ -64,6 +68,36 @@ _ORACLE_TRUNC_UNITS = {
 }
 _ORACLE_TRUNC_ALLOW_LIST = "YYYY/SYYYY/YEAR, MM/MON/MONTH, DD/DDD/J"
 
+HINT_STRIP_RULE = "core.strip-optimizer-hints"
+OPTIMIZER_HINT_STRIPPED = "OPTIMIZER_HINT_STRIPPED"
+
+_LOCKING_HINT_TOKENS = frozenset(
+    {
+        "NOLOCK",
+        "READUNCOMMITTED",
+        "READCOMMITTED",
+        "REPEATABLEREAD",
+        "SERIALIZABLE",
+        "UPDLOCK",
+        "XLOCK",
+        "TABLOCK",
+        "TABLOCKX",
+        "PAGLOCK",
+        "ROWLOCK",
+        "HOLDLOCK",
+        "NOWAIT",
+        "READPAST",
+    }
+)
+_HINT_COMMENT = re.compile(r"/\*\+")
+_LOCKING_IN_SOURCE = re.compile(
+    r"\b(?:WITH\s*\(\s*)?(NOLOCK|READUNCOMMITTED|UPDLOCK|XLOCK|TABLOCKX?|"
+    r"HOLDLOCK|READPAST|NOWAIT)\b",
+    re.IGNORECASE,
+)
+_INDEX_HINT_IN_SOURCE = re.compile(r"\b(?:USE|FORCE|IGNORE)\s+INDEX\b", re.IGNORECASE)
+_OPTION_HINT_IN_SOURCE = re.compile(r"\bOPTION\s*\(", re.IGNORECASE)
+
 
 class RewriteBlocked(UnsupportedError):
     """A typed rewrite refused to proceed. Unlike a bare parser complaint,
@@ -83,11 +117,7 @@ def _materialized_args(node: exp.Expression, allowed: frozenset[str]) -> set[str
     (``siblings`` on ``Order`` is the common one); those carry no semantics
     and must not trip the unmappable-argument guard.
     """
-    return {
-        key
-        for key, value in node.args.items()
-        if value is not None and key not in allowed
-    }
+    return {key for key, value in node.args.items() if value is not None and key not in allowed}
 
 
 def canonicalize_aggregate_order(
@@ -124,17 +154,13 @@ def canonicalize_aggregate_order(
             if order_extra:
                 raise RewriteBlocked(
                     "AGGREGATE_ORDER_UNMAPPABLE",
-                    "aggregate ORDER BY carries argument(s) the canonical shape "
-                    "cannot represent",
+                    "aggregate ORDER BY carries argument(s) the canonical shape cannot represent",
                 )
             separator_literal = order.args.get("this")
-            if separator_literal is not None and not isinstance(
-                separator_literal, exp.Literal
-            ):
+            if separator_literal is not None and not isinstance(separator_literal, exp.Literal):
                 raise RewriteBlocked(
                     "AGGREGATE_ORDER_UNMAPPABLE",
-                    "the separator carried inside the aggregate ORDER BY is not "
-                    "a literal",
+                    "the separator carried inside the aggregate ORDER BY is not a literal",
                 )
             expressions = order.args.get("expressions") or []
             if not expressions:
@@ -148,11 +174,7 @@ def canonicalize_aggregate_order(
                     this=this.copy() if this is not None else None,
                     expressions=[item.copy() for item in expressions],
                 ),
-                separator=(
-                    separator_literal.copy()
-                    if separator_literal is not None
-                    else None
-                ),
+                separator=(separator_literal.copy() if separator_literal is not None else None),
             )
             node.replace(replacement)
             if AGGREGATE_ORDER_RULE not in fired:
@@ -193,8 +215,7 @@ def lower_sqlite_group_concat_order(
         if order_extra:
             raise RewriteBlocked(
                 "AGGREGATE_ORDER_UNMAPPABLE",
-                "aggregate ORDER BY carries argument(s) the SQLite lowering "
-                "cannot represent",
+                "aggregate ORDER BY carries argument(s) the SQLite lowering cannot represent",
             )
         expressions = this.args.get("expressions") or []
         if not expressions:
@@ -266,3 +287,80 @@ def normalize_oracle_date_trunc(
         if ORACLE_TRUNC_RULE not in fired:
             fired.append(ORACLE_TRUNC_RULE)
     return statement, tuple(fired)
+
+
+@dataclass(frozen=True)
+class SourceHintScan:
+    locking: bool
+    plan_hint: bool
+
+
+def inspect_source_hints(sql: str) -> SourceHintScan:
+    """Detect vendor hints in the raw source text.
+
+    Plan-hint comments (``/*+ ... */``) are often dropped by the parser
+    before they become AST nodes. Scanning the source keeps
+    ``silentDropTolerance = 0``: a dropped optimizer comment is still
+    recorded, and a locking hint is still blocked.
+    """
+    return SourceHintScan(
+        locking=_LOCKING_IN_SOURCE.search(sql) is not None,
+        plan_hint=(
+            _HINT_COMMENT.search(sql) is not None
+            or _INDEX_HINT_IN_SOURCE.search(sql) is not None
+            or _OPTION_HINT_IN_SOURCE.search(sql) is not None
+        ),
+    )
+
+
+def _hint_token(node: exp.Expression) -> str:
+    if isinstance(node, exp.Var):
+        return str(node.this).upper()
+    if isinstance(node, exp.Identifier):
+        return str(node.this).upper()
+    this = node.args.get("this")
+    if isinstance(this, exp.Expression):
+        return _hint_token(this)
+    if this is not None:
+        return str(this).upper()
+    return ""
+
+
+def strip_optimizer_hints(
+    statement: exp.Expression,
+) -> tuple[exp.Expression, tuple[str, ...]]:
+    """Remove plan/index hints from the typed AST.
+
+    Locking and isolation hints change which rows a query may observe, so
+    they fail closed instead of being stripped.
+    """
+    fired = False
+    for table in list(statement.find_all(exp.Table)):
+        hints = list(table.args.get("hints") or [])
+        if not hints:
+            continue
+        kept: list[exp.Expression] = []
+        for hint in hints:
+            tokens = {_hint_token(hint), *(_hint_token(item) for item in hint.expressions or [])}
+            if tokens & _LOCKING_HINT_TOKENS:
+                raise RewriteBlocked(
+                    "LOCKING_HINT_NOT_PORTABLE",
+                    "Locking and isolation hints (NOLOCK, HOLDLOCK, UPDLOCK and "
+                    "related table hints) change concurrency semantics and are "
+                    "not stripped or rewritten",
+                )
+            fired = True
+        table.set("hints", kept or None)
+    for select in list(statement.find_all(exp.Select)):
+        if select.args.get("hint") is not None:
+            select.set("hint", None)
+            fired = True
+        options = list(select.args.get("options") or [])
+        if options:
+            select.set("options", None)
+            fired = True
+    if statement.find(exp.Hint) is not None:
+        for hint in list(statement.find_all(exp.Hint)):
+            hint.pop()
+            fired = True
+    return statement, ((HINT_STRIP_RULE,) if fired else ())

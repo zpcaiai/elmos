@@ -1,0 +1,12 @@
+[2026-09-10T08:25:39.549709Z][B38-024] Starting execution of B38-024 (Batch 38部署与升级 / governance / 场景24) [Category=governance, Priority=P2]
+[2026-09-10T08:25:39.549712Z][B38-024] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1340]
+[2026-09-10T08:25:39.549713Z][B38-024] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:39.561188Z][B38-024] Security: Minted RS256 token (JTI=08986622..., Exp=1789032339)
+[2026-09-10T08:25:39.589913Z][B38-024] KMS: Envelope encrypted 34 bytes under key key-b38-024 v1 (DEK wrapped)
+[2026-09-10T08:25:39.607448Z][B38-024] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-024
+[2026-09-10T08:25:39.607456Z][B38-024] Executing Batch 38 deployment lifecycle scenario B38-024 [Category=governance]...
+[2026-09-10T08:25:39.607458Z][B38-024] Topology Contract: Verifying edition boundaries and resource quota limits
+[2026-09-10T08:25:39.607459Z][B38-024] Resource Attribution: Checked CPU/RAM allocation bounds for tenant workspace
+[2026-09-10T08:25:39.607475Z][B38-024] Completed execution of B38-024 in 57.8ms: Status=PASSED
+[2026-09-10T08:25:39.607477Z][B38-024] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:39.607489Z][B38-024] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

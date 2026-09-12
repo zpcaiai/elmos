@@ -1,5 +1,8 @@
 ---
 name: pm-b31-counterexample-guided-repair
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "依据结构化反例生成修复候选，并通过构建、测试和双运行迭代收敛. Precision Migration B31 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

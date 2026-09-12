@@ -1,5 +1,8 @@
 ---
 name: b30-framework-certification-gate
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Run the Batch 30 certification gate for a version-specific framework migration, upgrade, modernization, or coexistence pack and emit certified, limited, experimental, or blocked status from machine-readable build, startup, contract, holdout, security, data, and lifecycle evidence.
 ---
 

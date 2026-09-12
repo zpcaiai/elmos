@@ -1,0 +1,12 @@
+[2026-09-10T08:26:18.796093Z][X-U016-009] Starting execution of X-U016-009 (SLO、Chaos与多区域DR / recovery / 场景9) [Category=recovery, Priority=P0]
+[2026-09-10T08:26:18.796096Z][X-U016-009] Bound Skill: tst-slo-chaos-multiregion-dr | Product Skill IDs: []
+[2026-09-10T08:26:18.796099Z][X-U016-009] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:18.806643Z][X-U016-009] Security: Minted RS256 token (JTI=abaad4c0..., Exp=1789032378)
+[2026-09-10T08:26:18.833283Z][X-U016-009] KMS: Envelope encrypted 37 bytes under key key-x-u016-009 v1 (DEK wrapped)
+[2026-09-10T08:26:18.847937Z][X-U016-009] [CROSS-RESILIENCE] Starting X-U016-009 (U016) Category=recovery
+[2026-09-10T08:26:18.847942Z][X-U016-009] Multi-Region Chaos DR: Inducing wide-area network partitions and validating SLO compliance
+[2026-09-10T08:26:18.847947Z][X-U016-009] Executing full regional evacuation drill (evacuating US-EAST-1 to EU-WEST-1)...
+[2026-09-10T08:26:18.848097Z][X-U016-009] Evacuation Drill: Measured RTO=0.000s, RPO=0.000s
+[2026-09-10T08:26:18.848108Z][X-U016-009] Completed execution of X-U016-009 in 52.0ms: Status=PASSED
+[2026-09-10T08:26:18.848110Z][X-U016-009] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:18.848119Z][X-U016-009] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

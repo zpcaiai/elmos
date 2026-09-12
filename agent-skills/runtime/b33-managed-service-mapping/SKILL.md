@@ -1,6 +1,9 @@
 ---
 name: b33-managed-service-mapping
-description: "Map and migrate managed databases caches queues streams object stores search and other cloud services with data consistency identity network encryption backup recovery performance quota cost and cutover evidence."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Map and migrate managed databases caches queues streams object stores search and other cloud services with data consistency identity network encryption backup recovery performance quota cost and cutover evidence.
 ---
 
 ## Operating mode

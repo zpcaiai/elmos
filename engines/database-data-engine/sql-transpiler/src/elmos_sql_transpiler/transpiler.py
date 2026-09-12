@@ -9,7 +9,7 @@ import sqlglot
 from sqlglot import exp
 from sqlglot.errors import ErrorLevel, ParseError, TokenError, UnsupportedError
 
-from . import placeholders, rewrites
+from . import placeholders, rewrites, routines
 from .adapters import target_adapter_for_profile
 from .models import (
     Diagnostic,
@@ -402,13 +402,40 @@ def transpile(request: TranspileRequest) -> TranspileResult:
         statement for statement in parsed_source_statements if isinstance(statement, exp.Expression)
     ]
 
+    hint_scan = rewrites.inspect_source_hints(request.sql)
+    if hint_scan.locking:
+        return _blocked_result(
+            request,
+            diagnostic=Diagnostic(
+                code="LOCKING_HINT_NOT_PORTABLE",
+                severity="ERROR",
+                statement_index=None,
+                message=(
+                    "Locking and isolation hints change concurrency semantics "
+                    "and are not stripped or rewritten."
+                ),
+            ),
+            syntax_parse="PASSED",
+            target_emit="NOT_RUN",
+            target_reparse="NOT_RUN",
+        )
+
     target_sql_parts: list[str] = []
     statement_irs: list[StatementIr] = []
     diagnostics: list[Diagnostic] = []
     rule_trace: list[dict[str, Any]] = []
+    skip_following_end = False
     try:
         for index, source_statement in enumerate(source_statements):
-            if isinstance(source_statement, exp.Command):
+            if skip_following_end and routines.is_end_statement(source_statement):
+                skip_following_end = False
+                continue
+            skip_following_end = False
+            if isinstance(source_statement, exp.Command) and not routines.is_routine_command(
+                source_statement
+            ):
+                raise UnsupportedError("opaque command nodes are prohibited")
+            if routines.is_end_statement(source_statement):
                 raise UnsupportedError("opaque command nodes are prohibited")
             parameter_nodes_before = _parameter_nodes(source_statement, source.dialect)
             canonical_statement, positional_rewrite = _normalize_positional_references(
@@ -433,7 +460,8 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                 if source.dialect == "oracle"
                 else (canonical_statement, ())
             )
-            for rule_id in (*aggregate_rules, *oracle_trunc_rules):
+            canonical_statement, hint_rules = rewrites.strip_optimizer_hints(canonical_statement)
+            for rule_id in (*aggregate_rules, *oracle_trunc_rules, *hint_rules):
                 rule_trace.append(
                     _transformation_trace(
                         statement_index=index,
@@ -508,6 +536,46 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                     )
                 )
 
+            conversion = routines.convert(canonical_statement, source.dialect, target.dialect)
+            if conversion is not None:
+                generated = conversion.sql
+                skip_following_end = conversion.skip_following_end
+                for rule_id in conversion.rule_ids:
+                    rule_trace.append(
+                        _transformation_trace(
+                            statement_index=index,
+                            rule_id=rule_id,
+                            action="EMIT_BOUNDED_ROUTINE",
+                            before=canonical_statement,
+                            after=canonical_statement,
+                        )
+                    )
+                target_statement, opaque_target = routines.reparse_routine_sql(
+                    generated, target.dialect, conversion.object_name
+                )
+                obligations = set(_obligations(source_statement))
+                obligations.update(conversion.obligations)
+                if opaque_target or conversion.opaque_target:
+                    obligations.add(routines.ROUTINE_TARGET_OPAQUE)
+                if hint_rules or hint_scan.plan_hint:
+                    obligations.add(rewrites.OPTIMIZER_HINT_STRIPPED)
+                statement_irs.append(
+                    StatementIr(
+                        index=len(statement_irs),
+                        kind=conversion.kind,
+                        source_ast=source_statement.dump(),
+                        target_ast=target_statement.dump(),
+                        obligations=tuple(sorted(obligations)),
+                        parameter_nodes_before=parameter_nodes_before,
+                        parameter_nodes_after=(),
+                    )
+                )
+                target_sql_parts.append(generated.rstrip(";"))
+                continue
+
+            if isinstance(canonical_statement, exp.Command):
+                raise UnsupportedError("opaque command nodes are prohibited")
+
             emission = target_adapter.emit(canonical_statement)
             if (
                 emission.adapter_id != target_adapter.adapter_id
@@ -551,9 +619,11 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                 obligations.add(rewrites.ORACLE_TRUNC_FORMAT_NORMALIZED)
             if lowering_rules:
                 obligations.add(rewrites.SQLITE_AGGREGATE_ORDER_LOWERED)
+            if hint_rules or hint_scan.plan_hint:
+                obligations.add(rewrites.OPTIMIZER_HINT_STRIPPED)
             statement_irs.append(
                 StatementIr(
-                    index=index,
+                    index=len(statement_irs),
                     kind=source_statement.key.upper(),
                     source_ast=source_statement.dump(),
                     target_ast=target_statement.dump(),
@@ -656,6 +726,18 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                 target_emit="PASSED",
                 target_reparse="PASSED",
             )
+    if hint_scan.plan_hint:
+        diagnostics.append(
+            Diagnostic(
+                code="OPTIMIZER_HINT_STRIPPED",
+                severity="WARNING",
+                statement_index=None,
+                message=(
+                    "Vendor plan and index hints were stripped; they do not have a "
+                    "portable optimizer contract. Plan-shape equivalence remains NOT_RUN."
+                ),
+            )
+        )
     diagnostics.extend(
         _route_semantic_warnings(
             source.dialect,

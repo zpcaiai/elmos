@@ -1,0 +1,28 @@
+{
+  "changeSetId": "CS-001",
+  "planId": "plan-demo",
+  "stepId": "S1",
+  "baseRevision": "base-sha",
+  "resultRevision": "result-sha",
+  "files": [
+    {
+      "path": "tests/test_orders.py",
+      "operation": "add",
+      "beforeHash": "sha256:empty",
+      "afterHash": "sha256:test"
+    }
+  ],
+  "provenance": {
+    "skillVersion": "5.2.0",
+    "toolVersions": [
+      "pytest:8"
+    ],
+    "environmentId": "env-demo",
+    "executionId": "exec-001"
+  },
+  "unexpectedDeltas": [],
+  "verificationRefs": [
+    "VR-001"
+  ],
+  "status": "accepted"
+}

@@ -96,14 +96,15 @@ process.stdout.write(JSON.stringify({ errors, nodes: result.nodes.map(project) }
 `;
 
 function parseTemplateViaSubprocess(template: string): NgNode[] {
-  const scratch = path.join(process.env["ELMOS_CDE_SCRATCH"] ?? path.join(process.cwd(), ".cde-scratch"), "angular-parse");
+  const engineRoot = path.resolve(__dirname, "../..");
+  const scratch = path.join(process.env["ELMOS_CDE_SCRATCH"] ?? path.join(engineRoot, ".cde-scratch"), "angular-parse");
   fs.mkdirSync(scratch, { recursive: true });
   const scriptFile = path.join(scratch, "extract.mjs");
   fs.writeFileSync(scriptFile, EXTRACTOR, "utf8");
   let raw: string;
   try {
     raw = execFileSync(process.execPath, [scriptFile, JSON.stringify(template)], {
-      encoding: "utf8", cwd: process.cwd(), stdio: ["ignore", "pipe", "pipe"], timeout: 60_000,
+      encoding: "utf8", cwd: engineRoot, stdio: ["ignore", "pipe", "pipe"], timeout: 60_000,
     });
   } catch (error) {
     const err = error as { stderr?: string; message?: string };

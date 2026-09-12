@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: cost-finops-sustainability-audit
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Repeated full-repository scans dominate cost
+  - High reasoning model used for deterministic tasks
+  - Idle runtime labs remain provisioned
+  negativeControls:
+  - personal finance
+  - guaranteed savings
+  - optimize cost by weakening required controls
+  checks:
+  - id: cost-finops-sustainability-audit-AC-01
+    requirement: Attribute cost to tenant, engagement, repository, workflow, step, model, tool, environment, and artifact.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: cost-finops-sustainability-audit-AC-02
+    requirement: Separate model, compute, storage, network, license, and human-review costs.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: cost-finops-sustainability-audit-AC-03
+    requirement: Detect retry waste, duplicate analysis, poor cache reuse, idle workers, oversized resources, and expensive
+      low-value evidence.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: cost-finops-sustainability-audit-AC-04
+    requirement: Model cost-quality-latency-risk tradeoffs without violating acceptance or safety gates.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: cost-finops-sustainability-audit-AC-05
+    requirement: Track machine wall-clock and queue time separately from human elapsed time.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

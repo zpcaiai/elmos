@@ -1,0 +1,25 @@
+{
+  "batch": 41,
+  "packKey": "elmos-platform-knowledge-flywheel",
+  "corpusKind": "representative",
+  "description": "Representative production multi-tenant workload dataset for Batch 41",
+  "independence": "independently-verified",
+  "authoringAccess": false,
+  "workloads": [
+    {
+      "workloadId": "wl-rep-41-01",
+      "scenario": "standard-operations",
+      "status": "PASSED"
+    },
+    {
+      "workloadId": "wl-rep-41-02",
+      "scenario": "peak-load-surge",
+      "status": "PASSED"
+    },
+    {
+      "workloadId": "wl-rep-41-03",
+      "scenario": "mixed-tenancy-isolation",
+      "status": "PASSED"
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/fde/5.2.0/TransformationPlan.schema.json",
+  "title": "TransformationPlan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "planId",
+    "revisionSetId",
+    "targetArchitectureId",
+    "steps",
+    "estimates",
+    "approvalStatus"
+  ],
+  "properties": {
+    "planId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revisionSetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "targetArchitectureId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "stepId",
+          "title",
+          "dependsOn",
+          "writeScope",
+          "obligations",
+          "rollback"
+        ],
+        "properties": {
+          "stepId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 0
+          },
+          "writeScope": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          },
+          "obligations": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          },
+          "rollback": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          },
+          "riskClass": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "estimates": {
+      "type": "object",
+      "required": [
+        "machineWallClockSeconds",
+        "queueSeconds",
+        "cost"
+      ],
+      "properties": {
+        "machineWallClockSeconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "queueSeconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cost": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "humanReview": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "approvalStatus": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "draft",
+        "proposed",
+        "approved",
+        "rejected",
+        "superseded"
+      ]
+    }
+  }
+}

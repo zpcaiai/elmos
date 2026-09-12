@@ -1,5 +1,8 @@
 ---
 name: pm-b21-stored-procedure-conversion
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将 PL/SQL、T-SQL、PL/pgSQL、MySQL Procedure 等数据库程序解析为可转换、可测试和可验证的过程语义. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,36 @@
+skill: elmos-assurance-property-fuzz
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-property-fuzz-A01
+  given: 变形前提不满足
+  when: 在真实集成模块执行对应测试或负例
+  then: 不报伪业务错误，标predicate not applicable
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-property-fuzz-A02
+  given: fuzzer超预算
+  when: 在真实集成模块执行对应测试或负例
+  then: INCONCLUSIVE不能当没发现bug=PASS
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-property-fuzz-A03
+  given: 发现随机反例
+  when: 在真实集成模块执行对应测试或负例
+  then: 固定seed/最小输入可原生复现
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

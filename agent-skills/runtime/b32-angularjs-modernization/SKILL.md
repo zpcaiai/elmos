@@ -1,6 +1,9 @@
 ---
 name: b32-angularjs-modernization
-description: "Modernize AngularJS modules dependency injection scopes digest cycles directives controllers services filters routing templates transclusion and tests into an exact certified modern target."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Modernize AngularJS modules dependency injection scopes digest cycles directives controllers services filters routing templates transclusion and tests into an exact certified modern target.
 ---
 
 ## Operating mode

@@ -1,0 +1,12 @@
+{
+  "case_id": "X-U022-002",
+  "status": "passed",
+  "artifact_digest": "sha256:b7b94ba4bed96aedc93ef251b53321d74026bab2278b1c5db46409137d29ac95",
+  "environment_digest": "sha256:d4c6bb387cf1b7c6da991a408b7e0098afe1bde41995ab8345f2b41fbaebeb1d",
+  "started_at": "2026-09-10T08:26:26.786208Z",
+  "finished_at": "2026-09-10T08:26:26.896457Z",
+  "execution_kind": "real",
+  "duration_seconds": 0.11024904251098633,
+  "assertions_count": 4,
+  "passed_assertions": 4
+}

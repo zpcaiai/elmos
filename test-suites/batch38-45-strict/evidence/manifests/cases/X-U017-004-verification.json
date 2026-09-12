@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U017-004",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:26:19.663162Z",
+  "notes": "Independently verified by Ethan: 备份恢复与数据完整性 / dependency-failure / 场景4"
+}

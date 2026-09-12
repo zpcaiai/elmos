@@ -15,6 +15,7 @@ The harness is emitted as a stdlib-only Python script. RSA material for the
 OIDC mode is produced with ``openssl`` and the JWKS is derived from the modulus
 it prints, so no target needs a Python cryptography dependency to be verified.
 """
+
 from __future__ import annotations
 
 from .production_contract import (
@@ -101,9 +102,9 @@ def render_local_runtime(
         raise ValueError(f"UNSUPPORTED_AUTH_MODE:{auth_mode}")
     if durability not in DURABILITY_PROFILES:
         raise ValueError(f"UNSUPPORTED_DURABILITY:{durability}")
-    durability_table = "{" + ", ".join(
-        f"{name!r}: {settings!r}" for name, settings in sorted(DURABILITY_PROFILES.items())
-    ) + "}"
+    durability_table = (
+        "{" + ", ".join(f"{name!r}: {settings!r}" for name, settings in sorted(DURABILITY_PROFILES.items())) + "}"
+    )
     if app_port_argument_index is not None:
         if (
             isinstance(app_port_argument_index, bool)

@@ -1,5 +1,8 @@
 ---
 name: pm-b19-constraint-and-index-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达主外键、唯一、检查、索引、分区、聚簇、部分和表达式索引. Precision Migration B19 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

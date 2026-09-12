@@ -148,6 +148,13 @@ _SWIFT_BUILD_COMMUNICATION_POLL_SECONDS = 1.0
 # Normal completion still requires three consecutive empty session snapshots.
 # Keep enough bounded wall-clock budget for every identity scan plus scheduler
 # contention on production developer hosts; exhaustion remains fail-closed.
+_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS = 1.0
+# A command can exit successfully while a short-lived, same-session helper
+# still owns an inherited stdout/stderr descriptor.  Give that helper a small,
+# absolute drain window before treating the retained pipe as a process leak.
+# This stays far below the command deadline and the runaway-session test's
+# bounded cleanup path remains fail-closed.
+_SWIFT_BUILD_PIPE_DRAIN_TIMEOUT_SECONDS = 2.0
 _SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS = 10.0
 _SWIFT_BUILD_MAXIMUM_PROCESS_IDS = 32_768
 _SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES = 512 * 1024
@@ -3023,9 +3030,15 @@ def _run_swift_build_step(
     effective_timeout = int(os.environ.get("ELMOS_SWIFT_BUILD_TIMEOUT_SECONDS", str(timeout)))
     communication_deadline = time.monotonic() + effective_timeout
     pending_input = input_text
+    completed_leader_drain_deadline: float | None = None
     try:
         while True:
             remaining = communication_deadline - time.monotonic()
+            if completed_leader_drain_deadline is not None:
+                remaining = min(
+                    remaining,
+                    completed_leader_drain_deadline - time.monotonic(),
+                )
             if remaining <= 0:
                 raise subprocess.TimeoutExpired(command, effective_timeout)
             try:
@@ -3039,12 +3052,18 @@ def _run_swift_build_step(
                 # after the session leader exits.  SwiftPM compiler helpers
                 # have exhibited exactly that leak, which otherwise consumes
                 # the full one-hour cold-build timeout.  Poll the pinned leader
-                # so a completed leader with live pipe holders enters the same
-                # bounded, identity-checked process-tree cleanup as a timeout.
+                # and allow a short-lived helper to drain naturally. A pipe
+                # that remains open beyond the bounded grace enters the same
+                # identity-checked process-tree cleanup as a command timeout.
                 pending_input = None
                 poll = getattr(process, "poll", None)
-                if not callable(poll) or poll() is not None:
+                if not callable(poll):
                     raise
+                if poll() is not None and completed_leader_drain_deadline is None:
+                    completed_leader_drain_deadline = min(
+                        communication_deadline,
+                        time.monotonic() + _SWIFT_BUILD_PIPE_DRAIN_TIMEOUT_SECONDS,
+                    )
     except BaseException as error:
         cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(process)
         if cleanup_error is not None or cleanup_diagnostics:
@@ -5685,13 +5704,15 @@ def _verify_trusted_go_toolchain(expected: ExactToolchain) -> None:
         raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED")
 
 
-def _go_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
+def _go_analyzer_arguments(arguments: list[str], *, allow_inventory: bool = False) -> frozenset[str]:
     if (
         len(arguments) not in {2, 3}
         or any(not isinstance(argument, str) or not argument for argument in arguments)
         or any("\n" in argument or "\r" in argument or "\x00" in argument for argument in arguments)
         or (len(arguments) == 3 and arguments[2] != "--emitted-target")
-        or arguments[1] in {"--inventory", "--emitted-target"}
+        or arguments[1] == "--emitted-target"
+        or (len(arguments) == 3 and arguments[1] == "--inventory")
+        or (not allow_inventory and arguments[1] == "--inventory")
     ):
         raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
     source = Path(arguments[0])
@@ -5701,6 +5722,8 @@ def _go_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
         raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID") from error
     if not source.is_absolute() or source != resolved or source.is_symlink() or not source.is_file():
         raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+    if arguments[1] == "--inventory":
+        return frozenset()
     selector = arguments[1]
     names = selector.removeprefix("--functions=").split(",") if selector.startswith("--functions=") else [selector]
     if not names or any(not name or name.startswith("--") for name in names) or len(names) != len(set(names)):
@@ -5712,10 +5735,12 @@ def _run_trusted_go_analyzer(
     toolchain: ExactToolchain,
     helper: Path,
     arguments: list[str],
+    *,
+    allow_inventory: bool = False,
 ) -> dict[str, Any]:
     """Run a source- and toolchain-bound Go analyzer with exact error promotion."""
 
-    promotable = _go_analyzer_arguments(arguments)
+    promotable = _go_analyzer_arguments(arguments, allow_inventory=allow_inventory)
     expected_helper, helper_content = _go_analyzer_source_snapshot(helper)
     with tempfile.TemporaryDirectory(prefix="elmos-go-analyzer-") as temporary:
         root = Path(temporary).resolve(strict=True)
@@ -5756,13 +5781,15 @@ def _run_trusted_go_analyzer(
         return value
 
 
-def _rust_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
+def _rust_analyzer_arguments(arguments: list[str], *, allow_inventory: bool = False) -> frozenset[str]:
     if (
         len(arguments) not in {2, 3}
         or any(not isinstance(argument, str) or not argument for argument in arguments)
         or any("\n" in argument or "\r" in argument or "\x00" in argument for argument in arguments)
         or (len(arguments) == 3 and arguments[2] != "--emitted-target")
-        or arguments[1] in {"--inventory", "--emitted-target"}
+        or arguments[1] == "--emitted-target"
+        or (len(arguments) == 3 and arguments[1] == "--inventory")
+        or (not allow_inventory and arguments[1] == "--inventory")
     ):
         raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
     source = Path(arguments[0])
@@ -5772,6 +5799,8 @@ def _rust_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
         raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID") from error
     if not source.is_absolute() or source != resolved or source.is_symlink() or not source.is_file():
         raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
+    if arguments[1] == "--inventory":
+        return frozenset()
     selector = arguments[1]
     names = selector.removeprefix("--functions=").split(",") if selector.startswith("--functions=") else [selector]
     if not names or any(not name or name.startswith("--") for name in names) or len(names) != len(set(names)):
@@ -5826,10 +5855,12 @@ def _run_trusted_rust_analyzer(
     toolchain: ExactToolchain,
     package: Path,
     arguments: list[str],
+    *,
+    allow_inventory: bool = False,
 ) -> dict[str, Any]:
     """Run a package- and toolchain-bound Rust analyzer with exact error promotion."""
 
-    promotable = _rust_analyzer_arguments(arguments)
+    promotable = _rust_analyzer_arguments(arguments, allow_inventory=allow_inventory)
     if toolchain.auxiliary is None:
         raise RouteError("RUST_ANALYZER_CARGO_REQUIRED")
     cargo = Path(toolchain.auxiliary)
@@ -7922,10 +7953,10 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
         value = _run_trusted_javascript_analyzer(toolchain, source, "--inventory")
     elif language == "go":
         helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
-        value = _run_trusted_go_analyzer(toolchain, helper, [str(source), "--inventory"])
+        value = _run_trusted_go_analyzer(toolchain, helper, [str(source), "--inventory"], allow_inventory=True)
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
-        value = _run_trusted_rust_analyzer(toolchain, package, [str(source), "--inventory"])
+        value = _run_trusted_rust_analyzer(toolchain, package, [str(source), "--inventory"], allow_inventory=True)
     elif language == "swift":
         binary, analyzer_build_receipt = _swift_analyzer(toolchain)
         value = _bind_swift_analyzer_identity(

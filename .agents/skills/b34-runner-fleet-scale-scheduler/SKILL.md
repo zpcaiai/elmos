@@ -1,5 +1,8 @@
 ---
 name: b34-runner-fleet-scale-scheduler
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement a large tenant-isolated runner fleet scheduler using attestation capabilities region data policy resource profiles cache affinity leases autoscaling drain and recovery.
 ---
 

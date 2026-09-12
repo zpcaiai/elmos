@@ -1,0 +1,89 @@
+{
+  "schema_version": "4.0",
+  "tenant_id": "demo-tenant",
+  "project_id": "demo-project",
+  "run_id": "demo-run",
+  "profile_id": "elmos.assurance/v4/reference-strict",
+  "target_level": "E5",
+  "builder_control_domain": "demo-builder",
+  "revision_set": {
+    "source": "dffeea0e37c9c08512cfa69fa8e4e05bc68291c4828bb60d807c819f904ab47a",
+    "target": "b0dac3f267948d0982ea32742900016b9f71158d7259d019b78110f38b882910",
+    "artifact": "2d0da715c6a058f17b5cdf90d681dc1995051f16787e1700ffe4c38b28a5d510",
+    "scope": "232e5c93b0f7115e0600de5fbac7556c54ff778cdc9d43338cb743db1392592c",
+    "contract": "6b060ffcbea78758c5eba8bc11da2a3d9eb018897dc459bdc7ad6a1ebec96948",
+    "policy": "0c8a038472dfa7d39551b13110d79dfd3bbd362d354d24df00f214eb31b0a46f",
+    "environment": "5c32f525cc9e9da370d1762890bcdbeb2e80ebadbfa72e0a8c42586482d5d687",
+    "toolchain": "76705d5ca3a2463725820da807aa2014e9994e176c2bec95f15bb6a2158eadb5",
+    "suite": "8bde9d9781b2b5c3472af2cbd9b590e72d16ea4434f50b1376bb99f7ce1536bc",
+    "data": "392a556b7d61dacf14405ac8f9c9d59ef288221f130575b8504ce893683205f1",
+    "comparator": "c5d752129cb3e1018c5c43435195b3b604efdeeb4a547a80b05d7f0909bcb8b6",
+    "rules": "0745990332452eb8b50b7e5436bb8bbb81b03cfbe75a01c558ba68b4bdd87815"
+  },
+  "obligations": [
+    {
+      "id": "o-build",
+      "kind": "build",
+      "critical": true,
+      "case_ids": [
+        "c-build"
+      ]
+    },
+    {
+      "id": "o-contract",
+      "kind": "contract",
+      "critical": true,
+      "case_ids": [
+        "c-contract"
+      ]
+    },
+    {
+      "id": "o-smoke",
+      "kind": "smoke",
+      "critical": true,
+      "case_ids": [
+        "c-smoke"
+      ]
+    },
+    {
+      "id": "o-regression",
+      "kind": "regression",
+      "critical": true,
+      "case_ids": [
+        "c-regression"
+      ]
+    },
+    {
+      "id": "o-differential",
+      "kind": "differential",
+      "critical": true,
+      "case_ids": [
+        "c-differential"
+      ]
+    },
+    {
+      "id": "o-mutation",
+      "kind": "mutation",
+      "critical": true,
+      "case_ids": [
+        "c-mutation"
+      ]
+    },
+    {
+      "id": "o-proof",
+      "kind": "proof",
+      "critical": true,
+      "case_ids": [
+        "c-proof"
+      ]
+    },
+    {
+      "id": "o-audit",
+      "kind": "audit",
+      "critical": true,
+      "case_ids": [
+        "c-audit"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+apiVersion: elmos.ai/v1
+kind: DurableWorkflow
+metadata:
+  id: engagement-discovery
+  version: 5.2.0
+spec:
+  engine: canonical-K7-adapter
+  steps:
+  - id: capture-inputs
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: map-stakeholders
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: reconstruct-workflows
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: baseline-value
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: register-unknowns
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: approve-wedge
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  authority: environment-owned
+  cancellation: bounded
+  completionAuthority: K8

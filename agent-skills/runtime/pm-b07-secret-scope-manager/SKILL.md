@@ -1,5 +1,8 @@
 ---
 name: pm-b07-secret-scope-manager
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "按任务注入最小必要凭证，阻止跨项目、跨租户和跨阶段访问. Precision Migration B07 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

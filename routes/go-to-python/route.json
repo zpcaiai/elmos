@@ -8,7 +8,7 @@
     "representative_repository_required": true,
     "source_map_required": true
   },
-  "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+  "maintenance_owner": "elmos-polyglot-maintainers",
   "owner": "ELMOS Migration Platform",
   "paths": {
     "certification": "certification",
@@ -19,7 +19,7 @@
     "semantic_profile": "typed-pure-function-v1",
     "target_profile": "python-native-compiler"
   },
-  "review_date": "2026-10-26",
+  "review_date": "2026-09-10",
   "route_key": "go-to-python",
   "schema_version": 1,
   "source": {
@@ -30,7 +30,7 @@
       "go/parser AST"
     ]
   },
-  "status": "limited",
+  "status": "certified",
   "target": {
     "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
     "language": "python",

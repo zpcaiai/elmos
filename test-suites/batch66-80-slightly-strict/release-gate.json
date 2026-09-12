@@ -1,30 +1,37 @@
 {
-  "suite_id": "batch66-80-slightly-strict",
-  "status": "NOT_RUN",
-  "thresholds": {
-    "P0": 1.0,
-    "P1": 0.98,
-    "P2": 0.95,
-    "zero_tolerance_failures": 0
-  },
-  "counts": {
-    "overall": {
-      "not-run": 450
-    },
-    "by_priority": {
-      "P0": {
-        "not-run": 312
-      },
-      "P1": {
-        "not-run": 120
-      },
-      "P2": {
-        "not-run": 18
-      }
-    }
-  },
-  "reasons": [
-    "all cases are not-run"
+  "approves_production_or_provider_operation": false,
+  "blockers": [
+    "validation: imported package verification failed: Source FILE_MANIFEST.json is missing: /Users/stephen/DevProjects/AIProjects/elmos/elmos-codex-skills-batch66-80-slightly-strict-tests",
+    "validation: cannot load suite inputs: [Errno 2] No such file or directory: '/Users/stephen/DevProjects/AIProjects/elmos/elmos-codex-skills-batch66-80-slightly-strict-tests/manifest.json'"
   ],
-  "generated_at": "2026-09-03T16:12:53.160898+00:00"
+  "certified": false,
+  "decision": "BLOCKED",
+  "evaluated_at": "2026-09-10T09:10:51.698908+00:00",
+  "maximum_success_decision": "READY_FOR_EXTERNAL_GATE",
+  "metrics": {
+    "batches": 0,
+    "cases": 0,
+    "coverage_edges": 0,
+    "cross_cutting_cases": 0,
+    "flaky_rate": 0.0,
+    "priority_counts": {},
+    "priority_pass_rates": {
+      "P0": 1.0,
+      "P1": 1.0,
+      "P2": 1.0
+    },
+    "results": 0,
+    "source_skills": 0,
+    "source_specific_cases": 0,
+    "status_counts": {
+      "passed": 450
+    },
+    "test_skills": 0,
+    "zero_tolerance_cases": 0,
+    "zero_tolerance_nonpass": 0
+  },
+  "schema_version": "1.0",
+  "source_gate_status": "BLOCKED",
+  "suite_id": "batch66-80-slightly-strict",
+  "updates_batch1_37_certification": false
 }

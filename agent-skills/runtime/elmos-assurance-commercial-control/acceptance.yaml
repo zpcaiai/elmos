@@ -1,0 +1,36 @@
+skill: elmos-assurance-commercial-control
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-commercial-control-A01
+  given: 用户付费但测试FAIL
+  when: 在真实集成模块执行对应测试或负例
+  then: verdict保持FAIL
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-commercial-control-A02
+  given: 客户验收人未批准
+  when: 在真实集成模块执行对应测试或负例
+  then: 不伪造customer acceptance
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-commercial-control-A03
+  given: 证书过期
+  when: 在真实集成模块执行对应测试或负例
+  then: 界面和API都显式expired
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

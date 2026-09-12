@@ -1,0 +1,25 @@
+{
+  "schema_version": "elmos.legacy-web.compiled-skill-contract.v1",
+  "package_id": "elmos.java-legacy-web.repository-modernization",
+  "package_version": "1.0.0",
+  "installed_alias": "legacy-web-32-behavioral-contract-and-sequence-mining",
+  "namespace": "legacy-web-modernization-v1",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "legacy-web-31-legacy-web-semantic-ir"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "dispatch",
+    "handler_id": "execute_32_behavioral_contract_and_sequence_mining",
+    "phase": "semantic-model",
+    "priority": "P0",
+    "module_path": "engines/legacy-web-modernization-engine/src/elmos_legacy_web_modernization/runtime.py",
+    "skill_key": "32-behavioral-contract-and-sequence-mining",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

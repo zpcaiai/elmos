@@ -1,0 +1,36 @@
+skill: elmos-assurance-router-budget
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-router-budget-A01
+  given: OpenRouter fallback降数据隔离
+  when: 在真实集成模块执行对应测试或负例
+  then: policy拒绝
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-router-budget-A02
+  given: 并行任务争抢预算
+  when: 在真实集成模块执行对应测试或负例
+  then: 不超预留上限，失败可见
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-router-budget-A03
+  given: timeout无usage
+  when: 在真实集成模块执行对应测试或负例
+  then: 记pending而非0，认证暂停不造PASS
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

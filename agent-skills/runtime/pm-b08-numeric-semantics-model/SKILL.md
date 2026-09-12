@@ -1,5 +1,8 @@
 ---
 name: pm-b08-numeric-semantics-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "建模整数溢出、浮点、NaN、Infinity、负零、除法和取模差异. Precision Migration B08 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

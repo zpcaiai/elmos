@@ -1,5 +1,8 @@
 ---
 name: b32-form-binding-validation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Migrate form models binding validation timing conditional fields accessibility submission error focus file inputs draft persistence and server error reconciliation through explicit contracts.
 ---
 

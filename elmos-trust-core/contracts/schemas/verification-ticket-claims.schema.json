@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/verification-ticket-claims.v1.json",
+  "title": "Elmos VerificationTicket Claims v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["iss", "aud", "jti", "job_id", "project_id", "source_digest", "case_set", "case_catalog_digest", "runner_profile", "runner_profile_digest", "policy_bundle_digest", "iat", "nbf", "exp", "nonce"],
+  "properties": {
+    "iss": {"const": "elmos-authority"},
+    "aud": {"const": "elmos-truth-runner"},
+    "jti": {"type": "string", "minLength": 1},
+    "job_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "source_digest": {"$ref": "#/$defs/digest"},
+    "case_set": {"type": "string", "minLength": 1},
+    "case_catalog_digest": {"$ref": "#/$defs/digest"},
+    "hidden_test_package_digest": {"$ref": "#/$defs/digest"},
+    "runner_profile": {"type": "string", "minLength": 1},
+    "runner_profile_digest": {"$ref": "#/$defs/digest"},
+    "policy_bundle_digest": {"$ref": "#/$defs/digest"},
+    "iat": {"type": "integer", "minimum": 0},
+    "nbf": {"type": "integer", "minimum": 0},
+    "exp": {"type": "integer", "minimum": 0},
+    "nonce": {"type": "string", "minLength": 16}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[A-Fa-f0-9]{64}$"}
+  }
+}

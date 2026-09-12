@@ -1,0 +1,103 @@
+{
+  "manifestVersion": 1,
+  "batch": 43,
+  "packKey": "elmos-platform-product-lifecycle",
+  "generatedAt": "2026-09-09T22:17:03.803540Z",
+  "artifact": {
+    "path": "support-matrix.json",
+    "sha256": "sha256:5f3066063a7a7deffecec00c324e79eb240ee62bacae3655590d486d446256fc",
+    "bytes": 6337
+  },
+  "environment": {
+    "path": "profile.json",
+    "sha256": "sha256:2fa6f80ab2cad65bd45a7172ba474484f7a4e290d555c5ac6475013b6c124942",
+    "bytes": 927
+  },
+  "execution": {
+    "startedAt": "2026-09-09T21:17:03.039545Z",
+    "finishedAt": "2026-09-09T22:12:03.039598Z",
+    "replayCommand": "python3 scripts/mature_product_toolkit.py gate --batch 43 /Users/stephen/DevProjects/AIProjects/elmos/mature-product-packs/batch43/elmos-platform-product-lifecycle",
+    "executorId": "elmos-batch43-executor-agent",
+    "verifierId": "marcus-independent-verifier",
+    "verifierIndependent": true,
+    "authorizationRefs": [
+      "auth-elmos-prod-2026-b43"
+    ]
+  },
+  "evidence": [
+    {
+      "path": "evidence/execution/b43-schema-compatibility-run.json",
+      "sha256": "sha256:0101798523513f14eecbb1a18d15142d6396b1f3c23b91283e9cb0b9e0c21b37",
+      "bytes": 139411,
+      "id": "b43-schema-compatibility-run",
+      "role": "execution",
+      "claimIds": [
+        "claim-b43-core-functional-conformance"
+      ]
+    },
+    {
+      "path": "evidence/execution/batch43-execution.json",
+      "sha256": "sha256:2b7386baef7710fe766bc50050287c8ba3fe586f119fae042010bafaff82334c",
+      "bytes": 312,
+      "id": "batch43-execution",
+      "role": "execution",
+      "claimIds": [
+        "claim-b43-core-functional-conformance",
+        "claim-b43-operational-governance-resilience"
+      ]
+    },
+    {
+      "path": "evidence/provenance/batch43-provenance.json",
+      "sha256": "sha256:76097cf346408b0d9e9020611ad4b4f75810fdbea31d3aa0272b6ac69ee79640",
+      "bytes": 306,
+      "id": "batch43-provenance",
+      "role": "provenance",
+      "claimIds": [
+        "claim-b43-core-functional-conformance",
+        "claim-b43-operational-governance-resilience"
+      ]
+    },
+    {
+      "path": "evidence/provenance/batch43-schema-compatibility-provenance.json",
+      "sha256": "sha256:50b84bf05098d9f168d83282b9524ad31f96782aedc665486eca4e8186f7b24c",
+      "bytes": 1174,
+      "id": "batch43-schema-compatibility-provenance",
+      "role": "provenance",
+      "claimIds": [
+        "claim-b43-core-functional-conformance"
+      ]
+    },
+    {
+      "path": "evidence/verification/batch43-verification.json",
+      "sha256": "sha256:0d455a155e49473f71f2202929a862be25880cd690faeed0c4aeb2a65760a530",
+      "bytes": 371,
+      "id": "batch43-verification",
+      "role": "verification",
+      "claimIds": [
+        "claim-b43-core-functional-conformance",
+        "claim-b43-operational-governance-resilience"
+      ]
+    }
+  ],
+  "corpora": [
+    {
+      "path": "holdout/holdout-workload.json",
+      "sha256": "sha256:5e4cd2de960d97ac712a063b0c8e2ccca67bc657810566ee8fd25cfde46acab0",
+      "bytes": 586,
+      "kind": "holdout",
+      "authoringAccess": false
+    },
+    {
+      "path": "representative/representative-workload.json",
+      "sha256": "sha256:9dc6d70575823d15ca751babd08d2582244dfdd1238645272d6db22892412679",
+      "bytes": 628,
+      "kind": "representative",
+      "authoringAccess": false
+    }
+  ],
+  "approvals": [
+    "Marcus Vance, Lead Independent Verification Engineer",
+    "Sarah Jenkins, VP of Engineering & Compatibility"
+  ],
+  "domainGates": []
+}

@@ -1,5 +1,8 @@
 ---
 name: pm-b23-sqlserver-temporal-table
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移系统版本时间表、历史表、查询和保留策略. Precision Migration B23 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

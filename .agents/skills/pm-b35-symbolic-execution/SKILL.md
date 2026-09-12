@@ -1,5 +1,8 @@
 ---
 name: pm-b35-symbolic-execution
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "对关键切片探索符号路径并求解崩溃、违规和不等价输入. Precision Migration B35 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

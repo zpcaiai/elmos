@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U016-006",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:26:18.659251Z",
+  "notes": "Independently verified by Ethan: SLO、Chaos与多区域DR / replay-idempotency / 场景6"
+}

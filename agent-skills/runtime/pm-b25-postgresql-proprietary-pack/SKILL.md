@@ -1,5 +1,8 @@
 ---
 name: pm-b25-postgresql-proprietary-pack
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "识别 PostgreSQL 过程语言、扩展、高级类型、索引、复制、FDW 和自定义能力并制定迁移策略. Precision Migration B25 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

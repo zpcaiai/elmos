@@ -1,5 +1,8 @@
 ---
 name: pm-b43-scheduled-repository-analysis
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "按计划重新分析仓库、依赖、版本、架构、测试和运行风险. Precision Migration B43 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

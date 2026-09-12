@@ -1,5 +1,8 @@
 ---
 name: b30-framework-contract-meta-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Design or extend the framework-neutral Framework Contract Model used to represent web, dependency injection, configuration, validation, security, persistence, transactions, messaging, cache, scheduling, and lifecycle behavior. Use before framework-specific code generation.
 ---
 

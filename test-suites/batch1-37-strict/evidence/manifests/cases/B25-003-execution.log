@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B25-003 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [25]
+Title: Batch 25 双Runtime隔离：提供畸形、缺失、冲突、未知或明确不支持的输入
+Capability: 双Runtime隔离
+Test Type: negative
+Skill: tst-b25-high-confidence-behavior-poc
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

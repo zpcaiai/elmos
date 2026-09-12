@@ -1,0 +1,335 @@
+{
+  "batch": {
+    "id": "B14",
+    "title": "Product UX and collaboration surfaces",
+    "dependsOn": [
+      "B02",
+      "B06",
+      "B09",
+      "B12"
+    ],
+    "skills": [],
+    "tasks": [
+      "B14-T001",
+      "B14-T002",
+      "B14-T003",
+      "B14-T004",
+      "B14-T005",
+      "B14-T006",
+      "B14-T007",
+      "B14-T008",
+      "B14-T009",
+      "B14-T010",
+      "B14-T011",
+      "B14-T012",
+      "B14-T013"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B14-T001",
+      "batch": "B14",
+      "title": "Create shared UI design system for evidence, unknown, risk, approval and status semantics",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B00-T001"
+      ],
+      "outputs": [
+        "component library",
+        "accessibility tests",
+        "visual state contract"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B14-T002",
+      "batch": "B14",
+      "title": "Implement FDE Command Center (fde-command-center)",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B14-T001"
+      ],
+      "outputs": [
+        "route",
+        "API integration",
+        "a11y tests",
+        "role tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B14-T003",
+      "batch": "B14",
+      "title": "Implement Engagement Workspace (engagement-workspace)",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B14-T001"
+      ],
+      "outputs": [
+        "route",
+        "API integration",
+        "a11y tests",
+        "role tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B14-T004",
+      "batch": "B14",
+      "title": "Implement Repository X-Ray (repository-xray)",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B14-T001"
+      ],
+      "outputs": [
+        "route",
+        "API integration",
+        "a11y tests",
+        "role tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B14-T005",
+      "batch": "B14",
+      "title": "Implement System Graph Explorer (system-graph-explorer)",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B14-T001"
+      ],
+      "outputs": [
+        "route",
+        "API integration",
+        "a11y tests",
+        "role tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B14-T006",
+      "batch": "B14",
+      "title": "Implement Finding Workbench (finding-workbench)",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B14-T001"
+      ],
+      "outputs": [
+        "route",
+        "API integration",
+        "a11y tests",
+        "role tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B14-T007",
+      "batch": "B14",
+      "title": "Implement Architecture & Transformation Studio (architecture-studio)",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B14-T001"
+      ],
+      "outputs": [
+        "route",
+        "API integration",
+        "a11y tests",
+        "role tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B14-T008",
+      "batch": "B14",
+      "title": "Implement ChangeSet Console (changeset-console)",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B14-T001"
+      ],
+      "outputs": [
+        "route",
+        "API integration",
+        "a11y tests",
+        "role tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B14-T009",
+      "batch": "B14",
+      "title": "Implement Proof & Readiness Center (proof-center)",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B14-T001"
+      ],
+      "outputs": [
+        "route",
+        "API integration",
+        "a11y tests",
+        "role tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B14-T010",
+      "batch": "B14",
+      "title": "Implement Native Runtime Lab (runtime-lab)",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B14-T001"
+      ],
+      "outputs": [
+        "route",
+        "API integration",
+        "a11y tests",
+        "role tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B14-T011",
+      "batch": "B14",
+      "title": "Implement Release & Operations (release-operations)",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B14-T001"
+      ],
+      "outputs": [
+        "route",
+        "API integration",
+        "a11y tests",
+        "role tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B14-T012",
+      "batch": "B14",
+      "title": "Implement Adoption & Value (adoption-value)",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B14-T001"
+      ],
+      "outputs": [
+        "route",
+        "API integration",
+        "a11y tests",
+        "role tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B14-T013",
+      "batch": "B14",
+      "title": "Implement Admin & Trust Center (admin-trust)",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B14-T001"
+      ],
+      "outputs": [
+        "route",
+        "API integration",
+        "a11y tests",
+        "role tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

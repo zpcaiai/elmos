@@ -1,5 +1,8 @@
 ---
 name: pm-b09-effect-system
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "定义 Read、Write、Call、Publish、Throw、Spawn、Await、Clock、Random 等统一 Effect. Precision Migration B09 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

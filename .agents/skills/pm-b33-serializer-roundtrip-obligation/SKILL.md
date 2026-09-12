@@ -1,5 +1,8 @@
 ---
 name: pm-b33-serializer-roundtrip-obligation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成编码、解码、规范化和跨语言 Carrier 的 Round-trip 义务. Precision Migration B33 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B93 Delphi Numerical Binary Regression Verifier"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b93-delphi-numerical-binary-regression-verifier to execute this ELMOS Language Pack Skill with fail-closed evidence."

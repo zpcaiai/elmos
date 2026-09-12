@@ -1,5 +1,8 @@
 ---
 name: pm-b20-index-and-partition-converter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "转换索引、分区、聚簇、表达式、部分索引和存储布局. Precision Migration B20 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

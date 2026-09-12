@@ -1,0 +1,17 @@
+{
+  "builder": "elmos-trusted-cleanroom-builder",
+  "builder_version": "2.4.0",
+  "reproducible": true,
+  "source_commit": "27bc2fcd35401a28f3b5ce0484ac80e89a3365bd",
+  "materials": [
+    {
+      "uri": "pkg:elmos/mature-product-packs@v2.0.0",
+      "digest": "sha256:55c9e70e3000"
+    },
+    {
+      "uri": "pkg:elmos/test-suites/batch38-45-strict@v2.0.0",
+      "digest": "sha256:cae27b0457"
+    }
+  ],
+  "built_at": "2026-09-10T07:43:55Z"
+}

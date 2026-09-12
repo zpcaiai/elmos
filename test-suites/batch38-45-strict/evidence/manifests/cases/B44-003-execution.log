@@ -1,0 +1,11 @@
+[2026-09-10T08:25:53.808254Z][B44-003] Starting execution of B44-003 (Batch 44 FinOps / negative / 场景3) [Category=negative, Priority=P1]
+[2026-09-10T08:25:53.808258Z][B44-003] Bound Skill: tst-b44-finops-economics | Product Skill IDs: [1457, 1473]
+[2026-09-10T08:25:53.808261Z][B44-003] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:53.822206Z][B44-003] Security: Minted RS256 token (JTI=631d9e1a..., Exp=1789032353)
+[2026-09-10T08:25:53.858860Z][B44-003] KMS: Envelope encrypted 34 bytes under key key-b44-003 v1 (DEK wrapped)
+[2026-09-10T08:25:53.890403Z][B44-003] [B44-FINOPS-ECONOMICS] Initializing cloud financial operations for B44-003
+[2026-09-10T08:25:53.890410Z][B44-003] Executing Platform Gross Margin Modeling & Unit Economics...
+[2026-09-10T08:25:53.890466Z][B44-003] Gross Margin: Revenue=$1500.00, COGS=$72.10, Margin=95.2%
+[2026-09-10T08:25:53.890480Z][B44-003] Completed execution of B44-003 in 82.2ms: Status=PASSED
+[2026-09-10T08:25:53.890483Z][B44-003] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:25:53.890496Z][B44-003] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

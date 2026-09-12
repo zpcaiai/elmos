@@ -982,6 +982,55 @@ def test_swift_post_completion_budget_covers_required_identity_scans() -> None:
     assert native._SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS >= minimum_scan_budget
 
 
+def test_swift_build_step_allows_bounded_pipe_drain_after_successful_leader_exit(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    communication_attempts = 0
+    cleaned: list[int] = []
+
+    class CompletedLeader:
+        pid = 41_099
+        returncode = 0
+
+        def communicate(self, **_kwargs: object) -> tuple[str, str]:
+            nonlocal communication_attempts
+            communication_attempts += 1
+            if communication_attempts == 1:
+                raise subprocess.TimeoutExpired([sys.executable], 1)
+            return "stdout", "stderr"
+
+        def poll(self) -> int:
+            return self.returncode
+
+    process = CompletedLeader()
+    monkeypatch.setattr(native.subprocess, "Popen", lambda *_args, **_kwargs: process)
+    monkeypatch.setattr(
+        native,
+        "_wait_for_swift_build_session_exit",
+        lambda *_args, **_kwargs: True,
+    )
+    monkeypatch.setattr(
+        native,
+        "_attempt_swift_build_session_cleanup",
+        lambda candidate, **_kwargs: (cleaned.append(candidate.pid), ()),
+    )
+
+    completed = native._run_swift_build_step(
+        [sys.executable, "-c", "pass"],
+        cwd=tmp_path,
+        environment=dict(os.environ),
+        timeout=30,
+        failure="SWIFT_BUILD_PIPE_DRAIN",
+    )
+
+    assert completed.returncode == 0
+    assert completed.stdout == "stdout"
+    assert completed.stderr == "stderr"
+    assert communication_attempts == 2
+    assert cleaned == []
+
+
 @pytest.mark.parametrize("interrupt_phase", ("communicate", "enumeration"))
 def test_swift_build_step_preserves_keyboard_interrupt(
     tmp_path: Path,

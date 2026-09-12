@@ -1,0 +1,4 @@
+interface:
+  display_name: "B88 Ibmi Landscape Discovery and Inventory"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b88-ibmi-landscape-discovery-and-inventory to execute this ELMOS Language Pack Skill with fail-closed evidence."

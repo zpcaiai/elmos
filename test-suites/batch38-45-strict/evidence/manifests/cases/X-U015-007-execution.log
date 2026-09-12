@@ -1,0 +1,11 @@
+[2026-09-10T08:26:17.565736Z][X-U015-007] Starting execution of X-U015-007 (Air-gap离线更新撤销 / version-drift / 场景7) [Category=version-drift, Priority=P1]
+[2026-09-10T08:26:17.565739Z][X-U015-007] Bound Skill: tst-airgap-offline-update-revocation | Product Skill IDs: []
+[2026-09-10T08:26:17.565743Z][X-U015-007] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:17.577862Z][X-U015-007] Security: Minted RS256 token (JTI=7e9b37aa..., Exp=1789032377)
+[2026-09-10T08:26:17.624907Z][X-U015-007] KMS: Envelope encrypted 37 bytes under key key-x-u015-007 v1 (DEK wrapped)
+[2026-09-10T08:26:17.658234Z][X-U015-007] [CROSS-RESILIENCE] Starting X-U015-007 (U015) Category=version-drift
+[2026-09-10T08:26:17.658240Z][X-U015-007] Air-Gap Offline Updates: Verifying offline signed bundles and CRL certificate revocation
+[2026-09-10T08:26:17.658249Z][X-U015-007] Verifying offline update patch delta sequence (v2.0.0 -> v2.0.1 -> v2.1.0)...
+[2026-09-10T08:26:17.658275Z][X-U015-007] Completed execution of X-U015-007 in 92.5ms: Status=PASSED
+[2026-09-10T08:26:17.658278Z][X-U015-007] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:17.658295Z][X-U015-007] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

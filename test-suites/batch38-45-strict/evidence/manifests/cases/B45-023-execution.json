@@ -1,0 +1,12 @@
+{
+  "case_id": "B45-023",
+  "status": "passed",
+  "artifact_digest": "sha256:b7b94ba4bed96aedc93ef251b53321d74026bab2278b1c5db46409137d29ac95",
+  "environment_digest": "sha256:d4c6bb387cf1b7c6da991a408b7e0098afe1bde41995ab8345f2b41fbaebeb1d",
+  "started_at": "2026-09-10T08:26:04.733126Z",
+  "finished_at": "2026-09-10T08:26:04.854802Z",
+  "execution_kind": "real",
+  "duration_seconds": 0.12167572975158691,
+  "assertions_count": 3,
+  "passed_assertions": 3
+}

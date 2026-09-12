@@ -1,0 +1,22 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-contract-ir
+title: 可执行接口与语义契约
+priority: P0
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-requirement-oracles
+- elmos-assurance-interface-discovery
+inputs:
+- InterfaceInventory
+- RequirementSet
+- OracleRegistry
+outputs:
+- ContractSnapshot
+- OpenAPI/AsyncAPI/proto projections
+- ContractApproval
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

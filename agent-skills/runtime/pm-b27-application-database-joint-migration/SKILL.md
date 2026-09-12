@@ -1,5 +1,8 @@
 ---
 name: pm-b27-application-database-joint-migration
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "把数据库迁移与应用驱动、ORM、原生 SQL、事务、锁、错误码和性能一起转换和验证. Precision Migration B27 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

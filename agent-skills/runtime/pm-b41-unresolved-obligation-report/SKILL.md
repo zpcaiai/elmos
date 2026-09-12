@@ -1,5 +1,8 @@
 ---
 name: pm-b41-unresolved-obligation-report
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "列出所有未证明、未测试、未知、超时、规格冲突和阻断项. Precision Migration B41 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

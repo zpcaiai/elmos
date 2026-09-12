@@ -1,0 +1,36 @@
+skill: elmos-assurance-verified-rules
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-verified-rules-A01
+  given: 已证明规则用于不满足NULL前提的SQL
+  when: 在真实集成模块执行对应测试或负例
+  then: 拒绝适用
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-verified-rules-A02
+  given: rule换版本缓存仍命中
+  when: 在真实集成模块执行对应测试或负例
+  then: 证据不得复用
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-verified-rules-A03
+  given: rule发现反例
+  when: 在真实集成模块执行对应测试或负例
+  then: 受影响证书进入复审/撤销链
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

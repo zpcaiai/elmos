@@ -23,11 +23,7 @@ _LOCK_PROJECT_MARKER = "__ELMOS_PROJECT_NAME__"
 
 
 def _cargo_lock(project_name: str) -> str:
-    template = (
-        files("elmos_project_synthesis")
-        .joinpath("templates", "rust", "Cargo.lock")
-        .read_text(encoding="utf-8")
-    )
+    template = files("elmos_project_synthesis").joinpath("templates", "rust", "Cargo.lock").read_text(encoding="utf-8")
     if template.count(_LOCK_PROJECT_MARKER) != 1:
         raise ValueError("RUST_LOCK_TEMPLATE_INVALID")
     return template.replace(_LOCK_PROJECT_MARKER, project_name)

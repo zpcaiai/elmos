@@ -1,0 +1,11 @@
+[2026-09-10T08:26:26.897299Z][X-U022-003] Starting execution of X-U022-003 (模型路由、预算与Kill Switch / negative / 场景3) [Category=negative, Priority=P1]
+[2026-09-10T08:26:26.897302Z][X-U022-003] Bound Skill: tst-model-routing-budget-kill-switch | Product Skill IDs: []
+[2026-09-10T08:26:26.897306Z][X-U022-003] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:26.907489Z][X-U022-003] Security: Minted RS256 token (JTI=d5918b1c..., Exp=1789032386)
+[2026-09-10T08:26:26.934801Z][X-U022-003] KMS: Envelope encrypted 37 bytes under key key-x-u022-003 v1 (DEK wrapped)
+[2026-09-10T08:26:26.966890Z][X-U022-003] [CROSS-SEC-GOV] Initializing X-U022-003 (U022) Category=negative
+[2026-09-10T08:26:26.966899Z][X-U022-003] Model Routing & Budget Killswitch: Verifying multi-model router, spend caps, and provider failover
+[2026-09-10T08:26:26.966908Z][X-U022-003] Attempting model invocation with negative token budget...
+[2026-09-10T08:26:26.966933Z][X-U022-003] Completed execution of X-U022-003 in 69.6ms: Status=PASSED
+[2026-09-10T08:26:26.966937Z][X-U022-003] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:26.966958Z][X-U022-003] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

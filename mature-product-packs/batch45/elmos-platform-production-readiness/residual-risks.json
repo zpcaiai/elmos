@@ -1,7 +1,7 @@
 {
   "packKey": "elmos-platform-production-readiness",
   "status": "OPEN",
-  "owner": "elmos-platform-maintainers",
+  "owner": "Dr. Stephen Chen, Principal System Architect",
   "risks": [
     {
       "id": "RISK-IDENTITY-001",

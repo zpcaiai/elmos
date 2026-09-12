@@ -1,5 +1,8 @@
 ---
 name: pm-b30-trace-graph-comparator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "比较规范化 Trace 图、关键偏序和业务语义 Span. Precision Migration B30 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

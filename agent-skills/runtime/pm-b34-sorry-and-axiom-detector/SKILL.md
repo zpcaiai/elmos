@@ -1,5 +1,8 @@
 ---
 name: pm-b34-sorry-and-axiom-detector
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "阻止 sorry、未批准公理、不透明逃逸和不可信证明依赖. Precision Migration B34 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

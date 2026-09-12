@@ -1,0 +1,10 @@
+[project]
+name = "elmos-assurance-reference"
+version = "4.0.0"
+description = "Offline assurance reference kernel, not a production certificate authority"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["reference", "."]
+testpaths = ["tests"]
+addopts = "-ra"

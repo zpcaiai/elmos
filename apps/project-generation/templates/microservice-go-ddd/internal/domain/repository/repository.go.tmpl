@@ -1,0 +1,27 @@
+package repository
+
+import (
+	"context"
+
+	"{{.ModuleName}}/internal/domain/model"
+)
+
+// Repository defines the domain repository interface for Entity aggregates.
+// Following DDD rules, this is a pure Go abstraction residing in the domain layer,
+// free from any persistence, database, or ORM dependencies.
+type Repository interface {
+	// FindByID retrieves an entity by its unique ID. Returns nil and no error if not found.
+	FindByID(ctx context.Context, id string) (*model.Entity, error)
+
+	// Save persists a new entity aggregate to storage.
+	Save(ctx context.Context, entity *model.Entity) error
+
+	// Update updates an existing entity aggregate in storage.
+	Update(ctx context.Context, entity *model.Entity) error
+
+	// Delete removes an entity by ID from storage.
+	Delete(ctx context.Context, id string) error
+
+	// List retrieves paginated entities with total count.
+	List(ctx context.Context, offset, limit int) ([]*model.Entity, int64, error)
+}

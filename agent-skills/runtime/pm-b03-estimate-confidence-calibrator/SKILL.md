@@ -1,5 +1,8 @@
 ---
 name: pm-b03-estimate-confidence-calibrator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "依据样本量、同类历史、未知项和试点结果校准预测置信度，避免虚假精确. Precision Migration B03 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,6 +1,9 @@
 ---
 name: b30-micronaut-migration
-description: "Implement or certify a Micronaut source or target framework pack, covering compile-time dependency injection and AOP, HTTP, configuration, validation, data access, transactions, security, messaging, scheduling, native-image behavior, and version-specific providers."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement or certify a Micronaut source or target framework pack, covering compile-time dependency injection and AOP, HTTP, configuration, validation, data access, transactions, security, messaging, scheduling, native-image behavior, and version-specific providers.
 ---
 
 ## Operating mode

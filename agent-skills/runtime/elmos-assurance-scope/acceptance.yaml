@@ -1,0 +1,36 @@
+skill: elmos-assurance-scope
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-scope-A01
+  given: 声明支持的订单权限流程
+  when: 在真实集成模块执行对应测试或负例
+  then: 在scope中形成必测claim
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-scope-A02
+  given: 用空scope或删除关键接口获得PASS
+  when: 在真实集成模块执行对应测试或负例
+  then: 拒绝或INCONCLUSIVE并保留原分母
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-scope-A03
+  given: 修改已批准scope字段
+  when: 在真实集成模块执行对应测试或负例
+  then: 旧approval失效且触发受影响证据重跑
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: product-feedback-roadmap-loop
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: ProductFeedbackRoadmapLoopService
+    workflow: ProductFeedbackRoadmapLoopWorkflow
+    policyGate: ProductFeedbackRoadmapLoopPolicyGate
+    evidenceProducer: ProductFeedbackRoadmapLoopEvidenceProducer
+    repositoryPort: ProductFeedbackRoadmapLoopRepositoryPort
+  requiredPorts:
+  - id: feedback.read
+    direction: outbound
+  - id: capability.search
+    direction: inbound
+  - id: risk.score
+    direction: outbound
+  - id: roadmap.write
+    direction: outbound
+  - id: decision.record
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/product-feedback-roadmap-loop/runs
+  - GET /api/v1/skills/product-feedback-roadmap-loop/runs/{runId}
+  - POST /api/v1/skills/product-feedback-roadmap-loop/runs/{runId}/cancel
+  - POST /api/v1/skills/product-feedback-roadmap-loop/runs/{runId}/resume
+  events:
+  - elmos.skill.product-feedback-roadmap-loop.requested.v1
+  - elmos.skill.product-feedback-roadmap-loop.checkpointed.v1
+  - elmos.skill.product-feedback-roadmap-loop.completed.v1
+  - elmos.skill.product-feedback-roadmap-loop.failed.v1
+  workflowSteps:
+  - Collect approved feedback, support, usage, incident, sales, and delivery evidence.
+  - Deduplicate problem statements while retaining customer-specific constraints.
+  - Map each item to existing capabilities, gaps, adapters, or non-product needs.
+  - Score value, recurrence, strategic leverage, risk, and evidence confidence.
+  - Prepare roadmap decision packets and candidate experiments.
+  - Record product decisions and communicate them back to engagement owners.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

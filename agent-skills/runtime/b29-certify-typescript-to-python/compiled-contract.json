@@ -1,0 +1,21 @@
+{
+  "schema_version": "elmos.batch29.compiled-skill-contract.v1",
+  "package_id": "elmos.batch29.directed-language-routes",
+  "package_version": "1.0.0",
+  "installed_alias": "b29-certify-typescript-to-python",
+  "namespace": "batch29-language-routes-v1",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "dispatch",
+    "skill_name": "b29-certify-typescript-to-python",
+    "module_path": "scripts/batch29/b29_skill_runtime.py",
+    "runtime_class": "B29SkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

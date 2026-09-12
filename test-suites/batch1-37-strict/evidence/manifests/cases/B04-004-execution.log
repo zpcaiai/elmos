@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B04-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [4]
+Title: Batch 4 配置与环境分离：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: 配置与环境分离
+Test Type: dependency_failure
+Skill: tst-b04-target-skeleton
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

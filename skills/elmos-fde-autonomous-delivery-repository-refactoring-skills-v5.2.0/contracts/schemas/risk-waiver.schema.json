@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/fde/5.2.0/RiskWaiver.schema.json",
+  "title": "RiskWaiver",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "waiverId",
+    "riskRef",
+    "reason",
+    "owner",
+    "approver",
+    "expiresAt",
+    "compensatingControls",
+    "status"
+  ],
+  "properties": {
+    "waiverId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "riskRef": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "approver": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "compensatingControls": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "requested",
+        "approved",
+        "rejected",
+        "expired",
+        "revoked"
+      ]
+    }
+  }
+}

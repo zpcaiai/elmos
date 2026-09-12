@@ -1,0 +1,11 @@
+[2026-09-10T08:26:33.888399Z][X-U029-002] Starting execution of X-U029-002 (Evidence重放与认证防伪 / boundary / 场景2) [Category=boundary, Priority=P0]
+[2026-09-10T08:26:33.888403Z][X-U029-002] Bound Skill: tst-evidence-replay-certification-anti-forgery | Product Skill IDs: []
+[2026-09-10T08:26:33.888407Z][X-U029-002] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:33.920226Z][X-U029-002] Security: Minted RS256 token (JTI=649d0efc..., Exp=1789032393)
+[2026-09-10T08:26:33.973981Z][X-U029-002] KMS: Envelope encrypted 37 bytes under key key-x-u029-002 v1 (DEK wrapped)
+[2026-09-10T08:26:34.045816Z][X-U029-002] [CROSS-DELIVERY] Initializing X-U029-002 (U029) Category=boundary
+[2026-09-10T08:26:34.045827Z][X-U029-002] Evidence Replay & Anti-Forgery: Validating counterexample replay, zero-tolerance counters, and cryptographic seals
+[2026-09-10T08:26:34.045831Z][X-U029-002] Testing replay engine timeout at exactly 3600 seconds...
+[2026-09-10T08:26:34.045851Z][X-U029-002] Completed execution of X-U029-002 in 157.5ms: Status=PASSED
+[2026-09-10T08:26:34.045854Z][X-U029-002] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:34.045868Z][X-U029-002] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

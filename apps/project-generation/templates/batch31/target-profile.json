@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "profile_key": "unset-target",
+  "version": 1,
+  "owner": "UNASSIGNED",
+  "engine": "UNSET",
+  "versions": [
+    "UNSET"
+  ],
+  "edition": "UNSET",
+  "dialect": "UNSET",
+  "driver_versions": [
+    "UNSET"
+  ],
+  "charset": "UNSET",
+  "collation": "UNSET",
+  "timezone": "UTC",
+  "extensions": [],
+  "provision": {
+    "commands": [],
+    "image_digests": []
+  },
+  "health_check": {
+    "query": "SELECT 1"
+  },
+  "security": {
+    "credential_mode": "ephemeral",
+    "tls": "required"
+  },
+  "migration": {
+    "ddl_strategy": "expand-contract",
+    "data_strategy": "backfill-plus-cdc"
+  },
+  "providers": {}
+}

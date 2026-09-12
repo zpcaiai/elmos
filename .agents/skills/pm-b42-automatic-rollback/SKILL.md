@@ -1,5 +1,8 @@
 ---
 name: pm-b42-automatic-rollback
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "根据错误、差异、延迟、数据和业务 SLI 自动触发安全回滚. Precision Migration B42 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

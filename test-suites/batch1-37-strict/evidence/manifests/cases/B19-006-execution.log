@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B19-006 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [19]
+Title: Batch 19 Runner Job：重复提交、消息重放、Lease过期、任务恢复或并发执行
+Capability: Runner Job
+Test Type: replay_idempotency
+Skill: tst-b19-productization-blueprint
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

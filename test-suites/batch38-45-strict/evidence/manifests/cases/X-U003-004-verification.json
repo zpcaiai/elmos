@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U003-004",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:26:10.130065Z",
+  "notes": "Independently verified by Ethan: 环境、Fixture与Chaos工厂 / dependency-failure / 场景4"
+}

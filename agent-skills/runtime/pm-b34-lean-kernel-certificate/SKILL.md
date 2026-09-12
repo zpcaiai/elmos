@@ -1,5 +1,8 @@
 ---
 name: pm-b34-lean-kernel-certificate
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "记录 Lean 版本、依赖摘要、定理、Axiom 报告和内核验收结果. Precision Migration B34 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

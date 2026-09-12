@@ -1,5 +1,8 @@
 ---
 name: pm-b09-business-state-machine-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "提取和表达订单、支付、库存、权限等业务状态与合法转换. Precision Migration B09 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

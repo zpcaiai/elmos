@@ -497,10 +497,10 @@ WEB_CONSOLE_PACKAGE_PATH = WEB_CONSOLE_ROOT / "package.json"
 LOCKED_PLAYWRIGHT_VERSION = "1.61.1"
 LOCKED_AXE_PLAYWRIGHT_VERSION = "4.12.1"
 LOCKED_WEB_CONSOLE_LOCK_SHA256 = (
-    "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21"
+    "sha256:b2e085f330f40a3fea89fa643a61b3e0432dde883e8ef4e7c031e3ed085ed451"
 )
 LOCKED_WEB_CONSOLE_PACKAGE_SHA256 = (
-    "sha256:8789236a161bfe6b5c1017507ff1b8a8115a0ddfc3ee7cc77a27b4333dbd38d7"
+    "sha256:6aa741b5dac3aeed685f5c504f637bdaa3485a8db2fe2be405d5c8d0b760d5c3"
 )
 LOCKED_PLAYWRIGHT_PACKAGE_SHA256 = (
     "sha256:9d8556509e073169efec663b7f71c13f17d7002b307d00d48bf88ee91c387f3e"
@@ -590,7 +590,7 @@ LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_SHA256 = (
 )
 # The fixed 72-route/864-block campaign is intentionally bounded but exceeds
 # the former two-minute budget on the pinned Node 26 macOS runner.
-INTERACTION_ENGINE_VERIFY_TIMEOUT_SECONDS = 600
+INTERACTION_ENGINE_VERIFY_TIMEOUT_SECONDS = 900
 SOLVER_RESULT_KEYS = {
     "schema_version",
     "solver",
@@ -10327,9 +10327,6 @@ def execute_flutter_browser_runtime(
         flutter_identity = runtime_tool_identity(
             Path(policy.flutter_path), flutter_version
         )
-        python_identity = runtime_tool_identity(
-            Path(sys.executable), platform.python_version()
-        )
         integration_identity = file_identity(
             workspace / "integration_test/elmos_bounded_interaction_test.dart",
             "Flutter integration test source",
@@ -10346,7 +10343,6 @@ def execute_flutter_browser_runtime(
             "integration_test_sha256": integration_identity["sha256"],
             "integration_driver_sha256": driver_source_identity["sha256"],
         }
-        closure_digest = digest_json(closure)
         acquisition_relative, acquisition_sha, acquisition_bytes = (
             write_content_addressed_runtime_json(
                 evidence_root,

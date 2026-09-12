@@ -1,0 +1,81 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: e0-e3-readiness-and-evidence-bundle
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - All tests pass but critical unknown remains
+  - Evidence was produced before latest dependency change
+  - Capability seeks E5 without companion assurance package
+  negativeControls:
+  - issue E4 or E5 certificate
+  - approve stale evidence
+  - let adapter certify itself
+  checks:
+  - id: e0-e3-readiness-and-evidence-bundle-AC-01
+    requirement: E0 requires asset and RevisionSet identity; E1 requires reproducible native build status; E2 requires approved
+      behavior and test evidence; E3 requires non-functional, security, migration, and recovery readiness evidence.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: e0-e3-readiness-and-evidence-bundle-AC-02
+    requirement: Bind every claim to exact repository, environment, model, tool, database, policy, and artifact versions.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: e0-e3-readiness-and-evidence-bundle-AC-03
+    requirement: Block UNKNOWN, UNSUPPORTED, stale evidence, unresolved critical side effects, and missing approvals.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: e0-e3-readiness-and-evidence-bundle-AC-04
+    requirement: Ensure K8 or equivalent independent completion authority makes the decision.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: e0-e3-readiness-and-evidence-bundle-AC-05
+    requirement: State clearly that this capability package cannot issue E4, E5, P05, customer, regulatory, or accredited
+      certification.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

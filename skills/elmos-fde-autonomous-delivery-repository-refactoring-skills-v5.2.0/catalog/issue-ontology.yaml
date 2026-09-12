@@ -1,0 +1,284 @@
+apiVersion: elmos.ai/v1
+kind: IssueOntology
+metadata:
+  version: 5.2.0
+  domainCount: 21
+  issueTypeCount: 200
+spec:
+  domains:
+  - id: business-correctness
+    types:
+    - missing business rule
+    - conflicting rule
+    - illegal state transition
+    - unhandled exception path
+    - amount/inventory/quota non-conservation
+    - approval bypass
+    - workflow/code mismatch
+    - undocumented shadow process
+  - id: functional-correctness
+    types:
+    - nullability defect
+    - boundary-condition defect
+    - incorrect error semantics
+    - resource leak
+    - time/timezone defect
+    - encoding/locale defect
+    - precision/rounding defect
+    - unreachable or dead behavior
+  - id: architecture
+    types:
+    - cyclic dependency
+    - layer violation
+    - wrong module boundary
+    - shared database coupling
+    - distributed monolith
+    - unstable dependency direction
+    - architecture drift
+    - excessive fan-in/fan-out
+  - id: maintainability
+    types:
+    - duplicate implementation
+    - god object
+    - long function
+    - high cognitive complexity
+    - misleading abstraction
+    - dead code
+    - weak naming
+    - change hotspot
+    - ownership concentration
+  - id: concurrency-distributed
+    types:
+    - race condition
+    - deadlock
+    - lost update
+    - duplicate side effect
+    - message reordering
+    - split brain
+    - missing idempotency
+    - retry storm
+    - backpressure failure
+    - clock skew sensitivity
+  - id: transaction-consistency
+    types:
+    - incorrect transaction boundary
+    - cross-service transaction coupling
+    - missing compensation
+    - cache/database inconsistency
+    - read-after-write violation
+    - partial commit
+    - outbox/inbox gap
+    - reconciliation gap
+  - id: security
+    types:
+    - authentication weakness
+    - authorization bypass
+    - tenant escape
+    - injection
+    - SSRF
+    - unsafe deserialization
+    - XSS
+    - CSRF
+    - secret exposure
+    - weak cryptography
+    - unsafe file handling
+    - supply-chain tampering
+  - id: privacy-compliance
+    types:
+    - excessive data collection
+    - missing purpose limitation
+    - residency violation
+    - retention violation
+    - PII leakage
+    - missing consent
+    - audit gap
+    - legal hold conflict
+    - unverifiable compliance claim
+  - id: dependency-supply-chain
+    types:
+    - known vulnerability
+    - abandoned dependency
+    - version conflict
+    - license conflict
+    - malicious package risk
+    - unlocked dependency
+    - unsigned artifact
+    - missing SBOM
+    - missing provenance
+    - untrusted build input
+  - id: api-integration
+    types:
+    - contract drift
+    - breaking change
+    - ambiguous error code
+    - missing timeout
+    - unsafe retry
+    - rate-limit failure
+    - schema evolution defect
+    - webhook replay gap
+    - protocol-version incompatibility
+  - id: database-data
+    types:
+    - schema integrity defect
+    - missing or harmful index
+    - N+1 query
+    - slow query
+    - unsafe migration
+    - data-quality defect
+    - lineage gap
+    - access-policy drift
+    - routine semantic mismatch
+    - backup/recovery gap
+  - id: performance-capacity
+    types:
+    - algorithmic bottleneck
+    - memory leak
+    - GC pressure
+    - lock contention
+    - I/O amplification
+    - cache pathology
+    - connection-pool exhaustion
+    - capacity cliff
+    - tail-latency regression
+    - cost/performance regression
+  - id: reliability-resilience
+    types:
+    - single point of failure
+    - missing degradation
+    - missing circuit breaker
+    - invalid retry budget
+    - recovery path failure
+    - disaster-recovery gap
+    - dependency blast radius
+    - unsafe failover
+    - state restoration defect
+  - id: observability-operations
+    types:
+    - trace gap
+    - metric gap
+    - uncorrelated logs
+    - alert noise
+    - missing SLO
+    - runbook gap
+    - unknown ownership
+    - insufficient cardinality control
+    - incident evidence loss
+    - deployment visibility gap
+  - id: testing-quality
+    types:
+    - critical path untested
+    - weak oracle
+    - flaky test
+    - test pollution
+    - fixture drift
+    - mock overreach
+    - mutation survivor
+    - coverage illusion
+    - missing contract test
+    - missing differential test
+    - non-deterministic test
+  - id: ci-cd-developer-experience
+    types:
+    - non-reproducible build
+    - slow feedback
+    - unsafe release gate
+    - manual deployment
+    - rollback gap
+    - branch-policy weakness
+    - environment drift
+    - cache poisoning
+    - poor local setup
+    - unowned failed pipeline
+  - id: frontend-ux-accessibility
+    types:
+    - critical journey friction
+    - state inconsistency
+    - navigation defect
+    - accessibility violation
+    - responsive-layout defect
+    - rendering regression
+    - unsafe client storage
+    - form-validation mismatch
+    - poor error recovery
+  - id: i18n-mobile-platform
+    types:
+    - locale formatting defect
+    - translation key drift
+    - RTL defect
+    - timezone mismatch
+    - currency mismatch
+    - offline-state loss
+    - permission-lifecycle defect
+    - platform incompatibility
+    - mobile resource pressure
+  - id: ai-agent
+    types:
+    - prompt injection
+    - tool overreach
+    - hallucinated action
+    - untraceable decision
+    - evaluation gap
+    - model drift
+    - unsafe memory
+    - retrieval contamination
+    - unbounded loop
+    - irrecoverable workflow
+    - judge self-approval
+  - id: cost-finops-sustainability
+    types:
+    - idle resource
+    - cost anomaly
+    - unbounded token usage
+    - inefficient model routing
+    - storage growth
+    - network egress waste
+    - license waste
+    - carbon/energy hotspot
+    - missing chargeback
+    - cost attribution gap
+  - id: documentation-knowledge-governance
+    types:
+    - documentation drift
+    - missing ADR
+    - tribal knowledge
+    - bus-factor risk
+    - unsupported ownership
+    - policy/code mismatch
+    - obsolete runbook
+    - missing deprecation plan
+    - untracked waiver
+    - unknown system purpose
+  requiredFindingFields:
+  - findingId
+  - domain
+  - title
+  - locations
+  - affectedCapabilities
+  - evidence
+  - reproductionSteps
+  - severity
+  - likelihood
+  - businessImpact
+  - confidence
+  - falsePositiveRisk
+  - rootCause
+  - relatedFindings
+  - remediationOptions
+  - recommendedFix
+  - verificationPlan
+  - rollbackPlan
+  - automationLevel
+  - requiredApprovals
+  - status
+  coverageStates:
+  - observed
+  - detected
+  - verified-absent
+  - unknown
+  - unsupported
+  normalization:
+  - deduplicate by cause and evidence path
+  - retain tool-native result
+  - separate symptom from root cause
+  - link business impact and affected capabilities
+  - retain confidence and false-positive risk

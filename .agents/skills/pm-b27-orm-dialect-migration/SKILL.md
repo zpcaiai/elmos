@@ -1,5 +1,8 @@
 ---
 name: pm-b27-orm-dialect-migration
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 ORM Dialect、实体映射、查询语言、生成策略和迁移脚本. Precision Migration B27 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,30 @@
+schema_version: '4.0'
+id: sql-conversion
+maturity: SPECIFIED
+route_owner: existing-domain-pack
+routable_entry_delta: 0
+oracle: Typed result bag + ordered result when specified + transaction/effect trace
+proposed_first_route: 冻结源/目标真实DB版本的一对SQL SELECT子集；存储过程/事务另立route范围
+supported_features_candidate:
+- SELECT projection/filter
+- INNER/LEFT JOIN
+- aggregation
+- NULL three-valued logic
+- exact DECIMAL
+- DML effects
+risk_families:
+- NULL/NOT IN
+- bag重复数丢失
+- ORDER BY/LIMIT非确定性
+- collation/隐式cast
+- decimal溢出/舍入
+- stored routine异常/事务/锁
+formal_obligations_candidate:
+- 三值逻辑/关系bag受限DSL规则
+- rewrite充分前提
+- decimal/类型转换边界
+native_verification: NOT_RUN
+unsupported:
+- 未建模vendor extension/UDF
+- 未验证的procedure异常语义
+- 来源许可/环境缺失的真实DB

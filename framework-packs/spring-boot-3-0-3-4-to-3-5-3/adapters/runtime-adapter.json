@@ -1,0 +1,5 @@
+{
+  "implementation": "OPENREWRITE_MAVEN_PLUGIN_AND_SPRING_BOOT_3_TRANSFORMER",
+  "pack_key": "spring-boot-3-0-3-4-to-3-5-3",
+  "schema_version": 1
+}

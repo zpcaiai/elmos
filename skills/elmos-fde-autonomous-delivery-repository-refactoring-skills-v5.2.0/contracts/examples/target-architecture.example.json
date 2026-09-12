@@ -1,0 +1,24 @@
+{
+  "architectureId": "arch-balanced",
+  "option": "balanced",
+  "components": [
+    "API",
+    "Application service",
+    "Repository",
+    "Outbox"
+  ],
+  "decisions": [
+    "Keep modular monolith",
+    "Introduce transactional outbox"
+  ],
+  "invariants": [
+    "INV-001"
+  ],
+  "risks": [
+    "Migration complexity"
+  ],
+  "exitConditions": [
+    "Differential tests pass",
+    "Rollback rehearsed"
+  ]
+}

@@ -1,0 +1,12 @@
+[2026-09-10T08:25:47.698307Z][B42-011] Starting execution of B42-011 (Batch 42成熟Agent / privacy / 场景11) [Category=privacy, Priority=P1]
+[2026-09-10T08:25:47.698311Z][B42-011] Bound Skill: tst-b42-agent-factory | Product Skill IDs: [1415, 1423]
+[2026-09-10T08:25:47.698315Z][B42-011] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:47.710523Z][B42-011] Security: Minted RS256 token (JTI=218bebee..., Exp=1789032347)
+[2026-09-10T08:25:47.748536Z][B42-011] KMS: Envelope encrypted 34 bytes under key key-b42-011 v1 (DEK wrapped)
+[2026-09-10T08:25:47.776266Z][B42-011] [B42-AGENT-FACTORY] Initializing agent governance runtime for B42-011
+[2026-09-10T08:25:47.776292Z][B42-011] Executing Dead-Man Emergency Kill-Switch Activation...
+[2026-09-10T08:25:47.776431Z][B42-011] Kill-Switch Activated: ConfirmedKilled=True, RollbackApplied=True
+[2026-09-10T08:25:47.776437Z][B42-011] Post-kill check: authorized=False (E_AGENT_KILLED: Agent agent-runaway-b42-011 was terminated by kill-switch)
+[2026-09-10T08:25:47.776459Z][B42-011] Completed execution of B42-011 in 78.1ms: Status=PASSED
+[2026-09-10T08:25:47.776462Z][B42-011] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:47.776485Z][B42-011] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

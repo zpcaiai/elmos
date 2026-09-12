@@ -180,12 +180,23 @@ def _cloud_markdown(request: SynthesisRequest, profiles: list[dict[str, Any]]) -
         f"| {profile['id']} | `{profile['directory']}/Dockerfile` | {profile['port']} | `/health` |"
         for profile in profiles
     )
-    database_step = (
-        "7. PostgreSQL 配置优先使用同区域 Cloud SQL for PostgreSQL；设置连接池和实例上限，"
-        "Secret 只通过 Secret Manager 挂载文件，并先执行迁移/回滚演练。"
-        if request.requires_database
-        else "7. 当前为内存 Starter；扩缩容会产生多副本状态分叉，生产前必须改用外置持久化。"
-    )
+    if request.is_sqlite:
+        database_step = (
+            "7. SQLite 配置使用持久化存储卷或本地受保护路径；注意单进程写锁，"
+            "Secret 文件配置绝对路径，并先执行迁移/备份重放。"
+        )
+    elif request.is_mysql:
+        database_step = (
+            "7. MySQL 配置优先使用同区域 Cloud SQL for MySQL / RDS for MySQL 8.0+；"
+            "设置连接池上限与字符集 utf8mb4，Secret 通过挂载文件读取，并先执行迁移/备份演练。"
+        )
+    elif request.is_postgresql:
+        database_step = (
+            "7. PostgreSQL 配置优先使用同区域 Cloud SQL for PostgreSQL；设置连接池和实例上限，"
+            "Secret 只通过 Secret Manager 挂载文件，并先执行迁移/回滚演练。"
+        )
+    else:
+        database_step = "7. 当前为内存 Starter；扩缩容会产生多副本状态分叉，生产前必须改用外置持久化。"
     auth_step = (
         "8. 为 JWT/OIDC 配置精确 issuer、audience 与 Secret/JWKS 版本，权限缺失时默认拒绝。"
         if request.auth_mode != "none"
@@ -326,9 +337,7 @@ def render_deployment_guidance(request: SynthesisRequest) -> dict[str, str]:
         "APP_NAME": request.project_name,
     }
     if request.requires_database:
-        cloud_secrets.append(
-            {"mount_path": "/run/secrets/database-url", "name": "database-url", "version": "1"}
-        )
+        cloud_secrets.append({"mount_path": "/run/secrets/database-url", "name": "database-url", "version": "1"})
         cloud_environment["ELMOS_DATABASE_URL_FILE"] = "/run/secrets/database-url"
     if request.auth_mode != "none":
         cloud_environment.update(
@@ -338,14 +347,10 @@ def render_deployment_guidance(request: SynthesisRequest) -> dict[str, str]:
             }
         )
     if request.auth_mode == "jwt":
-        cloud_secrets.append(
-            {"mount_path": "/run/secrets/jwt-hmac-secret", "name": "jwt-hmac-secret", "version": "1"}
-        )
+        cloud_secrets.append({"mount_path": "/run/secrets/jwt-hmac-secret", "name": "jwt-hmac-secret", "version": "1"})
         cloud_environment["ELMOS_JWT_HMAC_SECRET_FILE"] = "/run/secrets/jwt-hmac-secret"  # noqa: S105
     elif request.auth_mode == "oidc":
-        cloud_secrets.append(
-            {"mount_path": "/run/secrets/oidc-jwks", "name": "oidc-jwks", "version": "1"}
-        )
+        cloud_secrets.append({"mount_path": "/run/secrets/oidc-jwks", "name": "oidc-jwks", "version": "1"})
         cloud_environment["ELMOS_OIDC_JWKS_FILE"] = "/run/secrets/oidc-jwks"
     contract = {
         "schema_version": "1.0.0",
@@ -396,9 +401,7 @@ def render_deployment_guidance(request: SynthesisRequest) -> dict[str, str]:
         "docs/CLOUD_DEPLOYMENT.md": _cloud_markdown(request, profiles),
         "deploy/deployment-options.json": json.dumps(contract, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         "deploy/cloud-run-control.py": (
-            files("elmos_project_synthesis")
-            .joinpath("cloud_run_control.py")
-            .read_text(encoding="utf-8")
+            files("elmos_project_synthesis").joinpath("cloud_run_control.py").read_text(encoding="utf-8")
         ),
         "deploy/cloud-run-request.example.json": json.dumps(
             {
@@ -432,7 +435,8 @@ def render_deployment_guidance(request: SynthesisRequest) -> dict[str, str]:
             ensure_ascii=False,
             indent=2,
             sort_keys=True,
-        ) + "\n",
+        )
+        + "\n",
         "deploy/cloud-run-authorization.example.json": json.dumps(
             {
                 "schema_version": 1,
@@ -448,5 +452,6 @@ def render_deployment_guidance(request: SynthesisRequest) -> dict[str, str]:
             ensure_ascii=False,
             indent=2,
             sort_keys=True,
-        ) + "\n",
+        )
+        + "\n",
     }

@@ -1,5 +1,8 @@
 ---
 name: pm-b12-minimal-change-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "优先生成最小语义变更集，限制无关格式化、重排和风格漂移. Precision Migration B12 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,6 +1,15 @@
 ---
 name: b31-etl-elt-discovery
-description: "Discover ETL, ELT, batch, streaming, orchestration, schedules, sources, sinks, transformations, checkpoints, retries, secrets, SLAs, and lineage from code, metadata, runtime, and operations. Use before data-pipeline modernization."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
+description: Discover ETL, ELT, batch, streaming, orchestration, schedules, sources, sinks, transformations, checkpoints, retries, secrets, SLAs, and lineage from code, metadata, runtime, and operations. Use before data-pipeline modernization.
 ---
 
 ## Operating mode

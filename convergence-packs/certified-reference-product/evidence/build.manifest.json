@@ -1,0 +1,10 @@
+{
+  "artifact_sha256": "e0967b581ee3c945c1b17a9be4fc749d21d8115954a097cb6d008a51d56d61ec",
+  "environment_sha256": "262d394bb5f76574f4f9afe2d7d1d21963e3f49c623698558af2279395d980c0",
+  "files": [
+    {
+      "path": "evidence/build.log",
+      "sha256": "785394c851ee674c8d51615dc5f903bfe09b6fa2978e96394b928c1371ed63d4"
+    }
+  ]
+}

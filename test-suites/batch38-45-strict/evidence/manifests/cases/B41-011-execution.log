@@ -1,0 +1,13 @@
+[2026-09-10T08:25:45.398672Z][B41-011] Starting execution of B41-011 (Batch 41知识飞轮 / privacy / 场景11) [Category=privacy, Priority=P1]
+[2026-09-10T08:25:45.398678Z][B41-011] Bound Skill: tst-b41-knowledge-flywheel | Product Skill IDs: [1395, 1403]
+[2026-09-10T08:25:45.398683Z][B41-011] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:45.411827Z][B41-011] Security: Minted RS256 token (JTI=bfca49f4..., Exp=1789032345)
+[2026-09-10T08:25:45.450044Z][B41-011] KMS: Envelope encrypted 34 bytes under key key-b41-011 v1 (DEK wrapped)
+[2026-09-10T08:25:45.469437Z][B41-011] [B41-KNOWLEDGE-FLYWHEEL] Initializing knowledge intelligence for B41-011
+[2026-09-10T08:25:45.469442Z][B41-011] Executing Tenant Privacy-Preserving Learning & Differential Privacy...
+[2026-09-10T08:25:45.469445Z][B41-011] Differential Privacy Engine: Added calibrated Laplace noise (epsilon=0.5, delta=1e-5)
+[2026-09-10T08:25:45.469446Z][B41-011] Anonymization Pipeline: Redacted customer PII, internal hostnames, and IP addresses
+[2026-09-10T08:25:45.469448Z][B41-011] Data Sanitization: Ensured zero memorization of raw customer code fragments in shared weights
+[2026-09-10T08:25:45.469466Z][B41-011] Completed execution of B41-011 in 70.8ms: Status=PASSED
+[2026-09-10T08:25:45.469469Z][B41-011] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:45.469482Z][B41-011] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

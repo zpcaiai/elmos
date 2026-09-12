@@ -1,6 +1,9 @@
 ---
 name: b34-incremental-graph-impact
-description: "Implement incremental dependency and semantic graph updates with tombstones invalidation stable graph versions impact propagation full-rebuild equivalence and conservative affected-work selection."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement incremental dependency and semantic graph updates with tombstones invalidation stable graph versions impact propagation full-rebuild equivalence and conservative affected-work selection.
 ---
 
 ## Operating mode

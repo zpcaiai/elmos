@@ -91,8 +91,41 @@ class Money:
         dec_factor = Decimal(str(factor))
         return Money(self.amount * dec_factor, self.currency)
 
+    def __truediv__(self, divisor: Decimal | int | float) -> "Money":
+        dec_divisor = Decimal(str(divisor))
+        if dec_divisor == Decimal("0"):
+            raise ZeroDivisionError("Cannot divide Money by zero")
+        return Money(self.amount / dec_divisor, self.currency)
+
+    def __neg__(self) -> "Money":
+        return Money(-self.amount, self.currency)
+
+    def __abs__(self) -> "Money":
+        return Money(abs(self.amount), self.currency)
+
+    def __lt__(self, other: "Money") -> bool:
+        if self.currency != other.currency:
+            raise ContractError(f"Cannot compare different currencies: {self.currency} vs {other.currency}")
+        return self.amount < other.amount
+
+    def __le__(self, other: "Money") -> bool:
+        if self.currency != other.currency:
+            raise ContractError(f"Cannot compare different currencies: {self.currency} vs {other.currency}")
+        return self.amount <= other.amount
+
+    def __gt__(self, other: "Money") -> bool:
+        if self.currency != other.currency:
+            raise ContractError(f"Cannot compare different currencies: {self.currency} vs {other.currency}")
+        return self.amount > other.amount
+
+    def __ge__(self, other: "Money") -> bool:
+        if self.currency != other.currency:
+            raise ContractError(f"Cannot compare different currencies: {self.currency} vs {other.currency}")
+        return self.amount >= other.amount
+
     def __str__(self) -> str:
         return f"{self.amount:.4f} {self.currency.value}"
+
 
 
 @dataclass(frozen=True)

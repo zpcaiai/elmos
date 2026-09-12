@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elmos-spring-modernization-engine"
+version = "0.1.0"
+description = "Spring legacy project modernization engine for ELMOS"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+test = [
+  "pytest==9.0.3",
+]
+
+[project.scripts]
+elmos-spring-modernize = "elmos_spring_modernization.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"

@@ -1,5 +1,8 @@
 ---
 name: pm-b39-repository-template-registry
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "登记经过构建、测试、安全和版本验证的仓库模板及兼容矩阵. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

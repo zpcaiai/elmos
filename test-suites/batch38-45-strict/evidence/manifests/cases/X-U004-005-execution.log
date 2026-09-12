@@ -1,0 +1,13 @@
+[2026-09-10T08:26:12.304932Z][X-U004-005] Starting execution of X-U004-005 (Evidence完整性与防伪 / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:26:12.304935Z][X-U004-005] Bound Skill: tst-b38-45-evidence-integrity-anti-cheating | Product Skill IDs: []
+[2026-09-10T08:26:12.304937Z][X-U004-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:12.333256Z][X-U004-005] Security: Minted RS256 token (JTI=8a76743e..., Exp=1789032372)
+[2026-09-10T08:26:12.380188Z][X-U004-005] KMS: Envelope encrypted 37 bytes under key key-x-u004-005 v1 (DEK wrapped)
+[2026-09-10T08:26:12.526933Z][X-U004-005] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U004-005 (U004)
+[2026-09-10T08:26:12.526941Z][X-U004-005] Executing category=security on U004
+[2026-09-10T08:26:12.526948Z][X-U004-005] Evidence Integrity & Anti-Cheating: Validating non-repudiation controls...
+[2026-09-10T08:26:12.526952Z][X-U004-005] Testing signature verification with revoked certifier public key...
+[2026-09-10T08:26:12.526954Z][X-U004-005] CRL Validator: Certificate serial revoked in CRL. Rejecting request.
+[2026-09-10T08:26:12.527018Z][X-U004-005] Completed execution of X-U004-005 in 222.0ms: Status=PASSED
+[2026-09-10T08:26:12.527027Z][X-U004-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:12.527050Z][X-U004-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

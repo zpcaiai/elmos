@@ -1,5 +1,8 @@
 ---
 name: pm-b01-platform-commoditization-risk
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "评估某项转换或验证能力被基础模型、云厂商或开源工具快速商品化的风险. Precision Migration B01 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

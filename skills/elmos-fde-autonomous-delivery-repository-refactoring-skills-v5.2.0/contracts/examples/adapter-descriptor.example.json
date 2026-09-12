@@ -1,0 +1,20 @@
+{
+  "id": "git-provider-adapter",
+  "version": "5.2.0",
+  "port": "RepositoryProviderPort",
+  "capabilities": [
+    "read-tree",
+    "read-commit",
+    "create-workspace-change"
+  ],
+  "trustBoundary": "External SCM under invocation-scoped lease",
+  "sideEffects": [
+    "workspace-write"
+  ],
+  "completionAuthority": false,
+  "conformanceTests": [
+    "tenant isolation",
+    "stale token rejection",
+    "idempotent retry"
+  ]
+}

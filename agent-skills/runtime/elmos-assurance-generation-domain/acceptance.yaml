@@ -1,0 +1,36 @@
+skill: elmos-assurance-generation-domain
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-generation-domain-A01
+  given: 需求遗漏但API全绿
+  when: 在真实集成模块执行对应测试或负例
+  then: requirement traceability必须失败
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-generation-domain-A02
+  given: 两种语言共同漏租户隔离
+  when: 在真实集成模块执行对应测试或负例
+  then: 独立安全规范检测
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-generation-domain-A03
+  given: 只测试Python却宣称所有目标通过
+  when: 在真实集成模块执行对应测试或负例
+  then: support matrix拒绝晋级
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

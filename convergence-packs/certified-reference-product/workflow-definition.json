@@ -1,0 +1,36 @@
+{
+  "workflow_id": "reference-migration",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "intake",
+      "kind": "activity",
+      "dependencies": [],
+      "idempotency": {
+        "key": "source-commit"
+      },
+      "timeout_seconds": 3600,
+      "retry": {
+        "max_attempts": 3
+      },
+      "compensation": null
+    },
+    {
+      "id": "transform",
+      "kind": "activity",
+      "dependencies": [
+        "intake"
+      ],
+      "idempotency": {
+        "key": "run-id"
+      },
+      "timeout_seconds": 14400,
+      "retry": {
+        "max_attempts": 2
+      },
+      "compensation": {
+        "step": "rollback-transform"
+      }
+    }
+  ]
+}

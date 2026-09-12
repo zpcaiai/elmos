@@ -1,5 +1,8 @@
 ---
 name: pm-b25-postgresql-foreign-data-wrapper
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 FDW、Foreign Server、User Mapping、Pushdown 和事务限制. Precision Migration B25 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

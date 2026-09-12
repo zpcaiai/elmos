@@ -1,5 +1,8 @@
 ---
 name: pm-b23-sqlserver-proprietary-pack
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "识别 T-SQL 和 SQL Server 平台能力，形成目标数据库或外部平台的安全迁移策略. Precision Migration B23 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

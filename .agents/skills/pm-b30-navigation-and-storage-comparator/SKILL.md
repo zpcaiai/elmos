@@ -1,5 +1,8 @@
 ---
 name: pm-b30-navigation-and-storage-comparator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "比较路由栈、返回、深链、本地存储、缓存和恢复状态. Precision Migration B30 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

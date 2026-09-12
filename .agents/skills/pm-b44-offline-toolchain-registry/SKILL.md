@@ -1,5 +1,8 @@
 ---
 name: pm-b44-offline-toolchain-registry
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "维护离线可验证的编译器、Runtime、数据库、浏览器、设备和证明工具. Precision Migration B44 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

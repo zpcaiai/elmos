@@ -1,5 +1,8 @@
 ---
 name: pm-b30-message-side-effect-comparator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "比较消息 Topic、Key、Header、Payload、次数、顺序、重试和 DLQ. Precision Migration B30 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

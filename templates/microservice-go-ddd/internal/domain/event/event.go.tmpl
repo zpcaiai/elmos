@@ -1,0 +1,92 @@
+package event
+
+import (
+	"context"
+	"time"
+)
+
+// Event defines the contract for all Domain Events.
+type Event interface {
+	EventName() string
+	OccurredAt() time.Time
+	Payload() any
+}
+
+// EventPublisher defines the contract for publishing domain events.
+type EventPublisher interface {
+	Publish(ctx context.Context, events ...Event) error
+}
+
+// EntityCreatedPayload contains data associated with EntityCreatedEvent.
+type EntityCreatedPayload struct {
+	EntityID    string    `json:"entity_id"`
+	Name        string    `json:"name"`
+	CreatedAt   time.Time `json:"created_at"`
+}
+
+// EntityCreatedEvent fires when a new domain entity is created.
+type EntityCreatedEvent struct {
+	occurredAt time.Time
+	payload    EntityCreatedPayload
+}
+
+// NewEntityCreatedEvent instantiates an EntityCreatedEvent.
+func NewEntityCreatedEvent(entityID, name string) EntityCreatedEvent {
+	now := time.Now().UTC()
+	return EntityCreatedEvent{
+		occurredAt: now,
+		payload: EntityCreatedPayload{
+			EntityID:  entityID,
+			Name:      name,
+			CreatedAt: now,
+		},
+	}
+}
+
+func (e EntityCreatedEvent) EventName() string {
+	return "domain.entity.created"
+}
+
+func (e EntityCreatedEvent) OccurredAt() time.Time {
+	return e.occurredAt
+}
+
+func (e EntityCreatedEvent) Payload() any {
+	return e.payload
+}
+
+// EntityStatusChangedPayload contains data associated with status transitions.
+type EntityStatusChangedPayload struct {
+	EntityID  string `json:"entity_id"`
+	OldStatus string `json:"old_status"`
+	NewStatus string `json:"new_status"`
+}
+
+// EntityStatusChangedEvent fires when an entity status is updated.
+type EntityStatusChangedEvent struct {
+	occurredAt time.Time
+	payload    EntityStatusChangedPayload
+}
+
+func NewEntityStatusChangedEvent(entityID, oldStatus, newStatus string) EntityStatusChangedEvent {
+	return EntityStatusChangedEvent{
+		occurredAt: time.Now().UTC(),
+		payload: EntityStatusChangedPayload{
+			EntityID:  entityID,
+			OldStatus: oldStatus,
+			NewStatus: newStatus,
+		},
+	}
+}
+
+func (e EntityStatusChangedEvent) EventName() string {
+	return "domain.entity.status_changed"
+}
+
+func (e EntityStatusChangedEvent) OccurredAt() time.Time {
+	return e.occurredAt
+}
+
+func (e EntityStatusChangedEvent) Payload() any {
+	return e.payload
+}

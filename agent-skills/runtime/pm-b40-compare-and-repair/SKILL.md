@@ -1,5 +1,8 @@
 ---
 name: pm-b40-compare-and-repair
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "输入源仓库与失败目标仓库，检测功能差异、自动修复并重新认证. Precision Migration B40 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b23-sqlserver-row-level-security
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Predicate Function、Security Policy 和上下文. Precision Migration B23 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

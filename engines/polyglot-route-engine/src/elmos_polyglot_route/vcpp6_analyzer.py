@@ -304,10 +304,10 @@ class _ExpressionParser:
             }
             return self._binary(operand, "==", false_literal)
         if token.value in {"+", "-"}:
-            operand = self._take()
-            if operand.kind != "number":
+            next_token = self._take()
+            if next_token.kind != "number":
                 raise RouteError("VCPP6_UNARY_SIGN_ON_EXPRESSION_OUTSIDE_CERTIFIED_SUBSET")
-            token = _Token(operand.kind, token.value + operand.value, token.start, operand.end)
+            token = _Token(next_token.kind, token.value + next_token.value, token.start, next_token.end)
         if token.kind == "number":
             raw = token.value
             value_text = re.sub(r"(?i)(?:i64|ll|l)$", "", raw)
@@ -326,14 +326,14 @@ class _ExpressionParser:
             }
         if token.kind == "string":
             try:
-                value = bytes(token.value[1:-1], "utf-8").decode("unicode_escape")
+                string_value = bytes(token.value[1:-1], "utf-8").decode("unicode_escape")
             except UnicodeDecodeError as error:
                 raise RouteError("VCPP6_STRING_ESCAPE_OUTSIDE_CERTIFIED_SUBSET") from error
-            if any(ord(character) > 127 for character in value):
+            if any(ord(character) > 127 for character in string_value):
                 raise RouteError("VCPP6_STRING_OUTSIDE_ASCII_PROFILE")
             return {
                 "kind": "literal",
-                "value": value,
+                "value": string_value,
                 "source_span": _span(self.source, token.start, token.end),
             }
         if token.value == "(":

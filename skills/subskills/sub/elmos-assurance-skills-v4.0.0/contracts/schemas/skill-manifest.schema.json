@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/assurance/v4/skill-manifest.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "4.0"
+    },
+    "kind": {
+      "const": "ImplementationSkill"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^elmos-[a-z0-9]+(-[a-z0-9]+)*$",
+      "maxLength": 64
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "priority": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2"
+      ]
+    },
+    "status": {
+      "const": "SPECIFIED"
+    },
+    "routable_entry_delta": {
+      "const": 0
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4096
+      },
+      "minItems": 1
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4096
+      },
+      "minItems": 1
+    },
+    "acceptance_file": {
+      "const": "acceptance.yaml"
+    },
+    "implementation_file": {
+      "const": "implementation.yaml"
+    },
+    "runbook_file": {
+      "const": "runbook.md"
+    },
+    "native_execution_status": {
+      "const": "NOT_RUN"
+    }
+  },
+  "required": [
+    "schema_version",
+    "kind",
+    "id",
+    "title",
+    "priority",
+    "status",
+    "routable_entry_delta",
+    "dependencies",
+    "inputs",
+    "outputs",
+    "acceptance_file",
+    "implementation_file",
+    "runbook_file",
+    "native_execution_status"
+  ]
+}

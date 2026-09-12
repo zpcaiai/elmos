@@ -1,0 +1,29 @@
+{
+  "schema": "elmos.execution-evidence.v1",
+  "evidenceId": "ev-01JEXAMPLE",
+  "jobId": "job-01JEXAMPLE",
+  "ticketId": "vt-01JEXAMPLE",
+  "subject": {"sourceDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"},
+  "provenance": {
+    "runnerIdentity": "spiffe://prod.elmos.internal/truth-runner",
+    "runnerImageDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "caseCatalogDigest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    "runnerProfileDigest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+    "policyDigest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+  },
+  "executions": [
+    {
+      "executionId": "exec-01",
+      "stepId": "hidden-unit",
+      "spawned": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "killed": false,
+      "durationMillis": 1000,
+      "stdoutDigest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "stderrDigest": "sha256:6666666666666666666666666666666666666666666666666666666666666666"
+    }
+  ],
+  "tests": {"discovered": 25, "executed": 25, "passed": 25, "failed": 0, "skipped": 0},
+  "infrastructure": {"runnerFailure": false, "timeout": false, "dependencyFailure": false}
+}

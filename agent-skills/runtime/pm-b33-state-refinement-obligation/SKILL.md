@@ -1,5 +1,8 @@
 ---
 name: pm-b33-state-refinement-obligation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成目标状态机对源状态机的 Simulation/Refinement 义务. Precision Migration B33 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

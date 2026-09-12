@@ -2,7 +2,7 @@
   "packKey": "elmos-platform-product-lifecycle",
   "batch": 43,
   "status": "OPEN",
-  "owner": "elmos-platform-maintainers",
+  "owner": "Sarah Jenkins, VP of Engineering & Compatibility",
   "risks": [
     {
       "id": "RISK-B43-COMPAT-001",

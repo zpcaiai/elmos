@@ -1,5 +1,8 @@
 ---
 name: pm-b32-language-pair-mutation-testing
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "注入特定语言方向常见错误，验证专用测试和验证器是否能杀死 Mutant. Precision Migration B32 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

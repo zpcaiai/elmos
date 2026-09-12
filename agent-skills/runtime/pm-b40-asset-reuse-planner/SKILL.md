@@ -1,5 +1,8 @@
 ---
 name: pm-b40-asset-reuse-planner
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "决定源码、测试、Schema、资源、协议、组件和部署资产的复用、适配或重建. Precision Migration B40 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

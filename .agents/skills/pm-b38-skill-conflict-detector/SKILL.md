@@ -1,5 +1,8 @@
 ---
 name: pm-b38-skill-conflict-detector
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "发现领域、Schema、权限、状态、资源、路由和依赖冲突. Precision Migration B38 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

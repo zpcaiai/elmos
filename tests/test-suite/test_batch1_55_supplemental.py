@@ -37,6 +37,20 @@ class BatchOneToFiftyFiveSupplementalTest(unittest.TestCase):
     def test_gate_fails_closed_for_every_not_run_case(self):
         temporary, destination = self.copy_suite()
         try:
+            results_path = destination / "results/catalog.json"
+            results = json.loads(results_path.read_text())
+            for c in results["cases"]:
+                c["status"] = "not-run"
+                c["evidence"] = []
+                c["execution_kind"] = None
+                c["executor"] = None
+                c["verifier"] = None
+                c["replay_command"] = None
+                c["artifact_digest"] = "sha256:" + "0" * 64
+                c["environment_digest"] = "sha256:" + "0" * 64
+                c["authorization_refs"] = []
+                c["domain_owner_approval_ref"] = None
+            results_path.write_text(json.dumps(results, ensure_ascii=False, indent=2) + "\n")
             result = self.command("python3", str(GATE), str(destination))
             self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
             gate = json.loads((destination / "release-gate.json").read_text())
@@ -55,6 +69,7 @@ class BatchOneToFiftyFiveSupplementalTest(unittest.TestCase):
             results = json.loads(results_path.read_text())
             result = results["cases"][0]
             result["status"] = "passed"
+            result["evidence"] = []
             result["artifact_digest"] = "sha256:" + "1" * 64
             result["environment_digest"] = "sha256:" + "2" * 64
             result["started_at"] = "2026-07-22T00:00:00Z"

@@ -9,6 +9,7 @@ need reformatting.
 
     uv run --locked python scripts/check_rust_emitter_formatting.py
 """
+
 from __future__ import annotations
 
 import shutil
@@ -24,6 +25,7 @@ def _cargo() -> str:
     if resolved is None:
         raise SystemExit("EXACT_TOOLCHAIN_NOT_AVAILABLE:rust:cargo")
     return resolved
+
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -126,9 +128,7 @@ def main() -> int:
                 actor="check:rust-formatting",
                 approved_at="2026-07-26T00:00:00+00:00",
             )
-            files = render_rust_production(
-                models.SynthesisRequest.from_mapping(draft), 8088
-            )
+            files = render_rust_production(models.SynthesisRequest.from_mapping(draft), 8088)
             directory = Path(tempfile.mkdtemp(prefix="elmos-rust-fmt-"))
             try:
                 for relative, content in files.items():

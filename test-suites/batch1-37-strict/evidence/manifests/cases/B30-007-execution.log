@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B30-007 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [30]
+Title: Batch 30 Node框架：改变工具链、Schema、Provider、配置或依赖版本并重放
+Capability: Node框架
+Test Type: version_drift
+Skill: tst-b30-multi-framework-version
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

@@ -1,0 +1,47 @@
+version: "2026-09-09.1"
+
+defaults:
+  fail_closed: true
+  raw_prompt_logging: false
+  raw_response_logging: false
+  cross_model_fallback_owner: ELMOS
+  same_model_deployment_failover_owner: GATEWAY_ALLOWED
+
+classifications:
+  PUBLIC:
+    allow_openrouter: true
+  INTERNAL:
+    allow_openrouter: true
+  CONFIDENTIAL:
+    require_no_training: true
+    require_retention_class: ZERO_OR_CONTRACTED
+  SOURCE_CODE:
+    require_no_training: true
+    raw_logging: false
+  SECRET_BEARING:
+    allow_openrouter: false
+    require_native_or_self_hosted: true
+    raw_logging: false
+  PII:
+    require_region_policy: true
+    raw_logging: false
+
+task_classes:
+  LARGE_REFACTOR:
+    quality_weight: 0.45
+    reliability_weight: 0.20
+    cost_weight: 0.10
+    latency_weight: 0.10
+    benchmark_weight: 0.15
+  CHEAP_CLASSIFICATION:
+    quality_weight: 0.20
+    reliability_weight: 0.20
+    cost_weight: 0.40
+    latency_weight: 0.20
+
+fallback:
+  max_attempts: 3
+  max_cross_model_fallbacks: 2
+  preserve_required_capabilities: true
+  preserve_security_constraints: true
+  prefer_failure_domain_diversity: true

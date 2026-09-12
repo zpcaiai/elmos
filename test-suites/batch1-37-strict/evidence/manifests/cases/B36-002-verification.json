@@ -1,0 +1,8 @@
+{
+  "case_id": "B36-002",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:55:52Z",
+  "notes": "Independently verified by Ethan: Batch 36 IntelliJ/VS/VSCode：使用极限规模、空值、最大长度、时间边界、数值边界或版本边界"
+}

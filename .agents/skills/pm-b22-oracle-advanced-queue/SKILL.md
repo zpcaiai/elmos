@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-advanced-queue
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Advanced Queue、消费者、优先级、延迟、事务和重试. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

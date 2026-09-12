@@ -1,0 +1,29 @@
+{
+  "schema_version": "elmos.precision-migration.compiled-skill-contract.v1",
+  "package_id": "elmos.precision-migration.b01-44",
+  "package_version": "1.0.0",
+  "installed_alias": "pm-b16-java-to-python-direction-pack",
+  "namespace": "precision-migration-b01-44",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "engines/polyglot-route-engine",
+    "scripts/batch29",
+    "routes/java-to-python/route.json"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "handler_id": "batch29-route-executor-v1:java-to-python",
+    "handler_entrypoint": "scripts.precision_migration.adapters:execute_batch29_route",
+    "supported_modes": [
+      "transform",
+      "validate",
+      "certify"
+    ],
+    "timeout_seconds": 120,
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

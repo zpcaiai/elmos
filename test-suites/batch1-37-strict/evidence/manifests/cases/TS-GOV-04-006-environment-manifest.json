@@ -1,0 +1,5 @@
+{
+  "role": "environment-manifest",
+  "case_id": "TS-GOV-04-006",
+  "ref": "shared/environment.json"
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "B01-P1-06",
+  "batch": 1,
+  "role": "trace.json",
+  "priority": "P1",
+  "generated_at": "2026-09-10T09:27:07.224897Z",
+  "execution_kind": "approved-equivalent",
+  "status": "passed"
+}

@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B04-005 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [4]
+Title: Batch 4 测试项目生成：使用越权身份、跨租户引用、恶意内容、秘密探测或出口绕过
+Capability: 测试项目生成
+Test Type: security
+Skill: tst-b04-target-skeleton
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

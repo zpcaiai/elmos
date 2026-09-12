@@ -1,5 +1,8 @@
 ---
 name: pm-b05-external-service-discovery
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "识别 HTTP、RPC、消息、SDK、设备和云服务集成及其契约. Precision Migration B05 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

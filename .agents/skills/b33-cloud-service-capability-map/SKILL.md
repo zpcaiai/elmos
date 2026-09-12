@@ -1,5 +1,8 @@
 ---
 name: b33-cloud-service-capability-map
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Map source cloud services and operational capabilities to target services modules adapters coexistence or blocked strategies with explicit identity network data availability recovery cost and lifecycle evidence.
 ---
 

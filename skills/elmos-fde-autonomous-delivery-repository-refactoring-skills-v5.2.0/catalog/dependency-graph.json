@@ -1,0 +1,391 @@
+{
+  "nodes": [
+    "stakeholder-workflow-discovery",
+    "business-baseline-roi",
+    "pilot-scope-sow-acceptance",
+    "status-risk-decision-communications",
+    "procurement-security-questionnaire",
+    "adoption-change-management",
+    "repository-custody-and-revisionset",
+    "asset-inventory-and-classification",
+    "reproducible-build-environment",
+    "external-dependency-stub-and-service-virtualization",
+    "support-profile-and-unknown-register",
+    "runtime-observation-and-traffic-capture",
+    "polyglot-semantic-system-graph",
+    "business-capability-code-mapping",
+    "data-event-permission-lineage",
+    "git-history-ownership-change-coupling",
+    "static-dynamic-evidence-fusion",
+    "issue-ontology-and-finding-normalization",
+    "architecture-maintainability-audit",
+    "correctness-concurrency-consistency-audit",
+    "security-privacy-supply-chain-audit",
+    "data-database-migration-audit",
+    "performance-reliability-observability-audit",
+    "test-ci-cd-developer-experience-audit",
+    "ux-accessibility-i18n-audit",
+    "ai-agent-system-audit",
+    "cost-finops-sustainability-audit",
+    "root-cause-risk-prioritization",
+    "business-invariant-recovery",
+    "target-architecture-alternatives-and-adr",
+    "transformation-dag-estimation",
+    "changeset-commit-and-provenance-governance",
+    "proof-guided-atomic-refactor-execution",
+    "modernization-strangler-and-rearchitecture",
+    "cross-language-framework-transformation",
+    "database-schema-routine-data-transformation",
+    "characterization-differential-mutation-verification",
+    "formal-assurance-routing",
+    "e0-e3-readiness-and-evidence-bundle",
+    "shadow-dual-run-canary-rollback-preparation",
+    "incident-triage-remediation-and-postmortem",
+    "final-handoff-training-support",
+    "reusable-recipe-skill-learning",
+    "portfolio-multi-repository-governance",
+    "product-feedback-roadmap-loop"
+  ],
+  "edges": [
+    {
+      "from": "stakeholder-workflow-discovery",
+      "to": "business-baseline-roi"
+    },
+    {
+      "from": "stakeholder-workflow-discovery",
+      "to": "pilot-scope-sow-acceptance"
+    },
+    {
+      "from": "business-baseline-roi",
+      "to": "pilot-scope-sow-acceptance"
+    },
+    {
+      "from": "pilot-scope-sow-acceptance",
+      "to": "status-risk-decision-communications"
+    },
+    {
+      "from": "status-risk-decision-communications",
+      "to": "procurement-security-questionnaire"
+    },
+    {
+      "from": "pilot-scope-sow-acceptance",
+      "to": "adoption-change-management"
+    },
+    {
+      "from": "repository-custody-and-revisionset",
+      "to": "asset-inventory-and-classification"
+    },
+    {
+      "from": "asset-inventory-and-classification",
+      "to": "reproducible-build-environment"
+    },
+    {
+      "from": "reproducible-build-environment",
+      "to": "external-dependency-stub-and-service-virtualization"
+    },
+    {
+      "from": "asset-inventory-and-classification",
+      "to": "support-profile-and-unknown-register"
+    },
+    {
+      "from": "reproducible-build-environment",
+      "to": "runtime-observation-and-traffic-capture"
+    },
+    {
+      "from": "reproducible-build-environment",
+      "to": "polyglot-semantic-system-graph"
+    },
+    {
+      "from": "support-profile-and-unknown-register",
+      "to": "polyglot-semantic-system-graph"
+    },
+    {
+      "from": "stakeholder-workflow-discovery",
+      "to": "business-capability-code-mapping"
+    },
+    {
+      "from": "polyglot-semantic-system-graph",
+      "to": "business-capability-code-mapping"
+    },
+    {
+      "from": "polyglot-semantic-system-graph",
+      "to": "data-event-permission-lineage"
+    },
+    {
+      "from": "repository-custody-and-revisionset",
+      "to": "git-history-ownership-change-coupling"
+    },
+    {
+      "from": "asset-inventory-and-classification",
+      "to": "git-history-ownership-change-coupling"
+    },
+    {
+      "from": "polyglot-semantic-system-graph",
+      "to": "static-dynamic-evidence-fusion"
+    },
+    {
+      "from": "runtime-observation-and-traffic-capture",
+      "to": "static-dynamic-evidence-fusion"
+    },
+    {
+      "from": "git-history-ownership-change-coupling",
+      "to": "static-dynamic-evidence-fusion"
+    },
+    {
+      "from": "static-dynamic-evidence-fusion",
+      "to": "issue-ontology-and-finding-normalization"
+    },
+    {
+      "from": "support-profile-and-unknown-register",
+      "to": "issue-ontology-and-finding-normalization"
+    },
+    {
+      "from": "issue-ontology-and-finding-normalization",
+      "to": "architecture-maintainability-audit"
+    },
+    {
+      "from": "business-capability-code-mapping",
+      "to": "architecture-maintainability-audit"
+    },
+    {
+      "from": "git-history-ownership-change-coupling",
+      "to": "architecture-maintainability-audit"
+    },
+    {
+      "from": "issue-ontology-and-finding-normalization",
+      "to": "correctness-concurrency-consistency-audit"
+    },
+    {
+      "from": "data-event-permission-lineage",
+      "to": "correctness-concurrency-consistency-audit"
+    },
+    {
+      "from": "issue-ontology-and-finding-normalization",
+      "to": "security-privacy-supply-chain-audit"
+    },
+    {
+      "from": "data-event-permission-lineage",
+      "to": "security-privacy-supply-chain-audit"
+    },
+    {
+      "from": "reproducible-build-environment",
+      "to": "security-privacy-supply-chain-audit"
+    },
+    {
+      "from": "issue-ontology-and-finding-normalization",
+      "to": "data-database-migration-audit"
+    },
+    {
+      "from": "data-event-permission-lineage",
+      "to": "data-database-migration-audit"
+    },
+    {
+      "from": "issue-ontology-and-finding-normalization",
+      "to": "performance-reliability-observability-audit"
+    },
+    {
+      "from": "runtime-observation-and-traffic-capture",
+      "to": "performance-reliability-observability-audit"
+    },
+    {
+      "from": "issue-ontology-and-finding-normalization",
+      "to": "test-ci-cd-developer-experience-audit"
+    },
+    {
+      "from": "reproducible-build-environment",
+      "to": "test-ci-cd-developer-experience-audit"
+    },
+    {
+      "from": "business-capability-code-mapping",
+      "to": "test-ci-cd-developer-experience-audit"
+    },
+    {
+      "from": "issue-ontology-and-finding-normalization",
+      "to": "ux-accessibility-i18n-audit"
+    },
+    {
+      "from": "business-capability-code-mapping",
+      "to": "ux-accessibility-i18n-audit"
+    },
+    {
+      "from": "issue-ontology-and-finding-normalization",
+      "to": "ai-agent-system-audit"
+    },
+    {
+      "from": "data-event-permission-lineage",
+      "to": "ai-agent-system-audit"
+    },
+    {
+      "from": "test-ci-cd-developer-experience-audit",
+      "to": "ai-agent-system-audit"
+    },
+    {
+      "from": "status-risk-decision-communications",
+      "to": "cost-finops-sustainability-audit"
+    },
+    {
+      "from": "performance-reliability-observability-audit",
+      "to": "cost-finops-sustainability-audit"
+    },
+    {
+      "from": "architecture-maintainability-audit",
+      "to": "root-cause-risk-prioritization"
+    },
+    {
+      "from": "correctness-concurrency-consistency-audit",
+      "to": "root-cause-risk-prioritization"
+    },
+    {
+      "from": "security-privacy-supply-chain-audit",
+      "to": "root-cause-risk-prioritization"
+    },
+    {
+      "from": "data-database-migration-audit",
+      "to": "root-cause-risk-prioritization"
+    },
+    {
+      "from": "performance-reliability-observability-audit",
+      "to": "root-cause-risk-prioritization"
+    },
+    {
+      "from": "business-capability-code-mapping",
+      "to": "business-invariant-recovery"
+    },
+    {
+      "from": "root-cause-risk-prioritization",
+      "to": "business-invariant-recovery"
+    },
+    {
+      "from": "root-cause-risk-prioritization",
+      "to": "target-architecture-alternatives-and-adr"
+    },
+    {
+      "from": "business-invariant-recovery",
+      "to": "target-architecture-alternatives-and-adr"
+    },
+    {
+      "from": "target-architecture-alternatives-and-adr",
+      "to": "transformation-dag-estimation"
+    },
+    {
+      "from": "transformation-dag-estimation",
+      "to": "changeset-commit-and-provenance-governance"
+    },
+    {
+      "from": "changeset-commit-and-provenance-governance",
+      "to": "proof-guided-atomic-refactor-execution"
+    },
+    {
+      "from": "proof-guided-atomic-refactor-execution",
+      "to": "modernization-strangler-and-rearchitecture"
+    },
+    {
+      "from": "target-architecture-alternatives-and-adr",
+      "to": "modernization-strangler-and-rearchitecture"
+    },
+    {
+      "from": "proof-guided-atomic-refactor-execution",
+      "to": "cross-language-framework-transformation"
+    },
+    {
+      "from": "business-invariant-recovery",
+      "to": "cross-language-framework-transformation"
+    },
+    {
+      "from": "proof-guided-atomic-refactor-execution",
+      "to": "database-schema-routine-data-transformation"
+    },
+    {
+      "from": "data-database-migration-audit",
+      "to": "database-schema-routine-data-transformation"
+    },
+    {
+      "from": "business-invariant-recovery",
+      "to": "database-schema-routine-data-transformation"
+    },
+    {
+      "from": "proof-guided-atomic-refactor-execution",
+      "to": "characterization-differential-mutation-verification"
+    },
+    {
+      "from": "business-invariant-recovery",
+      "to": "characterization-differential-mutation-verification"
+    },
+    {
+      "from": "business-invariant-recovery",
+      "to": "formal-assurance-routing"
+    },
+    {
+      "from": "correctness-concurrency-consistency-audit",
+      "to": "formal-assurance-routing"
+    },
+    {
+      "from": "characterization-differential-mutation-verification",
+      "to": "e0-e3-readiness-and-evidence-bundle"
+    },
+    {
+      "from": "security-privacy-supply-chain-audit",
+      "to": "e0-e3-readiness-and-evidence-bundle"
+    },
+    {
+      "from": "performance-reliability-observability-audit",
+      "to": "e0-e3-readiness-and-evidence-bundle"
+    },
+    {
+      "from": "test-ci-cd-developer-experience-audit",
+      "to": "e0-e3-readiness-and-evidence-bundle"
+    },
+    {
+      "from": "e0-e3-readiness-and-evidence-bundle",
+      "to": "shadow-dual-run-canary-rollback-preparation"
+    },
+    {
+      "from": "changeset-commit-and-provenance-governance",
+      "to": "shadow-dual-run-canary-rollback-preparation"
+    },
+    {
+      "from": "runtime-observation-and-traffic-capture",
+      "to": "incident-triage-remediation-and-postmortem"
+    },
+    {
+      "from": "shadow-dual-run-canary-rollback-preparation",
+      "to": "incident-triage-remediation-and-postmortem"
+    },
+    {
+      "from": "adoption-change-management",
+      "to": "final-handoff-training-support"
+    },
+    {
+      "from": "e0-e3-readiness-and-evidence-bundle",
+      "to": "final-handoff-training-support"
+    },
+    {
+      "from": "incident-triage-remediation-and-postmortem",
+      "to": "reusable-recipe-skill-learning"
+    },
+    {
+      "from": "e0-e3-readiness-and-evidence-bundle",
+      "to": "reusable-recipe-skill-learning"
+    },
+    {
+      "from": "reusable-recipe-skill-learning",
+      "to": "portfolio-multi-repository-governance"
+    },
+    {
+      "from": "support-profile-and-unknown-register",
+      "to": "portfolio-multi-repository-governance"
+    },
+    {
+      "from": "status-risk-decision-communications",
+      "to": "product-feedback-roadmap-loop"
+    },
+    {
+      "from": "adoption-change-management",
+      "to": "product-feedback-roadmap-loop"
+    },
+    {
+      "from": "reusable-recipe-skill-learning",
+      "to": "product-feedback-roadmap-loop"
+    }
+  ]
+}

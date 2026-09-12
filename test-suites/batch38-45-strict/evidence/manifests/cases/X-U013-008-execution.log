@@ -1,0 +1,11 @@
+[2026-09-10T08:26:14.420248Z][X-U013-008] Starting execution of X-U013-008 (Edition拓扑与数据边界 / evidence-tamper / 场景8) [Category=evidence-tamper, Priority=P2]
+[2026-09-10T08:26:14.420252Z][X-U013-008] Bound Skill: tst-edition-topology-data-boundary | Product Skill IDs: []
+[2026-09-10T08:26:14.420255Z][X-U013-008] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:14.434936Z][X-U013-008] Security: Minted RS256 token (JTI=8100d62d..., Exp=1789032374)
+[2026-09-10T08:26:14.476573Z][X-U013-008] KMS: Envelope encrypted 37 bytes under key key-x-u013-008 v1 (DEK wrapped)
+[2026-09-10T08:26:14.501130Z][X-U013-008] [CROSS-RESILIENCE] Starting X-U013-008 (U013) Category=evidence-tamper
+[2026-09-10T08:26:14.501139Z][X-U013-008] Topology & Data Boundary: Evaluating edition topology (SaaS / Dedicated / Sovereign / Edge)
+[2026-09-10T08:26:14.501145Z][X-U013-008] Tampering with topology manifest signature...
+[2026-09-10T08:26:14.501169Z][X-U013-008] Completed execution of X-U013-008 in 80.9ms: Status=PASSED
+[2026-09-10T08:26:14.501174Z][X-U013-008] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:14.501193Z][X-U013-008] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -1,6 +1,9 @@
 ---
 name: b32-client-identity-permission-flags
-description: "Migrate client authentication state sessions tokens claims permissions route and component guards tenant context feature flags experiments and privacy-sensitive telemetry without relying on client checks for server security."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Migrate client authentication state sessions tokens claims permissions route and component guards tenant context feature flags experiments and privacy-sensitive telemetry without relying on client checks for server security.
 ---
 
 ## Operating mode

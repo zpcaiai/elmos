@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B08-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [8]
+Title: Batch 8 最小Patch：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: 最小Patch
+Test Type: dependency_failure
+Skill: tst-b08-bounded-repair-loop
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

@@ -1,0 +1,9 @@
+{
+  "id": "batch40-provenance",
+  "batch": 40,
+  "packKey": "elmos-platform-supply-chain",
+  "role": "provenance",
+  "origin": "elmos-reproducible-build-system-b40",
+  "sha256": "sha256:7714a29f3a57555f6d85679b6f3b8d49f9966c82ba35cdc68a918eb83cbcb250",
+  "recordedAt": "2026-09-09T22:16:47.564678Z"
+}

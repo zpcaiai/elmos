@@ -1,0 +1,438 @@
+package telemetry
+
+import (
+	"context"
+	"crypto/rand"
+	"encoding/hex"
+	"fmt"
+	"net/http"
+	"os"
+	"strings"
+	"sync"
+	"time"
+)
+
+type contextKey string
+
+const (
+	spanContextKey    contextKey = "otel_span"
+	w3cTraceparentHdr string     = "traceparent"
+	w3cTracestateHdr   string     = "tracestate"
+)
+
+// SpanStatus defines the execution status of a trace span.
+type SpanStatus int
+
+const (
+	StatusUnset SpanStatus = iota
+	StatusOk
+	StatusError
+)
+
+func (s SpanStatus) String() string {
+	switch s {
+	case StatusOk:
+		return "OK"
+	case StatusError:
+		return "ERROR"
+	default:
+		return "UNSET"
+	}
+}
+
+// SpanContext contains the immutable W3C trace identifier state.
+type SpanContext struct {
+	TraceID    string
+	SpanID     string
+	TraceFlags byte
+	TraceState string
+	Remote     bool
+}
+
+// IsValid checks whether both TraceID and SpanID are populated and valid lengths.
+func (sc SpanContext) IsValid() bool {
+	return len(sc.TraceID) == 32 && sc.TraceID != "00000000000000000000000000000000" &&
+		len(sc.SpanID) == 16 && sc.SpanID != "0000000000000000"
+}
+
+// Span represents an OpenTelemetry trace span.
+type Span struct {
+	mu           sync.RWMutex
+	name         string
+	spanContext  SpanContext
+	parentSpanID string
+	startTime    time.Time
+	endTime      time.Time
+	attributes   map[string]any
+	status       SpanStatus
+	statusDesc   string
+	provider     *TracerProvider
+}
+
+// Name returns the span operation name.
+func (s *Span) Name() string {
+	return s.name
+}
+
+// SpanContext returns the span's context identifiers.
+func (s *Span) SpanContext() SpanContext {
+	return s.spanContext
+}
+
+// TraceID returns the 32-character hex trace identifier.
+func (s *Span) TraceID() string {
+	return s.spanContext.TraceID
+}
+
+// SpanID returns the 16-character hex span identifier.
+func (s *Span) SpanID() string {
+	return s.spanContext.SpanID
+}
+
+// ParentSpanID returns the parent span identifier if any.
+func (s *Span) ParentSpanID() string {
+	return s.parentSpanID
+}
+
+// StartTime returns the timestamp when the span began.
+func (s *Span) StartTime() time.Time {
+	return s.startTime
+}
+
+// EndTime returns the timestamp when the span ended.
+func (s *Span) EndTime() time.Time {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.endTime
+}
+
+// Duration returns the total wall-clock duration of the span.
+func (s *Span) Duration() time.Duration {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if s.endTime.IsZero() {
+		return time.Since(s.startTime)
+	}
+	return s.endTime.Sub(s.startTime)
+}
+
+// SetAttribute records a key-value attribute on the span.
+func (s *Span) SetAttribute(key string, value any) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.attributes[key] = value
+}
+
+// SetStatus updates the status code and optional description.
+func (s *Span) SetStatus(status SpanStatus, desc string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.status = status
+	s.statusDesc = desc
+}
+
+// Status returns the current span status.
+func (s *Span) Status() SpanStatus {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.status
+}
+
+// Attributes returns a snapshot copy of the span attributes.
+func (s *Span) Attributes() map[string]any {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	out := make(map[string]any, len(s.attributes))
+	for k, v := range s.attributes {
+		out[k] = v
+	}
+	return out
+}
+
+// End finishes the span and flushes it through the TracerProvider exporter.
+func (s *Span) End() {
+	s.mu.Lock()
+	if !s.endTime.IsZero() {
+		s.mu.Unlock()
+		return
+	}
+	s.endTime = time.Now()
+	s.mu.Unlock()
+
+	if s.provider != nil && s.provider.exporter != nil {
+		_ = s.provider.exporter.ExportSpan(s)
+	}
+}
+
+// SpanExporter defines the export interface for finished spans.
+type SpanExporter interface {
+	ExportSpan(span *Span) error
+	Shutdown(ctx context.Context) error
+}
+
+// StdoutExporter writes span summaries to standard output.
+type StdoutExporter struct {
+	mu sync.Mutex
+}
+
+// NewStdoutExporter creates an exporter writing to stdout.
+func NewStdoutExporter() *StdoutExporter {
+	return &StdoutExporter{}
+}
+
+// ExportSpan formats and outputs the span record.
+func (e *StdoutExporter) ExportSpan(span *Span) error {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	attrs := span.Attributes()
+	fmt.Fprintf(os.Stdout, "[TRACE] span=%s trace_id=%s span_id=%s parent_id=%s duration=%v status=%s attrs=%v\n",
+		span.Name(), span.TraceID(), span.SpanID(), span.ParentSpanID(), span.Duration(), span.Status(), attrs)
+	return nil
+}
+
+// Shutdown flushes pending exporter buffers.
+func (e *StdoutExporter) Shutdown(ctx context.Context) error {
+	return nil
+}
+
+// NoopExporter discards all spans.
+type NoopExporter struct{}
+
+func (n *NoopExporter) ExportSpan(span *Span) error        { return nil }
+func (n *NoopExporter) Shutdown(ctx context.Context) error { return nil }
+
+// TracerProvider manages span lifecycle and configuration.
+type TracerProvider struct {
+	serviceName string
+	environment string
+	exporter    SpanExporter
+	mu          sync.RWMutex
+	closed      bool
+}
+
+// NewTracerProvider creates an initialized OpenTelemetry TracerProvider.
+func NewTracerProvider(serviceName, environment string, exporter SpanExporter) *TracerProvider {
+	if exporter == nil {
+		exporter = &NoopExporter{}
+	}
+	return &TracerProvider{
+		serviceName: serviceName,
+		environment: environment,
+		exporter:    exporter,
+	}
+}
+
+// Tracer creates a tracer scoped to the given instrumentation scope name.
+func (tp *TracerProvider) Tracer(name string) *Tracer {
+	return &Tracer{
+		name:     name,
+		provider: tp,
+	}
+}
+
+// Shutdown flushes and tears down the tracer provider.
+func (tp *TracerProvider) Shutdown(ctx context.Context) error {
+	tp.mu.Lock()
+	defer tp.mu.Unlock()
+	if tp.closed {
+		return nil
+	}
+	tp.closed = true
+	if tp.exporter != nil {
+		return tp.exporter.Shutdown(ctx)
+	}
+	return nil
+}
+
+// Tracer provides methods to start and propagate spans.
+type Tracer struct {
+	name     string
+	provider *TracerProvider
+}
+
+// Start begins a new span, linking to any existing span in context as parent.
+func (t *Tracer) Start(ctx context.Context, spanName string) (context.Context, *Span) {
+	var traceID string
+	var parentSpanID string
+	var traceFlags byte = 0x01
+
+	if parent := SpanFromContext(ctx); parent != nil {
+		traceID = parent.TraceID()
+		parentSpanID = parent.SpanID()
+		traceFlags = parent.spanContext.TraceFlags
+	} else if sc, ok := RemoteSpanContextFromContext(ctx); ok && sc.IsValid() {
+		traceID = sc.TraceID
+		parentSpanID = sc.SpanID
+		traceFlags = sc.TraceFlags
+	} else {
+		traceID = generateHexID(16) // 16 bytes = 32 hex chars
+	}
+
+	spanID := generateHexID(8) // 8 bytes = 16 hex chars
+
+	span := &Span{
+		name: spanName,
+		spanContext: SpanContext{
+			TraceID:    traceID,
+			SpanID:     spanID,
+			TraceFlags: traceFlags,
+		},
+		parentSpanID: parentSpanID,
+		startTime:    time.Now(),
+		attributes: map[string]any{
+			"service.name":           t.provider.serviceName,
+			"deployment.environment": t.provider.environment,
+			"instrumentation.name":   t.name,
+		},
+		status:   StatusOk,
+		provider: t.provider,
+	}
+
+	newCtx := context.WithValue(ctx, spanContextKey, span)
+	return newCtx, span
+}
+
+// Global default tracer provider
+var (
+	globalProviderMu sync.RWMutex
+	globalProvider   *TracerProvider = NewTracerProvider("{{.ServiceName}}", "development", &NoopExporter{})
+)
+
+// SetGlobalTracerProvider registers the application-level tracer provider.
+func SetGlobalTracerProvider(tp *TracerProvider) {
+	globalProviderMu.Lock()
+	defer globalProviderMu.Unlock()
+	globalProvider = tp
+}
+
+// GetGlobalTracerProvider retrieves the active TracerProvider.
+func GetGlobalTracerProvider() *TracerProvider {
+	globalProviderMu.RLock()
+	defer globalProviderMu.RUnlock()
+	return globalProvider
+}
+
+// GetTracer returns a tracer from the global provider.
+func GetTracer(name string) *Tracer {
+	return GetGlobalTracerProvider().Tracer(name)
+}
+
+// InitTracer initializes the global TracerProvider with service metadata and exporter.
+func InitTracer(ctx context.Context, serviceName, environment string) (*TracerProvider, func(context.Context) error, error) {
+	var exporter SpanExporter
+	if strings.ToLower(environment) == "test" {
+		exporter = &NoopExporter{}
+	} else {
+		exporter = NewStdoutExporter()
+	}
+
+	tp := NewTracerProvider(serviceName, environment, exporter)
+	SetGlobalTracerProvider(tp)
+
+	shutdown := func(shutdownCtx context.Context) error {
+		return tp.Shutdown(shutdownCtx)
+	}
+
+	return tp, shutdown, nil
+}
+
+// ContextWithSpan attaches a Span to a Go context.
+func ContextWithSpan(ctx context.Context, span *Span) context.Context {
+	return context.WithValue(ctx, spanContextKey, span)
+}
+
+// SpanFromContext retrieves the active Span from context, or nil if none.
+func SpanFromContext(ctx context.Context) *Span {
+	if ctx == nil {
+		return nil
+	}
+	if span, ok := ctx.Value(spanContextKey).(*Span); ok {
+		return span
+	}
+	return nil
+}
+
+type remoteContextKey struct{}
+
+// RemoteSpanContextFromContext returns extracted remote W3C parent context.
+func RemoteSpanContextFromContext(ctx context.Context) (SpanContext, bool) {
+	if ctx == nil {
+		return SpanContext{}, false
+	}
+	sc, ok := ctx.Value(remoteContextKey{}).(SpanContext)
+	return sc, ok
+}
+
+// W3CPropagator implements W3C Trace Context specification for HTTP headers.
+type W3CPropagator struct{}
+
+// Extract parses the W3C traceparent header: version-trace_id-parent_id-trace_flags
+func (p W3CPropagator) Extract(ctx context.Context, headers http.Header) context.Context {
+	val := headers.Get(w3cTraceparentHdr)
+	if val == "" {
+		return ctx
+	}
+
+	parts := strings.Split(strings.TrimSpace(val), "-")
+	if len(parts) < 4 {
+		return ctx
+	}
+
+	version := parts[0]
+	traceID := parts[1]
+	parentID := parts[2]
+	flagsStr := parts[3]
+
+	// Version 00 validation
+	if version != "00" && len(version) != 2 {
+		return ctx
+	}
+	if len(traceID) != 32 || traceID == "00000000000000000000000000000000" {
+		return ctx
+	}
+	if len(parentID) != 16 || parentID == "0000000000000000" {
+		return ctx
+	}
+
+	var flags byte = 0x01
+	if decoded, err := hex.DecodeString(flagsStr); err == nil && len(decoded) > 0 {
+		flags = decoded[0]
+	}
+
+	sc := SpanContext{
+		TraceID:    traceID,
+		SpanID:     parentID,
+		TraceFlags: flags,
+		TraceState: headers.Get(w3cTracestateHdr),
+		Remote:     true,
+	}
+
+	return context.WithValue(ctx, remoteContextKey{}, sc)
+}
+
+// Inject encodes the span context into W3C traceparent and tracestate HTTP headers.
+func (p W3CPropagator) Inject(ctx context.Context, headers http.Header) {
+	span := SpanFromContext(ctx)
+	if span == nil {
+		return
+	}
+	sc := span.SpanContext()
+	if !sc.IsValid() {
+		return
+	}
+
+	headerVal := fmt.Sprintf("00-%s-%s-%02x", sc.TraceID, sc.SpanID, sc.TraceFlags)
+	headers.Set(w3cTraceparentHdr, headerVal)
+	if sc.TraceState != "" {
+		headers.Set(w3cTracestateHdr, sc.TraceState)
+	}
+}
+
+func generateHexID(byteCount int) string {
+	b := make([]byte, byteCount)
+	if _, err := rand.Read(b); err != nil {
+		nano := time.Now().UnixNano()
+		return fmt.Sprintf("%0*x", byteCount*2, nano)
+	}
+	return hex.EncodeToString(b)
+}

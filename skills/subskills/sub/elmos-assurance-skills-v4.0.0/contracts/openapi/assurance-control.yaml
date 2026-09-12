@@ -1,0 +1,1446 @@
+openapi: 3.1.1
+info:
+  title: Elmos Assurance Control API — implementation contract
+  version: 4.0.0
+  description: Versioned implementation contract with specialized command/response DTOs. Wire to existing Elmos
+    authorization, identity, workflow and K8. This package does not run an HTTP server.
+servers:
+- url: https://elmos.invalid/api/v4
+paths:
+  /projects/{projectId}/assurance/inventories:
+    post:
+      operationId: createInventory
+      summary: createInventory
+      description: Implementation contract only. Require permission inventory:write; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: &id001
+          type: string
+          pattern: ^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: &id002
+          type: string
+          minLength: 1
+          maxLength: 4096
+      security:
+      - bearerAuth: []
+      x-required-permission: inventory:write
+      responses:
+        '202':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedResource'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInventoryRequest'
+  /projects/{projectId}/assurance/contracts:
+    post:
+      operationId: createContractDraft
+      summary: createContractDraft
+      description: Implementation contract only. Require permission contract:write; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id002
+      security:
+      - bearerAuth: []
+      x-required-permission: contract:write
+      responses:
+        '202':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedResource'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContractDraftRequest'
+  /projects/{projectId}/assurance/contracts/{resourceId}/approve:
+    post:
+      operationId: approveContract
+      summary: approveContract
+      description: Implementation contract only. Require permission contract:approve; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: *id001
+      - name: resourceId
+        in: path
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id002
+      security:
+      - bearerAuth: []
+      x-required-permission: contract:approve
+      responses:
+        '202':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedResource'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveContractRequest'
+  /projects/{projectId}/assurance/plans:
+    post:
+      operationId: createTestPlan
+      summary: createTestPlan
+      description: Implementation contract only. Require permission plan:write; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id002
+      security:
+      - bearerAuth: []
+      x-required-permission: plan:write
+      responses:
+        '202':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedResource'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTestPlanRequest'
+  /projects/{projectId}/assurance/runs:
+    post:
+      operationId: createRun
+      summary: createRun
+      description: Implementation contract only. Require permission run:write; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id002
+      security:
+      - bearerAuth: []
+      x-required-permission: run:write
+      responses:
+        '202':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedResource'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRunRequest'
+  /projects/{projectId}/assurance/runs/{resourceId}:
+    get:
+      operationId: getRun
+      summary: getRun
+      description: Implementation contract only. Require permission run:read; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: *id001
+      - name: resourceId
+        in: path
+        required: true
+        schema: *id001
+      security:
+      - bearerAuth: []
+      x-required-permission: run:read
+      responses:
+        '200':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRunResponse'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /projects/{projectId}/assurance/runs/{resourceId}/cancel:
+    post:
+      operationId: cancelRun
+      summary: cancelRun
+      description: Implementation contract only. Require permission run:cancel; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: *id001
+      - name: resourceId
+        in: path
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id002
+      security:
+      - bearerAuth: []
+      x-required-permission: run:cancel
+      responses:
+        '202':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedResource'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelRunRequest'
+  /projects/{projectId}/assurance/runs/{resourceId}/coverage:
+    get:
+      operationId: getCoverage
+      summary: getCoverage
+      description: Implementation contract only. Require permission run:read; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: *id001
+      - name: resourceId
+        in: path
+        required: true
+        schema: *id001
+      security:
+      - bearerAuth: []
+      x-required-permission: run:read
+      responses:
+        '200':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCoverageResponse'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /projects/{projectId}/assurance/runs/{resourceId}/seal:
+    post:
+      operationId: sealEvidence
+      summary: sealEvidence
+      description: Implementation contract only. Require permission evidence:seal; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: *id001
+      - name: resourceId
+        in: path
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id002
+      security:
+      - bearerAuth: []
+      x-required-permission: evidence:seal
+      responses:
+        '202':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedResource'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SealEvidenceRequest'
+  /projects/{projectId}/assurance/runs/{resourceId}/audits:
+    post:
+      operationId: requestEthenAudit
+      summary: requestEthenAudit
+      description: Implementation contract only. Require permission audit:request; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: *id001
+      - name: resourceId
+        in: path
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id002
+      security:
+      - bearerAuth: []
+      x-required-permission: audit:request
+      responses:
+        '202':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedResource'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestEthenAuditRequest'
+  /projects/{projectId}/assurance/audits/{resourceId}/decision:
+    post:
+      operationId: submitAuditDecision
+      summary: submitAuditDecision
+      description: Implementation contract only. Require permission audit:decide; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: *id001
+      - name: resourceId
+        in: path
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id002
+      security:
+      - bearerAuth: []
+      x-required-permission: audit:decide
+      responses:
+        '202':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedResource'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitAuditDecisionRequest'
+  /projects/{projectId}/assurance/runs/{resourceId}/decision:
+    get:
+      operationId: getGateDecision
+      summary: getGateDecision
+      description: Implementation contract only. Require permission decision:read; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: *id001
+      - name: resourceId
+        in: path
+        required: true
+        schema: *id001
+      security:
+      - bearerAuth: []
+      x-required-permission: decision:read
+      responses:
+        '200':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetGateDecisionResponse'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /projects/{projectId}/assurance/attestations/{resourceId}:
+    get:
+      operationId: getAttestation
+      summary: getAttestation
+      description: Implementation contract only. Require permission attestation:read; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: *id001
+      - name: resourceId
+        in: path
+        required: true
+        schema: *id001
+      security:
+      - bearerAuth: []
+      x-required-permission: attestation:read
+      responses:
+        '200':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAttestationResponse'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /projects/{projectId}/assurance/attestations/{resourceId}/revoke:
+    post:
+      operationId: revokeAttestation
+      summary: revokeAttestation
+      description: Implementation contract only. Require permission attestation:revoke; compare authenticated tenant/project.
+        No caller-supplied authority. Raw artifacts use brokered content-addressed upload, never arbitrary callback
+        URLs.
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: *id001
+      - name: resourceId
+        in: path
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id002
+      security:
+      - bearerAuth: []
+      x-required-permission: attestation:revoke
+      responses:
+        '202':
+          description: Accepted resource or current state; async response is not a test PASS.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedResource'
+        '400':
+          description: Invalid contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Revision/idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unsupported semantics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Quota/concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevokeAttestationRequest'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      properties:
+        code: *id002
+        message: *id002
+        trace_id: *id001
+        retryable:
+          type: boolean
+      required:
+      - code
+      - message
+      - trace_id
+      - retryable
+    RunState: &id005
+      type: object
+      additionalProperties: false
+      properties:
+        run_id: *id001
+        state:
+          enum:
+          - QUEUED
+          - RUNNING
+          - PAUSED_BUDGET
+          - CANCEL_REQUESTED
+          - CANCELLED
+          - SEALED
+          - AUDITING
+          - DECIDED
+        verdict:
+          anyOf:
+          - enum:
+            - PASS
+            - FAIL
+            - INCONCLUSIVE
+          - type: 'null'
+        revision:
+          type: integer
+          minimum: 0
+        blocking_reasons:
+          type: array
+          items: *id002
+          minItems: 0
+      required:
+      - run_id
+      - state
+      - verdict
+      - revision
+      - blocking_reasons
+    CreateInventoryRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        source_artifact_digest: &id003
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        scope_digest: *id003
+        discovery_profile_id: &id004
+          type: string
+          pattern: ^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$
+        runtime_observation_allowed:
+          type: boolean
+      required:
+      - source_artifact_digest
+      - scope_digest
+      - discovery_profile_id
+      - runtime_observation_allowed
+    CreateContractDraftRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        inventory_id: *id004
+        requirement_artifact_digest: *id003
+        parent_contract_digest:
+          anyOf:
+          - *id003
+          - type: 'null'
+        proposal_artifact_digest: *id003
+      required:
+      - inventory_id
+      - requirement_artifact_digest
+      - parent_contract_digest
+      - proposal_artifact_digest
+    ApproveContractRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        contract_digest: *id003
+        scope_digest: *id003
+        approval_challenge_id: *id004
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+          - NEEDS_CLARIFICATION
+        rationale: &id006
+          type: string
+          minLength: 1
+          maxLength: 4096
+      required:
+      - contract_digest
+      - scope_digest
+      - approval_challenge_id
+      - decision
+      - rationale
+    CreateTestPlanRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        contract_digest: *id003
+        scope_digest: *id003
+        coverage_profile_id: *id004
+        runner_matrix_digest: *id003
+        budget_minor_units: &id008
+          type: integer
+          minimum: 0
+        currency:
+          type: string
+          pattern: ^[A-Z]{3}$
+      required:
+      - contract_digest
+      - scope_digest
+      - coverage_profile_id
+      - runner_matrix_digest
+      - budget_minor_units
+      - currency
+    CreateRunRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        plan_id: *id004
+        scope_digest: *id003
+        revision_set:
+          type: object
+          additionalProperties: false
+          properties:
+            source: *id003
+            target: *id003
+            artifact: *id003
+            scope: *id003
+            contract: *id003
+            policy: *id003
+            environment: *id003
+            toolchain: *id003
+            suite: *id003
+            data: *id003
+            comparator: *id003
+            rules: *id003
+          required:
+          - source
+          - target
+          - artifact
+          - scope
+          - contract
+          - policy
+          - environment
+          - toolchain
+          - suite
+          - data
+          - comparator
+          - rules
+        target_level:
+          enum:
+          - E0
+          - E1
+          - E2
+          - E3
+          - E4
+          - E5
+        profile_id: *id004
+        budget_reservation_id: *id004
+        deadline_at: &id007
+          type: integer
+          minimum: 1
+      required:
+      - plan_id
+      - scope_digest
+      - revision_set
+      - target_level
+      - profile_id
+      - budget_reservation_id
+      - deadline_at
+    GetRunResponse: *id005
+    CancelRunRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason: *id006
+        expected_fencing_epoch: *id007
+      required:
+      - reason
+      - expected_fencing_epoch
+    GetCoverageResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        run_id: *id004
+        obligation_set_digest: *id003
+        planned: *id008
+        executed: *id008
+        asserted: *id008
+        passed: *id008
+        denominator: *id008
+        unresolved_obligation_ids:
+          type: array
+          items: *id004
+          minItems: 0
+        report_artifact_digest: *id003
+      required:
+      - run_id
+      - obligation_set_digest
+      - planned
+      - executed
+      - asserted
+      - passed
+      - denominator
+      - unresolved_obligation_ids
+      - report_artifact_digest
+    SealEvidenceRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_revision_set_digest: *id003
+        expected_evidence_inventory_digest: *id003
+        seal_nonce: *id004
+      required:
+      - expected_revision_set_digest
+      - expected_evidence_inventory_digest
+      - seal_nonce
+    RequestEthenAuditRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        sealed_evidence_root: *id003
+        approved_auditor_config_id: *id004
+        audit_profile_id: *id004
+        deadline_at: *id007
+      required:
+      - sealed_evidence_root
+      - approved_auditor_config_id
+      - audit_profile_id
+      - deadline_at
+    SubmitAuditDecisionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        audit_session_id: *id004
+        subject_revision_set_digest: *id003
+        scope_digest: *id003
+        policy_digest: *id003
+        evidence_root: *id003
+        review_nonce: *id004
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+          - NEEDS_EVIDENCE
+        findings_artifact_digest: *id003
+        signed_review_artifact_digest: *id003
+      required:
+      - audit_session_id
+      - subject_revision_set_digest
+      - scope_digest
+      - policy_digest
+      - evidence_root
+      - review_nonce
+      - decision
+      - findings_artifact_digest
+      - signed_review_artifact_digest
+    GetGateDecisionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        run_id: *id004
+        profile_id: *id004
+        verdict:
+          anyOf:
+          - enum:
+            - PASS
+            - FAIL
+            - INCONCLUSIVE
+          - type: 'null'
+        blocking_codes:
+          type: array
+          items: *id004
+          minItems: 0
+        decision_artifact_digest:
+          anyOf:
+          - *id003
+          - type: 'null'
+      required:
+      - run_id
+      - profile_id
+      - verdict
+      - blocking_codes
+      - decision_artifact_digest
+    GetAttestationResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        attestation_digest: *id003
+        subject_artifact_digest: *id003
+        scope_digest: *id003
+        profile_id: *id004
+        status:
+          enum:
+          - DRAFT
+          - ISSUED
+          - SUSPENDED
+          - REVOKED
+          - EXPIRED
+          - SUPERSEDED
+        valid_until: *id007
+        status_checked_at: *id007
+        statement_artifact_digest: *id003
+        verification_artifact_digest: *id003
+      required:
+      - attestation_digest
+      - subject_artifact_digest
+      - scope_digest
+      - profile_id
+      - status
+      - valid_until
+      - status_checked_at
+      - statement_artifact_digest
+      - verification_artifact_digest
+    RevokeAttestationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        attestation_digest: *id003
+        reason_code: *id004
+        reason: *id006
+        revocation_approval_id: *id004
+      required:
+      - attestation_digest
+      - reason_code
+      - reason
+      - revocation_approval_id
+    AcceptedResource:
+      type: object
+      additionalProperties: false
+      properties:
+        resource_id: *id004
+        revision: *id008
+        state: *id006
+      required:
+      - resource_id
+      - revision
+      - state

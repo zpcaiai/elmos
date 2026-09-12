@@ -1,5 +1,8 @@
 ---
 name: pm-b08-option-result-union-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "统一 Option、Result、Union、错误分支和封闭代数数据类型. Precision Migration B08 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

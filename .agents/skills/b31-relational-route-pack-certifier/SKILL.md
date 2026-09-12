@@ -1,5 +1,14 @@
 ---
 name: b31-relational-route-pack-certifier
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: Implement and certify exact directional Oracle, SQL Server, MySQL, and PostgreSQL route packs, including edition/version features, dialect lowering, routines, drivers, data migration, workload evidence, and maintenance. Use for concrete relational engine routes.
 ---
 

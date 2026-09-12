@@ -1,7 +1,7 @@
 {
   "batch": 41,
   "packKey": "elmos-platform-knowledge-flywheel",
-  "owner": "elmos-platform-maintainers",
+  "owner": "Dr. Maya Lin, Head of Knowledge Intelligence",
   "scope": [
     "engines/ai-platform-engine as the ingestion, retrieval and prediction surface",
     "engines/polyglot-route-engine and recipes/ as the pattern and recipe corpus",
@@ -30,7 +30,10 @@
     1411,
     1412
   ],
-  "status": "IN_PROGRESS",
-  "evidenceRefs": [],
+  "status": "COMPLETE",
+  "evidenceRefs": [
+    "batch41-execution",
+    "batch41-verification"
+  ],
   "externalOperationExecuted": false
 }

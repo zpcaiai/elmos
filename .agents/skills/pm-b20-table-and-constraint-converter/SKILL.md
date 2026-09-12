@@ -1,5 +1,8 @@
 ---
 name: pm-b20-table-and-constraint-converter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "转换表、列、主外键、唯一、检查、默认值和依赖顺序. Precision Migration B20 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

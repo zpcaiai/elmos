@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: security-privacy-supply-chain-audit
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Cross-tenant cache leak
+  - Prompt injection reaches a write tool
+  - Build dependency lacks provenance
+  negativeControls:
+  - penetrate production without authorization
+  - declare compliance
+  - expose secrets to model
+  checks:
+  - id: security-privacy-supply-chain-audit-AC-01
+    requirement: Model assets, actors, trust boundaries, entry points, data classes, abuse cases, and side effects.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: security-privacy-supply-chain-audit-AC-02
+    requirement: Trace authentication, authorization, service identity, tenant context, and privileged paths end to end.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: security-privacy-supply-chain-audit-AC-03
+    requirement: Detect common application, API, agent, dependency, artifact, CI/CD, container, cloud, and IaC risks.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: security-privacy-supply-chain-audit-AC-04
+    requirement: Generate SBOM, dependency delta, license delta, and provenance obligations where tooling exists.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: security-privacy-supply-chain-audit-AC-05
+    requirement: Separate product controls, deployment controls, organizational controls, and customer responsibilities.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

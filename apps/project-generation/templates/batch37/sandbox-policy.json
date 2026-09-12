@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "policy_id": "marketplace-default-deny",
+  "default_action": "deny",
+  "allowed_permissions": [
+    "workspace-read",
+    "artifact-read",
+    "artifact-write",
+    "evidence-write"
+  ],
+  "limits": {
+    "cpu_millis": 2000,
+    "memory_mb": 1024,
+    "wall_time_seconds": 300,
+    "pids": 32,
+    "output_mb": 100
+  },
+  "filesystem": {
+    "workspace_mode": "copy-on-write",
+    "allowed_paths": [
+      "/workspace",
+      "/artifacts"
+    ],
+    "deny_host_paths": true
+  },
+  "network": {
+    "mode": "none",
+    "allowlist": [],
+    "deny_metadata_endpoints": true
+  },
+  "process": {
+    "allow_subprocess": false,
+    "allowed_executables": [],
+    "deny_privileged": true
+  },
+  "secrets": {
+    "mode": "none",
+    "allowed_secret_names": [],
+    "short_lived_only": true
+  },
+  "tenant_isolation": {
+    "required": true,
+    "cross_tenant_refs": false
+  },
+  "cleanup": {
+    "kill_processes": true,
+    "remove_workspace": true,
+    "revoke_credentials": true
+  }
+}

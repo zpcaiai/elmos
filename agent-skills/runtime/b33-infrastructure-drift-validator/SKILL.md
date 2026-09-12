@@ -1,6 +1,9 @@
 ---
 name: b33-infrastructure-drift-validator
-description: "Detect reconcile and verify drift among source definitions live resources IaC state target plans deployments pipelines policies cost and runtime contracts without silently adopting or destroying unknown resources."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Detect reconcile and verify drift among source definitions live resources IaC state target plans deployments pipelines policies cost and runtime contracts without silently adopting or destroying unknown resources.
 ---
 
 ## Operating mode

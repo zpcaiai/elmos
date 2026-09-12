@@ -1,5 +1,8 @@
 ---
 name: b33-serverless-event-runtime
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Migrate and certify serverless functions event sources triggers bindings concurrency retries idempotency timeouts cold starts state destinations dead letters schedules and deployment contracts.
 ---
 

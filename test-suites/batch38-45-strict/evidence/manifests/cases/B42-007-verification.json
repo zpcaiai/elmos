@@ -1,0 +1,8 @@
+{
+  "case_id": "B42-007",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:25:47.494615Z",
+  "notes": "Independently verified by Ethan: Batch 42成熟Agent / version-drift / 场景7"
+}

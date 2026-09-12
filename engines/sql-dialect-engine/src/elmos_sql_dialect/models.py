@@ -41,6 +41,53 @@ class Dialect(str, Enum):
     MYSQL = "mysql"
     ORACLE = "oracle"
     TSQL = "tsql"  # SQL Server
+    DM8 = "dm8"
+    OPENGAUSS = "opengauss"
+
+
+class ChinaDbDialect(str, Enum):
+    """Domestic / ChinaDB database dialects supported for lowering and routing."""
+
+    DM8 = "dm8"
+    OPENGAUSS = "opengauss"
+    KINGBASEES = "kingbasees"
+    TIDB = "tidb"
+    GBASE_8S = "gbase-8s"
+    GBASE_8C = "gbase-8c"
+    GBASE_8A = "gbase-8a"
+    HIGHGO = "highgo-hgdb"
+    OCEANBASE_ORACLE = "oceanbase-oracle"
+    OCEANBASE_MYSQL = "oceanbase-mysql"
+    GAUSSDB_ORACLE = "gaussdb-oracle"
+    GAUSSDB_M = "gaussdb-m"
+    GOLDENDB = "goldendb"
+
+
+DM8_CAPABILITIES: frozenset[str] = frozenset(
+    {
+        "IDENTITY_COLUMNS",
+        "MERGE_UPSERT",
+        "CLOB_TEXT",
+        "VARCHAR2_SEMANTICS",
+        "ROWNUM_PAGINATION",
+        "SYNONYMS",
+        "COMPATIBILITY_MODES",
+        "TRANSACTION_AUTONOMOUS",
+    }
+)
+
+OPENGAUSS_CAPABILITIES: frozenset[str] = frozenset(
+    {
+        "HASH_DISTRIBUTION",
+        "REPLICATION_DISTRIBUTION",
+        "ROW_ORIENTATION",
+        "COLUMN_ORIENTATION",
+        "COMPATIBILITY_MODES",
+        "ON_DUPLICATE_KEY",
+        "PLPGSQL_ROUTINES",
+        "PACKAGE_SUPPORT",
+    }
+)
 
 
 # Real, self-hosting database engines this sandbox can execute a real

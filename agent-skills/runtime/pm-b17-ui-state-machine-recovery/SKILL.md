@@ -1,5 +1,8 @@
 ---
 name: pm-b17-ui-state-machine-recovery
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从组件和流程恢复 Idle、Loading、Success、Failure、Submitting 等状态机. Precision Migration B17 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

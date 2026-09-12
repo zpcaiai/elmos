@@ -1,0 +1,16 @@
+{
+  "schema": "elmos.semantic-audit.v1",
+  "auditId": "audit-01JEXAMPLE",
+  "jobId": "job-01JEXAMPLE",
+  "evidenceManifestDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "claims": [
+    {
+      "claimId": "claim-001",
+      "requirementId": "REQ-001",
+      "decision": "SATISFIED",
+      "evidenceRefs": ["sha256:1111111111111111111111111111111111111111111111111111111111111111"],
+      "reasonSummary": "Requirement is supported by authoritative evidence.",
+      "confidence": 0.95
+    }
+  ]
+}

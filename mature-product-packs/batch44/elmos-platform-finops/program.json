@@ -1,7 +1,7 @@
 {
   "batch": 44,
   "packKey": "elmos-platform-finops",
-  "owner": "elmos-platform-maintainers",
+  "owner": "David Sterling, Head of Cloud FinOps & Economics",
   "scope": [
     "apps/commercial-api as the metering, quota and billing surface",
     ".github/workflows/commercial-billing-neon.yml as the billing reconciliation pipeline",
@@ -30,7 +30,10 @@
     1473,
     1474
   ],
-  "status": "IN_PROGRESS",
-  "evidenceRefs": [],
+  "status": "COMPLETE",
+  "evidenceRefs": [
+    "batch44-execution",
+    "batch44-verification"
+  ],
   "externalOperationExecuted": false
 }

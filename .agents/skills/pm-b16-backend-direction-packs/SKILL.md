@@ -1,5 +1,8 @@
 ---
 name: pm-b16-backend-direction-packs
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "为六种后端语言的 30 条有方向路径分别维护源特性、目标特性、规则、依赖、变异、黄金仓库和验证策略. Precision Migration B16 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

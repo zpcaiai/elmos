@@ -22,10 +22,18 @@ obj/
 **/obj/
 TestResults/
 **/TestResults/
+*.dll
+**/*.dll
+*.rmeta
+**/*.rmeta
 .vs/
 **/.vs/
 .venv/
 **/.venv/
+venv/
+**/venv/
+test_env/
+**/test_env/
 __pycache__/
 **/__pycache__/
 .pytest_cache/
@@ -69,6 +77,7 @@ _to_delete/
 /elmos-*.bundle
 /artifacts/batch105-108/
 /artifacts/frontend-to-miniapp/local-runtime-receipt-v1/
+/artifacts/frontend-to-miniapp/.frontend-miniapp-qualification*/
 /docs/migration-spec-source-batches.tar.gz
 /skills/*.zip
 /skills/batch_01_to_44_complete_skill_system/
@@ -119,3 +128,6 @@ survey-engines-mac.sh
 !client-packs/**/source-snapshots/**
 .mimosa/
 **/.mimosa/
+
+# Local benchmark and evaluation fixtures
+fixtures/

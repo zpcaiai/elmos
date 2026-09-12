@@ -1,5 +1,8 @@
 ---
 name: b32-route-navigation-deeplink
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Migrate and verify route tables nested navigation deep links redirects guards history query and hash state not-found behavior and browser or mobile back navigation through typed contracts.
 ---
 

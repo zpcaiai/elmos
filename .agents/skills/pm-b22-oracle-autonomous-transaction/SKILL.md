@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-autonomous-transaction
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "分析并迁移 Autonomous Transaction 的独立提交、可见性和审计语义. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

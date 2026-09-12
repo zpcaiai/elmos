@@ -1,5 +1,8 @@
 ---
 name: pm-b10-backend-frontend-semantic-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "把后端框架、领域服务和前端组件平台能力提升为可跨语言 Lowering、验证和生成的领域级语义. Precision Migration B10 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

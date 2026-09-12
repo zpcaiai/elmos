@@ -1,5 +1,14 @@
 ---
 name: b31-database-estate-discovery
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: Discover and fingerprint database estates, schemas, runtime workloads, security, storage, dependencies, and operational behavior from catalogs, DDL, statistics, query logs, plans, jobs, and configuration. Use before database modernization planning or certification.
 ---
 

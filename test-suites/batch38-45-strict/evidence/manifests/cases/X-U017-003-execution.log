@@ -1,0 +1,12 @@
+[2026-09-10T08:26:19.488343Z][X-U017-003] Starting execution of X-U017-003 (备份恢复与数据完整性 / negative / 场景3) [Category=negative, Priority=P1]
+[2026-09-10T08:26:19.488347Z][X-U017-003] Bound Skill: tst-backup-restore-data-integrity | Product Skill IDs: []
+[2026-09-10T08:26:19.488351Z][X-U017-003] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:19.501736Z][X-U017-003] Security: Minted RS256 token (JTI=2e13510d..., Exp=1789032379)
+[2026-09-10T08:26:19.533150Z][X-U017-003] KMS: Envelope encrypted 37 bytes under key key-x-u017-003 v1 (DEK wrapped)
+[2026-09-10T08:26:19.575055Z][X-U017-003] [CROSS-RESILIENCE] Starting X-U017-003 (U017) Category=negative
+[2026-09-10T08:26:19.575065Z][X-U017-003] Backup & Restore Data Integrity: Validating Merkle tree dataset reconciliation and PITR
+[2026-09-10T08:26:19.575067Z][X-U017-003] Testing detection of silent bit rot / data tampering in backup storage...
+[2026-09-10T08:26:19.575236Z][X-U017-003] Bit Rot Detection: Mismatched keys identified = ['k_5']
+[2026-09-10T08:26:19.575259Z][X-U017-003] Completed execution of X-U017-003 in 86.9ms: Status=PASSED
+[2026-09-10T08:26:19.575261Z][X-U017-003] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:19.575273Z][X-U017-003] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

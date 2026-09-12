@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B37-003 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [37]
+Title: Batch 37 Sandbox：提供畸形、缺失、冲突、未知或明确不支持的输入
+Capability: Sandbox
+Test Type: negative
+Skill: tst-b37-extension-marketplace-closure
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "pack_key": "web-console-next16-react19-wechat-v1",
+  "status": "PASSED_INDEPENDENT",
+  "independence": "independently-verified",
+  "visual_pass_rate": 1.0,
+  "artifact_ref": "web-console-layout-approved.svg",
+  "sha256": "sha256:cd0e31f9f9cdba006b774710038522cf82f95dbf5ccd2d64a688f7fa4c13c296"
+}

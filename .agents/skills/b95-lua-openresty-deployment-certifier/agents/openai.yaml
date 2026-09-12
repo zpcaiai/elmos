@@ -1,0 +1,4 @@
+interface:
+  display_name: "B95 Lua Openresty Deployment Certifier"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b95-lua-openresty-deployment-certifier to execute this ELMOS Language Pack Skill with fail-closed evidence."

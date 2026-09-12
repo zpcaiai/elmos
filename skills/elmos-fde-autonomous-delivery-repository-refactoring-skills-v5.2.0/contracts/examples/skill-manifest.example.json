@@ -1,0 +1,193 @@
+{
+  "apiVersion": "elmos.ai/v1",
+  "kind": "Skill",
+  "metadata": {
+    "id": "stakeholder-workflow-discovery",
+    "name": "Stakeholder Workflow Discovery",
+    "version": "5.2.0",
+    "package": "elmos-fde-autonomous-delivery-repository-refactoring-skills",
+    "pack": "01-fde-engagement"
+  },
+  "spec": {
+    "packageRole": "capability-extension",
+    "routable": false,
+    "routeOwnerRef": "binding://cross-cutting/delivery-governance",
+    "canonicalKernels": [
+      "K1"
+    ],
+    "businessLines": [
+      "all-four-lines",
+      "fde-delivery"
+    ],
+    "owner": "fde-engagement-team",
+    "priority": "P0",
+    "riskClass": "medium",
+    "maturity": "specification-ready",
+    "description": "Discover stakeholders, current workflows, decisions, pain points, constraints, and measurable outcomes before proposing implementation.",
+    "triggers": [
+      "customer discovery",
+      "workflow interview",
+      "stakeholder map",
+      "problem framing"
+    ],
+    "negativeTriggers": [
+      "implement a known code change",
+      "summarize an already approved specification"
+    ],
+    "inputs": [
+      {
+        "name": "taskContract",
+        "type": "TaskContract",
+        "required": true
+      },
+      {
+        "name": "tenantRepositoryIdentity",
+        "type": "TenantRepositoryIdentity",
+        "required": true
+      },
+      {
+        "name": "revisionSet",
+        "type": "RevisionSet",
+        "required": true
+      },
+      {
+        "name": "policyProfile",
+        "type": "PolicyProfile",
+        "required": true
+      },
+      {
+        "name": "acceptanceAndEvidenceObligations",
+        "type": "ObligationSet",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "stakeholder_map",
+        "type": "Artifact"
+      },
+      {
+        "name": "current_state_workflow",
+        "type": "Artifact"
+      },
+      {
+        "name": "discovery_brief",
+        "type": "Artifact"
+      },
+      {
+        "name": "opportunity_map",
+        "type": "Artifact"
+      },
+      {
+        "name": "unknown_register_updates",
+        "type": "Artifact"
+      }
+    ],
+    "tools": [
+      "repository.read",
+      "artifact.write",
+      "schema.validate",
+      "policy.evaluate",
+      "evidence.append"
+    ],
+    "dependencies": [],
+    "externalDependencies": [
+      "typed-skill-contract",
+      "artifact-identity-and-hashing",
+      "evidence-contract",
+      "policy-contract",
+      "capability-dependency-graph",
+      "compatibility-matrix-manager",
+      "skill-transaction-and-rollback",
+      "tenant-policy-aware-retrieval",
+      "repository-incremental-ingestion",
+      "build-and-dependency-graph",
+      "durable-task-checkpoint-memory",
+      "environment-owned-tool-authority",
+      "invocation-scoped-capability-lease",
+      "verified-security-context",
+      "result-interception-and-commit",
+      "remote-executor-fencing",
+      "independent-k8-decision"
+    ],
+    "invariants": [
+      "no claim without evidence",
+      "no authority escalation",
+      "all unknowns are explicit",
+      "outputs bind to exact RevisionSet"
+    ],
+    "failureModes": [
+      "insufficient evidence",
+      "unsupported technology",
+      "stale RevisionSet",
+      "authority denied",
+      "validation failure"
+    ],
+    "authority": {
+      "default": "deny",
+      "read": "explicit-capability-lease",
+      "workspaceWrite": "approved-plan-step-only",
+      "externalWrite": "human-approval-and-side-effect-ledger",
+      "productionWrite": "prohibited-in-capability-package",
+      "completionDecision": "independent-K8-only"
+    },
+    "idempotency": {
+      "key": "tenantId+engagementId+revisionSetId+planStepId+skillVersion",
+      "replayPolicy": "return-previous-artifacts-if-input-hashes-match"
+    },
+    "checkpointing": {
+      "beforeExternalEffect": true,
+      "afterAcceptedChangeSet": true,
+      "resumeRequiresAuthorityReplay": true
+    },
+    "evidence": {
+      "minimumLevel": "E2",
+      "freshnessRequired": true,
+      "exactVersionPins": true,
+      "counterexamplesRetained": true,
+      "unknownsBlockWhenMaterial": true
+    },
+    "rollback": {
+      "required": true,
+      "code": "atomic-revert-or-workspace-discard",
+      "data": "route-specific-compensation-and-reconciliation",
+      "externalEffects": "side-effect-ledger-compensation"
+    },
+    "telemetry": {
+      "required": [
+        "trace",
+        "metric",
+        "structured-log",
+        "artifact-hash",
+        "policy-decision"
+      ],
+      "costDimensions": [
+        "model",
+        "compute",
+        "storage",
+        "network",
+        "license",
+        "human-review"
+      ],
+      "timeDimensions": [
+        "machine-wall-clock",
+        "queue",
+        "human-review"
+      ]
+    },
+    "dataUsePolicy": {
+      "globalTrainingEligible": false,
+      "tenantAdapterEligible": "explicit-opt-in",
+      "secretInModelContext": false,
+      "retention": "tenant-policy"
+    },
+    "compatibility": {
+      "requiresElmos": ">=5.1.0",
+      "preservesCanonicalK1K8": true,
+      "addsRoutableEntryPoints": 0,
+      "standaloneCompletionBoundary": "E3",
+      "e4e5Companion": "elmos-functional-assurance-certification-skills"
+    },
+    "specificationStatus": "specification-ready-not-runtime-certified"
+  }
+}
