@@ -13,6 +13,7 @@ import re
 import sqlglot
 from sqlglot import exp
 
+from .dialects import sqlglot_read_dialect
 from .models import Dialect, DialectError
 
 
@@ -49,7 +50,7 @@ def extract_and_transpile_dynamic_sql(
 
     and re-wrap it in the target's dynamic execution statement.
     """
-    parsed = sqlglot.parse_one(dynamic_stmt, read=source_dialect.value)
+    parsed = sqlglot.parse_one(dynamic_stmt, read=sqlglot_read_dialect(source_dialect))
 
     raw_query: str | None = None
     if isinstance(parsed, exp.Command):
@@ -58,7 +59,7 @@ def extract_and_transpile_dynamic_sql(
         m = re.search(r"EXECUTE\s+IMMEDIATE\s+(.+)$", cmd_text, re.IGNORECASE)
         if m:
             expr_str = m.group(1).rstrip(";")
-            expr_ast = sqlglot.parse_one(expr_str, read=source_dialect.value)
+            expr_ast = sqlglot.parse_one(expr_str, read=sqlglot_read_dialect(source_dialect))
             if not isinstance(expr_ast, exp.Expression):
                 raise DialectError(
                     "CERTIFIED_DYNAMIC_SQL_UNSAFE",
@@ -97,8 +98,8 @@ def extract_and_transpile_dynamic_sql(
     try:
         transpiled_query = sqlglot.transpile(
             raw_query,
-            read=source_dialect.value,
-            write=target_dialect.value,
+            read=sqlglot_read_dialect(source_dialect),
+            write=sqlglot_read_dialect(target_dialect),
         )[0]
     except Exception as exc:
         raise DialectError(

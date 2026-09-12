@@ -1,0 +1,38 @@
+apiVersion: elmos.ai/v1
+kind: DurableWorkflow
+metadata:
+  id: repository-assessment
+  version: 5.2.0
+spec:
+  engine: canonical-K7-adapter
+  steps:
+  - id: freeze-revisionset
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: inventory
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: reproduce-build
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: capture-runtime
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: build-system-graph
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: run-audits
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: normalize-findings
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: prioritize-root-causes
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: independent-review
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  authority: environment-owned
+  cancellation: bounded
+  completionAuthority: K8

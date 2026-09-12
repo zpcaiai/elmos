@@ -1,5 +1,8 @@
 ---
 name: pm-b28-skipped-and-flaky-test-detector
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "识别跳过、条件跳过、重试掩盖、时间依赖和环境不稳定测试. Precision Migration B28 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

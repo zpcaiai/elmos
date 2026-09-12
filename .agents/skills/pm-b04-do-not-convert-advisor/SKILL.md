@@ -1,5 +1,8 @@
 ---
 name: pm-b04-do-not-convert-advisor
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "当收益低于风险、目标不适合或缺乏等价能力时，明确给出不转换或先治理建议. Precision Migration B04 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

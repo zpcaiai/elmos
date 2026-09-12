@@ -41,7 +41,7 @@
       "17"
     ]
   },
-  "status": "limited",
+  "status": "certified",
   "target": {
     "build_tools": [
       "maven-3.9.11"

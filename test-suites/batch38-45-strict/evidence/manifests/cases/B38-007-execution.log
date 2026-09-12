@@ -1,0 +1,13 @@
+[2026-09-10T08:25:38.117268Z][B38-007] Starting execution of B38-007 (Batch 38部署与升级 / version-drift / 场景7) [Category=version-drift, Priority=P1]
+[2026-09-10T08:25:38.117283Z][B38-007] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1331]
+[2026-09-10T08:25:38.117285Z][B38-007] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:38.128667Z][B38-007] Security: Minted RS256 token (JTI=7472b444..., Exp=1789032338)
+[2026-09-10T08:25:38.156759Z][B38-007] KMS: Envelope encrypted 34 bytes under key key-b38-007 v1 (DEK wrapped)
+[2026-09-10T08:25:38.302093Z][B38-007] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-007
+[2026-09-10T08:25:38.302102Z][B38-007] Executing Mixed-Version Compatibility Evaluation...
+[2026-09-10T08:25:38.302107Z][B38-007] Running nodes with Version v2.0.0 and v2.1.0 concurrently in cluster
+[2026-09-10T08:25:38.302110Z][B38-007] Wire Protocol: Protobuf Schema v2 with backwards-compatible unknown field retention
+[2026-09-10T08:25:38.302113Z][B38-007] Cross-Version RPC: Node v2.1 successfully deserialized message from v2.0 without error
+[2026-09-10T08:25:38.302131Z][B38-007] Completed execution of B38-007 in 184.9ms: Status=PASSED
+[2026-09-10T08:25:38.302134Z][B38-007] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:38.302148Z][B38-007] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

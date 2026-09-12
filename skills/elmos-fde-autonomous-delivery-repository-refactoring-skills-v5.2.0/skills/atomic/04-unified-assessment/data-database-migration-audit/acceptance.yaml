@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: data-database-migration-audit
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Oracle routine conversion to PostgreSQL
+  - Backfill may violate unique constraint
+  - ORM N+1 appears only at realistic volume
+  negativeControls:
+  - run destructive query on production
+  - infer data meaning from column names alone
+  checks:
+  - id: data-database-migration-audit-AC-01
+    requirement: Recover logical and physical schemas, constraints, indexes, routines, triggers, views, permissions, and ownership.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: data-database-migration-audit-AC-02
+    requirement: Analyze query plans, N+1 patterns, transaction boundaries, locking, pagination, and data-access anti-patterns.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: data-database-migration-audit-AC-03
+    requirement: Detect data-quality, retention, deletion, PII, lineage, and reconciliation gaps.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: data-database-migration-audit-AC-04
+    requirement: Assess expand-migrate-contract, CDC, backfill, dual-write, rollback, and cutover hazards.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: data-database-migration-audit-AC-05
+    requirement: Compare dialect and routine semantics rather than syntax alone.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

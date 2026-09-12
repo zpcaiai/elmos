@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B27-005 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [27]
+Title: Batch 27 Incremental PR：使用越权身份、跨租户引用、恶意内容、秘密探测或出口绕过
+Capability: Incremental PR
+Test Type: security
+Skill: tst-b27-incremental-production-factory
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

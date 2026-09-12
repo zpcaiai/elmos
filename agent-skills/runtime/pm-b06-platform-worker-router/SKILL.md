@@ -1,5 +1,8 @@
 ---
 name: pm-b06-platform-worker-router
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将任务路由到 OCI、VM、macOS、设备、数据库、浏览器或 Proof Worker. Precision Migration B06 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b09-protocol-and-workflow-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达重试、Saga、Outbox、审批、消息交互和长流程协议. Precision Migration B09 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

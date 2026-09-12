@@ -1,0 +1,18 @@
+[
+  {
+    "agent": "codex",
+    "dry_run_no_writes": true,
+    "actual_temp_install_skill_count": 34,
+    "repeat_install_refused": true,
+    "policy_files_untouched": true,
+    "actual_elmos_repository_changed": false
+  },
+  {
+    "agent": "claude",
+    "dry_run_no_writes": true,
+    "actual_temp_install_skill_count": 34,
+    "repeat_install_refused": true,
+    "policy_files_untouched": true,
+    "actual_elmos_repository_changed": false
+  }
+]

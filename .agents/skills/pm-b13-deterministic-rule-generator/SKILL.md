@@ -1,5 +1,8 @@
 ---
 name: pm-b13-deterministic-rule-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从已验证规则和 IR Lowering 确定性生成候选，避免重复推理. Precision Migration B13 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

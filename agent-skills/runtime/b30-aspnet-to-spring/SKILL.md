@@ -1,6 +1,9 @@
 ---
 name: b30-aspnet-to-spring
-description: "Implement and certify the directional ASP.NET Core or supported ASP.NET source to Spring Boot target framework pack, preserving routes, model binding, middleware, DI lifetimes, Options, validation, authentication/authorization, EF Core, transactions, hosted services, messaging, cache, and errors."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement and certify the directional ASP.NET Core or supported ASP.NET source to Spring Boot target framework pack, preserving routes, model binding, middleware, DI lifetimes, Options, validation, authentication/authorization, EF Core, transactions, hosted services, messaging, cache, and errors.
 ---
 
 ## Operating mode

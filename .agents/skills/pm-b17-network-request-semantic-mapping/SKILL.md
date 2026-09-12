@@ -1,5 +1,8 @@
 ---
 name: pm-b17-network-request-semantic-mapping
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "映射请求序列化、取消、重试、缓存、错误、竞态和 Latest-wins. Precision Migration B17 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -33,6 +33,8 @@ final class SpringUpgradeModels {
         OPENREWRITE,
         BUILD_AND_TEST,
         DETERMINISTIC_REPAIR,
+        DIAGNOSTIC_TARGETED_REPAIR,
+        HANDOFF_GENERATION,
         INDEPENDENT_VALIDATION,
         PACKAGE_ARTIFACT,
         READY,

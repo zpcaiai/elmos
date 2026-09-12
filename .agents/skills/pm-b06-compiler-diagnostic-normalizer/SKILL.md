@@ -1,5 +1,8 @@
 ---
 name: pm-b06-compiler-diagnostic-normalizer
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将编译、链接、类型、Lint 和构建诊断规范化为结构化问题. Precision Migration B06 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B22-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [22]
+Title: Batch 22 Equality/Hash：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: Equality/Hash
+Test Type: dependency_failure
+Skill: tst-b22-semantic-hardening
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

@@ -1,0 +1,48 @@
+apiVersion: elmos.ai/v1
+kind: AdapterDescriptor
+metadata:
+  id: security-scanner-adapter
+  version: 5.2.0
+spec:
+  providers:
+  - SAST
+  - DAST
+  - IaC
+  - container
+  - secret scanners
+  scope: security signals and remediation verification
+  replaceable: true
+  completionAuthority: false
+  routeAuthority: false
+  semanticTruthAuthority: false
+  riskClass: medium
+  requiredCapabilities:
+  - capability-negotiation
+  - invocation-scoped-lease
+  - verified-security-context
+  - typed-result
+  - version-pinning
+  - fencing
+  sideEffects:
+    default: none
+    writesRequire:
+    - explicit plan step
+    - policy approval
+    - idempotency key
+    - effect ledger
+  dataHandling:
+    tenantIsolation: true
+    secretsModelVisible: false
+    retention: tenant-policy
+  conformance:
+  - happy path
+  - auth denial
+  - tenant denial
+  - timeout
+  - retry
+  - idempotency
+  - stale generation
+  - version mismatch
+  - partial result
+  - cancellation
+  - audit completeness

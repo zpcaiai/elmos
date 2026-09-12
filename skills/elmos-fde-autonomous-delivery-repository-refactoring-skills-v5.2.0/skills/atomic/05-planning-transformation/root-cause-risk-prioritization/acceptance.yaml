@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: root-cause-risk-prioritization
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Hundreds of findings share one missing tenant-context boundary
+  - Critical vulnerability is low confidence
+  - Quick fix increases long-term coupling
+  negativeControls:
+  - sort only by scanner severity
+  - hide low-confidence critical candidates
+  checks:
+  - id: root-cause-risk-prioritization-AC-01
+    requirement: Separate symptoms, contributing conditions, root causes, amplifiers, and latent risks.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: root-cause-risk-prioritization-AC-02
+    requirement: Prioritize using business criticality, likelihood, blast radius, exploitability, change frequency, and remediation
+      leverage.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: root-cause-risk-prioritization-AC-03
+    requirement: Account for prerequisite fixes, coupled findings, and risk introduced by change.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: root-cause-risk-prioritization-AC-04
+    requirement: Keep evidence confidence and unknowns visible in ranking.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: root-cause-risk-prioritization-AC-05
+    requirement: Produce quick wins, mandatory controls, enabling foundations, and strategic workstreams.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

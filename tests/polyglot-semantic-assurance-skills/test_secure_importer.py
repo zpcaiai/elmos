@@ -36,8 +36,7 @@ def _fingerprint(root: Path) -> tuple[tuple[str, str], ...]:
         metadata = path.lstat()
         identity = (
             f"mode={stat.S_IMODE(metadata.st_mode):04o};uid={metadata.st_uid};"
-            f"gid={metadata.st_gid};dev={metadata.st_dev};ino={metadata.st_ino};"
-            f"nlink={metadata.st_nlink}"
+            f"gid={metadata.st_gid};dev={metadata.st_dev};ino={metadata.st_ino}"
         )
         if stat.S_ISLNK(metadata.st_mode):
             detail = f"SYMLINK;{identity};target={os.readlink(path)}"

@@ -1,5 +1,8 @@
 ---
 name: pm-b37-security-review-agent
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "独立审查权限、输入、Secret、供应链、沙箱和生成代码安全. Precision Migration B37 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

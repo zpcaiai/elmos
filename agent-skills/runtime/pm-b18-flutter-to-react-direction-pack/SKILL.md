@@ -1,5 +1,8 @@
 ---
 name: pm-b18-flutter-to-react-direction-pack
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "提供从 Flutter 到 React 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为. Precision Migration B18 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

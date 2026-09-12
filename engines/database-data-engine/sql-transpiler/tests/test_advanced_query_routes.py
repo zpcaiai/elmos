@@ -147,4 +147,3 @@ def test_all_42_routes_transpile_set_operations(route) -> None:
     assert result.target_emit == "PASSED"
     assert result.target_reparse == "PASSED"
     assert result.target_sql is not None
-

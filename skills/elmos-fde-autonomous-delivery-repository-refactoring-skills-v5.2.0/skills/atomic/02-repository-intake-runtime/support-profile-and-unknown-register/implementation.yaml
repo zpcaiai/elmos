@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: support-profile-and-unknown-register
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: SupportProfileAndUnknownRegisterService
+    workflow: SupportProfileAndUnknownRegisterWorkflow
+    policyGate: SupportProfileAndUnknownRegisterPolicyGate
+    evidenceProducer: SupportProfileAndUnknownRegisterEvidenceProducer
+    repositoryPort: SupportProfileAndUnknownRegisterRepositoryPort
+  requiredPorts:
+  - id: registry.read
+    direction: outbound
+  - id: coverage.compute
+    direction: inbound
+  - id: unknown.append
+    direction: outbound
+  - id: policy.evaluate
+    direction: outbound
+  - id: report.generate
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/support-profile-and-unknown-register/runs
+  - GET /api/v1/skills/support-profile-and-unknown-register/runs/{runId}
+  - POST /api/v1/skills/support-profile-and-unknown-register/runs/{runId}/cancel
+  - POST /api/v1/skills/support-profile-and-unknown-register/runs/{runId}/resume
+  events:
+  - elmos.skill.support-profile-and-unknown-register.requested.v1
+  - elmos.skill.support-profile-and-unknown-register.checkpointed.v1
+  - elmos.skill.support-profile-and-unknown-register.completed.v1
+  - elmos.skill.support-profile-and-unknown-register.failed.v1
+  workflowSteps:
+  - Load asset inventory and available analyzers, adapters, toolchains, and fixtures.
+  - Compute support depth and coverage for each technology and system surface.
+  - Create unknown records with owner, impact, resolution path, and release effect.
+  - Assess evidence age and RevisionSet compatibility.
+  - Evaluate release blockers under policy.
+  - Publish the support profile and completeness statement.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

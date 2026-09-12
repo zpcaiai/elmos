@@ -1,0 +1,12 @@
+[2026-09-10T08:26:14.050694Z][X-U013-005] Starting execution of X-U013-005 (Edition拓扑与数据边界 / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:26:14.050701Z][X-U013-005] Bound Skill: tst-edition-topology-data-boundary | Product Skill IDs: []
+[2026-09-10T08:26:14.050704Z][X-U013-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:14.073418Z][X-U013-005] Security: Minted RS256 token (JTI=b5010fb9..., Exp=1789032374)
+[2026-09-10T08:26:14.122278Z][X-U013-005] KMS: Envelope encrypted 37 bytes under key key-x-u013-005 v1 (DEK wrapped)
+[2026-09-10T08:26:14.164172Z][X-U013-005] [CROSS-RESILIENCE] Starting X-U013-005 (U013) Category=security
+[2026-09-10T08:26:14.164178Z][X-U013-005] Topology & Data Boundary: Evaluating edition topology (SaaS / Dedicated / Sovereign / Edge)
+[2026-09-10T08:26:14.164182Z][X-U013-005] Verifying Sovereign Cloud network isolation rules (zero outbound egress allowed)...
+[2026-09-10T08:26:14.164183Z][X-U013-005] Egress Firewall: 0 outbound packets dropped outside sovereign VPC boundary
+[2026-09-10T08:26:14.164202Z][X-U013-005] Completed execution of X-U013-005 in 113.5ms: Status=PASSED
+[2026-09-10T08:26:14.164205Z][X-U013-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:14.164219Z][X-U013-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

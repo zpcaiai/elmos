@@ -17,7 +17,7 @@
       ],
       "id": "web",
       "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
-      "status": "supported",
+      "status": "certified",
       "strategy": "framework-contract-and-real-runtime",
       "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
     },
@@ -59,7 +59,7 @@
       ],
       "id": "configuration",
       "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
-      "status": "supported",
+      "status": "certified",
       "strategy": "framework-contract-and-real-runtime",
       "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
     },
@@ -154,7 +154,7 @@
       ],
       "id": "lifecycle",
       "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
-      "status": "supported",
+      "status": "certified",
       "strategy": "framework-contract-and-real-runtime",
       "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
     }

@@ -1,6 +1,9 @@
 ---
 name: b32-client-estate-discovery
-description: "Discover and fingerprint pages components templates routes state stores forms API clients assets design systems browser APIs accessibility tests runtime rendering and device behavior before client modernization."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Discover and fingerprint pages components templates routes state stores forms API clients assets design systems browser APIs accessibility tests runtime rendering and device behavior before client modernization.
 ---
 
 ## Operating mode

@@ -17,7 +17,25 @@ from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Any
 
-from .models import Dialect, RouteError
+from .dm8_dialect import (
+    DM8DialectLowerer,
+    lower_dm8_ddl,
+    lower_dm8_query,
+    lower_dm8_sequence,
+    lower_dm8_upsert,
+)
+from .models import (
+    ChinaDbDialect,
+    Dialect,
+    RouteError,
+)
+from .opengauss_dialect import (
+    OpenGaussDialectLowerer,
+    OpenGaussMode,
+    lower_opengauss_ddl,
+    lower_opengauss_query,
+    lower_opengauss_routine,
+)
 
 _ORACLE = MappingProxyType(
     {
@@ -25,11 +43,31 @@ _ORACLE = MappingProxyType(
         "oracle-compatible": Dialect.ORACLE,
     }
 )
+_DM8 = MappingProxyType(
+    {
+        "oracle-compatible-explicit": Dialect.ORACLE,
+        "oracle-compatible": Dialect.ORACLE,
+        "native": Dialect.ORACLE,
+        "dm8-native": Dialect.ORACLE,
+    }
+)
 _POSTGRES = MappingProxyType(
     {
         "pg-compatible-explicit": Dialect.POSTGRES,
         "postgresql-compatible": Dialect.POSTGRES,
         "a-compatible": Dialect.POSTGRES,
+    }
+)
+_OPENGAUSS = MappingProxyType(
+    {
+        "pg-compatible-explicit": Dialect.POSTGRES,
+        "postgresql-compatible": Dialect.POSTGRES,
+        "a-compatible": Dialect.POSTGRES,
+        "native": Dialect.POSTGRES,
+        "opengauss-native": Dialect.POSTGRES,
+        "pg-mode": Dialect.POSTGRES,
+        "a-mode": Dialect.POSTGRES,
+        "b-mode": Dialect.POSTGRES,
     }
 )
 _MYSQL = MappingProxyType(
@@ -93,14 +131,14 @@ def _target(
 # Keep this tuple in the same order as the Batch 31 commercial registry.  The
 # order is part of the report's deterministic, diffable output.
 CHINADB_TARGETS: tuple[ChinaDbTarget, ...] = (
-    _target("dm8", "DM8", "native or explicitly selected compatibility mode", _ORACLE),
+    _target("dm8", "DM8", "native or explicitly selected compatibility mode", _DM8),
     _target(
         "kingbasees",
         "KingbaseES",
         "native or explicitly selected compatibility mode",
         _KINGBASE,
     ),
-    _target("opengauss", "openGauss", "exact database compatibility mode", _POSTGRES),
+    _target("opengauss", "openGauss", "exact database compatibility mode", _OPENGAUSS),
     _target("tidb", "TiDB", "exact SQL mode and deployment topology", _MYSQL),
     _target("gbase-8s", "GBase 8s", "exact compatibility mode", _GBASE_8S),
     _target(
@@ -156,6 +194,39 @@ CHINADB_TARGETS: tuple[ChinaDbTarget, ...] = (
 CHINADB_EXCLUDED_TARGET_IDS = ("polardb", "polardb-x", "tdsql")
 CHINADB_SOURCE_FAMILY_COUNT = 6
 CHINADB_PLANNED_ROUTE_COUNT = CHINADB_SOURCE_FAMILY_COUNT * len(CHINADB_TARGETS)
+
+DM8_CAPABILITIES: frozenset[str] = frozenset(
+    {
+        "IDENTITY_COLUMNS",
+        "MERGE_UPSERT",
+        "CLOB_TEXT",
+        "VARCHAR2_SEMANTICS",
+        "ROWNUM_PAGINATION",
+        "SYNONYMS",
+        "COMPATIBILITY_MODES",
+        "TRANSACTION_AUTONOMOUS",
+    }
+)
+
+OPENGAUSS_CAPABILITIES: frozenset[str] = frozenset(
+    {
+        "HASH_DISTRIBUTION",
+        "REPLICATION_DISTRIBUTION",
+        "ROW_ORIENTATION",
+        "COLUMN_ORIENTATION",
+        "ROW_COLUMN_ORIENTATION",
+        "COMPATIBILITY_MODES",
+        "ON_DUPLICATE_KEY",
+        "PLPGSQL_ROUTINES",
+        "PACKAGE_SUPPORT",
+        "SERIAL_COLUMN",
+        "JSONB",
+        "TIMESTAMPTZ",
+        "PG_MODE",
+        "A_MODE",
+        "B_MODE",
+    }
+)
 
 _BY_ID = {target.id: target for target in CHINADB_TARGETS}
 
@@ -275,6 +346,107 @@ def translate_chinadb_ddl(
             ),
         }
 
+    # Handle native lowering for DM8
+    if target_id == "dm8" and compatibility_mode in ("native", "dm8-native"):
+        try:
+            emitted = lower_dm8_ddl(sql, source_dialect=source_dialect)
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-dialect-translation",
+                "status": "PASSED",
+                "state": "LOCAL_EMITTED",
+                "profile": "dm8-native-ddl",
+                "sourceDialect": source_dialect,
+                "targetDialect": "dm8",
+                "namespaceProfile": None,
+                "reasonCode": None,
+                "reason": None,
+                "emitted": emitted,
+                "validation": None,
+                **_honesty_fields(
+                    target_id=target_id,
+                    compatibility_mode=compatibility_mode,
+                    mapped_dialect="dm8",
+                ),
+            }
+        except Exception as exc:  # noqa: BLE001
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-dialect-translation",
+                "status": "BLOCKED",
+                "state": "BLOCKED",
+                "profile": "dm8-native-ddl",
+                "sourceDialect": source_dialect,
+                "targetDialect": "dm8",
+                "namespaceProfile": None,
+                "reasonCode": "DM8_LOWERING_FAILED",
+                "reason": str(exc),
+                "emitted": None,
+                "validation": None,
+                **_honesty_fields(
+                    target_id=target_id,
+                    compatibility_mode=compatibility_mode,
+                    mapped_dialect="dm8",
+                ),
+            }
+
+    # Handle native lowering for openGauss
+    if target_id == "opengauss" and compatibility_mode in (
+        "native",
+        "opengauss-native",
+        "pg-mode",
+        "a-mode",
+        "b-mode",
+    ):
+        try:
+            orientation = kwargs.get("orientation", "ROW")
+            distribute_by = kwargs.get("distribute_by")
+            emitted = lower_opengauss_ddl(
+                sql,
+                source_dialect=source_dialect,
+                orientation=orientation,
+                distribute_by=distribute_by,
+            )
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-dialect-translation",
+                "status": "PASSED",
+                "state": "LOCAL_EMITTED",
+                "profile": "opengauss-native-ddl",
+                "sourceDialect": source_dialect,
+                "targetDialect": "opengauss",
+                "namespaceProfile": None,
+                "reasonCode": None,
+                "reason": None,
+                "emitted": emitted,
+                "validation": None,
+                **_honesty_fields(
+                    target_id=target_id,
+                    compatibility_mode=compatibility_mode,
+                    mapped_dialect="opengauss",
+                ),
+            }
+        except Exception as exc:  # noqa: BLE001
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-dialect-translation",
+                "status": "BLOCKED",
+                "state": "BLOCKED",
+                "profile": "opengauss-native-ddl",
+                "sourceDialect": source_dialect,
+                "targetDialect": "opengauss",
+                "namespaceProfile": None,
+                "reasonCode": "OPENGAUSS_LOWERING_FAILED",
+                "reason": str(exc),
+                "emitted": None,
+                "validation": None,
+                **_honesty_fields(
+                    target_id=target_id,
+                    compatibility_mode=compatibility_mode,
+                    mapped_dialect="opengauss",
+                ),
+            }
+
     report = translate_ddl(sql, source_dialect, mapped.value, **kwargs)
     report.update(
         _honesty_fields(
@@ -288,3 +460,102 @@ def translate_chinadb_ddl(
     else:
         report["state"] = report.get("status")
     return report
+
+
+def translate_to_dm8(
+    sql: str,
+    source_dialect: str = "postgres",
+    compatibility_mode: str = "native",
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Convenience helper to translate DDL directly to DM8."""
+    return translate_chinadb_ddl(
+        sql,
+        source_dialect=source_dialect,
+        target_id="dm8",
+        compatibility_mode=compatibility_mode,
+        **kwargs,
+    )
+
+
+def translate_to_opengauss(
+    sql: str,
+    source_dialect: str = "postgres",
+    compatibility_mode: str = "native",
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Convenience helper to translate DDL directly to openGauss."""
+    return translate_chinadb_ddl(
+        sql,
+        source_dialect=source_dialect,
+        target_id="opengauss",
+        compatibility_mode=compatibility_mode,
+        **kwargs,
+    )
+
+
+def lower_to_dm8(sql: str, source_dialect: str = "postgres", kind: str = "ddl") -> str:
+    """Lower SQL to DM8 depending on statement kind ('ddl', 'query', 'sequence', 'upsert')."""
+    kind_lower = kind.lower().strip()
+    if kind_lower == "query":
+        return lower_dm8_query(sql, source_dialect=source_dialect)
+    if kind_lower == "sequence":
+        return lower_dm8_sequence(sql, source_dialect=source_dialect)
+    if kind_lower == "upsert":
+        return lower_dm8_upsert(sql, source_dialect=source_dialect)
+    return lower_dm8_ddl(sql, source_dialect=source_dialect)
+
+
+def lower_to_opengauss(
+    sql: str,
+    source_dialect: str = "postgres",
+    kind: str = "ddl",
+    mode: str = "PG",
+    orientation: str = "ROW",
+    distribute_by: str | None = None,
+) -> str:
+    """Lower SQL to openGauss depending on statement kind ('ddl', 'query', 'routine')."""
+    kind_lower = kind.lower().strip()
+    if kind_lower == "query":
+        return lower_opengauss_query(sql, source_dialect=source_dialect, mode=mode)
+    if kind_lower in ("routine", "function", "procedure"):
+        return lower_opengauss_routine(sql, source_dialect=source_dialect)
+    return lower_opengauss_ddl(
+        sql,
+        source_dialect=source_dialect,
+        orientation=orientation,
+        distribute_by=distribute_by,
+    )
+
+
+__all__ = [
+    "CHINADB_EXCLUDED_TARGET_IDS",
+    "CHINADB_PLANNED_ROUTE_COUNT",
+    "CHINADB_SOURCE_FAMILY_COUNT",
+    "CHINADB_TARGETS",
+    "CHINADB_TARGET_SQL_EMISSION",
+    "ChinaDbDialect",
+    "ChinaDbTarget",
+    "DM8_CAPABILITIES",
+    "DM8DialectLowerer",
+    "OPENGAUSS_CAPABILITIES",
+    "OpenGaussDialectLowerer",
+    "OpenGaussMode",
+    "chinadb_capabilities",
+    "chinadb_target_by_id",
+    "lower_dm8_ddl",
+    "lower_dm8_query",
+    "lower_dm8_sequence",
+    "lower_dm8_upsert",
+    "lower_opengauss_ddl",
+    "lower_opengauss_query",
+    "lower_opengauss_routine",
+    "lower_to_dm8",
+    "lower_to_opengauss",
+    "translate_chinadb_ddl",
+    "translate_to_dm8",
+    "translate_to_opengauss",
+    "validate_chinadb_registry",
+]
+
+

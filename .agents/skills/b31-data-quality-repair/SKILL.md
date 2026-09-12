@@ -1,5 +1,14 @@
 ---
 name: b31-data-quality-repair
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: Implement data profiling, quality rules, anomaly classification, duplicate and referential checks, migration-defect isolation, controlled repair, reconciliation, and evidence. Use for data-quality readiness and repair loops.
 ---
 

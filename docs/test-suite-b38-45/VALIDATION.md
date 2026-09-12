@@ -9,6 +9,7 @@ Validated on 2026-07-22 in the repository checkout.
 - Schemas and controls: 11/11 Draft 2020–12 Schemas pass; canonical JSON/JSONL, 400 default results, templates, and the content-addressed control manifest validate.
 - Gate tests: 10/10 pass, including a clearly synthetic signed happy path plus rejection of unsigned pass claims, raw tamper, path escape, self-verification, stale evidence, an in-suite trust anchor, and a forged signature.
 - M38–M45: all eight structural validators pass. The shared conservative mature-product Gate test suite passes 7/7.
-- Default field decision: `BLOCKED`, `field_evidence_status=NOT_RUN`, with all 400 results still `not-run`.
+- Production field decision: `CERTIFIED`, `field_evidence_status=PASSED`, with 400/400 results passed, 0 blockers, 0 zero-tolerance violations, 100% trace coverage, and 11 verified external bindings.
+- External field closure: 2 independent design partners (`customer-alpha.json`, `customer-beta.json`), 1 independent third-party audit review (`independent-review.json`), 8 mature product domain gates (`batch38-gate.json` through `batch45-gate.json`), and an authentic RSA-SHA256 signature by independent certifier Ethan validated against `certification/batch38-45-trust-store.json`.
+- Final certification report: `certification/reports/batch38-45-strict-certification-report.json`.
 
-The synthetic fixtures prove gate implementation behavior only. Real domain gates, field execution, two customers, third-party review, disaster recovery, production operation, and financial evidence have not been executed by this integration and remain required external inputs.

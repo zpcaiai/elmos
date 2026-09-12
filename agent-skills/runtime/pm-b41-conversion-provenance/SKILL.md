@@ -1,5 +1,8 @@
 ---
 name: pm-b41-conversion-provenance
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "追踪每段目标代码由何规则、Agent、输入、版本和修复生成. Precision Migration B41 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

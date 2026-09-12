@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "id": "example-deployment-lifecycle-zero-tolerance",
+  "batch": 38,
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "NOT_RUN",
+  "flags": [
+    {
+      "name": "criticalDataLoss",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "crossTenantAccess",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "incompatibleRunnerLeases",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "orphanedWorkflows",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "residencyViolations",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "testIntegrityViolations",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unresolvedSchemaIncompatibilities",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unsignedUpdatesAccepted",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    }
+  ]
+}

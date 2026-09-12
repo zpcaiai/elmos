@@ -1,0 +1,36 @@
+skill: elmos-assurance-orchestrator
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-orchestrator-A01
+  given: 包级pytest全部通过
+  when: 在真实集成模块执行对应测试或负例
+  then: 只报告参考实现通过，不给产品E5
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-orchestrator-A02
+  given: 有已有功能可复用
+  when: 在真实集成模块执行对应测试或负例
+  then: 最小适配，不重建Harness
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-orchestrator-A03
+  given: 所有内部测试通过但Ethen未配置
+  when: 在真实集成模块执行对应测试或负例
+  then: E5 INCONCLUSIVE，仍交付完整证据草案
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

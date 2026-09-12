@@ -1,5 +1,8 @@
 ---
 name: pm-b10-frontend-component-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达组件输入、输出、状态、派生状态、子内容、事件和渲染语义. Precision Migration B10 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

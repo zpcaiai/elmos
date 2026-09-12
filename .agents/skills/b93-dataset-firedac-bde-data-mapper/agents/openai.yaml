@@ -1,0 +1,4 @@
+interface:
+  display_name: "B93 Dataset Firedac Bde Data Mapper"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b93-dataset-firedac-bde-data-mapper to execute this ELMOS Language Pack Skill with fail-closed evidence."

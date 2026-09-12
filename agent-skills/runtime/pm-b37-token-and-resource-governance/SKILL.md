@@ -1,5 +1,8 @@
 ---
 name: pm-b37-token-and-resource-governance
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "按任务、租户、模型、阶段和风险治理 Token、计算、并发和预算. Precision Migration B37 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

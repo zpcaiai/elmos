@@ -1,5 +1,8 @@
 ---
 name: pm-b14-rust-error-exception-adapter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "恢复 Rust 的异常、错误返回、panic/throw 与清理路径语义. Precision Migration B14 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

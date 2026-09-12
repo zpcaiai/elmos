@@ -1,0 +1,728 @@
+{
+  "batch": {
+    "id": "B11",
+    "title": "Modernization, polyglot and database transformation routes",
+    "dependsOn": [
+      "B10"
+    ],
+    "skills": [
+      "modernization-strangler-and-rearchitecture",
+      "cross-language-framework-transformation",
+      "database-schema-routine-data-transformation"
+    ],
+    "tasks": [
+      "B11-T001",
+      "B11-T002",
+      "B11-T003",
+      "B11-T004",
+      "B11-T005",
+      "B11-T006",
+      "B11-T007",
+      "B11-T008",
+      "B11-T009",
+      "B11-T010",
+      "B11-T011",
+      "B11-T012",
+      "B11-T013",
+      "B11-T014",
+      "B11-T015",
+      "B11-T016",
+      "B11-T017",
+      "B11-T018",
+      "B11-T019",
+      "B11-T020",
+      "B11-T021",
+      "B11-T022",
+      "B11-T023",
+      "B11-T024",
+      "B11-T025",
+      "B11-T026",
+      "B11-T027",
+      "B11-T028",
+      "B11-T029",
+      "B11-T030"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B11-T001",
+      "batch": "B11",
+      "title": "modernization-strangler-and-rearchitecture: Bind canonical ownership and model domain contracts",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B10-T020",
+        "B09-T020"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for modernization-strangler-and-rearchitecture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T002",
+      "batch": "B11",
+      "title": "modernization-strangler-and-rearchitecture: Implement persistence projections and append-only ledger events",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T001"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for modernization-strangler-and-rearchitecture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T003",
+      "batch": "B11",
+      "title": "modernization-strangler-and-rearchitecture: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T002"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for modernization-strangler-and-rearchitecture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T004",
+      "batch": "B11",
+      "title": "modernization-strangler-and-rearchitecture: Implement service and durable workflow",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T003"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for modernization-strangler-and-rearchitecture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T005",
+      "batch": "B11",
+      "title": "modernization-strangler-and-rearchitecture: Implement replaceable ports and first reference Adapter",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T004"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for modernization-strangler-and-rearchitecture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T006",
+      "batch": "B11",
+      "title": "modernization-strangler-and-rearchitecture: Implement APIs, events and query projections",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T005"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for modernization-strangler-and-rearchitecture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T007",
+      "batch": "B11",
+      "title": "modernization-strangler-and-rearchitecture: Implement product UI or operator surface",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T006"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for modernization-strangler-and-rearchitecture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T008",
+      "batch": "B11",
+      "title": "modernization-strangler-and-rearchitecture: Add deterministic tests, negative controls and failure injection",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T007"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for modernization-strangler-and-rearchitecture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T009",
+      "batch": "B11",
+      "title": "modernization-strangler-and-rearchitecture: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T008"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for modernization-strangler-and-rearchitecture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T010",
+      "batch": "B11",
+      "title": "modernization-strangler-and-rearchitecture: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T009"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for modernization-strangler-and-rearchitecture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T011",
+      "batch": "B11",
+      "title": "cross-language-framework-transformation: Bind canonical ownership and model domain contracts",
+      "skillId": "cross-language-framework-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B10-T020",
+        "B09-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for cross-language-framework-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T012",
+      "batch": "B11",
+      "title": "cross-language-framework-transformation: Implement persistence projections and append-only ledger events",
+      "skillId": "cross-language-framework-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T011"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for cross-language-framework-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T013",
+      "batch": "B11",
+      "title": "cross-language-framework-transformation: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "cross-language-framework-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T012"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for cross-language-framework-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T014",
+      "batch": "B11",
+      "title": "cross-language-framework-transformation: Implement service and durable workflow",
+      "skillId": "cross-language-framework-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T013"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for cross-language-framework-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T015",
+      "batch": "B11",
+      "title": "cross-language-framework-transformation: Implement replaceable ports and first reference Adapter",
+      "skillId": "cross-language-framework-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T014"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for cross-language-framework-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T016",
+      "batch": "B11",
+      "title": "cross-language-framework-transformation: Implement APIs, events and query projections",
+      "skillId": "cross-language-framework-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T015"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for cross-language-framework-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T017",
+      "batch": "B11",
+      "title": "cross-language-framework-transformation: Implement product UI or operator surface",
+      "skillId": "cross-language-framework-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T016"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for cross-language-framework-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T018",
+      "batch": "B11",
+      "title": "cross-language-framework-transformation: Add deterministic tests, negative controls and failure injection",
+      "skillId": "cross-language-framework-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T017"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for cross-language-framework-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T019",
+      "batch": "B11",
+      "title": "cross-language-framework-transformation: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "cross-language-framework-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T018"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for cross-language-framework-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T020",
+      "batch": "B11",
+      "title": "cross-language-framework-transformation: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "cross-language-framework-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T019"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for cross-language-framework-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T021",
+      "batch": "B11",
+      "title": "database-schema-routine-data-transformation: Bind canonical ownership and model domain contracts",
+      "skillId": "database-schema-routine-data-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B10-T020",
+        "B07-T040",
+        "B09-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for database-schema-routine-data-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T022",
+      "batch": "B11",
+      "title": "database-schema-routine-data-transformation: Implement persistence projections and append-only ledger events",
+      "skillId": "database-schema-routine-data-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T021"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for database-schema-routine-data-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T023",
+      "batch": "B11",
+      "title": "database-schema-routine-data-transformation: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "database-schema-routine-data-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T022"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for database-schema-routine-data-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T024",
+      "batch": "B11",
+      "title": "database-schema-routine-data-transformation: Implement service and durable workflow",
+      "skillId": "database-schema-routine-data-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T023"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for database-schema-routine-data-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T025",
+      "batch": "B11",
+      "title": "database-schema-routine-data-transformation: Implement replaceable ports and first reference Adapter",
+      "skillId": "database-schema-routine-data-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T024"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for database-schema-routine-data-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T026",
+      "batch": "B11",
+      "title": "database-schema-routine-data-transformation: Implement APIs, events and query projections",
+      "skillId": "database-schema-routine-data-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T025"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for database-schema-routine-data-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T027",
+      "batch": "B11",
+      "title": "database-schema-routine-data-transformation: Implement product UI or operator surface",
+      "skillId": "database-schema-routine-data-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T026"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for database-schema-routine-data-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T028",
+      "batch": "B11",
+      "title": "database-schema-routine-data-transformation: Add deterministic tests, negative controls and failure injection",
+      "skillId": "database-schema-routine-data-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T027"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for database-schema-routine-data-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T029",
+      "batch": "B11",
+      "title": "database-schema-routine-data-transformation: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "database-schema-routine-data-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T028"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for database-schema-routine-data-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B11-T030",
+      "batch": "B11",
+      "title": "database-schema-routine-data-transformation: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "database-schema-routine-data-transformation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B11-T029"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for database-schema-routine-data-transformation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

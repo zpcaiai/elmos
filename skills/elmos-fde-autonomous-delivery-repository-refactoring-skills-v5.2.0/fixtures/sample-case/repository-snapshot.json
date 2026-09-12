@@ -1,0 +1,19 @@
+{
+  "repositoryId": "repo-demo",
+  "revisionSetId": "revset-001",
+  "repositories": [
+    {
+      "uri": "file:///workspace/repo-demo",
+      "revision": "0123456789abcdef",
+      "submodules": []
+    }
+  ],
+  "capturedAt": "2026-08-31T00:00:00Z",
+  "contentHash": "sha256:demo",
+  "custody": {
+    "source": "customer-approved-clone",
+    "collector": "elmos-intake"
+  },
+  "dirty": false,
+  "largeFiles": []
+}

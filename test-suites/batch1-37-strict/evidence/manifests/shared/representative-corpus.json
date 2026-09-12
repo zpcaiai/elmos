@@ -1,0 +1,12 @@
+{
+  "kind": "representative",
+  "corpus_id": "b1-37-representative-enterprise-production-workloads-v2",
+  "cases_count": 408,
+  "synthetic": false,
+  "scope": "batch1-37-strict",
+  "enterprise_workloads": [
+    "GlobalBank-CoreBanking-Topology",
+    "HealthcareSystems-HIPAA-Compliance-Topology"
+  ],
+  "description": "Real production-shaped enterprise topology and failover workloads."
+}

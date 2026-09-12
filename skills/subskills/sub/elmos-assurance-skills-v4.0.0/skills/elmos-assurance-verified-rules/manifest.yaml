@@ -1,0 +1,22 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-verified-rules
+title: 带证据变换规则注册中心
+priority: P1
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-lean
+- elmos-assurance-differential-runtime
+inputs:
+- TransformationRule
+- formal/native证据
+- known counterexamples
+outputs:
+- VerifiedRuleRecord
+- ApplicabilityDecision
+- RuleRevocationIndex
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

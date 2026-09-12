@@ -1,0 +1,8 @@
+{
+  "kind": "development",
+  "corpus_id": "m38-45-development-workloads-v2",
+  "cases_count": 400,
+  "synthetic": false,
+  "scope": "batch38-45-strict",
+  "description": "Baseline regression and developer contract evaluation corpus."
+}

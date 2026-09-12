@@ -1,0 +1,27 @@
+schema_version: "1.0"
+toolchain_id: java8-to-java21
+version: 1.0.0
+image_digest:
+  algorithm: sha256
+  hex: REPLACE_WITH_64_HEX
+  size_bytes: 0
+os: linux
+architecture: amd64
+components:
+  - name: jdk-source
+    version: "8"
+  - name: jdk-target
+    version: "21"
+  - name: maven
+    version: "3.9"
+locale: C.UTF-8
+timezone: UTC
+environment:
+  SOURCE_DATE_EPOCH: "0"
+network_policy_digest:
+  algorithm: sha256
+  hex: REPLACE_WITH_64_HEX
+  size_bytes: 0
+determinism:
+  source_date_epoch: 0
+  random_seed_policy: fixed-per-action

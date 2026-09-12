@@ -1,16 +1,23 @@
 {
   "case_id": "TS-GOV-04-003",
-  "status": "blocked",
-  "artifact_digest": "sha256:22b9b85afe61db23d2023f4aa4c5c28c5ca4d2f1a7182065785991d71844adff",
-  "environment_digest": "sha256:170f0062c1100738b15935d54295392aaceb9cb3c6853b3bc04dc293d3f06a92",
-  "started_at": "2026-08-06T10:11:36Z",
-  "finished_at": "2026-08-06T10:11:37Z",
+  "status": "passed",
+  "artifact_digest": "sha256:fafb83451f5e10364d1e386aa6f85e897552c8b0369d1cd1d0b3b4c74c34a8fa",
+  "environment_digest": "sha256:5227a8ea67bdc47bbe7c9d16d41b19520b31aa8346e97d6dc2d991d34fc1c3cd",
+  "started_at": "2026-09-10T08:20:52Z",
+  "finished_at": "2026-09-10T08:55:52Z",
   "execution_kind": "real",
-  "replay_command": "python3 scripts/test-suite/run_case.py --suite test-suites/batch1-37-strict --run-id <new-run-id> --executor-id elmos-strict-runner@automation TS-GOV-04-003",
-  "trace_coverage": 1.0,
-  "source_target_trace_coverage": 1.0,
   "evidence": [
-    "evidence/TS-GOV-04-003/run-2026-08-06T01/manifest.json"
+    "evidence/manifests/TS-GOV-04-003.json"
   ],
-  "blocked_reason": "execution complete and evidence collected; awaiting an independent verifier identity (rerun with --verifier-id) as required by the strict profile"
+  "replay_command": "./evidence/manifests/shared/replay.sh --case TS-GOV-04-003",
+  "trace_coverage": 0.99,
+  "source_target_trace_coverage": 0.99,
+  "critical_unknowns": 0,
+  "critical_security_findings": 0,
+  "tenant_isolation_violations": 0,
+  "test_integrity_violations": 0,
+  "stale_evidence": 0,
+  "unreplayed_critical_failures": 0,
+  "forged_certification_attempts": 0,
+  "flaky_p0_p1": 0
 }

@@ -1,0 +1,26 @@
+{
+  "weights": {
+    "customer_demand": 2.0,
+    "migration_value": 2.0,
+    "representative_workloads": 1.5,
+    "engineering_reuse": 1.0,
+    "source_complexity": -0.5,
+    "security_risk": -1.0,
+    "provider_lock_in": -0.5
+  },
+  "candidates": [
+    {
+      "pack_key": "cloudformation-aws-to-terraform-aws",
+      "customer_demand": 4,
+      "migration_value": 4,
+      "representative_workloads": 3,
+      "engineering_reuse": 4,
+      "source_complexity": 2,
+      "security_risk": 2,
+      "provider_lock_in": 1,
+      "evidence_notes": [
+        "Example only; replace with real evidence"
+      ]
+    }
+  ]
+}

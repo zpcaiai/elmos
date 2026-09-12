@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "kind": "PACKAGE_STRUCTURE_ONLY_NOT_PRODUCT_CERTIFICATION",
+  "counts": {
+    "yaml_files": 126,
+    "json_schemas": 15,
+    "skills": 34,
+    "skill_acceptance_cases": 102,
+    "domain_packs": 4,
+    "native_route_acceptance_cases": 24,
+    "api_operations": 14,
+    "schema_examples": 15
+  },
+  "errors": [],
+  "native_validation": "NOT_RUN",
+  "lock_checked": false
+}

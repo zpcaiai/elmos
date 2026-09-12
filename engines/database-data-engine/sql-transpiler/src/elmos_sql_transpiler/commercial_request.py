@@ -34,11 +34,7 @@ class CommercialRequestLimits:
     max_parameters: int
 
     def __post_init__(self) -> None:
-        if (
-            self.max_envelope_bytes < 2
-            or self.max_sql_bytes < 1
-            or self.max_parameters < 0
-        ):
+        if self.max_envelope_bytes < 2 or self.max_sql_bytes < 1 or self.max_parameters < 0:
             raise ValueError("commercial request limits must be positive")
 
 

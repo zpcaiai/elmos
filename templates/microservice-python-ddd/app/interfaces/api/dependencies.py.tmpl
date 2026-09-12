@@ -1,0 +1,27 @@
+from typing import Annotated
+
+from fastapi import Depends
+
+from app.application.services.application_service import ApplicationService
+from app.config import Settings, get_settings
+from app.domain.repositories.base_repository import BaseRepository
+from app.infrastructure.repositories.repository_impl import RepositoryImpl
+
+# Shared repository instance for skeleton / in-memory runtime
+_repo_instance = RepositoryImpl()
+
+
+def get_repository() -> BaseRepository:
+    """Dependency provider for Domain Repository."""
+    return _repo_instance
+
+
+def get_application_service(
+    repo: Annotated[BaseRepository, Depends(get_repository)],
+) -> ApplicationService:
+    """Dependency provider for Application Service use cases."""
+    return ApplicationService(repository=repo)
+
+
+SettingsDep = Annotated[Settings, Depends(get_settings)]
+ServiceDep = Annotated[ApplicationService, Depends(get_application_service)]

@@ -1,5 +1,8 @@
 ---
 name: pm-b13-candidate-verifiability-ranker
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "优先选择更易类型检查、证明、差分和运行验证的候选. Precision Migration B13 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

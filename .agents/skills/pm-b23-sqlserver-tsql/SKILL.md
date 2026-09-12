@@ -1,5 +1,8 @@
 ---
 name: pm-b23-sqlserver-tsql
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 T-SQL 语法、批次、变量、函数、错误和系统对象. Precision Migration B23 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

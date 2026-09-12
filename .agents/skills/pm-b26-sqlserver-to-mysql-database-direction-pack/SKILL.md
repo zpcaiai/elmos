@@ -1,5 +1,8 @@
 ---
 name: pm-b26-sqlserver-to-mysql-database-direction-pack
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "提供从 SQL Server 到 MySQL 的数据库专用迁移包，覆盖 DDL、DML、过程代码、专有能力、数据迁移、性能、切换和回滚. Precision Migration B26 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

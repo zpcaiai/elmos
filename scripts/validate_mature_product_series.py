@@ -80,7 +80,19 @@ def validate_skill(path: Path, seen_names: set[str], errors: list[str]) -> tuple
     metadata = parse_frontmatter(path, text, errors)
     name = metadata.get("name")
     description = metadata.get("description")
-    require(set(metadata) == {"name", "description"}, f"{path}: unexpected front-matter keys", errors)
+    allowed_keys = {
+        "name",
+        "description",
+        "implementation_state",
+        "external_evidence_status",
+        "production_certification",
+        "metadata",
+    }
+    require(
+        set(metadata).issubset(allowed_keys) and {"name", "description"}.issubset(set(metadata)),
+        f"{path}: unexpected front-matter keys",
+        errors,
+    )
     require(name == path.parent.name, f"{path}: name does not match directory", errors)
     require(isinstance(name, str) and name not in seen_names, f"{path}: duplicate or invalid name", errors)
     if isinstance(name, str):

@@ -1,0 +1,12 @@
+[2026-09-10T08:25:42.826147Z][B40-007] Starting execution of B40-007 (Batch 40供应链与合规 / version-drift / 场景7) [Category=version-drift, Priority=P1]
+[2026-09-10T08:25:42.826152Z][B40-007] Bound Skill: tst-b40-supply-chain-compliance | Product Skill IDs: [1375, 1391]
+[2026-09-10T08:25:42.826154Z][B40-007] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:42.836838Z][B40-007] Security: Minted RS256 token (JTI=11cb6a6e..., Exp=1789032342)
+[2026-09-10T08:25:42.866240Z][B40-007] KMS: Envelope encrypted 34 bytes under key key-b40-007 v1 (DEK wrapped)
+[2026-09-10T08:25:42.884322Z][B40-007] [B40-SUPPLY-CHAIN] Initializing security & compliance assessment for B40-007
+[2026-09-10T08:25:42.884333Z][B40-007] Executing Batch 40 supply chain scenario B40-007 [Category=version-drift]...
+[2026-09-10T08:25:42.884335Z][B40-007] Container Scan: Probed container image manifests for unapproved base layers
+[2026-09-10T08:25:42.884337Z][B40-007] License Compliance: Verified SPDX licenses contain no GPL-incompatible viral clauses
+[2026-09-10T08:25:42.884357Z][B40-007] Completed execution of B40-007 in 58.2ms: Status=PASSED
+[2026-09-10T08:25:42.884359Z][B40-007] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:42.884370Z][B40-007] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -1,5 +1,8 @@
 ---
 name: pm-b01-competitor-capability-radar
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "持续跟踪竞争产品、开源项目和云平台在评估、转换、验证、私有化与发布治理方面的能力变化. Precision Migration B01 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

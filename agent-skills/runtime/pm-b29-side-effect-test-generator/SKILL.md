@@ -1,5 +1,8 @@
 ---
 name: pm-b29-side-effect-test-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成消息、外部调用、文件、缓存、审计和调用次数/顺序验证. Precision Migration B29 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

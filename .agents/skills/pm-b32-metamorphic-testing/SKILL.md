@@ -1,5 +1,8 @@
 ---
 name: pm-b32-metamorphic-testing
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在缺乏精确 Oracle 时使用输入变换与输出关系验证行为性质. Precision Migration B32 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

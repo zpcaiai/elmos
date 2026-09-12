@@ -1,5 +1,8 @@
 ---
 name: b30-source-framework-fingerprint
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement static and runtime fingerprinting for a source framework, including dependencies, active configuration, routes, components, middleware, security, persistence, transactions, messaging, cache, schedulers, generated code, and provider usage. Use before contract extraction.
 ---
 

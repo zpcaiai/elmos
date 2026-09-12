@@ -1,5 +1,8 @@
 ---
 name: pm-b32-transaction-atomicity-validation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "验证失败路径无部分提交、事务边界正确且源目标可见性一致. Precision Migration B32 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

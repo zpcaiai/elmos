@@ -1,0 +1,68 @@
+{
+  "data_owner": "ELMOS Synthetic Fixture Owner",
+  "gates": {
+    "canonical_ir_coverage": 0.95,
+    "data_reconciliation": 1.0,
+    "fingerprint_coverage": 0.95,
+    "p0_correctness": 1.0,
+    "source_map_coverage": 0.95
+  },
+  "maintenance_owner": "ELMOS ChinaDB Adapter Maintainers",
+  "mode": "migration",
+  "owner": "ELMOS Database Migration",
+  "pack_key": "postgresql-to-opengauss",
+  "paths": {
+    "canonical_ir": "canonical-ir/model.json",
+    "certification": "certification",
+    "fingerprint": "source-fingerprint",
+    "migration_plan": "migration/data-migration-plan.json",
+    "target_profile": "target-profile/profile.json"
+  },
+  "review_by": "2026-12-08",
+  "schema_version": 1,
+  "scope": {
+    "objects": [
+      "orders-query-contract"
+    ],
+    "schemas": [
+      "public"
+    ],
+    "workload_classes": [
+      "parameterized-select",
+      "ordering",
+      "pagination"
+    ]
+  },
+  "source": {
+    "charset": "UTF8",
+    "collation": "C",
+    "dialect": "postgresql",
+    "driver_versions": [
+      "psql:17.5"
+    ],
+    "edition": "community",
+    "engine": "postgresql",
+    "extensions": [],
+    "timezone": "UTC",
+    "versions": [
+      "17.5"
+    ]
+  },
+  "status": "certified",
+  "target": {
+    "charset": "UTF-8",
+    "collation": "en_US.UTF-8",
+    "dialect": "opengauss-pg-compatible",
+    "driver_versions": [
+      "opengauss-jdbc:5.0.0"
+    ],
+    "edition": "enterprise",
+    "engine": "opengauss",
+    "extensions": [],
+    "timezone": "Asia/Shanghai",
+    "versions": [
+      "5.0.0"
+    ]
+  },
+  "version": "1.0.0"
+}

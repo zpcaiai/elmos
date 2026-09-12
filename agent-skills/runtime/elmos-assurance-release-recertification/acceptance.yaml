@@ -1,0 +1,36 @@
+skill: elmos-assurance-release-recertification
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-release-recertification-A01
+  given: 部署不同镜像但同commit
+  when: 在真实集成模块执行对应测试或负例
+  then: 拒绝发布
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-release-recertification-A02
+  given: checker/rule被撤销
+  when: 在真实集成模块执行对应测试或负例
+  then: 受影响claims触发重验
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-release-recertification-A03
+  given: 恢复数据库复活旧证书
+  when: 在真实集成模块执行对应测试或负例
+  then: 校验撤销链防复活
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

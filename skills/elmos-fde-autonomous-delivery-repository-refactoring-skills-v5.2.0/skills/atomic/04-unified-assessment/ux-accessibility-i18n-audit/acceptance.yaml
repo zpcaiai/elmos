@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: ux-accessibility-i18n-audit
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Keyboard user cannot complete approval
+  - Timezone conversion changes business date
+  - Large bundle blocks field users on slow networks
+  negativeControls:
+  - visual redesign without product scope
+  - claim legal accessibility compliance from automated scan alone
+  checks:
+  - id: ux-accessibility-i18n-audit-AC-01
+    requirement: Trace critical user journeys across routes, states, forms, errors, permissions, network failures, and recovery.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: ux-accessibility-i18n-audit-AC-02
+    requirement: Assess keyboard, screen-reader, contrast, semantics, focus, motion, and accessible error handling using automated
+      and manual evidence.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: ux-accessibility-i18n-audit-AC-03
+    requirement: Detect hard-coded locale, timezone, currency, encoding, pluralization, and bidirectional-text assumptions.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: ux-accessibility-i18n-audit-AC-04
+    requirement: Measure bundle, rendering, data-fetch, hydration, memory, and interaction performance.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: ux-accessibility-i18n-audit-AC-05
+    requirement: Link experience findings to adoption and business outcomes.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

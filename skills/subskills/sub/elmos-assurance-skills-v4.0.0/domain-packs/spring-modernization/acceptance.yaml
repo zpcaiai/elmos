@@ -1,0 +1,63 @@
+domain: spring-modernization
+native_execution_status: NOT_RUN
+cases:
+- id: SPR-001
+  given: 未登录请求+returnUrl
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: status/Location/cookie/session及安全决策一致或有批准变化
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: SPR-002
+  given: invalid binding/validation
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 业务逻辑/DB写入不得先于校验
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: SPR-003
+  given: 事务中途异常/checked exception/self-invocation
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 验证实际rollback/propagation，不只扫描注解
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: SPR-004
+  given: filter/interceptor/shiro/security顺序
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 逐条拒绝/允许路径和副作用核对
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: SPR-005
+  given: multipart/i18n/JSP/forward/redirect
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 文件/编码/视图/headers/cookies语义正确
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: SPR-006
+  given: Quartz/定时任务重复触发及旧任务残留
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 副作用幂等和调度交接符合合同
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version

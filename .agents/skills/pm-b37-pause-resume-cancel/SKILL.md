@@ -1,5 +1,8 @@
 ---
 name: pm-b37-pause-resume-cancel
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "持久化任务状态、证据和副作用，支持安全暂停、恢复和取消. Precision Migration B37 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

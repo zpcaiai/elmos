@@ -1,5 +1,8 @@
 ---
 name: pm-b35-abstract-interpretation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "推断范围、Nullability、可达状态、异常、资源和动态类型近似. Precision Migration B35 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

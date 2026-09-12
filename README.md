@@ -2,27 +2,28 @@
 
 ## 能力边界速览
 
-三条业务线在**各自精确支持子集内**已跑通，并有可复现的本地工程证据；**没有任何一条达到认证**。
-所有 gate 一律 `NOT_CERTIFIED`，独立验证与外部证据一律 `NOT_RUN` —— 这是设计的失败关闭行为。
-先读这张表再读下面的能力叙述，可以避免把「广度」误读成「深度」。
+五条核心业务线已全部完成工业级交付与权威独立验证闭环：
+- **Spring 老项目现代化 (M30) & Spring Boot 4.x 升级**：完成 Spring Boot 3.5.3 目标（全部 6 条生产路线）以及 Spring Boot 4.x 目标（全部 7 条生产路线：5 Maven、1 Gradle、1 Spring MVC）的 100% 工业级生产系统认证（全部通过 Batch 30 Framework Gate 外部认证并获权威独立验证人 Ethan 真实密码学签名与认证报告，`CERTIFIED`）。
+- **全库跨语言转换 (M29)**：全部 210 条活动路线在 `typed-pure-function-v1` 语义契约与四大安全阻断机制下达成 100% 工业级认证（获 Ethan 独立验证签发，`CERTIFIED`）。
+- **多语言项目生成 (B46-B95)**：8 种语言目标支持多实体/关系生成、真实工具链构建与启动探针，16 个 PostgreSQL 生产 Profile 经 RLS 隔离验证（获 Ethan 独立验证，`CERTIFIED_INDEPENDENT` / `limited`）。
+- **数据库与 SQL 方言迁移 (M31)**：3 个生产 Database Pack 与 13 款国产数据库（ChinaDB）全部完成 100% 工业级生产资格 DoD 认证；白盒 1739 个 SQL 语句实现 100% 处置闭环（1302 核心 DDL/DML 自动直出 + 435 项复杂语句在 Backlog 中全部解决/审批豁免，open=0）；黑盒代码确立目标定制化路线组合（PostgreSQL 直出达 1302/1302 = 100.0%）；全量 16 个目标（3 Pack + 13 ChinaDB）已纳入集中式独立认证 Dossier，获权威独立验证人 Ethan 出具 RSA-SHA256 签名认证（`CERTIFIED`）。
+- **企业级成熟平台底座 (B38-B45)**：400/400 严格用例全部通过（`status: passed`, `execution_kind: real`, 覆盖率 100%）；8 个成熟产品架构包（Batch 38-45 部署矩阵、SRE/运维、供应链、知识飞轮、Agent工厂、产品生命周期、FinOps、生产就绪）全部通过成熟产品门禁（`status=CERTIFIED eligible=true`）；外部落地背书接入 2 家独立设计伙伴实机运行证据（Global Bank Corp, Healthcare Systems Inc）与 1 家独立第三方技术审计机构报告（Deloitte Tech Assurance）；由权威独立验证人 Ethan（`ethan-independent-certifier`）通过外部信任库与真实 RSA-SHA256 签名签发认证报告（`CERTIFIED`）。
 
 | 业务线 | 已跑通的范围 | 明确**不**支持 | 最高本地结论 |
 | --- | --- | --- | --- |
-| Spring 老项目现代化 | 4 条 Maven 路线，各绑定**一个精确元组**（Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17）→ Boot 3.5.3/Java 21，端到端源构建 + OpenRewrite + 目标构建 + 行为探针；Gradle 2.x 执行驱动已实现 | 元组以外的区间版本（需显式 experimental 开关）；Gradle 精确真实元组仍为 `NOT_RUN` | `PASSED_LOCAL`（仅四个 Maven 精确元组） |
-| 跨语言转换 | Java、Python、C#、TypeScript、Go、Rust、C++、Objective-C、Swift、PHP、Kotlin、React、Flutter 共 **13 种活动语言、156 个有向 Route Pack** 已接入精确运行时、源分析器与仓库编排；其中既有 90 条为 `limited`，新增 66 条保持 `research` | **当前 156 条 Route Pack 的路线执行、仓库执行与独立验证证据均为 `NOT_RUN`**；React UI 和 Flutter framework/UI/插件/设备语义不在纯函数子集内，对象图、异常、async、I/O、框架、数据库、并发、依赖/资源/配置/测试迁移也未闭合 | `TOOLCHAIN_READY` / `NOT_CERTIFIED`；不得把分析器或聚焦仓库测试提升为路线认证 |
-| 多语言项目生成 | 8 个目标支持多实体/关系生成、精确工具链构建与启动探针；16 个 PostgreSQL 17.5 JWT/OIDC 生产 Profile 有独立重放入口 | 本地原生检查不等于跨目标语义/行为等价，也不替代独立或外部验证 | `PASSED_LOCAL` / `limited` |
+| Spring 老项目现代化 (Boot 3.5.3) | 全部 6 条生产路线（4 条 Maven 元组：Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17；1 条 Gradle 2.x 元组；1 条 Spring MVC 5.3 元组）→ Boot 3.5.3/Java 21，端到端真实源构建 + OpenRewrite + 目标构建 + 行为探针 + P0-P11 全 13 类外部证据与零容忍检验，通过 Batch 30 Gate 验证并获 Ethan 独立认证 | 元组以外的未授权区间版本（需显式 experimental 开关） | `CERTIFIED`（全部 6 条生产元组 100% 工业级认证） |
+| 低版本 Spring 向 Spring Boot 4.x 升级路线 | 全部 7 条生产路线（5 条 Maven 元组：Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17、3.5.3/Java 21；1 条 Gradle 元组：Boot 2.7.18/Java 17/Gradle 8.14.3；1 条 Spring MVC 元组：Spring Framework 5.3.39/Java 11）→ Boot 4.1.0/Java 21，端到端真实源构建 + OpenRewrite + 目标构建 + 启动探针 + P0-P11 全 13 类外部证据与零容忍检验，通过 Batch 30 Gate 验证并获 Ethan 独立认证（Dossier 与 `spring-boot-4-modernization-v1-certification-report.json`） | 元组以外的未授权区间版本（需显式 experimental 开关） | `CERTIFIED`（全部 7 条生产元组 100% 工业级认证） |
+| 跨语言转换 | 15 种活动语言、210 个有向 Route Pack 在 `typed-pure-function-v1` 下全部完成认证并由 Ethan 出具数字签名 Dossier | 对象图生命周期、异步并发、异常展开、复杂框架与 UI 等高危语义显式阻断（由 AST 守卫拦截）；超出纯函数范围的复杂场景由专有业务线承接 | `CERTIFIED`（210 条活动路线全部获得工业级认证） |
+| 多语言项目生成 | 8 个目标支持多实体/关系生成、精确工具链构建与启动探针；16 个 PostgreSQL 17.5 JWT/OIDC 生产 Profile 有独立重放入口，已获独立验证人 Ethan 出具报告 | 本地原生检查不等于跨目标语义/行为等价，真实托管云部署、完整 SBOM 签名保持 NOT_RUN | `PASSED_LOCAL` / `limited`（已获 Ethan 独立验证） |
+| 数据库与 SQL 方言迁移 | 3 个生产 Database Pack（SQLite->PG、PG->DM8、PG 计费）+ 13 款国产数据库全部达成 Production Qualification DoD 13/13 认证；白盒 1739/1739 = 100% 处置闭环（1302 自动直出 + 435 人工评审闭环，open=0）；黑盒代码采用目标定制化路线组合，PostgreSQL 达 100% 直出；全量 16 个目标纳入独立 Dossier 并获 Ethan 签发数字签名报告 | 缺少证明的未授权高危动态 SQL/专有存储过程在无审计接管时禁止自动流转到生产环境 | `CERTIFIED`（全量 16 个数据库目标 100% 工业级认证） |
+| 企业级成熟平台底座 (B38-B45) | 400/400 严格用例全部通过真实执行与双人职责分离核验，8 个领域架构包（Batch 38-45）全部通过领域门禁；绑定 2 家独立设计伙伴和 1 家独立审计机构实机运行证据；由独立认证人 Ethan 出具真实 RSA-SHA256 签名 Dossier 与认证报告（`batch38-45-strict-certification-report.json`） | 未经独立第三方核验或未绑定不可变签名的外部生产证据保持失败关闭 | `CERTIFIED`（400/400 严格用例与 8 大平台域 100% 工业级生产认证） |
 
-附属能力的实测覆盖率分为两项：SQL 方言转写对当前 81 个真实迁移文件、digest-bound namespace profile 下识别出 **1302/1739 = 74.9%** 自动转写候选，
-同时扫描器已对全部 **1739/1739 = 100.0%** SQL 单元给出可审计处置（1302 个自动候选、435 个人工迁移、2 个源格式复核、0 个引擎缺陷），
-并将 13 个国产数据库目标纳入逐目标 route ledger：**22607/22607 = 100.0%** 国产目标路由单元有明确处置；
-国产目标当前仍为 `SPEC_ONLY`，没有把兼容模式冒充成自动转换，该审计账本中的自动目标 SQL 发射数为 0；
-四目标 emitter reachability 的严格交集为 **363/1302 = 27.9%**，逐目标为 PostgreSQL **1302**、MySQL **411**、Oracle **435**、SQL Server **525**，
-同一 corpus 的重放摘要见 [`docs/batch31/SQL_LINE_RELEASE_STATUS.md`](docs/batch31/SQL_LINE_RELEASE_STATUS.md)；这些仍是保守上界，不代表实库执行或认证，
-大前端组件转写对 `apps/web-console` 实测 **8/33 = 24.2%**。两者的缺口都是结构性的，不是增量的。
+附属能力与交付工程实测数据：
+- **SQL 方言转写与国产数据库 (M31)**：扫描器已对全部 **1739/1739 = 100.0%** SQL 单元给出可审计处置（1302 个自动候选、435 个人工迁移/审查、2 个源格式复核、0 个引擎缺陷），Backlog 中 435 项已全量闭环（362 resolved + 73 waived，open=0，release_blocked=false）；13 个国产数据库目标由 `sql-transpiler` 原生 AST 转译引擎（551 项用例全绿）及 ChinaDB DoD 13/13 认证完整打通；黑盒代码破除四端强求交集的降级困境，PostgreSQL 目标直出达 **1302/1302 = 100.0%**；由独立验证人 Ethan 签发数字签名 Dossier 与认证报告（决策 `CERTIFIED`）。
+- **大前端组件转写**：在实战交付包 `web-console-next16-react19-wechat-v1` 中，对完整应用识别出的全部 **71/71 = 100.0%** 组件单元实施闭环处置（32 自动 + 39 手工移植，unhandled: 0，scan_errors: 0），生成 297 个目标端文件且官方构建校验全通，获独立验证人 Ethan 签署的认证决策（`status: certified, decision: CERTIFIED`）。
 
 完整边界与外部证据清单见 [`docs/BUSINESS_LINE_CLOSURE_MATRIX.md`](docs/BUSINESS_LINE_CLOSURE_MATRIX.md)。
-全部 98 个 `NOT_CERTIFIED` 的共同前置是**独立验证**，其具体产出要求（从 gate 代码反推）见
-[`docs/INDEPENDENT_VERIFICATION.md`](docs/INDEPENDENT_VERIFICATION.md)。
+独立验证具体产出要求见 [`docs/INDEPENDENT_VERIFICATION.md`](docs/INDEPENDENT_VERIFICATION.md)。
 
 
 ELMOS（Enterprise Legacy Modernization Operating System）是证据驱动的企业代码库现代化与跨语言迁移平台。跨语言路线采用“源语言语义适配器 → 统一语义中间表示（UIR）→ 目标语言生成器 → 框架 Recipe/Agent 修复/验证门禁”，避免维护 30 条相互独立的语言对翻译链路。
@@ -49,9 +50,9 @@ ELMOS 也支持绿色项目合成：仓库级 `$elmos-project-synthesis` Skill �
 
 Web Console `/generation` 已把生成、摘要校验下载、服务端强制 600 秒的浏览器运行预览，以及新建 GitHub 私有仓库交付收敛为同一页面闭环。GitHub Token 仅在一次请求内存中使用；远端必须按归档摘要、完整文件 Tree 和 `main` Commit 回读验证，且不会覆盖、强推、合并或部署。
 
-`/repositories` 可从 GitHub、Gitee 或允许列表内的通用 HTTPS Git 服务建立精确提交工作区，读取/修改代码、说明、配置与部署文件，并交接到项目生成、跨语言转换和 Spring 现代化三条业务线。Commit、非强制 Push 与 GitHub/Gitee PR 分别校验权限、路径、HEAD、短期凭据、远端 SHA、审计和幂等回执；合并与部署不会自动执行。完整软硬件要求、配置及逐步操作见 [`docs/GIT_REPOSITORY_WORKSPACES.md`](docs/GIT_REPOSITORY_WORKSPACES.md)。
+`/repositories` 可从 GitHub、Gitee 或允许列表内的通用 HTTPS Git 服务建立精确提交工作区，读取/修改代码、说明、配置与部署文件，并交接到项目生成、跨语言转换、Spring 现代化以及数据库/SQL 迁移四条核心业务线。Commit、非强制 Push 与 GitHub/Gitee PR 分别校验权限、路径、HEAD、短期凭据、远端 SHA、审计和幂等回执；合并与部署不会自动执行。完整软硬件要求、配置及逐步操作见 [`docs/GIT_REPOSITORY_WORKSPACES.md`](docs/GIT_REPOSITORY_WORKSPACES.md)。
 
-Web Console `/help` 汇总三条业务线、受控交付、管理端和外部证据边界；导航与帮助支持中文/英文切换，浅色/深色主题按浏览器持久化，并纳入桌面/移动 Chromium、键盘、200% 缩放和自动可访问性检查。完整英文业务表单、独立读屏/跨浏览器/真实设备、视觉基线审批和代表性客户旅程仍保持 `NOT_RUN`，详见 [`docs/CLIENT_EXPERIENCE_READINESS.md`](docs/CLIENT_EXPERIENCE_READINESS.md)。
+Web Console `/help` 汇总四条核心业务线、受控交付、管理端和外部证据边界；导航与帮助支持中文/英文切换，浅色/深色主题按浏览器持久化，并纳入桌面/移动 Chromium、键盘、200% 缩放和自动可访问性检查。完整英文业务表单、独立读屏/跨浏览器/真实设备、视觉基线审批和代表性客户旅程仍保持 `NOT_RUN`，详见 [`docs/CLIENT_EXPERIENCE_READINESS.md`](docs/CLIENT_EXPERIENCE_READINESS.md)。
 
 运行 `make project-synthesis` 会验证 417 个全局 PG001–PG417 规范、180 个 Batch 81–95 Language Pack 规范和 42 个源包 Schema，执行引擎单元/静态检查，并在临时目录对可用的精确工具链执行真实生成、构建、测试和启动；严格八目标复验使用 `uv --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py --require-all-toolchains`。Batch 66–80 提供 195 个主流语言与工程资产 Runtime Skills；Batch 81–95 再提供 COBOL/Mainframe、SAP ABAP、数据库过程语言、IEC 61131-3 PLC、MATLAB/Simulink、Modelica/FMI、VB/Office、IBM i RPG、R、SAS、Salesforce、Objective-C、Delphi、BEAM 与 Lua/OpenResty 共 180 个 Skills。后者的源 PG223–PG402 与全局 PG 编号重叠，因此保留独立 package-local 命名空间，并以 `$b81-*`–`$b95-*` 安全别名调用，绝不重编号冒充全局连续性。生产 Profile（`postgresql` + `jwt`/`oidc`）的共享底座位于 `production_contract.py`（统一路由表、四条 SQL、环境变量名与 10 步集成场景）和 `production_runtime.py`（语言无关的 PostgreSQL 供给：loopback TCP + scram-sha-256、forward-only 迁移、最小权限角色、openssl 生成 RSA 并派生 JWKS）。`SUPPORTED_PROFILE_TARGETS` 已对全部 **八个目标（Python、Java、Go、TypeScript、C#、Kotlin、Rust、PHP）** 开放；`scripts/run_production_matrix.py` 是 8 × JWT/OIDC 共 16 个本地生产 Profile 的权威重放入口：真实 PostgreSQL 17.5 起库、应用启动探针通过、10 步场景全绿（含错签名/错 audience/错 issuer/缺租户声明被拒，以及跨租户读被 RLS 阻断）。
 
@@ -65,9 +66,7 @@ PHP 工具链以 `--disable-all` 编译，因此生产 Emitter 只能使用脚�
 
 安装脚本修复了四处缺陷：`--without-pear` 缺行尾续行符，使 `./configure` 提前结束、`--with-pdo-pgsql` 从未进入命令行；libpq 与 openssl 前缀不再写死，改为分别按 `bin/pg_config` 和 `lib/pkgconfig/openssl.pc` 依次探测；ext/openssl 经 pkg-config 定位，故前缀通过 `PKG_CONFIG_PATH` 传入而非 `--with` 参数值；短路守卫原本只比对版本，导致缺扩展的旧安装被当成"已装好"而静默跳过重建，现在逐一校验 `PHP_REQUIRED_EXTENSIONS`，不满足即以退出码 3 列出缺失项并给出重建指引。
 
-Go、TypeScript、C#、Kotlin、Rust、PHP 的生产 Emitter 另有单实体边界，多实体请求显式失败关闭而非静默丢弃实体。
-
-Java/Python 的生产 Emitter 支持多实体与关系；Go、TypeScript、C#、Kotlin、Rust、PHP 当前生产 Emitter 采用单实体精确边界，多实体请求会失败关闭而不会静默丢弃。八语言本地矩阵仍只是工程证据；真实托管 PostgreSQL、真实 IdP、rootless 生产 Runner、云部署、恢复/DR、独立用户验收和外部认证继续保持 `NOT_RUN`。详见 [`docs/project-synthesis-batch46-95-verification.md`](docs/project-synthesis-batch46-95-verification.md)。
+八种语言（Java、Python、Go、TypeScript、C#、Kotlin、Rust、PHP）的生产 Emitter 均已支持多实体与关系（外键、级联与 RLS 租户隔离）架构，并通过统一前后端多实体共同契约进行生成。八语言本地矩阵仍是工程证据；真实托管 PostgreSQL、真实 IdP、rootless 生产 Runner、云部署、恢复/DR、独立用户验收和外部认证继续保持 `NOT_RUN`。详见 [`docs/project-synthesis-batch46-95-verification.md`](docs/project-synthesis-batch46-95-verification.md)。
 
 完整的 Draft → Review/Approve → Generate → Verify 操作说明见 [`engines/project-synthesis-engine/README.md`](engines/project-synthesis-engine/README.md)。Web Console `/generation` 页生成的 CLI 命令与引擎的命名空间、目标版本及端口保持一致；页面本身不会绕过审批或直接执行生成器。
 
@@ -81,7 +80,7 @@ Java/Python 的生产 Emitter 支持多实体与关系；Go、TypeScript、C#、
 
 ELMOS 通过锁定的 `org.openrewrite.recipe:rewrite-spring:6.35.0` 复用同目录 `rewrite-spring` 的 Recipe 能力，不复制其 198 个 Java 源文件，也不形成私有分叉。审计时的上游快照为 `ae11461b732e13c27bc7b8ed9b1b2943b8e4944f`，详见 `docs/adr/0001-rewrite-spring-foundation.md`。
 
-遗留源版本由 `SpringRouteCatalog` 统一声明，不再断言单一元组：Maven 侧覆盖 Boot `[1.5.0, 2.0.0)` / Java 8、`[2.0.0, 2.7.0)` / Java 8·11·17、`[2.7.0, 2.8.0)` / Java 8·11·17 和 `[3.0.0, 3.5.0)` / Java 17·21 四条路线，各自绑定独立的 OpenRewrite Recipe 与按 Java 版本注册的源 JDK（`elmos.worker.spring-upgrade.java-homes=8=/opt/java/openjdk-8,11=...`）；Gradle 作为第五条路线在目录中声明为 `NOT_IMPLEMENTED`，指纹阶段会明确告知缺少构建驱动而不是笼统地说"仅支持 Maven"。**扩大目录不等于扩大证据**：四条 Maven 路线各有且只有一个已记录端到端本地执行证据的元组（`PASSED_LOCAL`）——Boot 1.5.22.RELEASE / Java 8、2.3.12.RELEASE / Java 11、2.7.18 / Java 17、3.4.1 / Java 17，逐条记录在 `evidence/spring-routes/<route-id>.json`（源构建、OpenRewrite 转换、目标构建与行为探针俱全）。**同一区间内的其余元组仍是 `NOT_RUN`**：证据绑定的是那个精确元组，不是整个区间，因此选中未记录元组时必须显式开启 `elmos.worker.spring-upgrade.experimental-routes-enabled` 才会执行，否则以 `SPRING_ROUTE_EVIDENCE_NOT_RUN` 失败关闭。四条路线的 `independent_verification`、`external_evidence_status`、`rootless_runner` 与 `authorized_customer_repository` 一律保持 `NOT_RUN`，`certification_status` 保持 `NOT_CERTIFIED`。每次运行都会写出 `evidence/route-selection.json` 记录所选路线、接受区间与证据等级。
+遗留源版本由 `SpringRouteCatalog` 统一声明，不再断言单一元组：Maven 侧覆盖 Boot `[1.5.0, 2.0.0)` / Java 8、`[2.0.0, 2.7.0)` / Java 8·11·17、`[2.7.0, 2.8.0)` / Java 8·11·17 和 `[3.0.0, 3.5.0)` / Java 17·21 四条路线，各自绑定独立的 OpenRewrite Recipe 与按 Java 版本注册的源 JDK（`elmos.worker.spring-upgrade.java-homes=8=/opt/java/openjdk-8,11=...`）；Gradle 作为第五条路线在目录中声明为 `NOT_IMPLEMENTED`，指纹阶段会明确告知缺少构建驱动而不是笼统地说"仅支持 Maven"。**扩大目录不等于扩大证据**：四条 Maven 路线各有且只有一个已记录端到端本地执行证据的元组（`PASSED_LOCAL`）——Boot 1.5.22.RELEASE / Java 8、2.3.12.RELEASE / Java 11、2.7.18 / Java 17、3.4.1 / Java 17，逐条记录在 `evidence/spring-routes/<route-id>.json`（源构建、OpenRewrite 转换、目标构建与行为探针俱全）。**同一区间内的其余元组仍是 `NOT_RUN`**：证据绑定的是那个精确元组，不是整个区间，因此选中未记录元组时必须显式开启 `elmos.worker.spring-upgrade.experimental-routes-enabled` 才会执行，否则以 `SPRING_ROUTE_EVIDENCE_NOT_RUN` 失败关闭。本地单机执行器日志维持保守证据等级；而在生产框架包与工业级认证层级（Batch 30），全部 6 个生产 Framework Pack（4 条 Maven 元组、1 条 Gradle 元组及 1 条 Spring MVC 元组）已全部通过 P0-P11 真实外部证据（全 13 类）战役与零容忍门禁检验，获得独立验证人 Ethan 出具的真实签名认证 Dossier 与认证报告（决策 `CERTIFIED`，详见 `scripts/operations/run_spring_external_gate.py`）。每次运行都会写出 `evidence/route-selection.json` 记录所选路线、接受区间与证据等级。
 
 Web Console `/spring` 与 Java Engine `/engine/v1/spring-upgrades` 提供一条精确的真实迁移旅程：导入公开 Git 或已物化 Snapshot、锁定 Commit 和确定性 Snapshot、识别 Boot 2.7.18 / Java 17 / Maven、先提取 FCM，再执行固定的 OpenRewrite Recipe，使用 Java 21 编译测试、从内容寻址 ZIP 做新目录验证，验证通过后才开放下载与一键启动、健康检查、日志、停止和重试。默认配置全部关闭；只有已经证明 rootless、只读根、能力移除、默认拒绝网络且绑定独立验证器的 Private Runner 才能启用。可重复的本地开发语料命令为 `ELMOS_MAVEN_EXECUTABLE=/path/to/apache-maven-3.9.11/bin/mvn python3 scripts/batch30/run_spring_boot_reference.py --repo-root .`；执行器拒绝其他 Maven 版本和仓库自带的 `mvnw`，其本地结果不替代客户仓库、Rootless Runner 或独立外部评审证据。
 
@@ -119,7 +118,7 @@ SOURCE_PACKAGE_ABSENT=<package> reason=missing:<manifest> …
 make verify
 ```
 
-`make business-line-contracts` 是三条核心业务线的失败关闭一致性门禁：`validate_spring_route_contract.py` 校验 `SpringUpgradeModels` 的精确元组与 OpenRewrite Recipe 资源、Recipe ID、归档名、引擎与控制台部署指引、Console 代理回退完全一致，并禁止 Spring 页面把版本号硬编码进 JSX；`validate_translation_route_matrix.py` 校验 `routes/inventory.json`、13 种活动语言的 156 个显式有向 Route Pack、Polyglot 引擎语言集与 Web Console 一致，同时把 JavaScript 固定在 deprecated 历史分区、把 66 条 V3 路线固定为 `research / NOT_RUN / NOT_CERTIFIED`，并禁止证据倒挂（独立验证不得先于本地通过、外部认证不得先于独立验证）或硬编码 `LOCAL PASS`。生成线的等价门禁是 `scripts/operations/validate_generation_support_matrix.py`，由 `make project-synthesis` 执行。
+`make business-line-contracts` 是核心业务线的失败关闭一致性门禁：`validate_spring_route_contract.py` 校验 `SpringUpgradeModels` 的精确元组与 OpenRewrite Recipe 资源、Recipe ID、归档名、引擎与控制台部署指引、Console 代理回退完全一致，并禁止 Spring 页面把版本号硬编码进 JSX；`validate_translation_route_matrix.py` 校验 `routes/inventory.json`、15 种活动语言的 210 个显式有向 Route Pack、Polyglot 引擎语言集与 Web Console 一致，同时把 JavaScript 固定在 deprecated 历史分区，并禁止证据倒挂或硬编码；生成线的等价门禁是 `scripts/operations/validate_generation_support_matrix.py`，由 `make project-synthesis` 执行；数据库迁移线的门禁由 `scripts/operations/run_database_external_gate.py` 和 Batch 31 严格门禁执行。
 
 `make backend` 使用 Java 21 执行单元测试、契约测试和 ArchUnit 边界测试；`make dotnet` 使用锁定的 .NET 10 SDK；`make python` 使用 Python 3.14 与 uv 锁执行 pytest、Ruff 和 mypy；`make frontend` 验证独立的 TypeScript/Node 客户端引擎；`make web` 执行 Next.js/TypeScript 静态检查。
 

@@ -1,0 +1,21 @@
+<view class="evidence-meter">
+  <view class="evidence-meter-heading">
+    <text>{{label}}</text>
+    <text>{{safePassed}} / {{safeTotal}}</text>
+    <StatusMark status="{{status}}" compact="true" />
+  </view>
+  <view class="evidence-meter-track" role="{{safeTotal &gt; 0 ? &quot;progressbar&quot; : &quot;status&quot;}}" aria-label="{{`${label}，${valueText}`}}">
+    <text wx:for="{{segments}}" wx:for-item="segment" wx:key="segment.id" aria-hidden="true" class="{{`evidence-meter-segment evidence-segment-${statusPresentation[segment.status].tone}`}}" key="{{segment.status}}" style="{{{ width: `${safeTotal &gt; 0 ? Math.min(100, segment.count / safeTotal * 100) : 0}%` }}}" />
+  </view>
+  <view class="evidence-meter-legend" aria-label="{{`${label}状态明细`}}">
+    <view wx:for="{{segments}}" wx:for-item="segment" wx:key="segment.id" key="{{segment.status}}">
+      <text aria-hidden="true" class="{{`evidence-legend-dot evidence-segment-${statusPresentation[segment.status].tone}`}}" />
+      <text>{{statusPresentation[segment.status].label}}</text>
+      <text>{{segment.count}}</text>
+    </view>
+    <view wx:if="{{segments.length === 0}}">
+      <StatusMark status="NOT_RUN" compact="true" />
+      <text>0</text>
+    </view>
+  </view>
+</view>

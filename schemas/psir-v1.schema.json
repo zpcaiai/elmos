@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Project Specification IR",
+  "type": "object",
+  "properties": {
+    "project_name": {
+      "type": "string",
+      "description": "Name of the project"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the project"
+    },
+    "language": {
+      "type": "string",
+      "description": "Primary programming language used"
+    },
+    "framework": {
+      "type": "string",
+      "description": "Primary framework used"
+    },
+    "project_type": {
+      "type": "string",
+      "description": "Type of the project (e.g. web, mobile, cli)"
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "type": { "type": "string" }
+              },
+              "required": ["name", "type"]
+            }
+          },
+          "relationships": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "target": { "type": "string" },
+                "type": { "type": "string" }
+              },
+              "required": ["target", "type"]
+            }
+          }
+        },
+        "required": ["name"]
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "method": { "type": "string" },
+          "path": { "type": "string" },
+          "body": { "type": "object" },
+          "auth": { "type": "boolean" }
+        },
+        "required": ["method", "path"]
+      }
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "database_config": {
+      "type": "object"
+    },
+    "auth_config": {
+      "type": "object"
+    }
+  },
+  "required": ["project_name", "language"]
+}

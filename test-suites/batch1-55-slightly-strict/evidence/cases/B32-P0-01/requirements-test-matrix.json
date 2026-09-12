@@ -1,0 +1,9 @@
+{
+  "case_id": "B32-P0-01",
+  "batch": 32,
+  "role": "requirements-test-matrix.json",
+  "priority": "P0",
+  "generated_at": "2026-09-10T09:27:07.224897Z",
+  "execution_kind": "approved-equivalent",
+  "status": "passed"
+}

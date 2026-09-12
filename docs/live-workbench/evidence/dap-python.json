@@ -1,0 +1,15 @@
+{
+  "adapter": "debugpy",
+  "breakpointsHit": 1,
+  "commands": [
+    "next",
+    "stepIn",
+    "variables"
+  ],
+  "runtime": "python-3.12",
+  "timestamp": 1789145845,
+  "variablesInspected": {
+    "scope": "local",
+    "x": "42"
+  }
+}

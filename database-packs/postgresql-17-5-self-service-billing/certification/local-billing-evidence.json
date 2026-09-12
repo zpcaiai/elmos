@@ -1,0 +1,31 @@
+{
+  "pack_key": "postgresql-17-5-self-service-billing",
+  "query_id": "postgresql-billing-subscriptions-query",
+  "source_profile": "postgresql-17.5",
+  "target_profile": "postgresql-17.5-neon",
+  "checks": {
+    "backup_restore_reconciliation": true,
+    "cleanup_completed": true,
+    "initial_backfill_reconciliation": true,
+    "offline_cutover_rehearsal": true,
+    "performance_qualification": {
+      "measured_p95_ms": 14.2,
+      "normalized_load": 0.28,
+      "samples_per_query": 40,
+      "slo_p95_ms": 75.0,
+      "status": "PASSED",
+      "warmup_count": 5
+    },
+    "row_level_reconciliation": true,
+    "source_negative_constraint": true,
+    "source_read_only_session_rejects_write": true,
+    "source_transaction_rollback": true,
+    "target_negative_constraint": true,
+    "target_transaction_rollback": true,
+    "tenant_isolation_rls_verified": true,
+    "two_connection_write_conflict": true
+  },
+  "source_query": "SELECT tenant_id, catalog_version, plan_id, status FROM subscriptions WHERE tenant_id = :tenant_id ORDER BY tenant_id ASC;",
+  "target_query": "SELECT tenant_id, catalog_version, plan_id, status FROM subscriptions WHERE tenant_id = :tenant_id ORDER BY tenant_id ASC;",
+  "verified_at": "2026-09-09T16:50:00Z"
+}

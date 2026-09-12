@@ -1,0 +1,87 @@
+# {{.ProjectName}}
+
+{{.Description}}
+
+## Architectural Overview (Domain-Driven Design)
+
+This Python microservice is built with **FastAPI** adhering to **Domain-Driven Design (DDD)** and **Hexagonal / Clean Architecture** principles:
+
+```
+[ Interfaces (REST API / Probes) ] ─────┐
+                                        │
+                                        ▼
+                  [ Application Layer (Services / DTOs) ]
+                                        │
+                                        ▼
+                   [ Domain Layer (Models / Exceptions / Repo Interface) ]
+                                        ▲
+                                        │
+[ Infrastructure Layer (Async DB / HTTP Client) ] ──┘ (implements Domain Interfaces)
+```
+
+### Layer Structure
+
+- **`app/main.py`**: FastAPI application factory, lifespan startup/shutdown hooks, global middlewares (CORS, Request ID, Exception Handlers).
+- **`app/config.py`**: `pydantic-settings` BaseSettings configuration loaded from environment variables.
+- **`app/domain/`**:
+  - `models/`: Pure business models, Aggregate Roots, status enums, business validation rules.
+  - `repositories/`: Abstract repository interfaces (`BaseRepository`) without framework dependencies.
+  - `exceptions/`: Domain-specific business exceptions.
+- **`app/application/`**:
+  - `services/`: Use case orchestrator coordinating domain entities and infrastructure ports.
+  - `dtos/`: Pydantic request and response schemas.
+- **`app/infrastructure/`**:
+  - `database/`: Async connection pooling and session management ({{.Database}}).
+  - `repositories/`: Concrete async repository implementation stub.
+  - `external/`: External service async HTTP client stub (`httpx`).
+- **`app/interfaces/`**:
+  - `api/router.py`: REST routes and path operations.
+  - `api/dependencies.py`: FastAPI dependency injection.
+- **`tests/`**:
+  - `unit/`: Fast unit tests covering domain rules.
+  - `integration/`: Async integration tests exercising HTTP endpoints.
+- **`deploy/k8s/`**: Kubernetes deployment, service, and configmap manifests.
+
+## Getting Started
+
+### Prerequisites
+- Python 3.12+
+- Docker & Kubernetes (optional)
+
+### Local Development
+```bash
+# Install dependencies in virtual environment
+make install
+
+# Run development server with live reload
+make run
+
+# Run test suite
+make test
+
+# Run linter
+make lint
+```
+
+### Configuration
+Configuration is loaded via environment variables or `.env` file:
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `APP_ENV` | Environment (`development`, `staging`, `production`) | `development` |
+| `PORT` | HTTP listen port | `{{.Port}}` |
+| `DATABASE_URL` | Database connection URL | `{{.Database}}://...` |
+| `LOG_LEVEL` | Logging level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) | `INFO` |
+| `LOG_FORMAT` | Log format (`json`, `text`) | `json` |
+
+## API Endpoints
+
+- `GET /healthz` - Kubernetes liveness probe
+- `GET /readyz` - Kubernetes readiness probe
+- `GET /docs` - OpenAPI Swagger UI
+- `POST /api/v1/entities` - Create entity
+- `GET /api/v1/entities/{id}` - Retrieve entity
+- `PUT /api/v1/entities/{id}` - Update entity
+- `DELETE /api/v1/entities/{id}` - Delete entity
+- `GET /api/v1/entities` - List entities (supports `?offset=0&limit=20`)
+- `POST /api/v1/entities/{id}/activate` - Activate entity

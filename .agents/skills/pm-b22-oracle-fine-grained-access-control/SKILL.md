@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-fine-grained-access-control
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 VPD/FGAC 策略函数、上下文和行列级安全. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

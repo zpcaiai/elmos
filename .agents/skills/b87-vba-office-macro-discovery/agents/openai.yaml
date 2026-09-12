@@ -1,0 +1,4 @@
+interface:
+  display_name: "B87 Vba Office Macro Discovery"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b87-vba-office-macro-discovery to execute this ELMOS Language Pack Skill with fail-closed evidence."

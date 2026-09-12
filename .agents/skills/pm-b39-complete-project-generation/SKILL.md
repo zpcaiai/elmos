@@ -1,5 +1,8 @@
 ---
 name: pm-b39-complete-project-generation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从可执行Skills和技术选择生成前端、后端、管理端、数据、测试、部署、运维和文档闭环的完整项目. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

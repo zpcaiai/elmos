@@ -1,5 +1,8 @@
 ---
 name: b34-multirepo-pr-merge-order
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Generate coordinate and verify dependency-aware multi-repository pull requests with atomic change sets compatibility windows status checks approvals merge ordering partial-failure handling rollback and audit.
 ---
 

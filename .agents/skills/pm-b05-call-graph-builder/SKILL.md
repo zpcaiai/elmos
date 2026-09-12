@@ -1,5 +1,8 @@
 ---
 name: pm-b05-call-graph-builder
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "构建静态与动态融合的调用图，并标记反射、RPC、消息和插件边. Precision Migration B05 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

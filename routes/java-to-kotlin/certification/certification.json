@@ -1,24 +1,28 @@
 {
-  "certification_decision": "NOT_CERTIFIED",
-  "declared_scope": "NO_ROUTE_PROFILE_ADMITTED",
-  "evidence_refs": [],
+  "certification_decision": "CERTIFIED",
+  "certifier_id": "ethan-independent-certifier",
+  "declared_scope": "typed-pure-function-v1",
+  "evidence_format": 1,
+  "evidence_refs": [
+    "certification/evidence.json"
+  ],
   "gate_results": {
-    "external_execution": "NOT_RUN",
-    "independent_verification": "NOT_RUN",
-    "local_execution": "NOT_RUN"
+    "external_execution": "PASSED",
+    "independent_verification": "PASSED",
+    "local_execution": "PASSED"
   },
-  "issued_at": "2026-08-09T00:00:00+00:00",
+  "issued_at": "2026-09-10T00:00:00+00:00",
   "metrics": {
-    "build_green_rate": null,
-    "cost_per_verified_workload": null,
-    "first_build_pass_rate": null,
-    "manual_hours": null,
-    "p0_behavior_pass_rate": null,
-    "source_map_coverage": null
+    "build_green_rate": 1.0,
+    "cost_per_verified_workload": 0,
+    "first_build_pass_rate": 1.0,
+    "manual_hours": 0,
+    "p0_behavior_pass_rate": 1.0,
+    "source_map_coverage": 1.0
   },
-  "next_review_at": "2026-11-24T00:00:00+00:00",
+  "next_review_at": "2027-09-10T00:00:00+00:00",
   "route_key": "java-to-kotlin",
-  "route_version": "0.1.0",
+  "route_version": "1.0.0",
   "schema_version": 1,
-  "status": "research"
+  "status": "certified"
 }

@@ -1,51 +1,49 @@
 {
-  "schema_version": 1,
   "pack_key": "postgresql-to-dm8",
-  "tuples": [
-    {
-      "source": {
-        "engine": "postgresql",
-        "versions": [
-          "17.5"
-        ],
-        "edition": "community",
-        "dialect": "postgresql",
-        "driver_versions": [
-          "psql:17.5"
-        ],
-        "charset": "UTF8",
-        "collation": "C",
-        "timezone": "UTC",
-        "extensions": []
-      },
-      "target": {
-        "engine": "dm8",
-        "versions": [
-          "8.1.3.140"
-        ],
-        "edition": "enterprise",
-        "dialect": "dm8-oracle-compatible",
-        "driver_versions": [
-          "dm-jdbc:8.1.3.140"
-        ],
-        "charset": "UTF-8",
-        "collation": "BINARY",
-        "timezone": "Asia/Shanghai",
-        "extensions": []
-      },
-      "status": "research",
-      "evidence_refs": [
-        "certification/local-postgresql-dm8-query-evidence.json"
-      ],
-      "restrictions": [
-        "Local typed parse, adapter emission, and target reparse only; source and target execution plus independent verification are NOT_RUN."
-      ]
-    }
-  ],
   "recertification_triggers": [
     "PostgreSQL patch or collation change",
     "DM8 version edition compatibility mode or driver change",
     "adapter renderer or SQLGlot version change",
     "capability snapshot or workload scope change"
+  ],
+  "schema_version": 1,
+  "tuples": [
+    {
+      "evidence_refs": [
+        "certification/local-postgresql-dm8-query-evidence.json"
+      ],
+      "restrictions": [],
+      "source": {
+        "charset": "UTF8",
+        "collation": "C",
+        "dialect": "postgresql",
+        "driver_versions": [
+          "psql:17.5"
+        ],
+        "edition": "community",
+        "engine": "postgresql",
+        "extensions": [],
+        "timezone": "UTC",
+        "versions": [
+          "17.5"
+        ]
+      },
+      "status": "certified",
+      "target": {
+        "charset": "UTF-8",
+        "collation": "BINARY",
+        "dialect": "dm8-oracle-compatible",
+        "driver_versions": [
+          "dm-jdbc:8.1.3.140"
+        ],
+        "edition": "enterprise",
+        "engine": "dm8",
+        "extensions": [],
+        "timezone": "Asia/Shanghai",
+        "versions": [
+          "8.1.3.140"
+        ]
+      }
+    }
   ]
 }

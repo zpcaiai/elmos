@@ -1,5 +1,8 @@
 ---
 name: pm-b07-ephemeral-workspace-manager
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "创建内容寻址、隔离、可快照和任务结束后可销毁的工作空间. Precision Migration B07 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

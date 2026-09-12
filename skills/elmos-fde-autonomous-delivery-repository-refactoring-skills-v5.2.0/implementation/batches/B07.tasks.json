@@ -1,0 +1,960 @@
+{
+  "batch": {
+    "id": "B07",
+    "title": "Architecture, correctness, security and data audits",
+    "dependsOn": [
+      "B06"
+    ],
+    "skills": [
+      "architecture-maintainability-audit",
+      "correctness-concurrency-consistency-audit",
+      "security-privacy-supply-chain-audit",
+      "data-database-migration-audit"
+    ],
+    "tasks": [
+      "B07-T001",
+      "B07-T002",
+      "B07-T003",
+      "B07-T004",
+      "B07-T005",
+      "B07-T006",
+      "B07-T007",
+      "B07-T008",
+      "B07-T009",
+      "B07-T010",
+      "B07-T011",
+      "B07-T012",
+      "B07-T013",
+      "B07-T014",
+      "B07-T015",
+      "B07-T016",
+      "B07-T017",
+      "B07-T018",
+      "B07-T019",
+      "B07-T020",
+      "B07-T021",
+      "B07-T022",
+      "B07-T023",
+      "B07-T024",
+      "B07-T025",
+      "B07-T026",
+      "B07-T027",
+      "B07-T028",
+      "B07-T029",
+      "B07-T030",
+      "B07-T031",
+      "B07-T032",
+      "B07-T033",
+      "B07-T034",
+      "B07-T035",
+      "B07-T036",
+      "B07-T037",
+      "B07-T038",
+      "B07-T039",
+      "B07-T040"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B07-T001",
+      "batch": "B07",
+      "title": "architecture-maintainability-audit: Bind canonical ownership and model domain contracts",
+      "skillId": "architecture-maintainability-audit",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B06-T010",
+        "B05-T020",
+        "B05-T040"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for architecture-maintainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T002",
+      "batch": "B07",
+      "title": "architecture-maintainability-audit: Implement persistence projections and append-only ledger events",
+      "skillId": "architecture-maintainability-audit",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B07-T001"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for architecture-maintainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T003",
+      "batch": "B07",
+      "title": "architecture-maintainability-audit: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "architecture-maintainability-audit",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B07-T002"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for architecture-maintainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T004",
+      "batch": "B07",
+      "title": "architecture-maintainability-audit: Implement service and durable workflow",
+      "skillId": "architecture-maintainability-audit",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B07-T003"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for architecture-maintainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T005",
+      "batch": "B07",
+      "title": "architecture-maintainability-audit: Implement replaceable ports and first reference Adapter",
+      "skillId": "architecture-maintainability-audit",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B07-T004"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for architecture-maintainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T006",
+      "batch": "B07",
+      "title": "architecture-maintainability-audit: Implement APIs, events and query projections",
+      "skillId": "architecture-maintainability-audit",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B07-T005"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for architecture-maintainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T007",
+      "batch": "B07",
+      "title": "architecture-maintainability-audit: Implement product UI or operator surface",
+      "skillId": "architecture-maintainability-audit",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B07-T006"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for architecture-maintainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T008",
+      "batch": "B07",
+      "title": "architecture-maintainability-audit: Add deterministic tests, negative controls and failure injection",
+      "skillId": "architecture-maintainability-audit",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B07-T007"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for architecture-maintainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T009",
+      "batch": "B07",
+      "title": "architecture-maintainability-audit: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "architecture-maintainability-audit",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B07-T008"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for architecture-maintainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T010",
+      "batch": "B07",
+      "title": "architecture-maintainability-audit: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "architecture-maintainability-audit",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B07-T009"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for architecture-maintainability-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T011",
+      "batch": "B07",
+      "title": "correctness-concurrency-consistency-audit: Bind canonical ownership and model domain contracts",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B06-T010",
+        "B05-T030"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for correctness-concurrency-consistency-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T012",
+      "batch": "B07",
+      "title": "correctness-concurrency-consistency-audit: Implement persistence projections and append-only ledger events",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T011"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for correctness-concurrency-consistency-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T013",
+      "batch": "B07",
+      "title": "correctness-concurrency-consistency-audit: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T012"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for correctness-concurrency-consistency-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T014",
+      "batch": "B07",
+      "title": "correctness-concurrency-consistency-audit: Implement service and durable workflow",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T013"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for correctness-concurrency-consistency-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T015",
+      "batch": "B07",
+      "title": "correctness-concurrency-consistency-audit: Implement replaceable ports and first reference Adapter",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T014"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for correctness-concurrency-consistency-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T016",
+      "batch": "B07",
+      "title": "correctness-concurrency-consistency-audit: Implement APIs, events and query projections",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T015"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for correctness-concurrency-consistency-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T017",
+      "batch": "B07",
+      "title": "correctness-concurrency-consistency-audit: Implement product UI or operator surface",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T016"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for correctness-concurrency-consistency-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T018",
+      "batch": "B07",
+      "title": "correctness-concurrency-consistency-audit: Add deterministic tests, negative controls and failure injection",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T017"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for correctness-concurrency-consistency-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T019",
+      "batch": "B07",
+      "title": "correctness-concurrency-consistency-audit: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T018"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for correctness-concurrency-consistency-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T020",
+      "batch": "B07",
+      "title": "correctness-concurrency-consistency-audit: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T019"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for correctness-concurrency-consistency-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T021",
+      "batch": "B07",
+      "title": "security-privacy-supply-chain-audit: Bind canonical ownership and model domain contracts",
+      "skillId": "security-privacy-supply-chain-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B06-T010",
+        "B05-T030",
+        "B04-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for security-privacy-supply-chain-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T022",
+      "batch": "B07",
+      "title": "security-privacy-supply-chain-audit: Implement persistence projections and append-only ledger events",
+      "skillId": "security-privacy-supply-chain-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T021"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for security-privacy-supply-chain-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T023",
+      "batch": "B07",
+      "title": "security-privacy-supply-chain-audit: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "security-privacy-supply-chain-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T022"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for security-privacy-supply-chain-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T024",
+      "batch": "B07",
+      "title": "security-privacy-supply-chain-audit: Implement service and durable workflow",
+      "skillId": "security-privacy-supply-chain-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T023"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for security-privacy-supply-chain-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T025",
+      "batch": "B07",
+      "title": "security-privacy-supply-chain-audit: Implement replaceable ports and first reference Adapter",
+      "skillId": "security-privacy-supply-chain-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T024"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for security-privacy-supply-chain-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T026",
+      "batch": "B07",
+      "title": "security-privacy-supply-chain-audit: Implement APIs, events and query projections",
+      "skillId": "security-privacy-supply-chain-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T025"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for security-privacy-supply-chain-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T027",
+      "batch": "B07",
+      "title": "security-privacy-supply-chain-audit: Implement product UI or operator surface",
+      "skillId": "security-privacy-supply-chain-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T026"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for security-privacy-supply-chain-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T028",
+      "batch": "B07",
+      "title": "security-privacy-supply-chain-audit: Add deterministic tests, negative controls and failure injection",
+      "skillId": "security-privacy-supply-chain-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T027"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for security-privacy-supply-chain-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T029",
+      "batch": "B07",
+      "title": "security-privacy-supply-chain-audit: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "security-privacy-supply-chain-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T028"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for security-privacy-supply-chain-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T030",
+      "batch": "B07",
+      "title": "security-privacy-supply-chain-audit: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "security-privacy-supply-chain-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T029"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for security-privacy-supply-chain-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T031",
+      "batch": "B07",
+      "title": "data-database-migration-audit: Bind canonical ownership and model domain contracts",
+      "skillId": "data-database-migration-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B06-T010",
+        "B05-T030"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for data-database-migration-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T032",
+      "batch": "B07",
+      "title": "data-database-migration-audit: Implement persistence projections and append-only ledger events",
+      "skillId": "data-database-migration-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T031"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for data-database-migration-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T033",
+      "batch": "B07",
+      "title": "data-database-migration-audit: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "data-database-migration-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T032"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for data-database-migration-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T034",
+      "batch": "B07",
+      "title": "data-database-migration-audit: Implement service and durable workflow",
+      "skillId": "data-database-migration-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T033"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for data-database-migration-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T035",
+      "batch": "B07",
+      "title": "data-database-migration-audit: Implement replaceable ports and first reference Adapter",
+      "skillId": "data-database-migration-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T034"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for data-database-migration-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T036",
+      "batch": "B07",
+      "title": "data-database-migration-audit: Implement APIs, events and query projections",
+      "skillId": "data-database-migration-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T035"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for data-database-migration-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T037",
+      "batch": "B07",
+      "title": "data-database-migration-audit: Implement product UI or operator surface",
+      "skillId": "data-database-migration-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T036"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for data-database-migration-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T038",
+      "batch": "B07",
+      "title": "data-database-migration-audit: Add deterministic tests, negative controls and failure injection",
+      "skillId": "data-database-migration-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T037"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for data-database-migration-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T039",
+      "batch": "B07",
+      "title": "data-database-migration-audit: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "data-database-migration-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T038"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for data-database-migration-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B07-T040",
+      "batch": "B07",
+      "title": "data-database-migration-audit: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "data-database-migration-audit",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B07-T039"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for data-database-migration-audit are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

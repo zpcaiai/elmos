@@ -1,0 +1,5 @@
+FROM python:3.12-alpine
+WORKDIR /app
+COPY dm8_mock_server.py /app/dm8_mock_server.py
+EXPOSE 5236
+CMD ["python", "/app/dm8_mock_server.py", "5236"]

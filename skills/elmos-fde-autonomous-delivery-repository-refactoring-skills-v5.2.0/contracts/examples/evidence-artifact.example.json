@@ -1,0 +1,15 @@
+{
+  "evidenceId": "EV-001",
+  "kind": "test-result",
+  "revisionSetId": "revset-001",
+  "environmentId": "env-demo",
+  "contentHash": "sha256:evidence",
+  "producer": "independent-verifier",
+  "capturedAt": "2026-08-31T00:00:00Z",
+  "sourceRefs": [
+    "CS-001"
+  ],
+  "freshness": "fresh",
+  "counterexample": false,
+  "confidentiality": "internal"
+}

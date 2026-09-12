@@ -1,6 +1,9 @@
 ---
 name: b29-certify-typescript-to-python
-description: "Implement or certify the directed TypeScript-to-Python migration route, including source semantics, target lowering, compatibility strategy, corpus, real builds, behavior evidence, and route manifest. Use only for TypeScript source and Python target work."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement or certify the directed TypeScript-to-Python migration route, including source semantics, target lowering, compatibility strategy, corpus, real builds, behavior evidence, and route manifest. Use only for TypeScript source and Python target work.
 ---
 
 ## Operating mode

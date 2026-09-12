@@ -1,5 +1,8 @@
 ---
 name: pm-b39-deployment-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成容器、编排、配置、密钥、数据库迁移、环境和发布文件. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

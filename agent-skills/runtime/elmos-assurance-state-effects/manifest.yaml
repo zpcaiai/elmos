@@ -1,0 +1,21 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-state-effects
+title: 状态机、副作用与时序模型
+priority: P0
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-contract-ir
+inputs:
+- ContractSnapshot
+- DB/MQ/缓存关系
+- 并发需求
+outputs:
+- StateMachineSet
+- EffectCatalog
+- TemporalProperties
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

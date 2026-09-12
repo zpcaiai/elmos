@@ -20,7 +20,8 @@
       "score": 0.0,
       "owner": "REPLACE_ME",
       "status": "NOT_RUN",
-      "evidenceRefs": []
+      "evidenceRefs": [],
+      "unevidenced": true
     }
   ],
   "packKey": "elmos-platform-production-readiness"

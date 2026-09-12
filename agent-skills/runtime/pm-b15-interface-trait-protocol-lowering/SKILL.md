@@ -1,5 +1,8 @@
 ---
 name: pm-b15-interface-trait-protocol-lowering
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在 Interface、Trait、Protocol、结构类型和动态协议之间映射契约. Precision Migration B15 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

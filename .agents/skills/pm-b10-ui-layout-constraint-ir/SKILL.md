@@ -1,5 +1,8 @@
 ---
 name: pm-b10-ui-layout-constraint-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达约束布局、Flex/Grid、尺寸、间距、滚动、响应式和主题. Precision Migration B10 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

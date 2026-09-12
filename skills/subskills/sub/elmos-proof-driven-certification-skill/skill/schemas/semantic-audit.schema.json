@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/semantic-audit.v1.json",
+  "title": "Elmos SemanticAudit v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "auditId", "jobId", "evidenceManifestDigest", "claims"],
+  "properties": {
+    "schema": {"const": "elmos.semantic-audit.v1"},
+    "auditId": {"type": "string", "minLength": 1},
+    "jobId": {"type": "string", "minLength": 1},
+    "evidenceManifestDigest": {"$ref": "#/$defs/digest"},
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["claimId", "requirementId", "decision", "evidenceRefs", "reasonSummary", "confidence"],
+        "properties": {
+          "claimId": {"type": "string", "minLength": 1},
+          "requirementId": {"type": "string", "minLength": 1},
+          "decision": {"enum": ["SATISFIED", "VIOLATED", "UNKNOWN", "NOT_APPLICABLE", "CONFLICTING_EVIDENCE"]},
+          "evidenceRefs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+          "reasonSummary": {"type": "string", "minLength": 1},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[A-Fa-f0-9]{64}$"}
+  }
+}

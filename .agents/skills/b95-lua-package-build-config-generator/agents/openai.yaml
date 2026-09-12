@@ -1,0 +1,4 @@
+interface:
+  display_name: "B95 Lua Package Build Config Generator"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b95-lua-package-build-config-generator to execute this ELMOS Language Pack Skill with fail-closed evidence."

@@ -1,5 +1,8 @@
 ---
 name: pm-b17-layout-constraint-mapping
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "把 DOM/CSS、Flex/Grid、Widget、ArkUI 和小程序布局映射到约束 IR. Precision Migration B17 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

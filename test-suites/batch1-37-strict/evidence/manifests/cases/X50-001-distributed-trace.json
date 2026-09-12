@@ -1,0 +1,5 @@
+{
+  "role": "distributed-trace",
+  "case_id": "X50-001",
+  "ref": "cases/X50-001-execution.log"
+}

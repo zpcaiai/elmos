@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B14-003 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [14]
+Title: Batch 14 内容与案例：提供畸形、缺失、冲突、未知或明确不支持的输入
+Capability: 内容与案例
+Test Type: negative
+Skill: tst-b14-plg-community-localization
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

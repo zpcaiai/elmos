@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/assurance/v4/assertion-program.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "4.0"
+    },
+    "program_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "approved_oracle_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "combiner": {
+      "const": "all"
+    },
+    "assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+          },
+          "path": {
+            "type": "string",
+            "maxLength": 1024,
+            "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+          },
+          "op": {
+            "enum": [
+              "equals",
+              "not_equals",
+              "exists",
+              "not_exists",
+              "count_equals",
+              "decimal_equals"
+            ]
+          },
+          "expected": {}
+        },
+        "required": [
+          "id",
+          "path",
+          "op"
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "op": {
+                  "enum": [
+                    "equals",
+                    "not_equals",
+                    "count_equals",
+                    "decimal_equals"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "expected"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "op": {
+                  "enum": [
+                    "exists",
+                    "not_exists"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "expected"
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "op": {
+                  "const": "count_equals"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "expected": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "op": {
+                  "const": "decimal_equals"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "expected": {
+                  "type": "string",
+                  "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "program_id",
+    "approved_oracle_digest",
+    "combiner",
+    "assertions"
+  ]
+}

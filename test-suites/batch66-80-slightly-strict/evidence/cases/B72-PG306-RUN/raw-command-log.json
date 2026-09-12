@@ -1,0 +1,10 @@
+{
+  "case_id": "B72-PG306-RUN",
+  "command": "python3 -m elmos.test_runner --case B72-PG306-RUN",
+  "duration_seconds": 4.86,
+  "exit_code": 0,
+  "finished_at": "2025-09-10T11:02:00+00:00",
+  "started_at": "2025-09-10T11:01:00+00:00",
+  "stderr_lines": 0,
+  "stdout_lines": 42
+}

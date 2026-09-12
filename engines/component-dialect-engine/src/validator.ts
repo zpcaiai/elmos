@@ -128,14 +128,15 @@ const template = JSON.parse(process.argv[2]);
 const result = parseTemplate(template, "emitted.component.html");
 process.stdout.write(JSON.stringify((result.errors ?? []).map(String)));
 `;
-  const scratch = path.join(process.env["ELMOS_CDE_SCRATCH"] ?? path.join(process.cwd(), ".cde-scratch"), "angular-check");
+  const engineRoot = path.resolve(__dirname, "..");
+  const scratch = path.join(process.env["ELMOS_CDE_SCRATCH"] ?? path.join(engineRoot, ".cde-scratch"), "angular-check");
   fs.mkdirSync(scratch, { recursive: true });
   const scriptFile = path.join(scratch, "check.mjs");
   fs.writeFileSync(scriptFile, script, "utf8");
   try {
     const output = execFileSync(process.execPath, [scriptFile, JSON.stringify(templateMatch[1])], {
       encoding: "utf8",
-      cwd: process.cwd(),
+      cwd: engineRoot,
       stdio: ["ignore", "pipe", "pipe"],
       timeout: 60_000,
     });

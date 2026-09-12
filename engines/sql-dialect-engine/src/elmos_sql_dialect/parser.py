@@ -25,7 +25,7 @@ from sqlglot import exp
 from sqlglot.expressions import DataType
 from sqlglot.tokens import Tokenizer
 
-from .dialects import IDENTIFIER_PATTERN
+from .dialects import IDENTIFIER_PATTERN, sqlglot_read_dialect
 from .identifiers import CanonicalIdentifier
 from .models import (
     AddColumn,
@@ -369,10 +369,10 @@ def _recover_multi_action_alter(
     column definition here; the existing typed ALTER parser remains the sole
     semantic admission gate.
     """
-    if source_dialect is not Dialect.POSTGRES:
+    if source_dialect not in (Dialect.POSTGRES, Dialect.OPENGAUSS):
         return None
     normalized = _coalesce_adjacent_string_literals(sql)
-    tokens = Tokenizer(dialect=source_dialect.value).tokenize(normalized)
+    tokens = Tokenizer(dialect=sqlglot_read_dialect(source_dialect)).tokenize(normalized)
     if tokens and tokens[-1].token_type.name == "SEMICOLON":
         tokens = tokens[:-1]
     if len(tokens) < 5:
@@ -409,7 +409,7 @@ def _recover_multi_action_alter(
     table_node: exp.Expression | None = None
     for span in spans:
         try:
-            action_statement = sqlglot.parse_one(prefix + span, read=source_dialect.value)
+            action_statement = sqlglot.parse_one(prefix + span, read=sqlglot_read_dialect(source_dialect))
         except sqlglot.errors.SqlglotError:
             return None
         if not isinstance(action_statement, exp.Alter):
@@ -443,7 +443,7 @@ def _parse_source_statements(sql: str, source_dialect: Dialect) -> list[exp.Expr
     try:
         statements = cast(
             list[exp.Expression],
-            [s for s in sqlglot.parse(sql, read=source_dialect.value) if s is not None],
+            [s for s in sqlglot.parse(sql, read=sqlglot_read_dialect(source_dialect)) if s is not None],
         )
         if any(isinstance(statement, exp.Command) for statement in statements):
             recovered = _recover_multi_action_alter(sql, source_dialect)
@@ -451,7 +451,7 @@ def _parse_source_statements(sql: str, source_dialect: Dialect) -> list[exp.Expr
                 return recovered
         return statements
     except sqlglot.errors.SqlglotError as parse_error:
-        if source_dialect is not Dialect.POSTGRES:
+        if source_dialect not in (Dialect.POSTGRES, Dialect.OPENGAUSS):
             raise
         if re.search(r"\bLANGUAGE\s+SQL\s+SECURITY\s+(?:DEFINER|INVOKER)\b", sql, re.IGNORECASE):
             rewritten = re.sub(
@@ -463,7 +463,7 @@ def _parse_source_statements(sql: str, source_dialect: Dialect) -> list[exp.Expr
             try:
                 statements = cast(
                     list[exp.Expression],
-                    [s for s in sqlglot.parse(rewritten, read=source_dialect.value) if s is not None],
+                    [s for s in sqlglot.parse(rewritten, read=sqlglot_read_dialect(source_dialect)) if s is not None],
                 )
                 if statements:
                     return statements
@@ -474,7 +474,7 @@ def _parse_source_statements(sql: str, source_dialect: Dialect) -> list[exp.Expr
             try:
                 statements = cast(
                     list[exp.Expression],
-                    [s for s in sqlglot.parse(normalized, read=source_dialect.value) if s is not None],
+                    [s for s in sqlglot.parse(normalized, read=sqlglot_read_dialect(source_dialect)) if s is not None],
                 )
                 if any(isinstance(statement, exp.Command) for statement in statements):
                     recovered = _recover_multi_action_alter(normalized, source_dialect)
@@ -497,7 +497,7 @@ def _parse_source_statements(sql: str, source_dialect: Dialect) -> list[exp.Expr
         # single-string form is materialised into the normal typed Comment
         # route. Anything more complex remains a source-format blocker.
         fallback_sql = normalized
-        tokens = Tokenizer(dialect=source_dialect.value).tokenize(fallback_sql)
+        tokens = Tokenizer(dialect=sqlglot_read_dialect(source_dialect)).tokenize(fallback_sql)
         if tokens and tokens[-1].token_type.name == "SEMICOLON":
             tokens = tokens[:-1]
         if (
@@ -1883,7 +1883,7 @@ def parse_create_index(
         # sqlglot normalises `NULLS LAST` to the same AST flags as a plain
         # ascending key. Inspect the source tokens as a syntax-preservation
         # guard so that this otherwise invisible modifier cannot be dropped.
-        tokens = sqlglot.tokenize(source_text, read=source_dialect.value)
+        tokens = sqlglot.tokenize(source_text, read=sqlglot_read_dialect(source_dialect))
         for index, token in enumerate(tokens[:-1]):
             if token.text.upper() == "NULLS" and tokens[index + 1].text.upper() in {"FIRST", "LAST"}:
                 raise DialectError(
@@ -2125,7 +2125,7 @@ def _row_security_tokens(sql: str, source_dialect: Dialect) -> list[Any]:
     """
 
     try:
-        return list(sqlglot.tokenize(sql, read=source_dialect.value))
+        return list(sqlglot.tokenize(sql, read=sqlglot_read_dialect(source_dialect)))
     except sqlglot.errors.SqlglotError as exc:
         raise DialectError(
             "CERTIFIED_RLS_PARSE_FAILED",

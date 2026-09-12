@@ -1,0 +1,10 @@
+{
+  "case_id": "B75-PG339-RUN",
+  "command": "python3 -m elmos.test_runner --case B75-PG339-RUN",
+  "duration_seconds": 5.52,
+  "exit_code": 0,
+  "finished_at": "2025-09-10T12:08:00+00:00",
+  "started_at": "2025-09-10T12:07:00+00:00",
+  "stderr_lines": 0,
+  "stdout_lines": 42
+}

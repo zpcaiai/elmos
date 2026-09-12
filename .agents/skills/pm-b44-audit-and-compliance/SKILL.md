@@ -1,5 +1,8 @@
 ---
 name: pm-b44-audit-and-compliance
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "记录不可抵赖操作、数据处理、模型调用、审批和证据保留. Precision Migration B44 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

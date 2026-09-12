@@ -1,5 +1,8 @@
 ---
 name: pm-b12-semantic-diff-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成类型、调用、Effect、状态和观察维度的语义 Diff，而非仅文本 Diff. Precision Migration B12 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

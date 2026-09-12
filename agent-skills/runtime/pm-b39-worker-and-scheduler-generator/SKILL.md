@@ -1,5 +1,8 @@
 ---
 name: pm-b39-worker-and-scheduler-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成后台 Worker、队列消费者、定时任务、重试、幂等和监控. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

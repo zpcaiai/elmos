@@ -1,0 +1,12 @@
+.PHONY: cross-language-check cross-language-install cross-language-clean
+
+cross-language-check:
+	@echo "--- Cross-Language Verification Engine Tests ---"
+	cd engines/cross-language-verification-engine && \
+		PYTHONPATH=src .venv/bin/python3 -m pytest tests/ -v --tb=short
+
+cross-language-install:
+	cd engines/cross-language-verification-engine && uv venv --python 3.12 && uv pip install pytest && uv pip install -e .
+
+cross-language-clean:
+	rm -rf engines/cross-language-verification-engine/build engines/cross-language-verification-engine/src/*.egg-info engines/cross-language-verification-engine/.pytest_cache

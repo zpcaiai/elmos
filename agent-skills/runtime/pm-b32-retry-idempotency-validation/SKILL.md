@@ -1,5 +1,8 @@
 ---
 name: pm-b32-retry-idempotency-validation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "验证超时、重试、重复投递和幂等键不会造成重复副作用. Precision Migration B32 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -61,6 +61,23 @@ def openapi_yaml(request: SynthesisRequest, *, server_port: int) -> str:
         "        '200':",
         "          description: Service is healthy",
     ]
+    if request.is_worker:
+        lines.extend(
+            [
+                "  /api/v1/worker/status:",
+                "    get:",
+                "      operationId: getWorkerStatus",
+                "      responses:",
+                "        '200':",
+                "          description: Background worker health and execution statistics",
+                "  /api/v1/worker/trigger:",
+                "    post:",
+                "      operationId: triggerWorkerCycle",
+                "      responses:",
+                "        '200':",
+                "          description: Manually triggered worker execution cycle result",
+            ]
+        )
 
     for entity in request.entities:
         entity_class = pascal(entity.singular)
@@ -371,6 +388,12 @@ def kubernetes_yaml(request: SynthesisRequest, *, language: str, port: int) -> s
 
 def target_readme(request: SynthesisRequest, *, language: str, framework: str, port: int, commands: str) -> str:
     resources = ", ".join(f"`/api/v1/{entity.plural}`" for entity in request.entities)
+    worker_note = (
+        "\nBackground worker status and trigger endpoints are `GET /api/v1/worker/status` "
+        "and `POST /api/v1/worker/trigger`.\n"
+        if request.is_worker
+        else ""
+    )
     return clean(
         f"""
         # {request.project_name} — {language}
@@ -387,9 +410,9 @@ def target_readme(request: SynthesisRequest, *, language: str, framework: str, p
         {commands}
         ```
 
-        The API listens on `http://localhost:{port}`. Health is `GET /health`; generated
-        collections are {resources}.
-
+        The service kind is `{request.project_kind}`. The API listens on `http://localhost:{port}`.
+        Health is `GET /health`; generated collections are {resources}.
+        {worker_note}
         ## Evidence boundary
 
         Local build/startup evidence is engineering evidence only. The requested authentication

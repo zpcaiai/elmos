@@ -1,0 +1,22 @@
+{
+  "schema_version": "4.0",
+  "observation_id": "demo-observation",
+  "request_digest": "86c72d5e090632430238edc15169932a35c86e80438d53d65b415296ac88bc5a",
+  "runtime_digest": "36dc3a273aaee040a52879ed2d3a819bb7dbaac368a8629d490362ed1ad45fba",
+  "correlation_id": "demo-correlation",
+  "completion": "COMPLETED",
+  "data": {
+    "status": 201,
+    "total": "10.00"
+  },
+  "side_effects": [
+    {
+      "kind": "db",
+      "resource_ref": "demo.orders",
+      "operation": "insert",
+      "count": 1,
+      "transaction_ref": "demo-tx"
+    }
+  ],
+  "clock_policy_digest": "02097e4d0bbf70e1415f430a6af96056ef18cd23538b8e6207d576bb5e436c50"
+}

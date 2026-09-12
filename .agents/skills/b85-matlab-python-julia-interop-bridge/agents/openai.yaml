@@ -1,0 +1,4 @@
+interface:
+  display_name: "B85 Matlab Python Julia Interop Bridge"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b85-matlab-python-julia-interop-bridge to execute this ELMOS Language Pack Skill with fail-closed evidence."

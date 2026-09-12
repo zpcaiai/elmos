@@ -1,0 +1,81 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: characterization-differential-mutation-verification
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Refactor changes exception wording but not semantics
+  - Target emits events in different order
+  - Tests pass but mutation score is weak
+  negativeControls:
+  - declare success from compile only
+  - let implementation agent approve itself
+  - ignore approved behavior changes
+  checks:
+  - id: characterization-differential-mutation-verification-AC-01
+    requirement: Derive verification obligations from acceptance criteria, invariants, findings, changes, and risk.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: characterization-differential-mutation-verification-AC-02
+    requirement: Compare source and target values, errors, data mutations, events, side effects, states, timing, and user-visible
+      behavior under normalized semantics.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: characterization-differential-mutation-verification-AC-03
+    requirement: Classify differences as exact failure, normalized equivalence, tolerated range, approved change, unknown,
+      or oracle defect.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: characterization-differential-mutation-verification-AC-04
+    requirement: Evaluate test strength through mutation or equivalent fault seeding on critical paths.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: characterization-differential-mutation-verification-AC-05
+    requirement: Keep verifier execution and completion decisions independent from the producer.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

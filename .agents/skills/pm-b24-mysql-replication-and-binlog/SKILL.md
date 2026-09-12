@@ -1,5 +1,8 @@
 ---
 name: pm-b24-mysql-replication-and-binlog
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Binlog 格式、GTID、复制拓扑、过滤、冲突和 CDC. Precision Migration B24 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

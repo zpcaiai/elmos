@@ -1,0 +1,11 @@
+[2026-09-10T08:26:28.932403Z][X-U024-005] Starting execution of X-U024-005 (计量、账单与毛利对账 / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:26:28.932407Z][X-U024-005] Bound Skill: tst-metering-billing-margin-reconciliation | Product Skill IDs: []
+[2026-09-10T08:26:28.932411Z][X-U024-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:28.963355Z][X-U024-005] Security: Minted RS256 token (JTI=25507b50..., Exp=1789032388)
+[2026-09-10T08:26:29.001362Z][X-U024-005] KMS: Envelope encrypted 37 bytes under key key-x-u024-005 v1 (DEK wrapped)
+[2026-09-10T08:26:29.020564Z][X-U024-005] [CROSS-DELIVERY] Initializing X-U024-005 (U024) Category=security
+[2026-09-10T08:26:29.020570Z][X-U024-005] FinOps Economics: Reconciling usage metering to customer invoices with gross margin analysis
+[2026-09-10T08:26:29.020574Z][X-U024-005] Verifying tenant isolation in billing usage reports...
+[2026-09-10T08:26:29.020592Z][X-U024-005] Completed execution of X-U024-005 in 88.2ms: Status=PASSED
+[2026-09-10T08:26:29.020595Z][X-U024-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:29.020608Z][X-U024-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

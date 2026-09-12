@@ -1,5 +1,8 @@
 ---
 name: pm-b24-mysql-event-scheduler
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Event Scheduler、时区、重复规则和失败处理. Precision Migration B24 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

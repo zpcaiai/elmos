@@ -1,0 +1,10 @@
+{
+  "candidate": {},
+  "sanitization": {},
+  "development": {},
+  "negative": {},
+  "holdout": {},
+  "security_review": {},
+  "signing": {},
+  "publication": {}
+}

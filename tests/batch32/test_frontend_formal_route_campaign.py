@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -71,6 +72,20 @@ class FrontendFormalCampaignTests(unittest.TestCase):
             text=True,
         )
         cls.engine_output = cls.root / "engine-output"
+        node_env = dict(os.environ)
+        sys_paths = [p for p in ["/opt/homebrew/bin", "/usr/local/bin"] if os.path.isdir(p)]
+        other_paths = [p for p in node_env.get("PATH", "").split(os.pathsep) if p not in sys_paths]
+        node_env["PATH"] = os.pathsep.join(sys_paths + other_paths)
+        locked_z3 = (
+            ROOT
+            / "client-packs"
+            / "frontend-72-route-equivalence-v2"
+            / "formal-campaign"
+            / "environment"
+            / "z3"
+        )
+        if locked_z3.is_file():
+            node_env["ELMOS_FRONTEND_Z3"] = str(locked_z3.resolve())
         subprocess.run(
             [
                 "node",
@@ -82,28 +97,34 @@ class FrontendFormalCampaignTests(unittest.TestCase):
             check=True,
             capture_output=True,
             text=True,
+            env=node_env,
         )
         cls.toolchain_evidence = cls.root / "toolchain-evidence.json"
-        subprocess.run(
-            [
-                sys.executable,
-                str(ROOT / "tooling" / "run_frontend_formal_toolchains.py"),
-                str(cls.engine_output / "frontend-formal-route-campaign.json"),
-                "--output",
-                str(cls.toolchain_evidence),
-                "--profile",
-                "harmony-arkui",
-                "--harmony-tool",
-                "/nonexistent/hvigorw",
-                "--no-network",
-                "--timeout-seconds",
-                "2",
-            ],
-            cwd=ROOT,
-            check=True,
-            capture_output=True,
-            text=True,
-        )
+        try:
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "tooling" / "run_frontend_formal_toolchains.py"),
+                    str(cls.engine_output / "frontend-formal-route-campaign.json"),
+                    "--output",
+                    str(cls.toolchain_evidence),
+                    "--profile",
+                    "harmony-arkui",
+                    "--harmony-tool",
+                    "/nonexistent/hvigorw",
+                    "--no-network",
+                    "--timeout-seconds",
+                    "2",
+                ],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        except subprocess.CalledProcessError as err:
+            raise RuntimeError(
+                f"run_frontend_formal_toolchains failed:\nSTDOUT:\n{err.stdout}\nSTDERR:\n{err.stderr}"
+            ) from err
         staging = cls.root / "staging"
         client, verification = generator.build_packs(
             ROOT,

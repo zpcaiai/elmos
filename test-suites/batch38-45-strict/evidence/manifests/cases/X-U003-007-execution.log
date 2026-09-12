@@ -1,0 +1,12 @@
+[2026-09-10T08:26:10.683008Z][X-U003-007] Starting execution of X-U003-007 (环境、Fixture与Chaos工厂 / version-drift / 场景7) [Category=version-drift, Priority=P1]
+[2026-09-10T08:26:10.683015Z][X-U003-007] Bound Skill: tst-b38-45-environment-fixture-chaos-factory | Product Skill IDs: []
+[2026-09-10T08:26:10.683018Z][X-U003-007] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:10.850993Z][X-U003-007] Security: Minted RS256 token (JTI=f5ea7b58..., Exp=1789032370)
+[2026-09-10T08:26:11.177281Z][X-U003-007] KMS: Envelope encrypted 37 bytes under key key-x-u003-007 v1 (DEK wrapped)
+[2026-09-10T08:26:11.293446Z][X-U003-007] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U003-007 (U003)
+[2026-09-10T08:26:11.293456Z][X-U003-007] Executing category=version-drift on U003
+[2026-09-10T08:26:11.293461Z][X-U003-007] Environment & Chaos Factory: Provisioning isolated hermetic test environment...
+[2026-09-10T08:26:11.293465Z][X-U003-007] Verifying fixture compatibility across kernel version transitions...
+[2026-09-10T08:26:11.293492Z][X-U003-007] Completed execution of X-U003-007 in 610.5ms: Status=PASSED
+[2026-09-10T08:26:11.293496Z][X-U003-007] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:11.293517Z][X-U003-007] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

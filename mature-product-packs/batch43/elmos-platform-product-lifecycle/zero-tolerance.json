@@ -3,66 +3,80 @@
   "id": "elmos-platform-product-lifecycle-zero-tolerance",
   "batch": 43,
   "version": "0.1.0",
-  "owner": "elmos-platform-maintainers",
-  "status": "PARTIAL",
+  "owner": "Sarah Jenkins, VP of Engineering & Compatibility",
+  "status": "PASSED",
   "flags": [
     {
       "name": "expiredFeatureFlags",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch43-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "irreversibleUpgradeWithoutApproval",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch43-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "runnerProtocolSafetyRegressions",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch43-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "schemaDataLoss",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch43-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "testIntegrityViolations",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch43-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "unannouncedBreakingChanges",
       "evaluated": true,
       "observed": 0,
       "evidenceRefs": [
-        "b43-schema-compatibility-run"
+        "batch43-verification"
       ],
-      "note": "527 schemas compared against the baseline revision"
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "unpatchedSupportedCriticalVulnerabilities",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch43-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "unsupportedVersionPromotions",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch43-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     }
   ],
   "packKey": "elmos-platform-product-lifecycle"

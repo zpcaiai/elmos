@@ -1,0 +1,17 @@
+{
+  "schema_version": "4.0",
+  "proof_id": "demo-proof",
+  "claim_id": "demo-claim",
+  "trusted_statement_digest": "fa0f663e10cd2e051e5816890a060328410d1ee1071613dd6f44fd105c8c6321",
+  "semantic_model_digest": "72f3f81d605782affe9a75bee7f751a0e58ddccc08fb6cca2c641a9e5ec03a7b",
+  "source_ir_binding_digest": "a5deb7727c379b27f5d6040c6d0de2a8d17169105c1b789d19b6900180f0cbee",
+  "target_artifact_digest": "990131a9a6de096ef0fe65b4d4cb967a01f5484363e6f9e11afd38166fb2364a",
+  "preconditions": [
+    "Model-bound Boolean guard only; no SQL NULL semantics claimed"
+  ],
+  "allowed_axioms": [],
+  "toolchain_digest": "39f7f6769221b3b7a77c002018244c47f3f9d683d81f5dc8dd86c10d965fb569",
+  "checker_digest": "c892154a1e3edaa1cd51c2817dc5af7432ac787634f0e30c7b211bd14ee5c36d",
+  "native_evidence_refs": [],
+  "status": "NOT_RUN"
+}

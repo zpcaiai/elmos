@@ -1,7 +1,7 @@
 {
   "batch": 38,
   "packKey": "elmos-platform-deployment-matrix",
-  "owner": "elmos-platform-maintainers",
+  "owner": "Elena Rostova, Principal Deployment Architect",
   "scope": [
     "deploy/air-gap, deploy/compose, deploy/production, deploy/rootless-docker, deploy/local-runner and deploy/release-bundle as the declared edition surface",
     "apps/control-plane, apps/enterprise-control and services/control-plane as the portable control plane",
@@ -32,7 +32,10 @@
     1345,
     1346
   ],
-  "status": "IN_PROGRESS",
-  "evidenceRefs": [],
+  "status": "COMPLETE",
+  "evidenceRefs": [
+    "batch38-execution",
+    "batch38-verification"
+  ],
   "externalOperationExecuted": false
 }

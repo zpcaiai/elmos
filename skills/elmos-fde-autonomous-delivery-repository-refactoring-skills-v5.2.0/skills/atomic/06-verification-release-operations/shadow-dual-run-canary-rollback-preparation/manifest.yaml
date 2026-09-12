@@ -1,0 +1,155 @@
+apiVersion: elmos.ai/v1
+kind: Skill
+metadata:
+  id: shadow-dual-run-canary-rollback-preparation
+  name: Shadow Dual Run Canary Rollback Preparation
+  version: 5.2.0
+  package: elmos-fde-autonomous-delivery-repository-refactoring-skills
+  pack: 06-verification-release-operations
+spec:
+  packageRole: capability-extension
+  routable: false
+  routeOwnerRef: binding://domain/repository-autonomy
+  canonicalKernels:
+  - K6
+  - K7
+  - K8
+  businessLines:
+  - all-four-lines
+  - release-operations
+  owner: release-engineering-team
+  priority: P1
+  riskClass: critical
+  maturity: specification-ready
+  description: Prepare shadow, dual-run, canary, feature-flag, reconciliation, rollback, and incident controls for later E4/E5
+    execution by authorized environments.
+  triggers:
+  - canary plan
+  - shadow traffic
+  - dual run
+  - rollback plan
+  - feature flag rollout
+  negativeTriggers:
+  - perform unapproved production cutover
+  - claim E4 or E5
+  - duplicate real side effects during shadow
+  inputs:
+  - name: taskContract
+    type: TaskContract
+    required: true
+  - name: tenantRepositoryIdentity
+    type: TenantRepositoryIdentity
+    required: true
+  - name: revisionSet
+    type: RevisionSet
+    required: true
+  - name: policyProfile
+    type: PolicyProfile
+    required: true
+  - name: acceptanceAndEvidenceObligations
+    type: ObligationSet
+    required: true
+  outputs:
+  - name: rollout_plan
+    type: Artifact
+  - name: shadow_and_side_effect_isolation_plan
+    type: Artifact
+  - name: rollback_package
+    type: Artifact
+  - name: reconciliation_plan
+    type: Artifact
+  - name: E4_E5_execution_handoff
+    type: Artifact
+  tools:
+  - rollout.plan
+  - featureflag.plan
+  - reconcile.plan
+  - rollback.rehearse
+  - evidence.append
+  dependencies:
+  - e0-e3-readiness-and-evidence-bundle
+  - changeset-commit-and-provenance-governance
+  externalDependencies:
+  - typed-skill-contract
+  - artifact-identity-and-hashing
+  - evidence-contract
+  - policy-contract
+  - capability-dependency-graph
+  - compatibility-matrix-manager
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  - repository-incremental-ingestion
+  - build-and-dependency-graph
+  - durable-task-checkpoint-memory
+  - environment-owned-tool-authority
+  - invocation-scoped-capability-lease
+  - verified-security-context
+  - result-interception-and-commit
+  - remote-executor-fencing
+  - independent-k8-decision
+  invariants:
+  - no claim without evidence
+  - no authority escalation
+  - all unknowns are explicit
+  - outputs bind to exact RevisionSet
+  failureModes:
+  - insufficient evidence
+  - unsupported technology
+  - stale RevisionSet
+  - authority denied
+  - validation failure
+  authority:
+    default: deny
+    read: explicit-capability-lease
+    workspaceWrite: approved-plan-step-only
+    externalWrite: human-approval-and-side-effect-ledger
+    productionWrite: prohibited-in-capability-package
+    completionDecision: independent-K8-only
+  idempotency:
+    key: tenantId+engagementId+revisionSetId+planStepId+skillVersion
+    replayPolicy: return-previous-artifacts-if-input-hashes-match
+  checkpointing:
+    beforeExternalEffect: true
+    afterAcceptedChangeSet: true
+    resumeRequiresAuthorityReplay: true
+  evidence:
+    minimumLevel: E3
+    freshnessRequired: true
+    exactVersionPins: true
+    counterexamplesRetained: true
+    unknownsBlockWhenMaterial: true
+  rollback:
+    required: true
+    code: atomic-revert-or-workspace-discard
+    data: route-specific-compensation-and-reconciliation
+    externalEffects: side-effect-ledger-compensation
+  telemetry:
+    required:
+    - trace
+    - metric
+    - structured-log
+    - artifact-hash
+    - policy-decision
+    costDimensions:
+    - model
+    - compute
+    - storage
+    - network
+    - license
+    - human-review
+    timeDimensions:
+    - machine-wall-clock
+    - queue
+    - human-review
+  dataUsePolicy:
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+    secretInModelContext: false
+    retention: tenant-policy
+  compatibility:
+    requiresElmos: '>=5.1.0'
+    preservesCanonicalK1K8: true
+    addsRoutableEntryPoints: 0
+    standaloneCompletionBoundary: E3
+    e4e5Companion: elmos-functional-assurance-certification-skills
+  specificationStatus: specification-ready-not-runtime-certified

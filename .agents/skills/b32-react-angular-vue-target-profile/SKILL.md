@@ -1,5 +1,8 @@
 ---
 name: b32-react-angular-vue-target-profile
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Create and certify exact React Angular or Vue target profiles covering versions build rendering state forms styling design system API clients identity i18n accessibility testing browser device and maintenance policies.
 ---
 

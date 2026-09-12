@@ -1,0 +1,36 @@
+skill: elmos-assurance-durable-execution
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-durable-execution-A01
+  given: worker commit前崩溃后重送
+  when: 在真实集成模块执行对应测试或负例
+  then: 控制平面只有一个可见结果
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-durable-execution-A02
+  given: 过期lease恢复
+  when: 在真实集成模块执行对应测试或负例
+  then: 拒绝或受控换发，不能复活
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-durable-execution-A03
+  given: 取消后旧worker回传
+  when: 在真实集成模块执行对应测试或负例
+  then: FENCE_REJECTED
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

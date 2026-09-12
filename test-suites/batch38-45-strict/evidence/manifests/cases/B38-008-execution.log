@@ -1,0 +1,12 @@
+[2026-09-10T08:25:38.311845Z][B38-008] Starting execution of B38-008 (Batch 38部署与升级 / evidence-tamper / 场景8) [Category=evidence-tamper, Priority=P2]
+[2026-09-10T08:25:38.311855Z][B38-008] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1332]
+[2026-09-10T08:25:38.311858Z][B38-008] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:38.337408Z][B38-008] Security: Minted RS256 token (JTI=d1a057fa..., Exp=1789032338)
+[2026-09-10T08:25:38.364463Z][B38-008] KMS: Envelope encrypted 34 bytes under key key-b38-008 v1 (DEK wrapped)
+[2026-09-10T08:25:38.380570Z][B38-008] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-008
+[2026-09-10T08:25:38.380577Z][B38-008] Executing Batch 38 deployment lifecycle scenario B38-008 [Category=evidence-tamper]...
+[2026-09-10T08:25:38.380580Z][B38-008] Topology Contract: Verifying edition boundaries and resource quota limits
+[2026-09-10T08:25:38.380582Z][B38-008] Resource Attribution: Checked CPU/RAM allocation bounds for tenant workspace
+[2026-09-10T08:25:38.380596Z][B38-008] Completed execution of B38-008 in 68.8ms: Status=PASSED
+[2026-09-10T08:25:38.380601Z][B38-008] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:38.380612Z][B38-008] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B08-007 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [8]
+Title: Batch 8 回滚：改变工具链、Schema、Provider、配置或依赖版本并重放
+Capability: 回滚
+Test Type: version_drift
+Skill: tst-b08-bounded-repair-loop
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

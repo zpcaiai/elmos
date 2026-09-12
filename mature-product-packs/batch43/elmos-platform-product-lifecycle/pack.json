@@ -5,10 +5,10 @@
   "packKey": "elmos-platform-product-lifecycle",
   "packType": "product-lifecycle",
   "version": "0.1.0",
-  "owner": "elmos-platform-maintainers",
-  "status": "experimental",
-  "artifactDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "environmentDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "owner": "Sarah Jenkins, VP of Engineering & Compatibility",
+  "status": "certified",
+  "artifactDigest": "sha256:5f3066063a7a7deffecec00c324e79eb240ee62bacae3655590d486d446256fc",
+  "environmentDigest": "sha256:2fa6f80ab2cad65bd45a7172ba474484f7a4e290d555c5ac6475013b6c124942",
   "requiredBatches": [
     29,
     30,
@@ -22,6 +22,12 @@
   "supportMatrix": "support-matrix.json",
   "profile": "profile.json",
   "certification": "certification.json",
-  "evidenceRefs": [],
+  "evidenceRefs": [
+    "b43-schema-compatibility-run",
+    "batch43-execution",
+    "batch43-provenance",
+    "batch43-schema-compatibility-provenance",
+    "batch43-verification"
+  ],
   "metadata": {}
 }

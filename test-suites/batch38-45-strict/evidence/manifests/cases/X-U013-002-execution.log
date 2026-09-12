@@ -1,0 +1,12 @@
+[2026-09-10T08:26:13.270025Z][X-U013-002] Starting execution of X-U013-002 (Edition拓扑与数据边界 / boundary / 场景2) [Category=boundary, Priority=P0]
+[2026-09-10T08:26:13.270030Z][X-U013-002] Bound Skill: tst-edition-topology-data-boundary | Product Skill IDs: []
+[2026-09-10T08:26:13.270034Z][X-U013-002] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:13.342684Z][X-U013-002] Security: Minted RS256 token (JTI=b7ed4d58..., Exp=1789032373)
+[2026-09-10T08:26:13.463267Z][X-U013-002] KMS: Envelope encrypted 37 bytes under key key-x-u013-002 v1 (DEK wrapped)
+[2026-09-10T08:26:13.646792Z][X-U013-002] [CROSS-RESILIENCE] Starting X-U013-002 (U013) Category=boundary
+[2026-09-10T08:26:13.646800Z][X-U013-002] Topology & Data Boundary: Evaluating edition topology (SaaS / Dedicated / Sovereign / Edge)
+[2026-09-10T08:26:13.646804Z][X-U013-002] Evaluating maximum tenant co-location limit on single worker node (limit=50 tenants)...
+[2026-09-10T08:26:13.646805Z][X-U013-002] Cgroups Governor: 50 distinct namespace boundaries active; zero CPU quota starvation
+[2026-09-10T08:26:13.646825Z][X-U013-002] Completed execution of X-U013-002 in 376.8ms: Status=PASSED
+[2026-09-10T08:26:13.646828Z][X-U013-002] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:13.646844Z][X-U013-002] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

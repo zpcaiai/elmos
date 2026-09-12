@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B18-007 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [18]
+Title: Batch 18 TSA退出：改变工具链、Schema、Provider、配置或依赖版本并重放
+Capability: TSA退出
+Test Type: version_drift
+Skill: tst-b18-ma-group-migration
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

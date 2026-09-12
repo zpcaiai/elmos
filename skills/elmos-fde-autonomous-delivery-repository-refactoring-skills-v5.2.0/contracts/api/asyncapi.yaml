@@ -1,0 +1,40 @@
+asyncapi: 3.0.0
+info:
+  title: Elmos FDE Events
+  version: 5.2.0
+channels:
+  skillEvents:
+    address: elmos.skill.{skillId}.{event}.v1
+    messages:
+      skillEvent:
+        payload:
+          type: object
+          required:
+          - eventId
+          - tenantId
+          - revisionSetId
+          - eventType
+          properties:
+            eventId:
+              type: string
+            tenantId:
+              type: string
+            revisionSetId:
+              type: string
+            eventType:
+              type: string
+  effectEvents:
+    address: elmos.effect.{event}.v1
+    messages:
+      effectEvent:
+        payload:
+          $ref: ../schemas/side-effect.schema.json
+operations:
+  receiveSkillEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/skillEvents'
+  receiveEffectEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/effectEvents'

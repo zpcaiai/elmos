@@ -1,5 +1,8 @@
 ---
 name: pm-b21-package-state-converter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将 Package 公私有成员、会话状态和初始化转换为 Schema、模块或服务状态. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

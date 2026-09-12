@@ -1,0 +1,4 @@
+interface:
+  display_name: "B92 Cocoa Cocoatouch Framework Mapper"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b92-cocoa-cocoatouch-framework-mapper to execute this ELMOS Language Pack Skill with fail-closed evidence."

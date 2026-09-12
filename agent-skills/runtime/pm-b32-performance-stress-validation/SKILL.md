@@ -1,5 +1,8 @@
 ---
 name: pm-b32-performance-stress-validation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在代表负载和极端负载下验证延迟、吞吐、稳定性和资源门槛. Precision Migration B32 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

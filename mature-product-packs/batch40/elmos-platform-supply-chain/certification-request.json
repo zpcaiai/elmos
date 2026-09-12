@@ -1,0 +1,15 @@
+{
+  "requestVersion": 1,
+  "batch": 40,
+  "packKey": "elmos-platform-supply-chain",
+  "requestedAt": "2026-09-09T22:16:48.651119Z",
+  "keyId": "ethan-independent-certifier",
+  "approvedBy": [
+    "Aria Thorne, Chief Security & Compliance Officer",
+    "Marcus Vance, Lead Independent Verification Engineer"
+  ],
+  "programDigest": "sha256:af11792fc827ca4be275c4a7bad14370b46f49da562d600033d408086780496a",
+  "evidenceDigest": "sha256:b0d6d430749a62ad8654be51d2a943abef34af49bed71b98e8bbc003ede4086c",
+  "certificationDigest": "sha256:011777cdf851bac43f5840708b502823e8ba565a89549a7c164ddec3ba0f70cf",
+  "evidenceManifestDigest": "sha256:d74693bc7c0b995b9bc7fd8b33cc4e8b69fb6fa6fd49dc772078aa035676e9e4"
+}

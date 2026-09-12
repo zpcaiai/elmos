@@ -1,0 +1,29 @@
+{
+  "schema_version": "elmos.precision-migration.compiled-skill-contract.v1",
+  "package_id": "elmos.precision-migration.b01-44",
+  "package_version": "1.0.0",
+  "installed_alias": "pm-b42-side-effect-suppression",
+  "namespace": "precision-migration-b01-44",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "engines/infrastructure-engine",
+    "engines/operations-sre-itsm-engine",
+    "scripts/precision_migration/b42.py"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "handler_id": "b42-side-effect-suppression-v1",
+    "handler_entrypoint": "scripts.precision_migration.b42:execute_side_effect_suppression",
+    "supported_modes": [
+      "validate",
+      "repair",
+      "certify"
+    ],
+    "timeout_seconds": 120,
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

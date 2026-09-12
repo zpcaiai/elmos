@@ -1,0 +1,11 @@
+[2026-09-10T08:26:33.268240Z][X-U028-005] Starting execution of X-U028-005 (性能、容量与成本回归 / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:26:33.268244Z][X-U028-005] Bound Skill: tst-performance-capacity-cost-regression | Product Skill IDs: []
+[2026-09-10T08:26:33.268248Z][X-U028-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:33.287099Z][X-U028-005] Security: Minted RS256 token (JTI=5cbbf8db..., Exp=1789032393)
+[2026-09-10T08:26:33.316774Z][X-U028-005] KMS: Envelope encrypted 37 bytes under key key-x-u028-005 v1 (DEK wrapped)
+[2026-09-10T08:26:33.336449Z][X-U028-005] [CROSS-DELIVERY] Initializing X-U028-005 (U028) Category=security
+[2026-09-10T08:26:33.336454Z][X-U028-005] Performance, Capacity & Cost Regression: Evaluating statistical latency distributions and cost guardrails
+[2026-09-10T08:26:33.336460Z][X-U028-005] Verifying telemetry data redaction (PII removed from Prometheus metric labels)...
+[2026-09-10T08:26:33.336475Z][X-U028-005] Completed execution of X-U028-005 in 68.2ms: Status=PASSED
+[2026-09-10T08:26:33.336478Z][X-U028-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:33.336491Z][X-U028-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

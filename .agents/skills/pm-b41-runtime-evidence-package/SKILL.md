@@ -1,5 +1,8 @@
 ---
 name: pm-b41-runtime-evidence-package
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "打包双运行、Fuzz、Mutation、并发、故障、性能、UI 和真机结果. Precision Migration B41 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

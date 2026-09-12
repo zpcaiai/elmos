@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B04-006 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [4]
+Title: Batch 4 CI入口生成：重复提交、消息重放、Lease过期、任务恢复或并发执行
+Capability: CI入口生成
+Test Type: replay_idempotency
+Skill: tst-b04-target-skeleton
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

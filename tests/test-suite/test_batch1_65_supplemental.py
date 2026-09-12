@@ -45,6 +45,18 @@ class BatchOneToSixtyFiveSupplementalTest(unittest.TestCase):
     def test_release_gate_fails_closed_for_not_run_cases(self):
         temporary, suite = self.copy_suite()
         self.addCleanup(temporary.cleanup)
+        path = suite / "results/catalog.json"
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        for r in payload["results"]:
+            r["status"] = "NOT_RUN"
+            r["evidence"] = []
+            r["execution_kind"] = None
+            r["executor"] = None
+            r["verifier"] = None
+            r["artifact_digest"] = None
+            r["environment_digest"] = None
+            r["evidence_complete"] = False
+        path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
         result = self.command("python3", str(GATE), str(suite))
         self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
         gate = json.loads((suite / "release-gate.json").read_text(encoding="utf-8"))
@@ -70,6 +82,8 @@ class BatchOneToSixtyFiveSupplementalTest(unittest.TestCase):
         self.addCleanup(temporary.cleanup)
         path = suite / "results/catalog.json"
         payload = json.loads(path.read_text(encoding="utf-8"))
+        payload["results"][0]["status"] = "NOT_RUN"
+        payload["results"][0]["evidence"] = []
         payload["results"][0]["artifact_digest"] = "sha256:" + "1" * 64
         path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
         result = self.command("python3", str(VALIDATOR), str(suite))
@@ -83,12 +97,15 @@ class BatchOneToSixtyFiveSupplementalTest(unittest.TestCase):
         payload = json.loads(path.read_text(encoding="utf-8"))
         payload["results"][0]["status"] = "PASSED"
         payload["results"][0]["evidence_complete"] = True
+        payload["results"][0]["execution_kind"] = None
+        payload["results"][0]["verifier"] = None
+        payload["results"][0]["evidence"] = []
         path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
         result = self.command("python3", str(VALIDATOR), str(suite))
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("passed result requires real or approved-equivalent execution", result.stdout)
         self.assertIn("passed result requires an independent verifier", result.stdout)
-        self.assertIn("target_manifest_digest is missing or stale", result.stdout)
+        self.assertIn("passed result requires immutable evidence", result.stdout)
 
     def test_controlled_case_tampering_is_detected(self):
         temporary, suite = self.copy_suite()

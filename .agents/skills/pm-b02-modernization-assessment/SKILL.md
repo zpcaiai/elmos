@@ -1,5 +1,8 @@
 ---
 name: pm-b02-modernization-assessment
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在任何转换前恢复应用架构、功能、依赖、技术债、阻断项和现代化选择，并生成面向管理与工程团队的评估结论. Precision Migration B02 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

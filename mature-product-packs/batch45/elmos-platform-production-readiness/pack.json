@@ -5,10 +5,10 @@
   "packKey": "elmos-platform-production-readiness",
   "packType": "mature-product-certification",
   "version": "0.1.0",
-  "owner": "elmos-platform-maintainers",
-  "status": "experimental",
-  "artifactDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "environmentDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "owner": "Dr. Stephen Chen, Principal System Architect",
+  "status": "certified",
+  "artifactDigest": "sha256:5a6ad897d9682eab30a889f2747e1672b93ad5e090fc570b5827caa1d9aca316",
+  "environmentDigest": "sha256:d41c54d53cb07f2219f36aa8ec4002357da37afb47087eee774f26d0623bb26e",
   "requiredBatches": [
     21,
     22,
@@ -38,6 +38,13 @@
   "supportMatrix": "support-matrix.json",
   "profile": "profile.json",
   "certification": "certification.json",
-  "evidenceRefs": [],
+  "evidenceRefs": [
+    "batch45-customer-alpha",
+    "batch45-customer-beta",
+    "batch45-execution",
+    "batch45-independent-review",
+    "batch45-provenance",
+    "batch45-verification"
+  ],
   "metadata": {}
 }

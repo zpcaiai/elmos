@@ -1,5 +1,8 @@
 ---
 name: pm-b12-symbol-safe-renaming
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在作用域、重载、反射、配置和序列化约束下安全重命名符号. Precision Migration B12 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

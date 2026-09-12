@@ -1,5 +1,8 @@
 ---
 name: pm-b43-framework-obsolescence-monitor
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "监控框架生命周期、废弃 API、运行时支持和迁移窗口. Precision Migration B43 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

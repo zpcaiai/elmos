@@ -254,7 +254,7 @@ def main() -> int:
         for name, value in vars(container_images).items()
         if name.endswith("_IMAGE") and isinstance(value, str)
     ]
-    require(len(image_values) == 12, "CONTAINER_IMAGE_INVENTORY_DRIFT")
+    require(len(image_values) == 13, "CONTAINER_IMAGE_INVENTORY_DRIFT")
     for image in image_values:
         require(
             re.fullmatch(r"[^@\s]+@sha256:[0-9a-f]{64}", image) is not None,

@@ -1,0 +1,63 @@
+domain: project-generation
+native_execution_status: NOT_RUN
+cases:
+- id: GEN-001
+  given: 正常创建订单
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 请求/响应schema、DB行与业务字段一致，事件恰按声明语义产生
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: GEN-002
+  given: 跨tenant读取/修改
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 拒绝且DB/MQ无未授权副作用
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: GEN-003
+  given: 相同幂等键重复/并发创建
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 同一业务结果，无重复扣款/库存效果
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: GEN-004
+  given: 事务第二步故障
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 要求的原子状态不部分提交
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: GEN-005
+  given: 需求删实现但接口仍返回200
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: 独立需求测试必须失败
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version
+- id: GEN-006
+  given: UI重试/取消流程
+  when: 执行冻结scope的原生source/target或规范一致性测试
+  then: UI/HTTP/最终数据状态一致
+  severity: critical
+  required_evidence:
+  - native-tool-version
+  - raw-report-hash
+  - revision-set-hash
+  - oracle-version

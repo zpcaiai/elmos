@@ -1,0 +1,40 @@
+{
+  "partners": [
+    {
+      "organization_id": "customer-a",
+      "independent": true,
+      "repository": {
+        "digest": "0bd7029e0d7aeffc87b34f267150288a0151888b5e4b049f575ea1d1f87b7844"
+      },
+      "production_validation": true,
+      "rollback_drill": true,
+      "handoff": true,
+      "accepted": true,
+      "evidence": [
+        "evidence/customer-a-0.json",
+        "evidence/customer-a-1.json",
+        "evidence/customer-a-2.json",
+        "evidence/customer-a-3.json",
+        "evidence/customer-a-4.json"
+      ]
+    },
+    {
+      "organization_id": "customer-b",
+      "independent": true,
+      "repository": {
+        "digest": "61b1436de3085c47167cb3c91d7794007ef61cb6517314267d37d4bc4a26759a"
+      },
+      "production_validation": true,
+      "rollback_drill": true,
+      "handoff": true,
+      "accepted": true,
+      "evidence": [
+        "evidence/customer-b-0.json",
+        "evidence/customer-b-1.json",
+        "evidence/customer-b-2.json",
+        "evidence/customer-b-3.json",
+        "evidence/customer-b-4.json"
+      ]
+    }
+  ]
+}

@@ -30,7 +30,7 @@ def quote_identifier(name: str, dialect: Dialect, *, force: bool | None = None) 
     if not should_quote:
         return str(name)
     value = str(name)
-    if dialect in (Dialect.POSTGRES, Dialect.ORACLE):
+    if dialect in (Dialect.POSTGRES, Dialect.ORACLE, Dialect.DM8, Dialect.OPENGAUSS):
         return '"' + value.replace('"', '""') + '"'
     if dialect is Dialect.MYSQL:
         return "`" + value.replace("`", "``") + "`"

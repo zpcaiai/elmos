@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-boot-3-to-4",
+  "capabilities": [
+    {
+      "id": "web",
+      "status": "experimental",
+      "strategy": "framework-contract",
+      "reason": "Initial scaffold; evidence required",
+      "evidence_refs": []
+    },
+    {
+      "id": "dependency-injection",
+      "status": "detected-only",
+      "strategy": "framework-contract",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "configuration",
+      "status": "detected-only",
+      "strategy": "framework-contract",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "validation",
+      "status": "detected-only",
+      "strategy": "framework-contract",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "authentication",
+      "status": "blocked",
+      "strategy": "human-review",
+      "reason": "Requires target-profile certification",
+      "evidence_refs": []
+    },
+    {
+      "id": "authorization",
+      "status": "blocked",
+      "strategy": "human-review",
+      "reason": "Requires target-profile certification",
+      "evidence_refs": []
+    },
+    {
+      "id": "persistence",
+      "status": "detected-only",
+      "strategy": "contract-mapping",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "transactions",
+      "status": "blocked",
+      "strategy": "human-review",
+      "reason": "Requires provider-specific certification",
+      "evidence_refs": []
+    },
+    {
+      "id": "messaging",
+      "status": "detected-only",
+      "strategy": "retained-provider-or-adapter",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "cache",
+      "status": "detected-only",
+      "strategy": "provider-profile",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "scheduler",
+      "status": "detected-only",
+      "strategy": "provider-profile",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    },
+    {
+      "id": "lifecycle",
+      "status": "detected-only",
+      "strategy": "framework-contract",
+      "reason": "Not yet implemented",
+      "evidence_refs": []
+    }
+  ]
+}

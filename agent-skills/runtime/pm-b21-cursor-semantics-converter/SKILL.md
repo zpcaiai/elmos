@@ -1,5 +1,8 @@
 ---
 name: pm-b21-cursor-semantics-converter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "转换显式/隐式游标、游标属性、批量提取、顺序和资源关闭. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

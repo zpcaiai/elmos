@@ -1,0 +1,729 @@
+{
+  "batch": {
+    "id": "B12",
+    "title": "Verification mesh and formal assurance routing",
+    "dependsOn": [
+      "B10"
+    ],
+    "skills": [
+      "characterization-differential-mutation-verification",
+      "formal-assurance-routing",
+      "e0-e3-readiness-and-evidence-bundle"
+    ],
+    "tasks": [
+      "B12-T001",
+      "B12-T002",
+      "B12-T003",
+      "B12-T004",
+      "B12-T005",
+      "B12-T006",
+      "B12-T007",
+      "B12-T008",
+      "B12-T009",
+      "B12-T010",
+      "B12-T011",
+      "B12-T012",
+      "B12-T013",
+      "B12-T014",
+      "B12-T015",
+      "B12-T016",
+      "B12-T017",
+      "B12-T018",
+      "B12-T019",
+      "B12-T020",
+      "B12-T021",
+      "B12-T022",
+      "B12-T023",
+      "B12-T024",
+      "B12-T025",
+      "B12-T026",
+      "B12-T027",
+      "B12-T028",
+      "B12-T029",
+      "B12-T030"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B12-T001",
+      "batch": "B12",
+      "title": "characterization-differential-mutation-verification: Bind canonical ownership and model domain contracts",
+      "skillId": "characterization-differential-mutation-verification",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B10-T020",
+        "B09-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for characterization-differential-mutation-verification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T002",
+      "batch": "B12",
+      "title": "characterization-differential-mutation-verification: Implement persistence projections and append-only ledger events",
+      "skillId": "characterization-differential-mutation-verification",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T001"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for characterization-differential-mutation-verification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T003",
+      "batch": "B12",
+      "title": "characterization-differential-mutation-verification: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "characterization-differential-mutation-verification",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T002"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for characterization-differential-mutation-verification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T004",
+      "batch": "B12",
+      "title": "characterization-differential-mutation-verification: Implement service and durable workflow",
+      "skillId": "characterization-differential-mutation-verification",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T003"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for characterization-differential-mutation-verification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T005",
+      "batch": "B12",
+      "title": "characterization-differential-mutation-verification: Implement replaceable ports and first reference Adapter",
+      "skillId": "characterization-differential-mutation-verification",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T004"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for characterization-differential-mutation-verification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T006",
+      "batch": "B12",
+      "title": "characterization-differential-mutation-verification: Implement APIs, events and query projections",
+      "skillId": "characterization-differential-mutation-verification",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T005"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for characterization-differential-mutation-verification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T007",
+      "batch": "B12",
+      "title": "characterization-differential-mutation-verification: Implement product UI or operator surface",
+      "skillId": "characterization-differential-mutation-verification",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T006"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for characterization-differential-mutation-verification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T008",
+      "batch": "B12",
+      "title": "characterization-differential-mutation-verification: Add deterministic tests, negative controls and failure injection",
+      "skillId": "characterization-differential-mutation-verification",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T007"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for characterization-differential-mutation-verification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T009",
+      "batch": "B12",
+      "title": "characterization-differential-mutation-verification: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "characterization-differential-mutation-verification",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T008"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for characterization-differential-mutation-verification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T010",
+      "batch": "B12",
+      "title": "characterization-differential-mutation-verification: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "characterization-differential-mutation-verification",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T009"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for characterization-differential-mutation-verification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T011",
+      "batch": "B12",
+      "title": "formal-assurance-routing: Bind canonical ownership and model domain contracts",
+      "skillId": "formal-assurance-routing",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B09-T010",
+        "B07-T020"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for formal-assurance-routing are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T012",
+      "batch": "B12",
+      "title": "formal-assurance-routing: Implement persistence projections and append-only ledger events",
+      "skillId": "formal-assurance-routing",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T011"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for formal-assurance-routing are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T013",
+      "batch": "B12",
+      "title": "formal-assurance-routing: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "formal-assurance-routing",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T012"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for formal-assurance-routing are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T014",
+      "batch": "B12",
+      "title": "formal-assurance-routing: Implement service and durable workflow",
+      "skillId": "formal-assurance-routing",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T013"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for formal-assurance-routing are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T015",
+      "batch": "B12",
+      "title": "formal-assurance-routing: Implement replaceable ports and first reference Adapter",
+      "skillId": "formal-assurance-routing",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T014"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for formal-assurance-routing are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T016",
+      "batch": "B12",
+      "title": "formal-assurance-routing: Implement APIs, events and query projections",
+      "skillId": "formal-assurance-routing",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T015"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for formal-assurance-routing are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T017",
+      "batch": "B12",
+      "title": "formal-assurance-routing: Implement product UI or operator surface",
+      "skillId": "formal-assurance-routing",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T016"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for formal-assurance-routing are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T018",
+      "batch": "B12",
+      "title": "formal-assurance-routing: Add deterministic tests, negative controls and failure injection",
+      "skillId": "formal-assurance-routing",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T017"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for formal-assurance-routing are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T019",
+      "batch": "B12",
+      "title": "formal-assurance-routing: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "formal-assurance-routing",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T018"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for formal-assurance-routing are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T020",
+      "batch": "B12",
+      "title": "formal-assurance-routing: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "formal-assurance-routing",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T019"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for formal-assurance-routing are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T021",
+      "batch": "B12",
+      "title": "e0-e3-readiness-and-evidence-bundle: Bind canonical ownership and model domain contracts",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B12-T010",
+        "B07-T030",
+        "B08-T010",
+        "B08-T020"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for e0-e3-readiness-and-evidence-bundle are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T022",
+      "batch": "B12",
+      "title": "e0-e3-readiness-and-evidence-bundle: Implement persistence projections and append-only ledger events",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T021"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for e0-e3-readiness-and-evidence-bundle are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T023",
+      "batch": "B12",
+      "title": "e0-e3-readiness-and-evidence-bundle: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T022"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for e0-e3-readiness-and-evidence-bundle are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T024",
+      "batch": "B12",
+      "title": "e0-e3-readiness-and-evidence-bundle: Implement service and durable workflow",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T023"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for e0-e3-readiness-and-evidence-bundle are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T025",
+      "batch": "B12",
+      "title": "e0-e3-readiness-and-evidence-bundle: Implement replaceable ports and first reference Adapter",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T024"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for e0-e3-readiness-and-evidence-bundle are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T026",
+      "batch": "B12",
+      "title": "e0-e3-readiness-and-evidence-bundle: Implement APIs, events and query projections",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T025"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for e0-e3-readiness-and-evidence-bundle are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T027",
+      "batch": "B12",
+      "title": "e0-e3-readiness-and-evidence-bundle: Implement product UI or operator surface",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T026"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for e0-e3-readiness-and-evidence-bundle are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T028",
+      "batch": "B12",
+      "title": "e0-e3-readiness-and-evidence-bundle: Add deterministic tests, negative controls and failure injection",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T027"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for e0-e3-readiness-and-evidence-bundle are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T029",
+      "batch": "B12",
+      "title": "e0-e3-readiness-and-evidence-bundle: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T028"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for e0-e3-readiness-and-evidence-bundle are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B12-T030",
+      "batch": "B12",
+      "title": "e0-e3-readiness-and-evidence-bundle: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B12-T029"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for e0-e3-readiness-and-evidence-bundle are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

@@ -1,5 +1,8 @@
 ---
 name: pm-b02-representative-slice-pilot
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "自动选择代表性语义切片执行试转换，以校准正确率、修复轮数、成本和风险. Precision Migration B02 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

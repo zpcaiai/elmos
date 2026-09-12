@@ -1,5 +1,8 @@
 ---
 name: pm-b21-procedure-symbolic-validator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "对关键过程切片执行符号或关系验证，寻找源目标反例. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

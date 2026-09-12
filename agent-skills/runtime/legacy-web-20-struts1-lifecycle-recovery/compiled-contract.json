@@ -1,0 +1,26 @@
+{
+  "schema_version": "elmos.legacy-web.compiled-skill-contract.v1",
+  "package_id": "elmos.java-legacy-web.repository-modernization",
+  "package_version": "1.0.0",
+  "installed_alias": "legacy-web-20-struts1-lifecycle-recovery",
+  "namespace": "legacy-web-modernization-v1",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "legacy-web-11-framework-and-version-fingerprinting",
+    "legacy-web-13-route-ownership-and-conflict-analysis"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "dispatch",
+    "handler_id": "execute_20_struts1_lifecycle_recovery",
+    "phase": "semantic-recovery",
+    "priority": "P0",
+    "module_path": "engines/legacy-web-modernization-engine/src/elmos_legacy_web_modernization/runtime.py",
+    "skill_key": "20-struts1-lifecycle-recovery",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

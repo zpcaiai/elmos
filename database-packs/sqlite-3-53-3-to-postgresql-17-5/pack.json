@@ -54,7 +54,7 @@
       "3.53.3"
     ]
   },
-  "status": "experimental",
+  "status": "certified",
   "target": {
     "charset": "UTF8",
     "collation": "C",

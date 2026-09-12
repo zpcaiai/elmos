@@ -1,0 +1,11 @@
+{
+  "components": [],
+  "enabled": false,
+  "exit_criteria": [
+    "Parity and rollback verified."
+  ],
+  "pack_key": "spring-boot-3-0-3-4-to-3-5-3",
+  "reason": "Direct cutover preferred for Spring Boot monolithic microservices.",
+  "schema_version": 1,
+  "status": "NOT_RUN"
+}

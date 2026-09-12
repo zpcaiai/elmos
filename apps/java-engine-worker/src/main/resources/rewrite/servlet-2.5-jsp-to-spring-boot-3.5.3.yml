@@ -1,0 +1,33 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.Servlet2_5JspToSpringBoot3_5_3Java21
+displayName: Prepare Java EE Servlet 2.5 / JSP for Spring Boot 3.5.3 on Java 21
+description: >-
+  Applies deterministic Java 21, Jakarta EE 10 and Spring Boot 3.5.3 transformations for
+  legacy Servlet 2.5 / JSP applications. Replaces javax.servlet with jakarta.servlet,
+  adds Spring Boot 3.5.3 starters, and configures modern Java 21 compiler properties.
+recipeList:
+  - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta
+  - org.openrewrite.maven.AddParentPom:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      version: 3.5.3
+      relativePath: ""
+  - org.openrewrite.maven.UpgradeParentVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      newVersion: 3.5.3
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "21"
+      addIfMissing: true
+      trustParent: false
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-web
+      version: 3.5.3
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: org.apache.tomcat.embed
+      artifactId: tomcat-embed-jasper
+      scope: provided

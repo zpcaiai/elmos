@@ -1,0 +1,116 @@
+package valueobject
+
+import (
+	"errors"
+	"fmt"
+	"strings"
+)
+
+var (
+	ErrInvalidCurrency      = errors.New("invalid or unsupported currency code")
+	ErrNegativeAmount        = errors.New("amount cannot be negative")
+	ErrCurrencyMismatch      = errors.New("cannot operate on different currencies")
+	ErrInvalidPostalCode     = errors.New("postal code cannot be empty")
+	ErrInvalidAddressStreet  = errors.New("street address cannot be empty")
+)
+
+// Address represents an immutable geographical address value object.
+type Address struct {
+	street     string
+	city       string
+	state      string
+	postalCode string
+	country    string
+}
+
+// NewAddress constructs and validates an Address value object.
+func NewAddress(street, city, state, postalCode, country string) (Address, error) {
+	street = strings.TrimSpace(street)
+	postalCode = strings.TrimSpace(postalCode)
+	if street == "" {
+		return Address{}, ErrInvalidAddressStreet
+	}
+	if postalCode == "" {
+		return Address{}, ErrInvalidPostalCode
+	}
+
+	return Address{
+		street:     street,
+		city:       strings.TrimSpace(city),
+		state:      strings.TrimSpace(state),
+		postalCode: postalCode,
+		country:    strings.ToUpper(strings.TrimSpace(country)),
+	}, nil
+}
+
+func (a Address) Street() string     { return a.street }
+func (a Address) City() string       { return a.city }
+func (a Address) State() string      { return a.state }
+func (a Address) PostalCode() string { return a.postalCode }
+func (a Address) Country() string    { return a.country }
+
+// Equals verifies value object equality.
+func (a Address) Equals(other Address) bool {
+	return a.street == other.street &&
+		a.city == other.city &&
+		a.state == other.state &&
+		a.postalCode == other.postalCode &&
+		a.country == other.country
+}
+
+// Money represents a monetary amount in cents with an ISO 4217 currency.
+type Money struct {
+	amountInCents int64
+	currency      string
+}
+
+// NewMoney constructs and validates a Money value object.
+func NewMoney(cents int64, currency string) (Money, error) {
+	if cents < 0 {
+		return Money{}, ErrNegativeAmount
+	}
+	code := strings.ToUpper(strings.TrimSpace(currency))
+	if len(code) != 3 {
+		return Money{}, ErrInvalidCurrency
+	}
+	return Money{
+		amountInCents: cents,
+		currency:      code,
+	}, nil
+}
+
+func (m Money) AmountInCents() int64 { return m.amountInCents }
+func (m Money) Currency() string      { return m.currency }
+
+// Add calculates the sum of two monetary amounts of the same currency.
+func (m Money) Add(other Money) (Money, error) {
+	if m.currency != other.currency {
+		return Money{}, ErrCurrencyMismatch
+	}
+	return Money{
+		amountInCents: m.amountInCents + other.amountInCents,
+		currency:      m.currency,
+	}, nil
+}
+
+// Subtract calculates the difference between two monetary amounts.
+func (m Money) Subtract(other Money) (Money, error) {
+	if m.currency != other.currency {
+		return Money{}, ErrCurrencyMismatch
+	}
+	if m.amountInCents < other.amountInCents {
+		return Money{}, ErrNegativeAmount
+	}
+	return Money{
+		amountInCents: m.amountInCents - other.amountInCents,
+		currency:      m.currency,
+	}, nil
+}
+
+func (m Money) Equals(other Money) bool {
+	return m.amountInCents == other.amountInCents && m.currency == other.currency
+}
+
+func (m Money) String() string {
+	return fmt.Sprintf("%.2f %s", float64(m.amountInCents)/100.0, m.currency)
+}

@@ -1,0 +1,727 @@
+{
+  "batch": {
+    "id": "B13",
+    "title": "Release rehearsal, incident and handoff",
+    "dependsOn": [
+      "B12"
+    ],
+    "skills": [
+      "shadow-dual-run-canary-rollback-preparation",
+      "incident-triage-remediation-and-postmortem",
+      "final-handoff-training-support"
+    ],
+    "tasks": [
+      "B13-T001",
+      "B13-T002",
+      "B13-T003",
+      "B13-T004",
+      "B13-T005",
+      "B13-T006",
+      "B13-T007",
+      "B13-T008",
+      "B13-T009",
+      "B13-T010",
+      "B13-T011",
+      "B13-T012",
+      "B13-T013",
+      "B13-T014",
+      "B13-T015",
+      "B13-T016",
+      "B13-T017",
+      "B13-T018",
+      "B13-T019",
+      "B13-T020",
+      "B13-T021",
+      "B13-T022",
+      "B13-T023",
+      "B13-T024",
+      "B13-T025",
+      "B13-T026",
+      "B13-T027",
+      "B13-T028",
+      "B13-T029",
+      "B13-T030"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B13-T001",
+      "batch": "B13",
+      "title": "shadow-dual-run-canary-rollback-preparation: Bind canonical ownership and model domain contracts",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B12-T030",
+        "B10-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for shadow-dual-run-canary-rollback-preparation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T002",
+      "batch": "B13",
+      "title": "shadow-dual-run-canary-rollback-preparation: Implement persistence projections and append-only ledger events",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T001"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for shadow-dual-run-canary-rollback-preparation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T003",
+      "batch": "B13",
+      "title": "shadow-dual-run-canary-rollback-preparation: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T002"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for shadow-dual-run-canary-rollback-preparation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T004",
+      "batch": "B13",
+      "title": "shadow-dual-run-canary-rollback-preparation: Implement service and durable workflow",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T003"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for shadow-dual-run-canary-rollback-preparation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T005",
+      "batch": "B13",
+      "title": "shadow-dual-run-canary-rollback-preparation: Implement replaceable ports and first reference Adapter",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T004"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for shadow-dual-run-canary-rollback-preparation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T006",
+      "batch": "B13",
+      "title": "shadow-dual-run-canary-rollback-preparation: Implement APIs, events and query projections",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T005"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for shadow-dual-run-canary-rollback-preparation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T007",
+      "batch": "B13",
+      "title": "shadow-dual-run-canary-rollback-preparation: Implement product UI or operator surface",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T006"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for shadow-dual-run-canary-rollback-preparation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T008",
+      "batch": "B13",
+      "title": "shadow-dual-run-canary-rollback-preparation: Add deterministic tests, negative controls and failure injection",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T007"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for shadow-dual-run-canary-rollback-preparation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T009",
+      "batch": "B13",
+      "title": "shadow-dual-run-canary-rollback-preparation: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T008"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for shadow-dual-run-canary-rollback-preparation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T010",
+      "batch": "B13",
+      "title": "shadow-dual-run-canary-rollback-preparation: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T009"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for shadow-dual-run-canary-rollback-preparation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T011",
+      "batch": "B13",
+      "title": "incident-triage-remediation-and-postmortem: Bind canonical ownership and model domain contracts",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B04-T030",
+        "B13-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for incident-triage-remediation-and-postmortem are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T012",
+      "batch": "B13",
+      "title": "incident-triage-remediation-and-postmortem: Implement persistence projections and append-only ledger events",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T011"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for incident-triage-remediation-and-postmortem are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T013",
+      "batch": "B13",
+      "title": "incident-triage-remediation-and-postmortem: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T012"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for incident-triage-remediation-and-postmortem are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T014",
+      "batch": "B13",
+      "title": "incident-triage-remediation-and-postmortem: Implement service and durable workflow",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T013"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for incident-triage-remediation-and-postmortem are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T015",
+      "batch": "B13",
+      "title": "incident-triage-remediation-and-postmortem: Implement replaceable ports and first reference Adapter",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T014"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for incident-triage-remediation-and-postmortem are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T016",
+      "batch": "B13",
+      "title": "incident-triage-remediation-and-postmortem: Implement APIs, events and query projections",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T015"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for incident-triage-remediation-and-postmortem are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T017",
+      "batch": "B13",
+      "title": "incident-triage-remediation-and-postmortem: Implement product UI or operator surface",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T016"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for incident-triage-remediation-and-postmortem are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T018",
+      "batch": "B13",
+      "title": "incident-triage-remediation-and-postmortem: Add deterministic tests, negative controls and failure injection",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T017"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for incident-triage-remediation-and-postmortem are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T019",
+      "batch": "B13",
+      "title": "incident-triage-remediation-and-postmortem: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T018"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for incident-triage-remediation-and-postmortem are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T020",
+      "batch": "B13",
+      "title": "incident-triage-remediation-and-postmortem: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B13-T019"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for incident-triage-remediation-and-postmortem are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T021",
+      "batch": "B13",
+      "title": "final-handoff-training-support: Bind canonical ownership and model domain contracts",
+      "skillId": "final-handoff-training-support",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B02-T060",
+        "B12-T030"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for final-handoff-training-support are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T022",
+      "batch": "B13",
+      "title": "final-handoff-training-support: Implement persistence projections and append-only ledger events",
+      "skillId": "final-handoff-training-support",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B13-T021"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for final-handoff-training-support are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T023",
+      "batch": "B13",
+      "title": "final-handoff-training-support: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "final-handoff-training-support",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B13-T022"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for final-handoff-training-support are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T024",
+      "batch": "B13",
+      "title": "final-handoff-training-support: Implement service and durable workflow",
+      "skillId": "final-handoff-training-support",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B13-T023"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for final-handoff-training-support are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T025",
+      "batch": "B13",
+      "title": "final-handoff-training-support: Implement replaceable ports and first reference Adapter",
+      "skillId": "final-handoff-training-support",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B13-T024"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for final-handoff-training-support are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T026",
+      "batch": "B13",
+      "title": "final-handoff-training-support: Implement APIs, events and query projections",
+      "skillId": "final-handoff-training-support",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B13-T025"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for final-handoff-training-support are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T027",
+      "batch": "B13",
+      "title": "final-handoff-training-support: Implement product UI or operator surface",
+      "skillId": "final-handoff-training-support",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B13-T026"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for final-handoff-training-support are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T028",
+      "batch": "B13",
+      "title": "final-handoff-training-support: Add deterministic tests, negative controls and failure injection",
+      "skillId": "final-handoff-training-support",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B13-T027"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for final-handoff-training-support are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T029",
+      "batch": "B13",
+      "title": "final-handoff-training-support: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "final-handoff-training-support",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B13-T028"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for final-handoff-training-support are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B13-T030",
+      "batch": "B13",
+      "title": "final-handoff-training-support: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "final-handoff-training-support",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B13-T029"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for final-handoff-training-support are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

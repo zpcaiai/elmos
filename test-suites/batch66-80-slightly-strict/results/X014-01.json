@@ -1,13 +1,54 @@
 {
+  "attempts": 1,
   "case_id": "X014-01",
-  "status": "not-run",
-  "attempts": 0,
-  "source_sha256": null,
-  "environment_sha256": null,
-  "fixture_sha256": null,
-  "started_at": null,
-  "finished_at": null,
-  "evidence": [],
-  "waiver_id": null,
-  "notes": []
+  "environment_sha256": "87d04ab23d7616a25f3dd9abb141cc846f3ecbbc752bdef2acd10374ab08074d",
+  "evidence": [
+    {
+      "kind": "artifact-manifest",
+      "path": "evidence/shared/artifact-manifest.json",
+      "sha256": "edd2d7fcfe319d05be76d782d0a4b0f197f754fa1fdf421f44a89852560db949"
+    },
+    {
+      "kind": "authorization",
+      "path": "evidence/shared/authorization.json",
+      "sha256": "fa3c00154b8cec41f8abf1774bdc949c755401647ab576bcdd199522824e128e"
+    },
+    {
+      "kind": "environment-manifest",
+      "path": "evidence/shared/environment-manifest.json",
+      "sha256": "87d04ab23d7616a25f3dd9abb141cc846f3ecbbc752bdef2acd10374ab08074d"
+    },
+    {
+      "kind": "independent-verification",
+      "path": "evidence/shared/independent-verification.json",
+      "sha256": "1f811b131db74130a3ef7e8670fc49961547619e7f9c03a2bf8e0176a4cfcfaa"
+    },
+    {
+      "kind": "raw-command-log",
+      "path": "evidence/cases/X014-01/raw-command-log.json",
+      "sha256": "735ad792d7d5ac3eea95d93bbf0945ca7815a55836f1ba5b116975f385684620"
+    },
+    {
+      "kind": "replay-command",
+      "path": "evidence/shared/replay-command.sh",
+      "sha256": "3ca32652a28c78b1401935b4ca69270d5782fc2a800d338fd8e62b5cbfc5cb23"
+    },
+    {
+      "kind": "result-json",
+      "path": "evidence/cases/X014-01/result-json.json",
+      "sha256": "6c8612c7a49e19e0c1cc35f18ee2d6e0605fed5a4ee9b19ced93e0956bfb7354"
+    },
+    {
+      "kind": "source-snapshot",
+      "path": "evidence/shared/source-snapshot.json",
+      "sha256": "27ad97c6ab95a64c6587be8edbf0c0cd9fd768578aeb8cea0f804f5d5e1fe272"
+    }
+  ],
+  "finished_at": "2025-09-10T15:25:00+00:00",
+  "fixture_sha256": "9869117ff85bd96af0149f8e7cb52a9b64eec1397e41c325113548f046ec3990",
+  "notes": [],
+  "source_sha256": "eb5751c04b75ee8c453a1cd2db7cfce7dced244a0d092d2a89a6e3ba28753491",
+  "started_at": "2025-09-10T15:24:00+00:00",
+  "status": "passed",
+  "waiver_id": null
 }

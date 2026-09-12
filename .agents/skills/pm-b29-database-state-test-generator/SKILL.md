@@ -1,5 +1,8 @@
 ---
 name: pm-b29-database-state-test-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成初始状态、写入、约束、回滚、触发器和最终状态验证. Precision Migration B29 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

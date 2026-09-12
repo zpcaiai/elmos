@@ -1,5 +1,8 @@
 ---
 name: pm-b35-tla-state-machine-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从业务/协议 IR 生成 TLA+ 状态机、安全性和活性性质. Precision Migration B35 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

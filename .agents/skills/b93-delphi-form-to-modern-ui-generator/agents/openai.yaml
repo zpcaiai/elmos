@@ -1,0 +1,4 @@
+interface:
+  display_name: "B93 Delphi Form to Modern UI Generator"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b93-delphi-form-to-modern-ui-generator to execute this ELMOS Language Pack Skill with fail-closed evidence."

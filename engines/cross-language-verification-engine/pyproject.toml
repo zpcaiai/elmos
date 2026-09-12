@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elmos-cross-language-verification"
+version = "0.1.0"
+description = "Cross-language behavioral equivalence verification framework"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+test = [
+  "pytest==8.1.1",
+]
+
+[project.scripts]
+elmos-cross-verify = "elmos_cross_language_verification.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

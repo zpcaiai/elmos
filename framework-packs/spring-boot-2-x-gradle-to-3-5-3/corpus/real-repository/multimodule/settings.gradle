@@ -1,0 +1,4 @@
+rootProject.name = 'tier3-multimodule'
+include 'common-domain'
+include 'core-service'
+include 'web-app'

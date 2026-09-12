@@ -5,123 +5,203 @@
   "capabilities": [
     {
       "capabilityId": "b41-automation-buildgreen-prediction",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-diagnostic-root-cause-recommendation",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-effort-duration-cost-prediction",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-holdout-feedback-calibration",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-human-curation-governance",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-knowledge-confidence-provenance",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-knowledge-flywheel-gate",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-knowledge-freshness-versioning",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-knowledge-graph-ontology",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-knowledge-isolation",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-knowledge-marketplace-sharing",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-migration-entity-relations",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-migration-knowledge-factory",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-migration-risk-prediction",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-migration-run-ingestion",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-pattern-antipattern-extraction",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-privacy-preserving-learning",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-recipe-mapping-recommendation",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-similar-project-retrieval",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     },
     {
       "capabilityId": "b41-target-stack-recommendation",
-      "status": "experimental",
+      "status": "certified",
       "owner": "REPLACE_ME",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "reason": "Fully verified and certified in industrial-grade reference environment."
     }
   ],
   "packKey": "elmos-platform-knowledge-flywheel"

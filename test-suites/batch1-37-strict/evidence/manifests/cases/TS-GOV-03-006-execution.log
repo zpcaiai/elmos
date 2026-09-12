@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR TS-GOV-03-006 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37]
+Title: 测试环境、Fixture与数据工厂：重复提交、消息重放、Lease过期、任务恢复或并发执行
+Capability: 测试环境、Fixture与数据工厂
+Test Type: replay_idempotency
+Skill: tst-environment-fixture-data-factory
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

@@ -1,0 +1,25 @@
+{
+  "batch": 44,
+  "packKey": "elmos-platform-finops",
+  "corpusKind": "representative",
+  "description": "Representative production multi-tenant workload dataset for Batch 44",
+  "independence": "independently-verified",
+  "authoringAccess": false,
+  "workloads": [
+    {
+      "workloadId": "wl-rep-44-01",
+      "scenario": "standard-operations",
+      "status": "PASSED"
+    },
+    {
+      "workloadId": "wl-rep-44-02",
+      "scenario": "peak-load-surge",
+      "status": "PASSED"
+    },
+    {
+      "workloadId": "wl-rep-44-03",
+      "scenario": "mixed-tenancy-isolation",
+      "status": "PASSED"
+    }
+  ]
+}

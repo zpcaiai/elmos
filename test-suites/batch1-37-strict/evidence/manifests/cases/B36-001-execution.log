@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B36-001 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [36]
+Title: Batch 36 IDE Protocol：在精确版本、不可变Artifact和批准环境中执行完整成功路径
+Capability: IDE Protocol
+Test Type: happy_path
+Skill: tst-b36-ide-cli-pr-experience
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

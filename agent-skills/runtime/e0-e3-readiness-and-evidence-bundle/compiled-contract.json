@@ -1,0 +1,20 @@
+{
+  "package": "elmos-fde-autonomous-delivery-repository-refactoring-skills",
+  "version": "5.2.0",
+  "source_id": "e0-e3-readiness-and-evidence-bundle",
+  "alias": "elmos-fde-e0-e3-readiness-and-evidence-bundle",
+  "pack": "06-verification-release-operations",
+  "is_workflow": false,
+  "dependencies": [
+    "characterization-differential-mutation-verification",
+    "security-privacy-supply-chain-audit",
+    "performance-reliability-observability-audit",
+    "test-ci-cd-developer-experience-audit"
+  ],
+  "effect_boundary": "E3",
+  "routable": false,
+  "implementation_state": "LOCAL_CONTROL_PLANE",
+  "external_evidence": "NOT_RUN",
+  "independent_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

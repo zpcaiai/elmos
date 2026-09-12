@@ -1,0 +1,54 @@
+package errors_test
+
+import (
+	"errors"
+	"net/http"
+	"testing"
+
+	appErrors "{{.ModuleName}}/pkg/errors"
+)
+
+func TestErrors_RFC7807ProblemDetails(t *testing.T) {
+	// 1. Not Found
+	nfErr := appErrors.NewNotFound("entity with id 123 not found")
+	prob1 := nfErr.ToProblemDetails("/api/v1/entities/123")
+	if prob1.Status != http.StatusNotFound {
+		t.Fatalf("expected status 404, got %d", prob1.Status)
+	}
+	if prob1.Type != "urn:problem-type:not-found" {
+		t.Fatalf("expected urn:problem-type:not-found, got %s", prob1.Type)
+	}
+	if prob1.Title != "Resource Not Found" {
+		t.Fatalf("expected 'Resource Not Found', got %s", prob1.Title)
+	}
+	if prob1.Instance != "/api/v1/entities/123" {
+		t.Fatalf("expected instance /api/v1/entities/123, got %s", prob1.Instance)
+	}
+
+	// 2. Validation
+	valErr := appErrors.NewValidation("name cannot be blank")
+	prob2 := appErrors.ToProblemDetails(valErr, "/api/v1/entities")
+	if prob2.Status != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d", prob2.Status)
+	}
+	if prob2.Type != "urn:problem-type:validation-error" {
+		t.Fatalf("expected urn:problem-type:validation-error, got %s", prob2.Type)
+	}
+
+	// 3. Conflict
+	confErr := appErrors.NewConflict("entity already exists")
+	prob3 := appErrors.ToProblemDetails(confErr, "/api/v1/entities")
+	if prob3.Status != http.StatusConflict {
+		t.Fatalf("expected status 409, got %d", prob3.Status)
+	}
+
+	// 4. Standard unhandled error falls back to 500 Problem Details
+	stdErr := errors.New("database connection timeout")
+	prob4 := appErrors.ToProblemDetails(stdErr, "/api/v1/entities")
+	if prob4.Status != http.StatusInternalServerError {
+		t.Fatalf("expected status 500, got %d", prob4.Status)
+	}
+	if prob4.Type != "urn:problem-type:internal-server-error" {
+		t.Fatalf("expected internal-server-error, got %s", prob4.Type)
+	}
+}

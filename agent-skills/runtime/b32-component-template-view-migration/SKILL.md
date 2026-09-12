@@ -1,6 +1,9 @@
 ---
 name: b32-component-template-view-migration
-description: "Migrate server templates views component trees slots content projection conditional rendering lists events lifecycle and composition into target components through typed UI contracts and runtime verification."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Migrate server templates views component trees slots content projection conditional rendering lists events lifecycle and composition into target components through typed UI contracts and runtime verification.
 ---
 
 ## Operating mode

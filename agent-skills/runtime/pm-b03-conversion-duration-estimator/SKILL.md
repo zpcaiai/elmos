@@ -1,5 +1,8 @@
 ---
 name: pm-b03-conversion-duration-estimator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "分解估算扫描、建模、生成、构建、测试、差分、修复、性能和人工审核耗时. Precision Migration B03 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

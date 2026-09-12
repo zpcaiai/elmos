@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "skill_name": "b38-multiregion-active-active-edition",
+  "batch": 38,
+  "batch_title": "Enterprise Deployment Matrix & Upgrade Lifecycle",
+  "implementation_state": "VERIFIED",
+  "external_evidence_status": "LOCAL_EXECUTED",
+  "production_certification": "NOT_CERTIFIED",
+  "runtime_handler": "scripts.batch38.b38_skill_runtime.B38SkillRuntime._handle_multiregion_active_active_edition",
+  "fail_closed_policy": "FAIL_CLOSED_ON_UNKNOWN_STATUS",
+  "metrics_thresholds": {
+    "editionConformanceRate": 1.0,
+    "upgradeRollbackPassRate": 1.0,
+    "recoveryPassRate": 1.0
+  }
+}

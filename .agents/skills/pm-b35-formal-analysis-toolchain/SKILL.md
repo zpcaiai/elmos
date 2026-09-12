@@ -1,5 +1,8 @@
 ---
 name: pm-b35-formal-analysis-toolchain
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "组合 SMT、关系验证、符号/合流执行、抽象解释、TLA+、Alloy 与运行证据，形成分层形式验证体系. Precision Migration B35 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

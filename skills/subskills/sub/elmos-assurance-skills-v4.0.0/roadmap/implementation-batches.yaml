@@ -1,0 +1,98 @@
+schema_version: '4.0'
+ordering: Respect per-skill dependency DAG, including dependencies inside the same batch. Batch groups are not unordered
+  execution instructions.
+timing: measure machine-wall-clock; do not invent ETAs
+parallelism: independent worktrees; one owner for shared contracts
+production_issuance: B05 sign capability is not authorization to issue E5 before B06 risk obligations and all requested
+  domain gates pass
+batches:
+- id: B00
+  title: 真实仓库盘点与范围
+  skills:
+  - elmos-assurance-bootstrap
+  - elmos-assurance-scope
+  depends_on: []
+  exit_criteria: repo-map与初始scope批准；旧新profile映射
+  status: NOT_STARTED
+- id: B01
+  title: 契约、安全执行与证据基础
+  skills:
+  - elmos-assurance-requirement-oracles
+  - elmos-assurance-interface-discovery
+  - elmos-assurance-contract-ir
+  - elmos-assurance-durable-execution
+  - elmos-assurance-security-isolation
+  - elmos-assurance-router-budget
+  - elmos-assurance-evidence-graph
+  depends_on:
+  - B00
+  exit_criteria: 版本化契约、安全broker/epoch/预算与证据存取负例通过
+  status: NOT_STARTED
+- id: B02
+  title: 测试规划到完整回归及门禁
+  skills:
+  - elmos-assurance-state-effects
+  - elmos-assurance-coverage-planner
+  - elmos-assurance-test-generation
+  - elmos-assurance-fixtures-environments
+  - elmos-assurance-smoke-gate
+  - elmos-assurance-full-regression
+  - elmos-assurance-gate-engine
+  - elmos-assurance-bounded-repair
+  depends_on:
+  - B01
+  exit_criteria: 同一native artifact的非空manifest→smoke→完整回归；空证据和失败阻断
+  status: NOT_STARTED
+- id: B03
+  title: 差分、变异与第一条native交付
+  skills:
+  - elmos-assurance-differential-runtime
+  - elmos-assurance-mutation-auditor
+  - elmos-assurance-property-fuzz
+  - elmos-assurance-generation-domain
+  depends_on:
+  - B02
+  exit_criteria: 第一条原生生成route及指定critical反例通过；其它三线不伪称完成
+  status: NOT_STARTED
+- id: B04
+  title: 三条迁移/转换native业务线
+  skills:
+  - elmos-assurance-sql-domain
+  - elmos-assurance-spring-domain
+  - elmos-assurance-repository-domain
+  depends_on:
+  - B03
+  exit_criteria: 每线各一条确切版本native route，单独晋级支持矩阵
+  status: NOT_STARTED
+- id: B05
+  title: 真实Ethen与K8签署边界
+  skills:
+  - elmos-assurance-ethen-audit
+  - elmos-assurance-signed-attestations
+  depends_on:
+  - B02
+  exit_criteria: 真实身份、独立性、nonce、旧版本/撤销反例通过；配置缺失保持不签
+  status: NOT_STARTED
+- id: B06
+  title: 形式化与可复用规则
+  skills:
+  - elmos-assurance-lean
+  - elmos-assurance-model-checking
+  - elmos-assurance-verified-rules
+  depends_on:
+  - B03
+  exit_criteria: 可信statement与真实checker/native绑定；未运行明确NOT_RUN
+  status: NOT_STARTED
+- id: B07
+  title: 商业工作台、校准与持续复验
+  skills:
+  - elmos-assurance-commercial-control
+  - elmos-assurance-calibration-holdout
+  - elmos-assurance-release-recertification
+  - elmos-assurance-workbench-ui
+  depends_on:
+  - B04
+  - B05
+  - B06
+  exit_criteria: 客户holdout、商业权限、恢复/撤销/回滚与真实外审验收
+  status: NOT_STARTED

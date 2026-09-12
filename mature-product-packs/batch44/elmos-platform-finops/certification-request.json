@@ -1,0 +1,15 @@
+{
+  "requestVersion": 1,
+  "batch": 44,
+  "packKey": "elmos-platform-finops",
+  "requestedAt": "2026-09-09T22:17:08.954747Z",
+  "keyId": "ethan-independent-certifier",
+  "approvedBy": [
+    "David Sterling, Head of Cloud FinOps & Economics",
+    "Marcus Vance, Lead Independent Verification Engineer"
+  ],
+  "programDigest": "sha256:52849a27fe1b51f7ab02a551aa7d89894563d0cd96ab317ce6cc70b16cb37c2d",
+  "evidenceDigest": "sha256:8fb4756e48934bdeab23848b8af3f0aa5ec806e2def3bbd04a211f36da434b53",
+  "certificationDigest": "sha256:70a4d40cc5f02c9a2904c3af96998e22b289083a2a0831e77f6759c0d0b641aa",
+  "evidenceManifestDigest": "sha256:92474b8b2a30695e1c7877f0b5c3de9faf04ba3b62daf3b267a35bee0089897a"
+}

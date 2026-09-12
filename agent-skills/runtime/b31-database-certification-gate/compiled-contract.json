@@ -1,0 +1,22 @@
+{
+  "schema_version": "elmos.batch31.compiled-skill-contract.v1",
+  "package_id": "batch31-database-skills",
+  "package_version": "1.0.0",
+  "installed_alias": "b31-database-certification-gate",
+  "namespace": "batch31-database-v1",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute_b31_skill",
+    "handler_id": "gate-runner",
+    "category": "gate",
+    "module_path": "engines/database-data-engine/sql-transpiler/src/elmos_sql_transpiler/b31_skill_runtime.py",
+    "skill_key": "database-certification-gate",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

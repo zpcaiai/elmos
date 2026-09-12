@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: procurement-security-questionnaire
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: ProcurementSecurityQuestionnaireService
+    workflow: ProcurementSecurityQuestionnaireWorkflow
+    policyGate: ProcurementSecurityQuestionnairePolicyGate
+    evidenceProducer: ProcurementSecurityQuestionnaireEvidenceProducer
+    repositoryPort: ProcurementSecurityQuestionnaireRepositoryPort
+  requiredPorts:
+  - id: repository.read
+    direction: outbound
+  - id: artifact.write
+    direction: outbound
+  - id: schema.validate
+    direction: inbound
+  - id: policy.evaluate
+    direction: outbound
+  - id: evidence.append
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/procurement-security-questionnaire/runs
+  - GET /api/v1/skills/procurement-security-questionnaire/runs/{runId}
+  - POST /api/v1/skills/procurement-security-questionnaire/runs/{runId}/cancel
+  - POST /api/v1/skills/procurement-security-questionnaire/runs/{runId}/resume
+  events:
+  - elmos.skill.procurement-security-questionnaire.requested.v1
+  - elmos.skill.procurement-security-questionnaire.checkpointed.v1
+  - elmos.skill.procurement-security-questionnaire.completed.v1
+  - elmos.skill.procurement-security-questionnaire.failed.v1
+  workflowSteps:
+  - Classify every question by product control, deployment control, process control, or customer control.
+  - Retrieve the exact approved evidence and version.
+  - Draft answer, qualifier, evidence link, owner, and expiry date.
+  - Flag legal interpretation and unsupported requirements.
+  - Run consistency checks against architecture and data-use policy.
+  - Export the response packet and gap register for approval.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

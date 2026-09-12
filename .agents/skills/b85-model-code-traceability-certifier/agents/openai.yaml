@@ -1,0 +1,4 @@
+interface:
+  display_name: "B85 Model Code Traceability Certifier"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b85-model-code-traceability-certifier to execute this ELMOS Language Pack Skill with fail-closed evidence."

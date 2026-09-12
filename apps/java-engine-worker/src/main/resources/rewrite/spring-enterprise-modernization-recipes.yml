@@ -1,0 +1,18 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.recipes.SpringEnterpriseComplexModernization
+displayName: Modernize Complex Enterprise Spring Scenarios to Spring Boot 4.x & Java 21
+description: >-
+  Composite industrial recipe covering Spring Security 5/6 filter chain refactoring,
+  JPA/Hibernate 6 type mappings & Criteria migration, Spring Cloud microservice modernization
+  (Ribbon to LoadBalancer, Hystrix to Resilience4j), and Java 21 LTS upgrades.
+recipeList:
+  - io.elmos.recipes.security.SpringSecurityFilterChainRecipe
+  - io.elmos.recipes.security.SpringSecurityMethodSecurityRecipe
+  - io.elmos.recipes.security.SpringSecurityAuthenticationRecipe
+  - io.elmos.recipes.jpa.Hibernate6TypeMappingRecipe
+  - io.elmos.recipes.jpa.Hibernate6CriteriaModernizationRecipe
+  - io.elmos.recipes.cloud.SpringCloudRibbonToLoadBalancerRecipe
+  - io.elmos.recipes.cloud.SpringCloudHystrixToResilience4jRecipe
+  - io.elmos.recipes.SpringSecurityLambdaChain
+  - org.openrewrite.java.migrate.UpgradeToJava21

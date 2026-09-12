@@ -1,5 +1,8 @@
 ---
 name: pm-b42-post-cutover-monitoring
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "切换后持续监控差异、异常、性能、数据质量、回滚条件和学习项. Precision Migration B42 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

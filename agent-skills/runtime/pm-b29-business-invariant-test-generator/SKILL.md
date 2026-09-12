@@ -1,5 +1,8 @@
 ---
 name: pm-b29-business-invariant-test-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从金额、库存、权限、状态、幂等和守恒规则生成属性测试. Precision Migration B29 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

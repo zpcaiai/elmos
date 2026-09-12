@@ -1,0 +1,17 @@
+{
+  "package": "elmos-fde-autonomous-delivery-repository-refactoring-skills",
+  "version": "5.2.0",
+  "source_id": "external-dependency-stub-and-service-virtualization",
+  "alias": "elmos-fde-external-dependency-stub-and-service-virtualization",
+  "pack": "02-repository-intake-runtime",
+  "is_workflow": false,
+  "dependencies": [
+    "reproducible-build-environment"
+  ],
+  "effect_boundary": "E3",
+  "routable": false,
+  "implementation_state": "LOCAL_CONTROL_PLANE",
+  "external_evidence": "NOT_RUN",
+  "independent_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

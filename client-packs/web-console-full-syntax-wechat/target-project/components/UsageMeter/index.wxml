@@ -1,0 +1,18 @@
+<view class="{{'meterCard'}}">
+  <view class="{{'meterHeading'}}">
+    <view>
+      <text>{{label}}</text>
+      <text>{{formatQuota(measure.consumed)}}</text>
+      <text>已结算 {{unit}}</text>
+    </view>
+    <text class="{{measure.hardStop ? 'danger' : &quot;&quot;}}">{{percent(measure.usageBps)}}</text>
+  </view>
+  <view class="{{'progress'}}" role="progressbar" aria-label="{{`${label}消耗进度`}}" aria-valuemin="{{0}}" aria-valuemax="{{measure.limit}}" aria-valuenow="{{Math.min(measure.consumed + measure.reserved, measure.limit)}}" aria-valuetext="{{meterLabel(label, measure.consumed, measure.limit, measure.usageBps)}}">
+    <text class="{{measure.hardStop ? 'progressDanger' : &quot;&quot;}}" style="{{{ width: `${visualPercent}%` }}}" />
+  </view>
+  <view class="{{'meterFoot'}}">
+    <text>剩余 <text>{{formatQuota(measure.remaining)}}</text></text>
+    <text wx:if="{{measure.reserved > 0}}">处理中 {{formatQuota(measure.reserved)}}</text>
+    <text>总额度 {{formatQuota(measure.limit)}}</text>
+  </view>
+</view>

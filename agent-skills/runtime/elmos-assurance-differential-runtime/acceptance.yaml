@@ -1,0 +1,36 @@
+skill: elmos-assurance-differential-runtime
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-differential-runtime-A01
+  given: SQL结果重复行被去重
+  when: 在真实集成模块执行对应测试或负例
+  then: bag comparator必须发现
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-differential-runtime-A02
+  given: 金额差0.01
+  when: 在真实集成模块执行对应测试或负例
+  then: 无批准容差时必须失败
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-differential-runtime-A03
+  given: source/target共同有越权
+  when: 在真实集成模块执行对应测试或负例
+  then: 规范安全oracle仍必须发现
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

@@ -1,5 +1,8 @@
 ---
 name: pm-b31-patch-existing-decision
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "判断当前目标架构正确且差异局部时是否继续补丁修复. Precision Migration B31 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

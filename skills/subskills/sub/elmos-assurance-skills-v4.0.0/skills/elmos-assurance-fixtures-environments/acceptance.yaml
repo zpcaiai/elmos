@@ -1,0 +1,36 @@
+skill: elmos-assurance-fixtures-environments
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-fixtures-environments-A01
+  given: 两个scenario同主键数据
+  when: 在真实集成模块执行对应测试或负例
+  then: 互不污染、独立回放结果一致
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-fixtures-environments-A02
+  given: 没有目标DB运行时
+  when: 在真实集成模块执行对应测试或负例
+  then: native status NOT_RUN，不能标DB回归通过
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-fixtures-environments-A03
+  given: 测试失败中途退出
+  when: 在真实集成模块执行对应测试或负例
+  then: 自动清理或隔离留档，无凭据泄漏
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

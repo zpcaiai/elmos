@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "pack_key": "client-source-to-target",
+  "source_tuple": {
+    "stack": "UNSET",
+    "versions": [
+      "UNSET"
+    ],
+    "language": "UNSET",
+    "language_versions": [
+      "UNSET"
+    ],
+    "runtime": "UNSET",
+    "runtime_versions": [
+      "UNSET"
+    ],
+    "build_tool": "UNSET",
+    "package_manager": "UNSET",
+    "router": [],
+    "renderer": [],
+    "state": [],
+    "forms": [],
+    "styling": [],
+    "design_system": [],
+    "api_client": [],
+    "identity": [],
+    "i18n": [],
+    "test_tools": [],
+    "browsers": [
+      "chromium-UNSET"
+    ],
+    "devices": []
+  },
+  "snapshot_digest": "UNSET",
+  "coverage": 0,
+  "routes": [],
+  "components": [],
+  "templates": [],
+  "state_stores": [],
+  "forms": [],
+  "api_clients": [],
+  "auth": [],
+  "i18n": [],
+  "design_assets": [],
+  "accessibility": [],
+  "runtime_evidence": [],
+  "evidence_refs": []
+}

@@ -1,0 +1,9 @@
+{
+  "id": "batch39-provenance",
+  "batch": 39,
+  "packKey": "elmos-platform-sre-operations",
+  "role": "provenance",
+  "origin": "elmos-reproducible-build-system-b39",
+  "sha256": "sha256:36d8e64a299d5ce188879e618532524c7dfae5a4baf9cee77ff5ed738d805653",
+  "recordedAt": "2026-09-09T22:15:52.544844Z"
+}

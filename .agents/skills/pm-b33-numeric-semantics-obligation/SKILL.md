@@ -1,5 +1,8 @@
 ---
 name: pm-b33-numeric-semantics-obligation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成位宽、溢出、精度、舍入、NaN 和边界语义保持义务. Precision Migration B33 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

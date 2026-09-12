@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "release_id": "sample.publisher.extension@0.1.0",
+  "extension_id": "sample.publisher.extension",
+  "version": "0.1.0",
+  "channel": "preview",
+  "status": "draft",
+  "artifact_digest": "sha256:deadbeef",
+  "signature_ref": "releases/sample/signature.sig",
+  "sbom_ref": "releases/sample/sbom.json",
+  "provenance_ref": "releases/sample/provenance.json",
+  "certification_ref": "certification/certification.json",
+  "published_at": "TODO",
+  "immutable": true,
+  "revocation": {}
+}

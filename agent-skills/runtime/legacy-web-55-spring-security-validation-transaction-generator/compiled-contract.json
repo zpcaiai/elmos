@@ -1,0 +1,28 @@
+{
+  "schema_version": "elmos.legacy-web.compiled-skill-contract.v1",
+  "package_id": "elmos.java-legacy-web.repository-modernization",
+  "package_version": "1.0.0",
+  "installed_alias": "legacy-web-55-spring-security-validation-transaction-generator",
+  "namespace": "legacy-web-modernization-v1",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "legacy-web-24-request-binding-and-type-conversion",
+    "legacy-web-27-security-authn-authz-csrf-semantics",
+    "legacy-web-28-transaction-and-side-effect-topology",
+    "legacy-web-41-springboot4-target-architecture"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "dispatch",
+    "handler_id": "execute_55_spring_security_validation_transaction_generator",
+    "phase": "transformation",
+    "priority": "P0",
+    "module_path": "engines/legacy-web-modernization-engine/src/elmos_legacy_web_modernization/runtime.py",
+    "skill_key": "55-spring-security-validation-transaction-generator",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

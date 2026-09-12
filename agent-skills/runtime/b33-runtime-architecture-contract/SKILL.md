@@ -1,6 +1,9 @@
 ---
 name: b33-runtime-architecture-contract
-description: "Implement or extend the typed Runtime Architecture Contract for components identities connections data flows dependencies lifecycle scaling availability rollout health recovery observability policies and source mapping before cloud transformation."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement or extend the typed Runtime Architecture Contract for components identities connections data flows dependencies lifecycle scaling availability rollout health recovery observability policies and source mapping before cloud transformation.
 ---
 
 ## Operating mode

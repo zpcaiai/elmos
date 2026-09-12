@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elmos-mature-platform-engine"
+version = "2.0.0"
+description = "Industrial mature platform foundation engine for Batches 38-45"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[project.scripts]
+elmos-mature-platform = "elmos_mature_platform.cli:main"
+elmos-mature-platform-industrial = "elmos_mature_platform.industrial_certification:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers"
+testpaths = ["tests"]
+pythonpath = ["src"]

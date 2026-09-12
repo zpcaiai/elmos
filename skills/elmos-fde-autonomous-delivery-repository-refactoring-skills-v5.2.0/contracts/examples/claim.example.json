@@ -1,0 +1,21 @@
+{
+  "claimId": "CL-001",
+  "statement": "Retries preserve at-most-once order creation",
+  "scope": [
+    "orders.create"
+  ],
+  "assumptions": [
+    "Database unique index enabled"
+  ],
+  "status": "supported",
+  "supportingEvidence": [
+    "EV-001"
+  ],
+  "counterexamplesChecked": [
+    "timeout after commit",
+    "duplicate message"
+  ],
+  "confidence": 0.95,
+  "certificationLevel": "E3",
+  "producerIndependent": true
+}

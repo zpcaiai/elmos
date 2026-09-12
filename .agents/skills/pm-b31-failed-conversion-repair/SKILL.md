@@ -1,5 +1,8 @@
 ---
 name: pm-b31-failed-conversion-repair
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "面向 Vue→Flutter 等已有失败转换项目，定位缺失功能和行为差异，生成最小反例并驱动定点修复或重新转换. Precision Migration B31 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b26-database-direction-packs
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "为 Oracle、SQL Server、MySQL 和 PostgreSQL 的 12 条有方向路径分别维护对象、过程、专有能力、数据、性能、切换和回滚. Precision Migration B26 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

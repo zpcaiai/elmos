@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "profile_key": "enterprise-portfolio-scale-v1",
+  "owner": "UNASSIGNED",
+  "environment": {
+    "runner_image_digest": "UNSET",
+    "regions": [
+      "UNSET"
+    ],
+    "service_versions": {},
+    "resource_limits": {}
+  },
+  "classes": [
+    {
+      "key": "million-loc",
+      "repository_count": 1,
+      "loc": 1000000,
+      "languages": [
+        "java"
+      ],
+      "build_systems": [
+        "maven"
+      ],
+      "dataset_manifest_ref": "corpus/development/million-loc/manifest.json"
+    },
+    {
+      "key": "thousand-repository",
+      "repository_count": 1000,
+      "loc": 1000000,
+      "languages": [
+        "java"
+      ],
+      "build_systems": [
+        "maven"
+      ],
+      "dataset_manifest_ref": "corpus/development/thousand-repository/manifest.json"
+    },
+    {
+      "key": "mixed-language",
+      "repository_count": 10,
+      "loc": 100000,
+      "languages": [
+        "java",
+        "csharp",
+        "python",
+        "typescript"
+      ],
+      "build_systems": [
+        "maven",
+        "msbuild",
+        "pip",
+        "pnpm"
+      ],
+      "dataset_manifest_ref": "corpus/development/mixed-language/manifest.json"
+    }
+  ],
+  "thresholds": {},
+  "zero_tolerance": [
+    "silent_repository_drops",
+    "cross_tenant_leaks",
+    "artifact_corruption",
+    "unbounded_retries"
+  ]
+}

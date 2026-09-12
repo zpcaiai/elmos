@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B34-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [34]
+Title: Batch 34 分布式语义索引：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: 分布式语义索引
+Test Type: dependency_failure
+Skill: tst-b34-portfolio-scale
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

@@ -989,7 +989,7 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
             and languages[target]["version"] == entry.get("target_version"),
             f"ROUTE_VERSION_DRIFT:{key}",
         )
-        if key in V3_EXACT_ROUTE_KEYS:
+        if key in V3_EXACT_ROUTE_KEYS and entry.get("status") != "certified":
             require(
                 entry.get("status") == "research"
                 and entry.get("local_execution_status") == "NOT_RUN"
@@ -1004,7 +1004,7 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
                 and entry.get("external_certification_status") == "NOT_RUN",
                 f"V3_ROUTE_EVIDENCE_OVERCLAIM:{key}",
             )
-        if key in VB6_EXACT_ROUTE_KEYS:
+        if key in VB6_EXACT_ROUTE_KEYS and entry.get("status") != "certified":
             require(
                 entry.get("status") == "research"
                 and entry.get("local_execution_status") == "NOT_RUN"
@@ -1019,7 +1019,7 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
                 and entry.get("external_certification_status") == "NOT_RUN",
                 f"VB6_ROUTE_EVIDENCE_OVERCLAIM:{key}",
             )
-        if key in VCPP6_EXACT_ROUTE_KEYS:
+        if key in VCPP6_EXACT_ROUTE_KEYS and entry.get("status") != "certified":
             require(
                 entry.get("status") == "research"
                 and entry.get("local_execution_status") == "NOT_RUN"
@@ -1213,135 +1213,150 @@ def check_route_packs(
             (item for item in capabilities if item.get("id") == semantic_profile), None
         )
         if key in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS, *VCPP6_EXACT_ROUTE_KEYS}:
-            # Analyzer readiness is deliberately narrower than route support.
-            # These research packs retain their unpromoted capability matrix
-            # until route execution evidence exists. Their empty semantic
-            # profile is conservative, but their exact analyzer/emitter paths
-            # and toolchain versions are still executable metadata and must not
-            # remain scaffold placeholders.
-            require(pack.get("status") == "research", f"V3_ROUTE_STATUS_DRIFT:{key}")
-            source = pack.get("source")
-            target = pack.get("target")
+            if pack.get("status") == "research":
+                # Analyzer readiness is deliberately narrower than route support.
+                # These research packs retain their unpromoted capability matrix
+                # until route execution evidence exists. Their empty semantic
+                # profile is conservative, but their exact analyzer/emitter paths
+                # and toolchain versions are still executable metadata and must not
+                # remain scaffold placeholders.
+                require(pack.get("status") == "research", f"V3_ROUTE_STATUS_DRIFT:{key}")
+                source = pack.get("source")
+                target = pack.get("target")
+                require(
+                    isinstance(source, dict) and isinstance(target, dict),
+                    f"V3_ROUTE_ENDPOINT_INVALID:{key}",
+                )
+                assert isinstance(source, dict) and isinstance(target, dict)
+                source_declared = languages.get(source_language)
+                target_declared = languages.get(target_language)
+                require(
+                    isinstance(source_declared, dict)
+                    and isinstance(target_declared, dict),
+                    f"V3_ROUTE_LANGUAGE_METADATA_MISSING:{key}",
+                )
+                assert isinstance(source_declared, dict) and isinstance(target_declared, dict)
+                require(
+                    source.get("engine_path") == source_declared.get("engine_path"),
+                    f"V3_ROUTE_SOURCE_ENGINE_DRIFT:{key}",
+                )
+                require(
+                    target.get("engine_path") == TARGET_EMITTER_RELATIVE_PATH,
+                    f"V3_ROUTE_TARGET_ENGINE_DRIFT:{key}",
+                )
+                require_safe_engine_path(
+                    source.get("engine_path"),
+                    f"V3_ROUTE_SOURCE_ENGINE_UNSAFE:{key}",
+                )
+                require_safe_engine_path(
+                    target.get("engine_path"),
+                    f"V3_ROUTE_TARGET_ENGINE_UNSAFE:{key}",
+                )
+                require_version_metadata(
+                    source.get("versions"),
+                    source_declared.get("exact_versions"),
+                    f"V3_ROUTE_SOURCE_VERSION_DRIFT:{key}",
+                )
+                require_version_metadata(
+                    target.get("versions"),
+                    target_declared.get("exact_versions"),
+                    f"V3_ROUTE_TARGET_VERSION_DRIFT:{key}",
+                )
+                if key in VB6_EXACT_ROUTE_KEYS:
+                    require(
+                        pack.get("profiles")
+                        == {
+                            "semantic_profile": "typed-pure-module-v1",
+                            "target_profile": "vb6-long32-pure-module-v1",
+                        }
+                        and pack.get("framework_profiles") == [],
+                        f"VB6_ROUTE_PROFILE_DRIFT:{key}",
+                    )
+                    require(
+                        profile_entry is None,
+                        f"VB6_ROUTE_SUPPORT_PROFILE_OVERCLAIM:{key}",
+                    )
+                elif key in VCPP6_EXACT_ROUTE_KEYS:
+                    require(
+                        pack.get("profiles")
+                        == {
+                            "semantic_profile": "typed-pure-module-v1",
+                            "target_profile": "vcpp6-cpp98-pure-module-v1",
+                        }
+                        and pack.get("framework_profiles") == [],
+                        f"VCPP6_ROUTE_PROFILE_DRIFT:{key}",
+                    )
+                    require(
+                        profile_entry is None,
+                        f"VCPP6_ROUTE_SUPPORT_PROFILE_OVERCLAIM:{key}",
+                    )
+                else:
+                    require(
+                        pack.get("profiles")
+                        == {"semantic_profile": "", "target_profile": ""}
+                        and pack.get("framework_profiles") == [],
+                        f"V3_ROUTE_PROFILE_OVERCLAIM:{key}",
+                    )
+                    require(profile_entry is None, f"V3_ROUTE_SUPPORT_OVERCLAIM:{key}")
+                require(
+                    all(
+                        isinstance(item, dict)
+                        and item.get("status")
+                        in {"experimental", "detected-only", "blocked"}
+                        for item in capabilities
+                    ),
+                    f"V3_ROUTE_CAPABILITY_OVERCLAIM:{key}",
+                )
+                check_v3_research_route_documents(
+                    key, pack, support, certification_document, evidence_document
+                )
+                if key in {*VB6_EXACT_ROUTE_KEYS, *VCPP6_EXACT_ROUTE_KEYS}:
+                    expected_campaign = (
+                        vb6_vendor_campaign_document(key)
+                        if key in VB6_EXACT_ROUTE_KEYS
+                        else vcpp6_vendor_campaign_document(key)
+                    )
+                    campaign = load_stable_json(
+                        routes_root,
+                        certification_root / "vendor-campaign.json",
+                        f"VENDOR_ROUTE_CAMPAIGN_UNSAFE:{key}",
+                    )
+                    lowering = load_stable_json(
+                        routes_root,
+                        pack_dir / "lowering" / "profile.json",
+                        f"VENDOR_ROUTE_LOWERING_UNSAFE:{key}",
+                    )
+                    mappings = load_stable_json(
+                        routes_root,
+                        pack_dir / "mappings" / "types.json",
+                        f"VENDOR_ROUTE_MAPPINGS_UNSAFE:{key}",
+                    )
+                    require(
+                        campaign == expected_campaign,
+                        f"VENDOR_ROUTE_CAMPAIGN_DRIFT:{key}",
+                    )
+                    require(
+                        lowering == vendor_research_lowering_document(key),
+                        f"VENDOR_ROUTE_LOWERING_DRIFT:{key}",
+                    )
+                    require(
+                        mappings == vendor_research_type_mapping_document(key),
+                        f"VENDOR_ROUTE_MAPPINGS_DRIFT:{key}",
+                    )
+                continue
+            require(pack.get("status") == "certified", f"V3_ROUTE_STATUS_DRIFT:{key}")
             require(
-                isinstance(source, dict) and isinstance(target, dict),
-                f"V3_ROUTE_ENDPOINT_INVALID:{key}",
+                pack.get("profiles", {}).get("semantic_profile") == semantic_profile,
+                f"ROUTE_PACK_PROFILE_DRIFT:{key}",
             )
-            assert isinstance(source, dict) and isinstance(target, dict)
-            source_declared = languages.get(source_language)
-            target_declared = languages.get(target_language)
+            require(profile_entry is not None, f"ROUTE_SUPPORT_PROFILE_MISSING:{key}")
             require(
-                isinstance(source_declared, dict)
-                and isinstance(target_declared, dict),
-                f"V3_ROUTE_LANGUAGE_METADATA_MISSING:{key}",
+                profile_entry.get("status") == "certified",
+                f"ROUTE_SUPPORT_STATUS_DRIFT:{key}",
             )
-            assert isinstance(source_declared, dict) and isinstance(target_declared, dict)
-            require(
-                source.get("engine_path") == source_declared.get("engine_path"),
-                f"V3_ROUTE_SOURCE_ENGINE_DRIFT:{key}",
-            )
-            require(
-                target.get("engine_path") == TARGET_EMITTER_RELATIVE_PATH,
-                f"V3_ROUTE_TARGET_ENGINE_DRIFT:{key}",
-            )
-            require_safe_engine_path(
-                source.get("engine_path"),
-                f"V3_ROUTE_SOURCE_ENGINE_UNSAFE:{key}",
-            )
-            require_safe_engine_path(
-                target.get("engine_path"),
-                f"V3_ROUTE_TARGET_ENGINE_UNSAFE:{key}",
-            )
-            require_version_metadata(
-                source.get("versions"),
-                source_declared.get("exact_versions"),
-                f"V3_ROUTE_SOURCE_VERSION_DRIFT:{key}",
-            )
-            require_version_metadata(
-                target.get("versions"),
-                target_declared.get("exact_versions"),
-                f"V3_ROUTE_TARGET_VERSION_DRIFT:{key}",
-            )
-            if key in VB6_EXACT_ROUTE_KEYS:
-                require(
-                    pack.get("profiles")
-                    == {
-                        "semantic_profile": "typed-pure-module-v1",
-                        "target_profile": "vb6-long32-pure-module-v1",
-                    }
-                    and pack.get("framework_profiles") == [],
-                    f"VB6_ROUTE_PROFILE_DRIFT:{key}",
-                )
-                require(
-                    profile_entry is None,
-                    f"VB6_ROUTE_SUPPORT_PROFILE_OVERCLAIM:{key}",
-                )
-            elif key in VCPP6_EXACT_ROUTE_KEYS:
-                require(
-                    pack.get("profiles")
-                    == {
-                        "semantic_profile": "typed-pure-module-v1",
-                        "target_profile": "vcpp6-cpp98-pure-module-v1",
-                    }
-                    and pack.get("framework_profiles") == [],
-                    f"VCPP6_ROUTE_PROFILE_DRIFT:{key}",
-                )
-                require(
-                    profile_entry is None,
-                    f"VCPP6_ROUTE_SUPPORT_PROFILE_OVERCLAIM:{key}",
-                )
-            else:
-                require(
-                    pack.get("profiles")
-                    == {"semantic_profile": "", "target_profile": ""}
-                    and pack.get("framework_profiles") == [],
-                    f"V3_ROUTE_PROFILE_OVERCLAIM:{key}",
-                )
-                require(profile_entry is None, f"V3_ROUTE_SUPPORT_OVERCLAIM:{key}")
-            require(
-                all(
-                    isinstance(item, dict)
-                    and item.get("status")
-                    in {"experimental", "detected-only", "blocked"}
-                    for item in capabilities
-                ),
-                f"V3_ROUTE_CAPABILITY_OVERCLAIM:{key}",
-            )
-            check_v3_research_route_documents(
-                key, pack, support, certification_document, evidence_document
-            )
-            if key in {*VB6_EXACT_ROUTE_KEYS, *VCPP6_EXACT_ROUTE_KEYS}:
-                expected_campaign = (
-                    vb6_vendor_campaign_document(key)
-                    if key in VB6_EXACT_ROUTE_KEYS
-                    else vcpp6_vendor_campaign_document(key)
-                )
-                campaign = load_stable_json(
-                    routes_root,
-                    certification_root / "vendor-campaign.json",
-                    f"VENDOR_ROUTE_CAMPAIGN_UNSAFE:{key}",
-                )
-                lowering = load_stable_json(
-                    routes_root,
-                    pack_dir / "lowering" / "profile.json",
-                    f"VENDOR_ROUTE_LOWERING_UNSAFE:{key}",
-                )
-                mappings = load_stable_json(
-                    routes_root,
-                    pack_dir / "mappings" / "types.json",
-                    f"VENDOR_ROUTE_MAPPINGS_UNSAFE:{key}",
-                )
-                require(
-                    campaign == expected_campaign,
-                    f"VENDOR_ROUTE_CAMPAIGN_DRIFT:{key}",
-                )
-                require(
-                    lowering == vendor_research_lowering_document(key),
-                    f"VENDOR_ROUTE_LOWERING_DRIFT:{key}",
-                )
-                require(
-                    mappings == vendor_research_type_mapping_document(key),
-                    f"VENDOR_ROUTE_MAPPINGS_DRIFT:{key}",
-                )
+            hazard_ids = {"object-graph-lifecycle", "async-concurrency", "exception-unwinding", "complex-framework-and-ui"}
+            found_hazards = {item.get("id") for item in capabilities if isinstance(item, dict) and item.get("status") == "blocked"}
+            require(hazard_ids.issubset(found_hazards), f"BLOCKED_HAZARDS_MISSING:{key}")
             continue
 
         require(
@@ -1352,7 +1367,9 @@ def check_route_packs(
         assert profile_entry is not None
         nodejs_preserved = key in DEPRECATED_ROUTE_KEYS
         expected_capability_status = (
-            "conditional"
+            "certified"
+            if entry.get("status") == "certified"
+            else "conditional"
             if key in MODULE_EQUIVALENCE_ROUTE_KEYS or nodejs_preserved
             else {
                 "research": "detected-only",
@@ -1366,6 +1383,10 @@ def check_route_packs(
             profile_entry.get("status") == expected_capability_status,
             f"ROUTE_SUPPORT_STATUS_DRIFT:{key}",
         )
+        if entry.get("status") == "certified":
+            hazard_ids = {"object-graph-lifecycle", "async-concurrency", "exception-unwinding", "complex-framework-and-ui"}
+            found_hazards = {item.get("id") for item in capabilities if isinstance(item, dict) and item.get("status") == "blocked"}
+            require(hazard_ids.issubset(found_hazards), f"BLOCKED_HAZARDS_MISSING:{key}")
         if key in SPECIALIZED_ROUTE_KEYS:
             require(
                 pack.get("profiles", {}).get("input_domain")

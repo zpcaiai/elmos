@@ -35,12 +35,8 @@ def test_native_dep_solver_conflict() -> None:
         {"package": "pkg-b", "constraints": "*"},
     ]
     available = {
-        "pkg-a": [
-            {"version": "1.0.0", "dependencies": [{"package": "common", "constraints": "^1.0.0"}]}
-        ],
-        "pkg-b": [
-            {"version": "1.0.0", "dependencies": [{"package": "common", "constraints": "^2.0.0"}]}
-        ],
+        "pkg-a": [{"version": "1.0.0", "dependencies": [{"package": "common", "constraints": "^1.0.0"}]}],
+        "pkg-b": [{"version": "1.0.0", "dependencies": [{"package": "common", "constraints": "^2.0.0"}]}],
         "common": [
             {"version": "1.0.0", "dependencies": []},
             {"version": "2.0.0", "dependencies": []},

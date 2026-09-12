@@ -1,5 +1,8 @@
 ---
 name: pm-b25-postgresql-listen-notify
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 LISTEN/NOTIFY 的会话、事务、负载限制和替代消息系统. Precision Migration B25 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

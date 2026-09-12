@@ -1,5 +1,8 @@
 ---
 name: pm-b44-air-gapped-installation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "打包离线镜像、依赖、工具链、模型、许可证、升级和验证流程. Precision Migration B44 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

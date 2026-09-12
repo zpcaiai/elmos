@@ -1,0 +1,11 @@
+[2026-09-10T08:25:59.204418Z][B45-005] Starting execution of B45-005 (Batch 45成熟产品认证 / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:25:59.204425Z][B45-005] Bound Skill: tst-b45-mature-product-certification | Product Skill IDs: [1479, 1495]
+[2026-09-10T08:25:59.204427Z][B45-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:59.222800Z][B45-005] Security: Minted RS256 token (JTI=a3764557..., Exp=1789032359)
+[2026-09-10T08:25:59.327252Z][B45-005] KMS: Envelope encrypted 34 bytes under key key-b45-005 v1 (DEK wrapped)
+[2026-09-10T08:25:59.473107Z][B45-005] [B45-PRODUCTION-READINESS] Initializing mature certification evaluation for B45-005
+[2026-09-10T08:25:59.473123Z][B45-005] Executing Batch 45 certification readiness scenario B45-005 [Category=security]...
+[2026-09-10T08:25:59.473125Z][B45-005] Domain Gate Check: Verified interlocking gates for Batches 38 through 45
+[2026-09-10T08:25:59.473145Z][B45-005] Completed execution of B45-005 in 268.7ms: Status=PASSED
+[2026-09-10T08:25:59.473148Z][B45-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:59.473162Z][B45-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

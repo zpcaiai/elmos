@@ -1,0 +1,168 @@
+package persistence
+
+import (
+	"context"
+	"fmt"
+	"sort"
+	"sync"
+
+	"{{.ModuleName}}/internal/domain/model"
+	"{{.ModuleName}}/internal/domain/repository"
+)
+
+// RepositoryImpl implements the domain repository.Repository interface.
+// By default, it provides an in-memory thread-safe store suitable for testing,
+// with clean extension points for {{.Database}} persistence.
+type RepositoryImpl struct {
+	mu          sync.RWMutex
+	items       map[string]*model.Entity
+	databaseURL string
+}
+
+// Ensure RepositoryImpl satisfies domain repository interface.
+var _ repository.Repository = (*RepositoryImpl)(nil)
+
+// NewRepository constructs a persistence repository adapter.
+func NewRepository(databaseURL string) *RepositoryImpl {
+	return &RepositoryImpl{
+		items:       make(map[string]*model.Entity),
+		databaseURL: databaseURL,
+	}
+}
+
+// FindByID retrieves an entity from storage by primary key.
+func (r *RepositoryImpl) FindByID(ctx context.Context, id string) (*model.Entity, error) {
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	default:
+	}
+
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	ent, exists := r.items[id]
+	if !exists {
+		return nil, nil
+	}
+
+	// Reconstitute a copy to prevent external mutation of repository state
+	return model.Reconstitute(
+		ent.ID(),
+		ent.Name(),
+		ent.Description(),
+		ent.Status(),
+		ent.CreatedAt(),
+		ent.UpdatedAt(),
+	), nil
+}
+
+// Save inserts a new entity into storage.
+func (r *RepositoryImpl) Save(ctx context.Context, entity *model.Entity) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
+
+	if entity == nil {
+		return fmt.Errorf("cannot save nil entity")
+	}
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if _, exists := r.items[entity.ID()]; exists {
+		return fmt.Errorf("entity with id %s already exists", entity.ID())
+	}
+
+	r.items[entity.ID()] = entity
+	return nil
+}
+
+// Update updates an existing entity in storage.
+func (r *RepositoryImpl) Update(ctx context.Context, entity *model.Entity) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
+
+	if entity == nil {
+		return fmt.Errorf("cannot update nil entity")
+	}
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if _, exists := r.items[entity.ID()]; !exists {
+		return fmt.Errorf("entity with id %s does not exist", entity.ID())
+	}
+
+	r.items[entity.ID()] = entity
+	return nil
+}
+
+// Delete removes an entity by ID from storage.
+func (r *RepositoryImpl) Delete(ctx context.Context, id string) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	delete(r.items, id)
+	return nil
+}
+
+// List returns a paginated list of entities.
+func (r *RepositoryImpl) List(ctx context.Context, offset, limit int) ([]*model.Entity, int64, error) {
+	select {
+	case <-ctx.Done():
+		return nil, 0, ctx.Err()
+	default:
+	}
+
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	totalCount := int64(len(r.items))
+	if offset >= len(r.items) {
+		return []*model.Entity{}, totalCount, nil
+	}
+
+	// Collect keys for deterministic sorting
+	keys := make([]string, 0, len(r.items))
+	for k := range r.items {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	end := offset + limit
+	if end > len(keys) {
+		end = len(keys)
+	}
+
+	result := make([]*model.Entity, 0, end-offset)
+	for i := offset; i < end; i++ {
+		ent := r.items[keys[i]]
+		result = append(result, model.Reconstitute(
+			ent.ID(),
+			ent.Name(),
+			ent.Description(),
+			ent.Status(),
+			ent.CreatedAt(),
+			ent.UpdatedAt(),
+		))
+	}
+
+	return result, totalCount, nil
+}
+
+// Close gracefully releases any database connections.
+func (r *RepositoryImpl) Close() error {
+	return nil
+}

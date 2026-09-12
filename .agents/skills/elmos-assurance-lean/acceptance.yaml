@@ -1,0 +1,36 @@
+skill: elmos-assurance-lean
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-lean-A01
+  given: proof依赖sorryAx/自定义未批准公理
+  when: 在真实集成模块执行对应测试或负例
+  then: 拒绝critical formal PASS
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-lean-A02
+  given: 证明x>0但需求含负数
+  when: 在真实集成模块执行对应测试或负例
+  then: statement mismatch阻断
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-lean-A03
+  given: theorem通过但目标源码变更
+  when: 在真实集成模块执行对应测试或负例
+  then: refinement link失效，要求重验
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

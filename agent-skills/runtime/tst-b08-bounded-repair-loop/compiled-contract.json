@@ -1,0 +1,34 @@
+{
+  "schema_version": "elmos.strict-test-suite.compiled-skill-contract.v1",
+  "package_id": "elmos.migration-platform-strict-tests",
+  "package_version": "1.0.0",
+  "installed_alias": "tst-b08-bounded-repair-loop",
+  "namespace": "elmos-strict-test-suite",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute",
+    "skill_name": "tst-b08-bounded-repair-loop",
+    "title": "Batch 8：有界Repair Loop严格测试",
+    "suite_source": "batch1-37-strict",
+    "case_count": 8,
+    "case_ids": [
+      "B08-001",
+      "B08-002",
+      "B08-003",
+      "B08-004",
+      "B08-005",
+      "B08-006",
+      "B08-007",
+      "B08-008"
+    ],
+    "module_path": "scripts/test-suite/tst_skill_runtime.py",
+    "runtime_class": "TstSkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

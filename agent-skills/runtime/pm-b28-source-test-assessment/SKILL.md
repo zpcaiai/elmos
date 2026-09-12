@@ -1,5 +1,8 @@
 ---
 name: pm-b28-source-test-assessment
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "盘点源测试并判断其覆盖范围、Oracle可信度、断言强度、稳定性和迁移价值. Precision Migration B28 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

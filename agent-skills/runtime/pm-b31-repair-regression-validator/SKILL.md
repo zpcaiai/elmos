@@ -1,5 +1,8 @@
 ---
 name: pm-b31-repair-regression-validator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "确保修复解决当前反例且未破坏已通过功能、性能和安全门禁. Precision Migration B31 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

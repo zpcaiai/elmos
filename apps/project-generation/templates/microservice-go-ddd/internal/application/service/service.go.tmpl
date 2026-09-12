@@ -1,0 +1,175 @@
+package service
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"{{.ModuleName}}/internal/application/dto"
+	"{{.ModuleName}}/internal/application/port"
+	"{{.ModuleName}}/internal/domain/event"
+	"{{.ModuleName}}/internal/domain/model"
+	"{{.ModuleName}}/internal/domain/repository"
+	appErrors "{{.ModuleName}}/pkg/errors"
+	"{{.ModuleName}}/pkg/logger"
+)
+
+// EntityService coordinates domain logic and infrastructure repository access.
+// It implements port.EntityUseCase.
+type EntityService struct {
+	repo      repository.Repository
+	publisher port.EventPublisherPort
+	log       logger.Logger
+}
+
+// NewEntityService constructs a new EntityService orchestrator.
+func NewEntityService(repo repository.Repository, log logger.Logger) *EntityService {
+	return &EntityService{
+		repo: repo,
+		log:  log,
+	}
+}
+
+// WithPublisher attaches an event publisher port.
+func (s *EntityService) WithPublisher(pub port.EventPublisherPort) *EntityService {
+	s.publisher = pub
+	return s
+}
+
+// CreateEntity orchestrates entity validation, creation, and persistence.
+func (s *EntityService) CreateEntity(ctx context.Context, req dto.CreateEntityRequest) (*dto.EntityResponse, error) {
+	entityID := fmt.Sprintf("ent-%d", time.Now().UnixNano())
+
+	ent, err := model.NewEntity(entityID, req.Name, req.Description)
+	if err != nil {
+		s.log.Warn("Entity creation failed validation", "error", err)
+		return nil, appErrors.NewValidation(err.Error())
+	}
+
+	if err := s.repo.Save(ctx, ent); err != nil {
+		s.log.Error("Failed to persist entity", "id", ent.ID(), "error", err)
+		return nil, appErrors.NewInternal("failed to save entity", err)
+	}
+
+	// Dispatch domain event if publisher is configured
+	if s.publisher != nil {
+		evt := event.NewEntityCreatedEvent(ent.ID(), ent.Name())
+		_ = s.publisher.Publish(ctx, evt)
+	}
+
+	s.log.Info("Entity successfully created", "id", ent.ID())
+	res := dto.FromDomain(ent)
+	return &res, nil
+}
+
+// GetEntity retrieves an entity by its identifier.
+func (s *EntityService) GetEntity(ctx context.Context, id string) (*dto.EntityResponse, error) {
+	ent, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		s.log.Error("Error querying entity", "id", id, "error", err)
+		return nil, appErrors.NewInternal("database query failure", err)
+	}
+	if ent == nil {
+		return nil, appErrors.NewNotFound(fmt.Sprintf("entity '%s' not found", id))
+	}
+
+	res := dto.FromDomain(ent)
+	return &res, nil
+}
+
+// UpdateEntity updates mutable entity fields.
+func (s *EntityService) UpdateEntity(ctx context.Context, id string, req dto.UpdateEntityRequest) (*dto.EntityResponse, error) {
+	ent, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return nil, appErrors.NewInternal("database query failure", err)
+	}
+	if ent == nil {
+		return nil, appErrors.NewNotFound(fmt.Sprintf("entity '%s' not found", id))
+	}
+
+	if err := ent.UpdateDetails(req.Name, req.Description); err != nil {
+		return nil, appErrors.NewValidation(err.Error())
+	}
+
+	if err := s.repo.Update(ctx, ent); err != nil {
+		s.log.Error("Failed to update entity", "id", id, "error", err)
+		return nil, appErrors.NewInternal("failed to update entity", err)
+	}
+
+	res := dto.FromDomain(ent)
+	return &res, nil
+}
+
+// DeleteEntity removes an entity by ID.
+func (s *EntityService) DeleteEntity(ctx context.Context, id string) error {
+	ent, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return appErrors.NewInternal("database query failure", err)
+	}
+	if ent == nil {
+		return appErrors.NewNotFound(fmt.Sprintf("entity '%s' not found", id))
+	}
+
+	if err := s.repo.Delete(ctx, id); err != nil {
+		return appErrors.NewInternal("failed to delete entity", err)
+	}
+
+	s.log.Info("Entity deleted", "id", id)
+	return nil
+}
+
+// ListEntities retrieves paginated entities.
+func (s *EntityService) ListEntities(ctx context.Context, param dto.PaginationParam) (*dto.ListEntityResponse, error) {
+	if param.Limit <= 0 {
+		param.Limit = 20
+	}
+	if param.Offset < 0 {
+		param.Offset = 0
+	}
+
+	items, total, err := s.repo.List(ctx, param.Offset, param.Limit)
+	if err != nil {
+		return nil, appErrors.NewInternal("failed to list entities", err)
+	}
+
+	return &dto.ListEntityResponse{
+		Items:      dto.FromDomainList(items),
+		TotalCount: total,
+		Offset:     param.Offset,
+		Limit:      param.Limit,
+	}, nil
+}
+
+// ActivateEntity transitions an entity to Active.
+func (s *EntityService) ActivateEntity(ctx context.Context, id string) error {
+	ent, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return appErrors.NewInternal("database query failure", err)
+	}
+	if ent == nil {
+		return appErrors.NewNotFound(fmt.Sprintf("entity '%s' not found", id))
+	}
+
+	if err := ent.Activate(); err != nil {
+		return appErrors.NewValidation(err.Error())
+	}
+
+	return s.repo.Update(ctx, ent)
+}
+
+// DeactivateEntity transitions an entity to Inactive.
+func (s *EntityService) DeactivateEntity(ctx context.Context, id string) error {
+	ent, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return appErrors.NewInternal("database query failure", err)
+	}
+	if ent == nil {
+		return appErrors.NewNotFound(fmt.Sprintf("entity '%s' not found", id))
+	}
+
+	if err := ent.Deactivate(); err != nil {
+		return appErrors.NewValidation(err.Error())
+	}
+
+	return s.repo.Update(ctx, ent)
+}

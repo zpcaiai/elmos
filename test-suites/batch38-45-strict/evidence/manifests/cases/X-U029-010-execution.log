@@ -1,0 +1,11 @@
+[2026-09-10T08:26:34.504503Z][X-U029-010] Starting execution of X-U029-010 (Evidence重放与认证防伪 / performance / 场景10) [Category=performance, Priority=P0]
+[2026-09-10T08:26:34.504507Z][X-U029-010] Bound Skill: tst-evidence-replay-certification-anti-forgery | Product Skill IDs: []
+[2026-09-10T08:26:34.504511Z][X-U029-010] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:34.518981Z][X-U029-010] Security: Minted RS256 token (JTI=05dcbe72..., Exp=1789032394)
+[2026-09-10T08:26:34.552007Z][X-U029-010] KMS: Envelope encrypted 37 bytes under key key-x-u029-010 v1 (DEK wrapped)
+[2026-09-10T08:26:34.568582Z][X-U029-010] [CROSS-DELIVERY] Initializing X-U029-010 (U029) Category=performance
+[2026-09-10T08:26:34.568588Z][X-U029-010] Evidence Replay & Anti-Forgery: Validating counterexample replay, zero-tolerance counters, and cryptographic seals
+[2026-09-10T08:26:34.568595Z][X-U029-010] Benchmarking RSA-2048 signature verification speed...
+[2026-09-10T08:26:34.568621Z][X-U029-010] Completed execution of X-U029-010 in 64.1ms: Status=PASSED
+[2026-09-10T08:26:34.568624Z][X-U029-010] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:34.568640Z][X-U029-010] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

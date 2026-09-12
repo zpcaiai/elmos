@@ -130,15 +130,15 @@
     },
     {
       "id": "stored-procedure-and-trigger",
-      "scope": "PL/SQL, T-SQL, PL/pgSQL, MySQL routines and triggers",
-      "state": "BLOCKED",
-      "reason": "Procedural control flow and transaction semantics require the Batch 31 routine migration pipeline."
+      "scope": "SQL-language scalar functions, single-DML SQL procedures, and named-function row triggers. PL/SQL, T-SQL and PL/pgSQL control flow remain fail-closed.",
+      "state": "CONDITIONAL",
+      "reason": "Bounded SQL-language functions, single-DML procedures and named-function row triggers are typed and emitted. Packages, dynamic SQL, SECURITY DEFINER, STRICT, RETURNS TABLE, OUT parameters and arbitrary procedural control flow stay blocked. SQLite has no stored-function contract; DuckDB functions are emitted as CREATE MACRO under ROUTINE_DUCKDB_MACRO_SUBSTITUTE. Source/target execution stays NOT_RUN."
     },
     {
       "id": "optimizer-hints-and-plan-shape",
-      "scope": "Vendor hints, plan guides, optimizer directives and physical access paths",
-      "state": "BLOCKED",
-      "reason": "Syntax emission cannot prove equivalent optimizer behavior."
+      "scope": "Vendor plan/index hints are stripped with an explicit obligation; locking and isolation hints stay fail-closed",
+      "state": "CONDITIONAL",
+      "reason": "Plan and index hints (/*+ */, USE INDEX, OPTION) are stripped and recorded as OPTIMIZER_HINT_STRIPPED. NOLOCK and related locking hints change concurrency semantics and remain BLOCKED. Equivalent optimizer behavior is not claimed; plan-shape equivalence stays NOT_RUN."
     },
     {
       "id": "runtime-result-equivalence",

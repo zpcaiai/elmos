@@ -1,0 +1,34 @@
+{
+  "schema_version": "elmos.strict-test-suite.compiled-skill-contract.v1",
+  "package_id": "elmos.migration-platform-strict-tests",
+  "package_version": "1.0.0",
+  "installed_alias": "tst-cross-tenant-security-adversarial",
+  "namespace": "elmos-strict-test-suite",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute",
+    "skill_name": "tst-cross-tenant-security-adversarial",
+    "title": "跨租户、安全与对抗测试",
+    "suite_source": "batch1-37-strict",
+    "case_count": 8,
+    "case_ids": [
+      "X42-001",
+      "X42-002",
+      "X42-003",
+      "X42-004",
+      "X42-005",
+      "X42-006",
+      "X42-007",
+      "X42-008"
+    ],
+    "module_path": "scripts/test-suite/tst_skill_runtime.py",
+    "runtime_class": "TstSkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

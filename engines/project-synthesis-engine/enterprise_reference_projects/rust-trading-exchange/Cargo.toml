@@ -1,0 +1,22 @@
+[package]
+name = "rust-trading-exchange"
+version = "0.1.0"
+edition = "2021"
+authors = ["Elmos Engineering <core@elmos.io>"]
+description = "Ultra-low-latency deterministic matching engine and trading exchange"
+
+[dependencies]
+
+[[bin]]
+name = "trading-exchange"
+path = "src/main.rs"
+
+[lib]
+name = "trading_exchange"
+path = "src/lib.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"

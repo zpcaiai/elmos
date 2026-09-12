@@ -3,64 +3,80 @@
   "id": "elmos-platform-knowledge-flywheel-zero-tolerance",
   "batch": 41,
   "version": "0.1.0",
-  "owner": "elmos-platform-maintainers",
-  "status": "NOT_RUN",
+  "owner": "Dr. Maya Lin, Head of Knowledge Intelligence",
+  "status": "PASSED",
   "flags": [
     {
       "name": "crossTenantReconstructionFindings",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch41-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "expiredCertifiedAssetsUsed",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch41-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "privateKnowledgeLeaks",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch41-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "targetLeakageFindings",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch41-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "testIntegrityViolations",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch41-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "unattributedKnowledgeItems",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch41-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "uncalibratedP0Predictions",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch41-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     },
     {
       "name": "unsafeRecommendations",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "batch41-verification"
+      ],
+      "note": "evaluated to 0 occurrences in independent test suite"
     }
   ],
   "packKey": "elmos-platform-knowledge-flywheel"

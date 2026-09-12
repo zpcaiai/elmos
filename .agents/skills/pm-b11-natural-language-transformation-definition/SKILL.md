@@ -1,5 +1,8 @@
 ---
 name: pm-b11-natural-language-transformation-definition
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将目标、范围、前置条件、例外、禁止项和验收要求结构化为转换定义. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

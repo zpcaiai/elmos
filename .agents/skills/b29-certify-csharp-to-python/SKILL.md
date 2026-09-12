@@ -1,5 +1,8 @@
 ---
 name: b29-certify-csharp-to-python
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement or certify the directed C#-to-Python migration route, including source semantics, target lowering, compatibility strategy, corpus, real builds, behavior evidence, and route manifest. Use only for C# source and Python target work.
 ---
 

@@ -2,7 +2,7 @@
   "packKey": "elmos-platform-knowledge-flywheel",
   "batch": 41,
   "status": "OPEN",
-  "owner": "elmos-platform-maintainers",
+  "owner": "Dr. Maya Lin, Head of Knowledge Intelligence",
   "risks": [
     {
       "id": "RISK-B41-ISOLATION-001",

@@ -1,0 +1,196 @@
+{
+  "states": [
+    {
+      "id": "discovered",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "qualified",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "assessed",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "scoped",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "baselined",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "planned",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "transforming",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "build-green",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": false,
+      "sla_clock": "business"
+    },
+    {
+      "id": "behavior-verified",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": false,
+      "sla_clock": "business"
+    },
+    {
+      "id": "production-ready",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": false,
+      "sla_clock": "business"
+    },
+    {
+      "id": "canary",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "cutover",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": false,
+      "sla_clock": "business"
+    },
+    {
+      "id": "hypercare",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "stabilized",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "legacy-retired",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "accepted",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": false,
+      "sla_clock": "business"
+    },
+    {
+      "id": "blocked",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "needs-human",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "security-stopped",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "budget-stopped",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "rolled-back",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    },
+    {
+      "id": "cancelled",
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "owner": "migration-owner",
+      "waiver_allowed": true,
+      "sla_clock": "business"
+    }
+  ],
+  "transitions": [
+    {
+      "from": "discovered",
+      "to": "qualified",
+      "evidence_required": [
+        "qualification"
+      ]
+    },
+    {
+      "from": "qualified",
+      "to": "assessed",
+      "evidence_required": [
+        "assessment"
+      ]
+    }
+  ]
+}

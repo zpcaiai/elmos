@@ -1,0 +1,32 @@
+{
+  "schema_version": "elmos.strict-test-suite.compiled-skill-contract.v1",
+  "package_id": "elmos.migration-platform-strict-tests",
+  "package_version": "1.0.0",
+  "installed_alias": "tst-b38-45-final-strict-release-gate",
+  "namespace": "elmos-strict-test-suite",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute",
+    "skill_name": "tst-b38-45-final-strict-release-gate",
+    "title": "Batch 38–45最终严格门禁 / success / 场景1",
+    "suite_source": "batch38-45-strict",
+    "case_count": 6,
+    "case_ids": [
+      "X-U030-001",
+      "X-U030-002",
+      "X-U030-003",
+      "X-U030-004",
+      "X-U030-005",
+      "X-U030-006"
+    ],
+    "module_path": "scripts/test-suite/tst_skill_runtime.py",
+    "runtime_class": "TstSkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

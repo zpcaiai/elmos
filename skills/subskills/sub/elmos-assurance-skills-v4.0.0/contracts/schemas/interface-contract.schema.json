@@ -1,0 +1,277 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/assurance/v4/interface-contract.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "4.0"
+    },
+    "contract_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "tenant_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "project_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "source_kind": {
+      "enum": [
+        "declared",
+        "observed",
+        "inferred",
+        "approved_normative"
+      ]
+    },
+    "requirement_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "interfaces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+          },
+          "protocol": {
+            "enum": [
+              "http",
+              "graphql",
+              "grpc",
+              "event",
+              "websocket",
+              "cli",
+              "sdk",
+              "routine",
+              "file",
+              "job",
+              "ui",
+              "device"
+            ]
+          },
+          "operation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "source_locations": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 1
+          },
+          "preconditions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 0
+          },
+          "auth_roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "outcomes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+                },
+                "condition": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096
+                },
+                "assertions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096
+                  },
+                  "minItems": 1
+                }
+              },
+              "required": [
+                "id",
+                "condition",
+                "assertions"
+              ]
+            },
+            "minItems": 1
+          },
+          "state_transitions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 0
+          },
+          "side_effects": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 0
+          },
+          "invariants": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 1
+          },
+          "oracle_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "risk": {
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "wire_schema_bindings": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "request_schema_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "response_schema_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "error_schema_digests": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "minItems": 0
+              },
+              "schema_format": {
+                "enum": [
+                  "json-schema-2020-12",
+                  "protobuf-descriptor",
+                  "graphql-sdl",
+                  "sql-routine-signature",
+                  "typed-domain-adapter"
+                ]
+              },
+              "content_types": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "request_schema_digest",
+              "response_schema_digest",
+              "error_schema_digests",
+              "schema_format",
+              "content_types"
+            ]
+          },
+          "assertion_program_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "required": [
+          "id",
+          "protocol",
+          "operation",
+          "source_locations",
+          "preconditions",
+          "auth_roles",
+          "outcomes",
+          "state_transitions",
+          "side_effects",
+          "invariants",
+          "oracle_ids",
+          "risk",
+          "wire_schema_bindings",
+          "assertion_program_digest"
+        ]
+      },
+      "minItems": 1
+    },
+    "known_blind_spots": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4096
+      },
+      "minItems": 0
+    },
+    "approval_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "contract_id",
+    "tenant_id",
+    "project_id",
+    "source_kind",
+    "requirement_ids",
+    "interfaces",
+    "known_blind_spots",
+    "approval_digest"
+  ]
+}

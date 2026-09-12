@@ -1,0 +1,4 @@
+interface:
+  display_name: "B92 Objectivec Swift Interop Header Generator"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b92-objectivec-swift-interop-header-generator to execute this ELMOS Language Pack Skill with fail-closed evidence."

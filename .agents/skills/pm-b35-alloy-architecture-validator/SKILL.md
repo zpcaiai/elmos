@@ -1,5 +1,8 @@
 ---
 name: pm-b35-alloy-architecture-validator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "用 Alloy 验证模块、权限、所有权、Schema 和架构关系约束. Precision Migration B35 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

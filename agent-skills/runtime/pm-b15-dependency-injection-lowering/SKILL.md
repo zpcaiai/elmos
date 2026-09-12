@@ -1,5 +1,8 @@
 ---
 name: pm-b15-dependency-injection-lowering
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "映射容器、生命周期、Scope、拦截、代理、工厂和条件绑定. Precision Migration B15 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

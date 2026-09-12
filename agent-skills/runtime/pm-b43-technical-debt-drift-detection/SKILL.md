@@ -1,5 +1,8 @@
 ---
 name: pm-b43-technical-debt-drift-detection
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "检测新技术债、已修复问题回归和跨仓库治理漂移. Precision Migration B43 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

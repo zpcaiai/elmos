@@ -11,7 +11,8 @@
     "evidence": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "replay_command": {"type": ["string", "null"]},
     "trace_coverage": {"type": "number", "minimum": 0, "maximum": 1}, "authorization_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
     "counters": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}}, "findings": {"type": "array"},
-    "metrics": {"type": "object", "additionalProperties": {"type": "number"}}
+    "metrics": {"type": "object", "additionalProperties": {"type": "number"}},
+    "duration_seconds": {"type": "number"}
   },
   "$defs": {"digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}
 }

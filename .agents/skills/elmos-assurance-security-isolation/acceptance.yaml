@@ -1,0 +1,36 @@
+skill: elmos-assurance-security-isolation
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-security-isolation-A01
+  given: tenant A引用B evidence blob
+  when: 在真实集成模块执行对应测试或负例
+  then: 拒绝
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-security-isolation-A02
+  given: 构建脚本读取host key或docker socket
+  when: 在真实集成模块执行对应测试或负例
+  then: 隔离阻断
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-security-isolation-A03
+  given: OpenAPI外链/压缩炸弹/恶意proof
+  when: 在真实集成模块执行对应测试或负例
+  then: 受控拒绝，不执行高权限代码
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

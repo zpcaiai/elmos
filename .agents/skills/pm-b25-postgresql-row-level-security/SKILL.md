@@ -1,5 +1,8 @@
 ---
 name: pm-b25-postgresql-row-level-security
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Policy、USING、WITH CHECK、角色和安全上下文. Precision Migration B25 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

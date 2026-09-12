@@ -1,0 +1,13 @@
+[2026-09-10T08:26:08.436630Z][X-U002-006] Starting execution of X-U002-006 (能力追踪与覆盖矩阵 / replay-idempotency / 场景6) [Category=replay-idempotency, Priority=P0]
+[2026-09-10T08:26:08.436633Z][X-U002-006] Bound Skill: tst-b38-45-capability-traceability | Product Skill IDs: []
+[2026-09-10T08:26:08.436634Z][X-U002-006] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:08.464373Z][X-U002-006] Security: Minted RS256 token (JTI=e70b0c62..., Exp=1789032368)
+[2026-09-10T08:26:08.553307Z][X-U002-006] KMS: Envelope encrypted 37 bytes under key key-x-u002-006 v1 (DEK wrapped)
+[2026-09-10T08:26:08.630894Z][X-U002-006] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U002-006 (U002)
+[2026-09-10T08:26:08.630906Z][X-U002-006] Executing category=replay-idempotency on U002
+[2026-09-10T08:26:08.630911Z][X-U002-006] Capability Traceability: Loading canonical catalog of 172 Skills (1325-1496)
+[2026-09-10T08:26:08.630915Z][X-U002-006] Traceability Engine: Cross-referencing requirements, architectural contracts, test cases
+[2026-09-10T08:26:08.630919Z][X-U002-006] Recomputing traceability matrix twice with identical inputs...
+[2026-09-10T08:26:08.630955Z][X-U002-006] Completed execution of X-U002-006 in 194.3ms: Status=PASSED
+[2026-09-10T08:26:08.630959Z][X-U002-006] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:08.630979Z][X-U002-006] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

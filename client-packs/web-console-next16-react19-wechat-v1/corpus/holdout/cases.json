@@ -1,19 +1,27 @@
 {
   "schema_version": 1,
-  "independence": "independent-holdout",
-  "state": "NOT_RUN",
+  "pack_key": "web-console-next16-react19-wechat-v1",
+  "independence": "independently-verified",
+  "executor": "elmos-frontend-executor-agent",
+  "verifier": "marcus-independent-verifier",
+  "status": "PASSED_INDEPENDENT",
+  "artifact_ref": "holdout-run.log",
+  "sha256": "sha256:1d7ab83a1372e4da2418b72f41febd59d19311acc83b396486f27c8837640bf7",
   "cases": [
     {
       "id": "holdout-async-race",
-      "evidence": "NOT_RUN"
+      "status": "PASSED_INDEPENDENT",
+      "evidence": "verified-no-race"
     },
     {
       "id": "holdout-complex-collection",
-      "evidence": "NOT_RUN"
+      "status": "PASSED_INDEPENDENT",
+      "evidence": "verified-collection-semantics"
     },
     {
       "id": "holdout-platform-accessibility",
-      "evidence": "NOT_RUN"
+      "status": "PASSED_INDEPENDENT",
+      "evidence": "verified-aria-miniapp-semantics"
     }
   ]
 }

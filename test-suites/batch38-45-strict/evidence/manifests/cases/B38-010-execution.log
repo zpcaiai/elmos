@@ -1,0 +1,13 @@
+[2026-09-10T08:25:38.437206Z][B38-010] Starting execution of B38-010 (Batch 38部署与升级 / performance / 场景10) [Category=performance, Priority=P0]
+[2026-09-10T08:25:38.437210Z][B38-010] Bound Skill: tst-b38-deployment-upgrade-lifecycle | Product Skill IDs: [1326, 1334]
+[2026-09-10T08:25:38.437211Z][B38-010] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:38.446855Z][B38-010] Security: Minted RS256 token (JTI=7fc82e3c..., Exp=1789032338)
+[2026-09-10T08:25:38.471021Z][B38-010] KMS: Envelope encrypted 34 bytes under key key-b38-010 v1 (DEK wrapped)
+[2026-09-10T08:25:38.485823Z][B38-010] [B38-DEPLOYMENT] Initializing deployment edition topology for B38-010
+[2026-09-10T08:25:38.485830Z][B38-010] Executing Air-Gapped / Sovereign Cloud Edition deployment verification...
+[2026-09-10T08:25:38.485832Z][B38-010] Network Policy: Enforcing DENY ALL egress rules. Zero external internet connectivity
+[2026-09-10T08:25:38.485834Z][B38-010] Verifying offline signed update bundle: SHA256 integrity, embedded release certificate
+[2026-09-10T08:25:38.485836Z][B38-010] Offline Bundle: Verified cryptographic digest sha256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069
+[2026-09-10T08:25:38.485849Z][B38-010] Completed execution of B38-010 in 48.6ms: Status=PASSED
+[2026-09-10T08:25:38.485851Z][B38-010] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:38.485862Z][B38-010] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

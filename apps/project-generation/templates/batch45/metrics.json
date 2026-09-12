@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "id": "example-mature-product-certification-metrics",
+  "batch": 45,
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "NOT_RUN",
+  "metrics": [
+    {
+      "name": "certifiedRouteClaimAccuracy",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "customerOutcomePassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "deploymentMatrixPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "developerExperiencePassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "economicsPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "ecosystemPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "evidenceTraceCoverage",
+      "threshold": 0.99,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "functionalDepthPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "independentReviewPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "maintainabilityPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "maturityDimensionPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "scaleSloPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "securityGovernancePassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "semanticBehaviorPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "sreDrPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "unresolvedCriticalRiskCount",
+      "threshold": 0.0,
+      "comparator": "max",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    }
+  ]
+}

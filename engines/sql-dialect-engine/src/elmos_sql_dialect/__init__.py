@@ -19,4 +19,8 @@ __all__ = [
     "profiles",
     "identifiers",
     "capabilities",
+    "sql_diagnostic_auto_repairer",
+    "database_handoff_ledger",
+    "procedural_ast_lowerer",
 ]
+

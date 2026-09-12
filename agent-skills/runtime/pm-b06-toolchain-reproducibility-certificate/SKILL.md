@@ -1,5 +1,8 @@
 ---
 name: pm-b06-toolchain-reproducibility-certificate
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "记录镜像摘要、工具版本、依赖锁、环境摘要和命令，签发可复现证据. Precision Migration B06 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

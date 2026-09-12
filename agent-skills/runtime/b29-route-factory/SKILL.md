@@ -1,6 +1,9 @@
 ---
 name: b29-route-factory
-description: "Implement and certify a source-to-target programming-language migration route, including adapters, PSP/UIR mappings, target lowering, compatibility runtime, corpus, benchmarks, and certification. Use for Batch 29 route creation or major route expansion; not for framework-only changes or production cutover."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement and certify a source-to-target programming-language migration route, including adapters, PSP/UIR mappings, target lowering, compatibility runtime, corpus, benchmarks, and certification. Use for Batch 29 route creation or major route expansion; not for framework-only changes or production cutover.
 ---
 
 ## Operating mode

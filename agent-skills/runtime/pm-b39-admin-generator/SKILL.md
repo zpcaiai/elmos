@@ -1,5 +1,8 @@
 ---
 name: pm-b39-admin-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成管理端、权限、审计、运营、配置和数据治理功能. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

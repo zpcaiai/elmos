@@ -1,0 +1,10 @@
+{
+  "artifact_sha256": "a2e9d82b28485edf0249fd40758c01b9197e6a22203faa17ed41a9d07a24f70d",
+  "environment_sha256": "d022fd1e3ea59db22d6362bf0c0cffb08ac24e6671d591c645c9af370277a7a6",
+  "files": [
+    {
+      "path": "evidence/hypercare.log",
+      "sha256": "5442b6a35f2b679b6180d8ce32258213bb99aa8ea273673e3f2ed46bc9f77f57"
+    }
+  ]
+}

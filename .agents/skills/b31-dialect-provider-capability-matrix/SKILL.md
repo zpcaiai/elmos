@@ -1,5 +1,14 @@
 ---
 name: b31-dialect-provider-capability-matrix
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: Create and maintain exact database dialect, engine version, edition, extension, driver, and provider capability matrices with evidence-backed support states. Use for route claims, target selection, upgrades, and conditional feature decisions.
 ---
 

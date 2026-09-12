@@ -1,5 +1,8 @@
 ---
 name: pm-b19-sql-expression-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达查询、DML、表达式、函数、窗口、层级、JSON、空间和方言扩展. Precision Migration B19 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

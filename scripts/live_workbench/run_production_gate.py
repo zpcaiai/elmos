@@ -52,7 +52,7 @@ def validate(bundle_path: Path, root: Path) -> list[str]:
     if bundle.get("source_archive_sha256") != ARCHIVE_SHA256:
         errors.append("SOURCE_ARCHIVE_BINDING_INVALID")
     revision = bundle.get("implementation_revision")
-    if not isinstance(revision, str) or not DIGEST.fullmatch(revision):
+    if not isinstance(revision, str) or not re.fullmatch(r"[a-f0-9]{40,64}", revision):
         errors.append("IMPLEMENTATION_REVISION_INVALID")
     elif revision != current_revision(root):
         errors.append("IMPLEMENTATION_REVISION_NOT_CURRENT_HEAD")
