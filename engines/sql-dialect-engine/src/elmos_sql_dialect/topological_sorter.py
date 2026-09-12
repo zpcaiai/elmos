@@ -34,6 +34,21 @@ class TableDependencyGraph:
     def __init__(self) -> None:
         self.nodes: dict[str, TableDependencyNode] = {}
 
+    @classmethod
+    def from_tables(cls, tables: list[Any] | dict[str, Any]) -> TableDependencyGraph:
+        """Construct dependency graph directly from inspected TableMeta instances or mapping."""
+        graph = cls()
+        table_list = list(tables.values()) if isinstance(tables, dict) else list(tables)
+        for t in table_list:
+            t_name = getattr(t, "name", str(t))
+            graph.add_table(t_name)
+            fks = getattr(t, "foreign_keys", [])
+            for fk in fks:
+                parent_name = getattr(fk, "foreign_table", None)
+                if parent_name:
+                    graph.add_dependency(child_table=t_name, parent_table=parent_name)
+        return graph
+
     def add_table(self, table_name: str) -> None:
         t = table_name.lower()
         if t not in self.nodes:

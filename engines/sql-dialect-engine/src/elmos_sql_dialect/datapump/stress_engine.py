@@ -255,3 +255,19 @@ class PhysicalStressEngine:
             min_latency_ms=min_lat,
             max_latency_ms=max_lat,
         )
+
+    def audit_money_conservation(
+        self, schema: str = "public", table_name: str = "stress_accounts", expected_total: float = 20000.00
+    ) -> tuple[bool, float, float]:
+        """Verifies strict balance conservation invariant under concurrency."""
+        conn = self.connection_factory()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(f"SELECT COALESCE(SUM(balance), 0) FROM {schema}.{table_name};")
+                actual_total = float(cur.fetchone()[0])
+                diff = abs(actual_total - expected_total)
+                is_conserved = diff < 0.005
+                return is_conserved, actual_total, diff
+        finally:
+            conn.close()
+

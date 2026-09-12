@@ -4,10 +4,10 @@ Executes all 10 real migration business steps against live physical database ins
 1. Static DDL lexical & grammar parsing
 2. Online live schema metadata inspection
 3. Canonical DB IR modeling & topological DAG sorting
-4. ChinaDB dialect lowering (DM8, openGauss, Procedural AST)
+4. ChinaDB dialect lowering (DM8, openGauss, Procedural AST) & Live Function/Procedure Execution
 5. Physical Data Pump streaming & throughput measurement
-6. Physical PostgreSQL WAL Logical Replication CDC event capture
-7. Live table chunk hashing & row discrepancy pinpointing
+6. Physical PostgreSQL WAL Logical Replication CDC event capture & Target Replay
+7. Live table chunk hashing & row discrepancy pinpointing (Rust Engine)
 8. Real multi-threaded transaction stress testing & money conservation invariants
 9. Closed-loop runtime error diagnosis & AST self-healing
 10. Authentic execution receipt generation & gate attestation (Strict Non-Self-Certification)
@@ -15,6 +15,7 @@ Executes all 10 real migration business steps against live physical database ins
 
 from __future__ import annotations
 
+import datetime
 import hashlib
 import json
 import logging
@@ -123,7 +124,11 @@ class RealMigrationPipelineOrchestrator:
         """
         table_ast = parse_create_table(sample_ddl, source_dialect=Dialect.POSTGRES)
         d1 = round((time.perf_counter() - t0) * 1000.0, 2)
-        p1_det = {"parsed_table": str(table_ast.name), "column_count": len(table_ast.columns)}
+        p1_det = {
+            "parsed_table": str(table_ast.name),
+            "column_count": len(table_ast.columns),
+            "columns": [c.name for c in table_ast.columns],
+        }
         p1_dig = hashlib.sha256(json.dumps(p1_det, sort_keys=True).encode()).hexdigest()
         receipts.append(
             PipelinePhaseReceipt(
@@ -144,29 +149,51 @@ class RealMigrationPipelineOrchestrator:
         schema_inspect = f"{target_schema_prefix}_inspect"
         conn = self.connection_factory()
         conn.autocommit = True
+        inspected_tables = {}
         try:
             with conn.cursor() as cur:
-                cur.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_inspect};")
-                cur.execute(f"DROP TABLE IF EXISTS {schema_inspect}.test_meta CASCADE;")
+                cur.execute(f"DROP SCHEMA IF EXISTS {schema_inspect} CASCADE;")
+                cur.execute(f"CREATE SCHEMA {schema_inspect};")
                 cur.execute(f"""
-                    CREATE TABLE {schema_inspect}.test_meta (
+                    CREATE TABLE {schema_inspect}.users (
                         id SERIAL PRIMARY KEY,
-                        code VARCHAR(30) UNIQUE NOT NULL,
-                        amount NUMERIC(10, 2) CHECK (amount >= 0)
+                        username VARCHAR(50) UNIQUE NOT NULL,
+                        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+                    );
+                    CREATE TABLE {schema_inspect}.products (
+                        id SERIAL PRIMARY KEY,
+                        sku VARCHAR(50) UNIQUE NOT NULL,
+                        price NUMERIC(12, 2) CHECK (price >= 0)
+                    );
+                    CREATE TABLE {schema_inspect}.orders (
+                        id SERIAL PRIMARY KEY,
+                        user_id INT REFERENCES {schema_inspect}.users(id) ON DELETE CASCADE,
+                        total NUMERIC(12, 2) DEFAULT 0.00,
+                        status VARCHAR(20) DEFAULT 'PENDING'
+                    );
+                    CREATE TABLE {schema_inspect}.order_items (
+                        id SERIAL PRIMARY KEY,
+                        order_id INT REFERENCES {schema_inspect}.orders(id) ON DELETE CASCADE,
+                        product_id INT REFERENCES {schema_inspect}.products(id),
+                        qty INT CHECK (qty > 0)
                     );
                 """)
             inspector = PostgresInspector(connection=conn)
             res = inspector.inspect_schema(schema_name=schema_inspect)
-            t_meta = res.tables.get("test_meta")
-            assert t_meta is not None
-            col_names = [c.name for c in t_meta.columns]
-            assert "code" in col_names
+            assert "users" in res.tables
+            assert "products" in res.tables
+            assert "orders" in res.tables
+            assert "order_items" in res.tables
+            inspected_tables = res.tables
+
             p2_det = {
                 "schema": schema_inspect,
-                "inspected_table": t_meta.name,
-                "columns_count": len(t_meta.columns),
-                "primary_keys": t_meta.primary_key,
-                "check_constraints": len(t_meta.check_constraints),
+                "inspected_table": "orders",
+                "tables_count": len(res.tables),
+                "tables": sorted(list(res.tables.keys())),
+                "primary_keys": res.tables["orders"].primary_key,
+                "check_constraints": len(res.tables["products"].check_constraints),
+                "foreign_keys_detected": len(res.tables["order_items"].foreign_keys),
             }
         finally:
             with conn.cursor() as cur:
@@ -190,23 +217,21 @@ class RealMigrationPipelineOrchestrator:
         # ==========================================
         t0 = time.perf_counter()
         from elmos_sql_dialect.topological_sorter import TableDependencyGraph
-        graph = TableDependencyGraph()
-        graph.add_table("users")
-        graph.add_table("products")
-        graph.add_dependency(child_table="orders", parent_table="users")
-        graph.add_dependency(child_table="order_items", parent_table="orders")
-        graph.add_dependency(child_table="order_items", parent_table="products")
 
+        # Build DAG directly from inspected table metadata
+        graph = TableDependencyGraph.from_tables(inspected_tables)
         topo_plan = graph.compute_creation_order()
         drop_order = graph.compute_drop_order()
 
         assert topo_plan.ordered_tables.index("users") < topo_plan.ordered_tables.index("orders")
         assert topo_plan.ordered_tables.index("orders") < topo_plan.ordered_tables.index("order_items")
+        assert topo_plan.ordered_tables.index("products") < topo_plan.ordered_tables.index("order_items")
         d3 = round((time.perf_counter() - t0) * 1000.0, 2)
         p3_det = {
             "tables_sorted": len(topo_plan.ordered_tables),
             "create_order": topo_plan.ordered_tables,
             "drop_order": drop_order,
+            "derived_from_live_fks": True,
         }
         p3_dig = hashlib.sha256(json.dumps(p3_det, sort_keys=True).encode()).hexdigest()
         receipts.append(
@@ -221,7 +246,7 @@ class RealMigrationPipelineOrchestrator:
         )
 
         # ==========================================
-        # Phase 4: ChinaDB 方言降级 (DM8, openGauss, Procedural AST)
+        # Phase 4: ChinaDB 方言降级与存储过程/函数实机执行
         # ==========================================
         t0 = time.perf_counter()
         from elmos_sql_dialect.dm8_dialect import lower_dm8_ddl
@@ -232,15 +257,93 @@ class RealMigrationPipelineOrchestrator:
         dm8_sql = lower_dm8_ddl("CREATE TABLE test (id SERIAL PRIMARY KEY, active BOOLEAN);")
         og_sql = lower_opengauss_ddl("CREATE TABLE test (id SERIAL PRIMARY KEY, active BOOLEAN);")
 
-        proc_lowerer = ProceduralAstLowerer()
+        proc_lowerer = ProceduralAstLowerer(target_dialect=Dialect.OPENGAUSS)
+
+        # 1. Stored Function with conditional business calculation
+        oracle_fn = """
+        CREATE OR REPLACE FUNCTION calc_rebate(p_amount IN NUMBER, p_tier IN INTEGER)
+        RETURN NUMBER IS
+            v_rate NUMBER := 0.05;
+        BEGIN
+            IF p_tier > 1 THEN
+                v_rate := 0.10;
+            END IF;
+            RETURN p_amount * v_rate;
+        END;
+        """
+        fn_routine = proc_lowerer.parse_routine(oracle_fn, source_dialect=Dialect.ORACLE)
+        og_fn_sql = proc_lowerer.lower_routine(fn_routine, target_dialect=Dialect.OPENGAUSS)
+        dm8_fn_sql = proc_lowerer.lower_routine(fn_routine, target_dialect=Dialect.DM8)
+
+        # 2. Stored Procedure with table update and parameters
+        oracle_proc = """
+        CREATE OR REPLACE PROCEDURE update_stock(p_prod_id IN INTEGER, p_delta IN INTEGER)
+        IS
+            v_stock INTEGER;
+        BEGIN
+            SELECT stock INTO v_stock FROM inventory WHERE id = p_prod_id;
+            UPDATE inventory SET stock = stock + p_delta WHERE id = p_prod_id;
+        END;
+        """
+        proc_routine = proc_lowerer.parse_routine(oracle_proc, source_dialect=Dialect.ORACLE)
+        og_proc_sql = proc_lowerer.lower_routine(proc_routine, target_dialect=Dialect.OPENGAUSS)
+        dm8_proc_sql = proc_lowerer.lower_routine(proc_routine, target_dialect=Dialect.DM8)
+        pg_fn_sql = proc_lowerer.lower_routine(fn_routine, target_dialect=Dialect.POSTGRES)
+        pg_proc_sql = proc_lowerer.lower_routine(proc_routine, target_dialect=Dialect.POSTGRES)
+
+        # Anonymous block for compatibility
         proc_block = proc_lowerer.parse_body_block("BEGIN NULL; END;", source_dialect=Dialect.ORACLE)
         proc_sql = proc_lowerer.lower_block(proc_block, target_dialect=Dialect.POSTGRES)
+
+        # Physically execute on live target instance (openGauss or PostgreSQL)
+        live_proc_executed = False
+        calc_result = 0.0
+        final_stock = 0
+        tgt_conn = self.target_connection_factory() if self.target_connection_factory else self.connection_factory()
+        tgt_conn.autocommit = True
+        schema_proc = f"{target_schema_prefix}_proc"
+        try:
+            with tgt_conn.cursor() as cur:
+                cur.execute("SELECT version();")
+                ver_str = cur.fetchone()[0].lower()
+                is_og = "opengauss" in ver_str or "gaussdb" in ver_str
+
+                cur.execute(f"DROP SCHEMA IF EXISTS {schema_proc} CASCADE;")
+                cur.execute(f"CREATE SCHEMA {schema_proc};")
+                cur.execute(f"CREATE TABLE {schema_proc}.inventory (id INT PRIMARY KEY, stock INT);")
+                cur.execute(f"INSERT INTO {schema_proc}.inventory VALUES (1, 100);")
+                cur.execute(f"SET search_path TO {schema_proc}, public;")
+
+                exec_fn = og_fn_sql if is_og else pg_fn_sql
+                exec_proc = og_proc_sql if is_og else pg_proc_sql
+
+                cur.execute(exec_fn)
+                cur.execute("SELECT calc_rebate(100.0, 2);")
+                calc_result = float(cur.fetchone()[0])
+                assert calc_result == 10.0
+
+                cur.execute(exec_proc)
+                cur.execute("CALL update_stock(1, 45);")
+                cur.execute(f"SELECT stock FROM {schema_proc}.inventory WHERE id = 1;")
+                final_stock = int(cur.fetchone()[0])
+                assert final_stock == 145
+                live_proc_executed = True
+        finally:
+            with tgt_conn.cursor() as cur:
+                cur.execute(f"DROP SCHEMA IF EXISTS {schema_proc} CASCADE;")
+            tgt_conn.close()
 
         d4 = round((time.perf_counter() - t0) * 1000.0, 2)
         p4_det = {
             "dm8_lowered_sql": dm8_sql,
             "opengauss_lowered_sql": og_sql,
             "procedural_lowered_sql": proc_sql,
+            "og_function_sql": og_fn_sql,
+            "og_procedure_sql": og_proc_sql,
+            "dm8_procedure_sql": dm8_proc_sql,
+            "live_proc_executed": live_proc_executed,
+            "calc_rebate_result": calc_result,
+            "updated_stock_result": final_stock,
         }
         p4_dig = hashlib.sha256(json.dumps(p4_det, sort_keys=True).encode()).hexdigest()
         receipts.append(
@@ -269,36 +372,72 @@ class RealMigrationPipelineOrchestrator:
             with conn.cursor() as cur:
                 cur.execute(f"DROP SCHEMA IF EXISTS {schema_pump_src} CASCADE;")
                 cur.execute(f"CREATE SCHEMA {schema_pump_src};")
-                cur.execute(f"DROP TABLE IF EXISTS {schema_pump_src}.pump_data CASCADE;")
-                cur.execute(f"CREATE TABLE {schema_pump_src}.pump_data (id INT PRIMARY KEY, name VARCHAR(50));")
+                cur.execute(f"""
+                    CREATE TABLE {schema_pump_src}.pump_data (
+                        id INT PRIMARY KEY,
+                        account_no VARCHAR(32) NOT NULL,
+                        balance NUMERIC(14, 2) NOT NULL,
+                        is_active BOOLEAN NOT NULL,
+                        note TEXT,
+                        created_at TIMESTAMPTZ NOT NULL
+                    );
+                """)
+                base_time = datetime.datetime(2026, 1, 1, 12, 0, 0, tzinfo=datetime.timezone.utc)
+                rows = [
+                    (
+                        i,
+                        f"ACC_{i:06d}",
+                        round(i * 12.34, 2),
+                        (i % 2 == 0),
+                        f"Customer note for {i}" if i % 5 != 0 else None,
+                        base_time + datetime.timedelta(minutes=i),
+                    )
+                    for i in range(1, 1001)
+                ]
                 import psycopg2.extras
                 psycopg2.extras.execute_values(
                     cur,
-                    f"INSERT INTO {schema_pump_src}.pump_data (id, name) VALUES %s",
-                    [(i, f"Name_{i}") for i in range(1, 1001)],
+                    f"INSERT INTO {schema_pump_src}.pump_data (id, account_no, balance, is_active, note, created_at) VALUES %s",
+                    rows,
                 )
             with tgt_conn.cursor() as cur:
                 cur.execute(f"DROP SCHEMA IF EXISTS {schema_pump_tgt} CASCADE;")
                 cur.execute(f"CREATE SCHEMA {schema_pump_tgt};")
-                cur.execute(f"DROP TABLE IF EXISTS {schema_pump_tgt}.pump_data CASCADE;")
-                cur.execute(f"CREATE TABLE {schema_pump_tgt}.pump_data (id INT PRIMARY KEY, name VARCHAR(50));")
+                cur.execute(f"""
+                    CREATE TABLE {schema_pump_tgt}.pump_data (
+                        id INT PRIMARY KEY,
+                        account_no VARCHAR(32) NOT NULL,
+                        balance NUMERIC(14, 2) NOT NULL,
+                        is_active BOOLEAN NOT NULL,
+                        note TEXT,
+                        created_at TIMESTAMPTZ NOT NULL
+                    ) WITH (ORIENTATION = ROW);
+                """)
             pump = PhysicalDataPump(
                 source_connection=conn,
                 target_connection=tgt_conn,
                 source_schema=schema_pump_src,
                 target_schema=schema_pump_tgt,
-                chunk_size=200,
+                chunk_size=250,
             )
             pump_stat = pump.pump_table(
                 table_name="pump_data",
                 primary_key_col="id",
             )
             assert pump_stat.total_rows == 1000
+
+            with tgt_conn.cursor() as cur:
+                cur.execute(f"SELECT COUNT(*), SUM(balance) FROM {schema_pump_tgt}.pump_data;")
+                tgt_cnt, tgt_sum = cur.fetchone()
+                assert tgt_cnt == 1000
+
             p5_det = {
                 "rows_pumped": pump_stat.total_rows,
                 "throughput_rows_sec": round(pump_stat.throughput_rows_sec, 2),
                 "chunks": pump_stat.chunks_count,
                 "target_type": target_engine_name,
+                "target_verified_count": tgt_cnt,
+                "target_verified_sum": float(tgt_sum),
             }
         finally:
             with conn.cursor() as cur:
@@ -322,40 +461,102 @@ class RealMigrationPipelineOrchestrator:
         )
 
         # ==========================================
-        # Phase 6: 物理 CDC 增量事件抓取 (WAL Slot)
+        # Phase 6: 物理 CDC 增量事件抓取与目标端实时重放
         # ==========================================
         t0 = time.perf_counter()
         from elmos_sql_dialect.cdc import PostgresLogicalReplicationCdc
-        schema_cdc = f"{target_schema_prefix}_cdc"
+        schema_cdc_src = f"{target_schema_prefix}_cdc_src"
+        schema_cdc_tgt = f"{target_schema_prefix}_cdc_tgt"
         slot_name = f"{target_schema_prefix}_slot"
         conn = self.connection_factory()
         conn.autocommit = True
+        tgt_conn = self.target_connection_factory() if self.target_connection_factory else conn
+        tgt_conn.autocommit = True
         cdc = PostgresLogicalReplicationCdc(connection=conn, slot_name=slot_name)
         cdc.drop_slot_if_exists()
         try:
             with conn.cursor() as cur:
-                cur.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_cdc};")
-                cur.execute(f"DROP TABLE IF EXISTS {schema_cdc}.wal_items CASCADE;")
-                cur.execute(f"CREATE TABLE {schema_cdc}.wal_items (id SERIAL PRIMARY KEY, val VARCHAR(50));")
+                cur.execute(f"DROP SCHEMA IF EXISTS {schema_cdc_src} CASCADE;")
+                cur.execute(f"CREATE SCHEMA {schema_cdc_src};")
+                cur.execute(f"CREATE TABLE {schema_cdc_src}.wal_items (id INT PRIMARY KEY, val VARCHAR(50));")
+
+            with tgt_conn.cursor() as cur:
+                cur.execute(f"DROP SCHEMA IF EXISTS {schema_cdc_tgt} CASCADE;")
+                cur.execute(f"CREATE SCHEMA {schema_cdc_tgt};")
+                cur.execute(f"CREATE TABLE {schema_cdc_tgt}.wal_items (id INT PRIMARY KEY, val VARCHAR(50));")
 
             cdc.create_slot_if_not_exists()
             with conn.cursor() as cur:
-                cur.execute(f"INSERT INTO {schema_cdc}.wal_items (val) VALUES ('A'), ('B');")
-                cur.execute(f"UPDATE {schema_cdc}.wal_items SET val = 'A_MOD' WHERE val = 'A';")
-                cur.execute(f"DELETE FROM {schema_cdc}.wal_items WHERE val = 'B';")
+                cur.execute(f"INSERT INTO {schema_cdc_src}.wal_items (id, val) VALUES (1, 'Initial_A'), (2, 'Initial_B'), (3, 'Initial_C');")
+                cur.execute(f"UPDATE {schema_cdc_src}.wal_items SET val = 'Updated_A' WHERE id = 1;")
+                cur.execute(f"DELETE FROM {schema_cdc_src}.wal_items WHERE id = 2;")
+                cur.execute(f"INSERT INTO {schema_cdc_src}.wal_items (id, val) VALUES (4, 'Initial_D');")
 
             events = cdc.fetch_changes(up_to_n_changes=100)
             item_events = [e for e in events if e.table == "wal_items"]
-            assert len(item_events) >= 4
+            assert len(item_events) >= 5
+
+            with tgt_conn.cursor() as cur:
+                cur.execute("SELECT version();")
+                ver_str = cur.fetchone()[0].lower()
+                is_og_target = "opengauss" in ver_str or "gaussdb" in ver_str
+
+            # Replay CDC stream events onto target database
+            for ev in item_events:
+                with tgt_conn.cursor() as cur:
+                    if ev.op.value == "INSERT" and ev.after:
+                        row_id = ev.after["id"]
+                        row_val = ev.after.get("val")
+                        if is_og_target:
+                            cur.execute(
+                                f"INSERT INTO {schema_cdc_tgt}.wal_items (id, val) VALUES (%s, %s) "
+                                f"ON DUPLICATE KEY UPDATE val = VALUES(val);",
+                                (row_id, row_val),
+                            )
+                        else:
+                            cur.execute(
+                                f"INSERT INTO {schema_cdc_tgt}.wal_items (id, val) VALUES (%s, %s) "
+                                f"ON CONFLICT (id) DO UPDATE SET val = EXCLUDED.val;",
+                                (row_id, row_val),
+                            )
+                    elif ev.op.value == "UPDATE" and ev.after:
+                        row_id = ev.after.get("id", ev.primary_key)
+                        row_val = ev.after.get("val")
+                        cur.execute(
+                            f"UPDATE {schema_cdc_tgt}.wal_items SET val = %s WHERE id = %s;",
+                            (row_val, row_id),
+                        )
+                    elif ev.op.value == "DELETE":
+                        del_id = ev.before.get("id") if ev.before else ev.primary_key
+                        cur.execute(
+                            f"DELETE FROM {schema_cdc_tgt}.wal_items WHERE id = %s;",
+                            (del_id,),
+                        )
+
+            # Assert target database state is 100% equivalent to source database state
+            with conn.cursor() as s_cur, tgt_conn.cursor() as t_cur:
+                s_cur.execute(f"SELECT id, val FROM {schema_cdc_src}.wal_items ORDER BY id;")
+                s_state = s_cur.fetchall()
+                t_cur.execute(f"SELECT id, val FROM {schema_cdc_tgt}.wal_items ORDER BY id;")
+                t_state = t_cur.fetchall()
+                assert s_state == t_state, f"CDC Target state {t_state} != Source {s_state}"
+
             p6_det = {
                 "slot_name": slot_name,
                 "captured_events_count": len(item_events),
                 "op_types": [e.op.value for e in item_events],
+                "target_replayed": True,
+                "replicated_row_count": len(t_state),
+                "replicated_ids": [r[0] for r in t_state],
             }
         finally:
             cdc.drop_slot_if_exists()
             with conn.cursor() as cur:
-                cur.execute(f"DROP SCHEMA IF EXISTS {schema_cdc} CASCADE;")
+                cur.execute(f"DROP SCHEMA IF EXISTS {schema_cdc_src} CASCADE;")
+            if tgt_conn is not conn:
+                with tgt_conn.cursor() as cur:
+                    cur.execute(f"DROP SCHEMA IF EXISTS {schema_cdc_tgt} CASCADE;")
+                tgt_conn.close()
             conn.close()
         d6 = round((time.perf_counter() - t0) * 1000.0, 2)
         p6_dig = hashlib.sha256(json.dumps(p6_det, sort_keys=True).encode()).hexdigest()
@@ -371,7 +572,7 @@ class RealMigrationPipelineOrchestrator:
         )
 
         # ==========================================
-        # Phase 7: 异构数据分块比对校验 (Data Comparator)
+        # Phase 7: 异构数据分块比对校验 (Rust Data Comparator)
         # ==========================================
         t0 = time.perf_counter()
         from elmos_sql_dialect.cdc import DataComparator
@@ -385,7 +586,6 @@ class RealMigrationPipelineOrchestrator:
             with conn.cursor() as cur:
                 cur.execute(f"DROP SCHEMA IF EXISTS {schema_cmp_src} CASCADE;")
                 cur.execute(f"CREATE SCHEMA {schema_cmp_src};")
-                cur.execute(f"DROP TABLE IF EXISTS {schema_cmp_src}.cmp_tab CASCADE;")
                 cur.execute(f"CREATE TABLE {schema_cmp_src}.cmp_tab (id INT PRIMARY KEY, num INT);")
                 import psycopg2.extras
                 psycopg2.extras.execute_values(
@@ -396,7 +596,6 @@ class RealMigrationPipelineOrchestrator:
             with tgt_conn.cursor() as cur:
                 cur.execute(f"DROP SCHEMA IF EXISTS {schema_cmp_tgt} CASCADE;")
                 cur.execute(f"CREATE SCHEMA {schema_cmp_tgt};")
-                cur.execute(f"DROP TABLE IF EXISTS {schema_cmp_tgt}.cmp_tab CASCADE;")
                 cur.execute(f"CREATE TABLE {schema_cmp_tgt}.cmp_tab (id INT PRIMARY KEY, num INT);")
                 import psycopg2.extras
                 psycopg2.extras.execute_values(
@@ -448,7 +647,7 @@ class RealMigrationPipelineOrchestrator:
         )
 
         # ==========================================
-        # Phase 8: 真实物理并发压测 (Physical Stress Engine)
+        # Phase 8: 真实物理并发压测与资金守恒不变量审计
         # ==========================================
         t0 = time.perf_counter()
         from elmos_sql_dialect.datapump import PhysicalStressEngine
@@ -463,10 +662,23 @@ class RealMigrationPipelineOrchestrator:
             max_retries=4,
         )
         try:
+            # 20 accounts * 10000.00 = 200,000.00 expected initial sum
             stress_engine.setup_stress_table(schema=schema_stress, table_name="accounts", num_accounts=20)
+            initial_conserved, initial_sum, _ = stress_engine.audit_money_conservation(
+                schema=schema_stress, table_name="accounts", expected_total=200000.00
+            )
+            assert initial_conserved is True
+
             stress_report = stress_engine.run_benchmark(schema=schema_stress, table_name="accounts", num_accounts=20)
             assert stress_report.successful_transactions > 0
             assert stress_report.tps > 2.0
+
+            # Strict Money Conservation Audit after 160 concurrent transactions
+            final_conserved, final_sum, drift = stress_engine.audit_money_conservation(
+                schema=schema_stress, table_name="accounts", expected_total=200000.00
+            )
+            assert final_conserved is True, f"Money leaked! Drift={drift}, Initial={initial_sum}, Final={final_sum}"
+
             p8_det = {
                 "target_database": stress_target_name,
                 "workers": stress_report.concurrency_workers,
@@ -475,6 +687,10 @@ class RealMigrationPipelineOrchestrator:
                 "tps": stress_report.tps,
                 "p50_ms": stress_report.p50_latency_ms,
                 "p95_ms": stress_report.p95_latency_ms,
+                "money_conservation_invariant_passed": True,
+                "initial_balance_total": initial_sum,
+                "final_balance_total": final_sum,
+                "balance_drift": drift,
             }
         finally:
             stress_engine.teardown_stress_table(schema=schema_stress, table_name="accounts")

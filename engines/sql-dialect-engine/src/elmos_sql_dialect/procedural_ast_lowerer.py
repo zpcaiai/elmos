@@ -1005,9 +1005,11 @@ class ProceduralAstLowerer:
     def lower_routine(self, routine: RoutineDefinition, target_dialect: Dialect | str | None = None) -> str:
         """Lower RoutineDefinition AST into target SQL dialect string."""
         td = Dialect(target_dialect.lower()) if target_dialect else self.target_dialect
-        if td == Dialect.POSTGRES:
+        if td == Dialect.OPENGAUSS:
+            return self._emit_opengauss_routine(routine)
+        elif td == Dialect.POSTGRES:
             return self._emit_postgres_routine(routine)
-        elif td == Dialect.ORACLE:
+        elif td in (Dialect.ORACLE, Dialect.DM8):
             return self._emit_oracle_routine(routine)
         elif td == Dialect.TSQL:
             return self._emit_tsql_routine(routine)
@@ -1031,9 +1033,11 @@ class ProceduralAstLowerer:
     def lower_trigger(self, trigger: TriggerDefinition, target_dialect: Dialect | str | None = None) -> str:
         """Lower TriggerDefinition AST into target SQL dialect string."""
         td = Dialect(target_dialect.lower()) if target_dialect else self.target_dialect
-        if td == Dialect.POSTGRES:
+        if td == Dialect.OPENGAUSS:
+            return self._emit_opengauss_trigger(trigger)
+        elif td == Dialect.POSTGRES:
             return self._emit_postgres_trigger(trigger)
-        elif td == Dialect.ORACLE:
+        elif td in (Dialect.ORACLE, Dialect.DM8):
             return self._emit_oracle_trigger(trigger)
         elif td == Dialect.TSQL:
             return self._emit_tsql_trigger(trigger)
@@ -1044,9 +1048,9 @@ class ProceduralAstLowerer:
     def lower_package(self, package: PackageDefinition, target_dialect: Dialect | str | None = None) -> str:
         """Lower PackageDefinition AST into target SQL dialect string."""
         td = Dialect(target_dialect.lower()) if target_dialect else self.target_dialect
-        if td == Dialect.POSTGRES:
+        if td in (Dialect.POSTGRES, Dialect.OPENGAUSS):
             return self._emit_postgres_package(package)
-        elif td == Dialect.ORACLE:
+        elif td in (Dialect.ORACLE, Dialect.DM8):
             return self._emit_oracle_package(package)
         elif td == Dialect.TSQL:
             return self._emit_tsql_package(package)
@@ -1299,6 +1303,89 @@ class ProceduralAstLowerer:
             lines.append("\n".join(init_lines))
             lines.append(f"SELECT {pkg.name}._init();")
 
+        return "\n".join(lines)
+
+    # -------------------------------------------------------------------------
+    # openGauss Emitters
+    # -------------------------------------------------------------------------
+    def _emit_opengauss_routine(self, r: RoutineDefinition) -> str:
+        lines: list[str] = []
+        kind_str = "PROCEDURE" if r.kind == RoutineKind.PROCEDURE else "FUNCTION"
+        replace_str = "OR REPLACE " if r.or_replace else ""
+        obj_name = f"{r.schema}.{r.name}" if r.schema else r.name
+
+        param_strs: list[str] = []
+        for p in r.parameters:
+            mode_str = f"{p.mode.value} " if p.mode != ParamMode.IN else ""
+            default_str = f" DEFAULT {p.default_expr}" if p.default_expr else ""
+            param_strs.append(f"{p.name} {mode_str}{self._map_type(p.data_type, Dialect.OPENGAUSS)}{default_str}")
+
+        lines.append(f"CREATE {replace_str}{kind_str} {obj_name}({', '.join(param_strs)})")
+        if r.kind == RoutineKind.FUNCTION and r.return_type:
+            lines.append(f"RETURN {self._map_type(r.return_type, Dialect.OPENGAUSS)}")
+
+        lines.append("AS")
+
+        if r.body.declarations:
+            lines.append("DECLARE")
+            for d in r.body.declarations:
+                if isinstance(d, VariableDecl):
+                    c_str = "CONSTANT " if d.is_constant else ""
+                    def_str = f" := {self._normalize_expr(d.default_expr, Dialect.OPENGAUSS)}" if d.default_expr else ""
+                    lines.append(f"    {d.name} {c_str}{self._map_type(d.data_type, Dialect.OPENGAUSS)}{def_str};")
+                elif isinstance(d, CursorDecl):
+                    lines.append(f"    CURSOR {d.name} IS {d.query_sql};")
+
+        lines.append("BEGIN")
+        for s in r.body.statements:
+            lines.append(self._emit_oracle_stmt(s, indent=4))
+
+        if r.body.exception_section:
+            lines.append("EXCEPTION")
+            for h in r.body.exception_section.handlers:
+                exc_list = " OR ".join(self._map_exception_names(h.exception_names, Dialect.OPENGAUSS))
+                lines.append(f"    WHEN {exc_list} THEN")
+                for s in h.statements:
+                    lines.append(self._emit_oracle_stmt(s, indent=8))
+            if r.body.exception_section.others_handler:
+                lines.append("    WHEN OTHERS THEN")
+                for s in r.body.exception_section.others_handler:
+                    lines.append(self._emit_oracle_stmt(s, indent=8))
+
+        lines.append("END;")
+        return "\n".join(lines)
+
+    def _emit_opengauss_trigger(self, t: TriggerDefinition) -> str:
+        func_name = f"fn_{t.name}"
+        lines: list[str] = []
+
+        lines.append(f"CREATE OR REPLACE FUNCTION {func_name}()")
+        lines.append("RETURNS trigger")
+        lines.append("LANGUAGE plpgsql")
+        lines.append("AS $$")
+        if t.body.declarations:
+            lines.append("DECLARE")
+            for d in t.body.declarations:
+                if isinstance(d, VariableDecl):
+                    lines.append(f"    {d.name} {self._map_type(d.data_type, Dialect.OPENGAUSS)};")
+        lines.append("BEGIN")
+        for s in t.body.statements:
+            lines.append(self._emit_postgres_stmt(s, indent=4, is_trigger=True))
+        lines.append("    RETURN NEW;")
+        lines.append("END;")
+        lines.append("$$;")
+        lines.append("")
+
+        events_str = " OR ".join(t.events)
+        row_str = "FOR EACH ROW" if t.for_each_row else "FOR EACH STATEMENT"
+        when_str = f"WHEN ({t.when_condition}) " if t.when_condition else ""
+        if t.or_replace:
+            lines.append(f"DROP TRIGGER IF EXISTS {t.name} ON {t.table_name};")
+        trigger_sql = (
+            f"CREATE TRIGGER {t.name} {t.timing} {events_str} ON {t.table_name} "
+            f"{row_str} {when_str}EXECUTE PROCEDURE {func_name}();"
+        )
+        lines.append(trigger_sql)
         return "\n".join(lines)
 
     # -------------------------------------------------------------------------
@@ -1888,63 +1975,89 @@ class ProceduralAstLowerer:
     def _map_type(self, type_str: str, target_dialect: Dialect) -> str:
         t_up = type_str.strip().upper()
         if "%TYPE" in t_up or "%ROWTYPE" in t_up:
-            if target_dialect == Dialect.POSTGRES:
+            if target_dialect in (Dialect.POSTGRES, Dialect.OPENGAUSS):
                 return type_str.replace(":", "")
-            elif target_dialect == Dialect.ORACLE:
+            elif target_dialect in (Dialect.ORACLE, Dialect.DM8):
                 return type_str
             return "VARCHAR(255)"
 
         mapping: dict[str, dict[Dialect, str]] = {
             "INT": {
                 Dialect.POSTGRES: "INTEGER",
+                Dialect.OPENGAUSS: "INTEGER",
+                Dialect.DM8: "INT",
                 Dialect.ORACLE: "NUMBER(10)",
                 Dialect.TSQL: "INT",
                 Dialect.MYSQL: "INT",
             },
             "INTEGER": {
                 Dialect.POSTGRES: "INTEGER",
+                Dialect.OPENGAUSS: "INTEGER",
+                Dialect.DM8: "INT",
                 Dialect.ORACLE: "NUMBER(10)",
                 Dialect.TSQL: "INT",
                 Dialect.MYSQL: "INT",
             },
             "BIGINT": {
                 Dialect.POSTGRES: "BIGINT",
+                Dialect.OPENGAUSS: "BIGINT",
+                Dialect.DM8: "BIGINT",
                 Dialect.ORACLE: "NUMBER(19)",
                 Dialect.TSQL: "BIGINT",
                 Dialect.MYSQL: "BIGINT",
             },
             "VARCHAR": {
                 Dialect.POSTGRES: "VARCHAR(255)",
+                Dialect.OPENGAUSS: "VARCHAR(255)",
+                Dialect.DM8: "VARCHAR(255)",
+                Dialect.ORACLE: "VARCHAR2(255)",
+                Dialect.TSQL: "NVARCHAR(255)",
+                Dialect.MYSQL: "VARCHAR(255)",
+            },
+            "VARCHAR2": {
+                Dialect.POSTGRES: "VARCHAR(255)",
+                Dialect.OPENGAUSS: "VARCHAR(255)",
+                Dialect.DM8: "VARCHAR2(255)",
                 Dialect.ORACLE: "VARCHAR2(255)",
                 Dialect.TSQL: "NVARCHAR(255)",
                 Dialect.MYSQL: "VARCHAR(255)",
             },
             "TEXT": {
                 Dialect.POSTGRES: "TEXT",
+                Dialect.OPENGAUSS: "TEXT",
+                Dialect.DM8: "CLOB",
                 Dialect.ORACLE: "CLOB",
                 Dialect.TSQL: "NVARCHAR(MAX)",
                 Dialect.MYSQL: "LONGTEXT",
             },
             "DECIMAL": {
                 Dialect.POSTGRES: "NUMERIC",
+                Dialect.OPENGAUSS: "NUMERIC",
+                Dialect.DM8: "DECIMAL",
                 Dialect.ORACLE: "NUMBER",
                 Dialect.TSQL: "DECIMAL",
                 Dialect.MYSQL: "DECIMAL",
             },
             "NUMBER": {
                 Dialect.POSTGRES: "NUMERIC",
+                Dialect.OPENGAUSS: "NUMERIC",
+                Dialect.DM8: "DECIMAL",
                 Dialect.ORACLE: "NUMBER",
                 Dialect.TSQL: "NUMERIC",
                 Dialect.MYSQL: "DECIMAL",
             },
             "BOOLEAN": {
                 Dialect.POSTGRES: "BOOLEAN",
+                Dialect.OPENGAUSS: "BOOLEAN",
+                Dialect.DM8: "BIT",
                 Dialect.ORACLE: "NUMBER(1)",
                 Dialect.TSQL: "BIT",
                 Dialect.MYSQL: "TINYINT(1)",
             },
             "TIMESTAMP": {
                 Dialect.POSTGRES: "TIMESTAMP",
+                Dialect.OPENGAUSS: "TIMESTAMP",
+                Dialect.DM8: "TIMESTAMP",
                 Dialect.ORACLE: "TIMESTAMP",
                 Dialect.TSQL: "DATETIME2",
                 Dialect.MYSQL: "DATETIME",
@@ -1963,7 +2076,7 @@ class ProceduralAstLowerer:
         results: list[str] = []
         for n in names:
             nu = n.upper()
-            if target_dialect == Dialect.POSTGRES:
+            if target_dialect in (Dialect.POSTGRES, Dialect.OPENGAUSS):
                 if nu == "NO_DATA_FOUND":
                     results.append("NO_DATA_FOUND")
                 elif nu == "TOO_MANY_ROWS":
@@ -1972,7 +2085,7 @@ class ProceduralAstLowerer:
                     results.append("UNIQUE_VIOLATION")
                 else:
                     results.append(nu)
-            elif target_dialect == Dialect.ORACLE:
+            elif target_dialect in (Dialect.ORACLE, Dialect.DM8):
                 results.append(nu)
             else:
                 results.append("SQLEXCEPTION")
@@ -1982,7 +2095,7 @@ class ProceduralAstLowerer:
         if not expr:
             return ""
         s = expr
-        if target_dialect == Dialect.POSTGRES:
+        if target_dialect in (Dialect.POSTGRES, Dialect.OPENGAUSS):
             if is_trigger:
                 s = re.sub(r":([Nn][Ee][Ww])\.", r"\1.", s)
                 s = re.sub(r":([Oo][Ll][Dd])\.", r"\1.", s)
@@ -2010,13 +2123,13 @@ class ProceduralAstLowerer:
             s = re.sub(r"\bNVL\(", "ISNULL(", s, flags=re.IGNORECASE)
             s = re.sub(r"\bSYSDATE\b", "GETDATE()", s, flags=re.IGNORECASE)
             s = re.sub(r"\bSYSTIMESTAMP\b", "SYSDATETIME()", s, flags=re.IGNORECASE)
-        elif target_dialect == Dialect.ORACLE:
+        elif target_dialect in (Dialect.ORACLE, Dialect.DM8):
             if is_trigger:
                 s = re.sub(r"(?<!:)\b(NEW|OLD)\.", r":\1.", s)
         return s
 
     def _normalize_pseudo_record(self, target: str, dialect: Dialect) -> str:
-        if dialect == Dialect.ORACLE:
+        if dialect in (Dialect.ORACLE, Dialect.DM8):
             if not target.startswith(":"):
                 return ":" + target
             return target
