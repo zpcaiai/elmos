@@ -11,6 +11,7 @@ import pytest
 try:
     import psycopg2
     import psycopg2.extras
+
     _HAS_PSYCOPG2 = True
 except ImportError:
     psycopg2 = None
@@ -58,10 +59,7 @@ def test_real_live_data_comparator_mismatch_pinpointing():
         """)
 
         # Insert 600 rows into source
-        rows = [
-            (i, f"Customer_{i}", i * 1.5, "COMPLETED")
-            for i in range(1, 601)
-        ]
+        rows = [(i, f"Customer_{i}", i * 1.5, "COMPLETED") for i in range(1, 601)]
         psycopg2.extras.execute_values(
             cur,
             f"INSERT INTO {schema_name}.orders_source (order_id, customer, amount, status) VALUES %s",
@@ -72,11 +70,7 @@ def test_real_live_data_comparator_mismatch_pinpointing():
         # 1. order_id = 250 is MODIFIED (amount differs)
         # 2. order_id = 599 is MISSING_IN_TARGET (omitted)
         # 3. order_id = 999 is EXTRA_IN_TARGET (added only to target)
-        target_rows = [
-            (r[0], r[1], r[2] if r[0] != 250 else 9999.99, r[3])
-            for r in rows
-            if r[0] != 599
-        ]
+        target_rows = [(r[0], r[1], r[2] if r[0] != 250 else 9999.99, r[3]) for r in rows if r[0] != 599]
         target_rows.append((999, "Extra_Customer", 123.45, "PENDING"))
 
         psycopg2.extras.execute_values(

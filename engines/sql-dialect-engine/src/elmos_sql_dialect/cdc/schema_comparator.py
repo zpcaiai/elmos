@@ -464,5 +464,3 @@ class SchemaComparator:
             target_nullable=tgt.nullable,
             details=f"Incompatible types: source is {src_type.value}, target is {tgt_type.value}.",
         )
-
-

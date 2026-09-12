@@ -59,10 +59,7 @@ def _recommended_action(reason_code: str) -> str:
             "or register an explicit target DBMS dynamic execution wrapper."
         )
     if "AUTONOMOUS_TRANSACTION" in reason_code:
-        return (
-            "Decouple autonomous transaction logging into a separate connection pool "
-            "or outbox queue table."
-        )
+        return "Decouple autonomous transaction logging into a separate connection pool or outbox queue table."
     if "PACKAGE" in reason_code:
         return (
             "Decompose PL/SQL package body into individual stored procedures and functions, "

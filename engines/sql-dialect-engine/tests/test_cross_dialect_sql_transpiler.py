@@ -12,8 +12,6 @@ Validates:
 
 from __future__ import annotations
 
-import pytest
-
 from elmos_sql_dialect.engine import translate_query, translate_sql, translate_upsert
 
 
@@ -119,8 +117,7 @@ class TestCrossDialectUpsertTranspiler:
 
     def test_mysql_to_postgres_upsert(self) -> None:
         my_sql = (
-            "INSERT INTO accounts (id, balance) VALUES (101, 5000.0) "
-            "ON DUPLICATE KEY UPDATE balance = VALUES(balance);"
+            "INSERT INTO accounts (id, balance) VALUES (101, 5000.0) ON DUPLICATE KEY UPDATE balance = VALUES(balance);"
         )
         res = translate_upsert(my_sql, "mysql", "postgres")
         assert res["status"] == "PASSED"

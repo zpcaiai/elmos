@@ -345,7 +345,7 @@ class SqlTranspilerGateway:
             target_key = _CHINADB_LOWERER_MAP.get(tgt, tgt)
             try:
                 target_sql = lower_chinadb_sql(normalized_sql, source_dialect=src, target_id=target_key, kind="auto")
-                receipt_payload = {
+                receipt_payload: dict[str, Any] = {
                     "sourceProfile": source_profile,
                     "targetProfile": target_profile,
                     "sourceDigest": f"sha256:{hashlib.sha256(normalized_sql.encode('utf-8')).hexdigest()}",

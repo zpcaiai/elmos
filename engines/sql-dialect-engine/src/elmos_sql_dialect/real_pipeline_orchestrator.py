@@ -115,6 +115,7 @@ class RealMigrationPipelineOrchestrator:
         t0 = time.perf_counter()
         from elmos_sql_dialect.models import Dialect
         from elmos_sql_dialect.parser import parse_create_table
+
         sample_ddl = """
             CREATE TABLE customers (
                 customer_id INT PRIMARY KEY,
@@ -146,6 +147,7 @@ class RealMigrationPipelineOrchestrator:
         # ==========================================
         t0 = time.perf_counter()
         from elmos_sql_dialect.inspectors import PostgresInspector
+
         schema_inspect = f"{target_schema_prefix}_inspect"
         conn = self.connection_factory()
         conn.autocommit = True
@@ -339,6 +341,7 @@ class RealMigrationPipelineOrchestrator:
             "opengauss_lowered_sql": og_sql,
             "procedural_lowered_sql": proc_sql,
             "og_function_sql": og_fn_sql,
+            "dm8_function_sql": dm8_fn_sql,
             "og_procedure_sql": og_proc_sql,
             "dm8_procedure_sql": dm8_proc_sql,
             "live_proc_executed": live_proc_executed,
@@ -362,6 +365,7 @@ class RealMigrationPipelineOrchestrator:
         # ==========================================
         t0 = time.perf_counter()
         from elmos_sql_dialect.datapump import PhysicalDataPump
+
         schema_pump_src = f"{target_schema_prefix}_pump_src"
         schema_pump_tgt = f"{target_schema_prefix}_pump_tgt"
         conn = self.connection_factory()
@@ -382,7 +386,7 @@ class RealMigrationPipelineOrchestrator:
                         created_at TIMESTAMPTZ NOT NULL
                     );
                 """)
-                base_time = datetime.datetime(2026, 1, 1, 12, 0, 0, tzinfo=datetime.timezone.utc)
+                base_time = datetime.datetime(2026, 1, 1, 12, 0, 0, tzinfo=datetime.UTC)
                 rows = [
                     (
                         i,
@@ -395,9 +399,11 @@ class RealMigrationPipelineOrchestrator:
                     for i in range(1, 1001)
                 ]
                 import psycopg2.extras
+
                 psycopg2.extras.execute_values(
                     cur,
-                    f"INSERT INTO {schema_pump_src}.pump_data (id, account_no, balance, is_active, note, created_at) VALUES %s",
+                    f"INSERT INTO {schema_pump_src}.pump_data "
+                    "(id, account_no, balance, is_active, note, created_at) VALUES %s",
                     rows,
                 )
             with tgt_conn.cursor() as cur:
@@ -465,6 +471,7 @@ class RealMigrationPipelineOrchestrator:
         # ==========================================
         t0 = time.perf_counter()
         from elmos_sql_dialect.cdc import PostgresLogicalReplicationCdc
+
         schema_cdc_src = f"{target_schema_prefix}_cdc_src"
         schema_cdc_tgt = f"{target_schema_prefix}_cdc_tgt"
         slot_name = f"{target_schema_prefix}_slot"
@@ -487,7 +494,10 @@ class RealMigrationPipelineOrchestrator:
 
             cdc.create_slot_if_not_exists()
             with conn.cursor() as cur:
-                cur.execute(f"INSERT INTO {schema_cdc_src}.wal_items (id, val) VALUES (1, 'Initial_A'), (2, 'Initial_B'), (3, 'Initial_C');")
+                cur.execute(
+                    f"INSERT INTO {schema_cdc_src}.wal_items (id, val) VALUES "
+                    "(1, 'Initial_A'), (2, 'Initial_B'), (3, 'Initial_C');"
+                )
                 cur.execute(f"UPDATE {schema_cdc_src}.wal_items SET val = 'Updated_A' WHERE id = 1;")
                 cur.execute(f"DELETE FROM {schema_cdc_src}.wal_items WHERE id = 2;")
                 cur.execute(f"INSERT INTO {schema_cdc_src}.wal_items (id, val) VALUES (4, 'Initial_D');")
@@ -576,6 +586,7 @@ class RealMigrationPipelineOrchestrator:
         # ==========================================
         t0 = time.perf_counter()
         from elmos_sql_dialect.cdc import DataComparator
+
         schema_cmp_src = f"{target_schema_prefix}_cmp_src"
         schema_cmp_tgt = f"{target_schema_prefix}_cmp_tgt"
         conn = self.connection_factory()
@@ -588,6 +599,7 @@ class RealMigrationPipelineOrchestrator:
                 cur.execute(f"CREATE SCHEMA {schema_cmp_src};")
                 cur.execute(f"CREATE TABLE {schema_cmp_src}.cmp_tab (id INT PRIMARY KEY, num INT);")
                 import psycopg2.extras
+
                 psycopg2.extras.execute_values(
                     cur,
                     f"INSERT INTO {schema_cmp_src}.cmp_tab (id, num) VALUES %s",
@@ -598,6 +610,7 @@ class RealMigrationPipelineOrchestrator:
                 cur.execute(f"CREATE SCHEMA {schema_cmp_tgt};")
                 cur.execute(f"CREATE TABLE {schema_cmp_tgt}.cmp_tab (id INT PRIMARY KEY, num INT);")
                 import psycopg2.extras
+
                 psycopg2.extras.execute_values(
                     cur,
                     f"INSERT INTO {schema_cmp_tgt}.cmp_tab (id, num) VALUES %s",
@@ -651,6 +664,7 @@ class RealMigrationPipelineOrchestrator:
         # ==========================================
         t0 = time.perf_counter()
         from elmos_sql_dialect.datapump import PhysicalStressEngine
+
         schema_stress = f"{target_schema_prefix}_stress"
         stress_target_factory = self.target_connection_factory or self.connection_factory
         stress_target_name = "openGauss-Target" if self.target_connection_factory else "PostgreSQL-16-Local"
@@ -719,6 +733,7 @@ class RealMigrationPipelineOrchestrator:
         # ==========================================
         t0 = time.perf_counter()
         from elmos_sql_dialect.self_healing_engine import ClosedLoopSelfHealingEngine
+
         schema_heal = f"{target_schema_prefix}_heal"
         conn = self.connection_factory()
         conn.autocommit = True

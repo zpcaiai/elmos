@@ -116,6 +116,7 @@ def _run_translate(args: argparse.Namespace) -> int:
                 "--compatibility-mode from that target's allow-list"
             )
         from .chinadb import translate_chinadb_sql
+
         report = translate_chinadb_sql(
             sql,
             args.source_dialect,
@@ -127,14 +128,12 @@ def _run_translate(args: argparse.Namespace) -> int:
     else:
         if args.compatibility_mode:
             raise RouteError(
-                "COMPATIBILITY_MODE_REQUIRES_CHINADB_TARGET: --compatibility-mode is only valid "
-                "with --chinadb-target"
+                "COMPATIBILITY_MODE_REQUIRES_CHINADB_TARGET: --compatibility-mode is only valid with --chinadb-target"
             )
         if args.target_dialect is None:
-            raise RouteError(
-                "TARGET_DIALECT_REQUIRED: provide --target-dialect or --chinadb-target"
-            )
+            raise RouteError("TARGET_DIALECT_REQUIRED: provide --target-dialect or --chinadb-target")
         from .engine import translate_sql
+
         report = translate_sql(
             sql,
             args.source_dialect,

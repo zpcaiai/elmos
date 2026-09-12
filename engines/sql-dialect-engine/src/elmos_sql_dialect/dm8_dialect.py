@@ -285,7 +285,6 @@ class DM8ASTTransformer:
         out = self.generator.generate(transformed)
         return f"{out};" if has_semicolon else out
 
-
     def wrap_with_rownum(self, query: str, limit: int, offset: int = 0) -> str:
         """Wrap query using DM8 / Oracle ROWNUM pagination pattern."""
         clean = query.strip().rstrip(";")
@@ -416,4 +415,3 @@ def lower_dm8_sequence(sql: str, source_dialect: str = "postgres") -> str:
 def lower_dm8_upsert(sql: str, source_dialect: str = "postgres") -> str:
     """Lower upsert statements to DM8 MERGE INTO."""
     return _DEFAULT_LOWERER.lower_upsert(sql, source_dialect=source_dialect)
-

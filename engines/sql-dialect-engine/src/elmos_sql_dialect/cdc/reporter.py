@@ -75,15 +75,9 @@ class CdcReconciliationReport:
                 "alignmentRate": alignment_rate,
                 "eventStreamConsistent": all_events_consistent,
             },
-            "schemaDiscrepancies": [
-                s.to_dict() for s in self.schema_diffs if not s.is_identical
-            ],
-            "snapshotDiscrepancies": [
-                d.to_dict() for d in self.snapshot_diffs if d.status != "ALIGNED"
-            ],
-            "eventDiscrepancies": [
-                e.to_dict() for e in self.event_diffs if e.status != "CONSISTENT"
-            ],
+            "schemaDiscrepancies": [s.to_dict() for s in self.schema_diffs if not s.is_identical],
+            "snapshotDiscrepancies": [d.to_dict() for d in self.snapshot_diffs if d.status != "ALIGNED"],
+            "eventDiscrepancies": [e.to_dict() for e in self.event_diffs if e.status != "CONSISTENT"],
         }
 
         # Calculate reproducible hash digest over the canonical JSON

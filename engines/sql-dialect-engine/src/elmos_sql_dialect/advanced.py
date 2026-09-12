@@ -586,9 +586,7 @@ def _body_statements(body: exp.Expression | None, source_dialect: Dialect) -> li
             current = []
             if chunk:
                 try:
-                    parsed_statement = sqlglot.parse_one(
-                        chunk, read=sqlglot_read_dialect(source_dialect)
-                    )
+                    parsed_statement = sqlglot.parse_one(chunk, read=sqlglot_read_dialect(source_dialect))
                     if isinstance(parsed_statement, exp.Expression):
                         statements.append(parsed_statement)
                     else:
@@ -599,9 +597,7 @@ def _body_statements(body: exp.Expression | None, source_dialect: Dialect) -> li
         chunk = " ".join(current).rstrip(";").strip()
         if chunk:
             try:
-                parsed_statement = sqlglot.parse_one(
-                    chunk, read=sqlglot_read_dialect(source_dialect)
-                )
+                parsed_statement = sqlglot.parse_one(chunk, read=sqlglot_read_dialect(source_dialect))
                 if isinstance(parsed_statement, exp.Expression):
                     statements.append(parsed_statement)
                 else:
@@ -688,9 +684,7 @@ def parse_procedure(
             assignments.append(RoutineAssignment(target_name, value))
         elif isinstance(item, exp.Rollback):
             sp_id = item.args.get("savepoint")
-            sp_name = str(
-                sp_id.this if isinstance(sp_id, exp.Expression) else (sp_id or "")
-            )
+            sp_name = str(sp_id.this if isinstance(sp_id, exp.Expression) else (sp_id or ""))
             if not sp_name:
                 tokens = item.sql().split()
                 sp_name = tokens[-1].rstrip(";")

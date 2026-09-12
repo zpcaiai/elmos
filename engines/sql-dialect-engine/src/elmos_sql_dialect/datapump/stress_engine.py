@@ -108,6 +108,7 @@ class PhysicalStressEngine:
                 # Pre-populate accounts
                 rows = [(i, 10000.00, 1) for i in range(1, num_accounts + 1)]
                 import psycopg2.extras
+
                 psycopg2.extras.execute_values(
                     cur,
                     f"INSERT INTO {schema}.{table_name} (account_id, balance, version) VALUES %s",
@@ -143,6 +144,7 @@ class PhysicalStressEngine:
             for i in range(self.tx_per_worker):
                 # Pick two random accounts to transfer money
                 import random
+
                 acc_from = (worker_id + i) % num_accounts + 1
                 acc_to = (worker_id + i + 1) % num_accounts + 1
                 if acc_from == acc_to:
@@ -161,9 +163,7 @@ class PhysicalStressEngine:
                         conn.autocommit = False
                         with conn.cursor() as cur:
                             # Order lock acquisition to minimize, but test, row lock contention
-                            first_acc, second_acc = (
-                                (acc_from, acc_to) if acc_from < acc_to else (acc_to, acc_from)
-                            )
+                            first_acc, second_acc = (acc_from, acc_to) if acc_from < acc_to else (acc_to, acc_from)
 
                             cur.execute(
                                 f"SELECT balance FROM {schema}.{table_name} WHERE account_id = %s FOR UPDATE;",
@@ -270,4 +270,3 @@ class PhysicalStressEngine:
                 return is_conserved, actual_total, diff
         finally:
             conn.close()
-

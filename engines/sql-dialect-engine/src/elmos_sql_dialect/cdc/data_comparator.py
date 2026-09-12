@@ -71,10 +71,7 @@ def hash_rows(rows: list[dict[str, Any]], columns: list[str] | None = None, algo
     if not rows:
         return hash_normalized_string("§EMPTY§", algorithm)
 
-    row_hashes = [
-        hash_normalized_string(normalize_row_dict(r, columns), algorithm)
-        for r in rows
-    ]
+    row_hashes = [hash_normalized_string(normalize_row_dict(r, columns), algorithm) for r in rows]
     # Aggregate chunk hash deterministically
     combined = "\n".join(row_hashes)
     return hash_normalized_string(combined, algorithm)
@@ -424,9 +421,10 @@ class DataComparator:
         if not self.rust_binary_path or not os.path.isfile(self.rust_binary_path):
             return None
 
-        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as s_file, tempfile.NamedTemporaryFile(
-            "w", suffix=".json", delete=False
-        ) as t_file:
+        with (
+            tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as s_file,
+            tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as t_file,
+        ):
             json.dump(chunk_src_rows, s_file, default=str)
             json.dump(chunk_tgt_rows, t_file, default=str)
             s_path = s_file.name

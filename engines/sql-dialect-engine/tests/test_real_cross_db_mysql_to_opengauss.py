@@ -19,6 +19,7 @@ from pathlib import Path
 try:
     import psycopg2
     import psycopg2.extras
+
     _HAS_PSYCOPG2 = True
 except ImportError:
     psycopg2 = None
@@ -26,6 +27,7 @@ except ImportError:
 
 try:
     import pymysql
+
     _HAS_PYMYSQL = True
 except ImportError:
     pymysql = None

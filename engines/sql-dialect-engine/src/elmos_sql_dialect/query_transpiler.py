@@ -17,9 +17,8 @@ Key AST Transformations:
 from __future__ import annotations
 
 import hashlib
-import json
 import re
-from typing import Any
+from typing import Any, cast
 
 from sqlglot import exp, parse_one
 from sqlglot.optimizer.simplify import simplify
@@ -97,10 +96,10 @@ class QueryTranspiler:
         write_dialect = DIALECT_MAP.get(tgt_norm, "postgres")
 
         try:
-            ast = parse_one(normalized_sql, read=read_dialect)
+            ast = cast(exp.Expression, parse_one(normalized_sql, read=read_dialect))
         except Exception:
             try:
-                ast = parse_one(normalized_sql)
+                ast = cast(exp.Expression, parse_one(normalized_sql))
             except Exception as exc:  # noqa: BLE001
                 return {
                     "schemaVersion": "1.0",
@@ -146,7 +145,8 @@ class QueryTranspiler:
         # Clean residual whitespace or formatting anomalies
         emitted = self._post_process_sql(emitted, tgt_norm)
 
-        # Step 8: If target is a specialized ChinaDB dialect, pass through lower_chinadb_sql for target-specific refinements
+        # Step 8: Apply target-specific refinements for specialized ChinaDB
+        # dialects without masking an unsupported or failed lowering.
         if tgt_norm in _CHINADB_LOWERER_MAP:
             target_key = _CHINADB_LOWERER_MAP.get(tgt_norm, tgt_norm)
             try:
@@ -157,8 +157,15 @@ class QueryTranspiler:
                     kind="query",
                     mode=mode or "PG",
                 )
-            except Exception:
-                pass  # Fallback to emitted standard SQL
+            except Exception as exc:  # noqa: BLE001
+                return {
+                    "schemaVersion": "1.0",
+                    "kind": "elmos.sql-query-translation",
+                    "status": "BLOCKED",
+                    "reasonCode": "TARGET_QUERY_LOWERING_FAILED",
+                    "reason": f"Could not lower query for target dialect {tgt_norm}: {exc}",
+                    "emitted": None,
+                }
 
         receipt = _sha256(f"{src_norm}:{tgt_norm}:{normalized_sql}:{emitted}")
         return {
@@ -207,7 +214,11 @@ class QueryTranspiler:
             for j in transformed.args.get("joins", []):
                 tbl_name = j.this.name if isinstance(j.this, exp.Table) else ""
                 alias_name = j.this.alias if isinstance(j.this, exp.Table) else ""
-                matched_key = tbl_name if tbl_name in outer_join_tables else (alias_name if alias_name in outer_join_tables else None)
+                matched_key = (
+                    tbl_name
+                    if tbl_name in outer_join_tables
+                    else (alias_name if alias_name in outer_join_tables else None)
+                )
                 if matched_key and matched_key in join_conditions:
                     cond = join_conditions[matched_key]
                     new_join = exp.Join(this=j.this, kind="LEFT", on=cond)
@@ -226,7 +237,7 @@ class QueryTranspiler:
 
         def _check_rownum(node: exp.Expression) -> exp.Expression:
             nonlocal extracted_limit
-            if isinstance(node, (exp.LTE, exp.LT)):
+            if isinstance(node, exp.LTE | exp.LT):
                 left = node.this
                 right = node.expression
                 if isinstance(left, exp.Column) and left.name.upper() == "ROWNUM":
@@ -251,7 +262,7 @@ class QueryTranspiler:
 
         def _xform(node: exp.Expression) -> exp.Expression:
             # 1. Null handling (NVL, IFNULL, ISNULL)
-            if isinstance(node, (exp.Anonymous, exp.Func)):
+            if isinstance(node, exp.Anonymous | exp.Func):
                 name = node.name.upper()
                 if name in ("NVL", "IFNULL", "ISNULL"):
                     args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
@@ -263,7 +274,8 @@ class QueryTranspiler:
                         return exp.Anonymous(this="ISNULL", expressions=args)
                     return exp.Anonymous(this="COALESCE", expressions=args)
 
-                # 2. NVL2(expr, not_null_val, null_val) -> CASE WHEN expr IS NOT NULL THEN not_null_val ELSE null_val END
+                # 2. NVL2(expr, not_null_val, null_val) -> CASE WHEN expr IS
+                # NOT NULL THEN not_null_val ELSE null_val END
                 if name == "NVL2":
                     args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
                     if len(args) == 3:
@@ -278,8 +290,8 @@ class QueryTranspiler:
                         whens = []
                         i = 1
                         while i + 1 < len(args):
-                            cond = exp.EQ(this=base_expr.copy(), expression=args[i].copy())
-                            whens.append(exp.If(this=cond, true=args[i + 1].copy()))
+                            decode_condition = exp.EQ(this=base_expr.copy(), expression=args[i].copy())
+                            whens.append(exp.If(this=decode_condition, true=args[i + 1].copy()))
                             i += 2
                         default_expr = args[i].copy() if i < len(args) else exp.null()
                         return exp.Case(ifs=whens, default=default_expr)
@@ -336,8 +348,8 @@ class QueryTranspiler:
         """Removes residual TRUE predicates from WHERE clause resulting from extracted conditions."""
         try:
             ast = simplify(ast)
-        except Exception:
-            pass
+        except Exception:  # noqa: BLE001
+            return ast
 
         where = ast.args.get("where")
         if where:

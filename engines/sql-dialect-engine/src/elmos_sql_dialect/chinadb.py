@@ -316,10 +316,7 @@ def translate_chinadb_ddl(
         )
     target = chinadb_target_by_id(target_id)
     if target is None:
-        raise RouteError(
-            f"CHINADB_TARGET_UNKNOWN: {target_id!r} is not one of "
-            f"{[item.id for item in CHINADB_TARGETS]}"
-        )
+        raise RouteError(f"CHINADB_TARGET_UNKNOWN: {target_id!r} is not one of {[item.id for item in CHINADB_TARGETS]}")
     mapped = target.dialect_for(compatibility_mode)
     if mapped is None:
         allowed = ", ".join(sorted(target.mode_dialects))
@@ -333,10 +330,7 @@ def translate_chinadb_ddl(
             "targetDialect": None,
             "namespaceProfile": None,
             "reasonCode": "COMPATIBILITY_MODE_NOT_MAPPED",
-            "reason": (
-                f"Compatibility mode {compatibility_mode!r} is not on the {target_id} allow-list "
-                f"({allowed})."
-            ),
+            "reason": (f"Compatibility mode {compatibility_mode!r} is not on the {target_id} allow-list ({allowed})."),
             "emitted": None,
             "validation": None,
             **_honesty_fields(
@@ -594,7 +588,7 @@ def _get_target_lowerer(target_id: str) -> Any:
         if transpiler_src.exists() and str(transpiler_src) not in sys.path:
             sys.path.insert(0, str(transpiler_src))
         try:
-            from elmos_sql_transpiler.chinadb_target_lowers import get_chinadb_lowerer
+            from elmos_sql_transpiler.chinadb_target_lowers import get_chinadb_lowerer  # type: ignore[import-not-found]
 
             return get_chinadb_lowerer(target_key)
         except Exception:
@@ -856,6 +850,3 @@ __all__ = [
     "translate_to_tidb",
     "validate_chinadb_registry",
 ]
-
-
-

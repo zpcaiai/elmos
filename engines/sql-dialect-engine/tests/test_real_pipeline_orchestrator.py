@@ -13,6 +13,7 @@ import pytest
 
 try:
     import psycopg2
+
     _HAS_PSYCOPG2 = True
 except ImportError:
     psycopg2 = None

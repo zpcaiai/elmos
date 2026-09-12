@@ -14,6 +14,7 @@ from pathlib import Path
 try:
     import psycopg2
     import psycopg2.extras
+
     _HAS_PSYCOPG2 = True
 except ImportError:
     psycopg2 = None
@@ -54,9 +55,7 @@ def test_real_cross_database_migration_and_rust_reconciliation():
     pg_conn = psycopg2.connect(dbname="postgres", user="stephen", host="localhost", port=5432)
     pg_conn.autocommit = True
 
-    og_conn = psycopg2.connect(
-        dbname="omm", user="gaussdb", password="Enmotech@123", host="localhost", port=54321
-    )
+    og_conn = psycopg2.connect(dbname="omm", user="gaussdb", password="Enmotech@123", host="localhost", port=54321)
     og_conn.autocommit = True
 
     # Rust binary path
@@ -83,10 +82,7 @@ def test_real_cross_database_migration_and_rust_reconciliation():
             """)
 
             # Insert 500 rows of source data in PG
-            rows = [
-                (i, f"ACC_NO_{i:05d}", round(1000.0 + i * 2.5, 2), (i % 5 != 0))
-                for i in range(1, 501)
-            ]
+            rows = [(i, f"ACC_NO_{i:05d}", round(1000.0 + i * 2.5, 2), (i % 5 != 0)) for i in range(1, 501)]
             psycopg2.extras.execute_values(
                 cur,
                 f"INSERT INTO {src_schema}.{test_table} (account_id, account_no, balance, is_active) VALUES %s;",

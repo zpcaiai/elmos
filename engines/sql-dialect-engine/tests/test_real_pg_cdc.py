@@ -11,6 +11,7 @@ import pytest
 
 try:
     import psycopg2
+
     _HAS_PSYCOPG2 = True
 except ImportError:
     psycopg2 = None
@@ -106,8 +107,7 @@ def test_real_postgres_logical_cdc_capture():
             cur.execute("SELECT id, sku, stock, price FROM elmos_cdc_test.products ORDER BY id;")
             db_rows = cur.fetchall()
             final_target_state = [
-                {"id": str(r[0]), "sku": r[1], "stock": str(r[2]), "price": str(r[3])}
-                for r in db_rows
+                {"id": str(r[0]), "sku": r[1], "stock": str(r[2]), "price": str(r[3])} for r in db_rows
             ]
 
         # Feed the real captured events into EventComparator

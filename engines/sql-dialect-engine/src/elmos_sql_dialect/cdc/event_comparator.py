@@ -134,9 +134,11 @@ class EventComparator:
             return None
 
         events_json = [ev.to_dict() for ev in events]
-        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as e_file, tempfile.NamedTemporaryFile(
-            "w", suffix=".json", delete=False
-        ) as i_file, tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as t_file:
+        with (
+            tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as e_file,
+            tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as i_file,
+            tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as t_file,
+        ):
             json.dump(events_json, e_file, default=str)
             json.dump(initial_state, i_file, default=str)
             json.dump(final_target_state, t_file, default=str)
@@ -218,9 +220,7 @@ class EventComparator:
                 return rust_res
 
         # 1. State simulation table indexed by PK
-        current_state: dict[Any, dict[str, Any]] = {
-            r[self.pk_col]: dict(r) for r in initial_state if self.pk_col in r
-        }
+        current_state: dict[Any, dict[str, Any]] = {r[self.pk_col]: dict(r) for r in initial_state if self.pk_col in r}
 
         # 2. Check stream ordering and duplicates
         seen_event_ids: set[str] = set()
@@ -281,9 +281,7 @@ class EventComparator:
                 current_state.pop(pk, None)
 
         # 3. Compare replayed expected state with final target state
-        target_state_by_pk = {
-            r[self.pk_col]: r for r in final_target_state if self.pk_col in r
-        }
+        target_state_by_pk = {r[self.pk_col]: r for r in final_target_state if self.pk_col in r}
 
         all_pks = set(current_state.keys()) | set(target_state_by_pk.keys())
         mismatched_pks: list[Any] = []

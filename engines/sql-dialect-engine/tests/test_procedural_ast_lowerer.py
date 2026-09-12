@@ -293,6 +293,3 @@ def test_cursor_notfound_and_trigger_pseudo_records():
     assert ":NEW" not in lowered_pg
     assert "COALESCE(" in lowered_pg
     assert "CURRENT_TIMESTAMP" in lowered_pg
-
-
-

@@ -43,15 +43,80 @@ class ProceduralSqlLexer:
     """Tokenizer for Procedural SQL dialects."""
 
     RESERVED = {
-        "CREATE", "OR", "REPLACE", "PROCEDURE", "FUNCTION", "TRIGGER", "PACKAGE", "BODY",
-        "IS", "AS", "BEGIN", "END", "DECLARE", "IF", "THEN", "ELSIF", "ELSE", "LOOP",
-        "WHILE", "FOR", "IN", "REVERSE", "EXIT", "WHEN", "RETURN", "CURSOR", "OPEN",
-        "FETCH", "INTO", "CLOSE", "EXCEPTION", "OTHERS", "RAISE", "SELECT", "FROM",
-        "WHERE", "GROUP", "BY", "HAVING", "ORDER", "LIMIT", "INSERT", "UPDATE", "DELETE",
-        "MERGE", "COMMIT", "ROLLBACK", "SAVEPOINT", "PRAGMA", "AUTONOMOUS_TRANSACTION",
-        "CONSTANT", "DEFAULT", "EXECUTE", "IMMEDIATE", "USING", "BEFORE", "AFTER",
-        "INSTEAD", "OF", "ROW", "EACH", "SET", "OUT", "INOUT", "NOCOPY", "TYPE",
-        "RECORD", "TABLE", "VARRAY", "TRUE", "FALSE", "NULL", "AND", "NOT",
+        "CREATE",
+        "OR",
+        "REPLACE",
+        "PROCEDURE",
+        "FUNCTION",
+        "TRIGGER",
+        "PACKAGE",
+        "BODY",
+        "IS",
+        "AS",
+        "BEGIN",
+        "END",
+        "DECLARE",
+        "IF",
+        "THEN",
+        "ELSIF",
+        "ELSE",
+        "LOOP",
+        "WHILE",
+        "FOR",
+        "IN",
+        "REVERSE",
+        "EXIT",
+        "WHEN",
+        "RETURN",
+        "CURSOR",
+        "OPEN",
+        "FETCH",
+        "INTO",
+        "CLOSE",
+        "EXCEPTION",
+        "OTHERS",
+        "RAISE",
+        "SELECT",
+        "FROM",
+        "WHERE",
+        "GROUP",
+        "BY",
+        "HAVING",
+        "ORDER",
+        "LIMIT",
+        "INSERT",
+        "UPDATE",
+        "DELETE",
+        "MERGE",
+        "COMMIT",
+        "ROLLBACK",
+        "SAVEPOINT",
+        "PRAGMA",
+        "AUTONOMOUS_TRANSACTION",
+        "CONSTANT",
+        "DEFAULT",
+        "EXECUTE",
+        "IMMEDIATE",
+        "USING",
+        "BEFORE",
+        "AFTER",
+        "INSTEAD",
+        "OF",
+        "ROW",
+        "EACH",
+        "SET",
+        "OUT",
+        "INOUT",
+        "NOCOPY",
+        "TYPE",
+        "RECORD",
+        "TABLE",
+        "VARRAY",
+        "TRUE",
+        "FALSE",
+        "NULL",
+        "AND",
+        "NOT",
     }
 
     MULTI_OPS = {":=", "=>", "||", "..", ">=", "<=", "<>", "!=", "+=", "-="}
@@ -304,12 +369,14 @@ class ProceduralSqlParser:
                         d_tokens.append(self._consume().value)
                     default_expr = " ".join(d_tokens)
 
-                params.append({
-                    "name": p_name,
-                    "data_type": p_type,
-                    "mode": p_mode,
-                    "default_expr": default_expr,
-                })
+                params.append(
+                    {
+                        "name": p_name,
+                        "data_type": p_type,
+                        "mode": p_mode,
+                        "default_expr": default_expr,
+                    }
+                )
 
                 if self._curr().value == ",":
                     self._consume(",")
@@ -342,12 +409,14 @@ class ProceduralSqlParser:
                     while self.idx < self.total and self._curr().value not in (",", "AS", "IS", "BEGIN"):
                         d_tokens.append(self._consume().value)
                     default_expr = " ".join(d_tokens)
-                params.append({
-                    "name": p_name,
-                    "data_type": p_type,
-                    "mode": p_mode,
-                    "default_expr": default_expr,
-                })
+                params.append(
+                    {
+                        "name": p_name,
+                        "data_type": p_type,
+                        "mode": p_mode,
+                        "default_expr": default_expr,
+                    }
+                )
                 if self._curr().value == ",":
                     self._consume(",")
 
@@ -415,11 +484,13 @@ class ProceduralSqlParser:
                     q_tokens.append(self._consume().value)
                 if self._curr().value == ";":
                     self._consume(";")
-                declarations.append({
-                    "kind": "CURSOR",
-                    "name": cur_name,
-                    "query_sql": " ".join(q_tokens),
-                })
+                declarations.append(
+                    {
+                        "kind": "CURSOR",
+                        "name": cur_name,
+                        "query_sql": " ".join(q_tokens),
+                    }
+                )
                 continue
 
             # Variable declaration: name [CONSTANT] type [DEFAULT expr | := expr];
@@ -455,13 +526,15 @@ class ProceduralSqlParser:
             if self._curr().value == ";":
                 self._consume(";")
 
-            declarations.append({
-                "kind": "VARIABLE",
-                "name": v_name,
-                "data_type": v_type,
-                "is_constant": is_const,
-                "default_expr": v_default,
-            })
+            declarations.append(
+                {
+                    "kind": "VARIABLE",
+                    "name": v_name,
+                    "data_type": v_type,
+                    "is_constant": is_const,
+                    "default_expr": v_default,
+                }
+            )
 
         # Body: BEGIN ... [EXCEPTION ...] END
         if self._curr().is_keyword("BEGIN"):
@@ -511,10 +584,12 @@ class ProceduralSqlParser:
                             self._consume(";")
                         if stmt_toks:
                             exc_stmts.append(" ".join(stmt_toks))
-                    exception_handlers.append({
-                        "exceptions": exc_names,
-                        "statements": exc_stmts,
-                    })
+                    exception_handlers.append(
+                        {
+                            "exceptions": exc_names,
+                            "statements": exc_stmts,
+                        }
+                    )
                 else:
                     self.idx += 1
                 continue
@@ -545,9 +620,11 @@ class ProceduralSqlParser:
                     break
 
             if stmt_toks:
-                statements.append({
-                    "raw_text": " ".join(stmt_toks),
-                })
+                statements.append(
+                    {
+                        "raw_text": " ".join(stmt_toks),
+                    }
+                )
 
         return {
             "name": name,
