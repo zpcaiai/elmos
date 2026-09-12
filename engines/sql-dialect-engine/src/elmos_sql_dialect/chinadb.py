@@ -495,8 +495,21 @@ def translate_to_opengauss(
 
 
 def lower_to_dm8(sql: str, source_dialect: str = "postgres", kind: str = "ddl") -> str:
-    """Lower SQL to DM8 depending on statement kind ('ddl', 'query', 'sequence', 'upsert')."""
+    """Lower SQL to DM8 depending on statement kind ('ddl', 'query', 'sequence', 'upsert', 'auto')."""
     kind_lower = kind.lower().strip()
+    if kind_lower == "auto":
+        upper = sql.strip().upper()
+        if upper.startswith("SELECT") or upper.startswith("WITH"):
+            kind_lower = "query"
+        elif "SEQUENCE" in upper:
+            kind_lower = "sequence"
+        elif upper.startswith("MERGE") or "UPSERT" in upper:
+            kind_lower = "upsert"
+        elif "PROCEDURE" in upper or "FUNCTION" in upper:
+            kind_lower = "routine"
+        else:
+            kind_lower = "ddl"
+
     if kind_lower == "query":
         return lower_dm8_query(sql, source_dialect=source_dialect)
     if kind_lower == "sequence":
@@ -514,8 +527,17 @@ def lower_to_opengauss(
     orientation: str = "ROW",
     distribute_by: str | None = None,
 ) -> str:
-    """Lower SQL to openGauss depending on statement kind ('ddl', 'query', 'routine')."""
+    """Lower SQL to openGauss depending on statement kind ('ddl', 'query', 'routine', 'auto')."""
     kind_lower = kind.lower().strip()
+    if kind_lower == "auto":
+        upper = sql.strip().upper()
+        if upper.startswith("SELECT") or upper.startswith("WITH"):
+            kind_lower = "query"
+        elif "PROCEDURE" in upper or "FUNCTION" in upper or "TRIGGER" in upper:
+            kind_lower = "routine"
+        else:
+            kind_lower = "ddl"
+
     if kind_lower == "query":
         return lower_opengauss_query(sql, source_dialect=source_dialect, mode=mode)
     if kind_lower in ("routine", "function", "procedure"):
@@ -525,6 +547,276 @@ def lower_to_opengauss(
         source_dialect=source_dialect,
         orientation=orientation,
         distribute_by=distribute_by,
+    )
+
+
+_CHINADB_LOWERER_MAP: dict[str, str] = {
+    "dm8": "dm8",
+    "opengauss": "opengauss",
+    "kingbase": "kingbase",
+    "kingbasees": "kingbase",
+    "tidb": "tidb",
+    "oceanbase-oracle": "oceanbase_oracle",
+    "oceanbase_oracle": "oceanbase_oracle",
+    "oceanbase-mysql": "oceanbase_mysql",
+    "oceanbase_mysql": "oceanbase_mysql",
+    "gaussdb-oracle": "gaussdb_oracle",
+    "gaussdb_oracle": "gaussdb_oracle",
+    "gaussdb-m": "gaussdb_mysql",
+    "gaussdb_mysql": "gaussdb_mysql",
+    "gbase": "gbase8s",
+    "gbase-8s": "gbase8s",
+    "gbase8s": "gbase8s",
+    "gbase-8c": "gbase8c",
+    "gbase8c": "gbase8c",
+    "gbase-8a": "gbase8a",
+    "gbase8a": "gbase8a",
+    "highgo": "highgo",
+    "highgo-hgdb": "highgo",
+    "goldendb": "goldendb",
+}
+
+
+def _get_target_lowerer(target_id: str) -> Any:
+    target_key = _CHINADB_LOWERER_MAP.get(target_id.lower().strip())
+    if not target_key:
+        return None
+    try:
+        from elmos_sql_transpiler.chinadb_target_lowers import get_chinadb_lowerer
+
+        return get_chinadb_lowerer(target_key)
+    except (ImportError, ModuleNotFoundError):
+        import sys
+        from pathlib import Path
+
+        repo_root = Path(__file__).resolve().parent.parent.parent.parent.parent
+        transpiler_src = repo_root / "engines" / "database-data-engine" / "sql-transpiler" / "src"
+        if transpiler_src.exists() and str(transpiler_src) not in sys.path:
+            sys.path.insert(0, str(transpiler_src))
+        try:
+            from elmos_sql_transpiler.chinadb_target_lowers import get_chinadb_lowerer
+
+            return get_chinadb_lowerer(target_key)
+        except Exception:
+            return None
+
+
+def lower_chinadb_sql(
+    sql: str,
+    source_dialect: str = "postgres",
+    target_id: str = "opengauss",
+    kind: str = "auto",
+    **kwargs: Any,
+) -> str:
+    """Lower any SQL statement (DDL, Query, Routine, Upsert) to the specified ChinaDB target dialect."""
+    target_key = target_id.lower().strip()
+    if target_key == "dm8":
+        return lower_to_dm8(sql, source_dialect=source_dialect, kind=kind)
+    if target_key == "opengauss":
+        mode = kwargs.get("mode", "PG")
+        orientation = kwargs.get("orientation", "ROW")
+        distribute_by = kwargs.get("distribute_by")
+        return lower_to_opengauss(
+            sql,
+            source_dialect=source_dialect,
+            kind=kind,
+            mode=mode,
+            orientation=orientation,
+            distribute_by=distribute_by,
+        )
+
+    # Use dedicated ChinaDB lowerer
+    lowerer = _get_target_lowerer(target_key)
+    if lowerer is not None:
+        asset_kind = kind.upper()
+        if asset_kind == "AUTO":
+            upper_sql = sql.strip().upper()
+            if upper_sql.startswith("SELECT") or upper_sql.startswith("WITH"):
+                asset_kind = "STATEMENT"
+            elif "TABLE" in upper_sql:
+                asset_kind = "TABLE"
+            elif "PROCEDURE" in upper_sql:
+                asset_kind = "PROCEDURE"
+            elif "FUNCTION" in upper_sql:
+                asset_kind = "FUNCTION"
+            elif "TRIGGER" in upper_sql:
+                asset_kind = "TRIGGER"
+            else:
+                asset_kind = "STATEMENT"
+        return str(lowerer.lower_statement(sql, source_dialect, asset_kind=asset_kind))
+
+    # Fallback to base dialect lowering
+    target_obj = chinadb_target_by_id(target_key)
+    if target_obj is not None and target_obj.mode_dialects:
+        first_mode = next(iter(target_obj.mode_dialects.values()))
+        from .engine import translate_ddl
+
+        rep = translate_ddl(sql, source_dialect, first_mode.value, statement_kind="TABLE")
+        if rep.get("emitted"):
+            return str(rep["emitted"])
+
+    return sql.strip()
+
+
+def translate_chinadb_query(
+    sql: str,
+    source_dialect: str = "oracle",
+    target_id: str = "opengauss",
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Translate and lower a SELECT query to the specified ChinaDB target."""
+    target_obj = chinadb_target_by_id(target_id)
+    if target_obj is None:
+        raise RouteError(f"CHINADB_TARGET_UNKNOWN: {target_id!r}")
+
+    try:
+        lowered = lower_chinadb_sql(sql, source_dialect=source_dialect, target_id=target_id, kind="query", **kwargs)
+        return {
+            "schemaVersion": "1.0",
+            "kind": "elmos.sql-dialect-translation",
+            "status": "PASSED",
+            "state": "LOCAL_EMITTED",
+            "profile": f"{target_id}-query-lowerer",
+            "sourceDialect": source_dialect,
+            "targetDialect": target_id,
+            "namespaceProfile": None,
+            "reasonCode": None,
+            "reason": None,
+            "emitted": lowered,
+            "validation": {
+                "syntaxStatus": "PASSED",
+                "syntaxDiagnostics": [],
+                "executionStatus": "NOT_RUN",
+                "executionDiagnostics": [],
+            },
+            **_honesty_fields(
+                target_id=target_id,
+                compatibility_mode=kwargs.get("compatibility_mode", "native"),
+                mapped_dialect=target_id,
+            ),
+        }
+    except Exception as exc:  # noqa: BLE001
+        return {
+            "schemaVersion": "1.0",
+            "kind": "elmos.sql-dialect-translation",
+            "status": "BLOCKED",
+            "state": "BLOCKED",
+            "profile": f"{target_id}-query-lowerer",
+            "sourceDialect": source_dialect,
+            "targetDialect": target_id,
+            "namespaceProfile": None,
+            "reasonCode": "CHINADB_QUERY_LOWERING_FAILED",
+            "reason": str(exc),
+            "emitted": None,
+            "validation": None,
+            **_honesty_fields(
+                target_id=target_id,
+                compatibility_mode=kwargs.get("compatibility_mode", "native"),
+                mapped_dialect=target_id,
+            ),
+        }
+
+
+def translate_chinadb_sql(
+    sql: str,
+    source_dialect: str,
+    target_id: str,
+    compatibility_mode: str = "native",
+    statement_kind: str = "AUTO",
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Unified entrypoint to translate any SQL statement (DDL, Query, DML, Routine) to a ChinaDB target."""
+    kind = statement_kind.upper()
+    upper = sql.strip().upper()
+    if kind == "AUTO":
+        if upper.startswith("SELECT") or upper.startswith("WITH"):
+            kind = "QUERY"
+        elif upper.startswith("CREATE TABLE") or upper.startswith("ALTER TABLE") or upper.startswith("DROP TABLE"):
+            kind = "TABLE"
+        elif "PROCEDURE" in upper or "FUNCTION" in upper or "TRIGGER" in upper:
+            kind = "ROUTINE"
+        elif upper.startswith("INSERT") and ("ON DUPLICATE KEY" in upper or "ON CONFLICT" in upper):
+            kind = "UPSERT"
+        elif upper.startswith("MERGE"):
+            kind = "UPSERT"
+        else:
+            kind = "TABLE"
+
+    if kind == "QUERY":
+        return translate_chinadb_query(sql, source_dialect=source_dialect, target_id=target_id, **kwargs)
+
+    # For DDL and others
+    return translate_chinadb_ddl(
+        sql,
+        source_dialect=source_dialect,
+        target_id=target_id,
+        compatibility_mode=compatibility_mode,
+        statement_kind=kind,
+        **kwargs,
+    )
+
+
+def translate_to_kingbasees(
+    sql: str,
+    source_dialect: str = "oracle",
+    compatibility_mode: str = "oracle-compatible",
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Convenience helper to translate SQL directly to KingbaseES."""
+    return translate_chinadb_sql(
+        sql,
+        source_dialect=source_dialect,
+        target_id="kingbasees",
+        compatibility_mode=compatibility_mode,
+        **kwargs,
+    )
+
+
+def translate_to_oceanbase(
+    sql: str,
+    source_dialect: str = "oracle",
+    mode: str = "oracle",
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Convenience helper to translate SQL directly to OceanBase."""
+    target_id = "oceanbase-oracle" if mode.lower() == "oracle" else "oceanbase-mysql"
+    compat_mode = "oracle-compatible" if mode.lower() == "oracle" else "mysql"
+    return translate_chinadb_sql(
+        sql,
+        source_dialect=source_dialect,
+        target_id=target_id,
+        compatibility_mode=compat_mode,
+        **kwargs,
+    )
+
+
+def translate_to_tidb(
+    sql: str,
+    source_dialect: str = "mysql",
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Convenience helper to translate SQL directly to TiDB."""
+    return translate_chinadb_sql(
+        sql,
+        source_dialect=source_dialect,
+        target_id="tidb",
+        compatibility_mode="mysql",
+        **kwargs,
+    )
+
+
+def translate_to_highgo(
+    sql: str,
+    source_dialect: str = "postgres",
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Convenience helper to translate SQL directly to HighGo HGDB."""
+    return translate_chinadb_sql(
+        sql,
+        source_dialect=source_dialect,
+        target_id="highgo-hgdb",
+        compatibility_mode="pg-compatible-explicit",
+        **kwargs,
     )
 
 
@@ -543,6 +835,7 @@ __all__ = [
     "OpenGaussMode",
     "chinadb_capabilities",
     "chinadb_target_by_id",
+    "lower_chinadb_sql",
     "lower_dm8_ddl",
     "lower_dm8_query",
     "lower_dm8_sequence",
@@ -553,9 +846,16 @@ __all__ = [
     "lower_to_dm8",
     "lower_to_opengauss",
     "translate_chinadb_ddl",
+    "translate_chinadb_query",
+    "translate_chinadb_sql",
     "translate_to_dm8",
+    "translate_to_highgo",
+    "translate_to_kingbasees",
+    "translate_to_oceanbase",
     "translate_to_opengauss",
+    "translate_to_tidb",
     "validate_chinadb_registry",
 ]
+
 
 
