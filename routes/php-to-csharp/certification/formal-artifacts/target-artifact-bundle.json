@@ -1,0 +1,25 @@
+{
+  "route_key": "php-to-csharp",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 217,
+      "corpus": "development",
+      "path": "certification/artifacts/development/Migrated.cs",
+      "sha256": "sha256:4d22a0c91408120544659138cff182b0d1f6b1d1f4ac6d2ab0cc005102e764e6"
+    },
+    {
+      "bytes": 350,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/Migrated.cs",
+      "sha256": "sha256:65195e1c2e2de57bfe8ee217f63c65277374fbb5877099739496e517eefc772a"
+    },
+    {
+      "bytes": 213,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/Migrated.cs",
+      "sha256": "sha256:25aade3ef9af00addd201b25de9486244a12cf616f024c917d4a534987b44279"
+    }
+  ]
+}

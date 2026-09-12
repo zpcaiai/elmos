@@ -48,47 +48,6 @@
       "release_eligible": true
     },
     {
-      "route_id": "postgresql-17.5-to-dm8-8.1.3.140",
-      "pack_key": "postgresql-to-dm8",
-      "source": {
-        "engine": "postgresql",
-        "versions": [
-          "17.5"
-        ],
-        "edition": "community",
-        "dialect": "postgresql",
-        "driver_versions": [
-          "psql:17.5"
-        ],
-        "charset": "UTF8",
-        "collation": "C",
-        "timezone": "UTC",
-        "extensions": []
-      },
-      "target": {
-        "engine": "dm8",
-        "versions": [
-          "8.1.3.140"
-        ],
-        "edition": "enterprise",
-        "dialect": "dm8-oracle-compatible",
-        "driver_versions": [
-          "dm-jdbc:8.1.3.140"
-        ],
-        "charset": "UTF-8",
-        "collation": "BINARY",
-        "timezone": "Asia/Shanghai",
-        "extensions": []
-      },
-      "scope": [
-        "parameterized-select",
-        "ordering",
-        "pagination"
-      ],
-      "status": "certified",
-      "release_eligible": true
-    },
-    {
       "route_id": "postgresql-17.5-to-postgresql-17.5-neon",
       "pack_key": "postgresql-17-5-self-service-billing",
       "source": {

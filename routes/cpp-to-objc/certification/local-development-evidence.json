@@ -1,8 +1,8 @@
 {
   "artifact_manifest": {
-    "bytes": 4382,
+    "bytes": 4406,
     "path": "certification/artifacts/development/artifact-manifest.json",
-    "sha256": "sha256:331680762d715cc8cc9ae2c5c8bba913ce7335e8ac89b4ef045dc86844cd31b3"
+    "sha256": "sha256:4c3e308414a1235aff50927d30c9cb1ba266a79cfd8861e359242ae6ee69fd17"
   },
   "artifact_root": "certification/artifacts/development",
   "authorization": "local-engineering-validation",
@@ -34,31 +34,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:74a85b810e9aa841bd58c347afcce8afe660c4fca432788280ad7793aa7b0bad",
+    "artifact_sha256": "sha256:7542b3732487489526f008217c45f8193748aec94e26433bd69ddf299efb8855",
     "assumption_boundary": "typed-pure-function-v1 / L0 / canonical-finite-no-error-input-domain",
-    "formal_input_digest": "sha256:9ad7b926660892f8ee99264add21c095002ee37dbec6c0c6232558ac14d40164",
+    "formal_input_digest": "sha256:f51041c71c68178c9b979c5209b746e670cad7c3fe1145a37621e1dcfe7cdab3",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:9ad7b926660892f8ee99264add21c095002ee37dbec6c0c6232558ac14d40164",
+    "formal_input_sha256": "sha256:f51041c71c68178c9b979c5209b746e670cad7c3fe1145a37621e1dcfe7cdab3",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:9ad7b926660892f8ee99264add21c095002ee37dbec6c0c6232558ac14d40164",
+        "formal_input_sha256": "sha256:f51041c71c68178c9b979c5209b746e670cad7c3fe1145a37621e1dcfe7cdab3",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:f71c776dbdd2785afc7938172323e017f42f840357e4dd92837e4c3215b580dc",
+        "sha256": "sha256:d528decaa93413943ba868bce969d538567d3641db27c955739ad02490d61058",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:9ad7b926660892f8ee99264add21c095002ee37dbec6c0c6232558ac14d40164",
+        "formal_input_sha256": "sha256:f51041c71c68178c9b979c5209b746e670cad7c3fe1145a37621e1dcfe7cdab3",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:f830246bc1e8abdf43de1fd33717d5093057bd34934d49bbe6481070ea2bf27b",
+        "sha256": "sha256:c3af34b9309823a8259b80fa5d3cab4f35acf6f25e4fe37b9f0c1235bb83feba",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:f71c776dbdd2785afc7938172323e017f42f840357e4dd92837e4c3215b580dc",
+    "solver_input_digest": "sha256:d528decaa93413943ba868bce969d538567d3641db27c955739ad02490d61058",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -102,7 +102,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:b24373cd721f934b3cfbaabb9c2adb12c06a5471565d96c215fd3dbe2b0fa0cf",
+    "artifact_sha256": "sha256:47d517197df34ba3996fcf49280eb1405e080daf7eeada58cabb56caf576eef6",
     "status": "PASSED"
   },
   "limitations": [

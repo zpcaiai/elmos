@@ -18,15 +18,15 @@
 (assert
  (= source_right target_right))
 (assert
- (let ((?x20 (ite source_left 0 0)))
- (let (($x18 (and (distinct 0 0) true)))
- (let ((?x17 (ite $x18 0 ?x20)))
- (= ?x17 0)))))
+ (let ((?x963 (ite source_left 0 0)))
+ (let (($x163 (and (distinct 0 0) true)))
+ (let ((?x172 (ite $x163 0 ?x963)))
+ (= ?x172 0)))))
 (assert
- (let ((?x20 (ite source_left 0 0)))
- (let (($x18 (and (distinct 0 0) true)))
- (let ((?x17 (ite $x18 0 ?x20)))
- (= ?x17 0)))))
+ (let ((?x963 (ite source_left 0 0)))
+ (let (($x163 (and (distinct 0 0) true)))
+ (let ((?x172 (ite $x163 0 ?x963)))
+ (= ?x172 0)))))
 (assert
  false)
 (check-sat)

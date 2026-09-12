@@ -1,0 +1,192 @@
+{
+  "allowed_suffixes": [
+    ".bas",
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".mjs",
+    ".php",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/php-to-csharp/certification/artifacts/holdout",
+  "corpus": "holdout",
+  "excluded_files": [
+    "bin/Release/net10.0/RouteHarness",
+    "bin/Release/net10.0/RouteHarness.deps.json",
+    "bin/Release/net10.0/RouteHarness.dll",
+    "bin/Release/net10.0/RouteHarness.pdb",
+    "bin/Release/net10.0/RouteHarness.runtimeconfig.json",
+    "obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+    "obj/Release/net10.0/RouteHarness.AssemblyInfo.cs",
+    "obj/Release/net10.0/RouteHarness.AssemblyInfoInputs.cache",
+    "obj/Release/net10.0/RouteHarness.GeneratedMSBuildEditorConfig.editorconfig",
+    "obj/Release/net10.0/RouteHarness.GlobalUsings.g.cs",
+    "obj/Release/net10.0/RouteHarness.assets.cache",
+    "obj/Release/net10.0/RouteHarness.csproj.CoreCompileInputs.cache",
+    "obj/Release/net10.0/RouteHarness.csproj.FileListAbsolute.txt",
+    "obj/Release/net10.0/RouteHarness.dll",
+    "obj/Release/net10.0/RouteHarness.genruntimeconfig.cache",
+    "obj/Release/net10.0/RouteHarness.pdb",
+    "obj/Release/net10.0/apphost",
+    "obj/Release/net10.0/ref/RouteHarness.dll",
+    "obj/Release/net10.0/refint/RouteHarness.dll",
+    "obj/RouteHarness.csproj.nuget.dgspec.json",
+    "obj/RouteHarness.csproj.nuget.g.props",
+    "obj/RouteHarness.csproj.nuget.g.targets",
+    "obj/project.assets.json",
+    "obj/project.nuget.cache"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 21,
+  "files": [
+    {
+      "bytes": 350,
+      "path": "Migrated.cs",
+      "sha256": "sha256:65195e1c2e2de57bfe8ee217f63c65277374fbb5877099739496e517eefc772a"
+    },
+    {
+      "bytes": 936,
+      "path": "Program.cs",
+      "sha256": "sha256:9eb2a54db3bd0bec14c4701d3081cc49d30034ba8ef45bae98139724c55a255e"
+    },
+    {
+      "bytes": 262,
+      "path": "RouteHarness.csproj",
+      "sha256": "sha256:199965fda9f51346aecced6f579b49326518d08f6b361be05a848e6ac08c9703"
+    },
+    {
+      "bytes": 1482,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:9b134e2b3ab972c14b9fa4926736a24f569ac637b699097cd778fda9cc10cad9"
+    },
+    {
+      "bytes": 14180,
+      "path": "chunk-map.json",
+      "sha256": "sha256:8ebe09691240ee3163e77817f7e1d573881d1dfed30ba6b9ae2cac303fac4c38"
+    },
+    {
+      "bytes": 3048,
+      "path": "formal-composition.json",
+      "sha256": "sha256:e535d8b69d4f2ddf0ce2cd2310d0b58ff0ce915f6eba8c0463e9a8c7d0abc39a"
+    },
+    {
+      "bytes": 1014,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:390aa82e77dde4bf4345b7b1ef75d03d01c85236e50d82555ae6569c4affcc31"
+    },
+    {
+      "bytes": 12392,
+      "path": "formal-input.json",
+      "sha256": "sha256:62a7050cf42a362a27e48620dd1f1949be0cf2031909832e49a360148abb90ec"
+    },
+    {
+      "bytes": 2390,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:9e3f4cca467d4f030c393c911a8bdcd737c58fb3fbf351c1e95387b269675a99"
+    },
+    {
+      "bytes": 2487,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:acf2621854d552117fc734a20364ed658c4a465ae55c18f7ffcfd02664d32ecd"
+    },
+    {
+      "bytes": 150,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:91054d96f588f95daa31124279f0a9e37d5043d4fe647e46ea3a1332f408fd5c"
+    },
+    {
+      "bytes": 202,
+      "path": "inputs/clamp.php",
+      "sha256": "sha256:d4c1d61f838c2b145a20736c032040b73233a460bfbad866704f4dbdf078021f"
+    },
+    {
+      "bytes": 3795,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:e5f64b6231285a3eb48e6b836066fca8c2dd9e97e3fb7306f22e0db9508a7f8b"
+    },
+    {
+      "bytes": 15961,
+      "path": "route-evidence.json",
+      "sha256": "sha256:3aa2354bc8027b59c497f58b12bf9a861b950bdb450d85d208dc155cc18185bb"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799"
+    },
+    {
+      "bytes": 2216,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:baca1961f3c9e59d352ccfea39dbea4afd34f496d1993552d1777f623ab0ad60"
+    },
+    {
+      "bytes": 202,
+      "path": "source-runtime/clamp.php",
+      "sha256": "sha256:d4c1d61f838c2b145a20736c032040b73233a460bfbad866704f4dbdf078021f"
+    },
+    {
+      "bytes": 928,
+      "path": "source-runtime/source_harness.php",
+      "sha256": "sha256:f78cdfc5368b1abe8cd5b3188b7f4425edc37b0557e5358154234458c072662e"
+    },
+    {
+      "bytes": 2216,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:baca1961f3c9e59d352ccfea39dbea4afd34f496d1993552d1777f623ab0ad60"
+    },
+    {
+      "bytes": 830,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:8b999ca00e2682357be2ba621fa7bab452aa71503a888b30d60e3e74fd8f8774"
+    },
+    {
+      "bytes": 938,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:b767dce8b6d37abf57a99e3a7bbb563c22509a2f635f299de5147ad3055b0376"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "php-to-csharp",
+  "schema_version": 1,
+  "total_bytes": 66288
+}

@@ -1,5 +1,6 @@
 {
   "allowed_suffixes": [
+    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -12,6 +13,7 @@
     ".m",
     ".md",
     ".mjs",
+    ".php",
     ".py",
     ".rs",
     ".smt2",
@@ -68,22 +70,22 @@
     {
       "bytes": 3036,
       "path": "formal-composition.json",
-      "sha256": "sha256:f21fdfa1b70f66d1b20c61c27da5c614737d561d293f04a21b5808a9ca06030a"
+      "sha256": "sha256:8bab14a353f04902c2530a1ae73b723061f624028edd91808a8a31efc1b2d6cb"
     },
     {
       "bytes": 1010,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:f20a7838501dad6f7f2b1f6b981c91b5c66c43aebc33130c3c8621b876be4172"
+      "sha256": "sha256:8650fe5a69927d44ec22bbab93032456fe12d404f32e90ab21f8374cf4bd16b2"
     },
     {
-      "bytes": 12227,
+      "bytes": 12228,
       "path": "formal-input.json",
-      "sha256": "sha256:20af84229da0e4b710ecbf40df5b46975f8d43671b784a01cdb45f11e0ed9f64"
+      "sha256": "sha256:89071e84f32672b33b1b572296cacdc0edad638364013e2bf964d74fae82d249"
     },
     {
       "bytes": 2378,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:97b0fec2430d9bae4cd3102d8f2232616905e29b8128c555385a7849602c2b13"
+      "sha256": "sha256:97111bb9311477b63f9d335454e54365beb5b6cae5b1ad8dc6de51f145c347c5"
     },
     {
       "bytes": 2683,
@@ -103,7 +105,7 @@
     {
       "bytes": 3507,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:13c77e5432b0e4022bf45115b12a21de0c7cf3417925f82b1ba7370d4b0d11e9"
+      "sha256": "sha256:bb54cdf566dacae19ae6cfe5aeb7031ffae5fd6cfcd95ff27c292a5c96dbed76"
     },
     {
       "bytes": 622,
@@ -113,7 +115,7 @@
     {
       "bytes": 10800,
       "path": "route-evidence.json",
-      "sha256": "sha256:6f2736d64e76e498b7f4ee02d0222a431e88a942e9d28a736a66a0fb5e190f3f"
+      "sha256": "sha256:c2ed95b71d4feb5b06b07e815d8733eaf0bac4c241dbfbbf359f6f26b2faaa9e"
     },
     {
       "bytes": 1915,
@@ -159,5 +161,5 @@
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "rust-to-cpp",
   "schema_version": 1,
-  "total_bytes": 56759
+  "total_bytes": 56760
 }

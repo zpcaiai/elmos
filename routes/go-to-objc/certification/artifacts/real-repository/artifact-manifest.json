@@ -1,5 +1,6 @@
 {
   "allowed_suffixes": [
+    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -12,6 +13,7 @@
     ".m",
     ".md",
     ".mjs",
+    ".php",
     ".py",
     ".rs",
     ".smt2",
@@ -67,22 +69,22 @@
     {
       "bytes": 3036,
       "path": "formal-composition.json",
-      "sha256": "sha256:8427d21e0e7e00634eb746d79bb05fddc3fa5e093b2e467810e56ff59f971c23"
+      "sha256": "sha256:532234c68055ffd22f7a398895eb8e6abee146d40c0d351663f6ddaf4c7ba545"
     },
     {
       "bytes": 1010,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:e070847c00d99827fbaf9720f14164554ff69c2fae169d3b1538cc989f814f0f"
+      "sha256": "sha256:353d7f07f8352798fcaae2cda6e619b6fcdacfb263798aac7b094ffbdee25dc6"
     },
     {
-      "bytes": 12129,
+      "bytes": 12130,
       "path": "formal-input.json",
-      "sha256": "sha256:f933f803048284fd0a7d7387e89a9e3f30a98e48ad6458af17ff5e4308102e6d"
+      "sha256": "sha256:2d75b56d5b6a7e7fce41efe2c21c846c0e4505447bd851db7fd404fddbcc8c38"
     },
     {
       "bytes": 2378,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:e659be226476f8343b8cc28bd3376ddae34a7518dc5ce8f1653c7f304974ff2f"
+      "sha256": "sha256:ab2c822b314bccf3712d6d5f4daf0d7e6903a1cb100d95246644061470eacc4a"
     },
     {
       "bytes": 2684,
@@ -102,7 +104,7 @@
     {
       "bytes": 3497,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:1bfbc95c9f3ed3fe3b6b22fa3308a6db23e255efffbcd072f6a8ac4cee8ff131"
+      "sha256": "sha256:96fcc618e0402963cfc750c3c4dba8ba76759efb1c102f089a6bf2d9787934d7"
     },
     {
       "bytes": 598,
@@ -112,7 +114,7 @@
     {
       "bytes": 10160,
       "path": "route-evidence.json",
-      "sha256": "sha256:828df68e80e43e3d01f243d79f44817ae0081546e0ecf9e9e234400d00751b50"
+      "sha256": "sha256:4e50d474d1c6d01227e2d8120cbbe441e8ae69c7b06685ed126d2b43fd6e22b6"
     },
     {
       "bytes": 1776,
@@ -158,5 +160,5 @@
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "go-to-objc",
   "schema_version": 1,
-  "total_bytes": 56107
+  "total_bytes": 56108
 }

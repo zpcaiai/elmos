@@ -1,5 +1,6 @@
 {
   "allowed_suffixes": [
+    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -12,6 +13,7 @@
     ".m",
     ".md",
     ".mjs",
+    ".php",
     ".py",
     ".rs",
     ".smt2",
@@ -79,22 +81,22 @@
     {
       "bytes": 3229,
       "path": "formal-composition.json",
-      "sha256": "sha256:9d6a571001783c8f95a162a8f8fb9b13a361512cfd019ad407872e7fed0dca9b"
+      "sha256": "sha256:43b4a97fae4854d0f1f45cbf7f7280be283063dd091da020228f43b0b68359cb"
     },
     {
       "bytes": 1162,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:7e49d54229a841abe9db2c3aba9f194941ae5faf50897dc46ee8f3148dec68af"
+      "sha256": "sha256:259809e0e1c5bad7c5a9ac7e5ab2f671b0021f8ccfc7ac8e5bdf24ebe98c5e44"
     },
     {
-      "bytes": 8101,
+      "bytes": 8102,
       "path": "formal-input.json",
-      "sha256": "sha256:5858bc506f62531f20440a694ed5e85a980b483592241e77b7967ac056f6a08f"
+      "sha256": "sha256:afa77359cf8f54f24c44e082d3787fdacd41d8a67fcb71af16fc9303925b4da3"
     },
     {
       "bytes": 2571,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:5e6b735ac4b3bfba842101a297d35378ae753002d2834c7ea1c11efacb213a37"
+      "sha256": "sha256:de79d06f1414c1f1bea80d656f5fb6461cbc0fae5da0ea3b7a83b82d7475f775"
     },
     {
       "bytes": 1939,
@@ -114,12 +116,12 @@
     {
       "bytes": 3680,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:998271fe3f3f554c5b6eb6658e67c08b8fb9c19843b826f0bc79b953c213b624"
+      "sha256": "sha256:c6e316b61b791109ac9a258523fd9c9199e60b7bf3290ec91682e13006e05b18"
     },
     {
       "bytes": 11557,
       "path": "route-evidence.json",
-      "sha256": "sha256:1a3570aa493286c20e05413173cb78fd1242b81c2d4acd6d6ced5c4563a048b1"
+      "sha256": "sha256:afd29ba796e0a795d2e0291948496ba5469ebaa8088b78a6829cb8352ee885e9"
     },
     {
       "bytes": 309,
@@ -160,5 +162,5 @@
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "cpp-to-java",
   "schema_version": 1,
-  "total_bytes": 47912
+  "total_bytes": 47913
 }

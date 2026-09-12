@@ -61,12 +61,21 @@ def validate() -> list[str]:
             failures.append(f"missing Skill: {skill_file.relative_to(ROOT)}")
             continue
         text = skill_file.read_text(encoding="utf-8")
-        frontmatter = re.match(r"\A---\nname:\s*([^\n]+)\ndescription:\s*([^\n]+)\n---\n", text)
+        frontmatter = re.match(
+            r'\A---\n'
+            r"name:\s*([^\n]+)\n"
+            r'implementation_state:\s*"(VERIFIED)"\n'
+            r'external_evidence_status:\s*"(LOCAL_EXECUTED)"\n'
+            r'production_certification:\s*"(NOT_CERTIFIED)"\n'
+            r"description:\s*([^\n]+)\n"
+            r"---\n",
+            text,
+        )
         if not frontmatter:
             failures.append(f"{expected_name}: invalid exact frontmatter")
         else:
             declared_name = frontmatter.group(1).strip()
-            description = frontmatter.group(2).strip()
+            description = frontmatter.group(5).strip().strip('"')
             if declared_name != expected_name:
                 failures.append(f"{expected_name}: declared name is {declared_name!r}")
             if len(declared_name) > 64:

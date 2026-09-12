@@ -1,18 +1,27 @@
 {
-  "certification_decision": "CERTIFIED",
-  "certifier_id": "ethan-independent-certifier",
-  "declared_scope": "typed-pure-function-v1",
-  "evidence_format": 1,
+  "certification_decision": "NOT_CERTIFIED",
+  "declared_scope": "typed-pure-function-v1+typed-pure-module-v1",
+  "evidence_format": 2,
   "evidence_refs": [
-    "certification/evidence.json"
+    "certification/local-development-evidence.json",
+    "certification/local-holdout-evidence.json",
+    "certification/local-representative-evidence.json",
+    "certification/formal-equivalence.json",
+    "certification/module-equivalence.json",
+    "certification/artifacts/module/artifact-manifest.json"
   ],
+  "formal_equivalence": {
+    "bytes": 298389,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:578e5a6a4a808f2555b148494ee26881bda9474db077a0514863e18df986d09c"
+  },
   "gate_results": {
-    "external_execution": "PASSED",
-    "independent_verification": "PASSED",
+    "external_execution": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
     "local_execution": "PASSED",
     "module_execution": "PASSED"
   },
-  "issued_at": "2026-09-10T00:00:00+00:00",
+  "issued_at": "2026-09-08T12:42:18.497965+00:00",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
@@ -26,9 +35,9 @@
     "path": "certification/module-equivalence.json",
     "sha256": "sha256:19eb43cd1d0b3991c78caee3f51d889d6c448133e1d8fcb5379f83f506022f8e"
   },
-  "next_review_at": "2027-09-10T00:00:00+00:00",
+  "next_review_at": "2026-10-26T00:00:00+00:00",
   "route_key": "cpp-to-java",
   "route_version": "1.0.0",
   "schema_version": 1,
-  "status": "certified"
+  "status": "limited"
 }

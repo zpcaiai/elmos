@@ -1,8 +1,8 @@
 {
   "artifact_manifest": {
-    "bytes": 5785,
+    "bytes": 5809,
     "path": "certification/artifacts/real-repository/artifact-manifest.json",
-    "sha256": "sha256:338175a7958666a1634e7e134490c88fc9e19262cc8ed50c7e141da72d180b79"
+    "sha256": "sha256:8c4c5cbab9f44deffb7f58393977f96df382ffcfee0b46de770eccecc15d463a"
   },
   "artifact_root": "certification/artifacts/real-repository",
   "authorization": "local-engineering-validation",
@@ -34,31 +34,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:61a36729cd8d2f2e6e9daa69cd7259e6894b825270941059f94ff95353239c6a",
+    "artifact_sha256": "sha256:c20ea15779b2de1bb3f8ae73738abe533bbfab80095780c6136363ab0eee89e1",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:0374b92faa5e36b0c52c40af44290ee7f0c96f360fede0387d86e42f46842d45",
+    "formal_input_digest": "sha256:38781776d5ec06a12326e15e4c22931206f35a7a3f28603030b73c7b09849808",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:0374b92faa5e36b0c52c40af44290ee7f0c96f360fede0387d86e42f46842d45",
+    "formal_input_sha256": "sha256:38781776d5ec06a12326e15e4c22931206f35a7a3f28603030b73c7b09849808",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:0374b92faa5e36b0c52c40af44290ee7f0c96f360fede0387d86e42f46842d45",
+        "formal_input_sha256": "sha256:38781776d5ec06a12326e15e4c22931206f35a7a3f28603030b73c7b09849808",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:1384e4d741f04764901f966a3e77c8f3bdee8fa96bc28485cddbf8e97b063902",
+        "sha256": "sha256:c36de93207d0db4c0a72b9916ebee766dfb9db7042226b851de9bae2f6e4cf71",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:0374b92faa5e36b0c52c40af44290ee7f0c96f360fede0387d86e42f46842d45",
+        "formal_input_sha256": "sha256:38781776d5ec06a12326e15e4c22931206f35a7a3f28603030b73c7b09849808",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:01904a9f2949a7dec6e8d6b2a51fadb1c1b77e6cb308f97fdd8246d784190e5b",
+        "sha256": "sha256:f5b00dc0a555a31af98fe2b3c47ec1371aba7e273f3e85ce644b206b02d1d4c0",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:1384e4d741f04764901f966a3e77c8f3bdee8fa96bc28485cddbf8e97b063902",
+    "solver_input_digest": "sha256:c36de93207d0db4c0a72b9916ebee766dfb9db7042226b851de9bae2f6e4cf71",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -102,7 +102,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:70bfc23fc2e61a9b65c1565910cb20b4adefa060df5224e21bcda735f739223e",
+    "artifact_sha256": "sha256:6e991d8cd3827c5100a5834748a778a9c136d11afd150ecbaa5678d3c6f96d70",
     "status": "PASSED"
   },
   "limitations": [
@@ -227,7 +227,7 @@
           "Release"
         ],
         "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
-        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-cpp-to-csharp-yf7p74iw/real-repository/RouteHarness.csproj (in 35 ms).\n  RouteHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-cpp-to-csharp-yf7p74iw/real-repository/bin/Release/net10.0/RouteHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.57\n"
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-cpp-to-csharp-irba6dox/real-repository/RouteHarness.csproj (in 56 ms).\n  RouteHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-cpp-to-csharp-irba6dox/real-repository/bin/Release/net10.0/RouteHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.15\n"
       },
       {
         "command": [

@@ -1,5 +1,5 @@
-; formal_input_digest: sha256:d684cafaa307670b5f3f731d1009843201913d27ac93a0f04ae3e9ef04cb3832
-; formal-input-sha256: sha256:d684cafaa307670b5f3f731d1009843201913d27ac93a0f04ae3e9ef04cb3832
+; formal_input_digest: sha256:bc41ccec46fdb22983bdf61ba700b53afa6d200d8620c8a4561106f72f7a24c4
+; formal-input-sha256: sha256:bc41ccec46fdb22983bdf61ba700b53afa6d200d8620c8a4561106f72f7a24c4
 ; claim-scope: canonical-normalized-source-ir-to-target-relift-ir
 ; input-domain: nodejs-es2022-esm-safe-integer-finite-v1
 ; original-source-bytes-theorem: false

@@ -1,8 +1,8 @@
 {
   "artifact_manifest": {
-    "bytes": 4444,
+    "bytes": 4468,
     "path": "certification/artifacts/holdout/artifact-manifest.json",
-    "sha256": "sha256:4fb6df65480900b64072e3cebbe5107cb303c1fe13594761104c08f9d7f67c96"
+    "sha256": "sha256:4855ba06041cb0faf8c16494a5660934de8df4dea40e38f245d5b3a20a8a47e7"
   },
   "artifact_root": "certification/artifacts/holdout",
   "authorization": "local-engineering-validation",
@@ -34,31 +34,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:ac9ae31bed38973202739b064570a8a74d77b5ad54790594ab4eee06253dad8c",
+    "artifact_sha256": "sha256:8b5be747755dc1e500e23d24662c2d2fe046d6e6c1aa3f9bd722e76660af080f",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:92deecf8a530f1563587b28fbbb6ce2d5d1eeb1e3bb7d0a630bc16b10eead5a7",
+    "formal_input_digest": "sha256:17ad1f3e911ad8355d5e47408bdc486ac65cb2cc82f5c39a98a8f36f57c66d43",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:92deecf8a530f1563587b28fbbb6ce2d5d1eeb1e3bb7d0a630bc16b10eead5a7",
+    "formal_input_sha256": "sha256:17ad1f3e911ad8355d5e47408bdc486ac65cb2cc82f5c39a98a8f36f57c66d43",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:92deecf8a530f1563587b28fbbb6ce2d5d1eeb1e3bb7d0a630bc16b10eead5a7",
+        "formal_input_sha256": "sha256:17ad1f3e911ad8355d5e47408bdc486ac65cb2cc82f5c39a98a8f36f57c66d43",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:c20a333a85810c6fff19db0359f127158f19107a65be7684d52ba9f0da4db9c8",
+        "sha256": "sha256:eb5f7603a9fbfa354adc769e44923cfa04b4501545ce9d3e1b2ee43ecff8416a",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:92deecf8a530f1563587b28fbbb6ce2d5d1eeb1e3bb7d0a630bc16b10eead5a7",
+        "formal_input_sha256": "sha256:17ad1f3e911ad8355d5e47408bdc486ac65cb2cc82f5c39a98a8f36f57c66d43",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:161c6e5c6e4e11630ca986b7e0cc345a0e2db84895bcf0a46a17edbfd209c7d4",
+        "sha256": "sha256:36f46d383d4a7858db17fd612c86c637b633fa66fb27be7f3a7e22d51fd71a3c",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:c20a333a85810c6fff19db0359f127158f19107a65be7684d52ba9f0da4db9c8",
+    "solver_input_digest": "sha256:eb5f7603a9fbfa354adc769e44923cfa04b4501545ce9d3e1b2ee43ecff8416a",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -76,7 +76,7 @@
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
-    "plan_sha256": "sha256:6e1783518305152f816db4e63294b51a0e21c688ab08b6b8a9ec3267d54f6208",
+    "plan_sha256": "sha256:8dc7add08ef441acc7775a4344ce9b5397be461f83fd0704a2a93b76f20a57ca",
     "policy_id": "typed-alpha-hygiene-v2",
     "policy_sha256": "sha256:e59434b55aa4b83451bef687d44cfc5fb3f104a38de921af706947f2664d2bf3",
     "raw_target_relift": {
@@ -102,7 +102,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:50432c1309b14a8c6e5f5312b6553a862bae252728a00de36d10e7e864f910b4",
+    "artifact_sha256": "sha256:951d7f04625d15c76733f9ddf8001c960206905ed580326bfe3bf7996d97f847",
     "status": "PASSED"
   },
   "limitations": [
@@ -121,15 +121,15 @@
     "artifact_sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799",
     "difference_count": 0,
     "source_ir_path": "source-semantic-ir.json",
-    "source_ir_sha256": "sha256:3567da295652d1b3abb89cb2a3ea08f23793e937aafd1d674b331fee72a16226",
+    "source_ir_sha256": "sha256:7a657a3a1d0d5011c0bec706c2b6947394621eda9252f93a1c2da9bb6a296001",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
     "target_ir_sha256": "sha256:3d1fac257fad50dcd67b289d12f71e669b11db909676df8dff4636e8f9533ddd"
   },
-  "semantic_ir_sha256": "sha256:3567da295652d1b3abb89cb2a3ea08f23793e937aafd1d674b331fee72a16226",
+  "semantic_ir_sha256": "sha256:7a657a3a1d0d5011c0bec706c2b6947394621eda9252f93a1c2da9bb6a296001",
   "source": {
     "analyzer": "SwiftSyntax",
-    "analyzer_version": "600.0.1;source-inputs=sha256:6ac46d212271caed65f4dc73e523e2c827028634ca6ee099c0892aa3b5613763;swift-driver=sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb;swift-syntax-tree=sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d;canonical-receipt=sha256:f7f1b5d7cac69523aa4eba91004ef0f803a53de140961f7daaae8513cc8d2f4e;binary=sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e;toolchain=sha256:abd549de7e236a804834f5e6c297c8da0a68d7b68d6372ee5b676ebb4a69f006;build-closure=sha256:42f086a415270b64ecf45d007c59c2395b3308d623f8cc35c6e385696b820cc5;network-policy=sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08",
+    "analyzer_version": "600.0.1;source-inputs=sha256:6faba783c284b0781cfdf720cb7011d92b4f1198422182c4169236a7ada809cb;swift-driver=sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb;swift-syntax-tree=sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d;canonical-receipt=sha256:f76a02fcde7685ae91897f2a1d1686ea4b59940210bb73884f4097672fecfa6f;binary=sha256:77de6e58a7e47d92d785b1cb7ca98f3fb0e99bd84e4e8e29ccd4b482ee4e7f76;toolchain=sha256:abd549de7e236a804834f5e6c297c8da0a68d7b68d6372ee5b676ebb4a69f006;build-closure=sha256:42f086a415270b64ecf45d007c59c2395b3308d623f8cc35c6e385696b820cc5;network-policy=sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08",
     "function_name": "clamp",
     "language": "swift",
     "path": "clamp.swift",

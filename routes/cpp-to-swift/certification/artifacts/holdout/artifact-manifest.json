@@ -1,5 +1,6 @@
 {
   "allowed_suffixes": [
+    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -12,6 +13,7 @@
     ".m",
     ".md",
     ".mjs",
+    ".php",
     ".py",
     ".rs",
     ".smt2",
@@ -68,22 +70,22 @@
     {
       "bytes": 3233,
       "path": "formal-composition.json",
-      "sha256": "sha256:b41fee573bd643188b793f7cbb023de33a97f946dd724ab87645a29b66a71755"
+      "sha256": "sha256:3f17e4b4d5067742464ea14032ed9fb9cd30f461c8343c42b8990565ce55ddf2"
     },
     {
       "bytes": 1162,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:29f1b1136fee2ac097d26a8fbfde83345f1f6ce6d96020c59fe3fd6c092cfeff"
+      "sha256": "sha256:d01d9c033e683b1938041a1660ae587ab3623dfcbd56a57bf5bbd2e9cfc78fc1"
     },
     {
-      "bytes": 10067,
+      "bytes": 10068,
       "path": "formal-input.json",
-      "sha256": "sha256:7e0ed64f71d199009f097a8740efa5522a21b92c9869a2133c90fc047eadb698"
+      "sha256": "sha256:02194f455263c93d4659fe4ca0da43c93f5a4f5e513ee101625dabf7e98d0a4a"
     },
     {
       "bytes": 2575,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:71c525a9a8be2e75eae28220f54f29524c40c21d4b3ff93f0fb6eeae387330a5"
+      "sha256": "sha256:3d8e37f3f51b69d4dcee1ac911fa50dc733df3de96a54b1086ab3282694b7df0"
     },
     {
       "bytes": 1940,
@@ -103,7 +105,7 @@
     {
       "bytes": 4360,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:65835138a78914803b0121ae6e23da0f09cb111c8201fa7c245f4ff18b17a36d"
+      "sha256": "sha256:63c828ebb4c46194038b85cd34d22c4a55fec37b94fffaaa65f3c916e3483c08"
     },
     {
       "bytes": 1550,
@@ -118,7 +120,7 @@
     {
       "bytes": 11549,
       "path": "route-evidence.json",
-      "sha256": "sha256:658c04c0a898342cfddf28bc0fc52762d3f621e3b9aa5399d1dcf267fa8eb9d0"
+      "sha256": "sha256:3fd42038dfd10ea4fbbc3c9bf17533194eebfe0e8c1e1e46dd198520d63844fc"
     },
     {
       "bytes": 309,
@@ -148,16 +150,16 @@
     {
       "bytes": 1298,
       "path": "target-semantic-ir.normalized.json",
-      "sha256": "sha256:3a009ec33204881b5105952d1a90507c33ef93fe9f1fe7a155ddb83ac0876f5e"
+      "sha256": "sha256:bad8e9b5ab9fe595369b50f01749b72a70bba047912a87aa0f142c2bc53f0d08"
     },
     {
       "bytes": 1313,
       "path": "target-semantic-ir.raw.json",
-      "sha256": "sha256:5247df8e118a8437d0dce971e48958254020a953dfe1177abab9c5a768d32839"
+      "sha256": "sha256:8a7dea75e12ea11288bea2a07444ae3a2918e2b5cbb76267657370eef56f3393"
     }
   ],
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "cpp-to-swift",
   "schema_version": 1,
-  "total_bytes": 51066
+  "total_bytes": 51067
 }

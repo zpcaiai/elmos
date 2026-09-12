@@ -1,0 +1,25 @@
+{
+  "route_key": "php-to-typescript",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 524,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.ts",
+      "sha256": "sha256:a8f82867edeb7d13d7007a1ee84b61f3fec7fd5de29fb0010bad226b77b05eb4"
+    },
+    {
+      "bytes": 560,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.ts",
+      "sha256": "sha256:f69314439966105dd2a6b1fad5dba79b3509d410b48db642e4e34014ed0834eb"
+    },
+    {
+      "bytes": 517,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.ts",
+      "sha256": "sha256:2439d83a7af28702f0e686d1821b17fd1e4a26a488286d653eb7631a853b2963"
+    }
+  ]
+}

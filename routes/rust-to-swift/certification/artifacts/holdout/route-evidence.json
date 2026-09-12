@@ -28,31 +28,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:c6e0e38fe63c3c8808c068617ff332a8f4e949c285fb249b571d748b8e08daa0",
+    "artifact_sha256": "sha256:92f34fa6f854a37827f1586dff13f4ba3f41d7bcc495964a4f13a07ca43ab512",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:c026bff635cdfeaad66d2bd00487d218ed4192d79b92208964339117e3149cc9",
+    "formal_input_digest": "sha256:877f7f45b6d1a48fdab1d93533503c21e32eb27c5be0b2d2dc56ab249f160fcf",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:c026bff635cdfeaad66d2bd00487d218ed4192d79b92208964339117e3149cc9",
+    "formal_input_sha256": "sha256:877f7f45b6d1a48fdab1d93533503c21e32eb27c5be0b2d2dc56ab249f160fcf",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:c026bff635cdfeaad66d2bd00487d218ed4192d79b92208964339117e3149cc9",
+        "formal_input_sha256": "sha256:877f7f45b6d1a48fdab1d93533503c21e32eb27c5be0b2d2dc56ab249f160fcf",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:a8c8790220f5bba748f599a5c9ebc6c44a112d33561d970ceb14d0f9262fc165",
+        "sha256": "sha256:b71a4f06720477318bb348b67b0d2ca69bc3192b02b3e7c0bf6a7c867b6c50ed",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:c026bff635cdfeaad66d2bd00487d218ed4192d79b92208964339117e3149cc9",
+        "formal_input_sha256": "sha256:877f7f45b6d1a48fdab1d93533503c21e32eb27c5be0b2d2dc56ab249f160fcf",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:2eafb1708472f32fe1cf95636682a0724d8a0cbd06716ad566fc95b948cfb349",
+        "sha256": "sha256:b79825d71a2d1646e89db7a8af5bc7ab214b75741aa4421d678ca88ce6a4d934",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:a8c8790220f5bba748f599a5c9ebc6c44a112d33561d970ceb14d0f9262fc165",
+    "solver_input_digest": "sha256:b71a4f06720477318bb348b67b0d2ca69bc3192b02b3e7c0bf6a7c867b6c50ed",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -66,7 +66,7 @@
   "identifier_hygiene": {
     "normalized_target_ir": {
       "path": "target-semantic-ir.normalized.json",
-      "sha256": "sha256:e3582d8d06bcc77e181d0d36581dd00954e77a489eeeccd6111eac35ab737e20",
+      "sha256": "sha256:2900736ac12e420fa20a5121319ea2cc4d844cb50e1f5605491a6801313be094",
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
@@ -75,7 +75,7 @@
     "policy_sha256": "sha256:fab9af18b8a5f2723f51d0e3bf5e6e4fd22064dd33fd3247dd885b07277eaad1",
     "raw_target_relift": {
       "path": "target-semantic-ir.raw.json",
-      "sha256": "sha256:4af977510f8d99877ea96525575f0c1c6bfe26c43577e069179b77e405cdbca3",
+      "sha256": "sha256:45d7c3b444337494a6ac5771816b4a4532bce2164764da3896eafe8d72c2d6d4",
       "status": "PASSED"
     },
     "renamed": true,
@@ -96,7 +96,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:34a95af43a88da7f421755bf9d61cf774caa39255c60728ff895946dba6297cb",
+    "artifact_sha256": "sha256:c1184124fa27728281a6fac3b85bbafb08267207d0de28320f7ceaf2928913de",
     "status": "PASSED"
   },
   "limitations": [
@@ -118,7 +118,7 @@
     "source_ir_sha256": "sha256:aebfb9da93995102b6ba472e2edac02a1abb125ad5320163d6c558b406bb86a9",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
-    "target_ir_sha256": "sha256:e3582d8d06bcc77e181d0d36581dd00954e77a489eeeccd6111eac35ab737e20"
+    "target_ir_sha256": "sha256:2900736ac12e420fa20a5121319ea2cc4d844cb50e1f5605491a6801313be094"
   },
   "semantic_ir_sha256": "sha256:aebfb9da93995102b6ba472e2edac02a1abb125ad5320163d6c558b406bb86a9",
   "source": {

@@ -284,8 +284,11 @@ from route_sets import (  # noqa: E402
     SUPPORTED_ROUTE_LANGUAGES,
     TEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
     TEN_LANGUAGE_MATRIX_LANGUAGES,
+    THIRTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
+    THIRTEEN_LANGUAGE_MATRIX_LANGUAGES,
     V3_EXACT_ROUTE_KEYS,
     V3_LANGUAGES,
+    VB6_EXACT_ROUTE_KEYS,
     nodejs_negative_case_ids,
     provenance_route_set,
     split_executable_route_key,
@@ -324,6 +327,7 @@ from route_runtime_metadata import (  # noqa: E402
     v3_research_certification_document,
     v3_research_evidence_document,
     v3_research_support_document,
+    vb6_vendor_campaign_document,
 )
 
 B16_LANGUAGES: tuple[Language, ...] = CORE_LANGUAGES  # type: ignore[assignment]
@@ -443,6 +447,38 @@ def nodejs_stable_route_error(reason: str) -> str:
     return wrapped[1]
 
 
+def stable_missing_symbol_failure(reason: str) -> str | None:
+    """Return the one stable missing-symbol rejection from a native wrapper.
+
+    Native analyzers that are launched through an exact compiler executable
+    report domain rejections inside ``NATIVE_ANALYZER_FAILED``.  The executable
+    path is host-specific evidence, while the synthetic negative case has one
+    host-independent expected result.  Strip the wrapper only when the complete
+    value is an absolute executable plus that exact result. ``go run`` appends
+    its fixed ``exit status 2`` launcher trailer, which is accepted only as the
+    complete second line. Every malformed, forged-relative, or different
+    diagnostic remains unrecognized and therefore fails the negative gate
+    closed.
+    """
+
+    if reason == MISSING_SYMBOL_FAILURE:
+        return reason
+    if not reason or "\r" in reason:
+        return None
+    prefix = "NATIVE_ANALYZER_FAILED:"
+    if not reason.startswith(prefix):
+        return None
+    wrapped = reason[len(prefix) :].split(":", 1)
+    if len(wrapped) != 2 or not Path(wrapped[0]).is_absolute():
+        return None
+    detail = wrapped[1]
+    if detail == MISSING_SYMBOL_FAILURE:
+        return detail
+    if detail == f"{MISSING_SYMBOL_FAILURE}\nexit status 2":
+        return MISSING_SYMBOL_FAILURE
+    return None
+
+
 def declared_input_domain(route_key: str) -> str:
     if route_key in SPECIALIZED_ROUTE_KEYS:
         return SPECIALIZED_INPUT_DOMAIN
@@ -488,6 +524,7 @@ EXTENSIONS = {
     "kotlin": "kt",
     "react": "tsx",
     "flutter": "dart",
+    "vb6": "bas",
 }
 CORPORA = {
     "development": ("", "Pricing", "pricing", "calculate", "behavior-cases.json"),
@@ -716,6 +753,7 @@ MODULE_FIXTURE_FILES: dict[Language, str] = {
     "objc": "equivalence_module.m",
     "swift": "equivalence_module.swift",
     "javascript": "equivalence_module.mjs",
+    "vb6": "equivalence_module.bas",
 }
 ARTIFACT_CORPORA = frozenset({*CORPORA, "module"})
 ARTIFACT_ALLOWED_SUFFIXES = {
@@ -731,6 +769,8 @@ ARTIFACT_ALLOWED_SUFFIXES = {
     ".md",
     ".m",
     ".mjs",
+    ".php",
+    ".bas",
     ".py",
     ".rs",
     ".smt2",
@@ -3214,6 +3254,8 @@ def parse_route_key(value: str) -> tuple[Language, Language]:
         reason = str(error)
         if reason.startswith("V3_ROUTE_RESEARCH_NOT_EXECUTABLE:"):
             raise argparse.ArgumentTypeError(reason) from None
+        if reason.startswith("VB6_ROUTE_VENDOR_CAMPAIGN_NOT_EXECUTABLE:"):
+            raise argparse.ArgumentTypeError(reason) from None
         if reason.startswith(
             "LEGACY_ROUTE_IMMUTABLE_REEXECUTION_REQUIRES_NEW_PACK_VERSION:"
         ):
@@ -3861,7 +3903,7 @@ def preflight_route_set_preparation(
         if route_key in CORE_ROUTE_KEYS:
             continue
         _preflight_route_directory(repo, route_key, allow_missing=True)
-        if route_key in V3_EXACT_ROUTE_KEYS:
+        if route_key in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS}:
             _v3_research_route_documents(repo, route_key)
         else:
             assert_limited_route_execution_allowed(route_key)
@@ -3928,7 +3970,7 @@ def verify_route_set_read_only(
         )
         if observed_markdown != expected_markdown:
             raise RuntimeError(f"ROUTE_SUPPORT_MATRIX_VIEW_DRIFT:{route_key}")
-        if route_key in V3_EXACT_ROUTE_KEYS and (
+        if route_key in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS} and (
             documents["route"]
             != _v3_research_route_manifest(repo, route_key)[2]
             or documents["support"] != v3_research_support_document(route_key)
@@ -3943,16 +3985,16 @@ def verify_route_set_read_only(
 def _v3_research_route_manifest(
     repo: Path, route_key: str
 ) -> tuple[Path, Path, dict[str, Any]]:
-    """Preflight and build one exact V3 research manifest in memory.
+    """Preflight and build one exact preparation-only manifest in memory.
 
     This is metadata synchronization only. It deliberately leaves the
-    semantic and target profiles empty and the status at ``research``: exact
+    V3 profiles remain empty; VB6 records only its bounded local subset. Exact
     analyzer/emitter paths and versions prove that the declared components
-    exist, not that this directed route has completed its own corpus, replay,
-    independent verification or certification gate.
+    exist, not that this directed route has completed its own vendor-runtime
+    corpus, replay, independent verification or certification gate.
     """
 
-    if route_key not in V3_EXACT_ROUTE_KEYS:
+    if route_key not in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS}:
         raise RuntimeError(f"V3_ROUTE_KEY_REQUIRED:{route_key}")
     source, target = split_route_key(route_key)
     routes_root = repo / "routes"
@@ -4005,7 +4047,14 @@ def _v3_research_route_manifest(
                 "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py"
             ),
         },
-        "profiles": {"semantic_profile": "", "target_profile": ""},
+        "profiles": (
+            {
+                "semantic_profile": "typed-pure-module-v1",
+                "target_profile": "vb6-long32-pure-module-v1",
+            }
+            if route_key in VB6_EXACT_ROUTE_KEYS
+            else {"semantic_profile": "", "target_profile": ""}
+        ),
         "framework_profiles": [],
         "paths": {
             "support_matrix": "support-matrix.json",
@@ -4031,7 +4080,7 @@ def _v3_research_route_documents(
 
     route, manifest_path, manifest = _v3_research_route_manifest(repo, route_key)
     certification_root = route / "certification"
-    return route, (
+    documents: tuple[tuple[Path, dict[str, Any]], ...] = (
         (manifest_path, manifest),
         (route / "support-matrix.json", v3_research_support_document(route_key)),
         (
@@ -4043,6 +4092,14 @@ def _v3_research_route_documents(
             v3_research_certification_document(route_key),
         ),
     )
+    if route_key in VB6_EXACT_ROUTE_KEYS:
+        documents += (
+            (
+                certification_root / "vendor-campaign.json",
+                vb6_vendor_campaign_document(route_key),
+            ),
+        )
+    return route, documents
 
 
 def _v3_research_route_transaction_documents(
@@ -4061,7 +4118,7 @@ def _v3_research_route_transaction_documents(
     if len(support_matches) != 1:
         raise RuntimeError(f"V3_SUPPORT_DOCUMENT_SELECTION_INVALID:{route.name}")
     support_bytes, support_document = support_matches[0]
-    return serialized + (
+    rendered: tuple[tuple[Path, bytes], ...] = serialized + (
         (
             route / "certification" / "support-matrix.md",
             support_matrix_markdown_bytes(
@@ -4071,6 +4128,52 @@ def _v3_research_route_transaction_documents(
             ),
         ),
     )
+    if route.name in VB6_EXACT_ROUTE_KEYS:
+        rendered += (
+            (
+                route / "certification" / "customer-support-profile.md",
+                (
+                    f"# {route.name} customer support profile\n\n"
+                    "- Status: `research`\n"
+                    "- Certification: `NOT_CERTIFIED`\n"
+                    "- Admitted local component scope: typed pure VB6 standard modules with "
+                    "`Long`, finite `Double`, `Boolean`, ASCII `String`, assignment, `If`, and `While`.\n"
+                    "- Vendor execution: `NOT_RUN` until the digest-bound Windows x86-compatible "
+                    "VB6 SP6 campaign receipt exists.\n"
+                    "- Independent verification: `NOT_RUN`.\n"
+                    "- Unsupported: forms, class modules, COM/ActiveX, ADO, `ByRef`, implicit "
+                    "`Variant`, error handling, cross-module calls, and non-ASCII code-page semantics.\n"
+                ).encode(),
+            ),
+            (
+                route / "certification" / "gate-report.md",
+                (
+                    f"# {route.name} route gate\n\n"
+                    "- Bounded analyzer/emitter and repository assembly: `PASSED_LOCAL_COMPONENTS`\n"
+                    "- Development corpus materialization: `READY_NOT_RUN`\n"
+                    "- Independent holdout corpus materialization: `READY_NOT_RUN`\n"
+                    "- Representative repository corpus materialization: `READY_NOT_RUN`\n"
+                    "- Governed Windows VB6 SP6 compile/run: `NOT_RUN`\n"
+                    "- Cross-host behavior comparison: `NOT_RUN`\n"
+                    "- Independent verifier: `NOT_RUN`\n"
+                    "- Decision: `NOT_CERTIFIED`\n\n"
+                    "Run `scripts/batch29/run_vb6_cross_host_campaign.py` in prepare, "
+                    "execute-windows, and verify phases. A local cross-host pass cannot replace "
+                    "independent verification or external certification.\n"
+                ).encode(),
+            ),
+            (
+                route / "certification" / "gap-inventory.md",
+                (
+                    f"# {route.name} open evidence gaps\n\n"
+                    "1. Execute all three corpora on a governed Windows x86-compatible VB6 SP6 host.\n"
+                    "2. Compile and run a representative multi-file repository assembly.\n"
+                    "3. Obtain a distinct independent verifier receipt over immutable artifacts.\n"
+                    "4. Run the conservative Batch 29 certification gate without unresolved critical unknowns.\n"
+                ).encode(),
+            ),
+        )
+    return rendered
 
 
 def synchronize_v3_research_route_manifest(repo: Path, route_key: str) -> Path:
@@ -4097,7 +4200,7 @@ def synchronize_v3_research_route_manifests(
     if (
         not route_keys
         or len(route_keys) != len(set(route_keys))
-        or set(route_keys) - set(V3_EXACT_ROUTE_KEYS)
+        or set(route_keys) - {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS}
     ):
         raise RuntimeError("V3_ROUTE_SYNC_SELECTION_INVALID")
     prepared = tuple(
@@ -5514,7 +5617,10 @@ def execute_negative(
                 Path(temporary) / "output",
             )
         except RouteError as exc:
-            reason = str(exc)
+            captured_reason = str(exc)
+            reason = stable_missing_symbol_failure(captured_reason)
+            if reason is None:
+                reason = captured_reason
         else:
             raise RuntimeError(
                 f"NEGATIVE_CASE_UNEXPECTEDLY_PASSED:{source}-to-{target}"
@@ -5726,7 +5832,7 @@ def write_inventory(repo: Path) -> None:
     legacy_authority = legacy_campaign_authority(repo)
     prepared_v3_routes = tuple(
         _v3_research_route_documents(repo, route_key)
-        for route_key in V3_EXACT_ROUTE_KEYS
+        for route_key in (*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS)
     )
     v3_documents = {
         route.name: {
@@ -5825,19 +5931,23 @@ def write_inventory(repo: Path) -> None:
         ):
             raise RuntimeError(f"ROUTE_DOCUMENT_BINDING_DRIFT:{route_key}")
         module_required = route_key in MODULE_EQUIVALENCE_ROUTE_KEYS
-        if route_key in V3_EXACT_ROUTE_KEYS:
+        if route_key in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS}:
             if (
                 manifest.get("status") != "research"
                 or evidence != v3_research_evidence_document(route_key)
                 or certification
                 != v3_research_certification_document(route_key)
             ):
-                raise RuntimeError(f"V3_ROUTE_CAMPAIGN_OVERCLAIM:{route_key}")
+                raise RuntimeError(f"RESEARCH_ROUTE_CAMPAIGN_OVERCLAIM:{route_key}")
             function_passed = False
             module_passed = False
             source_binding_current = False
             local_status = "NOT_RUN"
-            local_execution_reason = "V3_ROUTE_CAMPAIGN_NOT_RUN"
+            local_execution_reason = (
+                "VB6_VENDOR_ROUTE_CAMPAIGN_NOT_RUN"
+                if route_key in VB6_EXACT_ROUTE_KEYS
+                else "V3_ROUTE_CAMPAIGN_NOT_RUN"
+            )
         else:
             function_passed = evidence.get("execution_status") == "PASSED_LOCAL"
             module_passed = (
@@ -5905,22 +6015,23 @@ def write_inventory(repo: Path) -> None:
         status: sum(1 for entry in routes if entry["status"] == status)
         for status in ("research", "experimental", "limited", "blocked", "certified")
     }
-    # Prebuild the inventory, all 330 V3 contract/view documents, and the
-    # remaining 110 support-matrix views before the first write. They form one
+    # Prebuild the inventory, all 330 V3 and 130 VB6 contract/view documents,
+    # and the remaining 110 support-matrix views before the first write. They form one
     # process-level transaction: any injected or ordinary write failure
     # restores every target's exact original bytes.
     inventory_document = {
             "schema_version": "1.4.0",
             "route_policy": {
                 "mode": "complete-directed-matrix",
-                "cartesian_expansion": "EXPLICIT_THIRTEEN_LANGUAGE_MATRIX",
-                "complete_route_set": "thirteen-language-complete-156",
+                "cartesian_expansion": "EXPLICIT_FOURTEEN_LANGUAGE_MATRIX",
+                "complete_route_set": "fourteen-language-complete-182",
                 "legacy_route_set": "legacy-complete-30",
                 "specialized_route_set": "cpp-objc-swift-java-exact-8",
                 "completion_route_set": "nine-language-completion-34",
                 "nodejs_route_set": "javascript-node26-completion-18",
                 "php_route_set": "php-php85-completion-20",
                 "v3_route_set": "kotlin-react-flutter-completion-66",
+                "vb6_route_set": "vb6-completion-26",
                 "deprecated_route_set": "javascript-node26-completion-18",
                 "preserved_nine_language_route_set": "nine-language-complete-72",
                 "preserved_ten_language_route_set": "ten-language-complete-90",
@@ -6000,7 +6111,7 @@ def write_inventory(repo: Path) -> None:
                 },
                 "kotlin-react-flutter-completion-66": {
                     "policy": "exact-matrix-completion-set",
-                    "languages": list(SUPPORTED_ROUTE_LANGUAGES),
+                    "languages": list(THIRTEEN_LANGUAGE_MATRIX_LANGUAGES),
                     "route_count": len(V3_EXACT_ROUTE_KEYS),
                     "route_keys": list(V3_EXACT_ROUTE_KEYS),
                     "analyzer_status": "LOCAL_SINGLE_UNIT_READY",
@@ -6009,6 +6120,20 @@ def write_inventory(repo: Path) -> None:
                     "pending_repository_languages": list(PENDING_REPOSITORY_LANGUAGES),
                 },
                 "thirteen-language-complete-156": {
+                    "policy": "complete-directed-permutation",
+                    "languages": list(THIRTEEN_LANGUAGE_MATRIX_LANGUAGES),
+                    "route_count": len(THIRTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS),
+                    "route_keys": list(THIRTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS),
+                },
+                "vb6-completion-26": {
+                    "policy": "bounded-local-handlers-vendor-campaign-required",
+                    "languages": list(SUPPORTED_ROUTE_LANGUAGES),
+                    "route_count": len(VB6_EXACT_ROUTE_KEYS),
+                    "route_keys": list(VB6_EXACT_ROUTE_KEYS),
+                    "repository_status": "LOCAL_PREPARE_ONLY",
+                    "vendor_runtime_status": "NOT_RUN",
+                },
+                "fourteen-language-complete-182": {
                     "policy": "complete-directed-permutation",
                     "languages": list(SUPPORTED_ROUTE_LANGUAGES),
                     "route_count": len(COMPLETE_ROUTE_KEYS),
@@ -6184,15 +6309,23 @@ def main() -> int:
         v3_prepared_route_keys = tuple(
             route_key
             for route_key in prepared_route_keys
-            if route_key in V3_EXACT_ROUTE_KEYS
+            if route_key in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS}
         )
         if v3_prepared_route_keys:
             synchronize_v3_research_route_manifests(repo, v3_prepared_route_keys)
+            for route_key in v3_prepared_route_keys:
+                if route_key in VB6_EXACT_ROUTE_KEYS:
+                    source_value, _ = split_route_key(route_key)
+                    populate_corpus(
+                        repo / "routes" / route_key,
+                        fixtures,
+                        cast(Language, source_value),
+                    )
         for route_key in (
             route_key
             for route_key in prepared_route_keys
             if route_key not in CORE_ROUTE_KEYS
-            and route_key not in V3_EXACT_ROUTE_KEYS
+            and route_key not in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS}
         ):
             ensure_route_scaffold(repo, route_key)
             source_value, target_value = split_route_key(route_key)

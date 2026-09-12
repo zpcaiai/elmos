@@ -1,5 +1,6 @@
 {
   "allowed_suffixes": [
+    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -12,6 +13,7 @@
     ".m",
     ".md",
     ".mjs",
+    ".php",
     ".py",
     ".rs",
     ".smt2",
@@ -79,22 +81,22 @@
     {
       "bytes": 3044,
       "path": "formal-composition.json",
-      "sha256": "sha256:41c5bf323cad4bb6692d5e647f628b2e6da1e904cfe0bf6cd13ba2005b4ac975"
+      "sha256": "sha256:01f7f530e70bdc1c67466e5a73f5956d415073bbda3f6edaf67e8a9628346e82"
     },
     {
       "bytes": 1018,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:a3690d57ac71314c8028e6cd3e8a97fed03c86d8e39a8ffe49859938305a6a51"
+      "sha256": "sha256:a08fac327e82c03f93be6e7f10d0b173fda179eea4fd5d520136cbb09941fff9"
     },
     {
-      "bytes": 12247,
+      "bytes": 12248,
       "path": "formal-input.json",
-      "sha256": "sha256:46742f5b679a90ae6c42d40663b51f5bbd9552b80011fc96e75a46ba906467eb"
+      "sha256": "sha256:73ce04fd6fcf439042edaf112cc808c136e6f9957a49748a261de648040967a4"
     },
     {
       "bytes": 2386,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:e814526439fcb1f8b40ed80249f7882aaff4002698c1b1082299497a1616fb26"
+      "sha256": "sha256:6ad2d92fd556e504c31134c4c4b339209bf83777c3a5d7f064ad3dbe8fe86ca9"
     },
     {
       "bytes": 2371,
@@ -114,12 +116,12 @@
     {
       "bytes": 3517,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:7f950559fd5389c582ed1dc4f0343066b21111f3b2b5b0701d74ef6ffce6b7ac"
+      "sha256": "sha256:b3d4501a7015418c5cc930dca4df3b2a7b9da3736585e309b5df0cf8ffd186c2"
     },
     {
       "bytes": 10504,
       "path": "route-evidence.json",
-      "sha256": "sha256:43ebaca99c675dd2a28edbf4696eefd608d46fd9e81ac60f3fbf141c4bbb602b"
+      "sha256": "sha256:bac6b9f6bf26065554d3d2852eafa14ad52730686cbc2705d35dd70daed00f13"
     },
     {
       "bytes": 309,
@@ -160,5 +162,5 @@
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "objc-to-java",
   "schema_version": 1,
-  "total_bytes": 58236
+  "total_bytes": 58237
 }

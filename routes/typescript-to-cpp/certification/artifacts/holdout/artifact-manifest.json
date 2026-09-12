@@ -1,5 +1,6 @@
 {
   "allowed_suffixes": [
+    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -12,6 +13,7 @@
     ".m",
     ".md",
     ".mjs",
+    ".php",
     ".py",
     ".rs",
     ".smt2",
@@ -69,22 +71,22 @@
     {
       "bytes": 3392,
       "path": "formal-composition.json",
-      "sha256": "sha256:bbdffd7013c24449f69de040d16f714257ed84aa2c37426f0d7f652cdf088bcc"
+      "sha256": "sha256:c31a786214e0947732247fb08a18be9466fd6475cbd9e92d66da55c4c5a913da"
     },
     {
       "bytes": 2571,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:5a1a4f0d49bf4e4cb123dbf488268016974b246321d7a87a59c752bed4cb052e"
+      "sha256": "sha256:37edfe9389936f9824f06898b3bea9d2a38205042d149c7d0f7aa04053c0b7e8"
     },
     {
-      "bytes": 15307,
+      "bytes": 15308,
       "path": "formal-input.json",
-      "sha256": "sha256:e5e73d38450db08050edde4a24d5231656a791259ba3acee37d9d9dcb995f3d7"
+      "sha256": "sha256:727c26023d0db96f59d07fadebab88eafdf3f0ee81731f3dc442bad31272ef7a"
     },
     {
       "bytes": 2734,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:27ac08689eac3d07914458f5bb5d98c72bc45f5bcbd884752efb4519df1bc996"
+      "sha256": "sha256:123463b473d14a5f5cff52c3b1bf145142b02044e9bfa428d78b5c21f6ac6c70"
     },
     {
       "bytes": 2668,
@@ -104,7 +106,7 @@
     {
       "bytes": 4327,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:b93c012b068b935b2727e88fb31b9722643eb686ea4ecee75bb2126ff745793b"
+      "sha256": "sha256:9f7ab888faffa37996f06832ea1bcdc59de533c0e5aaa8c085a4dbfbb821283d"
     },
     {
       "bytes": 398,
@@ -114,7 +116,7 @@
     {
       "bytes": 12352,
       "path": "route-evidence.json",
-      "sha256": "sha256:a0e7ac90206efe70f8af9b3098303234c44662fc0c910fe1386b40b26ebf6a0b"
+      "sha256": "sha256:1b60829502401e679590ee6a1831290f33dd471743b9719be3d331c2a6295293"
     },
     {
       "bytes": 2024,
@@ -170,5 +172,5 @@
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "typescript-to-cpp",
   "schema_version": 1,
-  "total_bytes": 73571
+  "total_bytes": 73572
 }

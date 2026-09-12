@@ -1,5 +1,6 @@
 {
   "allowed_suffixes": [
+    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -12,6 +13,7 @@
     ".m",
     ".md",
     ".mjs",
+    ".php",
     ".py",
     ".rs",
     ".smt2",
@@ -68,22 +70,22 @@
     {
       "bytes": 3042,
       "path": "formal-composition.json",
-      "sha256": "sha256:98d50a8fb0cfb7fec8dbe1b506d1cb6be086c2cfb074d6b793ed48c38b7f022e"
+      "sha256": "sha256:c356f3f8c90d4f02ee2d2a170e4a4376c97f8773eeb67206757687c52a76dd12"
     },
     {
       "bytes": 1014,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:4a4eab763785b849b8e8e479851723f98640262d365a591c70103807fb7f540a"
+      "sha256": "sha256:01949a20c92baf39391a33fb8e922f771a93413e1ce08c8301e8d38dfd2a8048"
     },
     {
-      "bytes": 13129,
+      "bytes": 13130,
       "path": "formal-input.json",
-      "sha256": "sha256:bef9fef6470c76f3c74a32d80f0c05f7df5d5d2277594239985d9616be40bd09"
+      "sha256": "sha256:0ec9dd22bea6ac0697b73be7657bb160d48b127d99670b40dca9a3789ade5013"
     },
     {
       "bytes": 2384,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:2dcb9f32607ccc0b8c27c466e8aa0774725134cbd290976cdf3435b7a080558f"
+      "sha256": "sha256:1c8192f271d7ca92a2b3afda6e9ec43f5ecefdcb986ce61c5977f2220427b485"
     },
     {
       "bytes": 2671,
@@ -103,7 +105,7 @@
     {
       "bytes": 3515,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:82b96f2fd5a2aa310b31ee951e1eb585730971adcdeb45f96133c4be40548fd4"
+      "sha256": "sha256:a8ba9f59acf8d9055249da49e9f84cab0e527cbf6e09df61b89ead27dd0259eb"
     },
     {
       "bytes": 383,
@@ -113,7 +115,7 @@
     {
       "bytes": 10906,
       "path": "route-evidence.json",
-      "sha256": "sha256:38a0fc9bc848e6f2744ea63790bb228f545f8448e66579a1b390ba351fdb9e56"
+      "sha256": "sha256:1d6b3132a2f2e16d2781ff14f2101507e445944219a328e1b51ea9aa2e05c608"
     },
     {
       "bytes": 1780,
@@ -159,5 +161,5 @@
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "rust-to-objc",
   "schema_version": 1,
-  "total_bytes": 61512
+  "total_bytes": 61513
 }

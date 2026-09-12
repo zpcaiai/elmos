@@ -1,43 +1,46 @@
 {
   "artifact_manifests": {
     "development": {
-      "bytes": 5771,
+      "bytes": 5795,
       "path": "certification/artifacts/development/artifact-manifest.json",
-      "sha256": "sha256:9990f9436ea5b2cccc6de9f56070c4b6bed32857379d241c83206c53cd743dcd"
+      "sha256": "sha256:af684f81188c8cb381c3d55f8339416c965ab9d8508d187cadfeb0c4138a2623"
     },
     "holdout": {
-      "bytes": 5759,
+      "bytes": 5783,
       "path": "certification/artifacts/holdout/artifact-manifest.json",
-      "sha256": "sha256:904ee4b78aa0cb33fa4022d4e087ea929d176226e111768bdfce34c41c2081a8"
+      "sha256": "sha256:4deb98cf12f7b22236afd2a67f0dc95edd57d8d6e84316ea34af6b85412fc899"
     },
     "real-repository": {
-      "bytes": 5785,
+      "bytes": 5809,
       "path": "certification/artifacts/real-repository/artifact-manifest.json",
-      "sha256": "sha256:338175a7958666a1634e7e134490c88fc9e19262cc8ed50c7e141da72d180b79"
+      "sha256": "sha256:8c4c5cbab9f44deffb7f58393977f96df382ffcfee0b46de770eccecc15d463a"
     }
   },
   "artifact_refs": [
     {
-      "bytes": 5771,
+      "bytes": 5795,
       "path": "certification/artifacts/development/artifact-manifest.json",
-      "sha256": "sha256:9990f9436ea5b2cccc6de9f56070c4b6bed32857379d241c83206c53cd743dcd"
+      "sha256": "sha256:af684f81188c8cb381c3d55f8339416c965ab9d8508d187cadfeb0c4138a2623"
     },
     {
-      "bytes": 5759,
+      "bytes": 5783,
       "path": "certification/artifacts/holdout/artifact-manifest.json",
-      "sha256": "sha256:904ee4b78aa0cb33fa4022d4e087ea929d176226e111768bdfce34c41c2081a8"
+      "sha256": "sha256:4deb98cf12f7b22236afd2a67f0dc95edd57d8d6e84316ea34af6b85412fc899"
     },
     {
-      "bytes": 5785,
+      "bytes": 5809,
       "path": "certification/artifacts/real-repository/artifact-manifest.json",
-      "sha256": "sha256:338175a7958666a1634e7e134490c88fc9e19262cc8ed50c7e141da72d180b79"
+      "sha256": "sha256:8c4c5cbab9f44deffb7f58393977f96df382ffcfee0b46de770eccecc15d463a"
     }
   ],
   "critical_behavior_regressions": 0,
   "critical_unknown_semantics": 0,
   "execution_status": "PASSED_LOCAL",
-  "external_certification_status": "PASSED",
-  "independent_verification_status": "PASSED",
+  "formal_equivalence": {
+    "bytes": 304859,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:f2b9f8a8d1239dc4cc0950245f911a4c85286c378f0dc0832a8538ae675d4057"
+  },
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
@@ -46,7 +49,6 @@
     "p0_behavior_pass_rate": 1.0,
     "source_map_coverage": 1.0
   },
-  "module_execution_status": "NOT_APPLICABLE",
   "negative_runs": [
     "certification/local-negative-evidence.json"
   ],
@@ -57,7 +59,7 @@
     "Independent verifier, customer repository, framework, database, production, and external certification evidence remain NOT_RUN."
   ],
   "route_key": "cpp-to-csharp",
-  "route_maturity": "CERTIFIED",
+  "route_maturity": "LIMITED",
   "route_version": "1.0.0",
   "runs": [
     "certification/local-development-evidence.json",

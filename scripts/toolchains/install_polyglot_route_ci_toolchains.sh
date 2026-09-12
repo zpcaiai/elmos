@@ -66,6 +66,9 @@ case "${CI_PROFILE}" in
       "20260831.0337.3:26.6.2:25G83")
         HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260831.0337.3"
         ;;
+      "20260907.0351.1:26.6.2:25G83")
+        HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260907.0351.1"
+        ;;
       *)
         printf 'The full pinned Node closure rejects macos26 host profile %s.\n' \
           "${HOST_PROFILE}" >&2
@@ -162,12 +165,17 @@ PY
     fi
     ;;
   frontend-formal)
-    if [[ "${ImageOS:-}" != "macos15" \
-      || "${ImageVersion:-}" != "20260829.0321.1" \
-      || "$(sw_vers -productVersion)" != 15.* ]]; then
-      printf 'The frontend formal Node closure requires GitHub macos15 image 20260829.0321.1.\n' >&2
+    FRONTEND_HOST_PROFILE="${ImageOS:-}:${ImageVersion:-}:$(sw_vers -productVersion):$(sw_vers -buildVersion)"
+    readonly FRONTEND_HOST_PROFILE
+    case "${FRONTEND_HOST_PROFILE}" in
+      "macos15:20260829.0321.1:15.7.9:24G830"|\
+      "macos15:20260907.0337.1:15.7.9:24G830") ;;
+      *)
+      printf 'The frontend formal Node closure rejects hosted image profile %s.\n' \
+        "${FRONTEND_HOST_PROFILE}" >&2
       exit 2
-    fi
+      ;;
+    esac
     ;;
 esac
 
@@ -817,7 +825,8 @@ if [[ "${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python" ]]; then
   # by file digests, version output, bundle signature, team, and CDHash.
   case "${TEMURIN_HOST_BINDING}" in
     "20260728.0273.1:26.5.2:25F84:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"|\
-    "20260831.0337.3:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home") ;;
+    "20260831.0337.3:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home"|\
+    "20260907.0351.1:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home") ;;
     *)
       printf 'setup-java Temurin home is not bound to the exact hosted image: %s\n' \
         "${TEMURIN_HOST_BINDING}" >&2

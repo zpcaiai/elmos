@@ -732,8 +732,14 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
+      - name: Set up Rust 1.89.0
+        uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
       - name: Install locked uv tool
         run: python -m pip install --disable-pip-version-check uv==0.11.16
+      - name: Build locked Rust CDC comparator
+        run: >-
+          cargo build --locked --release
+          --manifest-path engines/sql-dialect-engine/cdc-engine-rust/Cargo.toml
       - name: Verify SQL Dialect Engine
         working-directory: engines/sql-dialect-engine
         run: |

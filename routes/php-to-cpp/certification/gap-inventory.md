@@ -1,5 +1,6 @@
-# php-to-cpp -- gap inventory
+# php-to-cpp remaining obligations
 
-`NOT_RUN`. This direction is declared, not demonstrated, so there is
-nothing here yet to profile or to inventory gaps against. Writing this
-document is part of what a first execution of this route produces.
+- Execute three physically separate function corpora with the pinned native toolchains.
+- Execute the typed-pure-module-v1 campaign over at least three functions.
+- Preserve every unsupported width, identity, ownership, exception, and effect semantic as blocked.
+- Obtain independent verification and external/customer evidence; both are currently NOT_RUN.

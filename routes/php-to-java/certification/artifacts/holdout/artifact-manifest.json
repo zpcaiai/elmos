@@ -1,0 +1,165 @@
+{
+  "allowed_suffixes": [
+    ".bas",
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".mjs",
+    ".php",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/php-to-java/certification/artifacts/holdout",
+  "corpus": "holdout",
+  "excluded_files": [
+    "Migrated.class",
+    "RouteHarness.class"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 20,
+  "files": [
+    {
+      "bytes": 261,
+      "path": "Migrated.java",
+      "sha256": "sha256:1dc1f70d656fc0c915eb4ab112c722b9e633ea87b97f0501631d1d128ec3803e"
+    },
+    {
+      "bytes": 840,
+      "path": "RouteHarness.java",
+      "sha256": "sha256:44afc88813a12e5c23b0c69a48b600519aa3ddfb6a9c0eff7a3e3e851f7c6c93"
+    },
+    {
+      "bytes": 1486,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:b63ba05a37f81b63cf7861b88c2a2778ea4e2f43fa2e675a382ce4b907621a32"
+    },
+    {
+      "bytes": 15059,
+      "path": "chunk-map.json",
+      "sha256": "sha256:b79570725bde472abeaf71ea32154b6d039cbcd94a12c47a2baa7db08dffc80b"
+    },
+    {
+      "bytes": 3040,
+      "path": "formal-composition.json",
+      "sha256": "sha256:4e4fff2c683440c5d7cb1dc5c83d40a47e4ccbe7b964092543f64e84fdc7c2c2"
+    },
+    {
+      "bytes": 1014,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:be572ec1401d67db9bccf175ef9d5269c1adac2ba116ed2174ca5bcd34b5cc6d"
+    },
+    {
+      "bytes": 14426,
+      "path": "formal-input.json",
+      "sha256": "sha256:c9a5de335d3d902da945601e2ae5d243e9a7515e834594f16c847a7e35fdc22f"
+    },
+    {
+      "bytes": 2382,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:08115be51ac5f214dd4ae7816e2dccbeeeb46bd665996923eb7e8220e7cbdba0"
+    },
+    {
+      "bytes": 2360,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:04190a58680dd9275532b999c78eba66137a404d03556e9c6f4df7b7268bcecf"
+    },
+    {
+      "bytes": 150,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:91054d96f588f95daa31124279f0a9e37d5043d4fe647e46ea3a1332f408fd5c"
+    },
+    {
+      "bytes": 202,
+      "path": "inputs/clamp.php",
+      "sha256": "sha256:d4c1d61f838c2b145a20736c032040b73233a460bfbad866704f4dbdf078021f"
+    },
+    {
+      "bytes": 3761,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:42d4cf890ece0ace727242f75fb21550853c1822503436398f017171851b7eb8"
+    },
+    {
+      "bytes": 12391,
+      "path": "route-evidence.json",
+      "sha256": "sha256:77e4b5a7f10344586b0d68b597ae3f3b373a13d8346dcd884e307ec98a55e583"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799"
+    },
+    {
+      "bytes": 2216,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:baca1961f3c9e59d352ccfea39dbea4afd34f496d1993552d1777f623ab0ad60"
+    },
+    {
+      "bytes": 202,
+      "path": "source-runtime/clamp.php",
+      "sha256": "sha256:d4c1d61f838c2b145a20736c032040b73233a460bfbad866704f4dbdf078021f"
+    },
+    {
+      "bytes": 928,
+      "path": "source-runtime/source_harness.php",
+      "sha256": "sha256:f78cdfc5368b1abe8cd5b3188b7f4425edc37b0557e5358154234458c072662e"
+    },
+    {
+      "bytes": 2216,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:baca1961f3c9e59d352ccfea39dbea4afd34f496d1993552d1777f623ab0ad60"
+    },
+    {
+      "bytes": 2011,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:1f4fb0fa850829915bd9f5b080225c468d1a540a918630d2b471c4357fdce9ae"
+    },
+    {
+      "bytes": 2031,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:012e29c84c00d71eae10503fb0765d41c87a0cc4307bf9b01926e7d1b68bb637"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "php-to-java",
+  "schema_version": 1,
+  "total_bytes": 67285
+}

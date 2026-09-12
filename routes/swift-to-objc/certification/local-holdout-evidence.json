@@ -1,8 +1,8 @@
 {
   "artifact_manifest": {
-    "bytes": 4376,
+    "bytes": 4400,
     "path": "certification/artifacts/holdout/artifact-manifest.json",
-    "sha256": "sha256:3093aaa98cbc3cb9880d89bd990f0ac673f428a9d31eda94d52fb51e8e3469de"
+    "sha256": "sha256:a6a6450bfd3dbd315854b7f92baa82deb75f294c467153f4fcfd244f1913b8e5"
   },
   "artifact_root": "certification/artifacts/holdout",
   "authorization": "local-engineering-validation",
@@ -34,31 +34,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:6dc9d759537c49d565264df77600c7acb673e178f21dc5aef3d6c6a558900c9d",
+    "artifact_sha256": "sha256:660d303527f155c67bd5317d5976ca574a550e4774a99db8340170943ad2fcc3",
     "assumption_boundary": "typed-pure-function-v1 / L0 / canonical-finite-no-error-input-domain",
-    "formal_input_digest": "sha256:700f1e693644c9e3007fa6d24cc7f533bdb7597b8ee632c1a7788dce5c2916ce",
+    "formal_input_digest": "sha256:43dfaa10b9ba2dcf7dadf1cc3916bb82d6cf595a05edd90d3ef2c3990e0a145c",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:700f1e693644c9e3007fa6d24cc7f533bdb7597b8ee632c1a7788dce5c2916ce",
+    "formal_input_sha256": "sha256:43dfaa10b9ba2dcf7dadf1cc3916bb82d6cf595a05edd90d3ef2c3990e0a145c",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:700f1e693644c9e3007fa6d24cc7f533bdb7597b8ee632c1a7788dce5c2916ce",
+        "formal_input_sha256": "sha256:43dfaa10b9ba2dcf7dadf1cc3916bb82d6cf595a05edd90d3ef2c3990e0a145c",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:93a78cafcaf7953830211fe99418043219ff753f918c430b4fdcaf0195c720e5",
+        "sha256": "sha256:5b22acff126d8c56bded85b43db449a7dcf79d7d7d319573f2bce314b180f226",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:700f1e693644c9e3007fa6d24cc7f533bdb7597b8ee632c1a7788dce5c2916ce",
+        "formal_input_sha256": "sha256:43dfaa10b9ba2dcf7dadf1cc3916bb82d6cf595a05edd90d3ef2c3990e0a145c",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:e3f7fe3dc59c053e7a2e20f59c311eb657b7e4a46e3dd3ea552402f1f889639b",
+        "sha256": "sha256:ace9a0c748b4f050b89475465d964f84192c3218c3b5990cf917021f00ccd725",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:93a78cafcaf7953830211fe99418043219ff753f918c430b4fdcaf0195c720e5",
+    "solver_input_digest": "sha256:5b22acff126d8c56bded85b43db449a7dcf79d7d7d319573f2bce314b180f226",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -76,7 +76,7 @@
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
-    "plan_sha256": "sha256:a5678a5f893d141686595f8ea016ef2fa641e8374e9004a9661d01a6834340d6",
+    "plan_sha256": "sha256:80833b0d90175bbced77a6a290b30c209bb5b57969e30ee33a936a368a3a5c46",
     "policy_id": "typed-alpha-hygiene-v2",
     "policy_sha256": "sha256:2c3bec7abb6a2b14b4fa04616076dbcdf8d3e8666f34eccdf7c7092290398227",
     "raw_target_relift": {
@@ -102,7 +102,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:7ee9c104c36c764e58c00b6e330a30352d0fff2ebd8a58d9cfe2c3273ace6425",
+    "artifact_sha256": "sha256:641818b0cab2bf98718d6b1f273d4fc4140668602ead7c40ea332ce711d7f124",
     "status": "PASSED"
   },
   "limitations": [
@@ -121,15 +121,15 @@
     "artifact_sha256": "sha256:1ecc40402a160340c4d61282f5a09f72ebb06c83af9d56095992df8d9a6948fe",
     "difference_count": 0,
     "source_ir_path": "source-semantic-ir.json",
-    "source_ir_sha256": "sha256:688f0ef24758f280dd14930d7df04af84f42828ba95ff287d72340a93737d233",
+    "source_ir_sha256": "sha256:19c62958179ed9fade63366b486c0052ebbcd0a63dbc84ee42c807719b2b7a60",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
     "target_ir_sha256": "sha256:363e6c882f0f5050e1aba5a083ce869503f6217ae274d32af042ee53db206825"
   },
-  "semantic_ir_sha256": "sha256:688f0ef24758f280dd14930d7df04af84f42828ba95ff287d72340a93737d233",
+  "semantic_ir_sha256": "sha256:19c62958179ed9fade63366b486c0052ebbcd0a63dbc84ee42c807719b2b7a60",
   "source": {
     "analyzer": "SwiftSyntax",
-    "analyzer_version": "600.0.1;source-inputs=sha256:6ac46d212271caed65f4dc73e523e2c827028634ca6ee099c0892aa3b5613763;swift-driver=sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb;swift-syntax-tree=sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d;canonical-receipt=sha256:f7f1b5d7cac69523aa4eba91004ef0f803a53de140961f7daaae8513cc8d2f4e;binary=sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e;toolchain=sha256:abd549de7e236a804834f5e6c297c8da0a68d7b68d6372ee5b676ebb4a69f006;build-closure=sha256:42f086a415270b64ecf45d007c59c2395b3308d623f8cc35c6e385696b820cc5;network-policy=sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08",
+    "analyzer_version": "600.0.1;source-inputs=sha256:6faba783c284b0781cfdf720cb7011d92b4f1198422182c4169236a7ada809cb;swift-driver=sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb;swift-syntax-tree=sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d;canonical-receipt=sha256:f76a02fcde7685ae91897f2a1d1686ea4b59940210bb73884f4097672fecfa6f;binary=sha256:77de6e58a7e47d92d785b1cb7ca98f3fb0e99bd84e4e8e29ccd4b482ee4e7f76;toolchain=sha256:abd549de7e236a804834f5e6c297c8da0a68d7b68d6372ee5b676ebb4a69f006;build-closure=sha256:42f086a415270b64ecf45d007c59c2395b3308d623f8cc35c6e385696b820cc5;network-policy=sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08",
     "function_name": "echoNumber",
     "language": "swift",
     "path": "echo_number.swift",

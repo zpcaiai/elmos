@@ -1,5 +1,6 @@
 {
   "allowed_suffixes": [
+    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -66,22 +67,22 @@
     {
       "bytes": 3036,
       "path": "formal-composition.json",
-      "sha256": "sha256:49c34fdede71b6d53e351cf705b4439bd0e445d3f921d79e8fcbcff53f9e8608"
+      "sha256": "sha256:6cd732ae0395ea850816082cf28da11053d8de8b3ce6eb27d35ec74e706df164"
     },
     {
       "bytes": 1018,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:5843fdfcc957322325b4d5f0fa5e90436b426a9c1442021d53b85ded8f3a6a07"
+      "sha256": "sha256:133843def138e2fde9d2ceb718464b294b3d804fb1a7d6a228cbb5ed29d34209"
     },
     {
-      "bytes": 12342,
+      "bytes": 12343,
       "path": "formal-input.json",
-      "sha256": "sha256:05584464fd2bd9cc1efa62326c816ef7300b3f7fa0045a5f423a07ca4c7647f5"
+      "sha256": "sha256:bebc56b2f665c3eeafcf62f4aac41a59cd87f6f27fe6dd4da0543d669eb6988d"
     },
     {
       "bytes": 2378,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:c60a584f9f26c87591b4a4c1262c6ca497e64a6f4f4870ca623166bc4e8dbe6f"
+      "sha256": "sha256:0ce12708a98a3728d825ee5099b5047d56a18f826c1c0cf9c9d400bebc96a537"
     },
     {
       "bytes": 2236,
@@ -101,7 +102,7 @@
     {
       "bytes": 3745,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:6bd0a276547bfa17e4f55437714b01f72122526c67865359ad52744e4739fb89"
+      "sha256": "sha256:980c7709f005b61ba8bb7eede331888d95de7400de7a387ad9e8abcf21d275a1"
     },
     {
       "bytes": 390,
@@ -109,9 +110,9 @@
       "sha256": "sha256:1bc2e213603e6f8f4b071f501bef81fe44687119be36c242091d93ba614b8fa1"
     },
     {
-      "bytes": 11665,
+      "bytes": 11778,
       "path": "route-evidence.json",
-      "sha256": "sha256:5037a99e246e9598d86d8829921b95eb26a4f0ab4a33ec29cf36f6601489b700"
+      "sha256": "sha256:195c5cf80c06686423f2ea1d634bed66b8239333c45ec514cef67a537a08760c"
     },
     {
       "bytes": 944,
@@ -157,5 +158,5 @@
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "go-to-php",
   "schema_version": 1,
-  "total_bytes": 57031
+  "total_bytes": 57145
 }

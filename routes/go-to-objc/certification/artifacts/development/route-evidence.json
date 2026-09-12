@@ -28,31 +28,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:cd186a1c840bc586a49eff527afcc4af0fc85baadea51003b01ec94628383313",
+    "artifact_sha256": "sha256:c7487334d73a3aa4c4ad6f11a4dbcb704016d37e9c62d61f3af32d14ceea8476",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:afd2b3cea93009c2d8ef75e470dd63c4c82c8927a01423505b674495a1cd1ac2",
+    "formal_input_digest": "sha256:a4ba173adc2184a5eda89feca3b380a4d848b1c125e1bca8e9ad790706125751",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:afd2b3cea93009c2d8ef75e470dd63c4c82c8927a01423505b674495a1cd1ac2",
+    "formal_input_sha256": "sha256:a4ba173adc2184a5eda89feca3b380a4d848b1c125e1bca8e9ad790706125751",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:afd2b3cea93009c2d8ef75e470dd63c4c82c8927a01423505b674495a1cd1ac2",
+        "formal_input_sha256": "sha256:a4ba173adc2184a5eda89feca3b380a4d848b1c125e1bca8e9ad790706125751",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:01e6ad404bd535ae10d8fdf10d9391efc012d7aa249c92fde6e63476fc6860a7",
+        "sha256": "sha256:dc0c75ca72f34662bcf8cf032d049e01b1d868885d2d50d4cf05af009db01c5a",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:afd2b3cea93009c2d8ef75e470dd63c4c82c8927a01423505b674495a1cd1ac2",
+        "formal_input_sha256": "sha256:a4ba173adc2184a5eda89feca3b380a4d848b1c125e1bca8e9ad790706125751",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:96395742c8b379c15bb07ed39a1af26323fdbee4fa663cba76e5ef64a414c45b",
+        "sha256": "sha256:2c4d150d677384d027cc923b5a367640e761fd771007b71515031b3d926429a8",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:01e6ad404bd535ae10d8fdf10d9391efc012d7aa249c92fde6e63476fc6860a7",
+    "solver_input_digest": "sha256:dc0c75ca72f34662bcf8cf032d049e01b1d868885d2d50d4cf05af009db01c5a",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -96,7 +96,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:ee53ca0b03adda9c8e00eb74caae37adfdba9f27d83a9c5900de82ccdafe36fa",
+    "artifact_sha256": "sha256:c3d39ca8097aa97283271d5d94bb38049114a352b6dbff15474dcc6fe5fc3ae1",
     "status": "PASSED"
   },
   "limitations": [
@@ -147,7 +147,7 @@
           "source_behavior_test.go"
         ],
         "stderr": "",
-        "stdout": "=== RUN   TestElmosSourceBehavior\nELMOS_OBSERVATION\t0\tb64\tMTIw\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNQ==\n--- PASS: TestElmosSourceBehavior (0.00s)\nPASS\nok  \tcommand-line-arguments\t0.422s\n"
+        "stdout": "=== RUN   TestElmosSourceBehavior\nELMOS_OBSERVATION\t0\tb64\tMTIw\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNQ==\n--- PASS: TestElmosSourceBehavior (0.00s)\nPASS\nok  \tcommand-line-arguments\t0.500s\n"
       }
     ],
     "language": "go",

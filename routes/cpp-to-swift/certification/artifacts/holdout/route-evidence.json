@@ -28,31 +28,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:b41fee573bd643188b793f7cbb023de33a97f946dd724ab87645a29b66a71755",
+    "artifact_sha256": "sha256:3f17e4b4d5067742464ea14032ed9fb9cd30f461c8343c42b8990565ce55ddf2",
     "assumption_boundary": "typed-pure-function-v1 / L0 / canonical-finite-no-error-input-domain",
-    "formal_input_digest": "sha256:7e0ed64f71d199009f097a8740efa5522a21b92c9869a2133c90fc047eadb698",
+    "formal_input_digest": "sha256:02194f455263c93d4659fe4ca0da43c93f5a4f5e513ee101625dabf7e98d0a4a",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:7e0ed64f71d199009f097a8740efa5522a21b92c9869a2133c90fc047eadb698",
+    "formal_input_sha256": "sha256:02194f455263c93d4659fe4ca0da43c93f5a4f5e513ee101625dabf7e98d0a4a",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:7e0ed64f71d199009f097a8740efa5522a21b92c9869a2133c90fc047eadb698",
+        "formal_input_sha256": "sha256:02194f455263c93d4659fe4ca0da43c93f5a4f5e513ee101625dabf7e98d0a4a",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:29f1b1136fee2ac097d26a8fbfde83345f1f6ce6d96020c59fe3fd6c092cfeff",
+        "sha256": "sha256:d01d9c033e683b1938041a1660ae587ab3623dfcbd56a57bf5bbd2e9cfc78fc1",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:7e0ed64f71d199009f097a8740efa5522a21b92c9869a2133c90fc047eadb698",
+        "formal_input_sha256": "sha256:02194f455263c93d4659fe4ca0da43c93f5a4f5e513ee101625dabf7e98d0a4a",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:71c525a9a8be2e75eae28220f54f29524c40c21d4b3ff93f0fb6eeae387330a5",
+        "sha256": "sha256:3d8e37f3f51b69d4dcee1ac911fa50dc733df3de96a54b1086ab3282694b7df0",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:29f1b1136fee2ac097d26a8fbfde83345f1f6ce6d96020c59fe3fd6c092cfeff",
+    "solver_input_digest": "sha256:d01d9c033e683b1938041a1660ae587ab3623dfcbd56a57bf5bbd2e9cfc78fc1",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -66,7 +66,7 @@
   "identifier_hygiene": {
     "normalized_target_ir": {
       "path": "target-semantic-ir.normalized.json",
-      "sha256": "sha256:3a009ec33204881b5105952d1a90507c33ef93fe9f1fe7a155ddb83ac0876f5e",
+      "sha256": "sha256:bad8e9b5ab9fe595369b50f01749b72a70bba047912a87aa0f142c2bc53f0d08",
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
@@ -75,7 +75,7 @@
     "policy_sha256": "sha256:fab9af18b8a5f2723f51d0e3bf5e6e4fd22064dd33fd3247dd885b07277eaad1",
     "raw_target_relift": {
       "path": "target-semantic-ir.raw.json",
-      "sha256": "sha256:5247df8e118a8437d0dce971e48958254020a953dfe1177abab9c5a768d32839",
+      "sha256": "sha256:8a7dea75e12ea11288bea2a07444ae3a2918e2b5cbb76267657370eef56f3393",
       "status": "PASSED"
     },
     "renamed": true,
@@ -96,7 +96,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:65835138a78914803b0121ae6e23da0f09cb111c8201fa7c245f4ff18b17a36d",
+    "artifact_sha256": "sha256:63c828ebb4c46194038b85cd34d22c4a55fec37b94fffaaa65f3c916e3483c08",
     "status": "PASSED"
   },
   "limitations": [
@@ -118,7 +118,7 @@
     "source_ir_sha256": "sha256:bb070d3f8f7b0ad19f4e631b69d90be10f237948c4b2c58e83c363bf51a77e1a",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
-    "target_ir_sha256": "sha256:3a009ec33204881b5105952d1a90507c33ef93fe9f1fe7a155ddb83ac0876f5e"
+    "target_ir_sha256": "sha256:bad8e9b5ab9fe595369b50f01749b72a70bba047912a87aa0f142c2bc53f0d08"
   },
   "semantic_ir_sha256": "sha256:bb070d3f8f7b0ad19f4e631b69d90be10f237948c4b2c58e83c363bf51a77e1a",
   "source": {

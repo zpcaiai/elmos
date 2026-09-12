@@ -852,7 +852,11 @@ def _statements(
             if len(cond_operands) != 2:
                 raise RouteError(f"{language.upper()}_FOR_COND_MALFORMED")
             cond_lhs = _unwrap(cond_operands[0])
-            if cond_lhs.get("kind") != "DeclRefExpr" or str(cond_lhs.get("referencedDecl", {}).get("name", "")) != var_name:
+            if (
+                cond_lhs.get("kind") != "DeclRefExpr"
+                or str(cond_lhs.get("referencedDecl", {}).get("name", ""))
+                != var_name
+            ):
                 raise RouteError(f"{language.upper()}_FOR_COND_LHS_MUST_BE_LOOP_VAR")
             end_expr = _expression(cond_operands[1], language, source_file, emitted_target, var_type)
 

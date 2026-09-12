@@ -2,15 +2,15 @@
 
 Generated from the route's authoritative `../support-matrix.json`; this view does not create execution or certification evidence.
 
-- Source SHA-256: `sha256:73126fe87ceebaf26925248929376c982aec5cede14b254f8d153815abde1588`
-- Source bytes: `2644`
+- Source SHA-256: `sha256:c9cd1d852eaa96d9143b77acb38a456f77d321cb9da7dd68b443f27f2226e3f7`
+- Source bytes: `1717`
 
 ## typed-pure-function-v1
 
-- Status: `certified`
+- Status: `supported`
 - Strategy: `compiler-backed-semantic-ir`
-- Evidence: `certification/evidence.json`
-- Reason: Certified for typed pure function semantic conversion under the verified typed-pure-function-v1 profile.
+- Evidence: `certification/local-development-evidence.json`, `certification/local-holdout-evidence.json`, `certification/local-representative-evidence.json`
+- Reason: Supported only inside typed-pure-function-v1 after native analysis, target compilation, separate holdout, and representative behavior replay. Independent and external certification remain NOT\_RUN.
 
 ## primitive-types
 
@@ -33,30 +33,9 @@ Generated from the route's authoritative `../support-matrix.json`; this view doe
 - Evidence: None
 - Reason: Requires exact Batch 30/31 packs and independent runtime evidence; it is not hidden in this route.
 
-## object-graph-lifecycle
+## typed-pure-module-v1
 
 - Status: `blocked`
-- Strategy: `separate-exact-pack`
+- Strategy: `per-function-proof-plus-module-composition`
 - Evidence: None
-- Reason: Object graph lifecycle, finalizers, references and circular graph semantics require specialized lifecycle runtime packs and are fail-closed blocked under typed-pure-function-v1.
-
-## async-concurrency
-
-- Status: `blocked`
-- Strategy: `separate-exact-pack`
-- Evidence: None
-- Reason: Asynchronous coroutines, thread scheduling, locks and concurrency primitives require dedicated concurrent runtime packs and are fail-closed blocked under typed-pure-function-v1.
-
-## exception-unwinding
-
-- Status: `blocked`
-- Strategy: `separate-exact-pack`
-- Evidence: None
-- Reason: Cross-language stack exception unwinding, landing pads and runtime throw/catch unwinding semantics require specialized exception runtime packs and are fail-closed blocked under typed-pure-function-v1.
-
-## complex-framework-and-ui
-
-- Status: `blocked`
-- Strategy: `separate-exact-pack`
-- Evidence: None
-- Reason: Complex framework lifecycle, dependency injection, and UI widget hierarchy conversions require dedicated framework modernization packs and are fail-closed blocked under typed-pure-function-v1.
+- Reason: This legacy route has not requested the separate module profile.

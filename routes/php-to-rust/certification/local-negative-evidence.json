@@ -1,11 +1,13 @@
 {
   "case": "missing-function-fails-closed",
   "expected_result": "BLOCKED",
-  "external_certification": "PASSED",
-  "independent_verifier": "PASSED",
-  "observed_reason": "NO_SUPPORTED_FUNCTIONS",
+  "external_certification": "NOT_RUN",
+  "independent_verifier": "NOT_RUN",
+  "observed_reason": "FUNCTION_NOT_FOUND:__elmos_missing_function__",
   "route": "php-to-rust",
   "schema_version": 1,
+  "source_native_analyzer": "EXECUTED",
   "status": "PASSED",
+  "target_execution": "NOT_REACHED_BY_DESIGN",
   "test_integrity": "PRESERVED"
 }

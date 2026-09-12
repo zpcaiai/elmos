@@ -1,8 +1,8 @@
 {
   "artifact_manifest": {
-    "bytes": 6141,
+    "bytes": 6153,
     "path": "certification/artifacts/development/artifact-manifest.json",
-    "sha256": "sha256:dc60b2dff38ac5b62ed4a37b268dca6729dc92f3062157a3031d7202b2ee0e55"
+    "sha256": "sha256:767ca994d9a188cda43d4461df358976dc2300c78a959050095ff360cdf83196"
   },
   "artifact_root": "certification/artifacts/development",
   "authorization": "local-engineering-validation",
@@ -34,31 +34,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:b6b8ef326760a4b003ced90c71332a27b6054da26852490efd8db07d0fe84580",
+    "artifact_sha256": "sha256:37318b519af485fd6510e1ac8399d1313bbdd2ca1b75e8f1d6886832f4154d6b",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:bf4edc2366f88c8d053f0ab230e432bcba07c54c876a27d8e2bfc24545ac569c",
+    "formal_input_digest": "sha256:799125cc9f99b169b49a9e8caa4a53ff75ee4302853b40e3958a931d31034a54",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:bf4edc2366f88c8d053f0ab230e432bcba07c54c876a27d8e2bfc24545ac569c",
+    "formal_input_sha256": "sha256:799125cc9f99b169b49a9e8caa4a53ff75ee4302853b40e3958a931d31034a54",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:bf4edc2366f88c8d053f0ab230e432bcba07c54c876a27d8e2bfc24545ac569c",
+        "formal_input_sha256": "sha256:799125cc9f99b169b49a9e8caa4a53ff75ee4302853b40e3958a931d31034a54",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:50abb0ad5bce1888aca0423234be749b48165061babc6dadf2bd50d396bdce48",
+        "sha256": "sha256:152a5941e20ddacd609db5dc0361602a89dd5e86780d8d92cdc0d481d323553c",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:bf4edc2366f88c8d053f0ab230e432bcba07c54c876a27d8e2bfc24545ac569c",
+        "formal_input_sha256": "sha256:799125cc9f99b169b49a9e8caa4a53ff75ee4302853b40e3958a931d31034a54",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:a6cb80caf8a802fc7baa7cb57887dc72d0a03bba0ba6202bc5df640def25f6ab",
+        "sha256": "sha256:2895ba6991b87c03b7f23cfc45175b6e0db698a6613c5119edb7ec3024d87b20",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:50abb0ad5bce1888aca0423234be749b48165061babc6dadf2bd50d396bdce48",
+    "solver_input_digest": "sha256:152a5941e20ddacd609db5dc0361602a89dd5e86780d8d92cdc0d481d323553c",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -76,7 +76,7 @@
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
-    "plan_sha256": "sha256:d0993a8fbe1ac70766d1e7d84f453b1ac5eca4769b62d9cc9ed005a6e4b7de96",
+    "plan_sha256": "sha256:cda8aca661edb23455553f6f6e9de7fc9314eb340fdb6bfa34a9e46bbfee6dde",
     "policy_id": "typed-alpha-hygiene-v2",
     "policy_sha256": "sha256:7a6c63cc83ffb1b4ea4bcbab527f2adec8d660c73eaa74f55e92a1da9e4feb2e",
     "raw_target_relift": {
@@ -102,7 +102,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:10b28074b2ea08c945925ab67281fc9d003ca2c2f21fb8d755bcac74fad23fa2",
+    "artifact_sha256": "sha256:38fdee844824e52832c7b618c7f97a0924a1774304dd6f758e82850d057be80c",
     "status": "PASSED"
   },
   "limitations": [
@@ -121,15 +121,15 @@
     "artifact_sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d",
     "difference_count": 0,
     "source_ir_path": "source-semantic-ir.json",
-    "source_ir_sha256": "sha256:c70ffaabe98f84de69e0298fd43cac1687013cddb27f56164d49ba768f4af3df",
+    "source_ir_sha256": "sha256:b73b5101ef19276678eb4c2231872fc853713bce0bc02f684c7659fc2d0395f0",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
     "target_ir_sha256": "sha256:149f9bddd2d83febd0b5c29f1ccd937e08d48e34a2c2c16bf5cc3d045f8692ab"
   },
-  "semantic_ir_sha256": "sha256:c70ffaabe98f84de69e0298fd43cac1687013cddb27f56164d49ba768f4af3df",
+  "semantic_ir_sha256": "sha256:b73b5101ef19276678eb4c2231872fc853713bce0bc02f684c7659fc2d0395f0",
   "source": {
     "analyzer": "Microsoft.CodeAnalysis.CSharp",
-    "analyzer_version": "5.6.0.0;source-inputs=sha256:62879faec13a79de62fee583d848c020ea29ee56734ba8edb0d752d1ed34b5cf;dotnet=sha256:b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2;dotnet-bundle=sha256:a2c14a09dfc0c6ca7c6a195cf09372618f1b8124622f38fd456685f13dfee94e;build-output=sha256:5991a3592cc3d4579d5e809c9767ed57ab762a2d045f34b87175bd79b5a2aac4",
+    "analyzer_version": "5.6.0.0;source-inputs=sha256:62879faec13a79de62fee583d848c020ea29ee56734ba8edb0d752d1ed34b5cf;dotnet=sha256:b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2;dotnet-bundle=sha256:a2c14a09dfc0c6ca7c6a195cf09372618f1b8124622f38fd456685f13dfee94e;build-output=sha256:f9f59cd2852c3838f69699865fdf7bee41c46a13fe8011edaf84f28eb5d46068",
     "function_name": "calculate",
     "language": "csharp",
     "path": "Pricing.cs",
@@ -150,7 +150,7 @@
           "Release"
         ],
         "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
-        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-php-g68z0yca/development/source-runtime/SourceHarness.csproj (in 152 ms).\n  SourceHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-php-g68z0yca/development/source-runtime/bin/Release/net10.0/SourceHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:08.49\n"
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-php-soid07ol/development/source-runtime/SourceHarness.csproj (in 48 ms).\n  SourceHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-php-soid07ol/development/source-runtime/bin/Release/net10.0/SourceHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.69\n"
       },
       {
         "command": [
@@ -343,11 +343,11 @@
         "platform=Darwin/arm64",
         "homebrew-bundle-profile=local-macos26-20260904",
         "php-root=/opt/homebrew/Cellar/php/8.5.9",
-        "php-tree-sha256=fb454ccb6b4aad2297c30d8741e5722ffb08439670469a03c46602b31c219277",
+        "php-tree-sha256=60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
         "php-tree-record-count=643",
         "php-tree-file-count=532",
         "php-tree-directory-count=109",
-        "php-tree-bytes=129952851",
+        "php-tree-bytes=129937220",
         "php-tree-symlink-count=1",
         "php-tree-unbound-symlink-count=1",
         "php-tree-unbound-symlink=pecl->/opt/homebrew/lib/php/pecl",
@@ -359,6 +359,8 @@
         "php-debug=False",
         "php-extensions=Core,FFI,PDO,PDO_ODBC,Phar,Reflection,SPL,SimpleXML,Zend OPcache,bcmath,bz2,calendar,ctype,curl,date,dba,dom,exif,fileinfo,filter,ftp,gd,gettext,gmp,hash,iconv,intl,json,ldap,lexbor,libxml,mbstring,mysqli,mysqlnd,odbc,openssl,pcntl,pcre,pdo_dblib,pdo_mysql,pdo_pgsql,pdo_sqlite,pgsql,posix,random,readline,session,shmop,snmp,soap,sockets,sodium,sqlite3,standard,sysvmsg,sysvsem,sysvshm,tidy,tokenizer,uri,xml,xmlreader,xmlwriter,xsl,zip,zlib",
         "php-tokenizer=builtin",
+        "php-homebrew-installer-metadata=NOT_BOUND",
+        "php-homebrew-runtime-dependency-versions=NOT_RUN",
         "php-runtime-semantic-soundness=NOT_RUN"
       ],
       "version": "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)"
