@@ -628,7 +628,7 @@
         {
           "name": "pytest",
           "kind": "pytest",
-          "timeout_seconds": 21600,
+          "timeout_seconds": 43200,
           "project": "engines/polyglot-route-engine",
           "tests": [
             "engines/polyglot-route-engine/tests"
@@ -636,10 +636,14 @@
           "uv_args": [
             "--locked",
             "--group",
-            "dev"
+            "dev",
+            "--with",
+            "pytest-xdist==3.6.1"
           ],
           "pythonpath": [],
-          "environment": {}
+          "environment": {
+            "PYTEST_ADDOPTS": "-n 6"
+          }
         }
       ]
     },
