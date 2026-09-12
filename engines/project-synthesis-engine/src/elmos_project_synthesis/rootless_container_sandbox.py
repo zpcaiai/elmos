@@ -89,9 +89,17 @@ class RootlessSandboxDetector:
 class LinuxRootlessSandboxRunner:
     """Executes code and commands within a hardened rootless sandbox."""
 
-    def __init__(self, config: SandboxSecurityConfig | None = None) -> None:
+    def __init__(
+        self,
+        config: SandboxSecurityConfig | None = None,
+        backend: str | None = None,
+    ) -> None:
         self.config = config or SandboxSecurityConfig()
         self.available_backends = RootlessSandboxDetector.detect_backends()
+        if backend is not None:
+            if backend not in self.available_backends:
+                raise ValueError(f"unavailable rootless sandbox backend: {backend}")
+            self.available_backends = [backend]
 
     def run(
         self,

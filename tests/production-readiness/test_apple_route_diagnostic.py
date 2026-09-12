@@ -209,7 +209,8 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
                 }
             )
         component_by_role = {
-            str(spec[0]): spec for spec in cls.validator.SWIFT_BUILD_CLOSURE_COMPONENT_SPECS
+            str(spec[0]): spec
+            for spec in cls.validator.SWIFT_BUILD_CLOSURE_COMPONENT_SPECS
         }
         for role, component_role in (
             ("xcrun-clang", "clang"),
@@ -250,9 +251,7 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
         return cls.diagnostic._sequenced_records(complete)
 
     @classmethod
-    def _write_payloads(
-        cls, evidence: Path, payloads: list[dict[str, object]]
-    ) -> None:
+    def _write_payloads(cls, evidence: Path, payloads: list[dict[str, object]]) -> None:
         evidence.write_text(
             "".join(
                 json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n"
@@ -481,15 +480,11 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
             "component-link": lambda payloads: payloads[5].__setitem__(
                 "link_target", "forged"
             ),
-            "component-sha": lambda payloads: payloads[5].__setitem__(
-                "sha256", ""
-            ),
+            "component-sha": lambda payloads: payloads[5].__setitem__("sha256", ""),
             "component-bytes-bool": lambda payloads: payloads[5].__setitem__(
                 "bytes", True
             ),
-            "component-identity": lambda payloads: payloads[5].pop(
-                "lexical_identity"
-            ),
+            "component-identity": lambda payloads: payloads[5].pop("lexical_identity"),
             "component-identity-link": lambda payloads: next(
                 payload
                 for payload in payloads
@@ -512,8 +507,7 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
             ),
             "sdk-alias-basename": lambda payloads: payloads[4].__setitem__(
                 "lexical",
-                "/Applications/Xcode.app/Contents/Developer/Platforms/"
-                "MacOSX.platform/Developer/SDKs/Forged.sdk",
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/Forged.sdk",
             ),
             "sdk-relative-target": lambda payloads: payloads[4].__setitem__(
                 "link_target", "../MacOSX.sdk"
@@ -527,9 +521,9 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
             "system-path": lambda payloads: payloads[-7].__setitem__(
                 "lexical", "/private/tmp/sandbox-exec"
             ),
-            "system-codesign": lambda payloads: payloads[-7][
-                "codesign"
-            ].__setitem__("verify_returncode", 1),
+            "system-codesign": lambda payloads: payloads[-7]["codesign"].__setitem__(
+                "verify_returncode", 1
+            ),
             "system-cdhash": lambda payloads: payloads[-7]["codesign"].pop(
                 "cdhash_full"
             ),
@@ -562,9 +556,7 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
                 self.diagnostic.DiagnosticError, "JSONL is invalid"
             ):
                 self.diagnostic._verify_jsonl(evidence, ROOT)
-            evidence.write_text(
-                '{"schema":"x","sequence":NaN}\n', encoding="utf-8"
-            )
+            evidence.write_text('{"schema":"x","sequence":NaN}\n', encoding="utf-8")
             with self.assertRaisesRegex(
                 self.diagnostic.DiagnosticError, "JSONL is invalid"
             ):
@@ -576,9 +568,7 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
             validator = root / "scripts/batch29/validate_route.py"
             validator.parent.mkdir(parents=True)
             validator.write_text(
-                "VALUE = 7\n"
-                "if __name__ == '__main__':\n"
-                "    raise RuntimeError('must not execute main')\n",
+                "VALUE = 7\nif __name__ == '__main__':\n    raise RuntimeError('must not execute main')\n",
                 encoding="utf-8",
             )
             module, digest = self.diagnostic._load_validator(root)
@@ -588,7 +578,9 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
                 "sha256:" + hashlib.sha256(validator.read_bytes()).hexdigest(),
             )
 
-    def test_source_keeps_diagnostic_and_certification_boundaries_explicit(self) -> None:
+    def test_source_keeps_diagnostic_and_certification_boundaries_explicit(
+        self,
+    ) -> None:
         source = SCRIPT.read_text(encoding="utf-8")
         prepare = PREPARE.read_text(encoding="utf-8")
         self.assertIn("not route certification evidence", source)
@@ -597,7 +589,7 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
         self.assertIn("MAX_TREE_BYTES = 1_000_000_000", source)
         self.assertIn("EXPECTED_COMPONENT_COUNT = 28", source)
         self.assertIn("EXPECTED_TREE_COUNT = 13", source)
-        self.assertIn('frozenset({0})', source)
+        self.assertIn("frozenset({0})", source)
         self.assertIn("COMPLETE_DIAGNOSTIC_ONLY", source)
         self.assertIn("records_sha256", source)
         self.assertIn("O_NOFOLLOW is required", source)
@@ -609,6 +601,7 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
             "26.5.2",
             "25F84",
             "20260831.0337.3",
+            "20260907.0351.1",
             "26.6.2",
             "25G83",
             "Xcode 26.6",
@@ -636,9 +629,7 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
         )
         self.assertIn("Xcode pre-seal inventory is empty", prepare)
         self.assertIn("Prepared route temp root is empty", prepare)
-        self.assertIn(
-            'raw_target != "/Applications/Xcode_26.6.app"', prepare
-        )
+        self.assertIn('raw_target != "/Applications/Xcode_26.6.app"', prepare)
         self.assertIn("XCODE_ENTRY_IDENTITY_BEFORE", prepare)
         self.assertIn("XCODE_ENTRY_IDENTITY_AFTER", prepare)
         self.assertIn("observed != expected", prepare)
@@ -660,8 +651,8 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
             '/usr/bin/sudo /usr/sbin/chown -h 0:0 "${CANONICAL_XCODE_APP}"',
             prepare,
         )
-        self.assertIn('! -user root -o ! -group wheel', prepare)
-        self.assertIn('private.mkdir(mode=0o700)', prepare)
+        self.assertIn("! -user root -o ! -group wheel", prepare)
+        self.assertIn("private.mkdir(mode=0o700)", prepare)
         self.assertIn('"TMPDIR=${PRIVATE_TMP}"', prepare)
         for line in prepare.splitlines():
             self.assertFalse(

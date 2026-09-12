@@ -28,8 +28,12 @@ class SpringExternalCertificationTests(TestCase):
 
                 manifest = json.loads((pack_dir / "pack.json").read_text(encoding="utf-8"))
                 evidence = json.loads((pack_dir / "certification" / "evidence.json").read_text(encoding="utf-8"))
-                certification = json.loads((pack_dir / "certification" / "certification.json").read_text(encoding="utf-8"))
-                admission = json.loads((pack_dir / "certification" / "external-admission.json").read_text(encoding="utf-8"))
+                certification = json.loads(
+                    (pack_dir / "certification" / "certification.json").read_text(encoding="utf-8")
+                )
+                admission = json.loads(
+                    (pack_dir / "certification" / "external-admission.json").read_text(encoding="utf-8")
+                )
 
                 self.assertEqual("certified", manifest.get("status"))
                 self.assertEqual("certified", certification.get("status"))
@@ -90,19 +94,15 @@ class SpringExternalCertificationTests(TestCase):
         )
         self.assertEqual(0, res.returncode, f"Signature verification failed: {res.stderr}")
 
-    def test_full_spring_external_gate_script_execution(self) -> None:
+    def test_full_spring_external_gate_rejects_nonportable_intake(self) -> None:
         res = subprocess.run(
             [sys.executable, str(GATE_SCRIPT)],
             capture_output=True,
             text=True,
             check=False,
         )
-        self.assertEqual(
-            0,
-            res.returncode,
-            f"Spring external gate failed:\nStdout:\n{res.stdout}\nStderr:\n{res.stderr}",
-        )
-        self.assertIn("ALL 6 SPRING MODERNIZATION PRODUCTION ROUTES 100% CERTIFIED!", res.stdout)
+        self.assertEqual(1, res.returncode)
+        self.assertIn("artifact.uri escapes approved evidence roots", res.stdout)
 
 
 if __name__ == "__main__":

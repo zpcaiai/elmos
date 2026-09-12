@@ -26,6 +26,12 @@ EXPECTED_VERSION: Final = (
     "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
 )
 EXPECTED_IMAGE: Final = ("macos15", "20260829.0321.1")
+EXPECTED_IMAGES: Final = frozenset(
+    {
+        EXPECTED_IMAGE,
+        ("macos15", "20260907.0337.1"),
+    }
+)
 EXPECTED_MACOS_PRODUCT_VERSION: Final = "15.7.9"
 EXPECTED_MACOS_BUILD_VERSION: Final = "24G830"
 OPT_LINK: Final = Path("/opt/homebrew/opt/openssl@3")
@@ -613,7 +619,7 @@ def _sealed_authority_receipt() -> dict[str, object]:
     }
 
 
-def _seal_runtime() -> dict[str, object]:
+def _seal_runtime(image: tuple[str, str] = EXPECTED_IMAGE) -> dict[str, object]:
     if os.geteuid() != 0:
         raise RuntimeError("OpenSSL runtime root sealing requires effective uid 0")
     directories_before = _directory_receipts(UNSEALED_DIRECTORY_PROFILES)
@@ -650,8 +656,8 @@ def _seal_runtime() -> dict[str, object]:
     return {
         "schema_version": 1,
         "kind": "elmos.hosted-openssl3-root-seal-receipt",
-        "image_os": EXPECTED_IMAGE[0],
-        "image_version": EXPECTED_IMAGE[1],
+        "image_os": image[0],
+        "image_version": image[1],
         "macos_product_version": EXPECTED_MACOS_PRODUCT_VERSION,
         "macos_build_version": EXPECTED_MACOS_BUILD_VERSION,
         "authority": authority_after,
@@ -894,7 +900,7 @@ def _forbidden_environment_names(environment: Mapping[str, str]) -> set[str]:
 def _verify_host(image_os: str | None, image_version: str | None) -> None:
     if sys.platform != "darwin" or os.uname().machine != "arm64":
         raise RuntimeError("OpenSSL runtime verifier requires Darwin arm64")
-    if (image_os, image_version) != EXPECTED_IMAGE:
+    if (image_os, image_version) not in EXPECTED_IMAGES:
         raise RuntimeError("GitHub hosted image identity mismatch")
     if (
         _run(["/usr/bin/sw_vers", "-productVersion"]).stdout.strip()
@@ -941,7 +947,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     _verify_host(*image)
     if arguments.seal:
-        receipt = _seal_runtime()
+        receipt = _seal_runtime(image)
         print(
             "OPENSSL3_ROOT_SEAL_RECEIPT "
             + json.dumps(receipt, sort_keys=True, separators=(",", ":"))

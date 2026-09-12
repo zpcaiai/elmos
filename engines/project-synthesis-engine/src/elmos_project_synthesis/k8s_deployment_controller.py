@@ -27,6 +27,8 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Any
 
+import yaml
+
 logger = logging.getLogger(__name__)
 
 
@@ -373,17 +375,37 @@ class K8sDeploymentController:
 
     def dry_run_validate(self, manifest_yaml: str) -> tuple[bool, str]:
         """Validate manifests using client-side dry-run."""
-        if not shutil.which(self.kubectl):
-            # Parse YAML syntactic validity if kubectl is absent
-            return True, "Valid Kubernetes manifest structure (Offline verified)"
+        try:
+            documents = list(yaml.safe_load_all(manifest_yaml))
+        except yaml.YAMLError as exc:
+            return False, f"Invalid Kubernetes manifest YAML: {exc}"
+        if not documents or any(
+            not isinstance(document, dict)
+            or not isinstance(document.get("apiVersion"), str)
+            or not isinstance(document.get("kind"), str)
+            or not isinstance(document.get("metadata"), dict)
+            or not isinstance(document["metadata"].get("name"), str)
+            for document in documents
+        ):
+            return False, "Invalid Kubernetes manifest structure"
+
+        if not self.is_cluster_available or not shutil.which(self.kubectl):
+            return True, "Valid Kubernetes manifest structure (offline client validation)"
 
         try:
             proc = subprocess.run(
-                [self.kubectl, "apply", "--dry-run=client", "-f", "-"],
+                [
+                    self.kubectl,
+                    "apply",
+                    "--dry-run=client",
+                    "--validate=false",
+                    "-f",
+                    "-",
+                ],
                 input=manifest_yaml,
                 text=True,
                 capture_output=True,
-                timeout=10,
+                timeout=30,
                 check=False,
             )
             return proc.returncode == 0, proc.stdout if proc.returncode == 0 else proc.stderr

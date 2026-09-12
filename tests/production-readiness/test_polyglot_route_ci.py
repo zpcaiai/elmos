@@ -14,8 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def _hosted_repository_matrix_languages() -> tuple[str, ...]:
     models_path = (
-        ROOT
-        / "engines/polyglot-route-engine/src/elmos_polyglot_route/models.py"
+        ROOT / "engines/polyglot-route-engine/src/elmos_polyglot_route/models.py"
     )
     module = ast.parse(models_path.read_text(encoding="utf-8"))
     for node in module.body:
@@ -25,7 +24,9 @@ def _hosted_repository_matrix_languages() -> tuple[str, ...]:
             and node.target.id == "HOSTED_REPOSITORY_MATRIX_LANGUAGES"
         ):
             value = ast.literal_eval(node.value)
-            if isinstance(value, tuple) and all(isinstance(item, str) for item in value):
+            if isinstance(value, tuple) and all(
+                isinstance(item, str) for item in value
+            ):
                 return value
     raise AssertionError("HOSTED_REPOSITORY_MATRIX_LANGUAGES literal was not found")
 
@@ -59,7 +60,9 @@ def _repository_matrix_test_inventory() -> tuple[frozenset[str], frozenset[str]]
         )
         (parameterized if has_parametrize else invariants).add(node.name)
     if not parameterized or not invariants:
-        raise AssertionError("repository matrix tests need parameterized and invariant nodes")
+        raise AssertionError(
+            "repository matrix tests need parameterized and invariant nodes"
+        )
     return frozenset(parameterized), frozenset(invariants)
 
 
@@ -104,13 +107,12 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         )
         self.assertNotIn("done < <(brew list --formula)", installer)
         self.assertIn(
-            'installed_formula_inventory="$(brew list --formula)"\n'
-            "    readonly installed_formula_inventory",
+            'installed_formula_inventory="$(brew list --formula)"\n    readonly installed_formula_inventory',
             installer,
         )
         self.assertIn('done <<<"${installed_formula_inventory}"', installer)
         self.assertIn('if token == "openssl@3":', installer)
-        self.assertIn('if source.count(overwrite) != 1:', installer)
+        self.assertIn("if source.count(overwrite) != 1:", installer)
         self.assertIn('source.replace(overwrite, "force: true", 1)', installer)
         self.assertIn(
             "libnghttp2/1.69.0/lib/libnghttp2.14.dylib|444|184240|"
@@ -120,8 +122,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
 
         node_inventory_block = (
             '  if [[ "${token}" == "node" ]]; then'
-            + installer.split('  if [[ "${token}" == "node" ]]; then', 1)[1]
-            .split("\n  fi\n", 1)[0]
+            + installer.split('  if [[ "${token}" == "node" ]]; then', 1)[1].split(
+                "\n  fi\n", 1
+            )[0]
             + "\n  fi"
         )
         injected = subprocess.run(
@@ -164,15 +167,15 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         formal_replay = frontend_job.index(
             "- name: Replay complete Batch 32 and Batch 35 formal gates"
         )
-        bind_step = frontend_job.split(
-            "- name: Bind OpenSSL 3 Ed25519 runtime", 1
-        )[1].split("- name: Verify bound OpenSSL runtime", 1)[0]
+        bind_step = frontend_job.split("- name: Bind OpenSSL 3 Ed25519 runtime", 1)[
+            1
+        ].split("- name: Verify bound OpenSSL runtime", 1)[0]
         root_seal_step = frontend_job.split(
             "- name: Root-seal OpenSSL 3 Ed25519 runtime", 1
         )[1].split("- name: Set up Node.js 26.0.0", 1)[0]
-        verify_step = frontend_job.split(
-            "- name: Verify bound OpenSSL runtime", 1
-        )[1].split("- name: Replay complete Batch 32 and Batch 35 formal gates", 1)[0]
+        verify_step = frontend_job.split("- name: Verify bound OpenSSL runtime", 1)[
+            1
+        ].split("- name: Replay complete Batch 32 and Batch 35 formal gates", 1)[0]
 
         self.assertLess(root_seal, frontend_tests)
         self.assertLess(frontend_tests, bind_runtime)
@@ -221,7 +224,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             root_seal_step,
         )
         self.assertNotIn("python3.11", root_seal_step)
-        self.assertNotIn("scripts/toolchains/verify_openssl3_ci_runtime.py --seal", root_seal_step)
+        self.assertNotIn(
+            "scripts/toolchains/verify_openssl3_ci_runtime.py --seal", root_seal_step
+        )
         self.assertNotIn("/usr/bin/sudo", bind_step)
         self.assertNotIn("--seal", verify_step)
         self.assertIn("OPENSSL3_RUNTIME_RECEIPT", verifier)
@@ -243,6 +248,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertIn("packages.arm64_sequoia.jws.json", frontend_job)
         for pinned_value in (
             "20260829.0321.1",
+            "20260907.0337.1",
             "15.7.9",
             "24G830",
             "fac6e4f037e8e9c184485de80f23df3816c0c6d8428b20a7703b6f339a72a83c",
@@ -290,8 +296,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             verifier.index("before = _runtime_receipt()"),
         )
         self.assertIn(
-            "printf '%s\\n' \"/opt/homebrew/Cellar/openssl@3/3.6.3/bin\" "
-            '>>"${GITHUB_PATH}"',
+            'printf \'%s\\n\' "/opt/homebrew/Cellar/openssl@3/3.6.3/bin" >>"${GITHUB_PATH}"',
             frontend_job,
         )
         self.assertIn('test "$(command -v openssl)" = "${openssl_bin}"', frontend_job)
@@ -398,9 +403,22 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
                 "uname",
                 return_value=mock.Mock(machine="arm64"),
             ),
-            mock.patch.object(verifier, "_run", side_effect=(product, build)) as run_mock,
+            mock.patch.object(
+                verifier, "_run", side_effect=(product, build)
+            ) as run_mock,
         ):
             verifier._verify_host("macos15", "20260829.0321.1")
+
+        with (
+            mock.patch.object(verifier.sys, "platform", "darwin"),
+            mock.patch.object(
+                verifier.os,
+                "uname",
+                return_value=mock.Mock(machine="arm64"),
+            ),
+            mock.patch.object(verifier, "_run", side_effect=(product, build)),
+        ):
+            verifier._verify_host("macos15", "20260907.0337.1")
 
         self.assertEqual(run_mock.call_count, 2)
         with (
@@ -551,19 +569,13 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             ROOT / "engines/polyglot-route-engine/src/elmos_polyglot_route/native.py"
         ).read_text(encoding="utf-8")
 
-        route_engine_job = workflow.split(
-            "  polyglot-route-engine-core:", 1
-        )[1].split(
+        route_engine_job = workflow.split("  polyglot-route-engine-core:", 1)[1].split(
             "  polyglot-route-engine-matrix:", 1
         )[0]
-        route_matrix_job = workflow.split(
-            "  polyglot-route-engine-matrix:", 1
-        )[1].split(
-            "  polyglot-route-engine:", 1
-        )[0]
-        route_engine_gate_job = workflow.split(
-            "  polyglot-route-engine:", 1
-        )[1].split(
+        route_matrix_job = workflow.split("  polyglot-route-engine-matrix:", 1)[
+            1
+        ].split("  polyglot-route-engine:", 1)[0]
+        route_engine_gate_job = workflow.split("  polyglot-route-engine:", 1)[1].split(
             "  polyglot-routes:", 1
         )[0]
         route_gate_job = workflow.split("  polyglot-routes:", 1)[1].split(
@@ -586,12 +598,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             '"$GITHUB_WORKSPACE/tests/batch35/test_packed_replay_schema_closure.py"'
         )
         core_partition = route_engine_job.index(
-            "all_test_files = sorted(tests_root.rglob(\"test_*.py\"))"
+            'all_test_files = sorted(tests_root.rglob("test_*.py"))'
         )
-        diagnostic_command = (
-            'python -I -B "${GITHUB_WORKSPACE}/scripts/toolchains/'
-            'diagnose_apple_route_ci.py"'
-        )
+        diagnostic_command = 'python -I -B "${GITHUB_WORKSPACE}/scripts/toolchains/diagnose_apple_route_ci.py"'
         apple_diagnostic = route_engine_job.index(diagnostic_command)
         host_preparation = route_engine_job.index(
             "scripts/toolchains/prepare_apple_route_ci_host.sh"
@@ -624,9 +633,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         )
         self.assertEqual(route_workers.count("--verify-jsonl"), 1)
         self.assertEqual(
-            all_route_jobs.count(
-                "scripts/toolchains/prepare_apple_route_ci_host.sh"
-            ),
+            all_route_jobs.count("scripts/toolchains/prepare_apple_route_ci_host.sh"),
             3,
         )
         for job in (route_pack_job, route_engine_job, route_matrix_job):
@@ -654,9 +661,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
                 route_engine_job,
             )
         )
-        functions_block = route_matrix_job.split("functions = (", 1)[1].split(
-            ")", 1
-        )[0]
+        functions_block = route_matrix_job.split("functions = (", 1)[1].split(")", 1)[0]
         selected_parameterized = frozenset(
             re.findall(r'"(test_[A-Za-z0-9_]+)"', functions_block)
         )
@@ -688,7 +693,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             ),
             1,
         )
-        self.assertIn("name: Directed route engine qualification", route_engine_gate_job)
+        self.assertIn(
+            "name: Directed route engine qualification", route_engine_gate_job
+        )
         self.assertIn("if: ${{ always() }}", route_engine_gate_job)
         self.assertIn("- polyglot-route-engine-core", route_engine_gate_job)
         self.assertIn("- polyglot-route-engine-matrix", route_engine_gate_job)
@@ -758,7 +765,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         )
         self.assertEqual(all_route_jobs.count(csharp_restore), 3)
         for job in (route_pack_job, route_engine_job, route_matrix_job):
-            self.assertLess(job.index(csharp_restore), job.index("swift package resolve"))
+            self.assertLess(
+                job.index(csharp_restore), job.index("swift package resolve")
+            )
         self.assertNotIn("make b29-skills-test", route_engine_job)
         self.assertIn("cargo fetch \\", route_engine_job)
         self.assertIn("--locked \\", route_engine_job)
@@ -789,11 +798,11 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertEqual(len(expected_matrix_nodes), 312)
         self.assertEqual(len(expected_matrix_nodes) + len(invariant_tests), 315)
         self.assertIn(
-            'if len(selectors) != 24 or len(set(selectors)) != 24:',
+            "if len(selectors) != 24 or len(set(selectors)) != 24:",
             route_matrix_job,
         )
         self.assertIn(
-            'if source not in HOSTED_REPOSITORY_MATRIX_LANGUAGES:',
+            "if source not in HOSTED_REPOSITORY_MATRIX_LANGUAGES:",
             route_matrix_job,
         )
         self.assertNotIn("-k", route_matrix_job)

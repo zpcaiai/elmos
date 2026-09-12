@@ -66,6 +66,9 @@ case "${CI_PROFILE}" in
       "20260831.0337.3:26.6.2:25G83")
         HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260831.0337.3"
         ;;
+      "20260907.0351.1:26.6.2:25G83")
+        HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260907.0351.1"
+        ;;
       *)
         printf 'The full pinned Node closure rejects macos26 host profile %s.\n' \
           "${HOST_PROFILE}" >&2
@@ -817,7 +820,8 @@ if [[ "${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python" ]]; then
   # by file digests, version output, bundle signature, team, and CDHash.
   case "${TEMURIN_HOST_BINDING}" in
     "20260728.0273.1:26.5.2:25F84:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"|\
-    "20260831.0337.3:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home") ;;
+    "20260831.0337.3:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home"|\
+    "20260907.0351.1:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home") ;;
     *)
       printf 'setup-java Temurin home is not bound to the exact hosted image: %s\n' \
         "${TEMURIN_HOST_BINDING}" >&2
