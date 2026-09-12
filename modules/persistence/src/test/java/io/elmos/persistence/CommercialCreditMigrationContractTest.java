@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CommercialCreditMigrationContractTest {
     private static final Path MIGRATION = Path.of(
             "src/main/resources/db/migration/V83__commercial_credit_and_one_time_orders.sql");
+    private static final Path RUNTIME_ROLE_CONFIGURATION = Path.of(
+            "../../scripts/commercial/configure_billing_runtime_role.sh");
 
     @Test void catalogContainsExactServerOwnedProducts() throws Exception {
         String sql = Files.readString(MIGRATION);
@@ -70,5 +72,20 @@ class CommercialCreditMigrationContractTest {
         assertFalse(sql.contains("GRANT INSERT ON commercial_credit_accounts"));
         assertFalse(sql.contains("GRANT UPDATE ON commercial_credit_accounts"));
         assertFalse(sql.contains("GRANT DELETE ON commercial_credit_ledger_entries"));
+    }
+
+    @Test void billingRuntimeGetsV2AndCommercialFunctionsWithoutDirectCreditWrites() throws Exception {
+        String script = Files.readString(RUNTIME_ROLE_CONFIGURATION);
+        for (String function : new String[]{
+                "elmos_reserve_usage_v2", "elmos_settle_usage_v2", "elmos_release_usage_v2",
+                "elmos_commercial_create_order", "elmos_commercial_fulfill_order",
+                "elmos_commercial_mark_order_handoff", "elmos_commercial_mark_order_prepare_failed",
+                "elmos_commercial_reserve_generation", "elmos_commercial_settle_generation",
+                "elmos_commercial_release_generation"}) {
+            assertTrue(script.contains("'" + function + "'"), function + " must be executable by the runtime role");
+        }
+        assertFalse(script.contains("INSERT ON TABLE commercial_credit"));
+        assertFalse(script.contains("UPDATE ON TABLE commercial_credit"));
+        assertFalse(script.contains("DELETE ON TABLE commercial_credit"));
     }
 }
