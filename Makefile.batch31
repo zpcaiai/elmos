@@ -1,16 +1,25 @@
 UV ?= uv
 BATCH31_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml --with cryptography --with sqlglot python
-.PHONY: b31-skills-test b31-pack-validate b31-pack-gate b31-ir-validate b31-all-packs-check b31-release-gate b31-manual-review-backlog b31-sql-route-closure-check b31-industrial-evaluation
+.PHONY: b31-skills-test b31-pack-validate b31-pack-gate b31-ir-validate b31-all-packs-check b31-release-gate b31-manual-review-backlog b31-sql-route-closure-check b31-industrial-evaluation b31-external-qualification
 b31-skills-test:
 	$(BATCH31_PYTHON) scripts/batch31/validate_skill_bundle.py
 	$(BATCH31_PYTHON) scripts/batch31/validate_sql_line_launch_scope.py docs/batch31/sql-line-launch-scope.json
 	$(MAKE) b31-sql-route-closure-check
 	$(BATCH31_PYTHON) -m unittest discover -s tests/batch31 -p 'test_*.py'
-	$(BATCH31_PYTHON) scripts/batch31/run_chinadb_industrial_evaluation.py
 	$(UV) run --quiet --with ruff ruff check scripts/batch31 tests/batch31
 	$(UV) run --quiet --with ruff ruff format --check scripts/batch31 tests/batch31
 b31-industrial-evaluation:
-	$(BATCH31_PYTHON) scripts/batch31/run_chinadb_industrial_evaluation.py
+	@echo "b31-industrial-evaluation is retired; validating external signed evidence"
+	$(MAKE) b31-external-qualification
+b31-external-qualification:
+	@test -n "$(CHINADB_REQUEST)" || (echo "CHINADB_REQUEST=<external-request.json> required" && exit 2)
+	@test -n "$(CHINADB_TRUST_STORE)" || (echo "CHINADB_TRUST_STORE=<external-trust-store.json> required" && exit 2)
+	@test -n "$(RUNNER_ATTESTATION_DIGEST)" || (echo "RUNNER_ATTESTATION_DIGEST=sha256:<digest> required" && exit 2)
+	$(BATCH31_PYTHON) scripts/operations/run_database_external_gate.py \
+		--chinadb-request "$(CHINADB_REQUEST)" \
+		--chinadb-trust-store "$(CHINADB_TRUST_STORE)" \
+		--expected-runner-attestation-digest "$(RUNNER_ATTESTATION_DIGEST)" \
+		--scope "$(or $(CHINADB_SCOPE),dm8)"
 b31-pack-validate:
 	@test -n "$(PACK)" || (echo "PACK=<database-pack-key> required" && exit 2)
 	$(BATCH31_PYTHON) scripts/batch31/validate_database_pack.py database-packs/$(PACK)

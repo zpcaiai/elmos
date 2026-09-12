@@ -1,0 +1,112 @@
+name: ChinaDB external production qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      evidence_run_id:
+        description: Run ID containing the externally produced signed evidence artifact
+        required: true
+        type: string
+      evidence_artifact_name:
+        description: Artifact containing request.json and trust-store.json
+        required: true
+        type: string
+      request_sha256:
+        description: Lowercase SHA-256 of request.json without the sha256 prefix
+        required: true
+        type: string
+      trust_store_sha256:
+        description: Lowercase SHA-256 of trust-store.json without the sha256 prefix
+        required: true
+        type: string
+      scope:
+        description: Ordered qualification phase
+        required: true
+        default: dm8
+        type: choice
+        options:
+          - dm8
+          - all
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: chinadb-production-qualification
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify signed ChinaDB evidence on dedicated Runner
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, macOS, ARM64, elmos-sql-perf-dedicated]
+    environment: chinadb-production-qualification
+    timeout-minutes: 20
+    env:
+      ELMOS_PERFORMANCE_RUNNER_CLASS: DEDICATED
+      ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST: ${{ vars.ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST }}
+      ELMOS_CHINADB_EVIDENCE_DIR: ${{ runner.temp }}/chinadb-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+      ELMOS_CHINADB_RESULT_DIR: ${{ runner.temp }}/chinadb-result-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Check out exact revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify dedicated Runner admission contract
+        shell: bash
+        env:
+          ELMOS_PERFORMANCE_RUNNER_ID: ${{ runner.name }}
+        run: |
+          test "$ELMOS_PERFORMANCE_RUNNER_CLASS" = "DEDICATED"
+          test -n "$ELMOS_PERFORMANCE_RUNNER_ID"
+          [[ "$ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+
+      - name: Download externally produced signed evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: ${{ inputs.evidence_artifact_name }}
+          run-id: ${{ inputs.evidence_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ env.ELMOS_CHINADB_EVIDENCE_DIR }}
+
+      - name: Pin evidence bytes supplied by the operator
+        shell: bash
+        env:
+          EXPECTED_REQUEST_SHA256: ${{ inputs.request_sha256 }}
+          EXPECTED_TRUST_STORE_SHA256: ${{ inputs.trust_store_sha256 }}
+        run: |
+          [[ "$EXPECTED_REQUEST_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$EXPECTED_TRUST_STORE_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          test -f "$ELMOS_CHINADB_EVIDENCE_DIR/request.json"
+          test ! -L "$ELMOS_CHINADB_EVIDENCE_DIR/request.json"
+          test -f "$ELMOS_CHINADB_EVIDENCE_DIR/trust-store.json"
+          test ! -L "$ELMOS_CHINADB_EVIDENCE_DIR/trust-store.json"
+          test "$(shasum -a 256 "$ELMOS_CHINADB_EVIDENCE_DIR/request.json" | awk '{print $1}')" = "$EXPECTED_REQUEST_SHA256"
+          test "$(shasum -a 256 "$ELMOS_CHINADB_EVIDENCE_DIR/trust-store.json" | awk '{print $1}')" = "$EXPECTED_TRUST_STORE_SHA256"
+
+      - name: Validate original receipt chain
+        shell: bash
+        run: |
+          mkdir -p "$ELMOS_CHINADB_RESULT_DIR"
+          scope_args=(--require-target dm8)
+          if [[ "${{ inputs.scope }}" = "all" ]]; then
+            scope_args=(--require-all)
+          fi
+          uv run --project engines/database-data-engine/sql-transpiler --locked \
+            python scripts/batch31/run_chinadb_qualification.py \
+              --request "$ELMOS_CHINADB_EVIDENCE_DIR/request.json" \
+              --trust-store "$ELMOS_CHINADB_EVIDENCE_DIR/trust-store.json" \
+              --expected-runner-attestation-digest "$ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST" \
+              "${scope_args[@]}" \
+              --output "$ELMOS_CHINADB_RESULT_DIR/qualification-result.json"
+
+      - name: Preserve evaluated result
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: chinadb-qualification-${{ inputs.scope }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.ELMOS_CHINADB_RESULT_DIR }}
+          if-no-files-found: warn
+          retention-days: 30

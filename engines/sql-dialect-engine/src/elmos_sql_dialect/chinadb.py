@@ -582,7 +582,9 @@ def _get_target_lowerer(target_id: str) -> Any:
     if not target_key:
         return None
     try:
-        from elmos_sql_transpiler.chinadb_target_lowers import get_chinadb_lowerer
+        from elmos_sql_transpiler.chinadb_target_lowers import (
+            get_chinadb_lowerer,
+        )
 
         return get_chinadb_lowerer(target_key)
     except (ImportError, ModuleNotFoundError):
@@ -594,7 +596,9 @@ def _get_target_lowerer(target_id: str) -> Any:
         if transpiler_src.exists() and str(transpiler_src) not in sys.path:
             sys.path.insert(0, str(transpiler_src))
         try:
-            from elmos_sql_transpiler.chinadb_target_lowers import get_chinadb_lowerer
+            from elmos_sql_transpiler.chinadb_target_lowers import (
+                get_chinadb_lowerer,
+            )
 
             return get_chinadb_lowerer(target_key)
         except Exception:
@@ -645,17 +649,9 @@ def lower_chinadb_sql(
                 asset_kind = "STATEMENT"
         return str(lowerer.lower_statement(sql, source_dialect, asset_kind=asset_kind))
 
-    # Fallback to base dialect lowering
-    target_obj = chinadb_target_by_id(target_key)
-    if target_obj is not None and target_obj.mode_dialects:
-        first_mode = next(iter(target_obj.mode_dialects.values()))
-        from .engine import translate_ddl
-
-        rep = translate_ddl(sql, source_dialect, first_mode.value, statement_kind="TABLE")
-        if rep.get("emitted"):
-            return str(rep["emitted"])
-
-    return sql.strip()
+    raise ValueError(
+        f"exact ChinaDB lowerer unavailable for target {target_id}; translation is blocked"
+    )
 
 
 def translate_chinadb_query(
@@ -740,7 +736,30 @@ def translate_chinadb_sql(
         elif upper.startswith("MERGE"):
             kind = "UPSERT"
         else:
-            kind = "TABLE"
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-dialect-translation",
+                "status": "BLOCKED",
+                "state": "BLOCKED",
+                "profile": f"{target_id}-auto-lowerer",
+                "sourceDialect": source_dialect,
+                "targetDialect": target_id,
+                "namespaceProfile": None,
+                "reasonCode": "STATEMENT_KIND_UNSUPPORTED",
+                "reason": "AUTO could not identify a supported SQL statement kind.",
+                "emitted": None,
+                "validation": {
+                    "syntaxStatus": "NOT_RUN",
+                    "syntaxDiagnostics": [],
+                    "executionStatus": "NOT_RUN",
+                    "executionDiagnostics": [],
+                },
+                **_honesty_fields(
+                    target_id=target_id,
+                    compatibility_mode=compatibility_mode,
+                    mapped_dialect=target_id,
+                ),
+            }
 
     if kind == "QUERY":
         return translate_chinadb_query(sql, source_dialect=source_dialect, target_id=target_id, **kwargs)
@@ -856,6 +875,3 @@ __all__ = [
     "translate_to_tidb",
     "validate_chinadb_registry",
 ]
-
-
-

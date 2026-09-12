@@ -1,11 +1,11 @@
-"""In-Process Headless Dual-Track Protocol Lab for 13 Domestic Databases (ChinaDB).
+"""In-process protocol-shaped SQL lab for 13 ChinaDB target identities.
 
 Provides wire-protocol compatible server endpoints for both:
 1. PostgreSQL Wire Protocol v3 (openGauss, KingbaseES, HighGo, GBase 8c, GaussDB Oracle mode)
 2. MySQL Wire Protocol v10 (TiDB, OceanBase MySQL, GaussDB M, GBase 8a, GoldenDB)
 
-Runs completely in-process with real TCP sockets or memory transport, executing
-real DDL, DML, transaction boundaries, and row-level queries.
+This is a bounded SQLite-backed engineering test double. It is not a vendor
+database runtime and cannot produce external execution or performance evidence.
 """
 
 from __future__ import annotations
@@ -71,6 +71,14 @@ class ProtocolLabDatabase:
         # True relational ACID storage engine
         self._sqlite = sqlite3.connect(":memory:", check_same_thread=False, isolation_level=None)
         self._sqlite.execute("PRAGMA foreign_keys = ON;")
+        self._closed = False
+
+    def close(self) -> None:
+        """Close the local SQLite backing store exactly once."""
+        with self._lock:
+            if not self._closed:
+                self._sqlite.close()
+                self._closed = True
 
     def execute_sql(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
         """Execute a subset of SQL (DDL and DML) with true ACID semantics."""
@@ -164,8 +172,10 @@ class ProtocolLabDatabase:
                 col_names = [d[0] for d in cur.description] if cur.description else []
                 rows = [tuple(r) for r in cur.fetchall()]
                 return col_names, rows, cur.rowcount if cur.rowcount >= 0 else 0
-            except Exception:
-                return [], [], 0
+            except sqlite3.Error as exc:
+                raise ValueError(
+                    f"PROTOCOL_LAB_UNSUPPORTED_SQL: {exc}"
+                ) from exc
 
     def _normalize_ddl_for_sqlite(self, sql: str) -> str:
         """Translate domestic ChinaDB types and DDL quirks to SQLite compatible DDL."""
@@ -280,8 +290,10 @@ class ProtocolLabDatabase:
             cols = [c.strip().lower() for c in m.group(4).split(",")]
             if tname in self.tables:
                 self.tables[tname].indexes[idx_name] = cols
-        with contextlib.suppress(Exception):
+        try:
             self._sqlite.execute(sql)
+        except sqlite3.Error as exc:
+            raise ValueError(f"PROTOCOL_LAB_INDEX_EXECUTION_FAILED: {exc}") from exc
         return [], [], 0
 
     def _handle_insert(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
@@ -616,6 +628,9 @@ class ChinaDbInstance:
         if self.server_socket:
             with contextlib.suppress(Exception):
                 self.server_socket.close()
+        if self.server_thread and self.server_thread.is_alive():
+            self.server_thread.join(timeout=1.0)
+        self.db.close()
 
 
 class ChinaDbProtocolLab:
@@ -694,6 +709,13 @@ class ChinaDbProtocolLab:
         """Stop all instances."""
         for inst in self.instances.values():
             inst.stop()
+
+    def __enter__(self) -> ChinaDbProtocolLab:
+        self.start()
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        self.stop()
 
     def _find_instance(self, target_id: str) -> ChinaDbInstance:
         target_norm = target_id.lower().replace("_", "-")

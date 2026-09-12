@@ -1,12 +1,12 @@
 {
-  "certification_decision": "CERTIFIED",
-  "claimed_status": "certified",
-  "derived_status": "certified",
+  "certification_decision": "NOT_CERTIFIED",
+  "claimed_status": "experimental",
+  "derived_status": "experimental",
   "failures": [],
   "gate_version": "batch31-evidence-derived-v2",
   "pack_key": "postgresql-17-5-self-service-billing",
   "production_blockers": [],
-  "release_eligible": true,
+  "release_eligible": false,
   "schema_version": 2,
-  "status": "certified"
+  "status": "experimental"
 }

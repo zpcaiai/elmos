@@ -1,9 +1,8 @@
-"""Orchestrator for 13 ChinaDB domestic database containers and Protocol Lab fallback.
+"""Orchestrator for explicit ChinaDB runtime modes and a local protocol lab.
 
-Manages the lifecycle of real Docker / Podman services via
-`deploy/chinadb/docker-compose.chinadb-matrix.yml` when container runtime is active,
-and provides seamless, fail-closed fallback to the in-process `ChinaDbProtocolLab`
-when containers are unavailable.
+The current repository-owned implementation executes only the bounded
+SQLite-backed protocol lab. It never reports that local mode as vendor-runtime
+execution evidence.
 """
 
 from __future__ import annotations
@@ -68,7 +67,13 @@ class ChinaDbContainerOrchestrator:
             is_ready=True,
             endpoint=f"chinadb://127.0.0.1/{target_id}",
             latency_ms=round(elapsed, 2),
-            details={"version": "1.0-industrial", "wire_ready": True},
+            details={
+                "version": "protocol-lab-v1",
+                "wire_ready": True,
+                "evidenceClass": "LOCAL_SYNTHETIC",
+                "vendorRuntimeExecution": "NOT_RUN",
+                "certification": "NOT_CERTIFIED",
+            },
         )
 
     def execute_query(
@@ -83,3 +88,9 @@ class ChinaDbContainerOrchestrator:
 
     def stop_all(self) -> None:
         self.protocol_lab.stop()
+
+    def __enter__(self) -> ChinaDbContainerOrchestrator:
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        self.stop_all()

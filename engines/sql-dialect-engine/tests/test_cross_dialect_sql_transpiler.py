@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import pytest
 
+import elmos_sql_dialect.query_transpiler as query_transpiler_module
 from elmos_sql_dialect.engine import translate_query, translate_sql, translate_upsert
 
 
@@ -149,6 +150,18 @@ class TestCrossDialectUpsertTranspiler:
 
 
 class TestChinaDbDomesticTargets:
+    def test_chinadb_lowerer_failure_blocks_instead_of_falling_back(
+        self, monkeypatch
+    ) -> None:
+        def fail(*args, **kwargs):
+            raise ValueError("lowerer unavailable")
+
+        monkeypatch.setattr(query_transpiler_module, "lower_chinadb_sql", fail)
+        result = translate_query("SELECT id FROM orders", "postgres", "kingbasees")
+        assert result["status"] == "BLOCKED"
+        assert result["reasonCode"] == "CHINADB_TARGET_LOWERING_FAILED"
+        assert result["emitted"] is None
+
     def test_oracle_to_opengauss_query(self) -> None:
         sql = "SELECT NVL(col1, 0) FROM my_tab WHERE ROWNUM <= 20"
         res = translate_query(sql, "oracle", "opengauss")
@@ -203,3 +216,27 @@ class TestTranslateSqlAutoDispatcher:
         res = translate_sql(sql, "mysql", "postgres")
         assert res["status"] == "PASSED"
         assert "CREATE TABLE test_tab" in res["emitted"]
+
+    @pytest.mark.parametrize("kind", ["query", "upsert"])
+    def test_unknown_dialects_fail_closed(self, kind: str) -> None:
+        sql = (
+            "SELECT 1"
+            if kind == "query"
+            else "INSERT INTO t (id) VALUES (1) ON CONFLICT (id) DO NOTHING"
+        )
+        translator = translate_query if kind == "query" else translate_upsert
+
+        source_result = translator(sql, "unknown-source", "postgres")
+        target_result = translator(sql, "postgres", "unknown-target")
+
+        assert source_result["status"] == "BLOCKED"
+        assert source_result["reasonCode"] == "SOURCE_DIALECT_UNSUPPORTED"
+        assert target_result["status"] == "BLOCKED"
+        assert target_result["reasonCode"] == "TARGET_DIALECT_UNSUPPORTED"
+
+    def test_auto_unknown_statement_kind_fails_closed(self) -> None:
+        result = translate_sql("VACUUM t", "postgres", "dm8")
+
+        assert result["status"] == "BLOCKED"
+        assert result["reasonCode"] == "STATEMENT_KIND_UNSUPPORTED"
+        assert result["emitted"] is None

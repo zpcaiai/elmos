@@ -2,9 +2,9 @@
   "data_owner": "ELMOS Synthetic Fixture Owner",
   "gates": {
     "canonical_ir_coverage": 0.95,
-    "data_reconciliation": 1.0,
+    "data_reconciliation": 1,
     "fingerprint_coverage": 0.95,
-    "p0_correctness": 1.0,
+    "p0_correctness": 1,
     "source_map_coverage": 0.95
   },
   "maintenance_owner": "ELMOS ChinaDB Adapter Maintainers",
@@ -48,7 +48,7 @@
       "17.5"
     ]
   },
-  "status": "certified",
+  "status": "research",
   "target": {
     "charset": "UTF-8",
     "collation": "BINARY",
