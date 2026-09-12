@@ -6,37 +6,43 @@
       "id": "schema-type-constraint",
       "domain": "schema",
       "owner": "elmos-commercial-billing",
-      "status": "certified",
-      "reason": "Typed schema structures, constraints, and tables verified on PostgreSQL 17.5 / Neon managed environment.",
+      "status": "experimental",
+      "reason": "Repository-owned bounded engineering evidence only; external execution and independent certification are NOT_RUN.",
       "evidence_refs": [
         "certification/local-billing-evidence.json"
       ],
       "strategy": "typed-ir-lowering",
-      "restrictions": []
+      "restrictions": [
+        "Exact external source/target execution and independently verified evidence are required."
+      ]
     },
     {
       "id": "tenant-isolation-rls",
       "domain": "security",
       "owner": "elmos-commercial-billing",
-      "status": "certified",
-      "reason": "PostgreSQL RLS policies for tenant isolation verified on Neon managed environment.",
+      "status": "experimental",
+      "reason": "Repository-owned bounded engineering evidence only; external execution and independent certification are NOT_RUN.",
       "evidence_refs": [
         "certification/local-billing-evidence.json"
       ],
       "strategy": "postgresql-rls-policy",
-      "restrictions": []
+      "restrictions": [
+        "Exact external source/target execution and independently verified evidence are required."
+      ]
     },
     {
       "id": "neon-production-cutover",
       "domain": "migration",
       "owner": "elmos-commercial-billing",
-      "status": "certified",
-      "reason": "Neon cloud cutover, rollback, CDC, and reconciliation workflows independently verified and certified.",
+      "status": "experimental",
+      "reason": "Repository-owned bounded engineering evidence only; external execution and independent certification are NOT_RUN.",
       "evidence_refs": [
         "certification/local-billing-evidence.json"
       ],
       "strategy": "approved-workflow-verified",
-      "restrictions": []
+      "restrictions": [
+        "Exact external source/target execution and independently verified evidence are required."
+      ]
     }
   ]
 }

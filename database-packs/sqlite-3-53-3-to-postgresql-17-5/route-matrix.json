@@ -10,7 +10,9 @@
       "evidence_refs": [
         "certification/local-engine-evidence.json"
       ],
-      "restrictions": [],
+      "restrictions": [
+        "External execution and independent certification are NOT_RUN."
+      ],
       "source": {
         "charset": "UTF-8",
         "collation": "BINARY",
@@ -26,7 +28,7 @@
           "3.53.3"
         ]
       },
-      "status": "certified",
+      "status": "experimental",
       "target": {
         "charset": "UTF8",
         "collation": "C",

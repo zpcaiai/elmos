@@ -6,15 +6,17 @@
   "gate_version": "batch31-evidence-derived-v2",
   "pack_key": "postgresql-to-dm8",
   "production_blockers": [
-    "critical_unknowns must be zero",
+    "canonical_ir_coverage below 0.95",
     "data_reconciliation_pass_rate below 1.0",
     "query_performance_slo_pass_rate below 1.0",
     "query_semantic_pass_rate below 1.0",
     "representative_workload_pass_rate below 1.0",
     "schema_conversion_pass_rate below 1.0",
+    "source_map_coverage below 0.95",
     "target_provision_pass_rate below 1.0",
     "transaction_contract_pass_rate below 1.0",
-    "type_boundary_pass_rate below 1.0"
+    "type_boundary_pass_rate below 1.0",
+    "workload_fingerprint_coverage below 0.95"
   ],
   "release_eligible": false,
   "schema_version": 2,

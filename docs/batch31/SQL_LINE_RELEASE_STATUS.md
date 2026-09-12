@@ -2,91 +2,73 @@
 
 ## Decision
 
-The repository release gate is evidence-derived and fail-closed. Under the
-Batch 31 formal assurance framework, all active SQL conversion routes and
-database modernization packs have reached unrestricted **`certified`** status
-and are approved for the **`GA`** (General Availability) release channel.
+The repository is **not production-certified**. Repository-owned syntax, IR,
+translation, local execution, and negative tests are bounded engineering
+evidence only. They do not replace real vendor execution, an attested dedicated
+Runner, or independent certification.
 
-1. **SQLite 3.53.3 to PostgreSQL 17.5**: Fully certified (`derived_status: certified`,
-   `restrictions: []`), passing full dual-engine differential execution, schema/type/constraint
-   boundaries, transaction rollback, target restore, performance SLO (p95 12.4ms <= 75ms),
-   and independent three-party verification.
-2. **PostgreSQL 17.5 to DM8 8.1.3.140**: Fully certified (`derived_status: certified`,
-   `restrictions: []`), covering exact Oracle-compatible DM8 dialect emission,
-   isolated holdout/representative workload corpora, full 18-capability matrix certification,
-   and independent ChinaDB QA board approval.
-3. **PostgreSQL 17.5 Self-Service Billing (Neon Modernization)**: Fully certified
-   (`derived_status: certified`, `restrictions: []`), covering typed schema constraints,
-   PostgreSQL RLS tenant isolation policies, Neon cloud cutover/reconciliation workflows,
-   dedicated runner performance SLO (p95 14.2ms <= 75ms), and dual supervisor sign-offs.
-4. **ChinaDB 13 Domestic Database Target Families**: Production Qualification Protocol 1.2.0
-   completed and certified (`PRODUCTION_DEFINITION_OF_DONE: 13/13`), covering `dm8`,
-   `kingbasees`, `opengauss`, `tidb`, `gbase-8s`, `gbase-8c`, `gbase-8a`, `highgo-hgdb`,
-   `oceanbase-oracle`, `oceanbase-mysql`, `gaussdb-oracle`, `gaussdb-m`, and `goldendb`.
+The machine-readable authority is `evidence/sql-route-closure-plan.json`:
 
-The exact launch tuples are machine-readable in `sql-line-launch-scope.json` with
-`release_channel: "GA"` and `release_eligible: true` for all routes.
+- high-priority P0 route cells: `0` open;
+- four-target common reachability: `1,189 / 1,365` admitted candidates;
+- blocked route cells: `365` (P1/P2, preserved explicitly);
+- real ChinaDB production execution: `0 / 13`;
+- dedicated Runner 75 ms qualification: `NOT_RUN_ENVIRONMENT_INVALID`;
+- independent verification: `NOT_RUN`;
+- certification: `NOT_CERTIFIED`.
 
-## P0 baseline & Closure
+## Ordered path to production
 
-- 81 migration files and 1,739 statements were scanned.
-- 1,302 statements are automatic candidates, 435 require manual migration,
-  two require source-format review, and scanner engine defects are zero.
-- **Manual review backlog**: All 435 items in `sql-manual-review-backlog.json`
-  are closed (362 `RESOLVED` with concrete artifact and revalidation references,
-  73 `WAIVED` with dual approvers and valid expiry timestamps). `open = 0`,
-  `release_blocked = false`.
-- **P0 semantic closure**: All 2,177 previously blocked P0 route cells (JSONB,
-  triggers, RLS, privileges) have been addressed with exact target dialect mappings.
-  Four-target reachability intersection is expanded to 1,189 / 1,302 (87.1%).
-  `sql-route-closure-plan.json` confirms `HIGH_PRIORITY_SEMANTIC_WORKSTREAMS`
-  status is `PASSED`.
-- Batch 31 pack validation executes formal JSON Schemas. Certification status
-  is derived from evidence, role separation, lifecycle state, and content
-  digests. A self-reported `certified` value cannot promote a pack.
-- CI runs the Batch 31 toolkit, every checked-in database pack, and the separate
-  release gate.
+1. Keep the P0 semantic workstream at zero regressions.
+2. Supply an externally mounted DM8 Protocol 1.2.0 request with an exact product
+   tuple, licensed disposable environment, credential references, vendor tools,
+   signed authorization/execution receipts, raw evidence digests, and a separate
+   operator-pinned Ed25519 trust store.
+3. Run DM8 on an exclusively assigned, attested dedicated Runner. The p95 SLO
+   remains 75 ms, host load must pass admission, and at most two measurement
+   attempts are permitted.
+4. Obtain independent verification and certification receipts from identities
+   and organizations separated from implementer and executor.
+5. Repeat the same exact process independently for the remaining 12 targets.
 
-## P1 implementation boundary
+The repository cannot perform steps 2-5 without those external resources. It
+must return `NOT_RUN` or `NOT_CERTIFIED` when they are absent.
 
-- All three launch routes have repository-owned packs, exact source and target runners,
-  typed canonical IR, capability checks, source/target apply and introspection,
-  normalized errors, real plans, transaction/locking checks, independent corpus
-  directories, and digest-bound evidence.
-- `build_manual_review_backlog.py --require-closed` validates that all 435 items
-  are cleanly resolved or waived, unblocking the release gate.
-- The Java database worker supports an owner-only, atomically written durable
-  store for terminal jobs and idempotency records, and the production Compose
-  profile mounts that store. Restart recovery of terminal state is covered locally.
+## Commands
 
-## P2 implementation boundary & Verification
-
-- **Full lifecycle qualification for the currently evidenced release-ready packs**: Dual-engine reference workloads execute
-  checkpointed initial loads, offline delta reconciliations, constraint/transaction
-  negatives, source read-only enforcement, target backup/restore, CDC stream verification,
-  and cutover execution across synthetic and representative customer corpora.
-- **Performance qualification**: The 75 ms p95 SLO is satisfied on dedicated runners only where retained evidence exists:
-  - SQLite -> PostgreSQL: measured p95 12.4 ms (<= 75 ms), pass rate 1.0.
-  - PostgreSQL Billing -> Neon: measured p95 14.2 ms (<= 75 ms), pass rate 1.0.
-  - PostgreSQL 17.5 -> DM8 8.1.3.140: `NOT_RUN`; no licensed DM8 dedicated-runner evidence is retained.
-- **Independent multi-role verification & sign-offs**: Three-party segregation
-  is established with distinct `executor`, `independent_verifier`, and `certification_authority`
-  principals is required. PostgreSQL 17.5 -> DM8 8.1.3.140 remains `NOT_RUN` for
-  independent verification and `NOT_CERTIFIED` for production certification.
-- **Production release gate**: Release-ready status is pack-specific:
-  - `sqlite-3-53-3-to-postgresql-17-5`
-  - `postgresql-to-dm8`: `derived_status=research release_eligible=false`, production `NOT_CERTIFIED`
-  - `postgresql-17-5-self-service-billing`
-
-## Release commands
+Prepare the checked-in request template:
 
 ```bash
-make b31-skills-test b31-all-packs-check
-make b31-release-gate PACK=sqlite-3-53-3-to-postgresql-17-5
-make b31-release-gate PACK=postgresql-to-dm8
-make b31-release-gate PACK=postgresql-17-5-self-service-billing
+cp engines/database-data-engine/sql-transpiler/examples/chinadb-production-qualification-draft.json /external/evidence/chinadb-request.json
 ```
 
-The engineering gate validates all pack contracts. The production release gate
-fails closed for PostgreSQL -> DM8 until the external and independent evidence
-listed in its gap inventory is supplied.
+Validate the DM8 pilot only after external systems have populated and signed the
+request:
+
+```bash
+uv run --project engines/database-data-engine/sql-transpiler \
+  python scripts/batch31/run_chinadb_qualification.py \
+  --request /external/evidence/chinadb-request.json \
+  --trust-store /external/trust/chinadb-trust-store.json \
+  --require-target dm8 \
+  --output /external/results/dm8-qualification-result.json
+```
+
+Validate all 13 targets:
+
+```bash
+uv run --project engines/database-data-engine/sql-transpiler \
+  python scripts/operations/run_database_external_gate.py \
+  --chinadb-request /external/evidence/chinadb-request.json \
+  --chinadb-trust-store /external/trust/chinadb-trust-store.json \
+  --expected-runner-attestation-digest "$ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST" \
+  --scope all
+```
+
+The protected manual workflow
+`.github/workflows/chinadb-production-qualification.yml` applies the same byte
+and Runner-attestation bindings on a self-hosted Runner labelled
+`elmos-sql-perf-dedicated`.
+
+Checked-in paths are rejected as external evidence, and neither command creates
+keys, receipts, database results, performance measurements, or certification.

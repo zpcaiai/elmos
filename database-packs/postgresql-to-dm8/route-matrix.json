@@ -12,7 +12,9 @@
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
-      "restrictions": [],
+      "restrictions": [
+        "External execution and independent certification are NOT_RUN."
+      ],
       "source": {
         "charset": "UTF8",
         "collation": "C",

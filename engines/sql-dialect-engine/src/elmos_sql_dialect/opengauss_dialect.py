@@ -56,7 +56,9 @@ class OpenGaussASTTransformer:
         self.mode = mode
         self.generator = OpenGaussGenerator()
 
-    def transform_column_def(self, col: exp.ColumnDef, source_dialect: str = "postgres") -> exp.ColumnDef:
+    def transform_column_def(
+        self, col: exp.ColumnDef, source_dialect: str = "postgres"
+    ) -> exp.ColumnDef:
         """Transform a ColumnDef node to openGauss data types and constraints."""
         kind_sql = col.kind.sql().upper() if col.kind else ""
 
@@ -290,7 +292,7 @@ class OpenGaussASTTransformer:
                 matched_key = (
                     tbl_name
                     if tbl_name in outer_join_tables
-                    else (alias_name if alias_name in outer_join_tables else None)
+                    else alias_name if alias_name in outer_join_tables else None
                 )
                 if matched_key and matched_key in join_conditions:
                     cond = join_conditions[matched_key]
@@ -340,7 +342,9 @@ class OpenGaussASTTransformer:
                     if name == "NVL2":
                         args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
                         if len(args) == 3:
-                            cond = exp.Is(this=args[0].copy(), expression=exp.var("NOT NULL"))
+                            cond: exp.Expression = exp.Is(
+                                this=args[0].copy(), expression=exp.var("NOT NULL")
+                            )
                             return exp.Case(ifs=[exp.If(this=cond, true=args[1].copy())], default=args[2].copy())
                     if name == "DECODE":
                         args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
@@ -349,8 +353,8 @@ class OpenGaussASTTransformer:
                             whens = []
                             i = 1
                             while i + 1 < len(args):
-                                decode_condition = exp.EQ(this=base_expr.copy(), expression=args[i].copy())
-                                whens.append(exp.If(this=decode_condition, true=args[i + 1].copy()))
+                                cond = exp.EQ(this=base_expr.copy(), expression=args[i].copy())
+                                whens.append(exp.If(this=cond, true=args[i + 1].copy()))
                                 i += 2
                             default_expr = args[i].copy() if i < len(args) else exp.null()
                             return exp.Case(ifs=whens, default=default_expr)
@@ -364,7 +368,10 @@ class OpenGaussASTTransformer:
                             return exp.Anonymous(
                                 this="POSITION",
                                 expressions=[
-                                    exp.var(f"{args[1].sql(dialect='postgres')} IN {args[0].sql(dialect='postgres')}")
+                                    exp.var(
+                                        f"{args[1].sql(dialect='postgres')} IN "
+                                        f"{args[0].sql(dialect='postgres')}"
+                                    )
                                 ],
                             )
                     if name == "SUBSTR":
@@ -443,7 +450,9 @@ class OpenGaussASTTransformer:
                 if create_node.expression:
                     body_sql = create_node.expression.sql(dialect="postgres")
                 elif isinstance(ast, exp.Block):
-                    statements = [e.sql(dialect="postgres") for e in ast.expressions if not isinstance(e, exp.Create)]
+                    statements = [
+                        e.sql(dialect="postgres") for e in ast.expressions if not isinstance(e, exp.Create)
+                    ]
                     body_sql = ";\n    ".join(statements)
 
                 if not body_sql.strip():
@@ -453,7 +462,14 @@ class OpenGaussASTTransformer:
                 if target_kind == "FUNCTION":
                     header = f"{header} RETURNS {ret_type}"
 
-                return f"{header}\nAS $$\nBEGIN\n    {body_sql};\nEND;\n$$ LANGUAGE plpgsql;"
+                return (
+                    f"{header}\n"
+                    f"AS $$\n"
+                    f"BEGIN\n"
+                    f"    {body_sql};\n"
+                    f"END;\n"
+                    f"$$ LANGUAGE plpgsql;"
+                )
 
         cleaned = sql.strip().rstrip(";")
         if "LANGUAGE plpgsql" not in cleaned:

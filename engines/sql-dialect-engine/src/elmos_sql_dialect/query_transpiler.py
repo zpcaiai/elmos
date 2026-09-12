@@ -92,14 +92,33 @@ class QueryTranspiler:
                 "emitted": None,
             }
 
-        read_dialect = DIALECT_MAP.get(src_norm, "postgres")
-        write_dialect = DIALECT_MAP.get(tgt_norm, "postgres")
+        if src_norm not in DIALECT_MAP:
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-query-translation",
+                "status": "BLOCKED",
+                "reasonCode": "SOURCE_DIALECT_UNSUPPORTED",
+                "reason": f"Unsupported source query dialect: {src_norm}",
+                "emitted": None,
+            }
+        if tgt_norm not in DIALECT_MAP:
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-query-translation",
+                "status": "BLOCKED",
+                "reasonCode": "TARGET_DIALECT_UNSUPPORTED",
+                "reason": f"Unsupported target query dialect: {tgt_norm}",
+                "emitted": None,
+            }
+
+        read_dialect = DIALECT_MAP[src_norm]
+        write_dialect = DIALECT_MAP[tgt_norm]
 
         try:
-            ast = cast(exp.Expression, parse_one(normalized_sql, read=read_dialect))
+            ast = parse_one(normalized_sql, read=read_dialect)
         except Exception:
             try:
-                ast = cast(exp.Expression, parse_one(normalized_sql))
+                ast = parse_one(normalized_sql)
             except Exception as exc:  # noqa: BLE001
                 return {
                     "schemaVersion": "1.0",
@@ -109,6 +128,8 @@ class QueryTranspiler:
                     "reason": f"Could not parse query for source dialect {src_norm}: {exc}",
                     "emitted": None,
                 }
+
+        ast = cast(exp.Expression, ast)
 
         # Step 1: Transform Oracle (+) outer joins into ANSI LEFT JOIN
         ast = self._transform_oracle_outer_joins(ast)
@@ -145,8 +166,7 @@ class QueryTranspiler:
         # Clean residual whitespace or formatting anomalies
         emitted = self._post_process_sql(emitted, tgt_norm)
 
-        # Step 8: Apply target-specific refinements for specialized ChinaDB
-        # dialects without masking an unsupported or failed lowering.
+        # Step 8: Apply the exact ChinaDB target lowerer.
         if tgt_norm in _CHINADB_LOWERER_MAP:
             target_key = _CHINADB_LOWERER_MAP.get(tgt_norm, tgt_norm)
             try:
@@ -162,8 +182,8 @@ class QueryTranspiler:
                     "schemaVersion": "1.0",
                     "kind": "elmos.sql-query-translation",
                     "status": "BLOCKED",
-                    "reasonCode": "TARGET_QUERY_LOWERING_FAILED",
-                    "reason": f"Could not lower query for target dialect {tgt_norm}: {exc}",
+                    "reasonCode": "CHINADB_TARGET_LOWERING_FAILED",
+                    "reason": f"ChinaDB target lowering failed for {tgt_norm}: {exc}",
                     "emitted": None,
                 }
 
@@ -217,7 +237,7 @@ class QueryTranspiler:
                 matched_key = (
                     tbl_name
                     if tbl_name in outer_join_tables
-                    else (alias_name if alias_name in outer_join_tables else None)
+                    else alias_name if alias_name in outer_join_tables else None
                 )
                 if matched_key and matched_key in join_conditions:
                     cond = join_conditions[matched_key]
@@ -274,12 +294,13 @@ class QueryTranspiler:
                         return exp.Anonymous(this="ISNULL", expressions=args)
                     return exp.Anonymous(this="COALESCE", expressions=args)
 
-                # 2. NVL2(expr, not_null_val, null_val) -> CASE WHEN expr IS
-                # NOT NULL THEN not_null_val ELSE null_val END
+                # 2. NVL2(expr, not-null, null) -> CASE expression.
                 if name == "NVL2":
                     args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
                     if len(args) == 3:
-                        cond = exp.Is(this=args[0].copy(), expression=exp.var("NOT NULL"))
+                        cond: exp.Expression = exp.Is(
+                            this=args[0].copy(), expression=exp.var("NOT NULL")
+                        )
                         return exp.Case(ifs=[exp.If(this=cond, true=args[1].copy())], default=args[2].copy())
 
                 # 3. DECODE(col, v1, r1, v2, r2, ... def) -> CASE WHEN col = v1 THEN r1 ... ELSE def END
@@ -290,8 +311,8 @@ class QueryTranspiler:
                         whens = []
                         i = 1
                         while i + 1 < len(args):
-                            decode_condition = exp.EQ(this=base_expr.copy(), expression=args[i].copy())
-                            whens.append(exp.If(this=decode_condition, true=args[i + 1].copy()))
+                            cond = exp.EQ(this=base_expr.copy(), expression=args[i].copy())
+                            whens.append(exp.If(this=cond, true=args[i + 1].copy()))
                             i += 2
                         default_expr = args[i].copy() if i < len(args) else exp.null()
                         return exp.Case(ifs=whens, default=default_expr)

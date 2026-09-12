@@ -19,7 +19,6 @@ import pytest
 try:
     import psycopg2
     import psycopg2.extras
-
     _HAS_PSYCOPG2 = True
 except ImportError:
     psycopg2 = None
@@ -27,7 +26,6 @@ except ImportError:
 
 try:
     import pymysql
-
     _HAS_PYMYSQL = True
 except ImportError:
     pymysql = None
@@ -108,10 +106,12 @@ class TestPhysicalSqlExecutionRoundtrip:
             cur.execute("DROP TABLE IF EXISTS test_roundtrip_customers CASCADE;")
             cur.execute("CREATE TABLE test_roundtrip_customers (id INT PRIMARY KEY, name VARCHAR(50), status INT);")
             cur.execute(
-                "CREATE TABLE test_roundtrip_orders (order_id INT PRIMARY KEY, cust_id INT, amount NUMERIC(10,2));"
+                "CREATE TABLE test_roundtrip_orders "
+                "(order_id INT PRIMARY KEY, cust_id INT, amount NUMERIC(10,2));"
             )
             cur.execute(
-                "INSERT INTO test_roundtrip_customers VALUES (1, 'Alice', 1), (2, 'Bob', 2), (3, 'Charlie', 0);"
+                "INSERT INTO test_roundtrip_customers VALUES "
+                "(1, 'Alice', 1), (2, 'Bob', 2), (3, 'Charlie', 0);"
             )
             cur.execute("INSERT INTO test_roundtrip_orders VALUES (101, 1, 150.00), (102, 1, 250.50), (103, 2, 80.00);")
 
@@ -120,10 +120,12 @@ class TestPhysicalSqlExecutionRoundtrip:
             cur.execute("DROP TABLE IF EXISTS test_roundtrip_customers CASCADE;")
             cur.execute("CREATE TABLE test_roundtrip_customers (id INT PRIMARY KEY, name VARCHAR(50), status INT);")
             cur.execute(
-                "CREATE TABLE test_roundtrip_orders (order_id INT PRIMARY KEY, cust_id INT, amount NUMERIC(10,2));"
+                "CREATE TABLE test_roundtrip_orders "
+                "(order_id INT PRIMARY KEY, cust_id INT, amount NUMERIC(10,2));"
             )
             cur.execute(
-                "INSERT INTO test_roundtrip_customers VALUES (1, 'Alice', 1), (2, 'Bob', 2), (3, 'Charlie', 0);"
+                "INSERT INTO test_roundtrip_customers VALUES "
+                "(1, 'Alice', 1), (2, 'Bob', 2), (3, 'Charlie', 0);"
             )
             cur.execute("INSERT INTO test_roundtrip_orders VALUES (101, 1, 150.00), (102, 1, 250.50), (103, 2, 80.00);")
 
@@ -132,10 +134,12 @@ class TestPhysicalSqlExecutionRoundtrip:
             cur.execute("DROP TABLE IF EXISTS test_roundtrip_customers;")
             cur.execute("CREATE TABLE test_roundtrip_customers (id INT PRIMARY KEY, name VARCHAR(50), status INT);")
             cur.execute(
-                "CREATE TABLE test_roundtrip_orders (order_id INT PRIMARY KEY, cust_id INT, amount DECIMAL(10,2));"
+                "CREATE TABLE test_roundtrip_orders "
+                "(order_id INT PRIMARY KEY, cust_id INT, amount DECIMAL(10,2));"
             )
             cur.execute(
-                "INSERT INTO test_roundtrip_customers VALUES (1, 'Alice', 1), (2, 'Bob', 2), (3, 'Charlie', 0);"
+                "INSERT INTO test_roundtrip_customers VALUES "
+                "(1, 'Alice', 1), (2, 'Bob', 2), (3, 'Charlie', 0);"
             )
             cur.execute("INSERT INTO test_roundtrip_orders VALUES (101, 1, 150.00), (102, 1, 250.50), (103, 2, 80.00);")
 

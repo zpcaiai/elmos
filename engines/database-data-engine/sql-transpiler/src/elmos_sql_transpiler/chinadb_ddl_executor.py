@@ -1,8 +1,7 @@
-"""Industrial DDL Migration Executor and Schema Introspection for ChinaDB.
+"""Bounded local DDL executor and schema introspection for ChinaDB-shaped SQL.
 
-Executes schema DDL, constraints, partitioned tables, indexes, lowered procedural
-routines and triggers across all 13 domestic database targets, and verifies structural
-fidelity via reverse catalog introspection.
+The default orchestrator is a SQLite-backed protocol lab, not a vendor runtime.
+Its receipts are local engineering evidence only.
 """
 
 from __future__ import annotations

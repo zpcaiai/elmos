@@ -5,14 +5,29 @@ Validates across 13 domestic targets.
 
 from __future__ import annotations
 
+import pytest
+
 from elmos_sql_transpiler.chinadb_adapters import CHINADB_LOCAL_ADAPTERS
 from elmos_sql_transpiler.chinadb_container_orchestrator import ChinaDbContainerOrchestrator
 from elmos_sql_transpiler.chinadb_ddl_executor import ChinaDbDdlExecutor
 from elmos_sql_transpiler.chinadb_protocol_lab import ChinaDbProtocolLab
 
 
-def test_all_13_chinadb_targets_registered():
-    lab = ChinaDbProtocolLab()
+@pytest.fixture
+def lab():
+    value = ChinaDbProtocolLab()
+    yield value
+    value.stop()
+
+
+@pytest.fixture
+def orchestrator():
+    value = ChinaDbContainerOrchestrator()
+    yield value
+    value.stop_all()
+
+
+def test_all_13_chinadb_targets_registered(lab):
     assert len(lab.instances) == 13
     assert len(CHINADB_LOCAL_ADAPTERS) == 13
 
@@ -34,8 +49,7 @@ def test_all_13_chinadb_targets_registered():
     assert set(lab.instances.keys()) == expected_targets
 
 
-def test_protocol_lab_basic_ddl_dml():
-    lab = ChinaDbProtocolLab()
+def test_protocol_lab_basic_ddl_dml(lab):
     target = "opengauss"
 
     # DDL
@@ -69,17 +83,17 @@ def test_protocol_lab_basic_ddl_dml():
     assert len(rows_del) == 1
 
 
-def test_container_orchestrator_health_all_13_targets():
-    orchestrator = ChinaDbContainerOrchestrator()
+def test_container_orchestrator_health_all_13_targets(orchestrator):
     for adapter in CHINADB_LOCAL_ADAPTERS:
         status = orchestrator.check_target_status(adapter.target_id)
         assert status.is_ready is True
         assert status.latency_ms >= 0.0
         assert status.mode in ("CONTAINER", "PROTOCOL_LAB")
+        assert status.details["evidenceClass"] == "LOCAL_SYNTHETIC"
+        assert status.details["vendorRuntimeExecution"] == "NOT_RUN"
 
 
-def test_ddl_executor_and_reverse_introspection():
-    orchestrator = ChinaDbContainerOrchestrator()
+def test_ddl_executor_and_reverse_introspection(orchestrator):
     executor = ChinaDbDdlExecutor(orchestrator)
     target = "oceanbase-oracle"
 
@@ -116,3 +130,8 @@ def test_ddl_executor_and_reverse_introspection():
     emp_inspect = executor.inspect_table(target, "employees")
     assert emp_inspect is not None
     assert "idx_emp_dept" in emp_inspect.indexes
+
+
+def test_protocol_lab_unknown_sql_fails_closed(lab):
+    with pytest.raises(ValueError, match="PROTOCOL_LAB_UNSUPPORTED_SQL"):
+        lab.execute("dm8", "VACUUM definitely_missing_table")
