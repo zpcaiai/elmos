@@ -56,6 +56,11 @@ ROUTE_LANGUAGE_RUNTIMES = {
     "flutter": "flutter-3.44.1",
 }
 
+WINDOWS_ROUTE_LANGUAGE_RUNTIMES = {
+    "routes-windows-vb6": {"vb6": "vb6-route-sp6"},
+    "routes-windows-vcpp6": {"vcpp6": "vcpp6-route-sp6"},
+}
+
 B66_80_BINDINGS = {
     "66": {"node-26.0.0", "pnpm-10.12.4", "typescript-5.9.2"},
     "67": {"go-1.25.0"},
@@ -381,6 +386,8 @@ def test_manifest_has_only_the_governed_top_level_profiles() -> None:
         "core",
         "synthesis",
         "routes-macos",
+        "routes-windows-vb6",
+        "routes-windows-vcpp6",
         "b66-80",
         "spring-legacy",
         "frontend-native",
@@ -416,7 +423,83 @@ def test_language_profiles_have_exact_emitter_and_route_coverage(
 
     if profile == "routes-macos":
         assert "javascript" not in expected_languages
-        assert "javascript" not in runtime_environment.ROUTE_LANGUAGES
+        assert expected_languages == runtime_environment.ROUTES_MACOS_LANGUAGES
+
+
+def test_external_windows_route_profiles_complete_the_active_language_set() -> None:
+    manifest = runtime_environment.load_manifest()
+    runtimes = _runtime_index(manifest)
+    observed = set(runtime_environment.ROUTES_MACOS_LANGUAGES)
+
+    for profile, expected in WINDOWS_ROUTE_LANGUAGE_RUNTIMES.items():
+        profile_ids = _profile_runtime_ids(manifest, profile)
+        assert manifest["profiles"][profile]["required"] == []
+        assert profile_ids == set(expected.values())
+        assert manifest["profiles"][profile]["platforms"] == ["windows-x86_64"]
+        for language, runtime_id in expected.items():
+            assert runtimes[runtime_id]["languages"] == [language]
+            assert runtimes[runtime_id]["install_policy"] == "vendor-external"
+            observed.add(language)
+
+    assert observed == runtime_environment.ROUTE_LANGUAGES
+    assert runtime_environment.ROUTE_LANGUAGES == {
+        "java",
+        "python",
+        "csharp",
+        "typescript",
+        "go",
+        "rust",
+        "cpp",
+        "objc",
+        "swift",
+        "php",
+        "kotlin",
+        "react",
+        "flutter",
+        "vb6",
+        "vcpp6",
+    }
+    assert "javascript" not in runtime_environment.ROUTE_LANGUAGES
+
+
+@pytest.mark.parametrize(
+    "profile",
+    ["routes-windows-vb6", "routes-windows-vcpp6"],
+)
+def test_external_windows_route_profile_is_not_applicable_on_macos(profile: str) -> None:
+    report = runtime_environment.doctor(
+        runtime_environment.load_manifest(),
+        profile,
+        platform_key="darwin-arm64",
+        environ={"PATH": ""},
+    )
+
+    assert report["status"] == "NOT_APPLICABLE"
+    assert report["claim_ceiling"] == "NOT_RUN"
+    assert report["runtimes"] == []
+
+
+@pytest.mark.parametrize(
+    "profile",
+    ["routes-windows-vb6", "routes-windows-vcpp6"],
+)
+def test_external_windows_route_profile_stays_not_run_without_campaign(
+    profile: str,
+) -> None:
+    report = runtime_environment.doctor(
+        runtime_environment.load_manifest(),
+        profile,
+        platform_key="windows-x86_64",
+        environ={"PATH": ""},
+    )
+
+    assert report["status"] == "NOT_RUN"
+    assert report["claim_ceiling"] == "NOT_RUN"
+    assert len(report["runtimes"]) == 1
+    assert report["runtimes"][0]["status"] == "NOT_RUN"
+    assert report["runtimes"][0]["blocking_reason"] == (
+        "EXACT_TARGET_PROFILE_REQUIRED:vendor-external"
+    )
 
 
 def test_exact_route_host_runtimes_are_darwin_arm64_only() -> None:
@@ -441,6 +524,24 @@ def test_exact_route_host_runtimes_are_darwin_arm64_only() -> None:
             == f"runtime {runtime_id} platforms must be exactly darwin-arm64"
             for error in errors
         )
+
+
+def test_gradle_version_probe_allows_a_bounded_cold_jvm_start() -> None:
+    probe = runtime_environment.PROBE_COMMANDS["gradle"]
+
+    assert probe.arguments == ("--version",)
+    assert probe.timeout_seconds == 45.0
+
+
+def test_pnpm_version_probe_allows_a_bounded_cold_node_start() -> None:
+    probe = runtime_environment.PROBE_COMMANDS["pnpm"]
+
+    assert probe.arguments == ("--version",)
+    assert probe.timeout_seconds == 45.0
+
+
+def test_exact_route_receipt_has_a_bounded_full_closure_budget() -> None:
+    assert runtime_environment.MAX_ROUTE_RECEIPT_SECONDS == 15 * 60
 
 
 def test_route_profile_wrong_platform_runs_no_probes_or_receipt(
