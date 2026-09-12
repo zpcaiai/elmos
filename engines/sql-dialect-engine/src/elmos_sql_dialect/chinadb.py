@@ -12,6 +12,7 @@ equivalence, or certification.
 
 from __future__ import annotations
 
+import importlib
 from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
@@ -582,11 +583,8 @@ def _get_target_lowerer(target_id: str) -> Any:
     if not target_key:
         return None
     try:
-        from elmos_sql_transpiler.chinadb_target_lowers import (
-            get_chinadb_lowerer,
-        )
-
-        return get_chinadb_lowerer(target_key)
+        module = importlib.import_module("elmos_sql_transpiler.chinadb_target_lowers")
+        return module.get_chinadb_lowerer(target_key)
     except (ImportError, ModuleNotFoundError):
         import sys
         from pathlib import Path
@@ -596,11 +594,10 @@ def _get_target_lowerer(target_id: str) -> Any:
         if transpiler_src.exists() and str(transpiler_src) not in sys.path:
             sys.path.insert(0, str(transpiler_src))
         try:
-            from elmos_sql_transpiler.chinadb_target_lowers import (
-                get_chinadb_lowerer,
+            module = importlib.import_module(
+                "elmos_sql_transpiler.chinadb_target_lowers"
             )
-
-            return get_chinadb_lowerer(target_key)
+            return module.get_chinadb_lowerer(target_key)
         except Exception:
             return None
 
