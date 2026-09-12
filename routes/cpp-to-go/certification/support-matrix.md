@@ -2,15 +2,15 @@
 
 Generated from the route's authoritative `../support-matrix.json`; this view does not create execution or certification evidence.
 
-- Source SHA-256: `sha256:75298859c89cc4be6536eac74e19e632cc4e90c0f8b0dbb063ffc1abdf302b6f`
-- Source bytes: `2890`
+- Source SHA-256: `sha256:72ff818c5b70ec94eeacf967be74c379618e1d18c8c9bb2f3e623e80eb9f1028`
+- Source bytes: `2908`
 
 ## typed-pure-function-v1
 
-- Status: `certified`
+- Status: `supported`
 - Strategy: `compiler-backed-semantic-ir`
 - Evidence: `certification/evidence.json`
-- Reason: Certified for typed pure function semantic conversion under the verified typed-pure-function-v1 profile.
+- Reason: Bounded local evidence supports typed pure function semantic conversion under the verified typed-pure-function-v1 profile.
 
 ## primitive-types
 
