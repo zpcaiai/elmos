@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, List, Mapping, Optional
+from typing import Any, Callable, Dict, Mapping, Optional
 
 from ..domain import TenantScope
-from ..industrial_runtime.host_broker import INDUSTRIAL_BROKER_ID, execute_industrial_skill
+from ..exact_skills.registry import load_exact_handlers
 from ..native_semantics import load_native_programs
 from .pack_00_05_core_foundry import CoreFoundryPackHandler
 from .pack_06_10_model_foundry import ModelFoundryPackHandler
@@ -70,48 +70,11 @@ class AutomatedPackHandlerRegistry:
         self._build_handlers()
 
     def _build_handlers(self) -> None:
-        for skill_name, program in self._programs.items():
-            declared_outputs = [str(o['name']) for o in program.document.get('outputs', [])]
-            pack_name = str(program.document.get('pack', ''))
-
-            def _make_handler(
-                s_name: str = skill_name,
-                outs: Optional[List[str]] = None,
-                p_name: str = pack_name,
-            ) -> HandlerFunc:
-                output_list = outs if outs is not None else list(declared_outputs)
-
-                def _handler(name: str, payload: Mapping[str, Any], scope: TenantScope, invocation_id: str) -> Dict[str, Any]:
-                    kernel = execute_industrial_skill(
-                        s_name,
-                        payload,
-                        tenant_scope=scope,
-                        invocation_id=invocation_id,
-                        pack=p_name,
-                    )
-                    output_dict: Dict[str, Any] = {
-                        out_name: kernel.materialize_output(out_name) for out_name in output_list
-                    }
-                    return {
-                        "status": "SUCCEEDED" if kernel.ok else "FAILED",
-                        "outputs": output_dict,
-                        "execution_status": "LOCAL_EXECUTED_SELF_ATTESTED",
-                        "execution_mode": kernel.execution_mode,
-                        "host_broker": INDUSTRIAL_BROKER_ID,
-                        "kernel_family": kernel.family,
-                        "algorithm": kernel.algorithm,
-                        "input_digest": kernel.input_digest,
-                        "output_digest": kernel.output_digest,
-                        "llm_required": False,
-                        "industrial": True,
-                        "skill": s_name,
-                        "pack": p_name,
-                        "error": kernel.error,
-                    }
-
-                return _handler
-
-            self._handlers[skill_name] = _make_handler(skill_name, declared_outputs, pack_name)
+        exact = load_exact_handlers()
+        if set(exact) != set(self._programs):
+            missing = sorted(set(self._programs) - set(exact))
+            raise RuntimeError(f"exact handler allowlist is incomplete: {missing[:8]}")
+        self._handlers = dict(exact)
 
     def get_handler(self, skill_name: str) -> Optional[HandlerFunc]:
         return self._handlers.get(skill_name)

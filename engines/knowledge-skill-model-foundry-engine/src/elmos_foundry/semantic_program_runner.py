@@ -245,6 +245,9 @@ class SemanticProgramRunner:
 
         handler = self.local_handlers.get(skill_name)
         if handler is None:
+            from .exact_skills.registry import get_exact_handler_or_none
+            handler = get_exact_handler_or_none(skill_name)
+        if handler is None:
             from .core_skill_handlers import HIGH_FREQUENCY_CORE_HANDLERS
             core_handler = HIGH_FREQUENCY_CORE_HANDLERS.get(skill_name)
             if core_handler is not None:

@@ -1,8 +1,8 @@
 """Industrial local Host Broker for the 1,244 HOST_ROUTE_BOUND Foundry skills.
 
-This package replaces hash-theatre pack stubs with deterministic computational
-kernels.  No LLM API key, host tenant, or external broker is required for
-local industrial execution.
+Pack dispatch uses exact compiled native-program handlers.  Family kernels
+remain available for domain-input unit tests.  No LLM API key is required
+for local industrial execution.
 """
 
 from .families import KernelFamily, classify_skill

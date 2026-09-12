@@ -91,8 +91,8 @@ def run_opposite_transfers(timeout: float = 0.4, preempt: Callable[[], None] | N
     resource = DualResource()
     if preempt is not None:
         globals()["_preempt_point"] = preempt
-    first = threading.Thread(target=resource.move_ab)
-    second = threading.Thread(target=resource.move_ba)
+    first = threading.Thread(target=resource.move_ab, daemon=True)
+    second = threading.Thread(target=resource.move_ba, daemon=True)
     first.start()
     second.start()
     first.join(timeout)
@@ -138,8 +138,8 @@ def run_crossing_transfers(timeout: float = 0.4, preempt: Callable[[], None] | N
     store = RowLockManager()
     if preempt is not None:
         globals()["_preempt_point"] = preempt
-    first = threading.Thread(target=lambda: store.transfer(1, 2, 10))
-    second = threading.Thread(target=lambda: store.transfer(2, 1, 10))
+    first = threading.Thread(target=lambda: store.transfer(1, 2, 10), daemon=True)
+    second = threading.Thread(target=lambda: store.transfer(2, 1, 10), daemon=True)
     first.start()
     second.start()
     first.join(timeout)

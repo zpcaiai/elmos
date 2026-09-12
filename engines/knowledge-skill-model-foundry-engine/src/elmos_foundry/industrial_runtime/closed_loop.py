@@ -8,6 +8,7 @@ import hashlib
 import json
 from typing import Any
 
+from ..exact_skills.registry import EXPECTED_EXACT_SKILLS, load_exact_handlers
 from ..local_semantics import LOCAL_SEMANTIC_SKILLS
 from .families import KernelFamily
 from .host_broker import (
@@ -106,6 +107,8 @@ def prove_input_dependence(sample_skills: Mapping[str, str]) -> tuple[int, int, 
 def run_foundry_insight() -> dict[str, Any]:
     broker = IndustrialLocalHostBroker()
     catalog = broker.execute_catalog()
+    exact = load_exact_handlers()
+    exact_ok = len(exact) == EXPECTED_EXACT_SKILLS and len({id(fn) for fn in exact.values()}) == EXPECTED_EXACT_SKILLS
     sample: dict[str, str] = {}
     seen_packs: set[str] = set()
     for name, program in broker._programs.items():
@@ -129,7 +132,9 @@ def run_foundry_insight() -> dict[str, Any]:
         "local_semantic_skills": len(LOCAL_SEMANTIC_SKILLS),
         "brokered_expected": EXPECTED_BROKERED_SKILLS,
         "atomic_expected": EXPECTED_ATOMIC_SKILLS,
-        "ok": catalog.ok and passed == checks and len(LOCAL_SEMANTIC_SKILLS) == EXPECTED_LOCAL_SEMANTIC_SKILLS,
+        "exact_handlers": len(exact),
+        "exact_handlers_unique": exact_ok,
+        "ok": catalog.ok and passed == checks and exact_ok and len(LOCAL_SEMANTIC_SKILLS) == EXPECTED_LOCAL_SEMANTIC_SKILLS,
     }
 
 
