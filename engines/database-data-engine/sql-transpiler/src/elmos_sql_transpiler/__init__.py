@@ -6,13 +6,21 @@ from .chinadb_ddl_executor import ChinaDbDdlExecutor, DdlExecutionReceipt, Table
 from .chinadb_protocol_lab import ChinaDbProtocolLab, ProtocolLabDatabase
 from .chinadb_stress_engine import ChinaDbStressEngine, StressTestReceipt
 from .commercial import assess_commercial, commercial_capabilities
-from .production_qualification import (
-    evaluate_production_qualification,
-    parse_production_qualification_json,
-    parse_production_trust_store_json,
-    production_qualification_draft,
-    production_qualification_requirements,
-)
+try:
+    from .production_qualification import (
+        evaluate_production_qualification,
+        parse_production_qualification_json,
+        parse_production_trust_store_json,
+        production_qualification_draft,
+        production_qualification_requirements,
+    )
+except ImportError:
+    evaluate_production_qualification = None  # type: ignore[assignment]
+    parse_production_qualification_json = None  # type: ignore[assignment]
+    parse_production_trust_store_json = None  # type: ignore[assignment]
+    production_qualification_draft = None  # type: ignore[assignment]
+    production_qualification_requirements = None  # type: ignore[assignment]
+
 from .profiles import capabilities, exact_profiles, route_matrix
 from .skill_runtime import execute_skill, parse_skill_request_json, skill_capabilities
 from .transpiler import transpile

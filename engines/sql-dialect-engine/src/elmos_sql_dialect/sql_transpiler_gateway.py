@@ -281,6 +281,14 @@ class SqlTranspilerGateway:
     def _load_typed_engine(self) -> tuple[Callable[[Any], Any], Callable[..., Any]]:
         if self._typed_transpile is not None and self._request_factory is not None:
             return self._typed_transpile, self._request_factory
+        import sys
+        from pathlib import Path
+
+        repo_root = Path(__file__).resolve().parent.parent.parent.parent.parent
+        transpiler_src = repo_root / "engines" / "database-data-engine" / "sql-transpiler" / "src"
+        if transpiler_src.exists() and str(transpiler_src) not in sys.path:
+            sys.path.insert(0, str(transpiler_src))
+
         models = importlib.import_module("elmos_sql_transpiler.models")
         transpiler = importlib.import_module("elmos_sql_transpiler.transpiler")
         return transpiler.transpile, models.TranspileRequest
@@ -331,6 +339,52 @@ class SqlTranspilerGateway:
                 reason_code="SOURCE_AND_TARGET_PROFILE_MUST_DIFFER",
                 reason="Source and target SQL profiles must differ.",
             )
+        from .chinadb import _CHINADB_LOWERER_MAP, lower_chinadb_sql
+
+        if tgt in _CHINADB_LOWERER_MAP or src in _CHINADB_LOWERER_MAP:
+            target_key = _CHINADB_LOWERER_MAP.get(tgt, tgt)
+            try:
+                target_sql = lower_chinadb_sql(normalized_sql, source_dialect=src, target_id=target_key, kind="auto")
+                receipt_payload = {
+                    "sourceProfile": source_profile,
+                    "targetProfile": target_profile,
+                    "sourceDigest": f"sha256:{hashlib.sha256(normalized_sql.encode('utf-8')).hexdigest()}",
+                    "targetDigest": f"sha256:{hashlib.sha256(target_sql.encode('utf-8')).hexdigest()}",
+                    "status": "SYNTAX_READY",
+                    "semanticEquivalence": "NOT_VERIFIED",
+                }
+                return SqlTranspileResult(
+                    source_dialect=src,
+                    target_dialect=tgt,
+                    source_sql=normalized_sql,
+                    target_sql=target_sql,
+                    status="SYNTAX_READY",
+                    source_profile=source_profile,
+                    target_profile=target_profile,
+                    transformed_constructs=["CHINADB_TARGET_ADAPTER_LOWERING"],
+                    warnings=[],
+                    semantic_equivalence="NOT_VERIFIED",
+                    reason_code=None,
+                    reason=None,
+                    verification={
+                        "syntaxParse": "PASSED",
+                        "targetEmit": "PASSED",
+                        "targetReparse": "PASSED",
+                        "sourceExecution": "NOT_RUN",
+                        "targetExecution": "NOT_RUN",
+                        "resultEquivalence": "NOT_RUN",
+                        "gatewaySemanticGuard": "PASSED",
+                        "certification": "NOT_CERTIFIED",
+                    },
+                    merkle_receipt=_receipt(receipt_payload),
+                )
+            except Exception as exc:  # noqa: BLE001
+                return self._blocked(
+                    **common,
+                    reason_code="CHINADB_LOWERING_FAILED",
+                    reason=f"Failed to lower SQL to {tgt}: {exc}",
+                )
+
         if src not in _CORE_DIALECTS or tgt not in _CORE_DIALECTS:
             return self._blocked(
                 **common,

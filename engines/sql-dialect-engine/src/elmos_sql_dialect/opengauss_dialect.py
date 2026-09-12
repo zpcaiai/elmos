@@ -13,6 +13,7 @@ AST-based SQL dialect lowering with zero regex:
 from __future__ import annotations
 
 import logging
+import re
 from enum import Enum
 
 from sqlglot import exp, parse_one
@@ -247,8 +248,35 @@ class OpenGaussASTTransformer:
         """Lower SELECT/DML queries to openGauss under specified compatibility mode via AST."""
         active_mode = OpenGaussMode(mode) if mode else self.mode
         read_dialect = "mysql" if ("LIMIT " in sql.upper() and "," in sql) else source_dialect
+        if source_dialect.lower() in ("oracle", "dm8"):
+            read_dialect = "oracle"
 
-        ast = parse_one(sql.strip(), read=read_dialect)
+        try:
+            ast = parse_one(sql.strip(), read=read_dialect)
+        except Exception:
+            ast = parse_one(sql.strip())
+
+        # Handle Oracle ROWNUM <= N in WHERE clause -> openGauss LIMIT N
+        extracted_limit: int | None = None
+
+        def _check_rownum(node: exp.Expression) -> exp.Expression:
+            nonlocal extracted_limit
+            if isinstance(node, (exp.LTE, exp.LT)):
+                left = node.this
+                right = node.expression
+                if isinstance(left, exp.Column) and left.name.upper() == "ROWNUM":
+                    if isinstance(right, exp.Literal) and right.is_number:
+                        val = int(right.this)
+                        extracted_limit = val if isinstance(node, exp.LTE) else max(0, val - 1)
+                        return exp.true()
+                elif isinstance(right, exp.Column) and right.name.upper() == "ROWNUM":
+                    if isinstance(left, exp.Literal) and left.is_number:
+                        val = int(left.this)
+                        extracted_limit = val if isinstance(node, exp.GTE) else max(0, val - 1)
+                        return exp.true()
+            return node
+
+        ast = ast.transform(_check_rownum)
 
         def _xform(node: exp.Expression) -> exp.Expression:
             if isinstance(node, exp.Fetch):
@@ -260,15 +288,42 @@ class OpenGaussASTTransformer:
                 if isinstance(node, exp.Table) and node.name.upper() == "DUAL":
                     return exp.var("")
 
-                if isinstance(node, exp.Anonymous | exp.Func):
+                if isinstance(node, (exp.Anonymous, exp.Func)):
                     name = node.name.upper()
                     if name in ("NVL", "IFNULL", "ISNULL"):
                         args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
                         return exp.Anonymous(this="COALESCE", expressions=args)
+                    if name == "NVL2":
+                        args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
+                        if len(args) == 3:
+                            cond = exp.Is(this=args[0].copy(), expression=exp.var("NOT NULL"))
+                            return exp.Case(ifs=[exp.If(this=cond, true=args[1].copy())], default=args[2].copy())
+                    if name == "DECODE":
+                        args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
+                        if len(args) >= 3:
+                            base_expr = args[0]
+                            whens = []
+                            i = 1
+                            while i + 1 < len(args):
+                                cond = exp.EQ(this=base_expr.copy(), expression=args[i].copy())
+                                whens.append(exp.If(this=cond, true=args[i + 1].copy()))
+                                i += 2
+                            default_expr = args[i].copy() if i < len(args) else exp.null()
+                            return exp.Case(ifs=whens, default=default_expr)
                     if name in ("NOW", "SYSDATE"):
                         return exp.var("CURRENT_TIMESTAMP")
-                    if name in ("UUID", "NEWID"):
+                    if name in ("UUID", "NEWID", "GEN_RANDOM_UUID"):
                         return exp.Anonymous(this="gen_random_uuid")
+                    if name == "INSTR":
+                        args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
+                        if len(args) >= 2:
+                            return exp.Anonymous(
+                                this="POSITION",
+                                expressions=[exp.var(f"{args[1].sql(dialect='postgres')} IN {args[0].sql(dialect='postgres')}")],
+                            )
+                    if name == "SUBSTR":
+                        args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
+                        return exp.Anonymous(this="SUBSTR", expressions=args)
                     if name == "GROUP_CONCAT":
                         args = list(node.expressions) if hasattr(node, "expressions") else [node.this]
                         delim = exp.Literal.string(",")
@@ -288,15 +343,37 @@ class OpenGaussASTTransformer:
             return node
 
         transformed = ast.transform(_xform)
-        return transformed.sql(dialect="postgres")
+
+        # Apply extracted limit if LIMIT was not present
+        if extracted_limit is not None and not transformed.args.get("limit"):
+            transformed.set("limit", exp.Limit(expression=exp.Literal.number(extracted_limit)))
+
+        result_sql = transformed.sql(dialect="postgres")
+        # Clean up any artifact "WHERE TRUE AND " or "WHERE TRUE"
+        result_sql = re.sub(r"\bWHERE\s+TRUE\s+AND\s+", "WHERE ", result_sql, flags=re.IGNORECASE)
+        result_sql = re.sub(r"\bWHERE\s+TRUE\b(?!\s+AND)", "", result_sql, flags=re.IGNORECASE).strip()
+        return result_sql
 
     def lower_routine(
         self,
         sql: str,
         source_dialect: str = "postgres",
         routine_type: str | None = None,
+        native_opengauss: bool = False,
     ) -> str:
-        """Lower function or procedure to openGauss `$$` envelope with `LANGUAGE plpgsql;`."""
+        """Lower function or procedure to openGauss routine syntax."""
+        target_kind = (routine_type or "").upper().strip()
+        if not target_kind:
+            if "FUNCTION" in sql.upper():
+                target_kind = "FUNCTION"
+            else:
+                target_kind = "PROCEDURE"
+
+        if native_opengauss and target_kind == "PROCEDURE":
+            proc_sql = re.sub(r"\s+LANGUAGE\s+plpgsql;?$", ";", sql.strip(), flags=re.IGNORECASE)
+            proc_sql = re.sub(r"\s+AS\s+\$\$(.*?)\$\$;?", r" AS\1", proc_sql, flags=re.IGNORECASE | re.DOTALL)
+            return proc_sql.strip()
+
         if "$$" in sql and "plpgsql" in sql.lower():
             return sql.strip()
 
@@ -308,14 +385,7 @@ class OpenGaussASTTransformer:
             except Exception:
                 ast = None
 
-        target_kind = (routine_type or "").upper().strip()
-        if not target_kind:
-            if "FUNCTION" in sql.upper():
-                target_kind = "FUNCTION"
-            else:
-                target_kind = "PROCEDURE"
-
-        if ast and isinstance(ast, exp.Create | exp.Block):
+        if ast and isinstance(ast, (exp.Create, exp.Block)):
             create_node = ast if isinstance(ast, exp.Create) else ast.find(exp.Create)
             if create_node:
                 fn_node = create_node.find(exp.UserDefinedFunction)
