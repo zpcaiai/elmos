@@ -1,0 +1,10 @@
+{
+  "name": "ELMOS",
+  "install": "corepack enable && corepack prepare pnpm@10.12.4 --activate && cd apps/web-console && pnpm install --frozen-lockfile",
+  "terminals": [
+    {
+      "name": "web-console",
+      "command": "cd apps/web-console && corepack pnpm dev"
+    }
+  ]
+}
