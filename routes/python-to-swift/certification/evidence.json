@@ -36,11 +36,13 @@
   "critical_behavior_regressions": 0,
   "critical_unknown_semantics": 0,
   "execution_status": "PASSED_LOCAL",
+  "external_certification_status": "NOT_RUN",
   "formal_equivalence": {
     "bytes": 305282,
     "path": "certification/formal-equivalence.json",
     "sha256": "sha256:b00cb86095071bc57e57d9ee037ba53477bcec7a8dae2430d0bbfa3faf9924a7"
   },
+  "independent_verification_status": "NOT_RUN",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,

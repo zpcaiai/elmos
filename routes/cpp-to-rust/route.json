@@ -41,7 +41,7 @@
       "arm64-apple-darwin25.6.0"
     ]
   },
-  "status": "certified",
+  "status": "limited",
   "target": {
     "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
     "language": "rust",

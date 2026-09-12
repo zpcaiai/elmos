@@ -41,7 +41,7 @@
       "strict_types=1"
     ]
   },
-  "status": "certified",
+  "status": "limited",
   "target": {
     "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
     "language": "objc",

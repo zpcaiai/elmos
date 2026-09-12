@@ -36,8 +36,8 @@
   "critical_behavior_regressions": 0,
   "critical_unknown_semantics": 0,
   "execution_status": "PASSED_LOCAL",
-  "external_certification_status": "PASSED",
-  "independent_verification_status": "PASSED",
+  "external_certification_status": "NOT_RUN",
+  "independent_verification_status": "NOT_RUN",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
@@ -57,7 +57,7 @@
     "Independent verifier, customer repository, framework, database, production, and external certification evidence remain NOT_RUN."
   ],
   "route_key": "csharp-to-rust",
-  "route_maturity": "CERTIFIED",
+  "route_maturity": "LIMITED",
   "route_version": "1.0.0",
   "runs": [
     "certification/local-development-evidence.json",
