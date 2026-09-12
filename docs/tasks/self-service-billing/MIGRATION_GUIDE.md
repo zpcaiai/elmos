@@ -85,6 +85,9 @@ Web 任务生产者还需要短期服务令牌和精确订阅绑定；启用
 
 ## 当前外部状态
 
-仓库未发现可用于本次操作的生产 Neon、OIDC、Stripe 或邮件 Secret，因此未执行生产迁移、
-未创建 Stripe 商品/价格、未注册 Webhook，也未发送邮件。状态保持 `NOT_RUN` /
-`NOT_CONFIGURED`。
+主线合并后的 `commercial-production` GitHub Actions run `34713508064` 使用受保护 Environment
+中的脱敏 Secret/目标绑定，在批准的 Neon PostgreSQL 17.11 将 schema 从 V86 升到 V87，
+迁移前后均验证完整 Flyway 历史并应用最小权限运行角色授权，状态为 `PASS_EXTERNAL`。
+
+这不代表 OIDC、支付宝/微信/ELMPay 生产商户、Webhook、退款、结算、邮件或应用部署已验证；
+这些外部能力仍保持各自的 `NOT_RUN` / `NOT_CONFIGURED`，live billing 继续关闭。

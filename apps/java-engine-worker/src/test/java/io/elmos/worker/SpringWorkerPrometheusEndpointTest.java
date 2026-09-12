@@ -20,7 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
                 "elmos.worker.spring-upgrade.ingress-auth-enabled=false",
                 "management.endpoints.web.exposure.include=health,info,prometheus",
                 "spring.cloud.compatibility-verifier.enabled=false",
-                "spring.cloud.gateway.enabled=false"
+                "spring.cloud.gateway.enabled=false",
+                "spring.autoconfigure.exclude=org.springframework.cloud.gateway.config.GatewayClassPathWarningAutoConfiguration"
         }
 )
 @AutoConfigureObservability

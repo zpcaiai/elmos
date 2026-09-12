@@ -85,7 +85,10 @@ class PaymentLifecycleHardeningMigrationContractTest {
                 "commercial_order_directory", "commercial_orders",
                 "commercial_credit_accounts", "commercial_credit_lots",
                 "commercial_credit_ledger_entries", "project_generation_entitlements",
-                "commercial_credit_reservations", "commercial_credit_reservation_lots"}) {
+                "commercial_credit_reservations", "commercial_credit_reservation_lots",
+                "commercial_credit_journal_transactions",
+                "commercial_credit_journal_entries",
+                "commercial_credit_projection_rebuilds"}) {
             assertTrue(script.contains(relation), relation + " must be granted after role creation");
         }
         for (String function : new String[]{
@@ -98,7 +101,8 @@ class PaymentLifecycleHardeningMigrationContractTest {
                 "elmos_commercial_mark_order_prepare_failed",
                 "elmos_commercial_reserve_generation", "elmos_commercial_settle_generation",
                 "elmos_commercial_release_generation",
-                "elmos_commercial_expire_generation_reservations"}) {
+                "elmos_commercial_expire_generation_reservations",
+                "elmos_commercial_credit_reconcile"}) {
             assertTrue(script.contains("'" + function + "'"),
                     function + " must be granted after role creation");
         }

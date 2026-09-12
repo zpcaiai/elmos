@@ -1,0 +1,348 @@
+{
+  "schema_version": "2.1",
+  "repository": "zpcaiai/elmos",
+  "generated_at": "2026-09-12T19:00:34.516253Z",
+  "source_alert_snapshot_digest": "sha256:f41a5b2d4a6e501e728db3da1c42371a4d76abecfbd47d96ba0d91f2360d8cf8",
+  "exceptions": [
+    {
+      "alert_number": 480,
+      "ecosystem": "pip",
+      "package": "cryptography",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "dependency_scope": "runtime",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-r6ph-v2qm-q3c2",
+      "severity": "high",
+      "vulnerable_version_range": "<= 46.0.4",
+      "first_patched_version": "46.0.5",
+      "classification": "immutable_source",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+        "sha256": "sha256:e6d231ef1d8d943a689f77aea631df215bf301ff71d4cd5132608034912df61c",
+        "bytes": 358
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-11T19:00:34Z"
+    },
+    {
+      "alert_number": 481,
+      "ecosystem": "pip",
+      "package": "cryptography",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "dependency_scope": "runtime",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-m959-cc7f-wv43",
+      "severity": "low",
+      "vulnerable_version_range": "< 46.0.6",
+      "first_patched_version": "46.0.6",
+      "classification": "immutable_source",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+        "sha256": "sha256:e6d231ef1d8d943a689f77aea631df215bf301ff71d4cd5132608034912df61c",
+        "bytes": 358
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-11T19:00:34Z"
+    },
+    {
+      "alert_number": 482,
+      "ecosystem": "pip",
+      "package": "cryptography",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "dependency_scope": "runtime",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-p423-j2cm-9vmq",
+      "severity": "medium",
+      "vulnerable_version_range": ">= 45.0.0, < 46.0.7",
+      "first_patched_version": "46.0.7",
+      "classification": "immutable_source",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+        "sha256": "sha256:e6d231ef1d8d943a689f77aea631df215bf301ff71d4cd5132608034912df61c",
+        "bytes": 358
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-11T19:00:34Z"
+    },
+    {
+      "alert_number": 483,
+      "ecosystem": "pip",
+      "package": "pytest",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "dependency_scope": "runtime",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-6w46-j5rx-g56g",
+      "severity": "medium",
+      "vulnerable_version_range": "< 9.0.3",
+      "first_patched_version": "9.0.3",
+      "classification": "immutable_source",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+        "sha256": "sha256:e6d231ef1d8d943a689f77aea631df215bf301ff71d4cd5132608034912df61c",
+        "bytes": 358
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-11T19:00:34Z"
+    },
+    {
+      "alert_number": 484,
+      "ecosystem": "pip",
+      "package": "cryptography",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "dependency_scope": "runtime",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-537c-gmf6-5ccf",
+      "severity": "high",
+      "vulnerable_version_range": ">= 0.5.0, < 48.0.1",
+      "first_patched_version": "48.0.1",
+      "classification": "immutable_source",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+        "sha256": "sha256:e6d231ef1d8d943a689f77aea631df215bf301ff71d4cd5132608034912df61c",
+        "bytes": 358
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-11T19:00:34Z"
+    },
+    {
+      "alert_number": 485,
+      "ecosystem": "pip",
+      "package": "cryptography",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "dependency_scope": "runtime",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-g6cj-pr64-35w5",
+      "severity": "high",
+      "vulnerable_version_range": ">= 44.0.0, < 50.0.0",
+      "first_patched_version": "50.0.0",
+      "classification": "immutable_source",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+        "sha256": "sha256:e6d231ef1d8d943a689f77aea631df215bf301ff71d4cd5132608034912df61c",
+        "bytes": 358
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-11T19:00:34Z"
+    },
+    {
+      "alert_number": 486,
+      "ecosystem": "pip",
+      "package": "cryptography",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "dependency_scope": "runtime",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-m2h6-j472-rp4c",
+      "severity": "medium",
+      "vulnerable_version_range": ">= 45.0.0, <= 48.0.0",
+      "first_patched_version": "49.0.0",
+      "classification": "immutable_source",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+        "sha256": "sha256:e6d231ef1d8d943a689f77aea631df215bf301ff71d4cd5132608034912df61c",
+        "bytes": 358
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-11T19:00:34Z"
+    },
+    {
+      "alert_number": 487,
+      "ecosystem": "pip",
+      "package": "cryptography",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "dependency_scope": "runtime",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-jwv3-5hgf-82ww",
+      "severity": "high",
+      "vulnerable_version_range": ">= 42.0.0, <= 48.0.0",
+      "first_patched_version": "49.0.0",
+      "classification": "immutable_source",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+        "sha256": "sha256:e6d231ef1d8d943a689f77aea631df215bf301ff71d4cd5132608034912df61c",
+        "bytes": 358
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-11T19:00:34Z"
+    }
+  ],
+  "fixed_claims": [],
+  "certification": "NOT_CERTIFIED",
+  "source_alerts": [
+    {
+      "severity": "high",
+      "relationship": "direct",
+      "dependency_scope": "runtime",
+      "first_patched_version": "46.0.5",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "package": "cryptography",
+      "ecosystem": "pip",
+      "alert_number": 480,
+      "vulnerable_version_range": "<= 46.0.4",
+      "ghsa_id": "GHSA-r6ph-v2qm-q3c2"
+    },
+    {
+      "severity": "low",
+      "relationship": "direct",
+      "dependency_scope": "runtime",
+      "first_patched_version": "46.0.6",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "package": "cryptography",
+      "ecosystem": "pip",
+      "alert_number": 481,
+      "vulnerable_version_range": "< 46.0.6",
+      "ghsa_id": "GHSA-m959-cc7f-wv43"
+    },
+    {
+      "severity": "medium",
+      "relationship": "direct",
+      "dependency_scope": "runtime",
+      "first_patched_version": "46.0.7",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "package": "cryptography",
+      "ecosystem": "pip",
+      "alert_number": 482,
+      "vulnerable_version_range": ">= 45.0.0, < 46.0.7",
+      "ghsa_id": "GHSA-p423-j2cm-9vmq"
+    },
+    {
+      "severity": "medium",
+      "relationship": "direct",
+      "dependency_scope": "runtime",
+      "first_patched_version": "9.0.3",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "package": "pytest",
+      "ecosystem": "pip",
+      "alert_number": 483,
+      "vulnerable_version_range": "< 9.0.3",
+      "ghsa_id": "GHSA-6w46-j5rx-g56g"
+    },
+    {
+      "severity": "high",
+      "relationship": "direct",
+      "dependency_scope": "runtime",
+      "first_patched_version": "48.0.1",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "package": "cryptography",
+      "ecosystem": "pip",
+      "alert_number": 484,
+      "vulnerable_version_range": ">= 0.5.0, < 48.0.1",
+      "ghsa_id": "GHSA-537c-gmf6-5ccf"
+    },
+    {
+      "severity": "high",
+      "relationship": "direct",
+      "dependency_scope": "runtime",
+      "first_patched_version": "50.0.0",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "package": "cryptography",
+      "ecosystem": "pip",
+      "alert_number": 485,
+      "vulnerable_version_range": ">= 44.0.0, < 50.0.0",
+      "ghsa_id": "GHSA-g6cj-pr64-35w5"
+    },
+    {
+      "severity": "medium",
+      "relationship": "direct",
+      "dependency_scope": "runtime",
+      "first_patched_version": "49.0.0",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "package": "cryptography",
+      "ecosystem": "pip",
+      "alert_number": 486,
+      "vulnerable_version_range": ">= 45.0.0, <= 48.0.0",
+      "ghsa_id": "GHSA-m2h6-j472-rp4c"
+    },
+    {
+      "severity": "high",
+      "relationship": "direct",
+      "dependency_scope": "runtime",
+      "first_patched_version": "49.0.0",
+      "manifest_path": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt",
+      "package": "cryptography",
+      "ecosystem": "pip",
+      "alert_number": 487,
+      "vulnerable_version_range": ">= 42.0.0, <= 48.0.0",
+      "ghsa_id": "GHSA-jwv3-5hgf-82ww"
+    }
+  ]
+}
