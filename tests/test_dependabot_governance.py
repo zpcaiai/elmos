@@ -57,7 +57,10 @@ class DependabotGovernanceTest(unittest.TestCase):
                 "zpcaiai/elmos", alerts, now=now, repo_root=root
             )
 
-            self.assertEqual("2.0", registry["schema_version"])
+            self.assertEqual("2.1", registry["schema_version"])
+            self.assertEqual(
+                [MODULE.alert_key(alerts[0])], registry["source_alerts"]
+            )
             self.assertEqual([], registry["fixed_claims"])
             self.assertEqual("NOT_CERTIFIED", registry["certification"])
             exception = registry["exceptions"][0]
@@ -246,6 +249,49 @@ class DependabotGovernanceTest(unittest.TestCase):
             self.assertTrue(
                 json.loads(provenance_path.read_text())["externalOperationExecuted"]
             )
+
+            replay_responses = [
+                mock.Mock(returncode=0, stdout=b"[[]]", stderr=b""),
+                mock.Mock(
+                    returncode=0,
+                    stdout=json.dumps([[immutable]]).encode("utf-8"),
+                    stderr=b"",
+                ),
+            ]
+            with (
+                mock.patch.object(sys, "argv", argv),
+                mock.patch.object(
+                    MODULE.subprocess, "run", side_effect=replay_responses
+                ) as replay_run,
+            ):
+                self.assertEqual(0, MODULE.main())
+            self.assertEqual(2, replay_run.call_count)
+            self.assertEqual(b"[]", snapshot.read_bytes())
+
+    def test_legacy_registry_migration_is_digest_bound(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = "client-packs/evidence/package.json"
+            path = root / manifest
+            path.parent.mkdir(parents=True)
+            path.write_text("{}\n", encoding="utf-8")
+            value = alert(2, "vitest", manifest)
+            registry = MODULE.build_registry(
+                "zpcaiai/elmos",
+                [value],
+                now=datetime(2026, 9, 8, tzinfo=timezone.utc),
+                repo_root=root,
+            )
+            legacy = {key: item for key, item in registry.items() if key != "source_alerts"}
+            legacy["schema_version"] = "2.0"
+
+            migrated = MODULE.migrate_registry(legacy)
+
+            self.assertEqual("2.1", migrated["schema_version"])
+            self.assertEqual([MODULE.alert_key(value)], migrated["source_alerts"])
+            legacy["source_alert_snapshot_digest"] = "sha256:" + "0" * 64
+            with self.assertRaisesRegex(ValueError, "cannot reconstruct"):
+                MODULE.migrate_registry(legacy)
 
     def test_unregistered_runtime_alert_does_not_overwrite_source_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

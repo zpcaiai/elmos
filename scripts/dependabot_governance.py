@@ -43,7 +43,8 @@ VUE2_COMPATIBILITY_MANIFESTS = frozenset(
     }
 )
 EOL_PACKAGES = {"vue", "vue-template-compiler", "vue-server-renderer"}
-SCHEMA_VERSION = "2.0"
+SCHEMA_VERSION = "2.1"
+LEGACY_SCHEMA_VERSION = "2.0"
 ALERT_KEY_FIELDS = frozenset(
     {
         "alert_number",
@@ -168,7 +169,10 @@ def build_registry(
         .isoformat()
         .replace("+00:00", "Z")
     )
-    snapshot_digest = alert_snapshot_digest(alerts)
+    source_alerts = sorted(
+        [alert_key(alert) for alert in alerts], key=lambda item: int(item["alert_number"])
+    )
+    snapshot_digest = alert_key_snapshot_digest(source_alerts)
     exceptions: list[dict[str, Any]] = []
     for alert in sorted(alerts, key=lambda item: int(item["number"])):
         classification = classify(alert)
@@ -213,10 +217,41 @@ def build_registry(
         "repository": repo,
         "generated_at": current.isoformat().replace("+00:00", "Z"),
         "source_alert_snapshot_digest": snapshot_digest,
+        "source_alerts": source_alerts,
         "exceptions": exceptions,
         "fixed_claims": [],
         "certification": "NOT_CERTIFIED",
     }
+
+
+def migrate_registry(registry: Mapping[str, Any]) -> dict[str, Any]:
+    migrated = dict(registry)
+    if migrated.get("schema_version") == SCHEMA_VERSION:
+        return migrated
+    if migrated.get("schema_version") != LEGACY_SCHEMA_VERSION:
+        raise ValueError("Dependabot registry schema version is unsupported")
+    exceptions = migrated.get("exceptions")
+    if not isinstance(exceptions, list):
+        raise TypeError("Dependabot exceptions must be a list")
+    source_alerts = sorted(
+        [
+            {field: exception[field] for field in ALERT_KEY_FIELDS}
+            for exception in exceptions
+            if isinstance(exception, Mapping)
+        ],
+        key=lambda item: int(item["alert_number"]),
+    )
+    if len(source_alerts) != len(exceptions):
+        raise TypeError("Dependabot legacy registry exceptions are invalid")
+    if migrated.get("source_alert_snapshot_digest") != alert_key_snapshot_digest(
+        source_alerts
+    ):
+        raise ValueError(
+            "Dependabot legacy registry cannot reconstruct its source alert snapshot"
+        )
+    migrated["schema_version"] = SCHEMA_VERSION
+    migrated["source_alerts"] = source_alerts
+    return migrated
 
 
 def validate_registry(
@@ -232,11 +267,21 @@ def validate_registry(
         "repository",
         "generated_at",
         "source_alert_snapshot_digest",
+        "source_alerts",
         "exceptions",
         "fixed_claims",
         "certification",
     }:
         raise ValueError("Dependabot registry shape is not exact")
+    source_alerts = registry["source_alerts"]
+    if not isinstance(source_alerts, list) or not all(
+        isinstance(item, Mapping) for item in source_alerts
+    ):
+        raise TypeError("Dependabot registry source alerts must be a list")
+    if registry["source_alert_snapshot_digest"] != alert_key_snapshot_digest(
+        source_alerts
+    ):
+        raise ValueError("Dependabot registry source alert snapshot is invalid")
     if (
         registry["schema_version"] != SCHEMA_VERSION
         or registry["certification"] != "NOT_CERTIFIED"
@@ -622,7 +667,9 @@ def main() -> int:
             encoding="utf-8",
         )
     elif registry_path.exists():
-        registry = json.loads(registry_path.read_bytes())
+        registry = migrate_registry(json.loads(registry_path.read_bytes()))
+        if not source_alert_keys and registry["source_alerts"]:
+            source_alert_keys = [dict(item) for item in registry["source_alerts"]]
         registered_numbers = {
             int(exception["alert_number"]) for exception in registry.get("exceptions", [])
         }
