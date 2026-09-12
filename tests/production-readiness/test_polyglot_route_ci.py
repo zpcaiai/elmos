@@ -181,7 +181,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertNotIn("brew install openssl@3", frontend_job)
         self.assertIn("runs-on: macos-15", frontend_job)
         self.assertGreaterEqual(
-            frontend_job.count("/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl"),
+            frontend_job.count("/opt/homebrew/Cellar/openssl@3/3.6.4/bin/openssl"),
             2,
         )
         self.assertIn(
@@ -227,11 +227,11 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertIn("OPENSSL3_RUNTIME_RECEIPT", verifier)
         self.assertIn("OPENSSL3_ROOT_SEAL_RECEIPT", verifier)
         self.assertIn(
-            "/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libssl.3.dylib",
+            "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libssl.3.dylib",
             verifier,
         )
         self.assertIn(
-            "/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libcrypto.3.dylib",
+            "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libcrypto.3.dylib",
             verifier,
         )
         self.assertNotIn("/usr/bin/realpath", frontend_job)
@@ -242,14 +242,14 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertIn('source.get("spec") == "stable"', frontend_job)
         self.assertIn("packages.arm64_sequoia.jws.json", frontend_job)
         for pinned_value in (
-            "20260829.0321.1",
+            "20260907.0337.1",
             "15.7.9",
             "24G830",
-            "fac6e4f037e8e9c184485de80f23df3816c0c6d8428b20a7703b6f339a72a83c",
-            "5f15ad8c8519304aad18b06105f367e21d75e0812eb300e904bb3b9271ce0d0d",
-            "256172ed0500c7af6f9d633b317fffe6efae0cae456eacc283a87cb2474317fb",
-            "b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
-            "a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
+            "67a83dd6d6d747d50c5d296dffb23e32bae9a2c588c93ae2d77e4c607b455c72",
+            "c6ee373222087cf31bc2f3817537d268b3c23e56b7fadd44bbf5c2317caed349",
+            "bae675614cd791d37ec35416ea9f87edcc85407d020810504cf458119b63522c",
+            "b0a7adb353c9d547b03d1e31f65c5d9688c054bfe601774fcfd4c5963d862bc5",
+            "c98521118b433673748b529121f44d3cf828e39e896b07cad2e7f104b339afa7",
         ):
             self.assertIn(pinned_value, verifier)
         for required_control in (
@@ -290,7 +290,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             verifier.index("before = _runtime_receipt()"),
         )
         self.assertIn(
-            "printf '%s\\n' \"/opt/homebrew/Cellar/openssl@3/3.6.3/bin\" "
+            "printf '%s\\n' \"/opt/homebrew/Cellar/openssl@3/3.6.4/bin\" "
             '>>"${GITHUB_PATH}"',
             frontend_job,
         )
@@ -327,7 +327,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertEqual(verifier.SEALED_OPT_LINK_PROFILE["gid"], 0)
         self.assertEqual(
             verifier.SEALED_OPT_LINK_PROFILE["target"],
-            "../Cellar/openssl@3/3.6.3",
+            "../Cellar/openssl@3/3.6.4",
         )
         self.assertTrue(
             all(
@@ -354,7 +354,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             mock.patch.object(verifier.os, "geteuid", return_value=501),
             self.assertRaisesRegex(RuntimeError, "requires effective uid 0"),
         ):
-            verifier._seal_runtime()
+            verifier._seal_runtime("macos15", "20260907.0337.1")
 
         arguments = verifier._parse_arguments(
             [
@@ -362,12 +362,12 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
                 "--image-os",
                 "macos15",
                 "--image-version",
-                "20260829.0321.1",
+                "20260907.0337.1",
             ]
         )
         self.assertTrue(arguments.seal)
         self.assertEqual(arguments.image_os, "macos15")
-        self.assertEqual(arguments.image_version, "20260829.0321.1")
+        self.assertEqual(arguments.image_version, "20260907.0337.1")
 
     def test_openssl_host_contract_pins_product_and_build(self) -> None:
         verifier_path = ROOT / "scripts/toolchains/verify_openssl3_ci_runtime.py"
@@ -400,7 +400,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             ),
             mock.patch.object(verifier, "_run", side_effect=(product, build)) as run_mock,
         ):
-            verifier._verify_host("macos15", "20260829.0321.1")
+            verifier._verify_host("macos15", "20260907.0337.1")
 
         self.assertEqual(run_mock.call_count, 2)
         with (

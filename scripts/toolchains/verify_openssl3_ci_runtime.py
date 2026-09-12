@@ -17,24 +17,23 @@ import tempfile
 from typing import Final
 
 
-OPENSSL: Final = Path("/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl")
-LIBSSL: Final = Path("/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libssl.3.dylib")
+OPENSSL: Final = Path("/opt/homebrew/Cellar/openssl@3/3.6.4/bin/openssl")
+LIBSSL: Final = Path("/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libssl.3.dylib")
 LIBCRYPTO: Final = Path(
-    "/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libcrypto.3.dylib"
+    "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libcrypto.3.dylib"
 )
 EXPECTED_VERSION: Final = (
-    "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
+    "OpenSSL 3.6.4 25 Aug 2026 (Library: OpenSSL 3.6.4 25 Aug 2026)"
 )
 EXPECTED_IMAGES: Final = frozenset(
     {
-        ("macos15", "20260829.0321.1"),
         ("macos15", "20260907.0337.1"),
     }
 )
 EXPECTED_MACOS_PRODUCT_VERSION: Final = "15.7.9"
 EXPECTED_MACOS_BUILD_VERSION: Final = "24G830"
 OPT_LINK: Final = Path("/opt/homebrew/opt/openssl@3")
-OPT_LINK_TARGET: Final = "../Cellar/openssl@3/3.6.3"
+OPT_LINK_TARGET: Final = "../Cellar/openssl@3/3.6.4"
 
 UNSEALED_DIRECTORY_PROFILES: Final = {
     Path("/opt"): {"mode": "0755", "uid": 0, "gid": 0},
@@ -48,17 +47,17 @@ UNSEALED_DIRECTORY_PROFILES: Final = {
         "uid": 501,
         "gid": 80,
     },
-    Path("/opt/homebrew/Cellar/openssl@3/3.6.3"): {
+    Path("/opt/homebrew/Cellar/openssl@3/3.6.4"): {
         "mode": "0755",
         "uid": 501,
         "gid": 80,
     },
-    Path("/opt/homebrew/Cellar/openssl@3/3.6.3/bin"): {
+    Path("/opt/homebrew/Cellar/openssl@3/3.6.4/bin"): {
         "mode": "0755",
         "uid": 501,
         "gid": 80,
     },
-    Path("/opt/homebrew/Cellar/openssl@3/3.6.3/lib"): {
+    Path("/opt/homebrew/Cellar/openssl@3/3.6.4/lib"): {
         "mode": "0755",
         "uid": 501,
         "gid": 80,
@@ -94,8 +93,8 @@ UNSEALED_FILE_PROFILES: Final = {
         "uid": 501,
         "gid": 80,
         "nlink": 1,
-        "bytes": 878_752,
-        "sha256": "fac6e4f037e8e9c184485de80f23df3816c0c6d8428b20a7703b6f339a72a83c",
+        "bytes": 880_512,
+        "sha256": "67a83dd6d6d747d50c5d296dffb23e32bae9a2c588c93ae2d77e4c607b455c72",
     },
     LIBSSL: {
         "role": "libssl",
@@ -103,8 +102,8 @@ UNSEALED_FILE_PROFILES: Final = {
         "uid": 501,
         "gid": 80,
         "nlink": 1,
-        "bytes": 887_984,
-        "sha256": "5f15ad8c8519304aad18b06105f367e21d75e0812eb300e904bb3b9271ce0d0d",
+        "bytes": 888_928,
+        "sha256": "c6ee373222087cf31bc2f3817537d268b3c23e56b7fadd44bbf5c2317caed349",
     },
     LIBCRYPTO: {
         "role": "libcrypto",
@@ -112,8 +111,8 @@ UNSEALED_FILE_PROFILES: Final = {
         "uid": 501,
         "gid": 80,
         "nlink": 1,
-        "bytes": 4_870_832,
-        "sha256": "256172ed0500c7af6f9d633b317fffe6efae0cae456eacc283a87cb2474317fb",
+        "bytes": 4_872_736,
+        "sha256": "bae675614cd791d37ec35416ea9f87edcc85407d020810504cf458119b63522c",
     },
 }
 
@@ -128,9 +127,9 @@ SIGNATURE_PROFILES: Final = {
         "Format=Mach-O thin (arm64)",
         "CodeDirectory v=20400 size=7073 flags=0x2(adhoc) hashes=216+2 location=embedded",
         "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
-        "CMSDigest=b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
-        "CDHash=b2920ada65fae0087ed680e1cfc58c8e21a20a9a",
+        "CandidateCDHashFull sha256=b0a7adb353c9d547b03d1e31f65c5d9688c054bfe601774fcfd4c5963d862bc5",
+        "CMSDigest=b0a7adb353c9d547b03d1e31f65c5d9688c054bfe601774fcfd4c5963d862bc5",
+        "CDHash=b0a7adb353c9d547b03d1e31f65c5d9688c054bf",
         "Signature=adhoc",
         "TeamIdentifier=not set",
         "Sealed Resources=none",
@@ -139,11 +138,11 @@ SIGNATURE_PROFILES: Final = {
     LIBCRYPTO: {
         "Identifier=libcrypto.3",
         "Format=Mach-O thin (arm64)",
-        "CodeDirectory v=20400 size=37924 flags=0x2(adhoc) hashes=1180+2 location=embedded",
+        "CodeDirectory v=20400 size=37956 flags=0x2(adhoc) hashes=1181+2 location=embedded",
         "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
-        "CMSDigest=a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
-        "CDHash=a8f03e63667ae72e9928cafa28a677fe8cafd9c0",
+        "CandidateCDHashFull sha256=c98521118b433673748b529121f44d3cf828e39e896b07cad2e7f104b339afa7",
+        "CMSDigest=c98521118b433673748b529121f44d3cf828e39e896b07cad2e7f104b339afa7",
+        "CDHash=c98521118b433673748b529121f44d3cf828e39e",
         "Signature=adhoc",
         "TeamIdentifier=not set",
         "Sealed Resources=none",
@@ -291,7 +290,7 @@ def _opt_link_receipt(expected: Mapping[str, object]) -> dict[str, object]:
     if (
         not stat.S_ISLNK(after.st_mode)
         or OPT_LINK.resolve(strict=True)
-        != Path("/opt/homebrew/Cellar/openssl@3/3.6.3")
+        != Path("/opt/homebrew/Cellar/openssl@3/3.6.4")
     ):
         raise RuntimeError("OpenSSL opt link does not resolve to the pinned keg")
     receipt: dict[str, object] = {
