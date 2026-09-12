@@ -256,6 +256,48 @@ class OpenGaussASTTransformer:
         except Exception:
             ast = parse_one(sql.strip())
 
+        # Handle Oracle (+) outer join predicates in comma-separated joins -> ANSI LEFT JOIN
+        outer_join_tables: set[str] = set()
+        join_conditions: dict[str, exp.Expression] = {}
+
+        def _check_join_mark(node: exp.Expression) -> exp.Expression:
+            if isinstance(node, exp.EQ):
+                left = node.this
+                right = node.expression
+                if isinstance(left, exp.Column) and getattr(left, "args", {}).get("join_mark"):
+                    table_name = left.table
+                    if table_name:
+                        outer_join_tables.add(table_name)
+                        left_clean = left.copy()
+                        left_clean.set("join_mark", False)
+                        join_conditions[table_name] = exp.EQ(this=right.copy(), expression=left_clean)
+                        return exp.true()
+                if isinstance(right, exp.Column) and getattr(right, "args", {}).get("join_mark"):
+                    table_name = right.table
+                    if table_name:
+                        outer_join_tables.add(table_name)
+                        right_clean = right.copy()
+                        right_clean.set("join_mark", False)
+                        join_conditions[table_name] = exp.EQ(this=left.copy(), expression=right_clean)
+                        return exp.true()
+            return node
+
+        ast = ast.transform(_check_join_mark)
+
+        if outer_join_tables and isinstance(ast, exp.Select):
+            new_joins = []
+            for j in ast.args.get("joins", []):
+                tbl_name = j.this.name if isinstance(j.this, exp.Table) else ""
+                alias_name = j.this.alias if isinstance(j.this, exp.Table) else ""
+                matched_key = tbl_name if tbl_name in outer_join_tables else (alias_name if alias_name in outer_join_tables else None)
+                if matched_key and matched_key in join_conditions:
+                    cond = join_conditions[matched_key]
+                    new_join = exp.Join(this=j.this, kind="LEFT", on=cond)
+                    new_joins.append(new_join)
+                else:
+                    new_joins.append(j)
+            ast.set("joins", new_joins)
+
         # Handle Oracle ROWNUM <= N in WHERE clause -> openGauss LIMIT N
         extracted_limit: int | None = None
 

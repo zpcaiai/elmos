@@ -5,8 +5,7 @@ import json
 import sys
 from pathlib import Path
 
-from .chinadb import CHINADB_TARGETS, chinadb_capabilities, translate_chinadb_ddl
-from .engine import translate_ddl
+from .chinadb import CHINADB_TARGETS, chinadb_capabilities
 from .models import Dialect, DialectError, RouteError, TypeMigrationPolicy
 from .profiles import NamespaceProfile
 from .scan import render_markdown, report_to_json, scan_repository
@@ -33,12 +32,19 @@ def _translate_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPa
     )
     p.add_argument(
         "--statement-kind",
-        default="TABLE",
+        default="AUTO",
         choices=[
+            "AUTO",
+            "QUERY",
+            "SELECT",
+            "UPSERT",
+            "MERGE",
             "TABLE",
             "INDEX",
             "INSERT",
             "UPDATE",
+            "DELETE",
+            "TRUNCATE",
             "ALTER",
             "DROP",
             "SCHEMA",
@@ -109,14 +115,15 @@ def _run_translate(args: argparse.Namespace) -> int:
                 "CHINADB_COMPATIBILITY_MODE_REQUIRED: --chinadb-target requires an explicit "
                 "--compatibility-mode from that target's allow-list"
             )
-        report = translate_chinadb_ddl(
+        from .chinadb import translate_chinadb_sql
+        report = translate_chinadb_sql(
             sql,
             args.source_dialect,
             args.chinadb_target,
             args.compatibility_mode,
             **translate_kwargs,
         )
-        emitted_dialect = report.get("mappedDialect")
+        emitted_dialect = report.get("mappedDialect", args.chinadb_target)
     else:
         if args.compatibility_mode:
             raise RouteError(
@@ -127,7 +134,8 @@ def _run_translate(args: argparse.Namespace) -> int:
             raise RouteError(
                 "TARGET_DIALECT_REQUIRED: provide --target-dialect or --chinadb-target"
             )
-        report = translate_ddl(
+        from .engine import translate_sql
+        report = translate_sql(
             sql,
             args.source_dialect,
             args.target_dialect,
@@ -137,7 +145,7 @@ def _run_translate(args: argparse.Namespace) -> int:
     args.output.mkdir(parents=True, exist_ok=True)
     (args.output / "translation-report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     if report["emitted"] is not None and emitted_dialect:
-        extension = {"postgres": "sql", "mysql": "sql", "oracle": "sql", "tsql": "sql"}[emitted_dialect]
+        extension = {"postgres": "sql", "mysql": "sql", "oracle": "sql", "tsql": "sql"}.get(emitted_dialect, "sql")
         (args.output / f"emitted.{extension}").write_text(report["emitted"] + "\n", encoding="utf-8")
     print(json.dumps(report, indent=2))
     return 0 if report["status"] == "PASSED" else 2
