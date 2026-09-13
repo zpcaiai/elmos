@@ -41,10 +41,15 @@ public final class SpringCloudMicroservicesModernizer {
             boolean modified,
             int changesCount,
             Set<String> modifiedFiles,
-            List<String> rulesApplied
+            List<String> rulesApplied,
+            List<String> blockingObligations
     ) {
+        public CloudModernizationResult(boolean modified, int changesCount, Set<String> modifiedFiles, List<String> rulesApplied) {
+            this(modified, changesCount, modifiedFiles, rulesApplied, List.of());
+        }
+
         public static CloudModernizationResult empty() {
-            return new CloudModernizationResult(false, 0, Collections.emptySet(), Collections.emptyList());
+            return new CloudModernizationResult(false, 0, Collections.emptySet(), Collections.emptyList(), Collections.emptyList());
         }
     }
 
@@ -58,6 +63,7 @@ public final class SpringCloudMicroservicesModernizer {
 
         Set<String> modifiedFiles = new LinkedHashSet<>();
         List<String> rulesApplied = new ArrayList<>();
+        List<String> blockingObligations = new ArrayList<>();
         int changesCount = 0;
 
         try (var stream = Files.walk(projectRoot)) {
@@ -92,10 +98,17 @@ public final class SpringCloudMicroservicesModernizer {
             return CloudModernizationResult.empty();
         }
 
+        var alibabaDubbo = SpringAlibabaDubboModernizer.modernize(projectRoot);
+        modifiedFiles.addAll(alibabaDubbo.modifiedFiles());
+        rulesApplied.addAll(alibabaDubbo.rulesApplied());
+        blockingObligations.addAll(alibabaDubbo.blockingObligations());
+        changesCount += alibabaDubbo.modifiedFiles().size();
+
         return new CloudModernizationResult(
-                changesCount > 0, changesCount,
+                !modifiedFiles.isEmpty(), changesCount,
                 Collections.unmodifiableSet(modifiedFiles),
-                Collections.unmodifiableList(rulesApplied)
+                Collections.unmodifiableList(rulesApplied),
+                Collections.unmodifiableList(blockingObligations)
         );
     }
 
