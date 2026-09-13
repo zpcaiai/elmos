@@ -112,11 +112,21 @@ def test_rust_installer_seals_sysroot_with_fixed_execution_surface(
     executable = sysroot / "bin" / "rustc"
     payload = sysroot / "lib" / "libstd.rlib"
     undeclared_executable = sysroot / "lib" / "unexpected-tool"
+    component_manifest = sysroot / "lib" / "rustlib" / "components"
     executable.parent.mkdir(parents=True)
     payload.parent.mkdir(parents=True)
+    component_manifest.parent.mkdir(parents=True)
     executable.write_bytes(b"compiler")
     payload.write_bytes(b"library")
     undeclared_executable.write_bytes(b"not-an-allowlisted-program")
+    component_manifest.write_text(
+        "cargo-aarch64-apple-darwin\n"
+        "rustc-aarch64-apple-darwin\n"
+        "rust-std-aarch64-apple-darwin\n"
+        "clippy-preview-aarch64-apple-darwin\n"
+        "rustfmt-preview-aarch64-apple-darwin\n",
+        encoding="utf-8",
+    )
     executable.chmod(0o755)
     payload.chmod(0o644)
     undeclared_executable.chmod(0o755)
@@ -138,7 +148,74 @@ def test_rust_installer_seals_sysroot_with_fixed_execution_surface(
     assert stat.S_IMODE(executable.stat().st_mode) == 0o555
     assert stat.S_IMODE(payload.stat().st_mode) == 0o444
     assert stat.S_IMODE(undeclared_executable.stat().st_mode) == 0o444
+    assert component_manifest.read_text(encoding="utf-8") == (
+        "cargo-aarch64-apple-darwin\n"
+        "rust-std-aarch64-apple-darwin\n"
+        "rustc-aarch64-apple-darwin\n"
+        "clippy-preview-aarch64-apple-darwin\n"
+        "rustfmt-preview-aarch64-apple-darwin\n"
+    )
+    assert stat.S_IMODE(component_manifest.stat().st_mode) == 0o444
     assert stat.S_IMODE(sysroot.stat().st_mode) == 0o555
+
+
+@pytest.mark.parametrize(
+    "components",
+    (
+        (
+            "cargo-aarch64-apple-darwin\n"
+            "rust-std-aarch64-apple-darwin\n"
+            "rustc-aarch64-apple-darwin\n"
+            "clippy-preview-aarch64-apple-darwin\n"
+            "rustfmt-preview-aarch64-apple-darwin\n"
+            "unknown-preview-aarch64-apple-darwin\n"
+        ),
+        (
+            "cargo-aarch64-apple-darwin\n"
+            "rust-std-aarch64-apple-darwin\n"
+            "rustc-aarch64-apple-darwin\n"
+            "clippy-preview-aarch64-apple-darwin\n"
+            "clippy-preview-aarch64-apple-darwin\n"
+        ),
+    ),
+)
+def test_rust_installer_rejects_unknown_or_duplicate_component_sets(
+    tmp_path: Path,
+    components: str,
+) -> None:
+    installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
+    function_start = installer.index("seal_rust_sysroot() {")
+    function_end = installer.index("\n}\n\ninstall_rust()", function_start) + 2
+    function = installer[function_start:function_end]
+    target = tmp_path / "rust"
+    component_manifest = (
+        target
+        / "rustup"
+        / "toolchains"
+        / "1.89.0-aarch64-apple-darwin"
+        / "lib"
+        / "rustlib"
+        / "components"
+    )
+    component_manifest.parent.mkdir(parents=True)
+    component_manifest.write_text(components, encoding="utf-8")
+
+    completed = subprocess.run(
+        [
+            "/bin/bash",
+            "-c",
+            function + '\nRUST_VERSION=1.89.0\nseal_rust_sysroot "$1"',
+            "bash",
+            str(target),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 3
+    assert "component manifest has an unexpected component set" in completed.stderr
+    assert component_manifest.read_text(encoding="utf-8") == components
 
 
 @pytest.mark.parametrize("language", ["go", "rust", "python"])

@@ -231,10 +231,25 @@ def test_project_synthesis_installer_seals_rust_before_publishing_wrappers() -> 
     wrapper_call = 'write_rust_wrapper "${target}" "rustc"'
     assert "seal_rust_sysroot()" in content
     assert 'find "${sysroot}" -type l -print -quit' in content
+    assert 'local component_manifest="${sysroot}/lib/rustlib/components"' in content
+    assert 'observed_components="$(LC_ALL=C sort "${component_manifest}")"' in content
+    assert '"$(wc -l <"${component_manifest}" | tr -d \' \')" != "5"' in content
+    assert "component manifest has an unexpected component set" in content
+    assert content.count("cargo-aarch64-apple-darwin") == 2
+    assert content.count("rust-std-aarch64-apple-darwin") == 2
+    assert content.count("rustc-aarch64-apple-darwin") == 2
+    assert content.count("clippy-preview-aarch64-apple-darwin") == 2
+    assert content.count("rustfmt-preview-aarch64-apple-darwin") == 2
     assert 'find "${sysroot}" -type f -exec chmod 0444 {} +' in content
     assert 'for executable_path in "${executable_paths[@]}"' in content
     assert 'chmod 0555 "${sysroot}/${executable_path}"' in content
     assert 'find "${sysroot}" -type d -exec chmod 0555 {} +' in content
+    assert content.index('observed_components="$(LC_ALL=C sort') < content.index(
+        'chmod u+w "${component_manifest}"'
+    )
+    assert content.index('chmod u+w "${component_manifest}"') < content.index(
+        'find "${sysroot}" -type f -exec chmod 0444 {} +'
+    )
     assert content.index(seal_call) < content.index(wrapper_call)
 
 
