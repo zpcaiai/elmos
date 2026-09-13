@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "protocol": "elmos-ethan-external-certification-v1",
+  "certifier": {
+    "actor_id": "ethan",
+    "organization_id": "ethan-independent-certification",
+    "role": "independent-certifier"
+  },
+  "excluded_business_lines": [
+    "M29"
+  ],
+  "business_lines": [
+    {
+      "id": "M30",
+      "name": "Spring modernization",
+      "commands": [
+        {
+          "id": "m30-commercial-skills",
+          "argv": ["make", "spring-golden-route-commercial-skills"]
+        },
+        {
+          "id": "m30-framework-gate",
+          "argv": ["make", "b30-skills-test"]
+        }
+      ],
+      "external_evidence_classes": [
+        "official-source-build",
+        "official-target-build",
+        "source-runtime",
+        "target-runtime",
+        "behavioral-equivalence",
+        "security",
+        "performance",
+        "rollback",
+        "customer-acceptance"
+      ]
+    },
+    {
+      "id": "M31",
+      "name": "SQL and ChinaDB",
+      "commands": [
+        {
+          "id": "m31-chinadb-skills",
+          "argv": ["make", "chinadb-commercial-migration-skills"]
+        },
+        {
+          "id": "m31-database-gate",
+          "argv": ["make", "b31-skills-test"]
+        }
+      ],
+      "external_evidence_classes": [
+        "real-source-database",
+        "real-target-database",
+        "detail-reconciliation",
+        "performance",
+        "cdc",
+        "cutover",
+        "rollback",
+        "customer-acceptance"
+      ]
+    },
+    {
+      "id": "M32",
+      "name": "Frontend and MiniApp",
+      "commands": [
+        {
+          "id": "m32-miniapp-skills",
+          "argv": ["make", "frontend-to-miniapp-skills"]
+        },
+        {
+          "id": "m32-client-gate",
+          "argv": ["make", "batch32-check"]
+        }
+      ],
+      "external_evidence_classes": [
+        "official-source-build",
+        "official-miniapp-build",
+        "browser-journey",
+        "emulator-journey",
+        "device-journey",
+        "permissions-and-privacy",
+        "visual-and-accessibility",
+        "customer-acceptance"
+      ]
+    },
+    {
+      "id": "B46-B95",
+      "name": "Multilanguage project synthesis",
+      "commands": [
+        {
+          "id": "synthesis-engine-gate",
+          "argv": ["make", "project-synthesis"]
+        },
+        {
+          "id": "project-generation-gate",
+          "argv": ["make", "project-generation"]
+        }
+      ],
+      "external_evidence_classes": [
+        "real-toolchain-builds",
+        "real-service-startup",
+        "managed-database",
+        "managed-identity",
+        "rootless-runtime",
+        "deployment",
+        "observability",
+        "restore-and-dr",
+        "customer-acceptance"
+      ]
+    },
+    {
+      "id": "B38-B45",
+      "name": "Mature platform",
+      "commands": [
+        {
+          "id": "mature-platform-validation",
+          "argv": ["make", "test-suite-b38-45-check"]
+        },
+        {
+          "id": "mature-platform-gate",
+          "argv": ["make", "test-suite-b38-45-gate"]
+        }
+      ],
+      "external_evidence_classes": [
+        "customer-authorization",
+        "production-equivalent-multiregion",
+        "continuous-slo",
+        "incident-and-recovery",
+        "disaster-recovery",
+        "bill-reconciliation",
+        "external-audit-workpapers",
+        "customer-outcome"
+      ]
+    },
+    {
+      "id": "QA-INTELLIGENCE-FOUNDRY",
+      "name": "Autonomous QA, Project Intelligence and Foundry",
+      "commands": [
+        {
+          "id": "autonomous-qa-gate",
+          "argv": ["make", "autonomous-qa-self-healing-skills"]
+        },
+        {
+          "id": "project-intelligence-gate",
+          "argv": ["make", "project-intelligence-skills"]
+        },
+        {
+          "id": "foundry-gate",
+          "argv": ["make", "knowledge-skill-model-foundry-skills"]
+        }
+      ],
+      "external_evidence_classes": [
+        "real-llm-provider",
+        "real-scm-webhook",
+        "production-multitenant-scheduler",
+        "representative-projects",
+        "independent-holdout",
+        "authorization-and-isolation",
+        "cost-and-budget",
+        "rollback",
+        "soak",
+        "customer-acceptance"
+      ]
+    }
+  ]
+}
