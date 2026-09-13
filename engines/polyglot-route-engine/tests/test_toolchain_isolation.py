@@ -503,6 +503,11 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         product_version="26.6.2",
         build_version="25G83",
     )
+    latest_hosted = toolchains._select_homebrew_route_bundle_profile(
+        image_version="20260907.0351.1",
+        product_version="26.6.2",
+        build_version="25G83",
+    )
 
     assert local.profile_id == "local-macos26-20260904"
     dotnet_fields = (
@@ -525,6 +530,10 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         getattr(legacy_hosted, field) == getattr(current_hosted, field)
         for field in dotnet_fields
     )
+    assert all(
+        getattr(latest_hosted, field) == getattr(current_hosted, field)
+        for field in dotnet_fields
+    )
     assert legacy_hosted.php_tree_sha256 == (
         "60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f"
     )
@@ -536,6 +545,8 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         "60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f"
     )
     assert current_hosted.php_tree_bytes == 129_937_220
+    assert latest_hosted.profile_id == "github-macos26-20260907.0351.1"
+    assert latest_hosted.php_tree_sha256 == current_hosted.php_tree_sha256
     assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
     assert legacy_hosted.php_tree_sha256 == local.php_tree_sha256
     assert current_hosted.php_tree_bytes == local.php_tree_bytes
@@ -553,6 +564,7 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
     (
         toolchains._HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE,
         toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
+        toolchains._HOMEBREW_ROUTE_LATEST_HOSTED_PROFILE,
     ),
     ids=lambda profile: profile.profile_id,
 )

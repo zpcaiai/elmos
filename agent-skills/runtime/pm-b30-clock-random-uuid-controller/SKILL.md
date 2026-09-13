@@ -1,8 +1,9 @@
 ---
 name: pm-b30-clock-random-uuid-controller
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "注入可控时钟、随机种子、UUID、序列和调度点，降低非确定噪声. Precision Migration B30 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 
