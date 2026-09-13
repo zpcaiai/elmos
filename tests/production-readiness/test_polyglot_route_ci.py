@@ -420,6 +420,17 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         ):
             verifier._verify_host("macos15", "20260907.0337.1")
 
+        with (
+            mock.patch.object(verifier.sys, "platform", "darwin"),
+            mock.patch.object(
+                verifier.os,
+                "uname",
+                return_value=mock.Mock(machine="arm64"),
+            ),
+            mock.patch.object(verifier, "_run", side_effect=(product, build)),
+        ):
+            verifier._verify_host("macos26", "20260907.0351.1")
+
         self.assertEqual(run_mock.call_count, 2)
         with (
             mock.patch.object(verifier.sys, "platform", "darwin"),
