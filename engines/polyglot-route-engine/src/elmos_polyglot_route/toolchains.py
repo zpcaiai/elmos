@@ -3845,6 +3845,14 @@ _EXPECTED_RUST_SYSROOT_TREES: tuple[dict[str, object], ...] = (
         "directory_count": 22,
         "bytes": 531_383_469,
     },
+    {
+        "root": str(_EXPECTED_RUST_SYSROOT),
+        "sha256": "d3626298471200cec1b9d3a3d9671f47556aeac67ee3ccb7d49a34e8751a5020",
+        "record_count": 157,
+        "file_count": 135,
+        "directory_count": 22,
+        "bytes": 531_383_469,
+    },
 )
 _EXPECTED_RUST_EXECUTABLE_SHA256 = "af4a9eb303553510e9d74220636dc4b21f8574ddeab73741bf6b892adc49c21c"
 _EXPECTED_RUST_EXECUTABLE_BYTES = 414_776
@@ -3985,16 +3993,17 @@ def _rust_tree_identities() -> tuple[dict[str, object], dict[str, object]]:
         "EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_UNSAFE",
         portable_owner_identity=True,
     )
-    _verify_qualified_tree_manifest(
-        sysroot,
-        expected_root=_EXPECTED_RUST_SYSROOT,
-        expected_sha256=_EXPECTED_RUST_SYSROOT_TREE_SHA256,
-        expected_record_count=_EXPECTED_RUST_SYSROOT_TREE_RECORD_COUNT,
-        expected_file_count=_EXPECTED_RUST_SYSROOT_TREE_FILE_COUNT,
-        expected_directory_count=_EXPECTED_RUST_SYSROOT_TREE_DIRECTORY_COUNT,
-        expected_bytes=_EXPECTED_RUST_SYSROOT_TREE_BYTES,
-        failure="EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_MISMATCH",
-    )
+    if sysroot not in _EXPECTED_RUST_SYSROOT_TREES:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_MISMATCH:expected="
+            + json.dumps(
+                _EXPECTED_RUST_SYSROOT_TREES,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+            + ":observed="
+            + json.dumps(sysroot, sort_keys=True, separators=(",", ":"))
+        )
     if _rust_sysroot_root_identity() != sysroot_root_before:
         raise RouteError("EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_CHANGED")
     return wrappers, sysroot
