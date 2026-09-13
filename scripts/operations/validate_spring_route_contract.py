@@ -39,6 +39,7 @@ SPRING_4_1_1_FEATURE_MATRIX = ROOT / "framework-packs" / "spring-to-boot-4-1-1" 
 SPRING_4_1_1_PACK = ROOT / "framework-packs" / "spring-to-boot-4-1-1"
 SPRING_VERIFICATION_PLAN_VALIDATOR = ROOT / "scripts" / "operations" / "validate_spring_verification_plan.py"
 SPRING_4_1_VERSION_MATRIX = ROOT / "framework-packs" / "spring-to-boot-4-1-0" / "version-matrix.json"
+SPRING_4_1_1_VERSION_MATRIX = ROOT / "framework-packs" / "spring-to-boot-4-1-1" / "version-matrix.json"
 MVC_PACK = ROOT / "framework-packs" / "spring-framework-5-3-mvc-to-spring-boot-3-5-3"
 MVC_PACK_RECIPE = MVC_PACK / "recipes" / "spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml"
 MVC_EXECUTABLE_ROUTE_ID = "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21"
@@ -184,6 +185,17 @@ BOOT_4_1_LOCAL_EVIDENCE = {
         "target_java": "21",
         "evidence_path": "evidence/spring-routes/spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21.json",
         "matrix_evidence_path": "evidence/spring-routes/spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21.json",
+    },
+}
+BOOT_4_1_1_LOCAL_EVIDENCE = {
+    "boot-3.5-maven-to-boot-4.1.1-java-21": {
+        "source_boot": "3.5.3",
+        "source_java": "21",
+        "target_boot": "4.1.1",
+        "target_java": "21",
+        "evidence_path": "evidence/spring-routes/boot-3.5-maven-to-boot-4.1.1-java-21.json",
+        "matrix_evidence_path": "certification/local-reference-evidence.json",
+        "matrix_evidence_file": "framework-packs/spring-to-boot-4-1-1/certification/local-reference-evidence.json",
     },
 }
 BOOT_3_5_LOCAL_EVIDENCE = {
@@ -870,7 +882,6 @@ def check_boot_4_1_version_matrix(routes: list[dict[str, object]]) -> None:
             and edge["target_java"] == "21",
             f"BOOT_4_1_1_EDGE_TARGET_OR_PACK_DRIFT:{route_id}",
         )
-        require(edge["evidence"] == "NOT_RUN", f"BOOT_4_1_1_EDGE_EVIDENCE_DRIFT:{route_id}")
         require(
             edge["recipe_resource"] != "" and edge["recipe_id"] != "",
             f"BOOT_4_1_1_EDGE_MISSING_EXECUTION_RECIPE:{route_id}",
@@ -902,6 +913,118 @@ def check_boot_4_1_version_matrix(routes: list[dict[str, object]]) -> None:
                 and "newVersion: 4.1.1" in recipe_block,
                 f"BOOT_4_1_1_GRADLE_PIN_MISSING:{route_id}",
             )
+
+        local_expectation = BOOT_4_1_1_LOCAL_EVIDENCE.get(route_id)
+        if local_expectation is None:
+            require(
+                edge["evidence"] == "NOT_RUN",
+                f"BOOT_4_1_1_EDGE_EVIDENCE_DRIFT:{route_id}",
+            )
+            require(
+                edge["verified_boot"] == "" and edge["verified_java"] == "",
+                f"BOOT_4_1_1_UNRUN_EDGE_DECLARES_TUPLE:{route_id}",
+            )
+            continue
+        require(
+            edge["evidence"] == "PASSED_LOCAL",
+            f"BOOT_4_1_1_LOCAL_EDGE_NOT_RECORDED:{route_id}",
+        )
+        require(
+            edge["verified_boot"] == local_expectation["source_boot"]
+            and edge["verified_java"] == local_expectation["source_java"],
+            f"BOOT_4_1_1_LOCAL_TUPLE_DRIFT:{route_id}",
+        )
+        evidence = load_local_evidence(
+            route_id,
+            ROOT / str(local_expectation["evidence_path"]),
+            "BOOT_4_1_1_LOCAL_EVIDENCE",
+        )
+        check_local_evidence_payload(
+            route_id,
+            evidence,
+            local_expectation,
+            "BOOT_4_1_1_LOCAL_EVIDENCE",
+        )
+
+    try:
+        matrix_4_1_1 = json.loads(SPRING_4_1_1_VERSION_MATRIX.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ContractError("BOOT_4_1_1_VERSION_MATRIX_INVALID") from exc
+    require(
+        matrix_4_1_1.get("schema_version") == 1
+        and matrix_4_1_1.get("pack_key") == "spring-to-boot-4-1-1"
+        and matrix_4_1_1.get("target") == {"spring_boot": "4.1.1", "java": "21"},
+        "BOOT_4_1_1_VERSION_MATRIX_HEADER_DRIFT",
+    )
+    rows_4_1_1 = matrix_4_1_1.get("tuples")
+    require(isinstance(rows_4_1_1, list), "BOOT_4_1_1_VERSION_MATRIX_TUPLES_INVALID")
+    matrix_by_id = {
+        row.get("id"): row for row in rows_4_1_1 if isinstance(row, dict)
+    }
+    expected_4_1_1_ids = set(BOOT_4_1_1_ROUTE_COMPOSITIONS)
+    require(
+        set(matrix_by_id) == expected_4_1_1_ids,
+        "BOOT_4_1_1_VERSION_MATRIX_ROUTE_SET_DRIFT",
+    )
+    catalog_4_1_1 = {
+        str(route["route_id"]): route
+        for route in routes
+        if route["target_boot"] == "4.1.1"
+    }
+    require(
+        set(catalog_4_1_1) == expected_4_1_1_ids,
+        "BOOT_4_1_1_CATALOG_ROUTE_SET_DRIFT",
+    )
+    for route_id in sorted(expected_4_1_1_ids):
+        route = catalog_4_1_1[route_id]
+        row = matrix_by_id[route_id]
+        require(
+            row.get("source_family") == route["source_family_contract"]
+            and row.get("source_range")
+            == f"[{route['source_boot_min']},{route['source_boot_max']})"
+            and sorted(row.get("source_java", []), key=int)
+            == sorted(route["source_java_versions"], key=int)
+            and row.get("build")
+            == f"{route['build_tool']}-{'3.9.11' if route['build_tool'] == 'maven' else '8.14.3'}"
+            and row.get("recipe") == route["recipe_id"]
+            and row.get("execution_status") == route["evidence"],
+            f"BOOT_4_1_1_VERSION_MATRIX_ROUTE_DRIFT:{route_id}",
+        )
+        local_expectation = BOOT_4_1_1_LOCAL_EVIDENCE.get(route_id)
+        if local_expectation is None:
+            require(
+                "verified_tuple" not in row and "evidence" not in row,
+                f"BOOT_4_1_1_VERSION_MATRIX_UNRUN_ROW_OVERCLAIM:{route_id}",
+            )
+            continue
+        require(
+            row.get("verified_tuple")
+            == {
+                "source_spring_boot": local_expectation["source_boot"],
+                "source_java": local_expectation["source_java"],
+                "target_spring_boot": local_expectation["target_boot"],
+                "target_java": local_expectation["target_java"],
+            }
+            and row.get("evidence") == local_expectation["matrix_evidence_path"],
+            f"BOOT_4_1_1_VERSION_MATRIX_LOCAL_EVIDENCE_DRIFT:{route_id}",
+        )
+        matrix_evidence = load_local_evidence(
+            route_id,
+            ROOT / str(local_expectation["matrix_evidence_file"]),
+            "BOOT_4_1_1_VERSION_MATRIX_EVIDENCE",
+        )
+        require(
+            matrix_evidence.get("execution_status") == "PASSED_LOCAL"
+            and matrix_evidence.get("behavioral_parity") is True
+            and matrix_evidence.get("certification_eligible") is False
+            and matrix_evidence.get("external_certification") == "NOT_RUN"
+            and matrix_evidence.get("independent_verification") == "NOT_RUN"
+            and matrix_evidence.get("source", {}).get("version")
+            == local_expectation["source_boot"]
+            and matrix_evidence.get("target", {}).get("version")
+            == local_expectation["target_boot"],
+            f"BOOT_4_1_1_VERSION_MATRIX_EVIDENCE_BOUNDARY_DRIFT:{route_id}",
+        )
 
     mvc = next((route for route in routes if route["route_id"] == MVC_EXECUTABLE_ROUTE_ID), None)
     require(mvc is not None, f"MVC_PACK_ROUTE_MISSING:{MVC_EXECUTABLE_ROUTE_ID}")

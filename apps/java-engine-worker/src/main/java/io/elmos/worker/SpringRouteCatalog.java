@@ -659,9 +659,10 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-to-boot-4.1.1.yml",
                     "io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_1Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
+                    EvidenceStatus.PASSED_LOCAL, "3.5.3", "21",
                     "Boot 4.0 semantic upgrade plus exact 4.1.1 dependency pin. "
-                            + "The 4.1.1 feature inventory is exposed through the FCM and remains unverified.",
+                            + "An exact local Maven 3.9.11 / Java 21 fixture passed build, startup, HTTP, "
+                            + "security, JPA, and rollback parity; external and independent evidence remain NOT_RUN.",
                     SourceFamily.SPRING_BOOT),
             new SpringRoute(
                     "boot-4.0-maven-to-boot-4.1.1-java-21",

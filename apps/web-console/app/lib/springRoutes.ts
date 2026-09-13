@@ -504,9 +504,9 @@ export const springRouteCatalogFallback: SpringRouteDescriptor[] = [
     targetSpringBoot: "4.1.1",
     targetJava: "21",
     recipeId: "io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_1Java21",
-    evidenceStatus: "NOT_RUN",
-    verifiedSourceSpringBoot: "",
-    verifiedSourceJava: "",
+    evidenceStatus: "PASSED_LOCAL",
+    verifiedSourceSpringBoot: "3.5.3",
+    verifiedSourceJava: "21",
   },
   {
     routeId: "boot-4.0-maven-to-boot-4.1.1-java-21",
