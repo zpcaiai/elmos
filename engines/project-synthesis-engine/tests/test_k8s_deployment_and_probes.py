@@ -68,6 +68,16 @@ def test_k8s_manifest_dry_run_validation():
     assert len(msg) > 0
 
 
+def test_k8s_offline_validation_rejects_incomplete_resources(monkeypatch):
+    monkeypatch.setattr(LocalK8sDetector, "detect_cluster", lambda: (False, None))
+    controller = K8sDeploymentController(kubectl_bin="kubectl")
+
+    valid, msg = controller.dry_run_validate("apiVersion: v1\nkind: Service\n")
+
+    assert valid is False
+    assert "metadata.name" in msg
+
+
 class _MockHealthHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/health/live":

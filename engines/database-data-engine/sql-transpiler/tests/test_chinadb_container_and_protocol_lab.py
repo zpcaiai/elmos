@@ -137,28 +137,34 @@ def test_protocol_lab_unknown_sql_fails_closed(lab):
         lab.execute("dm8", "VACUUM definitely_missing_table")
 
 
-def test_protocol_lab_records_bounded_sequence_catalog(lab):
-    lab.execute("dm8", "CREATE SEQUENCE order_seq START WITH 7 INCREMENT BY 3")
-    sequence = lab.get_database("dm8").sequences["order_seq"]
-    assert sequence.start_with == 7
-    assert sequence.increment_by == 3
+def test_protocol_lab_sequence_state_is_explicit(lab):
+    target = "dm8"
+    lab.execute(target, "CREATE SEQUENCE app.seq_order START WITH 5 INCREMENT BY 2 NOCACHE")
 
-    with pytest.raises(ValueError, match="PROTOCOL_LAB_SEQUENCE_INCREMENT_ZERO"):
-        lab.execute("dm8", "CREATE SEQUENCE invalid_seq INCREMENT BY 0")
+    cols, first, count = lab.execute(target, "SELECT app.seq_order.NEXTVAL FROM DUAL")
+    _, second, _ = lab.execute(target, "SELECT NEXTVAL('app.seq_order')")
+
+    assert cols == ["nextval"]
+    assert first == [(5,)]
+    assert second == [(7,)]
+    assert count == 1
+
+    lab.execute(target, "DROP SEQUENCE app.seq_order")
+    with pytest.raises(ValueError, match="PROTOCOL_LAB_SEQUENCE_NOT_FOUND"):
+        lab.execute(target, "SELECT app.seq_order.NEXTVAL FROM DUAL")
 
 
-def test_protocol_lab_accepts_only_bounded_tidb_noop_procedure_block(lab):
-    lab.execute(
-        "tidb",
+def test_protocol_lab_tidb_procedure_block_is_bounded(lab):
+    target = "tidb"
+    noop_block = (
         "/* TiDB Lowered Autonomous Procedure Block */\n"
-        "START TRANSACTION;\nNULL;\nCOMMIT;",
+        "START TRANSACTION;\nNULL;\nCOMMIT;"
     )
-    actions = [row["action"] for row in lab.get_database("tidb").transaction_logs]
-    assert actions[-3:] == ["BEGIN", "TIDB_BOUNDED_NOOP_PROCEDURE", "COMMIT"]
+    lab.execute(target, noop_block)
 
-    with pytest.raises(ValueError, match="unsupported TiDB procedure block"):
-        lab.execute(
-            "tidb",
-            "/* TiDB Lowered Autonomous Procedure Block */\n"
-            "START TRANSACTION;\nDELETE FROM accounts;\nCOMMIT;",
-        )
+    unsupported_block = (
+        "/* TiDB Lowered Autonomous Procedure Block */\n"
+        "START TRANSACTION;\nDELETE FROM accounts;\nCOMMIT;"
+    )
+    with pytest.raises(ValueError, match="PROTOCOL_LAB_UNSUPPORTED_TIDB_PROCEDURE_BLOCK"):
+        lab.execute(target, unsupported_block)

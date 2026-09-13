@@ -48,13 +48,28 @@ def test_hermetic_path_jail_safe_execution():
         runner.available_backends = ["hermetic_path_jail"]
         # Run standard python command reading local file
         cmd = [sys.executable, "-c", "print(open('hello.txt').read().strip())"]
-        result: SandboxExecutionResult = runner.run(cmd, host_workspace_path=tmp_path)
+        result: SandboxExecutionResult = runner.run(
+            cmd,
+            host_workspace_path=tmp_path,
+            backend="hermetic_path_jail",
+        )
 
         assert result.exit_code == 0
         assert "secure content" in result.stdout
         assert result.is_success is True
         assert result.security_verifications["cap_drop_all"] is True
         assert result.security_verifications["read_only_root"] is True
+        assert result.backend_used == "hermetic_path_jail"
+
+
+def test_unavailable_backend_is_rejected(tmp_path: Path):
+    runner = LinuxRootlessSandboxRunner()
+    try:
+        runner.run(["true"], host_workspace_path=tmp_path, backend="not-a-backend")
+    except ValueError as exc:
+        assert "sandbox backend is unavailable" in str(exc)
+    else:
+        raise AssertionError("unavailable backend must fail closed")
 
 
 def test_podman_and_bwrap_argument_generation():

@@ -123,6 +123,26 @@ class SemanticProgramRunnerTests(unittest.TestCase):
         self.assertIn("_workflow_execution", res.outputs)
         self.assertEqual(res.outputs["_workflow_execution"]["total_stages"], 7)
 
+    def test_native_skill_cannot_bypass_its_host_broker_with_workflow(self) -> None:
+        skill_name = "dynamic-sql-bind-identifier-safety"
+        record = self.catalog.atomic_skills[skill_name]
+        result = SkillCatalog(self.kernel).execute_skill(
+            skill_name,
+            {
+                "operation": "workflow",
+                "inputs": {
+                    name: {"fixture": index}
+                    for index, name in enumerate(record["inputs"])
+                },
+            },
+            self.scope,
+            invocation_id=self.scope.invocation_id,
+        )
+        self.assertEqual(result.status, "FAILED")
+        self.assertEqual(result.external_evidence_status, "NOT_RUN")
+        self.assertEqual(result.certification_status.value, "NOT_CERTIFIED")
+        self.assertIn("no exact local semantic handler", result.error or "")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -28,6 +28,7 @@ from elmos_foundry.external_assurance import (
     verify_external_run_receipt,
     verify_independent_acceptance,
 )
+from elmos_foundry.native_semantics import load_native_programs
 
 
 DIGEST_A = "sha256:" + "a" * 64
@@ -230,6 +231,66 @@ json.dump({"status": "SUCCEEDED", "outputs": outputs, "provider_receipt": receip
             route, binding, request, permit = self.broker_objects(broker.digest)
             with self.assertRaisesRegex(ExternalAssuranceError, "non-symlink"):
                 broker.execute(route, binding, request, permit, {}, self.scope)
+
+    def test_provider_signature_binds_native_semantic_trace(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            executable = Path(directory) / "provider"
+            self.write_provider(executable)
+            program = load_native_programs()["a2a-agent-discovery-messaging"]
+            operation = f"foundry.skill.{program.skill_name}.execute"
+            route = ExternalAdapterRoute(
+                "route.native-trace",
+                "1.0.0",
+                "4" * 64,
+                operation,
+                semantic_program=program,
+            )
+            config = ProviderCommandRoute(
+                route_id=route.route_id,
+                route_digest=route.digest,
+                operation=operation,
+                provider_id="provider-01",
+                provider_version="2026.09",
+                executable=executable,
+                executable_digest=digest_bytes(executable.read_bytes()),
+            )
+            broker = build_subprocess_broker(
+                broker_id="broker.provider-01",
+                version="1.0.0",
+                routes=(config,),
+                receipt_verifier=verifier,
+            )
+            _old_route, binding, request, permit = self.broker_objects(broker.digest)
+            result: dict[str, object] = {
+                "status": "SUCCEEDED",
+                "outputs": {"artifact": "provider-output"},
+                "semantic_execution": {"trace": "original"},
+            }
+            result["provider_receipt"] = signed(
+                {
+                    "schema_version": "elmos.foundry.provider-receipt.v1",
+                    "provider_id": config.provider_id,
+                    "provider_version": config.provider_version,
+                    "executable_digest": config.executable_digest,
+                    "request_binding_digest": request.binding_digest,
+                    "route_id": route.route_id,
+                    "route_digest": route.digest,
+                    "operation": route.operation,
+                    "outcome": "CONFIRMED",
+                    "outputs_digest": canonical_digest(result["outputs"]),
+                    "semantic_execution_digest": canonical_digest(
+                        result["semantic_execution"]
+                    ),
+                    "key_id": "test-key",
+                }
+            )
+            self.assertTrue(
+                broker.verify_result(route, binding, request, permit, result, self.scope)
+            )
+            result["semantic_execution"] = {"trace": "tampered"}
+            self.assertFalse(
+                broker.verify_result(route, binding, request, permit, result, self.scope)
+            )
 
     def training_request(self) -> ExternalRunRequest:
         return ExternalRunRequest(

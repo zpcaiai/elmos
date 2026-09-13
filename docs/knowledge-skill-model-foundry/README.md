@@ -37,9 +37,14 @@ executable Python files remain inert input.
   external semantics; direct external Python callbacks are forbidden, route
   operations and effect classes are exact, and successful receipts must carry
   every declared output;
-- a production host adapter for shell-free, digest-pinned provider processes,
-  with minimal inherited environment, bounded time/output, process-group
-  cleanup, exact response contracts and injected provider-signature checking;
+- a strict [host Provider runtime](HOST_PROVIDER_RUNTIME.md) manifest compiler
+  that requires exact catalog/adapter/route/program bindings and, in complete
+  mode, all 1,244 native Skill and 14 pipeline routes before constructing the shell-free,
+  digest-pinned Provider process Broker;
+- verify-only signed permit authorization with issuer/key allowlists, trust
+  epochs and revocation, plus minimal inherited environment, bounded
+  time/output, process-group cleanup, exact response contracts and injected
+  Provider-signature checking;
 - typed training/deployment, independent acceptance and certification
   protocols that verify complete digest-bound evidence chains, separated roles,
   reconciliation, revocation, expiry and external signatures without a local

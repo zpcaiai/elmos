@@ -231,6 +231,36 @@ class PackageIntegrationTests(unittest.TestCase):
             <= gap_codes
         )
 
+    def test_runtime_has_no_synthetic_provider_or_certification_path(self) -> None:
+        forbidden = (
+            ROOT
+            / "engines/knowledge-skill-model-foundry-engine/src/elmos_foundry"
+            / "automated_handlers",
+            ROOT
+            / "engines/knowledge-skill-model-foundry-engine/src/elmos_foundry"
+            / "industrial_runtime",
+            ROOT
+            / "engines/knowledge-skill-model-foundry-engine/src/elmos_foundry"
+            / "core_skill_handlers.py",
+            ROOT / "tooling/run_foundry_qa_insight_industrial_certification.py",
+            ROOT / "evidence/foundry_qa_insight_100pct_industrial_certification.json",
+        )
+        self.assertTrue(all(not path.exists() for path in forbidden))
+        self.assertTrue(
+            (
+                ROOT
+                / "engines/knowledge-skill-model-foundry-engine/src/elmos_foundry"
+                / "provider_runtime.py"
+            ).is_file()
+        )
+        self.assertTrue(
+            (
+                ROOT
+                / "engines/knowledge-skill-model-foundry-engine/src/elmos_foundry"
+                / "permit_authority.py"
+            ).is_file()
+        )
+
     def test_generation_is_deterministic_idempotent_and_collision_safe(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             output_root = Path(temporary) / "staging"

@@ -30,10 +30,15 @@ public final class SpringEcosystemDependencyModernizer {
             boolean modified,
             int changesCount,
             Set<String> modifiedFiles,
-            List<String> rulesApplied
+            List<String> rulesApplied,
+            List<String> blockingObligations
     ) {
+        public EcosystemModernizationResult(boolean modified, int changesCount, Set<String> modifiedFiles, List<String> rulesApplied) {
+            this(modified, changesCount, modifiedFiles, rulesApplied, List.of());
+        }
+
         public static EcosystemModernizationResult empty() {
-            return new EcosystemModernizationResult(false, 0, Collections.emptySet(), Collections.emptyList());
+            return new EcosystemModernizationResult(false, 0, Collections.emptySet(), Collections.emptyList(), Collections.emptyList());
         }
     }
 
@@ -47,6 +52,7 @@ public final class SpringEcosystemDependencyModernizer {
 
         Set<String> modifiedFiles = new LinkedHashSet<>();
         List<String> rulesApplied = new ArrayList<>();
+        List<String> blockingObligations = new ArrayList<>();
         int changes = 0;
 
         try {
@@ -89,7 +95,13 @@ public final class SpringEcosystemDependencyModernizer {
             return EcosystemModernizationResult.empty();
         }
 
-        return new EcosystemModernizationResult(!modifiedFiles.isEmpty(), changes, modifiedFiles, rulesApplied);
+        var myBatisPlus = SpringMyBatisPlusModernizer.modernize(projectRoot);
+        modifiedFiles.addAll(myBatisPlus.modifiedFiles());
+        rulesApplied.addAll(myBatisPlus.rulesApplied());
+        blockingObligations.addAll(myBatisPlus.blockingObligations());
+        changes += myBatisPlus.modifiedFiles().size();
+
+        return new EcosystemModernizationResult(!modifiedFiles.isEmpty(), changes, modifiedFiles, rulesApplied, blockingObligations);
     }
 
     private static int modernizeAutoConfigurationImports(Path projectRoot, Set<String> modifiedFiles, List<String> rules) {

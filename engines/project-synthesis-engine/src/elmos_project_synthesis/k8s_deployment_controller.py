@@ -27,6 +27,8 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Any
 
+import yaml  # type: ignore[import-untyped]
+
 logger = logging.getLogger(__name__)
 
 
@@ -372,10 +374,32 @@ class K8sDeploymentController:
         self.is_cluster_available, self.current_context = LocalK8sDetector.detect_cluster()
 
     def dry_run_validate(self, manifest_yaml: str) -> tuple[bool, str]:
-        """Validate manifests using client-side dry-run."""
-        if not shutil.which(self.kubectl):
-            # Parse YAML syntactic validity if kubectl is absent
-            return True, "Valid Kubernetes manifest structure (Offline verified)"
+        """Validate manifest structure, then use kubectl when a cluster is bound."""
+        try:
+            documents = [item for item in yaml.safe_load_all(manifest_yaml) if item is not None]
+        except yaml.YAMLError as exc:
+            return False, f"Invalid Kubernetes YAML: {exc}"
+        if not documents:
+            return False, "Kubernetes manifest contains no resources"
+        for index, document in enumerate(documents, start=1):
+            metadata = document.get("metadata") if isinstance(document, dict) else None
+            if (
+                not isinstance(document, dict)
+                or not isinstance(document.get("apiVersion"), str)
+                or not document["apiVersion"]
+                or not isinstance(document.get("kind"), str)
+                or not document["kind"]
+                or not isinstance(metadata, dict)
+                or not isinstance(metadata.get("name"), str)
+                or not metadata["name"]
+            ):
+                return False, f"Kubernetes resource {index} is missing apiVersion, kind, or metadata.name"
+
+        if not shutil.which(self.kubectl) or not self.is_cluster_available:
+            return True, (
+                f"Valid Kubernetes manifest structure ({len(documents)} resources; "
+                "offline verified)"
+            )
 
         try:
             proc = subprocess.run(

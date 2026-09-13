@@ -90,12 +90,25 @@ class ChinaDbDdlExecutor:
         db = self.orchestrator.get_database(target_id)
         verified_tables = sorted(list(db.tables.keys()))
         schema_snapshot = {
-            tname: {
-                "cols": {cname: c.data_type for cname, c in tbl.columns.items()},
-                "pks": tbl.primary_key_cols,
-                "indexes": list(tbl.indexes.keys()),
-            }
-            for tname, tbl in db.tables.items()
+            "tables": {
+                tname: {
+                    "cols": {cname: c.data_type for cname, c in tbl.columns.items()},
+                    "pks": tbl.primary_key_cols,
+                    "indexes": list(tbl.indexes.keys()),
+                }
+                for tname, tbl in db.tables.items()
+            },
+            "routines": db.routines,
+            "triggers": db.triggers,
+            "sequences": {
+                name: {
+                    "start_with": sequence.start_with,
+                    "increment_by": sequence.increment_by,
+                    "current_value": sequence.current_value,
+                    "source_ddl": sequence.source_ddl,
+                }
+                for name, sequence in db.sequences.items()
+            },
         }
         schema_snapshot["$sequences"] = {
             name: {
