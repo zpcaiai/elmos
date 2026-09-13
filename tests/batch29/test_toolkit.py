@@ -2558,7 +2558,7 @@ print('\\n'.join(failures))
         swift_definition_names = {
             name for name in schemas[0]["$defs"] if name.startswith("swift_")
         }
-        self.assertEqual(len(swift_definition_names), 40)
+        self.assertEqual(len(swift_definition_names), 38)
         self.assertEqual(
             swift_definition_names,
             {name for name in schemas[1]["$defs"] if name.startswith("swift_")},
@@ -2859,7 +2859,7 @@ print('\\n'.join(failures))
                 lambda value: value["dependency"]["mirror"]["git"].update(
                     {"sha256": "sha256:" + "4" * 64}
                 ),
-                "Apple host profile is not registered",
+                "toolchain exact identity is invalid",
             ),
             (
                 "unknown mirror seed",
@@ -3133,7 +3133,7 @@ print('\\n'.join(failures))
                 lambda value: value["network_isolation"]["verifier"].update(
                     {"sha256": "sha256:" + "1" * 64}
                 ),
-                "Apple host profile is not registered",
+                "toolchain exact identity is invalid",
             ),
             (
                 "build argv",
