@@ -1,0 +1,16 @@
+bef77712091435ce5e14805452d3b2955257387b5b815b29ad78582c3c4bf66d  ./AGENTS.autoload.snippet.md
+04663f503a3fac68dcae03ccec66715394eef482379052ec9ae9ddb37b7298fc  ./README.md
+352fc3eb3cec5dc9b4325ac93572a45dea74bef3caafef28bd42f84eca8b1efc  ./UNINSTALL.md
+59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03  ./VERSION
+a36462be5bc76cd37b7008ab56c5d5cbc9951f88b3330836432166d218709b69  ./elmos-auto-skill-router/SKILL.md
+0112173f52c3219ed2c755318bfaac3185b0d8e4ae9919282467e97ccc614680  ./elmos-auto-skill-router/references/installation.md
+d9bf3d17bfb45c261783554826d20bbb06148a6ff51ca5a066bbe57127364d2b  ./elmos-auto-skill-router/references/routing-model.md
+f2ef2afbb82c6f95a449f544f294416ae2584572a5d25fec80e5247d87fd6bff  ./elmos-auto-skill-router/scripts/check_install.sh
+9bc1d994989bb96c13bd4cae4e3fd426d1f7f319d73cccd462b09ca9cb70e438  ./elmos-auto-skill-router/scripts/continue-with-skills.sh
+26dd0c7ef793c36fb0356b455e9509dca41e26ee442a2ff8426907dee43a7cab  ./elmos-auto-skill-router/scripts/refresh_skill_index.py
+ac96c1a8aefe6b7a6d32b655296fdcf731110fcd9a30ecef6a53de9fa0de30b3  ./elmos-auto-skill-router/scripts/route_skills.py
+bc9b745f0cbb58c7ba2ba1af398363f4aa04e01af6958d53d58b46dc141932d0  ./elmos-auto-skill-router/templates/skill-router.json
+8743524c4ce2fe7e32fb8c33079720e9e400ddf0877f9fba8a08f637c72b43aa  ./examples/task-examples.txt
+09d4271c5cd15cecc63c009cbbe88a5307e1cedf5d32a60fd65e2bc0850e97ce  ./install.py
+e03b5730299da6f536f1a3239f2980056ea95232eae21d894a18f3c1f4b432a9  ./install.sh
+da7f602c11658c1a91fc4ea0f1cc85d45b30c5a83301aebb9abb474aef26f743  ./validate_package.sh

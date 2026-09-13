@@ -1,0 +1,1193 @@
+{
+  "batch": {
+    "id": "B05",
+    "title": "Unified semantic system graph",
+    "dependsOn": [
+      "B03",
+      "B04"
+    ],
+    "skills": [
+      "polyglot-semantic-system-graph",
+      "business-capability-code-mapping",
+      "data-event-permission-lineage",
+      "git-history-ownership-change-coupling",
+      "static-dynamic-evidence-fusion"
+    ],
+    "tasks": [
+      "B05-T001",
+      "B05-T002",
+      "B05-T003",
+      "B05-T004",
+      "B05-T005",
+      "B05-T006",
+      "B05-T007",
+      "B05-T008",
+      "B05-T009",
+      "B05-T010",
+      "B05-T011",
+      "B05-T012",
+      "B05-T013",
+      "B05-T014",
+      "B05-T015",
+      "B05-T016",
+      "B05-T017",
+      "B05-T018",
+      "B05-T019",
+      "B05-T020",
+      "B05-T021",
+      "B05-T022",
+      "B05-T023",
+      "B05-T024",
+      "B05-T025",
+      "B05-T026",
+      "B05-T027",
+      "B05-T028",
+      "B05-T029",
+      "B05-T030",
+      "B05-T031",
+      "B05-T032",
+      "B05-T033",
+      "B05-T034",
+      "B05-T035",
+      "B05-T036",
+      "B05-T037",
+      "B05-T038",
+      "B05-T039",
+      "B05-T040",
+      "B05-T041",
+      "B05-T042",
+      "B05-T043",
+      "B05-T044",
+      "B05-T045",
+      "B05-T046",
+      "B05-T047",
+      "B05-T048",
+      "B05-T049",
+      "B05-T050"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B05-T001",
+      "batch": "B05",
+      "title": "polyglot-semantic-system-graph: Bind canonical ownership and model domain contracts",
+      "skillId": "polyglot-semantic-system-graph",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B04-T010",
+        "B03-T030"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for polyglot-semantic-system-graph are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T002",
+      "batch": "B05",
+      "title": "polyglot-semantic-system-graph: Implement persistence projections and append-only ledger events",
+      "skillId": "polyglot-semantic-system-graph",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T001"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for polyglot-semantic-system-graph are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T003",
+      "batch": "B05",
+      "title": "polyglot-semantic-system-graph: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "polyglot-semantic-system-graph",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T002"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for polyglot-semantic-system-graph are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T004",
+      "batch": "B05",
+      "title": "polyglot-semantic-system-graph: Implement service and durable workflow",
+      "skillId": "polyglot-semantic-system-graph",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T003"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for polyglot-semantic-system-graph are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T005",
+      "batch": "B05",
+      "title": "polyglot-semantic-system-graph: Implement replaceable ports and first reference Adapter",
+      "skillId": "polyglot-semantic-system-graph",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T004"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for polyglot-semantic-system-graph are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T006",
+      "batch": "B05",
+      "title": "polyglot-semantic-system-graph: Implement APIs, events and query projections",
+      "skillId": "polyglot-semantic-system-graph",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T005"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for polyglot-semantic-system-graph are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T007",
+      "batch": "B05",
+      "title": "polyglot-semantic-system-graph: Implement product UI or operator surface",
+      "skillId": "polyglot-semantic-system-graph",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T006"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for polyglot-semantic-system-graph are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T008",
+      "batch": "B05",
+      "title": "polyglot-semantic-system-graph: Add deterministic tests, negative controls and failure injection",
+      "skillId": "polyglot-semantic-system-graph",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T007"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for polyglot-semantic-system-graph are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T009",
+      "batch": "B05",
+      "title": "polyglot-semantic-system-graph: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "polyglot-semantic-system-graph",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T008"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for polyglot-semantic-system-graph are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T010",
+      "batch": "B05",
+      "title": "polyglot-semantic-system-graph: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "polyglot-semantic-system-graph",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T009"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for polyglot-semantic-system-graph are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T011",
+      "batch": "B05",
+      "title": "business-capability-code-mapping: Bind canonical ownership and model domain contracts",
+      "skillId": "business-capability-code-mapping",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B02-T010",
+        "B05-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for business-capability-code-mapping are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T012",
+      "batch": "B05",
+      "title": "business-capability-code-mapping: Implement persistence projections and append-only ledger events",
+      "skillId": "business-capability-code-mapping",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B05-T011"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for business-capability-code-mapping are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T013",
+      "batch": "B05",
+      "title": "business-capability-code-mapping: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "business-capability-code-mapping",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B05-T012"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for business-capability-code-mapping are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T014",
+      "batch": "B05",
+      "title": "business-capability-code-mapping: Implement service and durable workflow",
+      "skillId": "business-capability-code-mapping",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B05-T013"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for business-capability-code-mapping are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T015",
+      "batch": "B05",
+      "title": "business-capability-code-mapping: Implement replaceable ports and first reference Adapter",
+      "skillId": "business-capability-code-mapping",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B05-T014"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for business-capability-code-mapping are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T016",
+      "batch": "B05",
+      "title": "business-capability-code-mapping: Implement APIs, events and query projections",
+      "skillId": "business-capability-code-mapping",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B05-T015"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for business-capability-code-mapping are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T017",
+      "batch": "B05",
+      "title": "business-capability-code-mapping: Implement product UI or operator surface",
+      "skillId": "business-capability-code-mapping",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B05-T016"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for business-capability-code-mapping are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T018",
+      "batch": "B05",
+      "title": "business-capability-code-mapping: Add deterministic tests, negative controls and failure injection",
+      "skillId": "business-capability-code-mapping",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B05-T017"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for business-capability-code-mapping are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T019",
+      "batch": "B05",
+      "title": "business-capability-code-mapping: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "business-capability-code-mapping",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B05-T018"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for business-capability-code-mapping are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T020",
+      "batch": "B05",
+      "title": "business-capability-code-mapping: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "business-capability-code-mapping",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B05-T019"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for business-capability-code-mapping are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T021",
+      "batch": "B05",
+      "title": "data-event-permission-lineage: Bind canonical ownership and model domain contracts",
+      "skillId": "data-event-permission-lineage",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B05-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for data-event-permission-lineage are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T022",
+      "batch": "B05",
+      "title": "data-event-permission-lineage: Implement persistence projections and append-only ledger events",
+      "skillId": "data-event-permission-lineage",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T021"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for data-event-permission-lineage are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T023",
+      "batch": "B05",
+      "title": "data-event-permission-lineage: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "data-event-permission-lineage",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T022"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for data-event-permission-lineage are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T024",
+      "batch": "B05",
+      "title": "data-event-permission-lineage: Implement service and durable workflow",
+      "skillId": "data-event-permission-lineage",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T023"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for data-event-permission-lineage are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T025",
+      "batch": "B05",
+      "title": "data-event-permission-lineage: Implement replaceable ports and first reference Adapter",
+      "skillId": "data-event-permission-lineage",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T024"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for data-event-permission-lineage are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T026",
+      "batch": "B05",
+      "title": "data-event-permission-lineage: Implement APIs, events and query projections",
+      "skillId": "data-event-permission-lineage",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T025"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for data-event-permission-lineage are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T027",
+      "batch": "B05",
+      "title": "data-event-permission-lineage: Implement product UI or operator surface",
+      "skillId": "data-event-permission-lineage",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T026"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for data-event-permission-lineage are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T028",
+      "batch": "B05",
+      "title": "data-event-permission-lineage: Add deterministic tests, negative controls and failure injection",
+      "skillId": "data-event-permission-lineage",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T027"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for data-event-permission-lineage are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T029",
+      "batch": "B05",
+      "title": "data-event-permission-lineage: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "data-event-permission-lineage",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T028"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for data-event-permission-lineage are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T030",
+      "batch": "B05",
+      "title": "data-event-permission-lineage: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "data-event-permission-lineage",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T029"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for data-event-permission-lineage are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T031",
+      "batch": "B05",
+      "title": "git-history-ownership-change-coupling: Bind canonical ownership and model domain contracts",
+      "skillId": "git-history-ownership-change-coupling",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B03-T010",
+        "B03-T020"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for git-history-ownership-change-coupling are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T032",
+      "batch": "B05",
+      "title": "git-history-ownership-change-coupling: Implement persistence projections and append-only ledger events",
+      "skillId": "git-history-ownership-change-coupling",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B05-T031"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for git-history-ownership-change-coupling are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T033",
+      "batch": "B05",
+      "title": "git-history-ownership-change-coupling: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "git-history-ownership-change-coupling",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B05-T032"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for git-history-ownership-change-coupling are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T034",
+      "batch": "B05",
+      "title": "git-history-ownership-change-coupling: Implement service and durable workflow",
+      "skillId": "git-history-ownership-change-coupling",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B05-T033"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for git-history-ownership-change-coupling are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T035",
+      "batch": "B05",
+      "title": "git-history-ownership-change-coupling: Implement replaceable ports and first reference Adapter",
+      "skillId": "git-history-ownership-change-coupling",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B05-T034"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for git-history-ownership-change-coupling are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T036",
+      "batch": "B05",
+      "title": "git-history-ownership-change-coupling: Implement APIs, events and query projections",
+      "skillId": "git-history-ownership-change-coupling",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B05-T035"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for git-history-ownership-change-coupling are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T037",
+      "batch": "B05",
+      "title": "git-history-ownership-change-coupling: Implement product UI or operator surface",
+      "skillId": "git-history-ownership-change-coupling",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B05-T036"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for git-history-ownership-change-coupling are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T038",
+      "batch": "B05",
+      "title": "git-history-ownership-change-coupling: Add deterministic tests, negative controls and failure injection",
+      "skillId": "git-history-ownership-change-coupling",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B05-T037"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for git-history-ownership-change-coupling are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T039",
+      "batch": "B05",
+      "title": "git-history-ownership-change-coupling: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "git-history-ownership-change-coupling",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B05-T038"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for git-history-ownership-change-coupling are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T040",
+      "batch": "B05",
+      "title": "git-history-ownership-change-coupling: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "git-history-ownership-change-coupling",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B05-T039"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for git-history-ownership-change-coupling are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T041",
+      "batch": "B05",
+      "title": "static-dynamic-evidence-fusion: Bind canonical ownership and model domain contracts",
+      "skillId": "static-dynamic-evidence-fusion",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B05-T010",
+        "B04-T030",
+        "B05-T040"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for static-dynamic-evidence-fusion are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T042",
+      "batch": "B05",
+      "title": "static-dynamic-evidence-fusion: Implement persistence projections and append-only ledger events",
+      "skillId": "static-dynamic-evidence-fusion",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T041"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for static-dynamic-evidence-fusion are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T043",
+      "batch": "B05",
+      "title": "static-dynamic-evidence-fusion: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "static-dynamic-evidence-fusion",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T042"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for static-dynamic-evidence-fusion are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T044",
+      "batch": "B05",
+      "title": "static-dynamic-evidence-fusion: Implement service and durable workflow",
+      "skillId": "static-dynamic-evidence-fusion",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T043"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for static-dynamic-evidence-fusion are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T045",
+      "batch": "B05",
+      "title": "static-dynamic-evidence-fusion: Implement replaceable ports and first reference Adapter",
+      "skillId": "static-dynamic-evidence-fusion",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T044"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for static-dynamic-evidence-fusion are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T046",
+      "batch": "B05",
+      "title": "static-dynamic-evidence-fusion: Implement APIs, events and query projections",
+      "skillId": "static-dynamic-evidence-fusion",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T045"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for static-dynamic-evidence-fusion are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T047",
+      "batch": "B05",
+      "title": "static-dynamic-evidence-fusion: Implement product UI or operator surface",
+      "skillId": "static-dynamic-evidence-fusion",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T046"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for static-dynamic-evidence-fusion are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T048",
+      "batch": "B05",
+      "title": "static-dynamic-evidence-fusion: Add deterministic tests, negative controls and failure injection",
+      "skillId": "static-dynamic-evidence-fusion",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T047"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for static-dynamic-evidence-fusion are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T049",
+      "batch": "B05",
+      "title": "static-dynamic-evidence-fusion: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "static-dynamic-evidence-fusion",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T048"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for static-dynamic-evidence-fusion are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B05-T050",
+      "batch": "B05",
+      "title": "static-dynamic-evidence-fusion: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "static-dynamic-evidence-fusion",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B05-T049"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for static-dynamic-evidence-fusion are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

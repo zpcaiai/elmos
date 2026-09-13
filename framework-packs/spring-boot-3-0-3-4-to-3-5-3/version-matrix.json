@@ -1,0 +1,32 @@
+{
+  "pack_key": "spring-boot-3-0-3-4-to-3-5-3",
+  "schema_version": 1,
+  "tuples": [
+    {
+      "build": "maven-3.9.11",
+      "framework": "spring-boot",
+      "id": "source",
+      "java": "17",
+      "spring_boot": "3.4.1",
+      "status": "supported-input-only"
+    },
+    {
+      "build": "maven-3.9.11",
+      "framework": "spring-boot",
+      "id": "target",
+      "java": "21",
+      "spring_boot": "3.5.3",
+      "status": "limited-output"
+    }
+  ],
+  "upgrade_edges": [
+    {
+      "directional": true,
+      "from": "source",
+      "recipes": [
+        "io.elmos.openrewrite.SpringBoot3_0To3_4ToBoot3_5_3Java21"
+      ],
+      "to": "target"
+    }
+  ]
+}

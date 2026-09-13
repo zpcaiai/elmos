@@ -1,0 +1,62 @@
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from app.domain.models.entity import Entity, EntityStatus
+
+
+class EntityCreateRequest(BaseModel):
+    """Payload for creating a new entity."""
+
+    name: str = Field(..., min_length=1, max_length=100, description="Unique entity name")
+    description: str | None = Field(
+        default="", max_length=500, description="Optional entity description"
+    )
+
+
+class EntityUpdateRequest(BaseModel):
+    """Payload for updating an entity's mutable fields."""
+
+    name: str = Field(..., min_length=1, max_length=100, description="Updated entity name")
+    description: str | None = Field(
+        default="", max_length=500, description="Updated entity description"
+    )
+
+
+class EntityResponse(BaseModel):
+    """View model representing the entity in external API contracts."""
+
+    id: str
+    name: str
+    description: str
+    status: EntityStatus
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+    @classmethod
+    def from_domain(cls, entity: Entity) -> "EntityResponse":
+        return cls(
+            id=entity.id,
+            name=entity.name,
+            description=entity.description,
+            status=entity.status,
+            created_at=entity.created_at,
+            updated_at=entity.updated_at,
+        )
+
+
+class EntityListResponse(BaseModel):
+    """Paginated collection of entity responses."""
+
+    items: list[EntityResponse]
+    total_count: int
+    offset: int
+    limit: int
+
+
+class PaginationParams(BaseModel):
+    """Query parameters for list operations."""
+    offset: int = Field(default=0, ge=0, description="Pagination offset")
+    limit: int = Field(default=20, ge=1, le=100, description="Page limit")

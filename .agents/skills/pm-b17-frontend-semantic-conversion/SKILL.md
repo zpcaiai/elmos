@@ -1,5 +1,8 @@
 ---
 name: pm-b17-frontend-semantic-conversion
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "恢复前端组件、响应式依赖、UI状态机、事件、布局、路由和平台能力，作为跨框架和跨平台转换的共同语义层. Precision Migration B17 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

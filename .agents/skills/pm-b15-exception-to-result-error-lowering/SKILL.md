@@ -1,5 +1,8 @@
 ---
 name: pm-b15-exception-to-result-error-lowering
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在异常、Result、error tuple、panic 和错误码之间保持错误路径与清理语义. Precision Migration B15 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

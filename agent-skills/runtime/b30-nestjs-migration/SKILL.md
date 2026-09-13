@@ -1,6 +1,9 @@
 ---
 name: b30-nestjs-migration
-description: "Implement or certify a NestJS source or target framework pack, covering modules, providers and scopes, controllers, pipes, guards, interceptors, filters, decorators, configuration, validation, authentication/authorization, persistence providers, microservices, queues, schedulers, and lifecycle hooks."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement or certify a NestJS source or target framework pack, covering modules, providers and scopes, controllers, pipes, guards, interceptors, filters, decorators, configuration, validation, authentication/authorization, persistence providers, microservices, queues, schedulers, and lifecycle hooks.
 ---
 
 ## Operating mode

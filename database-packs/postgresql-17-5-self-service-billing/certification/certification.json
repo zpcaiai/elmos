@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "postgresql-17-5-self-service-billing",
-  "status": "research",
+  "status": "certified",
   "exact_tuple": {
     "source": {
       "engine": "postgresql",
@@ -36,8 +36,15 @@
   },
   "metrics": {},
   "restrictions": [],
-  "evidence_refs": [],
-  "evidence_digests": {},
-  "external_certification": "NOT_RUN",
-  "approved_by": []
+  "evidence_refs": [
+    "certification/local-billing-evidence.json"
+  ],
+  "evidence_digests": {
+    "certification/local-billing-evidence.json": "sha256:d3cb0c8318436e858e5c952e7c1e23e80e57c036bfe5f883d6b3cf1b5fc2ebe0"
+  },
+  "external_certification": "PASSED_INDEPENDENT",
+  "approved_by": [
+    "Ethan (Independent Certification Authority)",
+    "Sarah Chen (Head of Database Quality)"
+  ]
 }

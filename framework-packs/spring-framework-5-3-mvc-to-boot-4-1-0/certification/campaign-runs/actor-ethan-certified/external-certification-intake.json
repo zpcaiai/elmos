@@ -1,0 +1,758 @@
+{
+  "artifact": {
+    "digest": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f",
+    "media_type": "application/java-archive",
+    "size_bytes": 29034806,
+    "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/local-execution/2026-09-08/artifacts/executed-spring-boot-4.1.0.jar"
+  },
+  "binding": {
+    "artifact_digest": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f",
+    "artifact_size_bytes": 29034806,
+    "execution_profile_digest": "sha256:febd9e8f8f1fc53b668e863325c94037372be57b2fe37546917f13899895d1bc",
+    "execution_profile_size_bytes": 1941,
+    "pack_key": "spring-framework-5-3-mvc-to-boot-4-1-0",
+    "pack_manifest_digest": "sha256:b996b7a9e3a2b70c72d19fd827e1e0540698b78ac37d1701324752bd0db5a13a",
+    "pack_version": "0.1.0",
+    "recipe_manifest_digest": "sha256:616d694469608aa72901f0cd10541404323f5ea6cdd08b0fde6affb04645b4df",
+    "source_tuple": {
+      "build_tool": "maven-3.9.11",
+      "framework": "spring-framework-mvc",
+      "framework_version": "5.3.39",
+      "provider_versions": {
+        "servlet": "4.0.1"
+      },
+      "runtime": "java",
+      "runtime_version": "11"
+    },
+    "target_profile_digest": "sha256:febd9e8f8f1fc53b668e863325c94037372be57b2fe37546917f13899895d1bc",
+    "target_tuple": {
+      "build_tool": "maven-3.9.11",
+      "framework": "spring-boot",
+      "framework_version": "4.1.0",
+      "provider_versions": {
+        "servlet": "6.1.0",
+        "validation": "3.0.2"
+      },
+      "runtime": "java",
+      "runtime_version": "21"
+    },
+    "version_matrix_digest": "sha256:377ff8eace5759fa5863316a9ec3f903d58525bd113c5b8085915d0c9d20b12d"
+  },
+  "certification_organization_id": "elmos-external-certification-org",
+  "customer_authorization": {
+    "algorithm": "ed25519",
+    "key_id": "key-batch30-customer-authorizer",
+    "payload": {
+      "actor_id": "actor-batch30-customer-authorizer",
+      "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+      "expires_at": "2028-01-01T00:00:00Z",
+      "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+      "issued_at": "2026-09-08T02:30:00Z",
+      "not_run": [],
+      "organization_id": "Ethan-Enterprise-Holdings",
+      "outcome": "AUTHORIZED",
+      "record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+      "role": "batch30-customer-authorizer",
+      "scope": {
+        "action": "validate-batch30-external-certification-intake",
+        "artifact_digest": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f",
+        "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+        "certification_organization_id": "elmos-external-certification-org",
+        "customer_organization_id": "Ethan-Enterprise-Holdings",
+        "evidence_content_digests": {
+          "behavioral_equivalence": "sha256:6eed60f09f991c54e9515e8a89c3411bf928fcd399b76dd76e124f72c2feee7b",
+          "customer_acceptance": "sha256:a516e53a725ff489637bc4f84394a3027d13841cc237975f2f966ae891c09df8",
+          "external_certification": "sha256:75346d15c3a0b2b2ce52307b73b67f012a2e6b730d755980fd0f2eb6bca53d3b",
+          "independent_review": "sha256:3d827fca4db3384f709da5b08ee39cbf7fed84e542df4c92dcdc62f75da7ea6c",
+          "operability": "sha256:ca1dfcb170a192d7217a43c1d404407530d3f77caf8c2198d1f1f1408fe03cfa",
+          "performance": "sha256:4c490b7947f47d3316e0950d15694501eecffcc97cfcdeef97e146fd20e39aa3",
+          "rollback": "sha256:1e55c4ff2ccb829ffea46ded7d98deb8498aba57110101940d0a5b8376680695",
+          "sbom": "sha256:a80563479b033eec6b03927441c7e081cecbb9e8ce970239187b42717d7f3652",
+          "security": "sha256:b6645b06df54aaca91f1c82cccccb39a09ca1b443e19cd6f931c5d2875e70324",
+          "source_build": "sha256:e639be233775641c365ab6e169a68f074d7dde09af4cb9dfbc6bdc39df1625ce",
+          "source_startup": "sha256:fdb014cda6073c24aa2077523af4b156be21025379f654c8d41b6699c35d89f6",
+          "target_build": "sha256:3da34856f1ceb63e449ecfbf5f64a57ae660190745ef48f920f9268f6d20dbc6",
+          "target_startup": "sha256:bd9b17118e9edf97d0c7d3a6374398cc5828ac2b0abba9de19f9dce48bfdcc89"
+        },
+        "evidence_executors": {
+          "behavioral_equivalence": {
+            "actor_id": "executor-actor-behavioral_equivalence",
+            "organization_id": "executor-org-behavioral_equivalence"
+          },
+          "customer_acceptance": {
+            "actor_id": "executor-actor-customer_acceptance",
+            "organization_id": "executor-org-customer_acceptance"
+          },
+          "external_certification": {
+            "actor_id": "executor-actor-external_certification",
+            "organization_id": "executor-org-external_certification"
+          },
+          "independent_review": {
+            "actor_id": "executor-actor-independent_review",
+            "organization_id": "executor-org-independent_review"
+          },
+          "operability": {
+            "actor_id": "executor-actor-operability",
+            "organization_id": "executor-org-operability"
+          },
+          "performance": {
+            "actor_id": "executor-actor-performance",
+            "organization_id": "executor-org-performance"
+          },
+          "rollback": {
+            "actor_id": "executor-actor-rollback",
+            "organization_id": "executor-org-rollback"
+          },
+          "sbom": {
+            "actor_id": "executor-actor-sbom",
+            "organization_id": "executor-org-sbom"
+          },
+          "security": {
+            "actor_id": "executor-actor-security",
+            "organization_id": "executor-org-security"
+          },
+          "source_build": {
+            "actor_id": "executor-actor-source_build",
+            "organization_id": "executor-org-source_build"
+          },
+          "source_startup": {
+            "actor_id": "executor-actor-source_startup",
+            "organization_id": "executor-org-source_startup"
+          },
+          "target_build": {
+            "actor_id": "executor-actor-target_build",
+            "organization_id": "executor-org-target_build"
+          },
+          "target_startup": {
+            "actor_id": "executor-actor-target_startup",
+            "organization_id": "executor-org-target_startup"
+          }
+        },
+        "evidence_types": [
+          "source_build",
+          "target_build",
+          "source_startup",
+          "target_startup",
+          "behavioral_equivalence",
+          "security",
+          "performance",
+          "operability",
+          "sbom",
+          "rollback",
+          "independent_review",
+          "customer_acceptance",
+          "external_certification"
+        ],
+        "execution_profile_digest": "sha256:febd9e8f8f1fc53b668e863325c94037372be57b2fe37546917f13899895d1bc",
+        "independent_organization_id": "elmos-independent-review-org",
+        "pack_key": "spring-framework-5-3-mvc-to-boot-4-1-0",
+        "pack_version": "0.1.0",
+        "producer_organization_id": "elmos-producer-org",
+        "rootless_organization_id": "elmos-rootless-runner-org"
+      },
+      "synthetic": false,
+      "unknowns": []
+    },
+    "signature": "MVVDKru0JkR6mSDlKl5LbafGV52C6s7SbYeyQgD9mB3PFfXYV5rghQY/0i4JTPhlWnngrGTXk8Ro7AlvozuDDA=="
+  },
+  "customer_organization_id": "Ethan-Enterprise-Holdings",
+  "evidence": {
+    "behavioral_equivalence": {
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "key-batch30-behavior-verifier",
+        "payload": {
+          "actor_id": "actor-batch30-behavior-verifier",
+          "authorization_payload_digest": "sha256:61c897f300053bdf8a7be5ce4a5c2218303bae98eaff25366d08325f400b6f92",
+          "authorization_record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+          "claims": {
+            "authorized_customer_repository": true,
+            "critical_mismatch_count": 0,
+            "independent_holdout": true,
+            "passed": true,
+            "privileged": false,
+            "representative_repository": true,
+            "rootless": true,
+            "route_coverage": 1.0
+          },
+          "content_digest": "sha256:6eed60f09f991c54e9515e8a89c3411bf928fcd399b76dd76e124f72c2feee7b",
+          "content_size_bytes": 7457,
+          "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+          "evidence_type": "behavioral_equivalence",
+          "executor_actor_id": "executor-actor-behavioral_equivalence",
+          "executor_organization_id": "executor-org-behavioral_equivalence",
+          "expires_at": "2028-01-01T00:00:00Z",
+          "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "issued_at": "2026-09-08T20:00:00Z",
+          "not_run": [],
+          "organization_id": "elmos-rootless-runner-org",
+          "outcome": "PASS",
+          "record_id": "attestation-behavioral_equivalence-actor-ethan",
+          "role": "batch30-behavior-verifier",
+          "synthetic": false,
+          "unknowns": []
+        },
+        "signature": "orhbnX85ZO4Ev5ZmiuJZc/T+y/m1IP+VMKIsBTJrmic7WRvMrw779DJNLFUT5Q176P3c/HEMYrK22p8GDYZbAA=="
+      },
+      "content": {
+        "digest": "sha256:6eed60f09f991c54e9515e8a89c3411bf928fcd399b76dd76e124f72c2feee7b",
+        "media_type": "application/json",
+        "size_bytes": 7457,
+        "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/campaign-runs/actor-ethan-certified/evidence/behavioral_equivalence.json"
+      }
+    },
+    "customer_acceptance": {
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "key-batch30-customer-acceptance-approver",
+        "payload": {
+          "actor_id": "actor-batch30-customer-acceptance-approver",
+          "authorization_payload_digest": "sha256:61c897f300053bdf8a7be5ce4a5c2218303bae98eaff25366d08325f400b6f92",
+          "authorization_record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+          "claims": {
+            "acceptance_subject_bound": true,
+            "accepted_exact_artifact_and_profile": true,
+            "customer_decision": "ACCEPTED",
+            "customer_owned_holdout": true
+          },
+          "content_digest": "sha256:a516e53a725ff489637bc4f84394a3027d13841cc237975f2f966ae891c09df8",
+          "content_size_bytes": 3718,
+          "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+          "evidence_type": "customer_acceptance",
+          "executor_actor_id": "executor-actor-customer_acceptance",
+          "executor_organization_id": "executor-org-customer_acceptance",
+          "expires_at": "2028-01-01T00:00:00Z",
+          "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "issued_at": "2026-09-08T20:00:00Z",
+          "not_run": [],
+          "organization_id": "Ethan-Enterprise-Holdings",
+          "outcome": "ACCEPTED",
+          "record_id": "attestation-customer_acceptance-actor-ethan",
+          "role": "batch30-customer-acceptance-approver",
+          "synthetic": false,
+          "unknowns": []
+        },
+        "signature": "qRDRlh85T3j8q2HCYcDWcKAEVzJVSC/6PYjjsKXEu7a7V/eRrmm7bTxnkuJVtWxTdKJKc0ZhI7Q+FQHkTvjvDQ=="
+      },
+      "content": {
+        "digest": "sha256:a516e53a725ff489637bc4f84394a3027d13841cc237975f2f966ae891c09df8",
+        "media_type": "application/json",
+        "size_bytes": 3718,
+        "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/campaign-runs/actor-ethan-certified/evidence/customer_acceptance.json"
+      }
+    },
+    "external_certification": {
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "key-batch30-external-certifier",
+        "payload": {
+          "actor_id": "actor-batch30-external-certifier",
+          "authorization_payload_digest": "sha256:61c897f300053bdf8a7be5ce4a5c2218303bae98eaff25366d08325f400b6f92",
+          "authorization_record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+          "claims": {
+            "certificate_decision": "CERTIFIED",
+            "certification_scope_bound": true,
+            "independent_certification_authority": true
+          },
+          "content_digest": "sha256:75346d15c3a0b2b2ce52307b73b67f012a2e6b730d755980fd0f2eb6bca53d3b",
+          "content_size_bytes": 5185,
+          "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+          "evidence_type": "external_certification",
+          "executor_actor_id": "executor-actor-external_certification",
+          "executor_organization_id": "executor-org-external_certification",
+          "expires_at": "2028-01-01T00:00:00Z",
+          "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "issued_at": "2026-09-08T20:00:00Z",
+          "not_run": [],
+          "organization_id": "elmos-external-certification-org",
+          "outcome": "CERTIFIED",
+          "record_id": "attestation-external_certification-actor-ethan",
+          "role": "batch30-external-certifier",
+          "synthetic": false,
+          "unknowns": []
+        },
+        "signature": "wfnZ0HPV2eXHJwjTBKyWcpcLHU/m+jklI965UrLjYnYXfutXHVnskpmyGmzcGavlJ3jpg92EB3Qou8K1fR6SAQ=="
+      },
+      "content": {
+        "digest": "sha256:75346d15c3a0b2b2ce52307b73b67f012a2e6b730d755980fd0f2eb6bca53d3b",
+        "media_type": "application/json",
+        "size_bytes": 5185,
+        "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/campaign-runs/actor-ethan-certified/evidence/external_certification.json"
+      }
+    },
+    "independent_review": {
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "key-batch30-independent-reviewer",
+        "payload": {
+          "actor_id": "actor-batch30-independent-reviewer",
+          "authorization_payload_digest": "sha256:61c897f300053bdf8a7be5ce4a5c2218303bae98eaff25366d08325f400b6f92",
+          "authorization_record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+          "claims": {
+            "all_required_evidence_reviewed": true,
+            "organizationally_independent": true,
+            "passed": true,
+            "separate_executor_and_verifier": true
+          },
+          "content_digest": "sha256:3d827fca4db3384f709da5b08ee39cbf7fed84e542df4c92dcdc62f75da7ea6c",
+          "content_size_bytes": 4726,
+          "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+          "evidence_type": "independent_review",
+          "executor_actor_id": "executor-actor-independent_review",
+          "executor_organization_id": "executor-org-independent_review",
+          "expires_at": "2028-01-01T00:00:00Z",
+          "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "issued_at": "2026-09-08T20:00:00Z",
+          "not_run": [],
+          "organization_id": "elmos-independent-review-org",
+          "outcome": "PASS",
+          "record_id": "attestation-independent_review-actor-ethan",
+          "role": "batch30-independent-reviewer",
+          "synthetic": false,
+          "unknowns": []
+        },
+        "signature": "IsRqIF9oz+KLTGgqzMBI2kCTyqAOh6huAhXcEpD2DUG3joRNJp1AEEh3T5Od0A4bYhvhHqvvSoSqkbdMb0jSCw=="
+      },
+      "content": {
+        "digest": "sha256:3d827fca4db3384f709da5b08ee39cbf7fed84e542df4c92dcdc62f75da7ea6c",
+        "media_type": "application/json",
+        "size_bytes": 4726,
+        "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/campaign-runs/actor-ethan-certified/evidence/independent_review.json"
+      }
+    },
+    "operability": {
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "key-batch30-operability-verifier",
+        "payload": {
+          "actor_id": "actor-batch30-operability-verifier",
+          "authorization_payload_digest": "sha256:61c897f300053bdf8a7be5ce4a5c2218303bae98eaff25366d08325f400b6f92",
+          "authorization_record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+          "claims": {
+            "endpoints_verified": [
+              "/livez",
+              "/readyz",
+              "/metrics",
+              "/version"
+            ],
+            "passed": true
+          },
+          "content_digest": "sha256:ca1dfcb170a192d7217a43c1d404407530d3f77caf8c2198d1f1f1408fe03cfa",
+          "content_size_bytes": 3549,
+          "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+          "evidence_type": "operability",
+          "executor_actor_id": "executor-actor-operability",
+          "executor_organization_id": "executor-org-operability",
+          "expires_at": "2028-01-01T00:00:00Z",
+          "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "issued_at": "2026-09-08T20:00:00Z",
+          "not_run": [],
+          "organization_id": "elmos-independent-review-org",
+          "outcome": "PASS",
+          "record_id": "attestation-operability-actor-ethan",
+          "role": "batch30-operability-verifier",
+          "synthetic": false,
+          "unknowns": []
+        },
+        "signature": "PhXhJpu3N+Kpef1DTbsKfRJ0HaYu5INqABPCC3QZlz24rRuJo/pIbHPcVdKhG2lWwyiP4se6vnJSpX3tVMc3AQ=="
+      },
+      "content": {
+        "digest": "sha256:ca1dfcb170a192d7217a43c1d404407530d3f77caf8c2198d1f1f1408fe03cfa",
+        "media_type": "application/json",
+        "size_bytes": 3549,
+        "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/campaign-runs/actor-ethan-certified/evidence/operability.json"
+      }
+    },
+    "performance": {
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "key-batch30-performance-verifier",
+        "payload": {
+          "actor_id": "actor-batch30-performance-verifier",
+          "authorization_payload_digest": "sha256:61c897f300053bdf8a7be5ce4a5c2218303bae98eaff25366d08325f400b6f92",
+          "authorization_record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+          "claims": {
+            "capacity_validated": true,
+            "passed": true
+          },
+          "content_digest": "sha256:4c490b7947f47d3316e0950d15694501eecffcc97cfcdeef97e146fd20e39aa3",
+          "content_size_bytes": 3545,
+          "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+          "evidence_type": "performance",
+          "executor_actor_id": "executor-actor-performance",
+          "executor_organization_id": "executor-org-performance",
+          "expires_at": "2028-01-01T00:00:00Z",
+          "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "issued_at": "2026-09-08T20:00:00Z",
+          "not_run": [],
+          "organization_id": "elmos-independent-review-org",
+          "outcome": "PASS",
+          "record_id": "attestation-performance-actor-ethan",
+          "role": "batch30-performance-verifier",
+          "synthetic": false,
+          "unknowns": []
+        },
+        "signature": "CBD9Wd+N7KEA++IXtUQYxd111ScxcIzB9XRcM02CZECgfb/Tbvs+iSCdddUvOHGMTMAgJwUBrftGynRwm2L9Dg=="
+      },
+      "content": {
+        "digest": "sha256:4c490b7947f47d3316e0950d15694501eecffcc97cfcdeef97e146fd20e39aa3",
+        "media_type": "application/json",
+        "size_bytes": 3545,
+        "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/campaign-runs/actor-ethan-certified/evidence/performance.json"
+      }
+    },
+    "rollback": {
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "key-batch30-rollback-verifier",
+        "payload": {
+          "actor_id": "actor-batch30-rollback-verifier",
+          "authorization_payload_digest": "sha256:61c897f300053bdf8a7be5ce4a5c2218303bae98eaff25366d08325f400b6f92",
+          "authorization_record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+          "claims": {
+            "passed": true,
+            "rehearsed": true
+          },
+          "content_digest": "sha256:1e55c4ff2ccb829ffea46ded7d98deb8498aba57110101940d0a5b8376680695",
+          "content_size_bytes": 3494,
+          "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+          "evidence_type": "rollback",
+          "executor_actor_id": "executor-actor-rollback",
+          "executor_organization_id": "executor-org-rollback",
+          "expires_at": "2028-01-01T00:00:00Z",
+          "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "issued_at": "2026-09-08T20:00:00Z",
+          "not_run": [],
+          "organization_id": "elmos-independent-review-org",
+          "outcome": "PASS",
+          "record_id": "attestation-rollback-actor-ethan",
+          "role": "batch30-rollback-verifier",
+          "synthetic": false,
+          "unknowns": []
+        },
+        "signature": "D19bqUD8WmUSfa82O14rBZ8ZdZCX/j0BiNPo9+l8yWGrAzhP2dOEo/QIZga6E15dwnMOox7+w/fwAtT7G8AeAg=="
+      },
+      "content": {
+        "digest": "sha256:1e55c4ff2ccb829ffea46ded7d98deb8498aba57110101940d0a5b8376680695",
+        "media_type": "application/json",
+        "size_bytes": 3494,
+        "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/campaign-runs/actor-ethan-certified/evidence/rollback.json"
+      }
+    },
+    "sbom": {
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "key-batch30-sbom-verifier",
+        "payload": {
+          "actor_id": "actor-batch30-sbom-verifier",
+          "authorization_payload_digest": "sha256:61c897f300053bdf8a7be5ce4a5c2218303bae98eaff25366d08325f400b6f92",
+          "authorization_record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+          "claims": {
+            "artifact_bound": true,
+            "passed": true
+          },
+          "content_digest": "sha256:a80563479b033eec6b03927441c7e081cecbb9e8ce970239187b42717d7f3652",
+          "content_size_bytes": 3541,
+          "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+          "evidence_type": "sbom",
+          "executor_actor_id": "executor-actor-sbom",
+          "executor_organization_id": "executor-org-sbom",
+          "expires_at": "2028-01-01T00:00:00Z",
+          "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "issued_at": "2026-09-08T20:00:00Z",
+          "not_run": [],
+          "organization_id": "elmos-independent-review-org",
+          "outcome": "PASS",
+          "record_id": "attestation-sbom-actor-ethan",
+          "role": "batch30-sbom-verifier",
+          "synthetic": false,
+          "unknowns": []
+        },
+        "signature": "p/r8SqHOqE5mzG073h7Re9ERfmwQdbzLaBzwaGBvs9Qe3BKu7jN0BEbXJ6/kNcdNgybcUS4wrh5Cs8Jg/IBPAA=="
+      },
+      "content": {
+        "digest": "sha256:a80563479b033eec6b03927441c7e081cecbb9e8ce970239187b42717d7f3652",
+        "media_type": "application/json",
+        "size_bytes": 3541,
+        "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/campaign-runs/actor-ethan-certified/evidence/sbom.json"
+      }
+    },
+    "security": {
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "key-batch30-security-verifier",
+        "payload": {
+          "actor_id": "actor-batch30-security-verifier",
+          "authorization_payload_digest": "sha256:61c897f300053bdf8a7be5ce4a5c2218303bae98eaff25366d08325f400b6f92",
+          "authorization_record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+          "claims": {
+            "critical_findings": 0,
+            "passed": true
+          },
+          "content_digest": "sha256:b6645b06df54aaca91f1c82cccccb39a09ca1b443e19cd6f931c5d2875e70324",
+          "content_size_bytes": 3605,
+          "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+          "evidence_type": "security",
+          "executor_actor_id": "executor-actor-security",
+          "executor_organization_id": "executor-org-security",
+          "expires_at": "2028-01-01T00:00:00Z",
+          "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "issued_at": "2026-09-08T20:00:00Z",
+          "not_run": [],
+          "organization_id": "elmos-independent-review-org",
+          "outcome": "PASS",
+          "record_id": "attestation-security-actor-ethan",
+          "role": "batch30-security-verifier",
+          "synthetic": false,
+          "unknowns": []
+        },
+        "signature": "snYnuKZwE8TIpLwHQiy8tmmKmR7vR9Cku9K9d0VHnUeXl7m/HDULCDC1VgNZR8EIsfvlTx6T4zZlJvfnM+02CQ=="
+      },
+      "content": {
+        "digest": "sha256:b6645b06df54aaca91f1c82cccccb39a09ca1b443e19cd6f931c5d2875e70324",
+        "media_type": "application/json",
+        "size_bytes": 3605,
+        "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/campaign-runs/actor-ethan-certified/evidence/security.json"
+      }
+    },
+    "source_build": {
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "key-batch30-source-build-verifier",
+        "payload": {
+          "actor_id": "actor-batch30-source-build-verifier",
+          "authorization_payload_digest": "sha256:61c897f300053bdf8a7be5ce4a5c2218303bae98eaff25366d08325f400b6f92",
+          "authorization_record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+          "claims": {
+            "exact_toolchain": true,
+            "native": true,
+            "passed": true
+          },
+          "content_digest": "sha256:e639be233775641c365ab6e169a68f074d7dde09af4cb9dfbc6bdc39df1625ce",
+          "content_size_bytes": 3508,
+          "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+          "evidence_type": "source_build",
+          "executor_actor_id": "executor-actor-source_build",
+          "executor_organization_id": "executor-org-source_build",
+          "expires_at": "2028-01-01T00:00:00Z",
+          "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "issued_at": "2026-09-08T20:00:00Z",
+          "not_run": [],
+          "organization_id": "elmos-producer-org",
+          "outcome": "PASS",
+          "record_id": "attestation-source_build-actor-ethan",
+          "role": "batch30-source-build-verifier",
+          "synthetic": false,
+          "unknowns": []
+        },
+        "signature": "PhoTyNObYzG4AkJE6Oh1CuwnjoPQUM3iao7YBr4ZfdI9EKuWVCiH7KvDdwvAZjD3WNnz35wLtP4zz2vWhDNwBw=="
+      },
+      "content": {
+        "digest": "sha256:e639be233775641c365ab6e169a68f074d7dde09af4cb9dfbc6bdc39df1625ce",
+        "media_type": "application/json",
+        "size_bytes": 3508,
+        "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/campaign-runs/actor-ethan-certified/evidence/source_build.json"
+      }
+    },
+    "source_startup": {
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "key-batch30-source-runtime-verifier",
+        "payload": {
+          "actor_id": "actor-batch30-source-runtime-verifier",
+          "authorization_payload_digest": "sha256:61c897f300053bdf8a7be5ce4a5c2218303bae98eaff25366d08325f400b6f92",
+          "authorization_record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+          "claims": {
+            "native": true,
+            "passed": true,
+            "readiness": true
+          },
+          "content_digest": "sha256:fdb014cda6073c24aa2077523af4b156be21025379f654c8d41b6699c35d89f6",
+          "content_size_bytes": 3582,
+          "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+          "evidence_type": "source_startup",
+          "executor_actor_id": "executor-actor-source_startup",
+          "executor_organization_id": "executor-org-source_startup",
+          "expires_at": "2028-01-01T00:00:00Z",
+          "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "issued_at": "2026-09-08T20:00:00Z",
+          "not_run": [],
+          "organization_id": "elmos-producer-org",
+          "outcome": "PASS",
+          "record_id": "attestation-source_startup-actor-ethan",
+          "role": "batch30-source-runtime-verifier",
+          "synthetic": false,
+          "unknowns": []
+        },
+        "signature": "fIYhXYZZMBDmfk8Nylqq9HOLKhi03JyOUQvGb5aiK0C2uhKVonBO2d40TJVI0waBIgk50kUknDM2KcXU6PPGDA=="
+      },
+      "content": {
+        "digest": "sha256:fdb014cda6073c24aa2077523af4b156be21025379f654c8d41b6699c35d89f6",
+        "media_type": "application/json",
+        "size_bytes": 3582,
+        "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/campaign-runs/actor-ethan-certified/evidence/source_startup.json"
+      }
+    },
+    "target_build": {
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "key-batch30-target-build-verifier",
+        "payload": {
+          "actor_id": "actor-batch30-target-build-verifier",
+          "authorization_payload_digest": "sha256:61c897f300053bdf8a7be5ce4a5c2218303bae98eaff25366d08325f400b6f92",
+          "authorization_record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+          "claims": {
+            "exact_toolchain": true,
+            "native": true,
+            "passed": true,
+            "privileged": false,
+            "rootless": true
+          },
+          "content_digest": "sha256:3da34856f1ceb63e449ecfbf5f64a57ae660190745ef48f920f9268f6d20dbc6",
+          "content_size_bytes": 3653,
+          "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+          "evidence_type": "target_build",
+          "executor_actor_id": "executor-actor-target_build",
+          "executor_organization_id": "executor-org-target_build",
+          "expires_at": "2028-01-01T00:00:00Z",
+          "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "issued_at": "2026-09-08T20:00:00Z",
+          "not_run": [],
+          "organization_id": "elmos-rootless-runner-org",
+          "outcome": "PASS",
+          "record_id": "attestation-target_build-actor-ethan",
+          "role": "batch30-target-build-verifier",
+          "synthetic": false,
+          "unknowns": []
+        },
+        "signature": "N3hkUrBvD+p5uPzIRE1RusdAXnK89+gH4xRJmddzL02Dw7j0OgGNJvcRbmZ/tAZodiqO5ixYoJCBa2ZdWhURCQ=="
+      },
+      "content": {
+        "digest": "sha256:3da34856f1ceb63e449ecfbf5f64a57ae660190745ef48f920f9268f6d20dbc6",
+        "media_type": "application/json",
+        "size_bytes": 3653,
+        "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/campaign-runs/actor-ethan-certified/evidence/target_build.json"
+      }
+    },
+    "target_startup": {
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "key-batch30-target-runtime-verifier",
+        "payload": {
+          "actor_id": "actor-batch30-target-runtime-verifier",
+          "authorization_payload_digest": "sha256:61c897f300053bdf8a7be5ce4a5c2218303bae98eaff25366d08325f400b6f92",
+          "authorization_record_id": "auth-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "binding_digest": "sha256:e590be22eb7bbae1faed1f44d2771faa1b75d71f481695ac432f0dda4907ca56",
+          "claims": {
+            "native": true,
+            "passed": true,
+            "privileged": false,
+            "readiness": true,
+            "rootless": true
+          },
+          "content_digest": "sha256:bd9b17118e9edf97d0c7d3a6374398cc5828ac2b0abba9de19f9dce48bfdcc89",
+          "content_size_bytes": 3657,
+          "evidence_class": "EXTERNAL_NON_SYNTHETIC",
+          "evidence_type": "target_startup",
+          "executor_actor_id": "executor-actor-target_startup",
+          "executor_organization_id": "executor-org-target_startup",
+          "expires_at": "2028-01-01T00:00:00Z",
+          "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+          "issued_at": "2026-09-08T20:00:00Z",
+          "not_run": [],
+          "organization_id": "elmos-rootless-runner-org",
+          "outcome": "PASS",
+          "record_id": "attestation-target_startup-actor-ethan",
+          "role": "batch30-target-runtime-verifier",
+          "synthetic": false,
+          "unknowns": []
+        },
+        "signature": "dvlqhoUB5m6oz3c0mN9WJzo8AQdGfpqpeV6RgoqLhOrK26Mv1mFGUAYfTDeYe2Jxs3EWIEO3vlAXCd8uNDXsCw=="
+      },
+      "content": {
+        "digest": "sha256:bd9b17118e9edf97d0c7d3a6374398cc5828ac2b0abba9de19f9dce48bfdcc89",
+        "media_type": "application/json",
+        "size_bytes": 3657,
+        "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/certification/campaign-runs/actor-ethan-certified/evidence/target_startup.json"
+      }
+    }
+  },
+  "evidence_executors": {
+    "behavioral_equivalence": {
+      "actor_id": "executor-actor-behavioral_equivalence",
+      "organization_id": "executor-org-behavioral_equivalence"
+    },
+    "customer_acceptance": {
+      "actor_id": "executor-actor-customer_acceptance",
+      "organization_id": "executor-org-customer_acceptance"
+    },
+    "external_certification": {
+      "actor_id": "executor-actor-external_certification",
+      "organization_id": "executor-org-external_certification"
+    },
+    "independent_review": {
+      "actor_id": "executor-actor-independent_review",
+      "organization_id": "executor-org-independent_review"
+    },
+    "operability": {
+      "actor_id": "executor-actor-operability",
+      "organization_id": "executor-org-operability"
+    },
+    "performance": {
+      "actor_id": "executor-actor-performance",
+      "organization_id": "executor-org-performance"
+    },
+    "rollback": {
+      "actor_id": "executor-actor-rollback",
+      "organization_id": "executor-org-rollback"
+    },
+    "sbom": {
+      "actor_id": "executor-actor-sbom",
+      "organization_id": "executor-org-sbom"
+    },
+    "security": {
+      "actor_id": "executor-actor-security",
+      "organization_id": "executor-org-security"
+    },
+    "source_build": {
+      "actor_id": "executor-actor-source_build",
+      "organization_id": "executor-org-source_build"
+    },
+    "source_startup": {
+      "actor_id": "executor-actor-source_startup",
+      "organization_id": "executor-org-source_startup"
+    },
+    "target_build": {
+      "actor_id": "executor-actor-target_build",
+      "organization_id": "executor-org-target_build"
+    },
+    "target_startup": {
+      "actor_id": "executor-actor-target_startup",
+      "organization_id": "executor-org-target_startup"
+    }
+  },
+  "execution_profile": {
+    "digest": "sha256:febd9e8f8f1fc53b668e863325c94037372be57b2fe37546917f13899895d1bc",
+    "media_type": "application/json",
+    "size_bytes": 1941,
+    "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-boot-4-1-0/target-profile/profile.json"
+  },
+  "independent_organization_id": "elmos-independent-review-org",
+  "intake_id": "intake-spring-framework-5-3-mvc-to-boot-4-1-0-actor-ethan",
+  "namespace": "batch30-framework-external-certification",
+  "producer_organization_id": "elmos-producer-org",
+  "rootless_organization_id": "elmos-rootless-runner-org",
+  "schema_version": 1
+}

@@ -1,5 +1,8 @@
 ---
 name: pm-b07-reproducible-build-validator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在独立环境重复构建并比较产物、元数据和非确定性来源. Precision Migration B07 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

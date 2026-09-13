@@ -1,0 +1,37 @@
+{
+  "graphId": "graph-demo",
+  "revisionSetId": "revset-001",
+  "nodes": [
+    {
+      "id": "n1",
+      "kind": "business-capability",
+      "label": "Create order",
+      "attributes": {}
+    },
+    {
+      "id": "n2",
+      "kind": "function",
+      "label": "create_order",
+      "attributes": {
+        "path": "app.py"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "n1",
+      "to": "n2",
+      "kind": "implemented-by",
+      "confidence": 0.9,
+      "dynamic": false,
+      "evidenceRefs": [
+        "ev-code-1"
+      ]
+    }
+  ],
+  "evidenceRefs": [
+    "ev-code-1"
+  ],
+  "unknownEdges": []
+}

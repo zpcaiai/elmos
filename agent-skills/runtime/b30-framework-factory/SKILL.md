@@ -1,6 +1,9 @@
 ---
 name: b30-framework-factory
-description: "Implement and certify a directional, version-specific framework migration or upgrade pack with runtime fingerprinting, framework contracts, target profiles, recipes, real builds, holdout corpora, and evidence. Use for Batch 30 pack creation or major expansion."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement and certify a directional, version-specific framework migration or upgrade pack with runtime fingerprinting, framework contracts, target profiles, recipes, real builds, holdout corpora, and evidence. Use for Batch 30 pack creation or major expansion.
 ---
 
 ## Operating mode

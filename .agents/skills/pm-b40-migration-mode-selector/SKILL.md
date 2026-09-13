@@ -1,5 +1,8 @@
 ---
 name: pm-b40-migration-mode-selector
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "根据源/目标资产、质量、规格和风险选择 Repair、Migration 或 Generation 模式. Precision Migration B40 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

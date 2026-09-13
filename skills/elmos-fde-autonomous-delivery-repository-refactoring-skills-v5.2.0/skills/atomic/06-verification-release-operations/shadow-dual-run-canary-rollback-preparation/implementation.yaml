@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: shadow-dual-run-canary-rollback-preparation
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: ShadowDualRunCanaryRollbackPreparationService
+    workflow: ShadowDualRunCanaryRollbackPreparationWorkflow
+    policyGate: ShadowDualRunCanaryRollbackPreparationPolicyGate
+    evidenceProducer: ShadowDualRunCanaryRollbackPreparationEvidenceProducer
+    repositoryPort: ShadowDualRunCanaryRollbackPreparationRepositoryPort
+  requiredPorts:
+  - id: rollout.plan
+    direction: outbound
+  - id: featureflag.plan
+    direction: outbound
+  - id: reconcile.plan
+    direction: outbound
+  - id: rollback.rehearse
+    direction: inbound
+  - id: evidence.append
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/shadow-dual-run-canary-rollback-preparation/runs
+  - GET /api/v1/skills/shadow-dual-run-canary-rollback-preparation/runs/{runId}
+  - POST /api/v1/skills/shadow-dual-run-canary-rollback-preparation/runs/{runId}/cancel
+  - POST /api/v1/skills/shadow-dual-run-canary-rollback-preparation/runs/{runId}/resume
+  events:
+  - elmos.skill.shadow-dual-run-canary-rollback-preparation.requested.v1
+  - elmos.skill.shadow-dual-run-canary-rollback-preparation.checkpointed.v1
+  - elmos.skill.shadow-dual-run-canary-rollback-preparation.completed.v1
+  - elmos.skill.shadow-dual-run-canary-rollback-preparation.failed.v1
+  workflowSteps:
+  - Select deployment topology and change blast radius.
+  - Design shadow or dual execution with side-effect isolation.
+  - Define cohort, metrics, thresholds, duration, escalation, and rollback policy.
+  - Generate deployment, observability, reconciliation, and recovery artifacts.
+  - Rehearse in representative non-production environments.
+  - Package approved production instructions for the independent release authority.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

@@ -1,0 +1,47 @@
+skill: elmos-assurance-bootstrap
+tasks:
+- id: elmos-assurance-bootstrap-T01
+  action: 只读识别四Domain Pack入口、路由、K8、Task、Artifact、Tenant、Usage和CI实际路径；不要从文档猜源码。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-bootstrap-T02
+  action: 逐项将本包逻辑模块映射到真实代码，标reuse/extend/absent/conflict；拒绝平行Harness。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-bootstrap-T03
+  action: 盘点运行时、数据库、编译器、测试runner、Lean及授权；不执行未审批repo hooks。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-bootstrap-T04
+  action: 冻结集成边界、feature flags、N-1契约fixtures和第一条native Golden Route；输出真实工具缺失项。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+global_contracts:
+- contracts/schemas/run-request.schema.json
+- contracts/schemas/evidence-payload.schema.json
+constraints:
+- reuse-existing-architecture
+- fail-closed
+- no-hidden-test-leak
+- no-unapproved-side-effects
+- no-fabricated-runtime-evidence

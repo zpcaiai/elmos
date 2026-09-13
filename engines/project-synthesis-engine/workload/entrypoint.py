@@ -70,11 +70,7 @@ def load_payload() -> dict:
 
     actor = payload.get("actor")
     synthesis_request = payload.get("synthesisRequest")
-    if (
-        not isinstance(actor, str)
-        or not actor.strip()
-        or len(actor) > _MAX_ACTOR_LENGTH
-    ):
+    if not isinstance(actor, str) or not actor.strip() or len(actor) > _MAX_ACTOR_LENGTH:
         log("WORKLOAD_REQUEST_INVALID: actor missing or malformed")
         raise SystemExit(EXIT_REQUEST_INVALID)
     if not isinstance(synthesis_request, dict) or not synthesis_request:
@@ -173,10 +169,7 @@ def main() -> int:
         json.dumps(payload["synthesisRequest"], indent=2, sort_keys=True),
         encoding="utf-8",
     )
-    log(
-        "generation workload: job_kind="
-        f"{json.dumps(os.environ.get('ELMOS_JOB_KIND', 'project-synthesis'))}"
-    )
+    log(f"generation workload: job_kind={json.dumps(os.environ.get('ELMOS_JOB_KIND', 'project-synthesis'))}")
 
     checkpoint = INPUT_DIR / "checkpoint.json"
     if checkpoint.is_file():
@@ -186,12 +179,7 @@ def main() -> int:
         log("generation workload: retry checkpoint observed, rerunning full pipeline")
 
     exit_code, stdout, stderr = run_pipeline(request_path, actor)
-    pipeline_log = (
-        "--- engine stderr ---\n"
-        f"{stderr}"
-        "--- engine result ---\n"
-        f"{stdout}"
-    )
+    pipeline_log = f"--- engine stderr ---\n{stderr}--- engine result ---\n{stdout}"
     if exit_code != 0:
         emit("blocked", 100)
         log(f"WORKLOAD_PIPELINE_FAILED: exit {exit_code}")

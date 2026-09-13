@@ -1,6 +1,9 @@
 ---
 name: b34-scale-benchmark-suite
-description: "Build and run reproducible million-line thousand-repository and mixed-language scale benchmarks with exact datasets environments cold and warm runs failure injection latency throughput quality cost and cleanup evidence."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Build and run reproducible million-line thousand-repository and mixed-language scale benchmarks with exact datasets environments cold and warm runs failure injection latency throughput quality cost and cleanup evidence.
 ---
 
 ## Operating mode

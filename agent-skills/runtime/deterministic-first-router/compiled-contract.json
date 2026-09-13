@@ -1,0 +1,32 @@
+{
+  "schema_version": "elmos.spring-golden-route.compiled-skill-contract.v2",
+  "package_id": "elmos-spring-golden-route-commercial-skills",
+  "package_version": "2.0.0",
+  "installed_alias": "deterministic-first-router",
+  "namespace": "spring-golden-route-commercial-v2",
+  "source_id": "FOUNDATION-10-deterministic-first-router",
+  "batch": "F10",
+  "dependencies": [],
+  "effective_dependencies": [
+    "recipe-marketplace",
+    "semantic-search-engine",
+    "agent-registry"
+  ],
+  "critical_dependencies": [
+    "recipe-marketplace",
+    "semantic-search-engine",
+    "agent-registry"
+  ],
+  "required_outputs": [],
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "handler_id": "handle_deterministic_first_router",
+    "dispatcher": "dispatch_skill",
+    "module_path": "engines/spring-golden-route-engine/src/elmos_spring_golden_route/runtime.py",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

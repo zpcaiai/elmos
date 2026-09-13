@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/assurance/v4/gate-decision.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "4.0"
+    },
+    "kind": {
+      "const": "DEMO_ONLY_NOT_A_CERTIFICATE"
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "INCONCLUSIVE"
+      ]
+    },
+    "request_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4096
+      },
+      "minItems": 0
+    },
+    "verified_evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "production_signing_allowed": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "kind",
+    "verdict",
+    "request_digest",
+    "reasons",
+    "verified_evidence_ids",
+    "production_signing_allowed"
+  ]
+}

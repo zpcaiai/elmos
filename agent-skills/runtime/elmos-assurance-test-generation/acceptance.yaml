@@ -1,0 +1,36 @@
+skill: elmos-assurance-test-generation
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-test-generation-A01
+  given: service调用没有assert
+  when: 在真实集成模块执行对应测试或负例
+  then: 测试有效性检查必须标弱/无效
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-test-generation-A02
+  given: target错误但test复制target输出
+  when: 在真实集成模块执行对应测试或负例
+  then: 独立oracle挑战失败，禁止自洽PASS
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-test-generation-A03
+  given: runner发现数小于manifest
+  when: 在真实集成模块执行对应测试或负例
+  then: 未运行项必须阻断required回归
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

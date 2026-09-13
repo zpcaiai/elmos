@@ -17,3 +17,13 @@ src/elmos_unified_cli_gateway.egg-info/dependency_links.txt
 src/elmos_unified_cli_gateway.egg-info/entry_points.txt
 src/elmos_unified_cli_gateway.egg-info/requires.txt
 src/elmos_unified_cli_gateway.egg-info/top_level.txt
+tests/test_completion.py
+tests/test_composite_pipeline.py
+tests/test_config.py
+tests/test_daemon.py
+tests/test_dispatcher.py
+tests/test_formatters.py
+tests/test_interactive.py
+tests/test_lsp_server.py
+tests/test_otel_collector.py
+tests/test_runner_fleet_scheduler.py

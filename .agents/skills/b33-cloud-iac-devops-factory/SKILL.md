@@ -1,5 +1,8 @@
 ---
 name: b33-cloud-iac-devops-factory
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement and certify an exact directional Cloud IaC and DevOps modernization pack with runtime discovery typed architecture contracts provider-neutral IaC IR real plan and apply evidence security drift cost rollback and cleanup.
 ---
 

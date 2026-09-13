@@ -1,5 +1,8 @@
 ---
 name: pm-b15-inheritance-to-composition-lowering
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "把类继承、模板方法和基类状态转换为组合、嵌入、委托或 Trait. Precision Migration B15 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

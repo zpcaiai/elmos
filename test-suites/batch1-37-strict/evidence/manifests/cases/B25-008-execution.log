@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B25-008 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [25]
+Title: Batch 25 客户Sign-off：篡改结果、Digest、Golden、审批、时间戳或删除失败记录
+Capability: 客户Sign-off
+Test Type: evidence_tamper
+Skill: tst-b25-high-confidence-behavior-poc
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

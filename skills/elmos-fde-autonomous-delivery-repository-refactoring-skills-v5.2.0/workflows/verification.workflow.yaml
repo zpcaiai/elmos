@@ -1,0 +1,35 @@
+apiVersion: elmos.ai/v1
+kind: DurableWorkflow
+metadata:
+  id: verification
+  version: 5.2.0
+spec:
+  engine: canonical-K7-adapter
+  steps:
+  - id: resolve-obligations
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: freeze-identities
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: run-static
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: run-tests
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: run-differential
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: run-nonfunctional
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: retain-counterexamples
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: judge-E0-E3
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  authority: environment-owned
+  cancellation: bounded
+  completionAuthority: K8

@@ -1,0 +1,9 @@
+{
+  "suite_id": "reference-product-evals",
+  "datasets": [],
+  "scenarios": [],
+  "metrics": [],
+  "thresholds": {},
+  "runs": [],
+  "promotion_gate": {}
+}

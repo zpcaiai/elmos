@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "id": "example-supply-chain-compliance-zero-tolerance",
+  "batch": 40,
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "NOT_RUN",
+  "flags": [
+    {
+      "name": "builderAttestationFailures",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "criticalOpenVulnerabilities",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "crossTenantEvidenceLeaks",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "runnerDowngradeAcceptances",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "secretLeaks",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "tamperedArtifactsAccepted",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "testIntegrityViolations",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unresolvedLicenseBlocks",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unsignedProductionArtifacts",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    }
+  ]
+}

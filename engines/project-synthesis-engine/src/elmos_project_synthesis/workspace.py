@@ -98,6 +98,7 @@ def _render_blueprint(request: SynthesisRequest) -> dict[str, Any]:
             "id": f"APP-{target.language.upper()}",
             "language": target.language,
             "profile": f"{target.framework}-{target.runtime}",
+            "kind": request.project_kind,
             "port": target.port,
             "storage": request.persistence,
             "auth_mode": request.auth_mode,
@@ -110,6 +111,7 @@ def _render_blueprint(request: SynthesisRequest) -> dict[str, Any]:
         "project": {
             "id": request.raw["project"]["id"],
             "name": request.project_name,
+            "kind": request.project_kind,
             "requirements_baseline_ref": f"sha256:{approval_hash}",
             "architecture_baseline_ref": f"sha256:{sha256_json(applications)}",
         },
@@ -166,6 +168,12 @@ def _render_blueprint(request: SynthesisRequest) -> dict[str, Any]:
                 "ownership": "managed",
                 "source_refs": [
                     *[f"REQ-CRUD-{index:03d}" for index in range(1, len(request.entities) + 1)],
+                    *(
+                        ["REQ-WORKER-001"]
+                        if request.is_worker
+                        and any(r.get("id") == "REQ-WORKER-001" for r in request.raw.get("requirements", []))
+                        else []
+                    ),
                     "REQ-HEALTH-001",
                     "REQ-DELIVERY-001",
                 ],
@@ -346,12 +354,12 @@ def _compose(request: SynthesisRequest) -> str:
                 "    cap_drop: [ALL]",
                 "    security_opt: [no-new-privileges:true]",
                 "    pids_limit: 256",
-                f"    cpus: \"{cpus}\"",
+                f'    cpus: "{cpus}"',
                 f"    mem_limit: {memory}",
                 "    stop_grace_period: 15s",
                 "    networks: [runtime]",
                 "    labels:",
-                "      io.elmos.generated: \"true\"",
+                '      io.elmos.generated: "true"',
                 "      io.elmos.runtime-scope: local-development",
             ]
         )

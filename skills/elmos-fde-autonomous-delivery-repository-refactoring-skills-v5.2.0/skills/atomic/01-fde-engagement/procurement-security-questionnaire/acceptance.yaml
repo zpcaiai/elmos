@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: procurement-security-questionnaire
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Enterprise security questionnaire
+  - RFP asks for certification not yet earned
+  - Customer requires data residency evidence
+  negativeControls:
+  - invent compliance status
+  - legal conclusion
+  - claim unexecuted control
+  checks:
+  - id: procurement-security-questionnaire-AC-01
+    requirement: Answer only from versioned product, deployment, policy, and evidence sources.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: procurement-security-questionnaire-AC-02
+    requirement: Mark unsupported, planned, customer-responsibility, and release-time-configured controls distinctly.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: procurement-security-questionnaire-AC-03
+    requirement: Route legal and regulatory interpretations to authorized humans.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: procurement-security-questionnaire-AC-04
+    requirement: Prevent reuse of stale answers after architecture or policy changes.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: procurement-security-questionnaire-AC-05
+    requirement: Produce a gap and remediation plan for unanswered requirements.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

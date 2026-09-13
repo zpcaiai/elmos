@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: business-baseline-roi
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - No trustworthy baseline exists
+  - Savings depend on user adoption
+  - Compute cost could erase operational benefit
+  negativeControls:
+  - financial audit
+  - guaranteed savings claim
+  - pricing without scope
+  checks:
+  - id: business-baseline-roi-AC-01
+    requirement: Measure current cycle time, labor, defects, incidents, revenue leakage, and risk exposure where relevant.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: business-baseline-roi-AC-02
+    requirement: Use ranges and confidence levels when data is incomplete.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: business-baseline-roi-AC-03
+    requirement: Keep model, compute, storage, network, and human-review costs separate.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: business-baseline-roi-AC-04
+    requirement: Express delivery estimates as machine wall-clock plus explicitly separate human decisions.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: business-baseline-roi-AC-05
+    requirement: Define post-launch measurement ownership, cadence, and data source.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

@@ -1,0 +1,10 @@
+{
+  "artifact_sha256": "ef3c9a71b8fdea83fa82c29f3ea26ea6f7a4610ec743983871f3751ce1d7249f",
+  "environment_sha256": "73d909dec4ac59bd68eee5f0150d23fe1487c6fa9eab2a4b04b4eb4eebffa72e",
+  "files": [
+    {
+      "path": "evidence/private-runner.log",
+      "sha256": "ca97689ea51afd7f68cfdd482a6b9358cadd3dead6e7c25771e7a88ed4f1765b"
+    }
+  ]
+}

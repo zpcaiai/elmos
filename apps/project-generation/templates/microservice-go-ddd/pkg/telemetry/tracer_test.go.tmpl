@@ -1,0 +1,115 @@
+package telemetry_test
+
+import (
+	"context"
+	"net/http"
+	"testing"
+	"time"
+
+	"{{.ModuleName}}/pkg/telemetry"
+)
+
+func TestTracer_StartAndEnd(t *testing.T) {
+	tp := telemetry.NewTracerProvider("test-service", "test", &telemetry.NoopExporter{})
+	tracer := tp.Tracer("unit-test")
+
+	ctx, span := tracer.Start(context.Background(), "test-operation")
+	if span == nil {
+		t.Fatal("expected non-nil span")
+	}
+	if span.Name() != "test-operation" {
+		t.Fatalf("expected span name 'test-operation', got %s", span.Name())
+	}
+	if len(span.TraceID()) != 32 {
+		t.Fatalf("expected 32-char trace ID, got %s", span.TraceID())
+	}
+	if len(span.SpanID()) != 16 {
+		t.Fatalf("expected 16-char span ID, got %s", span.SpanID())
+	}
+
+	span.SetAttribute("component", "test")
+	attrs := span.Attributes()
+	if attrs["component"] != "test" {
+		t.Fatalf("expected attribute 'component' to be 'test', got %v", attrs["component"])
+	}
+
+	span.SetStatus(telemetry.StatusOk, "success")
+	if span.Status() != telemetry.StatusOk {
+		t.Fatalf("expected StatusOk, got %v", span.Status())
+	}
+
+	span.End()
+	if span.EndTime().IsZero() {
+		t.Fatal("expected non-zero end time after End()")
+	}
+
+	// Verify child span
+	_, childSpan := tracer.Start(ctx, "child-operation")
+	defer childSpan.End()
+
+	if childSpan.TraceID() != span.TraceID() {
+		t.Fatalf("child span should inherit trace ID %s, got %s", span.TraceID(), childSpan.TraceID())
+	}
+	if childSpan.ParentSpanID() != span.SpanID() {
+		t.Fatalf("child span parent ID should be %s, got %s", span.SpanID(), childSpan.ParentSpanID())
+	}
+}
+
+func TestW3CPropagator_ExtractAndInject(t *testing.T) {
+	propagator := telemetry.W3CPropagator{}
+
+	incomingHeaders := http.Header{}
+	validTraceparent := "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
+	incomingHeaders.Set("traceparent", validTraceparent)
+
+	ctx := propagator.Extract(context.Background(), incomingHeaders)
+	sc, ok := telemetry.RemoteSpanContextFromContext(ctx)
+	if !ok {
+		t.Fatal("expected remote span context in context")
+	}
+	if sc.TraceID != "4bf92f3577b34da6a3ce929d0e0e4736" {
+		t.Fatalf("unexpected trace id: %s", sc.TraceID)
+	}
+	if sc.SpanID != "00f067aa0ba902b7" {
+		t.Fatalf("unexpected span id: %s", sc.SpanID)
+	}
+
+	tp := telemetry.NewTracerProvider("test-service", "test", &telemetry.NoopExporter{})
+	tracer := tp.Tracer("w3c-test")
+
+	ctxWithSpan, span := tracer.Start(ctx, "server-handler")
+	defer span.End()
+
+	if span.TraceID() != "4bf92f3577b34da6a3ce929d0e0e4736" {
+		t.Fatalf("span should use remote trace ID, got %s", span.TraceID())
+	}
+	if span.ParentSpanID() != "00f067aa0ba902b7" {
+		t.Fatalf("span parent should be %s, got %s", "00f067aa0ba902b7", span.ParentSpanID())
+	}
+
+	outgoingHeaders := http.Header{}
+	propagator.Inject(ctxWithSpan, outgoingHeaders)
+
+	injected := outgoingHeaders.Get("traceparent")
+	if injected == "" {
+		t.Fatal("expected injected traceparent header")
+	}
+	expectedPrefix := "00-4bf92f3577b34da6a3ce929d0e0e4736-" + span.SpanID()
+	if injected[:len(expectedPrefix)] != expectedPrefix {
+		t.Fatalf("expected injected header starting with %s, got %s", expectedPrefix, injected)
+	}
+}
+
+func TestInitTracer_Shutdown(t *testing.T) {
+	_, shutdown, err := telemetry.InitTracer(context.Background(), "test-service", "test")
+	if err != nil {
+		t.Fatalf("InitTracer failed: %v", err)
+	}
+	defer func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		if err := shutdown(ctx); err != nil {
+			t.Fatalf("shutdown failed: %v", err)
+		}
+	}()
+}

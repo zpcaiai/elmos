@@ -1,0 +1,21 @@
+{
+  "taskId": "task-demo-001",
+  "tenantId": "tenant-demo",
+  "engagementId": "eng-demo",
+  "intent": "Assess and plan a safe refactor",
+  "scope": {
+    "repositories": [
+      "repo-demo"
+    ],
+    "paths": [
+      "src/"
+    ]
+  },
+  "acceptanceCriteria": [
+    "All findings have evidence",
+    "No production write"
+  ],
+  "authorityProfile": "workspace-read-analysis-write",
+  "riskClass": "high",
+  "productionWritesAllowed": false
+}

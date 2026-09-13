@@ -1,0 +1,70 @@
+version: "2026-09-09.1"
+
+models:
+  - alias: strategic-coding-high
+    family: coding-reasoning
+    lifecycle: stable
+    capabilities:
+      coding: 0.98
+      architecture: 0.95
+      refactoring: 0.98
+      tool_calling: true
+      structured_output: true
+      streaming: true
+      long_context: true
+    task_benchmarks:
+      LARGE_REFACTOR: 0.96
+      MIGRATION_EXECUTION: 0.95
+
+  - alias: cheap-classifier
+    family: classifier
+    lifecycle: stable
+    capabilities:
+      classification: 0.95
+      structured_output: true
+      streaming: false
+
+providers:
+  - id: openai-direct
+    type: NATIVE
+    credential_ref: secret://providers/openai/prod
+    enabled: true
+
+  - id: anthropic-direct
+    type: NATIVE
+    credential_ref: secret://providers/anthropic/prod
+    enabled: true
+
+  - id: litellm-prod
+    type: LITELLM
+    credential_ref: secret://gateways/litellm/prod
+    enabled: true
+
+  - id: openrouter
+    type: OPENROUTER
+    credential_ref: secret://providers/openrouter/prod
+    enabled: true
+
+deployments:
+  - id: strategic-coding-high-openai-native
+    model_alias: strategic-coding-high
+    provider_id: openai-direct
+    lane: NATIVE_DIRECT
+    actual_model: "<provider-model-id>"
+    regions: ["us"]
+    retention: provider_contract
+    training: false
+    rate_limit_profile: openai-prod
+    pricing_profile: strategic-openai-2026-09
+    enabled: true
+
+  - id: strategic-coding-high-openrouter
+    model_alias: strategic-coding-high
+    provider_id: openrouter
+    lane: OPENROUTER
+    actual_model: "<openrouter-model-id>"
+    allowed_openrouter_providers: ["<approved-provider>"]
+    require_zdr: true
+    rate_limit_profile: openrouter-prod
+    pricing_profile: strategic-openrouter-2026-09
+    enabled: true

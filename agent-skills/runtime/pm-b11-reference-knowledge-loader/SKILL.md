@@ -1,5 +1,8 @@
 ---
 name: pm-b11-reference-knowledge-loader
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "加载文档、API、版本说明、组织规范和历史迁移知识，并保持来源可追踪. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

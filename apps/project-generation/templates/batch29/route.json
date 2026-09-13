@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "route_key": "java-to-csharp",
+  "version": "0.1.0",
+  "status": "research",
+  "owner": "UNASSIGNED",
+  "review_date": "",
+  "source": {
+    "language": "java",
+    "versions": [],
+    "engine_path": "engines/java-engine"
+  },
+  "target": {
+    "language": "csharp",
+    "versions": [],
+    "engine_path": "engines/csharp-engine"
+  },
+  "profiles": {
+    "semantic_profile": "",
+    "target_profile": ""
+  },
+  "framework_profiles": [],
+  "paths": {
+    "support_matrix": "support-matrix.json",
+    "corpus": "corpus",
+    "certification": "certification"
+  },
+  "gates": {
+    "real_target_compiler": true,
+    "source_map_required": true,
+    "holdout_required": true,
+    "representative_repository_required": true,
+    "critical_unknowns_allowed": 0,
+    "critical_behavior_regressions_allowed": 0
+  }
+}

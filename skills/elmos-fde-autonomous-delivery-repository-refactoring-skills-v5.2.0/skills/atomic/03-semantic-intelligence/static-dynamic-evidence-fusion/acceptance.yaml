@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: static-dynamic-evidence-fusion
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Static call graph disagrees with production trace
+  - Documentation contradicts tests
+  - Finding relies on an old build
+  negativeControls:
+  - majority vote over incompatible evidence
+  - overwrite contradictions
+  - use stale evidence silently
+  checks:
+  - id: static-dynamic-evidence-fusion-AC-01
+    requirement: Represent source, method, version, scope, freshness, confidence, and limitations for every fact.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: static-dynamic-evidence-fusion-AC-02
+    requirement: Prefer authoritative deterministic evidence for questions it can decide.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: static-dynamic-evidence-fusion-AC-03
+    requirement: Retain contradictions and counterexamples instead of collapsing them prematurely.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: static-dynamic-evidence-fusion-AC-04
+    requirement: Invalidate facts when RevisionSet, environment, toolchain, policy, or analyzer versions change.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: static-dynamic-evidence-fusion-AC-05
+    requirement: Generate proof obligations for facts that remain material but uncertain.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

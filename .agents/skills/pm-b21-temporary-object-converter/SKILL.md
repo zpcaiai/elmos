@@ -1,5 +1,8 @@
 ---
 name: pm-b21-temporary-object-converter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "转换临时表、表变量、临时 Schema、会话状态和生命周期. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,10 @@
+{
+  "schema_version": "4.0",
+  "id": "demo-revocation",
+  "subject_type": "attestation",
+  "subject_digest": "8ec932c941295495277494ac36035dae69d9d780a66d4a796826ecaf6cf738af",
+  "reason": "Synthetic illustration only",
+  "effective_at": 1,
+  "authority_ref": "DEMO-NOT-ENROLLED",
+  "signature_ref": "UNCONFIGURED"
+}

@@ -212,9 +212,7 @@ _FILTER_WITH_EXPLICIT_FRAME = (
         ("duckdb-1.5.4", "sqlserver-2022-cu26"),
     ],
 )
-def test_unexpected_emission_faults_are_failed_closed_not_raised(
-    source: str, target: str
-) -> None:
+def test_unexpected_emission_faults_are_failed_closed_not_raised(source: str, target: str) -> None:
     result = transpile(
         TranspileRequest(
             query_id="emission-fault",

@@ -1,5 +1,8 @@
 ---
 name: pm-b12-comment-and-format-preservation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在转换中保留注释、文档、格式和组织约定，避免无关 Diff. Precision Migration B12 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

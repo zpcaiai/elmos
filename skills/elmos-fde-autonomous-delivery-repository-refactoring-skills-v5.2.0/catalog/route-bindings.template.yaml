@@ -1,0 +1,22 @@
+apiVersion: elmos.ai/v1
+kind: RouteBindingTemplate
+metadata:
+  version: 5.2.0
+spec:
+  bindings:
+  - symbolic: binding://cross-cutting/delivery-governance
+    targetRouteOwnerId: REPLACE_FROM_TARGET_ELMOS_REGISTRY
+  - symbolic: binding://domain/database-conversion
+    targetRouteOwnerId: REPLACE_FROM_TARGET_ELMOS_REGISTRY
+  - symbolic: binding://domain/polyglot-conversion
+    targetRouteOwnerId: REPLACE_FROM_TARGET_ELMOS_REGISTRY
+  - symbolic: binding://domain/project-generation
+    targetRouteOwnerId: REPLACE_FROM_TARGET_ELMOS_REGISTRY
+  - symbolic: binding://domain/repository-autonomy
+    targetRouteOwnerId: REPLACE_FROM_TARGET_ELMOS_REGISTRY
+  - symbolic: binding://domain/spring-modernization
+    targetRouteOwnerId: REPLACE_FROM_TARGET_ELMOS_REGISTRY
+  rules:
+  - exactly one canonical owner per symbolic binding
+  - do not enable package if any P0 binding is unresolved
+  - do not copy or fork Goal, AI-SIR, runtime authority or K8 state

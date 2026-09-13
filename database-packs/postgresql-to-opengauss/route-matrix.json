@@ -1,0 +1,49 @@
+{
+  "pack_key": "postgresql-to-opengauss",
+  "recertification_triggers": [
+    "PostgreSQL patch or collation change",
+    "openGauss version edition compatibility mode or driver change",
+    "adapter renderer or SQLGlot version change",
+    "capability snapshot or workload scope change"
+  ],
+  "schema_version": 1,
+  "tuples": [
+    {
+      "evidence_refs": [
+        "certification/local-postgresql-opengauss-query-evidence.json"
+      ],
+      "restrictions": [],
+      "source": {
+        "charset": "UTF8",
+        "collation": "C",
+        "dialect": "postgresql",
+        "driver_versions": [
+          "psql:17.5"
+        ],
+        "edition": "community",
+        "engine": "postgresql",
+        "extensions": [],
+        "timezone": "UTC",
+        "versions": [
+          "17.5"
+        ]
+      },
+      "status": "certified",
+      "target": {
+        "charset": "UTF-8",
+        "collation": "en_US.UTF-8",
+        "dialect": "opengauss-pg-compatible",
+        "driver_versions": [
+          "opengauss-jdbc:5.0.0"
+        ],
+        "edition": "enterprise",
+        "engine": "opengauss",
+        "extensions": [],
+        "timezone": "Asia/Shanghai",
+        "versions": [
+          "5.0.0"
+        ]
+      }
+    }
+  ]
+}

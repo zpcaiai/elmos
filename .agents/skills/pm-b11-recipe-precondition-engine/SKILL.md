@@ -1,5 +1,8 @@
 ---
 name: pm-b11-recipe-precondition-engine
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在执行重写前验证类型、框架、版本、控制流和语义前置条件. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

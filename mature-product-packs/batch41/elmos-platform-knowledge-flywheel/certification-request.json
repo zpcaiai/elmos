@@ -1,0 +1,15 @@
+{
+  "requestVersion": 1,
+  "batch": 41,
+  "packKey": "elmos-platform-knowledge-flywheel",
+  "requestedAt": "2026-09-09T22:16:53.381508Z",
+  "keyId": "ethan-independent-certifier",
+  "approvedBy": [
+    "Dr. Maya Lin, Head of Knowledge Intelligence",
+    "Marcus Vance, Lead Independent Verification Engineer"
+  ],
+  "programDigest": "sha256:f8262247d65117c4416a704184fae92d5748cd0dbb5fe4fa3160e2f35277ec43",
+  "evidenceDigest": "sha256:ab94fbb4b85886dd55a99367c0c19a88ef28e9487e80413e81877d66d2b8da75",
+  "certificationDigest": "sha256:a0dbb36bcf015a5293617d163a685b47b0d3c4c7b65acc0c9ca8c7f978dfe989",
+  "evidenceManifestDigest": "sha256:75972d535c9e361660163aeefc519a21b3ecd731896aa75c9bb6649674aee458"
+}

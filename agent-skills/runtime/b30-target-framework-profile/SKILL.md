@@ -1,6 +1,9 @@
 ---
 name: b30-target-framework-profile
-description: "Design, implement, and certify a target framework profile covering architecture style, runtime, dependency injection, configuration, validation, security, persistence, transactions, messaging, cache, scheduling, observability, build, startup, and provider versions."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Design, implement, and certify a target framework profile covering architecture style, runtime, dependency injection, configuration, validation, security, persistence, transactions, messaging, cache, scheduling, observability, build, startup, and provider versions.
 ---
 
 ## Operating mode

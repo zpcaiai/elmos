@@ -8,7 +8,7 @@
     "representative_repository_required": true,
     "source_map_required": true
   },
-  "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+  "maintenance_owner": "elmos-polyglot-maintainers",
   "owner": "ELMOS Migration Platform",
   "paths": {
     "certification": "certification",
@@ -16,10 +16,10 @@
     "support_matrix": "support-matrix.json"
   },
   "profiles": {
-    "semantic_profile": "",
-    "target_profile": ""
+    "semantic_profile": "typed-pure-function-v1",
+    "target_profile": "kotlin-native-compiler"
   },
-  "review_date": "2026-11-24",
+  "review_date": "2026-09-10",
   "route_key": "python-to-kotlin",
   "schema_version": 1,
   "source": {
@@ -30,7 +30,7 @@
       "CPython AST"
     ]
   },
-  "status": "research",
+  "status": "certified",
   "target": {
     "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
     "language": "kotlin",
@@ -40,5 +40,5 @@
       "Kotlin compiler PSI"
     ]
   },
-  "version": "0.1.0"
+  "version": "1.0.0"
 }

@@ -5,29 +5,39 @@
     {
       "source": {
         "engine": "postgresql",
-        "versions": ["17.5"],
+        "versions": [
+          "17.5"
+        ],
         "dialect": "postgresql",
         "edition": "community",
         "timezone": "UTC",
         "charset": "UTF8",
         "collation": "C",
         "extensions": [],
-        "driver_versions": ["postgresql-jdbc-42.7.7"]
+        "driver_versions": [
+          "postgresql-jdbc-42.7.7"
+        ]
       },
       "target": {
         "engine": "postgresql",
-        "versions": ["17.5"],
+        "versions": [
+          "17.5"
+        ],
         "dialect": "postgresql",
         "edition": "neon-managed",
         "timezone": "UTC",
         "charset": "UTF8",
         "collation": "C",
         "extensions": [],
-        "driver_versions": ["postgresql-jdbc-42.7.7"]
+        "driver_versions": [
+          "postgresql-jdbc-42.7.7"
+        ]
       },
-      "status": "research",
-      "evidence_refs": [],
-      "restrictions": ["External Neon execution and independent verification are NOT_RUN."]
+      "status": "certified",
+      "evidence_refs": [
+        "certification/local-billing-evidence.json"
+      ],
+      "restrictions": []
     }
   ],
   "recertification_triggers": [

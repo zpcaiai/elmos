@@ -1,0 +1,4 @@
+interface:
+  display_name: "B82 Bapi Rfc Idoc Contract Extractor"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b82-bapi-rfc-idoc-contract-extractor to execute this ELMOS Language Pack Skill with fail-closed evidence."

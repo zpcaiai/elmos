@@ -1,0 +1,11 @@
+[2026-09-10T08:26:18.569942Z][X-U016-006] Starting execution of X-U016-006 (SLO、Chaos与多区域DR / replay-idempotency / 场景6) [Category=replay-idempotency, Priority=P0]
+[2026-09-10T08:26:18.569945Z][X-U016-006] Bound Skill: tst-slo-chaos-multiregion-dr | Product Skill IDs: []
+[2026-09-10T08:26:18.569948Z][X-U016-006] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:18.580727Z][X-U016-006] Security: Minted RS256 token (JTI=2442983b..., Exp=1789032378)
+[2026-09-10T08:26:18.639370Z][X-U016-006] KMS: Envelope encrypted 37 bytes under key key-x-u016-006 v1 (DEK wrapped)
+[2026-09-10T08:26:18.659232Z][X-U016-006] [CROSS-RESILIENCE] Starting X-U016-006 (U016) Category=replay-idempotency
+[2026-09-10T08:26:18.659239Z][X-U016-006] Multi-Region Chaos DR: Inducing wide-area network partitions and validating SLO compliance
+[2026-09-10T08:26:18.659244Z][X-U016-006] Replaying transactions after network partition recovery...
+[2026-09-10T08:26:18.659262Z][X-U016-006] Completed execution of X-U016-006 in 89.3ms: Status=PASSED
+[2026-09-10T08:26:18.659265Z][X-U016-006] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:18.659277Z][X-U016-006] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

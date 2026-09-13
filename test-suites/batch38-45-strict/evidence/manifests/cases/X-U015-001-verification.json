@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U015-001",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:26:16.630539Z",
+  "notes": "Independently verified by Ethan: Air-gap离线更新撤销 / success / 场景1"
+}

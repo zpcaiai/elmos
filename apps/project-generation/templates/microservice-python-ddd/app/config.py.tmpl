@@ -1,0 +1,61 @@
+from functools import lru_cache
+from typing import TYPE_CHECKING, Literal
+
+from pydantic import Field
+
+if TYPE_CHECKING:
+    from pydantic_settings import BaseSettings, SettingsConfigDict
+else:
+    try:
+        from pydantic_settings import BaseSettings, SettingsConfigDict
+    except ImportError:  # Fallback when pydantic-settings is not yet installed in local env
+        from pydantic import BaseModel as BaseSettings
+        SettingsConfigDict = dict
+
+
+class Settings(BaseSettings):
+    """Application configuration settings loaded from environment variables."""
+
+    # Application metadata
+    app_name: str = Field(default="{{.ServiceName}}", description="Service identifier")
+    app_env: Literal["development", "staging", "production"] = Field(
+        default="development", description="Deployment environment"
+    )
+    debug: bool = Field(default=False, description="Debug mode flag")
+    version: str = Field(default="{{.Version}}", description="Semantic version")
+
+    # Networking
+    host: str = Field(default="0.0.0.0", description="HTTP server bind host")
+    port: int = Field(default={{.Port}}, description="HTTP server listen port")
+
+    # Persistence
+    database_url: str = Field(
+        default="{{.Database}}://user:pass@localhost:5432/{{.ServiceName}}",
+        description="Database connection URL",
+    )
+    db_pool_size: int = Field(default=10, description="Database connection pool size")
+    db_max_overflow: int = Field(default=20, description="Max overflow connections")
+
+    # Observability & Logging
+    log_level: str = Field(default="INFO", description="Log level")
+    log_format: Literal["json", "text"] = Field(default="json", description="Log format")
+
+    # External Client
+    external_service_url: str = Field(
+        default="http://localhost:8081",
+        description="Downstream service URL",
+    )
+    external_service_timeout: float = Field(default=5.0, description="Request timeout in seconds")
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+
+@lru_cache
+def get_settings() -> Settings:
+    """Cached singleton for application settings."""
+    return Settings()

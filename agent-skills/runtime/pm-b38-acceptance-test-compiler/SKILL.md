@@ -1,5 +1,8 @@
 ---
 name: pm-b38-acceptance-test-compiler
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "把 Skill 验收场景编译为单元、契约、E2E、属性和门禁测试. Precision Migration B38 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

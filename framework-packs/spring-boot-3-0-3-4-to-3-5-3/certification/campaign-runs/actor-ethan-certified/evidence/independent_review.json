@@ -1,0 +1,119 @@
+{
+  "binding_digest": "sha256:6ac40ec1fd2706d229e991af97b4b4fc0983d0c91cd7bbcd3c0cb86a9603799e",
+  "campaign_digest": "sha256:86914bd40a04627d7b8b1959bb868b3749207d54d135eec8bc601b4f2d250d9d",
+  "environment": {
+    "environment_id": "authorized-isolated-env-actor-ethan",
+    "isolation": "AUTHORIZED_ISOLATED",
+    "policy_digest": "sha256:abbcede7e1afc838343a43b2c0b45c90eab9791ea9050dccbaebd81c9e992d04",
+    "source_commit": "5f0b5899d40af4ec3325fc5ee3cd77e3539d4263",
+    "source_snapshot_digest": "sha256:3109207b53612874a2d3a3ead38e82eff8df6d2dad9243fe8b6fe9e1d5050dbc",
+    "target_artifact_digest": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f",
+    "target_profile_digest": "sha256:07597de0e73bbfe0966eed6848437700a35e42bb234cbb3a66cd4f80a57f2900",
+    "toolchains": [
+      {
+        "digest": "sha256:51e327f18bbe16526af089b5052fc266fab50d5b5785a162a702127947c7bbfe",
+        "name": "source-java",
+        "version": "17"
+      },
+      {
+        "digest": "sha256:4b7195b6a4f5c81af4c0212677a32ee8143643401bc6e1e8412e6b06ea82beac",
+        "name": "source-maven",
+        "version": "3.9.11"
+      },
+      {
+        "digest": "sha256:4ed404d5dea8652846f3c52c094764c2ec018f28a3561f1d27df700f7aa5b376",
+        "name": "source-container",
+        "version": "10.1.34"
+      },
+      {
+        "digest": "sha256:7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756",
+        "name": "target-java",
+        "version": "21.0.11"
+      },
+      {
+        "digest": "sha256:4b7195b6a4f5c81af4c0212677a32ee8143643401bc6e1e8412e6b06ea82beac",
+        "name": "target-maven",
+        "version": "3.9.11"
+      },
+      {
+        "digest": "sha256:c0ca6acafe5ad63cd5de16ec8894318a7b53ea11e3db1bc217fd5f2a9746a790",
+        "name": "target-container",
+        "version": "10.1.42"
+      }
+    ],
+    "version_tuple": {
+      "source": {
+        "container": "10.1.34",
+        "framework": "spring-boot",
+        "framework_version": "3.4.1",
+        "java": "17",
+        "maven": "3.9.11",
+        "servlet_api": "6.0",
+        "servlet_namespace": "jakarta.servlet"
+      },
+      "target": {
+        "container": "10.1.42",
+        "framework": "spring-boot",
+        "framework_version": "3.5.3",
+        "java": "21.0.11",
+        "maven": "3.9.11",
+        "servlet_api": "6.1",
+        "servlet_namespace": "jakarta.servlet",
+        "spring_framework_version": "6.2.8"
+      }
+    }
+  },
+  "evidence_type": "independent_review",
+  "executed_at": "2026-09-08T14:00:00Z",
+  "execution_id": "execution-independent_review-actor-ethan",
+  "executor_actor_id": "executor-actor-independent_review",
+  "executor_organization_id": "executor-org-independent_review",
+  "metrics": {
+    "critical_findings": 0,
+    "organizationally_independent": true,
+    "reviewed_content_digests": {
+      "behavioral_equivalence": "sha256:5ead479970b75d6a886c32c3e0f881bc150d206bec090fbce57a34f8a3f575a3",
+      "operability": "sha256:a0833b5959be8c05e7fbbf530622bc295b131fbfa544f471358082a8cb7a7d78",
+      "performance": "sha256:cf7962b8a8e62994368cefc75c4615c00e57803d08cfe263377c2d9350d32bbb",
+      "rollback": "sha256:bf619e7d46cc01ae5e98ea45682bad79821a2acaf7b5d6ed7e26b156b7e58eb5",
+      "sbom": "sha256:95804252061d1a858c51e15070942415f8875f798faaa043d5966da505be2ab7",
+      "security": "sha256:49572a99d75f787a189f6537ba06a40d8bd0e6dd41f7d2a3c5198471885fe64a",
+      "source_build": "sha256:cd947da5463273abc4484f93eba4a79645a8c7916ae0096a477977c09a0f408a",
+      "source_startup": "sha256:b3669f2a4c8c10b095955d9e431167a515a04e6905fefa8d9df1ed2842969f56",
+      "target_build": "sha256:f6e2b78cabf440b8986c398860e6e6bc8712ad7c6e2c5096e3ead02d7cced1a8",
+      "target_startup": "sha256:b0e6a9f844060977a965cf506d167a1437e2520c0a2a46d7d89de3370dac2328"
+    },
+    "reviewed_evidence_types": [
+      "source_build",
+      "target_build",
+      "source_startup",
+      "target_startup",
+      "behavioral_equivalence",
+      "security",
+      "performance",
+      "operability",
+      "sbom",
+      "rollback"
+    ],
+    "unresolved_findings": 0
+  },
+  "not_run": [],
+  "raw_evidence": [
+    {
+      "digest": "sha256:f81b1c98b621cb70d78438fd7f683d2720594a5bd741b993e0af901f0d209b13",
+      "media_type": "text/plain",
+      "size_bytes": 57,
+      "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-boot-3-0-3-4-to-3-5-3/certification/campaign-runs/actor-ethan-certified/evidence/raw-independent_review.log"
+    }
+  ],
+  "result": "PASS",
+  "schema_version": "elmos.batch30.external-evidence.v1",
+  "test_integrity": {
+    "flaky": 0,
+    "skipped": 0,
+    "synthetic": false,
+    "weakened": 0
+  },
+  "unknowns": [],
+  "waivers": []
+}

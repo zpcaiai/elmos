@@ -1,5 +1,8 @@
 ---
 name: pm-b25-postgresql-sequence-and-identity
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Sequence、Identity、缓存、OWNED BY 和事务外取号. Precision Migration B25 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

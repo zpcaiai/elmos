@@ -36,7 +36,7 @@ from scripts.precision_migration.trust import (  # noqa: E402
 
 NAMESPACE = "batch30-framework-external-certification"
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
-IDENTITY = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,199}$")
+IDENTITY = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}$")
 NON_SUCCESS = {
     "UNKNOWN",
     "INCONCLUSIVE",

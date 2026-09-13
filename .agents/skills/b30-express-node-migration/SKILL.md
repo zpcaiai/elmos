@@ -1,5 +1,8 @@
 ---
 name: b30-express-node-migration
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement or certify Express and general Node.js service migration, including route and middleware ordering, request/response mutation, async error propagation, sessions, body parsing, templates, app locals, module loading, process lifecycle, observability, and provider integrations.
 ---
 

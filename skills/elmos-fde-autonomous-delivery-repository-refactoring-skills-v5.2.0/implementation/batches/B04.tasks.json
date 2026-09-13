@@ -1,0 +1,724 @@
+{
+  "batch": {
+    "id": "B04",
+    "title": "Native Runtime Lab and service virtualization",
+    "dependsOn": [
+      "B03"
+    ],
+    "skills": [
+      "reproducible-build-environment",
+      "external-dependency-stub-and-service-virtualization",
+      "runtime-observation-and-traffic-capture"
+    ],
+    "tasks": [
+      "B04-T001",
+      "B04-T002",
+      "B04-T003",
+      "B04-T004",
+      "B04-T005",
+      "B04-T006",
+      "B04-T007",
+      "B04-T008",
+      "B04-T009",
+      "B04-T010",
+      "B04-T011",
+      "B04-T012",
+      "B04-T013",
+      "B04-T014",
+      "B04-T015",
+      "B04-T016",
+      "B04-T017",
+      "B04-T018",
+      "B04-T019",
+      "B04-T020",
+      "B04-T021",
+      "B04-T022",
+      "B04-T023",
+      "B04-T024",
+      "B04-T025",
+      "B04-T026",
+      "B04-T027",
+      "B04-T028",
+      "B04-T029",
+      "B04-T030"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B04-T001",
+      "batch": "B04",
+      "title": "reproducible-build-environment: Bind canonical ownership and model domain contracts",
+      "skillId": "reproducible-build-environment",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B03-T020"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for reproducible-build-environment are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T002",
+      "batch": "B04",
+      "title": "reproducible-build-environment: Implement persistence projections and append-only ledger events",
+      "skillId": "reproducible-build-environment",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T001"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for reproducible-build-environment are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T003",
+      "batch": "B04",
+      "title": "reproducible-build-environment: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "reproducible-build-environment",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T002"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for reproducible-build-environment are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T004",
+      "batch": "B04",
+      "title": "reproducible-build-environment: Implement service and durable workflow",
+      "skillId": "reproducible-build-environment",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T003"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for reproducible-build-environment are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T005",
+      "batch": "B04",
+      "title": "reproducible-build-environment: Implement replaceable ports and first reference Adapter",
+      "skillId": "reproducible-build-environment",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T004"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for reproducible-build-environment are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T006",
+      "batch": "B04",
+      "title": "reproducible-build-environment: Implement APIs, events and query projections",
+      "skillId": "reproducible-build-environment",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T005"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for reproducible-build-environment are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T007",
+      "batch": "B04",
+      "title": "reproducible-build-environment: Implement product UI or operator surface",
+      "skillId": "reproducible-build-environment",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T006"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for reproducible-build-environment are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T008",
+      "batch": "B04",
+      "title": "reproducible-build-environment: Add deterministic tests, negative controls and failure injection",
+      "skillId": "reproducible-build-environment",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T007"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for reproducible-build-environment are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T009",
+      "batch": "B04",
+      "title": "reproducible-build-environment: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "reproducible-build-environment",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T008"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for reproducible-build-environment are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T010",
+      "batch": "B04",
+      "title": "reproducible-build-environment: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "reproducible-build-environment",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T009"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for reproducible-build-environment are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T011",
+      "batch": "B04",
+      "title": "external-dependency-stub-and-service-virtualization: Bind canonical ownership and model domain contracts",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B04-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for external-dependency-stub-and-service-virtualization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T012",
+      "batch": "B04",
+      "title": "external-dependency-stub-and-service-virtualization: Implement persistence projections and append-only ledger events",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B04-T011"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for external-dependency-stub-and-service-virtualization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T013",
+      "batch": "B04",
+      "title": "external-dependency-stub-and-service-virtualization: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B04-T012"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for external-dependency-stub-and-service-virtualization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T014",
+      "batch": "B04",
+      "title": "external-dependency-stub-and-service-virtualization: Implement service and durable workflow",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B04-T013"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for external-dependency-stub-and-service-virtualization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T015",
+      "batch": "B04",
+      "title": "external-dependency-stub-and-service-virtualization: Implement replaceable ports and first reference Adapter",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B04-T014"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for external-dependency-stub-and-service-virtualization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T016",
+      "batch": "B04",
+      "title": "external-dependency-stub-and-service-virtualization: Implement APIs, events and query projections",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B04-T015"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for external-dependency-stub-and-service-virtualization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T017",
+      "batch": "B04",
+      "title": "external-dependency-stub-and-service-virtualization: Implement product UI or operator surface",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B04-T016"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for external-dependency-stub-and-service-virtualization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T018",
+      "batch": "B04",
+      "title": "external-dependency-stub-and-service-virtualization: Add deterministic tests, negative controls and failure injection",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B04-T017"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for external-dependency-stub-and-service-virtualization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T019",
+      "batch": "B04",
+      "title": "external-dependency-stub-and-service-virtualization: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B04-T018"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for external-dependency-stub-and-service-virtualization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T020",
+      "batch": "B04",
+      "title": "external-dependency-stub-and-service-virtualization: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "priority": "P1",
+      "riskClass": "high",
+      "dependsOn": [
+        "B04-T019"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for external-dependency-stub-and-service-virtualization are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T021",
+      "batch": "B04",
+      "title": "runtime-observation-and-traffic-capture: Bind canonical ownership and model domain contracts",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B04-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for runtime-observation-and-traffic-capture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T022",
+      "batch": "B04",
+      "title": "runtime-observation-and-traffic-capture: Implement persistence projections and append-only ledger events",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T021"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for runtime-observation-and-traffic-capture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T023",
+      "batch": "B04",
+      "title": "runtime-observation-and-traffic-capture: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T022"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for runtime-observation-and-traffic-capture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T024",
+      "batch": "B04",
+      "title": "runtime-observation-and-traffic-capture: Implement service and durable workflow",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T023"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for runtime-observation-and-traffic-capture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T025",
+      "batch": "B04",
+      "title": "runtime-observation-and-traffic-capture: Implement replaceable ports and first reference Adapter",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T024"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for runtime-observation-and-traffic-capture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T026",
+      "batch": "B04",
+      "title": "runtime-observation-and-traffic-capture: Implement APIs, events and query projections",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T025"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for runtime-observation-and-traffic-capture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T027",
+      "batch": "B04",
+      "title": "runtime-observation-and-traffic-capture: Implement product UI or operator surface",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T026"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for runtime-observation-and-traffic-capture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T028",
+      "batch": "B04",
+      "title": "runtime-observation-and-traffic-capture: Add deterministic tests, negative controls and failure injection",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T027"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for runtime-observation-and-traffic-capture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T029",
+      "batch": "B04",
+      "title": "runtime-observation-and-traffic-capture: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T028"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for runtime-observation-and-traffic-capture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B04-T030",
+      "batch": "B04",
+      "title": "runtime-observation-and-traffic-capture: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "priority": "P1",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B04-T029"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for runtime-observation-and-traffic-capture are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

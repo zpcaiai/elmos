@@ -50,9 +50,7 @@ def test_matrix_requires_native_integration_and_cleanup() -> None:
     def executor(language: str, auth_mode: str) -> dict[str, object]:
         result = passed_case(language, auth_mode)
         if language == "go":
-            result["startup_probes"] = [
-                {"status": "PASSED", "integration_status": "NOT_RUN"}
-            ]
+            result["startup_probes"] = [{"status": "PASSED", "integration_status": "NOT_RUN"}]
         return result
 
     result = module.run_matrix(["python", "go"], ["jwt"], executor=executor)

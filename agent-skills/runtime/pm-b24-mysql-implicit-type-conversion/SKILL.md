@@ -1,5 +1,8 @@
 ---
 name: pm-b24-mysql-implicit-type-conversion
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "检测并消除 MySQL 宽松隐式转换、零日期和比较差异. Precision Migration B24 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

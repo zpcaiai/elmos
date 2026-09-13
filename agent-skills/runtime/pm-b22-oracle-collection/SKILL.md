@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-collection
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 VARRAY、Nested Table、Associative Array 和集合操作. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

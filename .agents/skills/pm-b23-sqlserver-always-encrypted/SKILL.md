@@ -1,5 +1,8 @@
 ---
 name: pm-b23-sqlserver-always-encrypted
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Always Encrypted、密钥、驱动端加解密和查询限制. Precision Migration B23 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

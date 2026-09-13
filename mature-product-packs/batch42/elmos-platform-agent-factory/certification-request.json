@@ -1,0 +1,15 @@
+{
+  "requestVersion": 1,
+  "batch": 42,
+  "packKey": "elmos-platform-agent-factory",
+  "requestedAt": "2026-09-09T22:16:58.637388Z",
+  "keyId": "ethan-independent-certifier",
+  "approvedBy": [
+    "Marcus Vance, Lead Independent Verification Engineer",
+    "Zackary Vance, Director of Agentic Systems"
+  ],
+  "programDigest": "sha256:8294c22dd71694e8b00204d09fa2b5f25c54063c2528ad71af25165bdd664b2a",
+  "evidenceDigest": "sha256:641e444a1bc58ff0e6cfc614f47801e4852b8fb7882f2b489c0b330fa9d42912",
+  "certificationDigest": "sha256:50be1ce96e74f0a546b0580808d9ea0bf2e1fc2f6ad9b9fc437ef32d5ddeba7a",
+  "evidenceManifestDigest": "sha256:253e0a18835114d656de788905bf9242fe8b9f453098235098f1382d2ef4c028"
+}

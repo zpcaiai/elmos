@@ -1,5 +1,8 @@
 ---
 name: pm-b04-target-language-suitability-analysis
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "分析目标语言在性能、并发、安全、生态、人才、维护、部署和迁移风险方面的适配度. Precision Migration B04 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

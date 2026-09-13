@@ -1,7 +1,7 @@
 {
   "batch": 39,
   "packKey": "elmos-platform-sre-operations",
-  "owner": "elmos-platform-maintainers",
+  "owner": "Liam O'Connor, Principal Site Reliability Engineer",
   "scope": [
     "engines/operations-sre-itsm-engine as the operations capability surface",
     "telemetry/events.schema.json, telemetry/metric-definitions.json, telemetry/policy.json and telemetry/validate.mjs as the observability contract",
@@ -32,7 +32,10 @@
     1367,
     1368
   ],
-  "status": "IN_PROGRESS",
-  "evidenceRefs": [],
+  "status": "COMPLETE",
+  "evidenceRefs": [
+    "batch39-execution",
+    "batch39-verification"
+  ],
   "externalOperationExecuted": false
 }

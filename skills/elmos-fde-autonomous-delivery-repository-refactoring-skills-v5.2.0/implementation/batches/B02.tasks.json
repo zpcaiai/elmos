@@ -1,0 +1,1421 @@
+{
+  "batch": {
+    "id": "B02",
+    "title": "FDE engagement and customer delivery hub",
+    "dependsOn": [
+      "B00",
+      "B01"
+    ],
+    "skills": [
+      "stakeholder-workflow-discovery",
+      "business-baseline-roi",
+      "pilot-scope-sow-acceptance",
+      "status-risk-decision-communications",
+      "procurement-security-questionnaire",
+      "adoption-change-management"
+    ],
+    "tasks": [
+      "B02-T001",
+      "B02-T002",
+      "B02-T003",
+      "B02-T004",
+      "B02-T005",
+      "B02-T006",
+      "B02-T007",
+      "B02-T008",
+      "B02-T009",
+      "B02-T010",
+      "B02-T011",
+      "B02-T012",
+      "B02-T013",
+      "B02-T014",
+      "B02-T015",
+      "B02-T016",
+      "B02-T017",
+      "B02-T018",
+      "B02-T019",
+      "B02-T020",
+      "B02-T021",
+      "B02-T022",
+      "B02-T023",
+      "B02-T024",
+      "B02-T025",
+      "B02-T026",
+      "B02-T027",
+      "B02-T028",
+      "B02-T029",
+      "B02-T030",
+      "B02-T031",
+      "B02-T032",
+      "B02-T033",
+      "B02-T034",
+      "B02-T035",
+      "B02-T036",
+      "B02-T037",
+      "B02-T038",
+      "B02-T039",
+      "B02-T040",
+      "B02-T041",
+      "B02-T042",
+      "B02-T043",
+      "B02-T044",
+      "B02-T045",
+      "B02-T046",
+      "B02-T047",
+      "B02-T048",
+      "B02-T049",
+      "B02-T050",
+      "B02-T051",
+      "B02-T052",
+      "B02-T053",
+      "B02-T054",
+      "B02-T055",
+      "B02-T056",
+      "B02-T057",
+      "B02-T058",
+      "B02-T059",
+      "B02-T060"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B02-T001",
+      "batch": "B02",
+      "title": "stakeholder-workflow-discovery: Bind canonical ownership and model domain contracts",
+      "skillId": "stakeholder-workflow-discovery",
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for stakeholder-workflow-discovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T002",
+      "batch": "B02",
+      "title": "stakeholder-workflow-discovery: Implement persistence projections and append-only ledger events",
+      "skillId": "stakeholder-workflow-discovery",
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T001"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for stakeholder-workflow-discovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T003",
+      "batch": "B02",
+      "title": "stakeholder-workflow-discovery: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "stakeholder-workflow-discovery",
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T002"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for stakeholder-workflow-discovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T004",
+      "batch": "B02",
+      "title": "stakeholder-workflow-discovery: Implement service and durable workflow",
+      "skillId": "stakeholder-workflow-discovery",
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T003"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for stakeholder-workflow-discovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T005",
+      "batch": "B02",
+      "title": "stakeholder-workflow-discovery: Implement replaceable ports and first reference Adapter",
+      "skillId": "stakeholder-workflow-discovery",
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T004"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for stakeholder-workflow-discovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T006",
+      "batch": "B02",
+      "title": "stakeholder-workflow-discovery: Implement APIs, events and query projections",
+      "skillId": "stakeholder-workflow-discovery",
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T005"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for stakeholder-workflow-discovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T007",
+      "batch": "B02",
+      "title": "stakeholder-workflow-discovery: Implement product UI or operator surface",
+      "skillId": "stakeholder-workflow-discovery",
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T006"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for stakeholder-workflow-discovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T008",
+      "batch": "B02",
+      "title": "stakeholder-workflow-discovery: Add deterministic tests, negative controls and failure injection",
+      "skillId": "stakeholder-workflow-discovery",
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T007"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for stakeholder-workflow-discovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T009",
+      "batch": "B02",
+      "title": "stakeholder-workflow-discovery: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "stakeholder-workflow-discovery",
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T008"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for stakeholder-workflow-discovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T010",
+      "batch": "B02",
+      "title": "stakeholder-workflow-discovery: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "stakeholder-workflow-discovery",
+      "priority": "P0",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T009"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for stakeholder-workflow-discovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T011",
+      "batch": "B02",
+      "title": "business-baseline-roi: Bind canonical ownership and model domain contracts",
+      "skillId": "business-baseline-roi",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B02-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for business-baseline-roi are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T012",
+      "batch": "B02",
+      "title": "business-baseline-roi: Implement persistence projections and append-only ledger events",
+      "skillId": "business-baseline-roi",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T011"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for business-baseline-roi are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T013",
+      "batch": "B02",
+      "title": "business-baseline-roi: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "business-baseline-roi",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T012"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for business-baseline-roi are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T014",
+      "batch": "B02",
+      "title": "business-baseline-roi: Implement service and durable workflow",
+      "skillId": "business-baseline-roi",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T013"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for business-baseline-roi are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T015",
+      "batch": "B02",
+      "title": "business-baseline-roi: Implement replaceable ports and first reference Adapter",
+      "skillId": "business-baseline-roi",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T014"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for business-baseline-roi are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T016",
+      "batch": "B02",
+      "title": "business-baseline-roi: Implement APIs, events and query projections",
+      "skillId": "business-baseline-roi",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T015"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for business-baseline-roi are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T017",
+      "batch": "B02",
+      "title": "business-baseline-roi: Implement product UI or operator surface",
+      "skillId": "business-baseline-roi",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T016"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for business-baseline-roi are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T018",
+      "batch": "B02",
+      "title": "business-baseline-roi: Add deterministic tests, negative controls and failure injection",
+      "skillId": "business-baseline-roi",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T017"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for business-baseline-roi are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T019",
+      "batch": "B02",
+      "title": "business-baseline-roi: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "business-baseline-roi",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T018"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for business-baseline-roi are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T020",
+      "batch": "B02",
+      "title": "business-baseline-roi: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "business-baseline-roi",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T019"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for business-baseline-roi are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T021",
+      "batch": "B02",
+      "title": "pilot-scope-sow-acceptance: Bind canonical ownership and model domain contracts",
+      "skillId": "pilot-scope-sow-acceptance",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B02-T010",
+        "B02-T020"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for pilot-scope-sow-acceptance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T022",
+      "batch": "B02",
+      "title": "pilot-scope-sow-acceptance: Implement persistence projections and append-only ledger events",
+      "skillId": "pilot-scope-sow-acceptance",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T021"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for pilot-scope-sow-acceptance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T023",
+      "batch": "B02",
+      "title": "pilot-scope-sow-acceptance: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "pilot-scope-sow-acceptance",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T022"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for pilot-scope-sow-acceptance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T024",
+      "batch": "B02",
+      "title": "pilot-scope-sow-acceptance: Implement service and durable workflow",
+      "skillId": "pilot-scope-sow-acceptance",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T023"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for pilot-scope-sow-acceptance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T025",
+      "batch": "B02",
+      "title": "pilot-scope-sow-acceptance: Implement replaceable ports and first reference Adapter",
+      "skillId": "pilot-scope-sow-acceptance",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T024"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for pilot-scope-sow-acceptance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T026",
+      "batch": "B02",
+      "title": "pilot-scope-sow-acceptance: Implement APIs, events and query projections",
+      "skillId": "pilot-scope-sow-acceptance",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T025"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for pilot-scope-sow-acceptance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T027",
+      "batch": "B02",
+      "title": "pilot-scope-sow-acceptance: Implement product UI or operator surface",
+      "skillId": "pilot-scope-sow-acceptance",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T026"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for pilot-scope-sow-acceptance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T028",
+      "batch": "B02",
+      "title": "pilot-scope-sow-acceptance: Add deterministic tests, negative controls and failure injection",
+      "skillId": "pilot-scope-sow-acceptance",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T027"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for pilot-scope-sow-acceptance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T029",
+      "batch": "B02",
+      "title": "pilot-scope-sow-acceptance: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "pilot-scope-sow-acceptance",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T028"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for pilot-scope-sow-acceptance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T030",
+      "batch": "B02",
+      "title": "pilot-scope-sow-acceptance: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "pilot-scope-sow-acceptance",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T029"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for pilot-scope-sow-acceptance are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T031",
+      "batch": "B02",
+      "title": "status-risk-decision-communications: Bind canonical ownership and model domain contracts",
+      "skillId": "status-risk-decision-communications",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B02-T030"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for status-risk-decision-communications are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T032",
+      "batch": "B02",
+      "title": "status-risk-decision-communications: Implement persistence projections and append-only ledger events",
+      "skillId": "status-risk-decision-communications",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T031"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for status-risk-decision-communications are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T033",
+      "batch": "B02",
+      "title": "status-risk-decision-communications: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "status-risk-decision-communications",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T032"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for status-risk-decision-communications are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T034",
+      "batch": "B02",
+      "title": "status-risk-decision-communications: Implement service and durable workflow",
+      "skillId": "status-risk-decision-communications",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T033"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for status-risk-decision-communications are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T035",
+      "batch": "B02",
+      "title": "status-risk-decision-communications: Implement replaceable ports and first reference Adapter",
+      "skillId": "status-risk-decision-communications",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T034"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for status-risk-decision-communications are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T036",
+      "batch": "B02",
+      "title": "status-risk-decision-communications: Implement APIs, events and query projections",
+      "skillId": "status-risk-decision-communications",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T035"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for status-risk-decision-communications are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T037",
+      "batch": "B02",
+      "title": "status-risk-decision-communications: Implement product UI or operator surface",
+      "skillId": "status-risk-decision-communications",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T036"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for status-risk-decision-communications are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T038",
+      "batch": "B02",
+      "title": "status-risk-decision-communications: Add deterministic tests, negative controls and failure injection",
+      "skillId": "status-risk-decision-communications",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T037"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for status-risk-decision-communications are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T039",
+      "batch": "B02",
+      "title": "status-risk-decision-communications: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "status-risk-decision-communications",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T038"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for status-risk-decision-communications are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T040",
+      "batch": "B02",
+      "title": "status-risk-decision-communications: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "status-risk-decision-communications",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T039"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for status-risk-decision-communications are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T041",
+      "batch": "B02",
+      "title": "procurement-security-questionnaire: Bind canonical ownership and model domain contracts",
+      "skillId": "procurement-security-questionnaire",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B02-T040"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for procurement-security-questionnaire are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T042",
+      "batch": "B02",
+      "title": "procurement-security-questionnaire: Implement persistence projections and append-only ledger events",
+      "skillId": "procurement-security-questionnaire",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T041"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for procurement-security-questionnaire are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T043",
+      "batch": "B02",
+      "title": "procurement-security-questionnaire: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "procurement-security-questionnaire",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T042"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for procurement-security-questionnaire are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T044",
+      "batch": "B02",
+      "title": "procurement-security-questionnaire: Implement service and durable workflow",
+      "skillId": "procurement-security-questionnaire",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T043"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for procurement-security-questionnaire are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T045",
+      "batch": "B02",
+      "title": "procurement-security-questionnaire: Implement replaceable ports and first reference Adapter",
+      "skillId": "procurement-security-questionnaire",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T044"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for procurement-security-questionnaire are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T046",
+      "batch": "B02",
+      "title": "procurement-security-questionnaire: Implement APIs, events and query projections",
+      "skillId": "procurement-security-questionnaire",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T045"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for procurement-security-questionnaire are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T047",
+      "batch": "B02",
+      "title": "procurement-security-questionnaire: Implement product UI or operator surface",
+      "skillId": "procurement-security-questionnaire",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T046"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for procurement-security-questionnaire are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T048",
+      "batch": "B02",
+      "title": "procurement-security-questionnaire: Add deterministic tests, negative controls and failure injection",
+      "skillId": "procurement-security-questionnaire",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T047"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for procurement-security-questionnaire are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T049",
+      "batch": "B02",
+      "title": "procurement-security-questionnaire: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "procurement-security-questionnaire",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T048"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for procurement-security-questionnaire are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T050",
+      "batch": "B02",
+      "title": "procurement-security-questionnaire: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "procurement-security-questionnaire",
+      "priority": "P2",
+      "riskClass": "high",
+      "dependsOn": [
+        "B02-T049"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for procurement-security-questionnaire are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T051",
+      "batch": "B02",
+      "title": "adoption-change-management: Bind canonical ownership and model domain contracts",
+      "skillId": "adoption-change-management",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B02-T030"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for adoption-change-management are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T052",
+      "batch": "B02",
+      "title": "adoption-change-management: Implement persistence projections and append-only ledger events",
+      "skillId": "adoption-change-management",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T051"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for adoption-change-management are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T053",
+      "batch": "B02",
+      "title": "adoption-change-management: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "adoption-change-management",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T052"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for adoption-change-management are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T054",
+      "batch": "B02",
+      "title": "adoption-change-management: Implement service and durable workflow",
+      "skillId": "adoption-change-management",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T053"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for adoption-change-management are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T055",
+      "batch": "B02",
+      "title": "adoption-change-management: Implement replaceable ports and first reference Adapter",
+      "skillId": "adoption-change-management",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T054"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for adoption-change-management are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T056",
+      "batch": "B02",
+      "title": "adoption-change-management: Implement APIs, events and query projections",
+      "skillId": "adoption-change-management",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T055"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for adoption-change-management are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T057",
+      "batch": "B02",
+      "title": "adoption-change-management: Implement product UI or operator surface",
+      "skillId": "adoption-change-management",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T056"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for adoption-change-management are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T058",
+      "batch": "B02",
+      "title": "adoption-change-management: Add deterministic tests, negative controls and failure injection",
+      "skillId": "adoption-change-management",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T057"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for adoption-change-management are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T059",
+      "batch": "B02",
+      "title": "adoption-change-management: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "adoption-change-management",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T058"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for adoption-change-management are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B02-T060",
+      "batch": "B02",
+      "title": "adoption-change-management: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "adoption-change-management",
+      "priority": "P1",
+      "riskClass": "medium",
+      "dependsOn": [
+        "B02-T059"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for adoption-change-management are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

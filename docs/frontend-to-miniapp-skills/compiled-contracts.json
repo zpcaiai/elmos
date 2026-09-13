@@ -69,7 +69,7 @@
   },
   "runtime_implementation": {
     "state": "HANDLER_IMPLEMENTED",
-    "implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+    "implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
     "files": [
       {
         "path": "tooling/integrate_frontend_to_miniapp_skills.py",
@@ -229,9 +229,9 @@
       },
       {
         "path": "engines/component-dialect-engine/package.json",
-        "bytes": 1941,
+        "bytes": 1981,
         "mode": "0644",
-        "sha256": "sha256:35395b9098791395f19a70df942b57694213033d8f426d760465ccb0c55eadea"
+        "sha256": "sha256:037fc9942414f9f9c5a5d8efe806bb857c41be00f5ab0c43134c82a5ce63a0a9"
       },
       {
         "path": "engines/component-dialect-engine/jest.config.js",
@@ -241,15 +241,15 @@
       },
       {
         "path": "engines/component-dialect-engine/package-lock.json",
-        "bytes": 155795,
+        "bytes": 189928,
         "mode": "0644",
-        "sha256": "sha256:6f0a29a7b33b6d03b169313614e15cafbac7bec137acd40e3b53a9a485e8e487"
+        "sha256": "sha256:3b328129f45f6727478f22a0400a02082e40dce88026fc581bcfc802a8086003"
       },
       {
         "path": "engines/component-dialect-engine/pnpm-lock.yaml",
         "bytes": 96204,
         "mode": "0644",
-        "sha256": "sha256:4cb0438ffc07f33f20d918fcf26ae4c80c6e84758bfad6cced23d5bf4c2e4282"
+        "sha256": "sha256:c053f8a1d6a90f41006c2f24e8aafa927deef8f3ba7b7e049f65a775093e5123"
       },
       {
         "path": "engines/component-dialect-engine/tsconfig.json",
@@ -325,9 +325,9 @@
       },
       {
         "path": "engines/component-dialect-engine/src/validator.ts",
-        "bytes": 10302,
+        "bytes": 10348,
         "mode": "0644",
-        "sha256": "sha256:390403bd5906f9fbef7de8e0594d3e1123c309eaafb69365ee035c359c02e081"
+        "sha256": "sha256:97d2503420e716feba6a4a1c5937222f6c73da5a2b610415e3ec0eb9f137cc3d"
       },
       {
         "path": "engines/component-dialect-engine/tests/miniapp-worker.test.ts",
@@ -499,7 +499,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -609,7 +609,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -726,7 +726,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -843,7 +843,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -960,7 +960,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1078,7 +1078,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1190,7 +1190,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1298,7 +1298,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1415,7 +1415,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1528,7 +1528,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1641,7 +1641,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1754,7 +1754,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1863,7 +1863,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -1972,7 +1972,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2081,7 +2081,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2193,7 +2193,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2314,7 +2314,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2429,7 +2429,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2542,7 +2542,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2660,7 +2660,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2782,7 +2782,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",
@@ -2906,7 +2906,7 @@
         }
       },
       "contract_state": "HANDLER_IMPLEMENTED",
-      "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+      "runtime_implementation_digest": "sha256:179f4cbc8fd633793778b5e00fd7da526b7e0e3e26ae6b5c980fdfa94bea2207",
       "runtime_evidence_status": "DECLARED",
       "external_evidence_status": "NOT_RUN",
       "certification": "NOT_CERTIFIED",

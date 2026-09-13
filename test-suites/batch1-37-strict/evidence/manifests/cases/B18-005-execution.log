@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B18-005 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [18]
+Title: Batch 18 平台整合：使用越权身份、跨租户引用、恶意内容、秘密探测或出口绕过
+Capability: 平台整合
+Test Type: security
+Skill: tst-b18-ma-group-migration
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

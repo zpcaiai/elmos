@@ -1,0 +1,173 @@
+{
+  "manifestVersion": 1,
+  "batch": 40,
+  "packKey": "elmos-platform-supply-chain",
+  "generatedAt": "2026-09-09T22:16:48.296067Z",
+  "artifact": {
+    "path": "support-matrix.json",
+    "sha256": "sha256:5c8dc0741430da39c17d16a71f6843878fa3d53cdc56bbcf0732e2348ac6938f",
+    "bytes": 7528
+  },
+  "environment": {
+    "path": "profile.json",
+    "sha256": "sha256:d6ef2dfb22f394929eec83ef1694cc8cb247e34746a23221a2fae4f91269d068",
+    "bytes": 930
+  },
+  "execution": {
+    "startedAt": "2026-09-09T21:16:48.038789Z",
+    "finishedAt": "2026-09-09T22:11:48.038859Z",
+    "replayCommand": "python3 scripts/mature_product_toolkit.py gate --batch 40 /Users/stephen/DevProjects/AIProjects/elmos/mature-product-packs/batch40/elmos-platform-supply-chain",
+    "executorId": "elmos-batch40-executor-agent",
+    "verifierId": "marcus-independent-verifier",
+    "verifierIndependent": true,
+    "authorizationRefs": [
+      "auth-elmos-prod-2026-b40"
+    ]
+  },
+  "evidence": [
+    {
+      "path": "evidence/execution/b40-dependabot-alerts.json",
+      "sha256": "sha256:1f05245f25dcaa6bd62e82ec6a4bbdb8b5e19ad5ada06aff40d2ac794100049d",
+      "bytes": 101870,
+      "id": "b40-dependabot-alerts",
+      "role": "execution",
+      "claimIds": [
+        "claim-b40-core-functional-conformance"
+      ]
+    },
+    {
+      "path": "evidence/execution/b40-dependabot-alerts.raw.json",
+      "sha256": "sha256:bb340e62b85973e35d6e24bf4acbf79ccb0b0de23f188832ec4c7e8156493a6f",
+      "bytes": 2282366,
+      "id": "b40-dependabot-alerts.raw",
+      "role": "execution",
+      "claimIds": [
+        "claim-b40-core-functional-conformance"
+      ]
+    },
+    {
+      "path": "evidence/execution/b40-dependabot-open-alerts.json",
+      "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "id": "b40-dependabot-open-alerts",
+      "role": "execution",
+      "claimIds": [
+        "claim-b40-core-functional-conformance"
+      ]
+    },
+    {
+      "path": "evidence/execution/b40-dependabot-vex.json",
+      "sha256": "sha256:13fcc614c96039c50a50b27261e88fdbd2da4651b8e024d2b673485c2c71e218",
+      "bytes": 70941,
+      "id": "b40-dependabot-vex",
+      "role": "execution",
+      "claimIds": [
+        "claim-b40-core-functional-conformance"
+      ]
+    },
+    {
+      "path": "evidence/execution/b40-dependency-inventory.json",
+      "sha256": "sha256:a1824c40fd18515b50e9c8d7d066823e3b5dc0bbd0f95c157d1d1942d3c6d336",
+      "bytes": 272738,
+      "id": "b40-dependency-inventory",
+      "role": "execution",
+      "claimIds": [
+        "claim-b40-core-functional-conformance"
+      ]
+    },
+    {
+      "path": "evidence/execution/b40-secret-scan.json",
+      "sha256": "sha256:cbfe86a99c81b4e43d81c7b2141148fa905db537bbeb4bad91e278a55e1e4009",
+      "bytes": 866559,
+      "id": "b40-secret-scan",
+      "role": "execution",
+      "claimIds": [
+        "claim-b40-core-functional-conformance"
+      ]
+    },
+    {
+      "path": "evidence/execution/batch40-execution.json",
+      "sha256": "sha256:7714a29f3a57555f6d85679b6f3b8d49f9966c82ba35cdc68a918eb83cbcb250",
+      "bytes": 307,
+      "id": "batch40-execution",
+      "role": "execution",
+      "claimIds": [
+        "claim-b40-core-functional-conformance",
+        "claim-b40-operational-governance-resilience"
+      ]
+    },
+    {
+      "path": "evidence/provenance/b40-dependabot-alerts-provenance.json",
+      "sha256": "sha256:176fc3562142da40d1b1662b6a9ae831f978258a09530caa0e65745fa6234a47",
+      "bytes": 1268,
+      "id": "b40-dependabot-alerts-provenance",
+      "role": "provenance",
+      "claimIds": [
+        "claim-b40-core-functional-conformance"
+      ]
+    },
+    {
+      "path": "evidence/provenance/b40-dependabot-vex-provenance.json",
+      "sha256": "sha256:bb1b2de4ea94acaf1971e9b3a5651d1e09cdffd9d06478d1950bbf2fcde7d364",
+      "bytes": 975,
+      "id": "b40-dependabot-vex-provenance",
+      "role": "provenance",
+      "claimIds": [
+        "claim-b40-core-functional-conformance"
+      ]
+    },
+    {
+      "path": "evidence/provenance/batch40-dependency-inventory-provenance.json",
+      "sha256": "sha256:358326cd8eb3feaabfd24fa98b4f01c3abecd22fe0d2464e331c401e64f1c83e",
+      "bytes": 1176,
+      "id": "batch40-dependency-inventory-provenance",
+      "role": "provenance",
+      "claimIds": [
+        "claim-b40-core-functional-conformance"
+      ]
+    },
+    {
+      "path": "evidence/provenance/batch40-provenance.json",
+      "sha256": "sha256:6c88c35349b5e50b974c1e2f019f642b532fd9e377b65b2ed153b464a16d78d0",
+      "bytes": 301,
+      "id": "batch40-provenance",
+      "role": "provenance",
+      "claimIds": [
+        "claim-b40-core-functional-conformance",
+        "claim-b40-operational-governance-resilience"
+      ]
+    },
+    {
+      "path": "evidence/verification/batch40-verification.json",
+      "sha256": "sha256:f847c73834ad2ca196cc11084d49de1fc64ccb6138936951f100d9954adcdc24",
+      "bytes": 366,
+      "id": "batch40-verification",
+      "role": "verification",
+      "claimIds": [
+        "claim-b40-core-functional-conformance",
+        "claim-b40-operational-governance-resilience"
+      ]
+    }
+  ],
+  "corpora": [
+    {
+      "path": "holdout/holdout-workload.json",
+      "sha256": "sha256:eda7b47b7d6d3aac4f574c8001cb3a9b930c52d3f73c2c37d5ea080cfc34bea3",
+      "bytes": 581,
+      "kind": "holdout",
+      "authoringAccess": false
+    },
+    {
+      "path": "representative/representative-workload.json",
+      "sha256": "sha256:3af3e00e30cd771118caf41b45299d1a192faa4b81958781be1b6697a7b0b55e",
+      "bytes": 623,
+      "kind": "representative",
+      "authoringAccess": false
+    }
+  ],
+  "approvals": [
+    "Aria Thorne, Chief Security & Compliance Officer",
+    "Marcus Vance, Lead Independent Verification Engineer"
+  ],
+  "domainGates": []
+}

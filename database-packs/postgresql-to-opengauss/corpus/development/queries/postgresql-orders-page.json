@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "1.0",
+  "queryId": "postgresql-orders-page-to-opengauss",
+  "sourceProfile": "postgresql-17.5",
+  "targetId": "opengauss",
+  "targetVersion": "5.0.0",
+  "targetEdition": "enterprise",
+  "compatibilityMode": "pg-compatible-explicit",
+  "targetDriver": "opengauss-jdbc-5.0.0",
+  "targetCharset": "UTF-8",
+  "targetCollation": "en_US.UTF-8",
+  "targetTimeZone": "Asia/Shanghai",
+  "capabilitySnapshotDigest": "sha256:aec49d861260e473e806fa4648a72699363d818bff9740b94581879e5a12d85b",
+  "sql": "SELECT id, tenant_id, amount_cents, created_at FROM orders WHERE tenant_id = :tenant_id ORDER BY created_at DESC LIMIT 10",
+  "parameters": [
+    {
+      "name": "tenant_id",
+      "logicalType": "unicode-text",
+      "nullable": false
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "id": "batch45-provenance",
+  "batch": 45,
+  "packKey": "elmos-platform-production-readiness",
+  "role": "provenance",
+  "origin": "elmos-reproducible-build-system-b45",
+  "sha256": "sha256:abdb0bdfe13002b95c66e3a16b6d82beaa267b2e327d47d9f56927649d25527e",
+  "recordedAt": "2026-09-09T22:17:12.420767Z"
+}

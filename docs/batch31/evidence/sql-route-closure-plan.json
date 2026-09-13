@@ -1,22 +1,22 @@
 {
   "current": {
-    "admittedCandidateUnits": 1302,
-    "blockedRouteCells": 2535,
+    "admittedCandidateUnits": 1365,
+    "blockedRouteCells": 365,
     "certification": "NOT_CERTIFIED",
-    "commonFourTargetEmittableUnits": 363,
-    "commonFourTargetImplementationRate": 0.2788,
-    "commonFourTargetOpenUnits": 939,
-    "dispositionAccountedUnits": 1739,
+    "commonFourTargetEmittableUnits": 1189,
+    "commonFourTargetImplementationRate": 0.8711,
+    "commonFourTargetOpenUnits": 176,
+    "dispositionAccountedUnits": 1865,
     "dispositionCoverage": 1.0,
-    "emittableRouteCells": 2673,
+    "emittableRouteCells": 5095,
     "externalExecution": "NOT_RUN",
-    "frozenSourceUnits": 1739,
+    "frozenSourceUnits": 1865,
     "independentVerification": "NOT_RUN",
     "manualMigrationItems": 435,
-    "manualMigrationOpen": 435,
+    "manualMigrationOpen": 0,
     "runtimeVerifiedRouteCells": 0,
-    "sourceFormatReviewItems": 2,
-    "targetRouteCells": 5208
+    "sourceFormatReviewItems": 65,
+    "targetRouteCells": 5460
   },
   "definitionOf100Percent": {
     "retryPolicy": "at most two bounded measurement attempts; no infinite retry",
@@ -32,10 +32,10 @@
   "executionSequence": [
     {
       "completionRule": "all P0 workstreams have zero blocked route cells",
-      "openRouteCells": 2177,
+      "openRouteCells": 0,
       "order": 1,
       "phase": "HIGH_PRIORITY_SEMANTIC_WORKSTREAMS",
-      "state": "OPEN"
+      "state": "PASSED"
     },
     {
       "completionRule": "DM8 reaches PRODUCTION_DEFINITION_OF_DONE",
@@ -77,9 +77,9 @@
     }
   ],
   "inputs": {
-    "manualBacklogDigest": "sha256:e809cce04b725110fd0b2c7abcaeb702611d54520ab8c19369aef318b3310e54",
+    "manualBacklogDigest": "sha256:93fca5c8d94c4202474abd2872fe3ed224b08f3bbe6f67186db5432432d1e6c4",
     "manualBacklogEvidence": "docs/batch31/evidence/sql-manual-review-backlog.json",
-    "reachabilityDigest": "sha256:c36d839f7eec2c4c3698209499c17bbbf9d13da463332daf1a21a26ca911a490",
+    "reachabilityDigest": "sha256:d72670f661e7018ccb19cbec79b581b2a399b6fcb8ceb23dfea0c4e4387900d0",
     "reachabilityEvidence": "docs/batch31/evidence/sql-target-reachability.json"
   },
   "kind": "elmos.batch31.sql-route-closure-plan",
@@ -101,208 +101,60 @@
   },
   "perTarget": {
     "mysql": {
-      "blocked": 891,
+      "blocked": 127,
       "blockers": {
+        "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED": 1,
+        "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED": 1,
         "CERTIFIED_COMMENT_TARGET_UNSUPPORTED": 6,
         "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED": 8,
         "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 15,
         "CERTIFIED_DDL_INDEX_EXPRESSION_UNSUPPORTED_BY_TARGET": 12,
         "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET": 70,
-        "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED": 395,
         "CERTIFIED_DDL_MYSQL_TEXT_DEFAULT_UNSUPPORTED": 1,
         "CERTIFIED_DDL_MYSQL_TEXT_KEY_REQUIRES_PREFIX": 7,
-        "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET": 1,
+        "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET": 2,
         "CERTIFIED_DDL_TARGET_RESERVED_IDENTIFIER": 1,
-        "CERTIFIED_PRIVILEGE_PRINCIPAL_UNSUPPORTED_BY_TARGET": 61,
-        "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED": 47,
-        "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": 3,
-        "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED": 264
+        "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": 3
       },
-      "emittable": 411,
+      "emittable": 1238,
       "runtimeVerified": 0
     },
     "oracle": {
-      "blocked": 867,
+      "blocked": 165,
       "blockers": {
-        "CERTIFIED_COMMENT_TARGET_UNSUPPORTED": 26,
+        "CERTIFIED_COMMENT_TARGET_UNSUPPORTED": 28,
         "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED": 7,
         "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 15,
         "CERTIFIED_DDL_INDEX_EXPRESSION_UNSUPPORTED_BY_TARGET": 12,
         "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET": 70,
-        "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED": 394,
-        "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET": 1,
-        "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED": 47,
+        "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET": 2,
         "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": 3,
-        "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED": 264,
         "CERTIFIED_SCHEMA_UNSUPPORTED_TARGET": 28
       },
-      "emittable": 435,
+      "emittable": 1200,
       "runtimeVerified": 0
     },
     "postgres": {
       "blocked": 0,
       "blockers": {},
-      "emittable": 1302,
+      "emittable": 1365,
       "runtimeVerified": 0
     },
     "tsql": {
-      "blocked": 777,
+      "blocked": 73,
       "blockers": {
         "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED": 7,
         "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 46,
         "CERTIFIED_DDL_INDEX_EXPRESSION_UNSUPPORTED_BY_TARGET": 15,
-        "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED": 394,
-        "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET": 1,
-        "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED": 47,
-        "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": 3,
-        "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED": 264
+        "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET": 2,
+        "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": 3
       },
-      "emittable": 525,
+      "emittable": 1292,
       "runtimeVerified": 0
     }
   },
   "schemaVersion": "1.0",
   "workstreams": [
-    {
-      "blockerCode": "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED",
-      "priority": "P0",
-      "requiredClosure": [
-        "typed implementation or explicit unsupported decision",
-        "negative and independent holdout cases",
-        "real disposable target execution",
-        "digest-bound revalidation evidence"
-      ],
-      "routeCellCount": 395,
-      "status": "OPEN",
-      "target": "mysql",
-      "workstreamId": "route-mysql-certified-ddl-json-binary-semantics-unsupported"
-    },
-    {
-      "blockerCode": "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED",
-      "priority": "P0",
-      "requiredClosure": [
-        "typed implementation or explicit unsupported decision",
-        "negative and independent holdout cases",
-        "real disposable target execution",
-        "digest-bound revalidation evidence"
-      ],
-      "routeCellCount": 394,
-      "status": "OPEN",
-      "target": "oracle",
-      "workstreamId": "route-oracle-certified-ddl-json-binary-semantics-unsupported"
-    },
-    {
-      "blockerCode": "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED",
-      "priority": "P0",
-      "requiredClosure": [
-        "typed implementation or explicit unsupported decision",
-        "negative and independent holdout cases",
-        "real disposable target execution",
-        "digest-bound revalidation evidence"
-      ],
-      "routeCellCount": 394,
-      "status": "OPEN",
-      "target": "tsql",
-      "workstreamId": "route-tsql-certified-ddl-json-binary-semantics-unsupported"
-    },
-    {
-      "blockerCode": "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED",
-      "priority": "P0",
-      "requiredClosure": [
-        "typed implementation or explicit unsupported decision",
-        "negative and independent holdout cases",
-        "real disposable target execution",
-        "digest-bound revalidation evidence"
-      ],
-      "routeCellCount": 264,
-      "status": "OPEN",
-      "target": "mysql",
-      "workstreamId": "route-mysql-certified-routine-trigger-target-route-required"
-    },
-    {
-      "blockerCode": "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED",
-      "priority": "P0",
-      "requiredClosure": [
-        "typed implementation or explicit unsupported decision",
-        "negative and independent holdout cases",
-        "real disposable target execution",
-        "digest-bound revalidation evidence"
-      ],
-      "routeCellCount": 264,
-      "status": "OPEN",
-      "target": "oracle",
-      "workstreamId": "route-oracle-certified-routine-trigger-target-route-required"
-    },
-    {
-      "blockerCode": "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED",
-      "priority": "P0",
-      "requiredClosure": [
-        "typed implementation or explicit unsupported decision",
-        "negative and independent holdout cases",
-        "real disposable target execution",
-        "digest-bound revalidation evidence"
-      ],
-      "routeCellCount": 264,
-      "status": "OPEN",
-      "target": "tsql",
-      "workstreamId": "route-tsql-certified-routine-trigger-target-route-required"
-    },
-    {
-      "blockerCode": "CERTIFIED_PRIVILEGE_PRINCIPAL_UNSUPPORTED_BY_TARGET",
-      "priority": "P0",
-      "requiredClosure": [
-        "typed implementation or explicit unsupported decision",
-        "negative and independent holdout cases",
-        "real disposable target execution",
-        "digest-bound revalidation evidence"
-      ],
-      "routeCellCount": 61,
-      "status": "OPEN",
-      "target": "mysql",
-      "workstreamId": "route-mysql-certified-privilege-principal-unsupported-by-target"
-    },
-    {
-      "blockerCode": "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED",
-      "priority": "P0",
-      "requiredClosure": [
-        "typed implementation or explicit unsupported decision",
-        "negative and independent holdout cases",
-        "real disposable target execution",
-        "digest-bound revalidation evidence"
-      ],
-      "routeCellCount": 47,
-      "status": "OPEN",
-      "target": "mysql",
-      "workstreamId": "route-mysql-certified-rls-target-route-required"
-    },
-    {
-      "blockerCode": "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED",
-      "priority": "P0",
-      "requiredClosure": [
-        "typed implementation or explicit unsupported decision",
-        "negative and independent holdout cases",
-        "real disposable target execution",
-        "digest-bound revalidation evidence"
-      ],
-      "routeCellCount": 47,
-      "status": "OPEN",
-      "target": "oracle",
-      "workstreamId": "route-oracle-certified-rls-target-route-required"
-    },
-    {
-      "blockerCode": "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED",
-      "priority": "P0",
-      "requiredClosure": [
-        "typed implementation or explicit unsupported decision",
-        "negative and independent holdout cases",
-        "real disposable target execution",
-        "digest-bound revalidation evidence"
-      ],
-      "routeCellCount": 47,
-      "status": "OPEN",
-      "target": "tsql",
-      "workstreamId": "route-tsql-certified-rls-target-route-required"
-    },
     {
       "blockerCode": "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET",
       "priority": "P1",
@@ -522,7 +374,7 @@
         "real disposable target execution",
         "digest-bound revalidation evidence"
       ],
-      "routeCellCount": 26,
+      "routeCellCount": 28,
       "status": "OPEN",
       "target": "oracle",
       "workstreamId": "route-oracle-certified-comment-target-unsupported"
@@ -556,6 +408,76 @@
       "workstreamId": "route-mysql-certified-comment-target-unsupported"
     },
     {
+      "blockerCode": "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET",
+      "priority": "P2",
+      "requiredClosure": [
+        "typed implementation or explicit unsupported decision",
+        "negative and independent holdout cases",
+        "real disposable target execution",
+        "digest-bound revalidation evidence"
+      ],
+      "routeCellCount": 2,
+      "status": "OPEN",
+      "target": "mysql",
+      "workstreamId": "route-mysql-certified-ddl-special-float-unsupported-by-target"
+    },
+    {
+      "blockerCode": "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET",
+      "priority": "P2",
+      "requiredClosure": [
+        "typed implementation or explicit unsupported decision",
+        "negative and independent holdout cases",
+        "real disposable target execution",
+        "digest-bound revalidation evidence"
+      ],
+      "routeCellCount": 2,
+      "status": "OPEN",
+      "target": "oracle",
+      "workstreamId": "route-oracle-certified-ddl-special-float-unsupported-by-target"
+    },
+    {
+      "blockerCode": "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET",
+      "priority": "P2",
+      "requiredClosure": [
+        "typed implementation or explicit unsupported decision",
+        "negative and independent holdout cases",
+        "real disposable target execution",
+        "digest-bound revalidation evidence"
+      ],
+      "routeCellCount": 2,
+      "status": "OPEN",
+      "target": "tsql",
+      "workstreamId": "route-tsql-certified-ddl-special-float-unsupported-by-target"
+    },
+    {
+      "blockerCode": "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED",
+      "priority": "P2",
+      "requiredClosure": [
+        "typed implementation or explicit unsupported decision",
+        "negative and independent holdout cases",
+        "real disposable target execution",
+        "digest-bound revalidation evidence"
+      ],
+      "routeCellCount": 1,
+      "status": "OPEN",
+      "target": "mysql",
+      "workstreamId": "route-mysql-certified-comment-routine-identity-required"
+    },
+    {
+      "blockerCode": "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED",
+      "priority": "P2",
+      "requiredClosure": [
+        "typed implementation or explicit unsupported decision",
+        "negative and independent holdout cases",
+        "real disposable target execution",
+        "digest-bound revalidation evidence"
+      ],
+      "routeCellCount": 1,
+      "status": "OPEN",
+      "target": "mysql",
+      "workstreamId": "route-mysql-certified-comment-target-column-type-required"
+    },
+    {
       "blockerCode": "CERTIFIED_DDL_MYSQL_TEXT_DEFAULT_UNSUPPORTED",
       "priority": "P2",
       "requiredClosure": [
@@ -570,20 +492,6 @@
       "workstreamId": "route-mysql-certified-ddl-mysql-text-default-unsupported"
     },
     {
-      "blockerCode": "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET",
-      "priority": "P2",
-      "requiredClosure": [
-        "typed implementation or explicit unsupported decision",
-        "negative and independent holdout cases",
-        "real disposable target execution",
-        "digest-bound revalidation evidence"
-      ],
-      "routeCellCount": 1,
-      "status": "OPEN",
-      "target": "mysql",
-      "workstreamId": "route-mysql-certified-ddl-special-float-unsupported-by-target"
-    },
-    {
       "blockerCode": "CERTIFIED_DDL_TARGET_RESERVED_IDENTIFIER",
       "priority": "P2",
       "requiredClosure": [
@@ -596,34 +504,6 @@
       "status": "OPEN",
       "target": "mysql",
       "workstreamId": "route-mysql-certified-ddl-target-reserved-identifier"
-    },
-    {
-      "blockerCode": "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET",
-      "priority": "P2",
-      "requiredClosure": [
-        "typed implementation or explicit unsupported decision",
-        "negative and independent holdout cases",
-        "real disposable target execution",
-        "digest-bound revalidation evidence"
-      ],
-      "routeCellCount": 1,
-      "status": "OPEN",
-      "target": "oracle",
-      "workstreamId": "route-oracle-certified-ddl-special-float-unsupported-by-target"
-    },
-    {
-      "blockerCode": "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET",
-      "priority": "P2",
-      "requiredClosure": [
-        "typed implementation or explicit unsupported decision",
-        "negative and independent holdout cases",
-        "real disposable target execution",
-        "digest-bound revalidation evidence"
-      ],
-      "routeCellCount": 1,
-      "status": "OPEN",
-      "target": "tsql",
-      "workstreamId": "route-tsql-certified-ddl-special-float-unsupported-by-target"
     }
   ]
 }

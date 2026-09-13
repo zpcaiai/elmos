@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/gate-decision.v1.json",
+  "title": "Elmos GateDecision v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "decisionId", "jobId", "allow", "status", "reasonCodes", "policyDigest"],
+  "properties": {
+    "schema": {"const": "elmos.gate-decision.v1"},
+    "decisionId": {"type": "string", "minLength": 1},
+    "jobId": {"type": "string", "minLength": 1},
+    "allow": {"type": "boolean"},
+    "status": {"enum": ["PASS", "DENY", "BLOCKED"]},
+    "reasonCodes": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "policyDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[A-Fa-f0-9]{64}$"}
+  }
+}

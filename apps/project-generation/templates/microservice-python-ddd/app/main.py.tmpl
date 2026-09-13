@@ -1,0 +1,211 @@
+import logging
+import time
+import uuid
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+from typing import Any
+
+from fastapi import FastAPI, HTTPException, Request, Response, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+from app.config import get_settings
+from app.domain.exceptions.domain_exceptions import (
+    BusinessRuleViolationException,
+    DomainException,
+    DomainValidationException,
+    EntityAlreadyExistsException,
+    EntityNotFoundException,
+)
+from app.infrastructure.database.session import get_db_manager
+from app.infrastructure.telemetry import instrument_app, setup_telemetry
+from app.interfaces.api.router import api_router, probe_router
+
+settings = get_settings()
+
+logging.basicConfig(
+    level=settings.log_level.upper(),
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
+logger = logging.getLogger("{{.ServiceName}}")
+
+
+def make_problem_response(
+    status_code: int,
+    title: str,
+    detail: str,
+    problem_type: str = "about:blank",
+    instance: str | None = None,
+    invalid_params: list[dict[str, Any]] | None = None,
+) -> JSONResponse:
+    """Construct RFC 7807 Problem Details response (application/problem+json)."""
+    content: dict[str, Any] = {
+        "type": problem_type,
+        "title": title,
+        "status": status_code,
+        "detail": detail,
+    }
+    if instance:
+        content["instance"] = instance
+    if invalid_params:
+        content["invalid_params"] = invalid_params
+
+    return JSONResponse(
+        status_code=status_code,
+        content=content,
+        media_type="application/problem+json",
+    )
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """Lifespan context manager managing application startup, DB pool, and graceful shutdown."""
+    logger.info(f"Starting {{.ServiceName}} in {settings.app_env} environment...")
+
+    # 1. Initialize OpenTelemetry Distributed Tracing
+    setup_telemetry(service_name="{{.ServiceName}}", environment=settings.app_env)
+
+    # 2. Initialize Database Connection Pool and verify health ping
+    db_manager = get_db_manager(settings)
+    await db_manager.init()
+    ping_ok = await db_manager.ping()
+    if not ping_ok:
+        logger.warning("Database connection pool health check ping failed during startup")
+    else:
+        logger.info("Database connection pool initialized and ping verified successfully")
+
+    yield
+
+    # 3. Graceful shutdown: close connection pools
+    logger.info("Shutting down {{.ServiceName}}...")
+    await db_manager.close()
+    logger.info("Database connection pool closed. Service shutdown complete.")
+
+
+def create_app() -> FastAPI:
+    """Factory function for FastAPI application instance."""
+    app = FastAPI(
+        title="{{.ProjectName}}",
+        description="{{.Description}}",
+        version="{{.Version}}",
+        docs_url="/docs",
+        redoc_url="/redoc",
+        openapi_url="/openapi.json",
+        lifespan=lifespan,
+    )
+
+    # 1. CORS Middleware
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # 2. OpenTelemetry & W3C Traceparent Instrumentation
+    instrument_app(app, service_name="{{.ServiceName}}")
+
+    # 3. Request ID and Timing Middleware
+    @app.middleware("http")
+    async def request_context_middleware(request: Request, call_next: Any) -> Response:
+        request_id = request.headers.get("X-Request-ID") or f"req-{uuid.uuid4().hex[:12]}"
+        start_time = time.perf_counter()
+
+        response: Response = await call_next(request)
+
+        duration = time.perf_counter() - start_time
+        response.headers["X-Request-ID"] = request_id
+        response.headers["X-Response-Time"] = f"{duration * 1000:.2f}ms"
+
+        logger.info(
+            f"{request.method} {request.url.path} "
+            f"status={response.status_code} "
+            f"duration={duration * 1000:.2f}ms "
+            f"req_id={request_id}"
+        )
+        return response
+
+    # 4. RFC 7807 Global Exception Handlers
+    @app.exception_handler(DomainException)
+    async def domain_exception_handler(request: Request, exc: DomainException) -> JSONResponse:
+        if isinstance(exc, EntityNotFoundException):
+            return make_problem_response(
+                status_code=status.HTTP_404_NOT_FOUND,
+                title="Resource Not Found",
+                detail=str(exc),
+                problem_type="urn:problem-type:not-found",
+                instance=request.url.path,
+            )
+        if isinstance(exc, EntityAlreadyExistsException):
+            return make_problem_response(
+                status_code=status.HTTP_409_CONFLICT,
+                title="Conflict",
+                detail=str(exc),
+                problem_type="urn:problem-type:conflict",
+                instance=request.url.path,
+            )
+        if isinstance(exc, (DomainValidationException, BusinessRuleViolationException)):
+            return make_problem_response(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                title="Validation Failed",
+                detail=str(exc),
+                problem_type="urn:problem-type:validation-error",
+                instance=request.url.path,
+            )
+        return make_problem_response(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            title="Domain Error",
+            detail=str(exc),
+            problem_type="urn:problem-type:domain-error",
+            instance=request.url.path,
+        )
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_exception_handler(
+        request: Request, exc: RequestValidationError
+    ) -> JSONResponse:
+        invalid_params = [
+            {
+                "name": ".".join(str(loc) for loc in err.get("loc", [])),
+                "reason": str(err.get("msg", "Invalid parameter")),
+            }
+            for err in exc.errors()
+        ]
+        return make_problem_response(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            title="Request Validation Failed",
+            detail="One or more request parameters failed schema validation.",
+            problem_type="urn:problem-type:validation-error",
+            instance=request.url.path,
+            invalid_params=invalid_params,
+        )
+
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
+        title_map = {
+            400: "Bad Request",
+            401: "Unauthorized",
+            403: "Forbidden",
+            404: "Resource Not Found",
+            409: "Conflict",
+            422: "Unprocessable Entity",
+            500: "Internal Server Error",
+        }
+        return make_problem_response(
+            status_code=exc.status_code,
+            title=title_map.get(exc.status_code, "HTTP Error"),
+            detail=str(exc.detail),
+            problem_type=f"urn:problem-type:http-{exc.status_code}",
+            instance=request.url.path,
+        )
+
+    # 5. Include Routers
+    app.include_router(probe_router)
+    app.include_router(api_router)
+
+    return app
+
+
+app = create_app()

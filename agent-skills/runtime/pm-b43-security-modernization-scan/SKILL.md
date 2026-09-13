@@ -1,5 +1,8 @@
 ---
 name: pm-b43-security-modernization-scan
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "持续识别漏洞、危险 API、依赖、配置、权限和安全现代化需求. Precision Migration B43 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

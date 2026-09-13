@@ -1,5 +1,8 @@
 ---
 name: pm-b14-python-async-concurrency-adapter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "恢复 Python 的异步、线程、任务、协程、取消和同步原语语义. Precision Migration B14 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

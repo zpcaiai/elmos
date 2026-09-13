@@ -1,0 +1,12 @@
+.PHONY: uir-java-typescript-check uir-java-typescript-install uir-java-typescript-clean
+
+uir-java-typescript-check:
+	@echo "--- UIR Java -> TypeScript Route Tests ---"
+	cd engines/uir-java-typescript && \
+		PYTHONPATH=src .venv/bin/python3 -m pytest tests/ -v --tb=short
+
+uir-java-typescript-install:
+	cd engines/uir-java-typescript && uv venv --python 3.12 && uv pip install pytest && uv pip install -e .
+
+uir-java-typescript-clean:
+	rm -rf engines/uir-java-typescript/build engines/uir-java-typescript/src/*.egg-info engines/uir-java-typescript/.pytest_cache

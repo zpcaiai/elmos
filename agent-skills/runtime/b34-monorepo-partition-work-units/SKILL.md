@@ -1,6 +1,9 @@
 ---
 name: b34-monorepo-partition-work-units
-description: "Partition very large monorepos and repository clusters into immutable dependency-aware work units based on build targets bounded contexts ownership criticality testability and resource profiles rather than arbitrary line counts."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Partition very large monorepos and repository clusters into immutable dependency-aware work units based on build targets bounded contexts ownership criticality testability and resource profiles rather than arbitrary line counts.
 ---
 
 ## Operating mode

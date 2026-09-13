@@ -1,0 +1,65 @@
+skill: elmos-assurance-orchestrator
+tasks:
+- id: elmos-assurance-orchestrator-T01
+  action: 先执行bootstrap并读取CODEX_START_HERE，不要求用户重复已知业务线。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-orchestrator-T02
+  action: 按roadmap DAG与真实差距选择一个完整纵向切片，四业务线共用契约/证据/安全内核。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-orchestrator-T03
+  action: 逐skill落实actual code+tests+evidence；按需加载，不一次加载所有长文。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-orchestrator-T04
+  action: 持续核对不可变RevisionSet、批准scope、独立Oracle和隐藏集界限。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-orchestrator-T05
+  action: 区分PACKAGE_VALIDATED/REFERENCE_TESTED/PRODUCT_NATIVE_VERIFIED/CUSTOMER_ACCEPTED；未实测绝不升档。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-orchestrator-T06
+  action: 停在签署/生产/权限边界时完成其它非阻塞工作，输出准确阻塞，不伪造Ethen/Lean/客户认证。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+global_contracts:
+- contracts/schemas/run-request.schema.json
+- contracts/schemas/evidence-payload.schema.json
+constraints:
+- reuse-existing-architecture
+- fail-closed
+- no-hidden-test-leak
+- no-unapproved-side-effects
+- no-fabricated-runtime-evidence

@@ -1,0 +1,29 @@
+{
+  "schema_version": "elmos.precision-migration.compiled-skill-contract.v1",
+  "package_id": "elmos.precision-migration.b01-44",
+  "package_version": "1.0.0",
+  "installed_alias": "pm-b41-certificate-signing",
+  "namespace": "precision-migration-b01-44",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "scripts/precision_migration/runtime.py",
+    "modules/evidence-assurance-fabric",
+    "scripts/precision_migration/trust.py",
+    "scripts/precision_migration/b41.py"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "handler_id": "b41-certificate-signing-v1",
+    "handler_entrypoint": "scripts.precision_migration.b41:execute_certificate_signing",
+    "supported_modes": [
+      "validate",
+      "certify"
+    ],
+    "timeout_seconds": 120,
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

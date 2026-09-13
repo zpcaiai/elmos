@@ -1,5 +1,8 @@
 ---
 name: pm-b04-migration-alternative-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成整体转换、局部转换、双端保留、服务化、兼容层和重新设计等替代方案. Precision Migration B04 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

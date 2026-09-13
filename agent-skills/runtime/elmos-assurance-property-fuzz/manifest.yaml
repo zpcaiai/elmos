@@ -1,0 +1,21 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-property-fuzz
+title: 性质、变形与模糊测试
+priority: P1
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-differential-runtime
+inputs:
+- 状态/语义模型
+- approved metamorphic relations
+- bounded budget
+outputs:
+- PropertyResults
+- FuzzCorpus
+- ReducedReproducers
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

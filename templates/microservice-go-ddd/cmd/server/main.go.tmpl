@@ -1,0 +1,122 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"{{.ModuleName}}/internal/application/service"
+	"{{.ModuleName}}/internal/infrastructure/config"
+	"{{.ModuleName}}/internal/infrastructure/persistence"
+	grpcInterface "{{.ModuleName}}/internal/interfaces/grpc"
+	httpInterface "{{.ModuleName}}/internal/interfaces/http"
+	"{{.ModuleName}}/pkg/logger"
+	"{{.ModuleName}}/pkg/telemetry"
+)
+
+func main() {
+	// 1. Load Configuration
+	cfg := config.Load()
+
+	// 2. Initialize Structured Logger
+	log := logger.New(cfg.LogLevel, cfg.LogFormat)
+	log.Info("Starting service",
+		"service", "{{.ServiceName}}",
+		"version", "{{.Version}}",
+		"env", cfg.Environment,
+	)
+
+	// 3. Initialize OpenTelemetry Distributed Tracing
+	_, shutdownTracer, err := telemetry.InitTracer(context.Background(), "{{.ServiceName}}", cfg.Environment)
+	if err != nil {
+		log.Error("Failed to initialize OpenTelemetry tracer", "error", err)
+	}
+
+	// 4. Initialize Infrastructure & Repositories
+	repo := persistence.NewRepository(cfg.DatabaseURL)
+	log.Info("Initialized database persistence layer", "database", "{{.Database}}")
+
+	// 5. Initialize Application Services (Use Cases)
+	entityService := service.NewEntityService(repo, log)
+
+	// 6. Initialize Interfaces (HTTP & gRPC)
+	httpHandler := httpInterface.NewHandler(entityService, log)
+	httpRouter := httpInterface.NewRouter(httpHandler, log)
+
+	httpServer := &http.Server{
+		Addr:         fmt.Sprintf(":%s", cfg.HTTPPort),
+		Handler:      httpRouter,
+		ReadTimeout:  cfg.ReadTimeout,
+		WriteTimeout: cfg.WriteTimeout,
+		IdleTimeout:  cfg.IdleTimeout,
+	}
+
+	grpcServer := grpcInterface.NewServer(entityService, log, cfg.GRPCPort)
+
+	// 7. Start Servers in Goroutines
+	go func() {
+		log.Info("HTTP server listening", "port", cfg.HTTPPort)
+		if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Error("HTTP server failed to listen", "error", err)
+			os.Exit(1)
+		}
+	}()
+
+	go func() {
+		log.Info("gRPC server listening", "port", cfg.GRPCPort)
+		if err := grpcServer.Start(); err != nil {
+			log.Error("gRPC server failed to run", "error", err)
+		}
+	}()
+
+	// 8. Graceful Shutdown on SIGINT / SIGTERM with 30-second drain timeout
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	sig := <-quit
+
+	log.Info("Received shutdown signal, starting graceful drain", "signal", sig.String())
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	// Stop gRPC server first
+	grpcServer.GracefulStop()
+	log.Info("gRPC server stopped")
+
+	// Drain active HTTP connections
+	if err := httpServer.Shutdown(shutdownCtx); err != nil {
+		log.Error("HTTP server forced to shutdown during drain", "error", err)
+	} else {
+		log.Info("HTTP server drained and exited cleanly")
+	}
+
+	// Flush and close repository persistence connections
+	if closer, ok := any(repo).(interface{ Close() error }); ok {
+		if err := closer.Close(); err != nil {
+			log.Error("Failed to flush and close persistence connection", "error", err)
+		} else {
+			log.Info("Persistence connection flushed and closed successfully")
+		}
+	}
+
+	// Flush pending OpenTelemetry spans
+	if shutdownTracer != nil {
+		if err := shutdownTracer(shutdownCtx); err != nil {
+			log.Error("Failed to flush OpenTelemetry tracer", "error", err)
+		} else {
+			log.Info("OpenTelemetry tracer flushed successfully")
+		}
+	}
+
+	// Flush structured logger buffer if available
+	if syncer, ok := any(log).(interface{ Sync() error }); ok {
+		_ = syncer.Sync()
+	}
+
+	log.Info("Service graceful shutdown complete")
+}

@@ -1,0 +1,18 @@
+{
+  "acceptanceId": "ACC-001",
+  "engagementId": "eng-demo",
+  "criteria": [
+    {
+      "id": "AC-1",
+      "statement": "All high-severity findings have plans",
+      "status": "pass",
+      "evidenceRefs": [
+        "EV-001"
+      ]
+    }
+  ],
+  "status": "in-review",
+  "approvers": [
+    "customer-product-owner"
+  ]
+}

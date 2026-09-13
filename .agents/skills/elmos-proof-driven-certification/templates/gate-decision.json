@@ -1,0 +1,9 @@
+{
+  "schema": "elmos.gate-decision.v1",
+  "decisionId": "decision-01JEXAMPLE",
+  "jobId": "job-01JEXAMPLE",
+  "allow": false,
+  "status": "DENY",
+  "reasonCodes": ["ZERO_TEST_EXECUTION"],
+  "policyDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+}

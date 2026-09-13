@@ -1,5 +1,8 @@
 ---
 name: pm-b27-native-query-rewriter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "重写原生查询、Hint、锁、分页、函数、JSON、日期和返回类型. Precision Migration B27 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

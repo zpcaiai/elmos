@@ -1,0 +1,8 @@
+{
+  "case_id": "B28-006",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:55:52Z",
+  "notes": "Independently verified by Ethan: Batch 28 Workforce Forecast：重复提交、消息重放、Lease过期、任务恢复或并发执行"
+}

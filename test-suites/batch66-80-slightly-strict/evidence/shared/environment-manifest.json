@@ -1,0 +1,14 @@
+{
+  "arch": "x86_64",
+  "captured_at": "2025-09-10T08:00:00+00:00",
+  "container_runtime": "docker-26.1",
+  "environment_id": "0f23b31c-1b10-51c7-92f3-b2af5e4c885c",
+  "go": "1.23.1",
+  "hermetic": true,
+  "java": "21.0.4",
+  "network_policy": "deny-egress",
+  "node": "22.3.0",
+  "os": "linux",
+  "python": "3.12.4",
+  "rust": "1.80.1"
+}

@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U013-007",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:26:14.419296Z",
+  "notes": "Independently verified by Ethan: Edition拓扑与数据边界 / version-drift / 场景7"
+}

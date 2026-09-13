@@ -80,11 +80,7 @@ SINGLE_ENTITY_SHAPE: dict[str, Any] = {
 
 def main() -> int:
     arguments = parse_args()
-    shape = (
-        MULTI_ENTITY_SHAPE
-        if arguments.language in MULTI_ENTITY_TARGETS
-        else SINGLE_ENTITY_SHAPE
-    )
+    shape = MULTI_ENTITY_SHAPE if arguments.language in MULTI_ENTITY_TARGETS else SINGLE_ENTITY_SHAPE
     request = approve_request(
         create_draft(
             name=f"enterprise-orders-{arguments.language}-{arguments.auth_mode}",

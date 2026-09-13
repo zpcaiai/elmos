@@ -1,0 +1,11 @@
+{
+  "exact_target_binding": true,
+  "maximum_rewrite_cycles": 2,
+  "pack_key": "spring-boot-2-x-gradle-to-4-1-0",
+  "recipe_config": "recipes/spring-to-boot-4.1.0.yml",
+  "recipes": [
+    "io.elmos.openrewrite.SpringBoot2xGradleToBoot4_1_0Java21"
+  ],
+  "regex_as_semantic_core": false,
+  "schema_version": 1
+}

@@ -1,6 +1,9 @@
 ---
 name: b34-shared-library-bom-platform-dependency
-description: "Analyze and govern shared libraries BOMs parent builds platform dependencies generated clients version alignment forks and consumer rollout across a repository portfolio."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Analyze and govern shared libraries BOMs parent builds platform dependencies generated clients version alignment forks and consumer rollout across a repository portfolio.
 ---
 
 ## Operating mode

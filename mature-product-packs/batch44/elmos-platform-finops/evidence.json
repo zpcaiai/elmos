@@ -1,5 +1,32 @@
 {
   "batch": 44,
   "packKey": "elmos-platform-finops",
-  "claims": []
+  "claims": [
+    {
+      "claimId": "claim-b44-core-functional-conformance",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch44-execution",
+        "batch44-verification"
+      ],
+      "provenanceRefs": [
+        "batch44-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    },
+    {
+      "claimId": "claim-b44-operational-governance-resilience",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch44-execution",
+        "batch44-verification"
+      ],
+      "provenanceRefs": [
+        "batch44-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    }
+  ]
 }

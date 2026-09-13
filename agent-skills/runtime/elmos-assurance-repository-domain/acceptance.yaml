@@ -1,0 +1,36 @@
+skill: elmos-assurance-repository-domain
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-repository-domain-A01
+  given: Java BigDecimal转浮点
+  when: 在真实集成模块执行对应测试或负例
+  then: 精度义务或差分必须阻断
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-repository-domain-A02
+  given: 模块测试都过但依赖装配失败
+  when: 在真实集成模块执行对应测试或负例
+  then: 仓库native build/workflow失败
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-repository-domain-A03
+  given: 未支持FFI被静默替换
+  when: 在真实集成模块执行对应测试或负例
+  then: UNSUPPORTED_SEMANTICS
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

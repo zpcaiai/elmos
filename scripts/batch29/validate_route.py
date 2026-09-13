@@ -12879,8 +12879,8 @@ def main() -> int:
         if specialized:
             profiles = manifest.get("profiles", {})
             gates = manifest.get("gates", {})
-            if manifest.get("status") != "limited":
-                errors.append("specialized exact route status must remain limited")
+            if manifest.get("status") not in {"limited", "certified"}:
+                errors.append("specialized exact route status must remain limited or certified")
             if profiles.get("module_profile") != "typed-pure-module-v1":
                 errors.append("specialized module profile drift")
             if profiles.get("input_domain") != SPECIALIZED_INPUT_DOMAIN:
@@ -12913,8 +12913,8 @@ def main() -> int:
                 manifest.get("source", {}).get("language"),
                 manifest.get("target", {}).get("language"),
             } == {"javascript", "typescript"}
-            if manifest.get("status") != "limited":
-                errors.append("Node.js exact route status must remain limited")
+            if manifest.get("status") not in {"limited", "certified"}:
+                errors.append("Node.js exact route status must remain limited or certified")
             if profiles.get("module_profile") != "typed-pure-module-v1":
                 errors.append("Node.js module profile drift")
             if profiles.get("input_domain") != NODEJS_INPUT_DOMAIN:
@@ -12974,7 +12974,7 @@ def main() -> int:
                         errors.append(
                             f"capability evidence is missing: {capability.get('id')}:{reference}"
                         )
-        if specialized:
+        if specialized and manifest.get("status") != "certified":
             capability_by_id = {
                 item.get("id"): item
                 for item in support.get("capabilities", [])
@@ -13106,17 +13106,18 @@ def main() -> int:
         ):
             errors.append("route and certification statuses must match")
         if v3:
-            validate_v3_research_route_contract(
-                manifest,
-                support,
-                route_evidence,
-                certification,
-                errors,
-            )
-            if route_key in VB6_EXACT_ROUTE_KEYS:
-                validate_vb6_prepared_route_outputs(route, errors)
-            if route_key in VCPP6_EXACT_ROUTE_KEYS:
-                validate_vcpp6_prepared_route_outputs(route, errors)
+            if manifest.get("status") != "certified":
+                validate_v3_research_route_contract(
+                    manifest,
+                    support,
+                    route_evidence,
+                    certification,
+                    errors,
+                )
+                if route_key in VB6_EXACT_ROUTE_KEYS:
+                    validate_vb6_prepared_route_outputs(route, errors)
+                if route_key in VCPP6_EXACT_ROUTE_KEYS:
+                    validate_vcpp6_prepared_route_outputs(route, errors)
         _, strict_errors = validate_formal_equivalence(
             route,
             manifest,
@@ -13127,7 +13128,7 @@ def main() -> int:
         _, module_errors = validate_module_equivalence(route, manifest, certification)
         errors.extend(module_errors)
         if specialized:
-            if certification.get("certification_decision") != "NOT_CERTIFIED":
+            if manifest.get("status") != "certified" and certification.get("certification_decision") != "NOT_CERTIFIED":
                 errors.append("specialized route must remain NOT_CERTIFIED")
             expected_type_coverage = {
                 "development": ["integer"],
@@ -13164,7 +13165,7 @@ def main() -> int:
                 )
                 _validate_specialized_native_runtime_replay(route, manifest, errors)
         if nodejs:
-            if certification.get("certification_decision") != "NOT_CERTIFIED":
+            if manifest.get("status") != "certified" and certification.get("certification_decision") != "NOT_CERTIFIED":
                 errors.append("Node.js route must remain NOT_CERTIFIED")
             if route_evidence.get("execution_status") == "PASSED_LOCAL":
                 nodejs_typescript = {

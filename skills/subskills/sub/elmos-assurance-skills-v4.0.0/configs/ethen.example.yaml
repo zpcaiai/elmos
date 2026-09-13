@@ -1,0 +1,10 @@
+status: UNCONFIGURED
+display_name: Ethen
+auditor_kind: human
+subject_id: CONFIGURE_REAL_IDENTITY
+control_domain: CONFIGURE_REAL_CONTROL_DOMAIN
+organization_id: CONFIGURE_REAL_ORGANIZATION_OR_DISCLOSE_SELF_REVIEW
+identity_ref: null
+signing_key_ref: null
+production_signing_enabled: false
+strict_external_review_required: true

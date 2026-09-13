@@ -1,0 +1,226 @@
+{
+  "states": [
+    "discovered",
+    "qualified",
+    "assessed",
+    "scoped",
+    "baselined",
+    "planned",
+    "transforming",
+    "build-green",
+    "behavior-verified",
+    "production-ready",
+    "canary",
+    "cutover",
+    "hypercare",
+    "stabilized",
+    "legacy-retired",
+    "accepted",
+    "blocked",
+    "needs-human",
+    "security-stopped",
+    "budget-stopped",
+    "rolled-back",
+    "cancelled"
+  ],
+  "transitions": [
+    {
+      "from": "discovered",
+      "to": "qualified",
+      "required_evidence": [
+        "discovered-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "qualified",
+      "to": "assessed",
+      "required_evidence": [
+        "qualified-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "assessed",
+      "to": "scoped",
+      "required_evidence": [
+        "assessed-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "scoped",
+      "to": "baselined",
+      "required_evidence": [
+        "scoped-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "baselined",
+      "to": "planned",
+      "required_evidence": [
+        "baselined-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "planned",
+      "to": "transforming",
+      "required_evidence": [
+        "planned-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "transforming",
+      "to": "build-green",
+      "required_evidence": [
+        "transforming-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "build-green",
+      "to": "behavior-verified",
+      "required_evidence": [
+        "build-green-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "behavior-verified",
+      "to": "production-ready",
+      "required_evidence": [
+        "behavior-verified-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "production-ready",
+      "to": "canary",
+      "required_evidence": [
+        "production-ready-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "canary",
+      "to": "cutover",
+      "required_evidence": [
+        "canary-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "cutover",
+      "to": "hypercare",
+      "required_evidence": [
+        "cutover-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "hypercare",
+      "to": "stabilized",
+      "required_evidence": [
+        "hypercare-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "stabilized",
+      "to": "legacy-retired",
+      "required_evidence": [
+        "stabilized-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": false
+    },
+    {
+      "from": "legacy-retired",
+      "to": "accepted",
+      "required_evidence": [
+        "legacy-retired-gate"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": false
+    },
+    {
+      "from": "transforming",
+      "to": "needs-human",
+      "required_evidence": [
+        "unresolved-obligation"
+      ],
+      "required_roles": [
+        "migration-lead"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "canary",
+      "to": "rolled-back",
+      "required_evidence": [
+        "rollback-decision"
+      ],
+      "required_roles": [
+        "release-manager"
+      ],
+      "reversible": true
+    },
+    {
+      "from": "rolled-back",
+      "to": "planned",
+      "required_evidence": [
+        "root-cause-plan"
+      ],
+      "required_roles": [
+        "project-owner"
+      ],
+      "reversible": true
+    }
+  ]
+}

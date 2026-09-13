@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: status-risk-decision-communications
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Weekly delivery review
+  - Critical blocker requires sponsor decision
+  - Executive demo readiness update
+  negativeControls:
+  - marketing copy
+  - claim completion from plans only
+  checks:
+  - id: status-risk-decision-communications-AC-01
+    requirement: Derive status from execution and evidence ledgers rather than agent self-report.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: status-risk-decision-communications-AC-02
+    requirement: Report scope, progress, risks, blockers, decisions, cost, machine wall-clock, and next gates.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: status-risk-decision-communications-AC-03
+    requirement: Distinguish completed, in-progress, blocked, unknown, unsupported, and waived work.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: status-risk-decision-communications-AC-04
+    requirement: Escalate material changes to security, correctness, schedule, or acceptance confidence.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: status-risk-decision-communications-AC-05
+    requirement: Keep executive and engineering views consistent through shared identifiers.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

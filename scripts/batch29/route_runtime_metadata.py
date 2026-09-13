@@ -671,17 +671,17 @@ EXACT_TOOLCHAIN_VERSIONS: dict[str, str] = {
 EXACT_TOOLCHAIN_RECORD_SHA256: dict[str, str] = {
     "java": "5c7afc06a2fa1a92d4bcc4034773f77c78df623d89b451f154cadbb16f92c32e",
     "python": "acdff16bd2346436e74f896082eebc2ad7e60e0786f821033c84551f8729c136",
-    "csharp": "9568b7bf8845e3f99e4231f861c89fc28339d1149ea20cb36a99eab7b02505ba",
-    "typescript": "0625eeaddd20bec8a42762d2551d243e9baa0a1b03cf221c48e9569899715cd4",
+    "csharp": "599d14cdc83b84573e55381034eec96a92b96e35e8720d531a05772601e4034c",
+    "typescript": "5938f0818dffa8c176ce2109fe42e739cc2307fb993d742c2e40c8e9e6852cb6",
     "go": "69db95b0f07ad243db976191853dad3c0597c97a1724bf950f576e883c3c13f6",
-    "rust": "a2e04542e74dc03c0d01b45add0f09d6189af4f812a5243e2de108daec07f1ec",
-    "cpp": "5640f0ce9e65fd7d4a5616f8754f7511c9ddb06d9c90cd6d1ec2a199f017966b",
-    "objc": "fbb108ab8528c620f48ec4a12bcde14d284d625b6667493f78ef20ecda63463d",
-    "swift": "4f672b92ce63ea95cb8b4cc115f6ca496b3f06aac8de21020e548373ac4a4057",
-    "php": "7d3bf8334efba9155a7af7e02cf5e4cb1dd5218c44d35c04926c967814b909d9",
+    "rust": "4f7ded5b34f661a8c293c0a1d9b205dcf46ce380d0af1d3af2524b830e4c4d1c",
+    "cpp": "8913649d7b9dcaa985a1f295b4117d7019d84093fadbd4023ca89b8d62540dca",
+    "objc": "e86e769cfde905ceec1ad15ca495a89b5a8ff8dab1ce2c6482f1a6cb5898f6db",
+    "swift": "190d36b7c11a157c97b5b8f2001b690d314a839fbf333b3f921da2444fa45cc5",
+    "php": "eeebd022f49f3e8370dba6e6a5140efd98c3d7e148a2ae89d40d3fa06dda652b",
     "kotlin": "71be41a8096b4c35bf41a7438a4b8bef2be1217905bf94ba25e2c3b69f0ddd7b",
-    "react": "ae60752360cb72b00d4226f6b40f984ab70dea1f12c90c27889984710e896506",
-    "flutter": "9da3d455a7d37a42acc7f709b9843def354de5e2277763f4b69cfc215ea6e160",
+    "react": "b241e63ca9f34dd183fd6c45c614c0f74eaade9357a2342f699134cc758665c6",
+    "flutter": "d2f7704a6ad995ac4ee90cbd262aa9591fd3264cacc298765c672066f7d6ec7d",
 }
 
 
@@ -744,7 +744,7 @@ def exact_toolchain_contract_sha256() -> str:
 # edits to any version, record hash, language order, or deprecated language fail
 # closed until the complete contract is intentionally re-pinned.
 EXACT_TOOLCHAIN_CONTRACT_SHA256 = (
-    "240d5ea692ed86248e0d673bea01553754209ef47c186c476ce71f64e9986adc"
+    "a34f743c015d7c6d72038b1efb02c1980f4a7e499ab7033f3ce6c1bbc45e6c48"
 )
 
 

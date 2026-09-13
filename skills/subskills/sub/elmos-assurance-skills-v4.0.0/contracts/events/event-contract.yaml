@@ -1,0 +1,13 @@
+delivery: at-least-once
+partition_key:
+- tenant_id
+- run_id
+ordering: per-run monotonic sequence; gap detection required
+deduplication:
+- tenant_id
+- event_id
+source_of_truth: durable run state + transactional outbox
+schema: contracts/schemas/event-envelope.schema.json
+payload_storage: immutable content address; ref resolves only through authorized service
+unknown_event_version: quarantine; no success inference
+security: signed producer identity or authenticated internal broker, not caller-supplied tenant claim

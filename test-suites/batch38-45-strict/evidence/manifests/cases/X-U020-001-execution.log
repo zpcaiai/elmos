@@ -1,0 +1,14 @@
+[2026-09-10T08:26:23.396873Z][X-U020-001] Starting execution of X-U020-001 (知识隔离、投毒与校准 / success / 场景1) [Category=success, Priority=P0]
+[2026-09-10T08:26:23.396877Z][X-U020-001] Bound Skill: tst-knowledge-isolation-poisoning-calibration | Product Skill IDs: []
+[2026-09-10T08:26:23.396882Z][X-U020-001] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:23.437813Z][X-U020-001] Security: Minted RS256 token (JTI=78890ca5..., Exp=1789032383)
+[2026-09-10T08:26:23.611493Z][X-U020-001] KMS: Envelope encrypted 37 bytes under key key-x-u020-001 v1 (DEK wrapped)
+[2026-09-10T08:26:23.701737Z][X-U020-001] [CROSS-SEC-GOV] Initializing X-U020-001 (U020) Category=success
+[2026-09-10T08:26:23.701749Z][X-U020-001] Knowledge Isolation & Anti-Poisoning: Verifying tenant vector space and RAG protections
+[2026-09-10T08:26:23.701753Z][X-U020-001] Querying RAG knowledge index for tenant-fintech-prod...
+[2026-09-10T08:26:23.701755Z][X-U020-001] Tenant Isolation: Vector embeddings partitioned via cryptographic tenant namespace
+[2026-09-10T08:26:23.701757Z][X-U020-001] Poisoning Filter: Scanned 500 documents for adversarial prompt injection strings
+[2026-09-10T08:26:23.701758Z][X-U020-001] Calibration Confidence: Measured 98.4% groundedness score against verified corpora
+[2026-09-10T08:26:23.701881Z][X-U020-001] Completed execution of X-U020-001 in 304.9ms: Status=PASSED
+[2026-09-10T08:26:23.701885Z][X-U020-001] Assertion Summary: 6/6 assertions passed
+[2026-09-10T08:26:23.701901Z][X-U020-001] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

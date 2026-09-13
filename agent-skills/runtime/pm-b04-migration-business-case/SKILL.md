@@ -1,5 +1,8 @@
 ---
 name: pm-b04-migration-business-case
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "汇总成本、收益、风险、TCO、机会成本和退出能力，形成可决策的商业论证. Precision Migration B04 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

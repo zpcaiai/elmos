@@ -1,0 +1,4048 @@
+{
+  "package": "elmos-fde-autonomous-delivery-repository-refactoring-skills",
+  "version": "5.2.0",
+  "count": 279,
+  "scenarios": [
+    {
+      "id": "SCN-01-01-01",
+      "skillId": "stakeholder-workflow-discovery",
+      "kind": "positive-or-edge",
+      "title": "New customer discovery with incomplete documentation",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-01-01-02",
+      "skillId": "stakeholder-workflow-discovery",
+      "kind": "positive-or-edge",
+      "title": "Conflicting business and engineering descriptions",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-01-01-03",
+      "skillId": "stakeholder-workflow-discovery",
+      "kind": "positive-or-edge",
+      "title": "Workflow contains manual shadow steps",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-01-01-01",
+      "skillId": "stakeholder-workflow-discovery",
+      "kind": "negative-trigger",
+      "title": "implement a known code change",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-01-01-02",
+      "skillId": "stakeholder-workflow-discovery",
+      "kind": "negative-trigger",
+      "title": "summarize an already approved specification",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-01-02-01",
+      "skillId": "business-baseline-roi",
+      "kind": "positive-or-edge",
+      "title": "No trustworthy baseline exists",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-01-02-02",
+      "skillId": "business-baseline-roi",
+      "kind": "positive-or-edge",
+      "title": "Savings depend on user adoption",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-01-02-03",
+      "skillId": "business-baseline-roi",
+      "kind": "positive-or-edge",
+      "title": "Compute cost could erase operational benefit",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-01-02-01",
+      "skillId": "business-baseline-roi",
+      "kind": "negative-trigger",
+      "title": "financial audit",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-01-02-02",
+      "skillId": "business-baseline-roi",
+      "kind": "negative-trigger",
+      "title": "guaranteed savings claim",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-01-02-03",
+      "skillId": "business-baseline-roi",
+      "kind": "negative-trigger",
+      "title": "pricing without scope",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-01-03-01",
+      "skillId": "pilot-scope-sow-acceptance",
+      "kind": "positive-or-edge",
+      "title": "Two-week pilot with production integration requested",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-01-03-02",
+      "skillId": "pilot-scope-sow-acceptance",
+      "kind": "positive-or-edge",
+      "title": "Scope expands after discovery",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-01-03-03",
+      "skillId": "pilot-scope-sow-acceptance",
+      "kind": "positive-or-edge",
+      "title": "Acceptance criteria conflict across stakeholders",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-01-03-01",
+      "skillId": "pilot-scope-sow-acceptance",
+      "kind": "negative-trigger",
+      "title": "unbounded build everything request",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-01-03-02",
+      "skillId": "pilot-scope-sow-acceptance",
+      "kind": "negative-trigger",
+      "title": "production approval without evidence",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-01-04-01",
+      "skillId": "status-risk-decision-communications",
+      "kind": "positive-or-edge",
+      "title": "Weekly delivery review",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-01-04-02",
+      "skillId": "status-risk-decision-communications",
+      "kind": "positive-or-edge",
+      "title": "Critical blocker requires sponsor decision",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-01-04-03",
+      "skillId": "status-risk-decision-communications",
+      "kind": "positive-or-edge",
+      "title": "Executive demo readiness update",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-01-04-01",
+      "skillId": "status-risk-decision-communications",
+      "kind": "negative-trigger",
+      "title": "marketing copy",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-01-04-02",
+      "skillId": "status-risk-decision-communications",
+      "kind": "negative-trigger",
+      "title": "claim completion from plans only",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-01-05-01",
+      "skillId": "procurement-security-questionnaire",
+      "kind": "positive-or-edge",
+      "title": "Enterprise security questionnaire",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-01-05-02",
+      "skillId": "procurement-security-questionnaire",
+      "kind": "positive-or-edge",
+      "title": "RFP asks for certification not yet earned",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-01-05-03",
+      "skillId": "procurement-security-questionnaire",
+      "kind": "positive-or-edge",
+      "title": "Customer requires data residency evidence",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-01-05-01",
+      "skillId": "procurement-security-questionnaire",
+      "kind": "negative-trigger",
+      "title": "invent compliance status",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-01-05-02",
+      "skillId": "procurement-security-questionnaire",
+      "kind": "negative-trigger",
+      "title": "legal conclusion",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-01-05-03",
+      "skillId": "procurement-security-questionnaire",
+      "kind": "negative-trigger",
+      "title": "claim unexecuted control",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-01-06-01",
+      "skillId": "adoption-change-management",
+      "kind": "positive-or-edge",
+      "title": "Pilot works technically but usage is low",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-01-06-02",
+      "skillId": "adoption-change-management",
+      "kind": "positive-or-edge",
+      "title": "Operations team refuses ownership",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-01-06-03",
+      "skillId": "adoption-change-management",
+      "kind": "positive-or-edge",
+      "title": "Training must differ by role",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-01-06-01",
+      "skillId": "adoption-change-management",
+      "kind": "negative-trigger",
+      "title": "code refactor only",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-01-06-02",
+      "skillId": "adoption-change-management",
+      "kind": "negative-trigger",
+      "title": "user surveillance without consent",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-02-01-01",
+      "skillId": "repository-custody-and-revisionset",
+      "kind": "positive-or-edge",
+      "title": "Multi-repository product with inconsistent branches",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-02-01-02",
+      "skillId": "repository-custody-and-revisionset",
+      "kind": "positive-or-edge",
+      "title": "Submodule commit is unavailable",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-02-01-03",
+      "skillId": "repository-custody-and-revisionset",
+      "kind": "positive-or-edge",
+      "title": "Customer supplies source archive without Git history",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-02-01-01",
+      "skillId": "repository-custody-and-revisionset",
+      "kind": "negative-trigger",
+      "title": "scan an unapproved repository",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-02-01-02",
+      "skillId": "repository-custody-and-revisionset",
+      "kind": "negative-trigger",
+      "title": "reuse a stale checkout",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-02-01-03",
+      "skillId": "repository-custody-and-revisionset",
+      "kind": "negative-trigger",
+      "title": "modify source during intake",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-02-02-01",
+      "skillId": "asset-inventory-and-classification",
+      "kind": "positive-or-edge",
+      "title": "Million-line monorepo",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-02-02-02",
+      "skillId": "asset-inventory-and-classification",
+      "kind": "positive-or-edge",
+      "title": "Repository includes generated SDKs and vendored libraries",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-02-02-03",
+      "skillId": "asset-inventory-and-classification",
+      "kind": "positive-or-edge",
+      "title": "Encrypted or proprietary binary assets are present",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-02-02-01",
+      "skillId": "asset-inventory-and-classification",
+      "kind": "negative-trigger",
+      "title": "assume every file is authored source",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-02-02-02",
+      "skillId": "asset-inventory-and-classification",
+      "kind": "negative-trigger",
+      "title": "delete generated or vendored code",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-02-03-01",
+      "skillId": "reproducible-build-environment",
+      "kind": "positive-or-edge",
+      "title": "Documentation build command is stale",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-02-03-02",
+      "skillId": "reproducible-build-environment",
+      "kind": "positive-or-edge",
+      "title": "Private dependency registry is unavailable",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-02-03-03",
+      "skillId": "reproducible-build-environment",
+      "kind": "positive-or-edge",
+      "title": "Multiple incompatible SDK versions are required",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-02-03-01",
+      "skillId": "reproducible-build-environment",
+      "kind": "negative-trigger",
+      "title": "declare project broken before environment diagnosis",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-02-03-02",
+      "skillId": "reproducible-build-environment",
+      "kind": "negative-trigger",
+      "title": "run untrusted code outside sandbox",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-02-04-01",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "kind": "positive-or-edge",
+      "title": "Payment API unavailable in test",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-02-04-02",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "kind": "positive-or-edge",
+      "title": "Industrial OPC UA device requires simulation",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-02-04-03",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "kind": "positive-or-edge",
+      "title": "Identity provider cannot be reached from sandbox",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-02-04-01",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "kind": "negative-trigger",
+      "title": "simulate a service without documenting fidelity limits",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-02-04-02",
+      "skillId": "external-dependency-stub-and-service-virtualization",
+      "kind": "negative-trigger",
+      "title": "use production credentials in tests",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-02-05-01",
+      "skillId": "support-profile-and-unknown-register",
+      "kind": "positive-or-edge",
+      "title": "Unsupported niche language",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-02-05-02",
+      "skillId": "support-profile-and-unknown-register",
+      "kind": "positive-or-edge",
+      "title": "Dynamic reflection prevents complete call resolution",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-02-05-03",
+      "skillId": "support-profile-and-unknown-register",
+      "kind": "positive-or-edge",
+      "title": "Production configuration is inaccessible",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-02-05-01",
+      "skillId": "support-profile-and-unknown-register",
+      "kind": "negative-trigger",
+      "title": "claim all issues found",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-02-05-02",
+      "skillId": "support-profile-and-unknown-register",
+      "kind": "negative-trigger",
+      "title": "hide unsupported assets",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-02-05-03",
+      "skillId": "support-profile-and-unknown-register",
+      "kind": "negative-trigger",
+      "title": "convert uncertainty into low-severity finding",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-02-06-01",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "kind": "positive-or-edge",
+      "title": "Production-only race condition",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-02-06-02",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "kind": "positive-or-edge",
+      "title": "Legacy application has no tracing",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-02-06-03",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "kind": "positive-or-edge",
+      "title": "Traffic contains sensitive identifiers",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-02-06-01",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "kind": "negative-trigger",
+      "title": "capture without authorization",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-02-06-02",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "kind": "negative-trigger",
+      "title": "store raw secrets or personal data",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-02-06-03",
+      "skillId": "runtime-observation-and-traffic-capture",
+      "kind": "negative-trigger",
+      "title": "treat sampled traffic as exhaustive",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-03-01-01",
+      "skillId": "polyglot-semantic-system-graph",
+      "kind": "positive-or-edge",
+      "title": "Java and TypeScript monorepo",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-03-01-02",
+      "skillId": "polyglot-semantic-system-graph",
+      "kind": "positive-or-edge",
+      "title": "Polyglot microservices with shared schemas",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-03-01-03",
+      "skillId": "polyglot-semantic-system-graph",
+      "kind": "positive-or-edge",
+      "title": "Reflection and generated clients create ambiguous edges",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-03-01-01",
+      "skillId": "polyglot-semantic-system-graph",
+      "kind": "negative-trigger",
+      "title": "text-only summary",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-03-01-02",
+      "skillId": "polyglot-semantic-system-graph",
+      "kind": "negative-trigger",
+      "title": "regex-only refactor",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-03-01-03",
+      "skillId": "polyglot-semantic-system-graph",
+      "kind": "negative-trigger",
+      "title": "claim resolved dynamic behavior without evidence",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-03-02-01",
+      "skillId": "business-capability-code-mapping",
+      "kind": "positive-or-edge",
+      "title": "Core order workflow spans five services",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-03-02-02",
+      "skillId": "business-capability-code-mapping",
+      "kind": "positive-or-edge",
+      "title": "Business rules differ between UI and database routine",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-03-02-03",
+      "skillId": "business-capability-code-mapping",
+      "kind": "positive-or-edge",
+      "title": "No owner knows a legacy exception path",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-03-02-01",
+      "skillId": "business-capability-code-mapping",
+      "kind": "negative-trigger",
+      "title": "infer business truth from names alone",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-03-02-02",
+      "skillId": "business-capability-code-mapping",
+      "kind": "negative-trigger",
+      "title": "replace domain expert approval",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-03-03-01",
+      "skillId": "data-event-permission-lineage",
+      "kind": "positive-or-edge",
+      "title": "Tenant ID dropped in async job",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-03-03-02",
+      "skillId": "data-event-permission-lineage",
+      "kind": "positive-or-edge",
+      "title": "PII copied into logs and embeddings",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-03-03-03",
+      "skillId": "data-event-permission-lineage",
+      "kind": "positive-or-edge",
+      "title": "Duplicate event may cause repeated payment",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-03-03-01",
+      "skillId": "data-event-permission-lineage",
+      "kind": "negative-trigger",
+      "title": "assume framework annotations guarantee authorization",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-03-03-02",
+      "skillId": "data-event-permission-lineage",
+      "kind": "negative-trigger",
+      "title": "ignore batch and offline paths",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-03-04-01",
+      "skillId": "git-history-ownership-change-coupling",
+      "kind": "positive-or-edge",
+      "title": "Critical module has one historical maintainer",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-03-04-02",
+      "skillId": "git-history-ownership-change-coupling",
+      "kind": "positive-or-edge",
+      "title": "Files in different services always change together",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-03-04-03",
+      "skillId": "git-history-ownership-change-coupling",
+      "kind": "positive-or-edge",
+      "title": "Large formatter commit distorts churn",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-03-04-01",
+      "skillId": "git-history-ownership-change-coupling",
+      "kind": "negative-trigger",
+      "title": "rank individual performance",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-03-04-02",
+      "skillId": "git-history-ownership-change-coupling",
+      "kind": "negative-trigger",
+      "title": "infer blame or intent without evidence",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-03-05-01",
+      "skillId": "static-dynamic-evidence-fusion",
+      "kind": "positive-or-edge",
+      "title": "Static call graph disagrees with production trace",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-03-05-02",
+      "skillId": "static-dynamic-evidence-fusion",
+      "kind": "positive-or-edge",
+      "title": "Documentation contradicts tests",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-03-05-03",
+      "skillId": "static-dynamic-evidence-fusion",
+      "kind": "positive-or-edge",
+      "title": "Finding relies on an old build",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-03-05-01",
+      "skillId": "static-dynamic-evidence-fusion",
+      "kind": "negative-trigger",
+      "title": "majority vote over incompatible evidence",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-03-05-02",
+      "skillId": "static-dynamic-evidence-fusion",
+      "kind": "negative-trigger",
+      "title": "overwrite contradictions",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-03-05-03",
+      "skillId": "static-dynamic-evidence-fusion",
+      "kind": "negative-trigger",
+      "title": "use stale evidence silently",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-04-01-01",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "kind": "positive-or-edge",
+      "title": "Multiple tools report the same SQL injection path",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-01-02",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "kind": "positive-or-edge",
+      "title": "Many local smells share one missing architecture boundary",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-01-03",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "kind": "positive-or-edge",
+      "title": "A model suggests a bug with no reproducible evidence",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-04-01-01",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "kind": "negative-trigger",
+      "title": "paste scanner output",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-01-02",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "kind": "negative-trigger",
+      "title": "create unsupported finding",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-01-03",
+      "skillId": "issue-ontology-and-finding-normalization",
+      "kind": "negative-trigger",
+      "title": "assign severity without impact context",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-04-02-01",
+      "skillId": "architecture-maintainability-audit",
+      "kind": "positive-or-edge",
+      "title": "Spring monolith with package cycles",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-02-02",
+      "skillId": "architecture-maintainability-audit",
+      "kind": "positive-or-edge",
+      "title": "Microservices share one database and release train",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-02-03",
+      "skillId": "architecture-maintainability-audit",
+      "kind": "positive-or-edge",
+      "title": "God service blocks framework upgrade",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-04-02-01",
+      "skillId": "architecture-maintainability-audit",
+      "kind": "negative-trigger",
+      "title": "style-only review",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-02-02",
+      "skillId": "architecture-maintainability-audit",
+      "kind": "negative-trigger",
+      "title": "recommend microservices by default",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-02-03",
+      "skillId": "architecture-maintainability-audit",
+      "kind": "negative-trigger",
+      "title": "rewrite without business value",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-04-03-01",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "kind": "positive-or-edge",
+      "title": "Duplicate message charges twice",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-03-02",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "kind": "positive-or-edge",
+      "title": "Clock shift expires session early",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-03-03",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "kind": "positive-or-edge",
+      "title": "Thread pool shutdown leaks resources",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-04-03-01",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "kind": "negative-trigger",
+      "title": "prove all behavior from static text",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-03-02",
+      "skillId": "correctness-concurrency-consistency-audit",
+      "kind": "negative-trigger",
+      "title": "silently change externally visible semantics",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-04-04-01",
+      "skillId": "security-privacy-supply-chain-audit",
+      "kind": "positive-or-edge",
+      "title": "Cross-tenant cache leak",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-04-02",
+      "skillId": "security-privacy-supply-chain-audit",
+      "kind": "positive-or-edge",
+      "title": "Prompt injection reaches a write tool",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-04-03",
+      "skillId": "security-privacy-supply-chain-audit",
+      "kind": "positive-or-edge",
+      "title": "Build dependency lacks provenance",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-04-04-01",
+      "skillId": "security-privacy-supply-chain-audit",
+      "kind": "negative-trigger",
+      "title": "penetrate production without authorization",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-04-02",
+      "skillId": "security-privacy-supply-chain-audit",
+      "kind": "negative-trigger",
+      "title": "declare compliance",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-04-03",
+      "skillId": "security-privacy-supply-chain-audit",
+      "kind": "negative-trigger",
+      "title": "expose secrets to model",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-04-05-01",
+      "skillId": "data-database-migration-audit",
+      "kind": "positive-or-edge",
+      "title": "Oracle routine conversion to PostgreSQL",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-05-02",
+      "skillId": "data-database-migration-audit",
+      "kind": "positive-or-edge",
+      "title": "Backfill may violate unique constraint",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-05-03",
+      "skillId": "data-database-migration-audit",
+      "kind": "positive-or-edge",
+      "title": "ORM N+1 appears only at realistic volume",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-04-05-01",
+      "skillId": "data-database-migration-audit",
+      "kind": "negative-trigger",
+      "title": "run destructive query on production",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-05-02",
+      "skillId": "data-database-migration-audit",
+      "kind": "negative-trigger",
+      "title": "infer data meaning from column names alone",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-04-06-01",
+      "skillId": "performance-reliability-observability-audit",
+      "kind": "positive-or-edge",
+      "title": "P95 latency grows superlinearly",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-06-02",
+      "skillId": "performance-reliability-observability-audit",
+      "kind": "positive-or-edge",
+      "title": "Retry storm during dependency outage",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-06-03",
+      "skillId": "performance-reliability-observability-audit",
+      "kind": "positive-or-edge",
+      "title": "No trace links user error to backend failure",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-04-06-01",
+      "skillId": "performance-reliability-observability-audit",
+      "kind": "negative-trigger",
+      "title": "benchmark on non-representative data without caveat",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-06-02",
+      "skillId": "performance-reliability-observability-audit",
+      "kind": "negative-trigger",
+      "title": "optimize before measuring",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-04-07-01",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "kind": "positive-or-edge",
+      "title": "Line coverage high but mutations survive",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-07-02",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "kind": "positive-or-edge",
+      "title": "CI takes hours and produces non-reproducible artifacts",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-07-03",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "kind": "positive-or-edge",
+      "title": "Integration fixtures hide authorization failures",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-04-07-01",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "kind": "negative-trigger",
+      "title": "equate line coverage with correctness",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-07-02",
+      "skillId": "test-ci-cd-developer-experience-audit",
+      "kind": "negative-trigger",
+      "title": "disable failing tests to pass",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-04-08-01",
+      "skillId": "ux-accessibility-i18n-audit",
+      "kind": "positive-or-edge",
+      "title": "Keyboard user cannot complete approval",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-08-02",
+      "skillId": "ux-accessibility-i18n-audit",
+      "kind": "positive-or-edge",
+      "title": "Timezone conversion changes business date",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-08-03",
+      "skillId": "ux-accessibility-i18n-audit",
+      "kind": "positive-or-edge",
+      "title": "Large bundle blocks field users on slow networks",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-04-08-01",
+      "skillId": "ux-accessibility-i18n-audit",
+      "kind": "negative-trigger",
+      "title": "visual redesign without product scope",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-08-02",
+      "skillId": "ux-accessibility-i18n-audit",
+      "kind": "negative-trigger",
+      "title": "claim legal accessibility compliance from automated scan alone",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-04-09-01",
+      "skillId": "ai-agent-system-audit",
+      "kind": "positive-or-edge",
+      "title": "Indirect prompt injection reaches MCP write tool",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-09-02",
+      "skillId": "ai-agent-system-audit",
+      "kind": "positive-or-edge",
+      "title": "RAG citations do not support answer",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-09-03",
+      "skillId": "ai-agent-system-audit",
+      "kind": "positive-or-edge",
+      "title": "Agent cannot resume after tool failure",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-04-09-01",
+      "skillId": "ai-agent-system-audit",
+      "kind": "negative-trigger",
+      "title": "judge quality from demo",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-09-02",
+      "skillId": "ai-agent-system-audit",
+      "kind": "negative-trigger",
+      "title": "allow model to certify itself",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-09-03",
+      "skillId": "ai-agent-system-audit",
+      "kind": "negative-trigger",
+      "title": "expose private evaluation data",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-04-10-01",
+      "skillId": "cost-finops-sustainability-audit",
+      "kind": "positive-or-edge",
+      "title": "Repeated full-repository scans dominate cost",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-10-02",
+      "skillId": "cost-finops-sustainability-audit",
+      "kind": "positive-or-edge",
+      "title": "High reasoning model used for deterministic tasks",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-04-10-03",
+      "skillId": "cost-finops-sustainability-audit",
+      "kind": "positive-or-edge",
+      "title": "Idle runtime labs remain provisioned",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-04-10-01",
+      "skillId": "cost-finops-sustainability-audit",
+      "kind": "negative-trigger",
+      "title": "personal finance",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-10-02",
+      "skillId": "cost-finops-sustainability-audit",
+      "kind": "negative-trigger",
+      "title": "guaranteed savings",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-04-10-03",
+      "skillId": "cost-finops-sustainability-audit",
+      "kind": "negative-trigger",
+      "title": "optimize cost by weakening required controls",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-05-01-01",
+      "skillId": "root-cause-risk-prioritization",
+      "kind": "positive-or-edge",
+      "title": "Hundreds of findings share one missing tenant-context boundary",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-01-02",
+      "skillId": "root-cause-risk-prioritization",
+      "kind": "positive-or-edge",
+      "title": "Critical vulnerability is low confidence",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-01-03",
+      "skillId": "root-cause-risk-prioritization",
+      "kind": "positive-or-edge",
+      "title": "Quick fix increases long-term coupling",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-05-01-01",
+      "skillId": "root-cause-risk-prioritization",
+      "kind": "negative-trigger",
+      "title": "sort only by scanner severity",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-01-02",
+      "skillId": "root-cause-risk-prioritization",
+      "kind": "negative-trigger",
+      "title": "hide low-confidence critical candidates",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-05-02-01",
+      "skillId": "business-invariant-recovery",
+      "kind": "positive-or-edge",
+      "title": "Legacy behavior includes known pricing bug",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-02-02",
+      "skillId": "business-invariant-recovery",
+      "kind": "positive-or-edge",
+      "title": "Authorization semantics are undocumented",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-02-03",
+      "skillId": "business-invariant-recovery",
+      "kind": "positive-or-edge",
+      "title": "Database trigger enforces hidden inventory invariant",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-05-02-01",
+      "skillId": "business-invariant-recovery",
+      "kind": "negative-trigger",
+      "title": "assume existing behavior is correct",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-02-02",
+      "skillId": "business-invariant-recovery",
+      "kind": "negative-trigger",
+      "title": "approve business rule without owner",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-05-03-01",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "kind": "positive-or-edge",
+      "title": "Modular monolith versus microservices",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-03-02",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "kind": "positive-or-edge",
+      "title": "Framework upgrade versus strangler replacement",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-03-03",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "kind": "positive-or-edge",
+      "title": "Shared database must be separated gradually",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-05-03-01",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "kind": "negative-trigger",
+      "title": "single unqualified rewrite recommendation",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-03-02",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "kind": "negative-trigger",
+      "title": "technology choice without constraints",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-05-04-01",
+      "skillId": "transformation-dag-estimation",
+      "kind": "positive-or-edge",
+      "title": "Database change must precede application cutover",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-04-02",
+      "skillId": "transformation-dag-estimation",
+      "kind": "positive-or-edge",
+      "title": "Parallel agents would edit overlapping modules",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-04-03",
+      "skillId": "transformation-dag-estimation",
+      "kind": "positive-or-edge",
+      "title": "Plan invalidated by upstream commit",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-05-04-01",
+      "skillId": "transformation-dag-estimation",
+      "kind": "negative-trigger",
+      "title": "one giant patch",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-04-02",
+      "skillId": "transformation-dag-estimation",
+      "kind": "negative-trigger",
+      "title": "human-day estimate presented as machine runtime",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-04-03",
+      "skillId": "transformation-dag-estimation",
+      "kind": "negative-trigger",
+      "title": "plan without rollback",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-05-05-01",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "kind": "positive-or-edge",
+      "title": "Agent modifies an unrelated lockfile",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-05-02",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "kind": "positive-or-edge",
+      "title": "Generated code and source changes need separate commits",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-05-03",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "kind": "positive-or-edge",
+      "title": "Commit passes tests but violates scope",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-05-05-01",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "kind": "negative-trigger",
+      "title": "git add all",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-05-02",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "kind": "negative-trigger",
+      "title": "mix unrelated changes",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-05-03",
+      "skillId": "changeset-commit-and-provenance-governance",
+      "kind": "negative-trigger",
+      "title": "force push without approval",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-05-06-01",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "kind": "positive-or-edge",
+      "title": "Type-safe API rename across monorepo",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-06-02",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "kind": "positive-or-edge",
+      "title": "Extract application service from controllers",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-06-03",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "kind": "positive-or-edge",
+      "title": "Refactor retry logic without duplicating side effects",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-05-06-01",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "kind": "negative-trigger",
+      "title": "free-form rewrite without plan",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-06-02",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "kind": "negative-trigger",
+      "title": "skip failing verification",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-06-03",
+      "skillId": "proof-guided-atomic-refactor-execution",
+      "kind": "negative-trigger",
+      "title": "production write without approval",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-05-07-01",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "kind": "positive-or-edge",
+      "title": "Struts and Servlet migration to Spring Boot",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-07-02",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "kind": "positive-or-edge",
+      "title": "Shared library framework major upgrade",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-07-03",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "kind": "positive-or-edge",
+      "title": "Monolith capability extraction with shared database",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-05-07-01",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "kind": "negative-trigger",
+      "title": "big-bang rewrite by default",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-07-02",
+      "skillId": "modernization-strangler-and-rearchitecture",
+      "kind": "negative-trigger",
+      "title": "remove legacy path before equivalence evidence",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-05-08-01",
+      "skillId": "cross-language-framework-transformation",
+      "kind": "positive-or-edge",
+      "title": "Java service to C#",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-08-02",
+      "skillId": "cross-language-framework-transformation",
+      "kind": "positive-or-edge",
+      "title": "Python component to Rust",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-08-03",
+      "skillId": "cross-language-framework-transformation",
+      "kind": "positive-or-edge",
+      "title": "Vue application to React with state and routing parity",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-05-08-01",
+      "skillId": "cross-language-framework-transformation",
+      "kind": "negative-trigger",
+      "title": "line-by-line translation",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-08-02",
+      "skillId": "cross-language-framework-transformation",
+      "kind": "negative-trigger",
+      "title": "claim equivalence without native runtime",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-08-03",
+      "skillId": "cross-language-framework-transformation",
+      "kind": "negative-trigger",
+      "title": "erase unsupported semantics",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-05-09-01",
+      "skillId": "database-schema-routine-data-transformation",
+      "kind": "positive-or-edge",
+      "title": "Oracle to PostgreSQL with routines",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-09-02",
+      "skillId": "database-schema-routine-data-transformation",
+      "kind": "positive-or-edge",
+      "title": "Zero-downtime column type change",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-05-09-03",
+      "skillId": "database-schema-routine-data-transformation",
+      "kind": "positive-or-edge",
+      "title": "Database authorization differs across engines",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-05-09-01",
+      "skillId": "database-schema-routine-data-transformation",
+      "kind": "negative-trigger",
+      "title": "syntax-only SQL translation",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-09-02",
+      "skillId": "database-schema-routine-data-transformation",
+      "kind": "negative-trigger",
+      "title": "destructive production migration without backup",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-05-09-03",
+      "skillId": "database-schema-routine-data-transformation",
+      "kind": "negative-trigger",
+      "title": "ignore permission semantics",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-06-01-01",
+      "skillId": "characterization-differential-mutation-verification",
+      "kind": "positive-or-edge",
+      "title": "Refactor changes exception wording but not semantics",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-01-02",
+      "skillId": "characterization-differential-mutation-verification",
+      "kind": "positive-or-edge",
+      "title": "Target emits events in different order",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-01-03",
+      "skillId": "characterization-differential-mutation-verification",
+      "kind": "positive-or-edge",
+      "title": "Tests pass but mutation score is weak",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-06-01-01",
+      "skillId": "characterization-differential-mutation-verification",
+      "kind": "negative-trigger",
+      "title": "declare success from compile only",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-01-02",
+      "skillId": "characterization-differential-mutation-verification",
+      "kind": "negative-trigger",
+      "title": "let implementation agent approve itself",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-01-03",
+      "skillId": "characterization-differential-mutation-verification",
+      "kind": "negative-trigger",
+      "title": "ignore approved behavior changes",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-06-02-01",
+      "skillId": "formal-assurance-routing",
+      "kind": "positive-or-edge",
+      "title": "Verify no cross-tenant read path",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-02-02",
+      "skillId": "formal-assurance-routing",
+      "kind": "positive-or-edge",
+      "title": "Check saga compensation liveness",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-02-03",
+      "skillId": "formal-assurance-routing",
+      "kind": "positive-or-edge",
+      "title": "Prove data migration mapping preserves monetary totals",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-06-02-01",
+      "skillId": "formal-assurance-routing",
+      "kind": "negative-trigger",
+      "title": "formalize the entire repository by default",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-02-02",
+      "skillId": "formal-assurance-routing",
+      "kind": "negative-trigger",
+      "title": "claim proof without checking tool output",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-02-03",
+      "skillId": "formal-assurance-routing",
+      "kind": "negative-trigger",
+      "title": "hide modeling assumptions",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-06-03-01",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "kind": "positive-or-edge",
+      "title": "All tests pass but critical unknown remains",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-03-02",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "kind": "positive-or-edge",
+      "title": "Evidence was produced before latest dependency change",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-03-03",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "kind": "positive-or-edge",
+      "title": "Capability seeks E5 without companion assurance package",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-06-03-01",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "kind": "negative-trigger",
+      "title": "issue E4 or E5 certificate",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-03-02",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "kind": "negative-trigger",
+      "title": "approve stale evidence",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-03-03",
+      "skillId": "e0-e3-readiness-and-evidence-bundle",
+      "kind": "negative-trigger",
+      "title": "let adapter certify itself",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-06-04-01",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "kind": "positive-or-edge",
+      "title": "Shadow order processing must not charge customers",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-04-02",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "kind": "positive-or-edge",
+      "title": "Canary schema change must remain backward compatible",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-04-03",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "kind": "positive-or-edge",
+      "title": "Rollback requires compensating events",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-06-04-01",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "kind": "negative-trigger",
+      "title": "perform unapproved production cutover",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-04-02",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "kind": "negative-trigger",
+      "title": "claim E4 or E5",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-04-03",
+      "skillId": "shadow-dual-run-canary-rollback-preparation",
+      "kind": "negative-trigger",
+      "title": "duplicate real side effects during shadow",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-06-05-01",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "kind": "positive-or-edge",
+      "title": "Bad rollout causes cross-tenant responses",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-05-02",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "kind": "positive-or-edge",
+      "title": "Queue retry storm overloads database",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-05-03",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "kind": "positive-or-edge",
+      "title": "Emergency hotfix lacks full regression window",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-06-05-01",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "kind": "negative-trigger",
+      "title": "make destructive production change without incident authority",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-05-02",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "kind": "negative-trigger",
+      "title": "assign blame",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-05-03",
+      "skillId": "incident-triage-remediation-and-postmortem",
+      "kind": "negative-trigger",
+      "title": "close incident from agent confidence",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-06-06-01",
+      "skillId": "final-handoff-training-support",
+      "kind": "positive-or-edge",
+      "title": "Operations cannot execute rollback runbook",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-06-02",
+      "skillId": "final-handoff-training-support",
+      "kind": "positive-or-edge",
+      "title": "Support owner lacks required access",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-06-03",
+      "skillId": "final-handoff-training-support",
+      "kind": "positive-or-edge",
+      "title": "Customer needs separate executive and engineering training",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-06-06-01",
+      "skillId": "final-handoff-training-support",
+      "kind": "negative-trigger",
+      "title": "declare handoff complete without owner acceptance",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-06-02",
+      "skillId": "final-handoff-training-support",
+      "kind": "negative-trigger",
+      "title": "transfer secrets in documents",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-06-07-01",
+      "skillId": "reusable-recipe-skill-learning",
+      "kind": "positive-or-edge",
+      "title": "Same migration fix recurs across customers",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-07-02",
+      "skillId": "reusable-recipe-skill-learning",
+      "kind": "positive-or-edge",
+      "title": "Skill triggers too broadly",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-07-03",
+      "skillId": "reusable-recipe-skill-learning",
+      "kind": "positive-or-edge",
+      "title": "Tenant trace is useful but not consented for global learning",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-06-07-01",
+      "skillId": "reusable-recipe-skill-learning",
+      "kind": "negative-trigger",
+      "title": "train globally without consent",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-07-02",
+      "skillId": "reusable-recipe-skill-learning",
+      "kind": "negative-trigger",
+      "title": "create duplicate skill",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-07-03",
+      "skillId": "reusable-recipe-skill-learning",
+      "kind": "negative-trigger",
+      "title": "generalize from one weak example",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-06-08-01",
+      "skillId": "portfolio-multi-repository-governance",
+      "kind": "positive-or-edge",
+      "title": "Hundreds of Spring services share vulnerable library",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-08-02",
+      "skillId": "portfolio-multi-repository-governance",
+      "kind": "positive-or-edge",
+      "title": "Two repositories require coordinated API migration",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-08-03",
+      "skillId": "portfolio-multi-repository-governance",
+      "kind": "positive-or-edge",
+      "title": "Portfolio dashboard hides one unsupported critical system",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-06-08-01",
+      "skillId": "portfolio-multi-repository-governance",
+      "kind": "negative-trigger",
+      "title": "compare teams by raw finding count",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-08-02",
+      "skillId": "portfolio-multi-repository-governance",
+      "kind": "negative-trigger",
+      "title": "apply one migration recipe to unsupported repos",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "SCN-06-09-01",
+      "skillId": "product-feedback-roadmap-loop",
+      "kind": "positive-or-edge",
+      "title": "Three customers request similar audit workflow",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-09-02",
+      "skillId": "product-feedback-roadmap-loop",
+      "kind": "positive-or-edge",
+      "title": "Feature request is actually missing training",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "SCN-06-09-03",
+      "skillId": "product-feedback-roadmap-loop",
+      "kind": "positive-or-edge",
+      "title": "High-value request conflicts with platform trust model",
+      "preconditions": [
+        "Exact tenant, engagement, RevisionSet and policy are known"
+      ],
+      "expected": [
+        "Typed output",
+        "Evidence and unknowns retained",
+        "No authority escalation",
+        "Independent verification handoff"
+      ]
+    },
+    {
+      "id": "NEG-06-09-01",
+      "skillId": "product-feedback-roadmap-loop",
+      "kind": "negative-trigger",
+      "title": "promise roadmap date",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-09-02",
+      "skillId": "product-feedback-roadmap-loop",
+      "kind": "negative-trigger",
+      "title": "rank by loudest customer only",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "NEG-06-09-03",
+      "skillId": "product-feedback-roadmap-loop",
+      "kind": "negative-trigger",
+      "title": "mix tenant secrets into shared roadmap",
+      "preconditions": [
+        "Request resembles adjacent work but is outside this Skill ownership"
+      ],
+      "expected": [
+        "Skill does not activate or delegates to canonical owner",
+        "No side effect",
+        "Decision is auditable"
+      ]
+    },
+    {
+      "id": "EDGE-001",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Repository contains malicious build scripts and must be inspected without execution",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-002",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Source archive contains path traversal entries or duplicate filenames",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-003",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Git LFS pointers exist but objects are missing",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-004",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Two repositories reference mutually incompatible schema versions",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-005",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Generated code is edited manually and regeneration would erase fixes",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-006",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Production behavior depends on an undocumented feature flag",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-007",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "External API behavior changed after the captured contract",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-008",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "A critical path uses reflection that static analysis cannot resolve",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-009",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Runtime trace sampling misses a rare but severe failure",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-010",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Tool output is too large and must be summarized without losing evidence identity",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-011",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Agent session resumes after policy or permission changes",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-012",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Remote executor is replaced while a write result is in flight",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-013",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Subagents discover conflicting findings from different evidence sources",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-014",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Two write agents produce overlapping patches",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-015",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "A database migration partially completes before cancellation",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-016",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "A retry repeats an external side effect despite task-level idempotency",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-017",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "A model/provider change alters structured output semantics",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-018",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "An analyzer upgrade invalidates prior findings",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-019",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "A customer requests deletion while evidence is under legal hold",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-020",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "A tenant asks to contribute a successful recipe to global learning",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-021",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "A security questionnaire asks for certification not yet earned",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-022",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Pilot acceptance criteria change after implementation begins",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-023",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "A high-severity scanner result is a false positive but lacks suppressing evidence",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-024",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "A low-severity code smell is the root cause of many production incidents",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-025",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Current behavior is inconsistent but business owners want it preserved temporarily",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-026",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Performance improvement changes event ordering within an allowed contract",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-027",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Canary rollback restores code but not already migrated data",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-028",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Shadow traffic accidentally invokes a non-idempotent tool",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-029",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "Customer environment cannot run required verification tool",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    },
+    {
+      "id": "EDGE-030",
+      "skillId": "cross-cutting",
+      "kind": "system-edge",
+      "title": "A regulated customer requires independent evidence replay in its own VPC",
+      "preconditions": [
+        "A relevant product workflow is active"
+      ],
+      "expected": [
+        "Fail closed or degrade safely",
+        "No hidden data/effect loss",
+        "Evidence and recovery state retained"
+      ]
+    }
+  ]
+}

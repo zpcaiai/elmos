@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: reusable-recipe-skill-learning
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: ReusableRecipeSkillLearningService
+    workflow: ReusableRecipeSkillLearningWorkflow
+    policyGate: ReusableRecipeSkillLearningPolicyGate
+    evidenceProducer: ReusableRecipeSkillLearningEvidenceProducer
+    repositoryPort: ReusableRecipeSkillLearningRepositoryPort
+  requiredPorts:
+  - id: trajectory.read
+    direction: outbound
+  - id: consent.evaluate
+    direction: outbound
+  - id: skill.search
+    direction: inbound
+  - id: artifact.sanitize
+    direction: inbound
+  - id: eval.execute
+    direction: outbound
+  - id: registry.write
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/reusable-recipe-skill-learning/runs
+  - GET /api/v1/skills/reusable-recipe-skill-learning/runs/{runId}
+  - POST /api/v1/skills/reusable-recipe-skill-learning/runs/{runId}/cancel
+  - POST /api/v1/skills/reusable-recipe-skill-learning/runs/{runId}/resume
+  events:
+  - elmos.skill.reusable-recipe-skill-learning.requested.v1
+  - elmos.skill.reusable-recipe-skill-learning.checkpointed.v1
+  - elmos.skill.reusable-recipe-skill-learning.completed.v1
+  - elmos.skill.reusable-recipe-skill-learning.failed.v1
+  workflowSteps:
+  - Collect material lessons from deliveries, incidents, reviews, and repeated manual corrections.
+  - 'Classify the correct improvement owner: AGENTS, harness, existing Skill, reference, script, test, adapter, policy, new
+    Skill, or no change.'
+  - Check duplication and canonical ownership across the capability graph.
+  - Create sanitized candidate artifacts and eval cases.
+  - Run deterministic and rubric-based evaluations with negative controls.
+  - Release only after independent acceptance and versioned invalidation rules.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

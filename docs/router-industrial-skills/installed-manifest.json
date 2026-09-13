@@ -1,0 +1,34 @@
+{
+  "archive": {
+    "bytes": 42130,
+    "entries": 26,
+    "path": "skills/subskills/elmos-router-industrial-skillpack.zip",
+    "sha256": "90ebe2dcf3f4c9e21d80c508c268429d3944e7780a3054a7416bff59197d9319",
+    "uncompressed_bytes": 87640
+  },
+  "install_roots": [
+    "agent-skills/runtime",
+    ".agents/skills"
+  ],
+  "installed_at": "2026-09-10T04:53:54.234945+00:00",
+  "package": "elmos-router-industrial-skillpack",
+  "package_id": "elmos.router-industrial-skillpack",
+  "skills_installed": [
+    "elmos-router-industrial",
+    "router-industrial-00-master-orchestrator",
+    "router-industrial-01-domain-contracts",
+    "router-industrial-02-model-provider-registry",
+    "router-industrial-03-policy-and-security",
+    "router-industrial-04-routing-engine",
+    "router-industrial-05-litellm-gateway",
+    "router-industrial-06-native-provider-adapters",
+    "router-industrial-07-openrouter-adapter",
+    "router-industrial-08-resilience-and-replay",
+    "router-industrial-09-cost-rate-limit-accounting",
+    "router-industrial-10-observability-and-evals",
+    "router-industrial-11-deployment-and-operations",
+    "router-industrial-12-certification-and-rollout"
+  ],
+  "source_files": 26,
+  "version": "1.0.0"
+}

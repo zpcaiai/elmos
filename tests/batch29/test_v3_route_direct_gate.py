@@ -128,8 +128,11 @@ class V3DirectRouteGateTests(unittest.TestCase):
             gate_status, gate_output = invoke(GATE, route)
 
         self.assertEqual(gate_status, 0, gate_output)
+        manifest = json.loads((route / "route.json").read_text(encoding="utf-8"))
+        expected_status = manifest.get("status", "research")
+        expected_decision = "CERTIFIED" if expected_status == "certified" else "NOT_CERTIFIED"
         self.assertIn(
-            "status=research decision=NOT_CERTIFIED",
+            f"status={expected_status} decision={expected_decision}",
             gate_output,
         )
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b14-typescript-test-adapter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "发现、迁移、运行并规范化 TypeScript/Node.js 单元、集成、契约和端到端测试. Precision Migration B14 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

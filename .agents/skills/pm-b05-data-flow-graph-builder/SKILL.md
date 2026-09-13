@@ -1,5 +1,8 @@
 ---
 name: pm-b05-data-flow-graph-builder
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "构建跨函数和跨模块数据流、污点流和关键业务数据传播图. Precision Migration B05 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,43 @@
+# {{.ProjectName}}
+
+{{.Description}}
+
+## Architecture Overview (DDD)
+
+This project follows Domain-Driven Design (DDD) layered architecture principles:
+
+```
+├── cmd/
+│   └── server/          # Application entrypoint & composition root (main.go)
+├── internal/
+│   ├── domain/          # Core business entities, value objects, domain events & repository interfaces
+│   │   ├── model/       # Aggregate roots and domain models
+│   │   ├── repository/  # Repository abstraction interfaces (zero infrastructure dependencies)
+│   │   ├── event/       # Domain event structures
+│   │   └── valueobject/ # Immutable value objects
+│   ├── application/     # Application use cases, services, DTOs & primary ports
+│   │   ├── service/     # Use case orchestrators (depends only on domain)
+│   │   ├── dto/         # Request/Response data transfer objects
+│   │   └── port/        # Inbound and outbound port interfaces
+│   ├── infrastructure/  # Concrete adapters (databases, external clients, configuration)
+│   │   ├── persistence/ # Concrete repository implementations
+│   │   ├── config/      # Environment configuration loading
+│   │   └── client/      # External service HTTP/gRPC clients
+│   └── interfaces/      # Inbound presentation layer (HTTP handlers, gRPC servers)
+│       ├── http/        # REST API handlers, routing, middleware
+│       └── grpc/        # gRPC server implementation
+└── pkg/                 # Shared utilities (logger, error types)
+```
+
+## Quick Start
+
+### Build & Run
+```bash
+make build
+./bin/server
+```
+
+### Run Tests
+```bash
+make test
+```

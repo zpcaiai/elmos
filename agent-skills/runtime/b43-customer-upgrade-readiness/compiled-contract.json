@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "skill_name": "b43-customer-upgrade-readiness",
+  "batch": 43,
+  "batch_title": "Product Lifecycle & Compatibility",
+  "implementation_state": "VERIFIED",
+  "external_evidence_status": "LOCAL_EXECUTED",
+  "production_certification": "NOT_CERTIFIED",
+  "runtime_handler": "scripts.batch43.b43_skill_runtime.B43SkillRuntime._handle_customer_upgrade_readiness",
+  "fail_closed_policy": "FAIL_CLOSED_ON_UNKNOWN_STATUS",
+  "metrics_thresholds": {
+    "compatibilityMatrixPassRate": 1.0,
+    "upgradePassRate": 1.0,
+    "unsupportedBreakingChangeCount": 0.0
+  }
+}

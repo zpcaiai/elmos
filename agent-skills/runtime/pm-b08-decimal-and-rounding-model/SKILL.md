@@ -1,5 +1,8 @@
 ---
 name: pm-b08-decimal-and-rounding-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "建模精度、Scale、舍入模式、溢出和货币语义. Precision Migration B08 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

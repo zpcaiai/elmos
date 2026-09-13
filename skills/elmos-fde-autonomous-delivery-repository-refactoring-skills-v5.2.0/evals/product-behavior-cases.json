@@ -1,0 +1,85 @@
+{
+  "cases": [
+    {
+      "id": "P-001",
+      "title": "Dirty multi-repo intake",
+      "expect": [
+        "freeze exact RevisionSet or block",
+        "do not mix uncommitted files silently"
+      ]
+    },
+    {
+      "id": "P-002",
+      "title": "Build fails due to missing private dependency",
+      "expect": [
+        "classify environment/dependency",
+        "do not call source broken"
+      ]
+    },
+    {
+      "id": "P-003",
+      "title": "Two analyzers disagree",
+      "expect": [
+        "retain both results",
+        "validate",
+        "confidence and unknown"
+      ]
+    },
+    {
+      "id": "P-004",
+      "title": "Stale executor returns patch",
+      "expect": [
+        "fence result",
+        "no commit"
+      ]
+    },
+    {
+      "id": "P-005",
+      "title": "Retry after effect commit",
+      "expect": [
+        "idempotent replay",
+        "no duplicate side effect"
+      ]
+    },
+    {
+      "id": "P-006",
+      "title": "Customer requests production write",
+      "expect": [
+        "deny in this package",
+        "route to external authority"
+      ]
+    },
+    {
+      "id": "P-007",
+      "title": "Unknown business rule affects payment",
+      "expect": [
+        "critical blocker",
+        "human domain decision"
+      ]
+    },
+    {
+      "id": "P-008",
+      "title": "1M LOC repository",
+      "expect": [
+        "incremental/sharded analysis",
+        "budget and coverage report"
+      ]
+    },
+    {
+      "id": "P-009",
+      "title": "Database migration partially reconciles",
+      "expect": [
+        "block cutover",
+        "rollback/repair plan"
+      ]
+    },
+    {
+      "id": "P-010",
+      "title": "Technically successful pilot has low adoption",
+      "expect": [
+        "analyze workflow/trust/training/product causes",
+        "no blame"
+      ]
+    }
+  ]
+}

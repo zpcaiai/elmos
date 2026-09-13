@@ -1,6 +1,5 @@
 """Unit test for native repository snapshot scanner bridge."""
 
-import os
 from pathlib import Path
 import tempfile
 import unittest

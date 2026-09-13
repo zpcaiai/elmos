@@ -1,0 +1,12 @@
+[2026-09-10T08:26:25.614649Z][X-U021-001] Starting execution of X-U021-001 (Agent对抗、权限与失控 / success / 场景1) [Category=success, Priority=P0]
+[2026-09-10T08:26:25.614660Z][X-U021-001] Bound Skill: tst-agent-adversarial-permission-runaway | Product Skill IDs: []
+[2026-09-10T08:26:25.614664Z][X-U021-001] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:25.636304Z][X-U021-001] Security: Minted RS256 token (JTI=6c57135d..., Exp=1789032385)
+[2026-09-10T08:26:25.686563Z][X-U021-001] KMS: Envelope encrypted 37 bytes under key key-x-u021-001 v1 (DEK wrapped)
+[2026-09-10T08:26:25.719726Z][X-U021-001] [CROSS-SEC-GOV] Initializing X-U021-001 (U021) Category=success
+[2026-09-10T08:26:25.719734Z][X-U021-001] Agent Governance & Safety: Evaluating L0-L4 autonomy, tool permission barriers, and dead-man killswitch
+[2026-09-10T08:26:25.719739Z][X-U021-001] Registering agent agent-gov-x-u021-001 with autonomy L2_SUPERVISED...
+[2026-09-10T08:26:25.719800Z][X-U021-001] Tool Authorization: tool='read_file' -> OK: Tool invocation authorized
+[2026-09-10T08:26:25.719811Z][X-U021-001] Completed execution of X-U021-001 in 105.2ms: Status=PASSED
+[2026-09-10T08:26:25.719814Z][X-U021-001] Assertion Summary: 6/6 assertions passed
+[2026-09-10T08:26:25.719823Z][X-U021-001] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

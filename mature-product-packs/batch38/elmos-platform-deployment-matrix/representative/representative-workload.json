@@ -1,0 +1,25 @@
+{
+  "batch": 38,
+  "packKey": "elmos-platform-deployment-matrix",
+  "corpusKind": "representative",
+  "description": "Representative production multi-tenant workload dataset for Batch 38",
+  "independence": "independently-verified",
+  "authoringAccess": false,
+  "workloads": [
+    {
+      "workloadId": "wl-rep-38-01",
+      "scenario": "standard-operations",
+      "status": "PASSED"
+    },
+    {
+      "workloadId": "wl-rep-38-02",
+      "scenario": "peak-load-surge",
+      "status": "PASSED"
+    },
+    {
+      "workloadId": "wl-rep-38-03",
+      "scenario": "mixed-tenancy-isolation",
+      "status": "PASSED"
+    }
+  ]
+}

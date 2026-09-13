@@ -1,0 +1,180 @@
+{"id": "stakeholder-workflow-discovery-pos-1", "kind": "positive", "query": "customer discovery", "expectedSkill": "stakeholder-workflow-discovery", "expectedActivate": true}
+{"id": "stakeholder-workflow-discovery-pos-2", "kind": "positive", "query": "workflow interview", "expectedSkill": "stakeholder-workflow-discovery", "expectedActivate": true}
+{"id": "stakeholder-workflow-discovery-neg-1", "kind": "negative", "query": "implement a known code change", "expectedSkill": "stakeholder-workflow-discovery", "expectedActivate": false}
+{"id": "stakeholder-workflow-discovery-neg-2", "kind": "negative", "query": "summarize an already approved specification", "expectedSkill": "stakeholder-workflow-discovery", "expectedActivate": false}
+{"id": "business-baseline-roi-pos-1", "kind": "positive", "query": "ROI", "expectedSkill": "business-baseline-roi", "expectedActivate": true}
+{"id": "business-baseline-roi-pos-2", "kind": "positive", "query": "business case", "expectedSkill": "business-baseline-roi", "expectedActivate": true}
+{"id": "business-baseline-roi-neg-1", "kind": "negative", "query": "financial audit", "expectedSkill": "business-baseline-roi", "expectedActivate": false}
+{"id": "business-baseline-roi-neg-2", "kind": "negative", "query": "guaranteed savings claim", "expectedSkill": "business-baseline-roi", "expectedActivate": false}
+{"id": "pilot-scope-sow-acceptance-pos-1", "kind": "positive", "query": "SOW", "expectedSkill": "pilot-scope-sow-acceptance", "expectedActivate": true}
+{"id": "pilot-scope-sow-acceptance-pos-2", "kind": "positive", "query": "pilot scope", "expectedSkill": "pilot-scope-sow-acceptance", "expectedActivate": true}
+{"id": "pilot-scope-sow-acceptance-neg-1", "kind": "negative", "query": "unbounded build everything request", "expectedSkill": "pilot-scope-sow-acceptance", "expectedActivate": false}
+{"id": "pilot-scope-sow-acceptance-neg-2", "kind": "negative", "query": "production approval without evidence", "expectedSkill": "pilot-scope-sow-acceptance", "expectedActivate": false}
+{"id": "status-risk-decision-communications-pos-1", "kind": "positive", "query": "weekly status", "expectedSkill": "status-risk-decision-communications", "expectedActivate": true}
+{"id": "status-risk-decision-communications-pos-2", "kind": "positive", "query": "executive update", "expectedSkill": "status-risk-decision-communications", "expectedActivate": true}
+{"id": "status-risk-decision-communications-neg-1", "kind": "negative", "query": "marketing copy", "expectedSkill": "status-risk-decision-communications", "expectedActivate": false}
+{"id": "status-risk-decision-communications-neg-2", "kind": "negative", "query": "claim completion from plans only", "expectedSkill": "status-risk-decision-communications", "expectedActivate": false}
+{"id": "procurement-security-questionnaire-pos-1", "kind": "positive", "query": "RFP", "expectedSkill": "procurement-security-questionnaire", "expectedActivate": true}
+{"id": "procurement-security-questionnaire-pos-2", "kind": "positive", "query": "security questionnaire", "expectedSkill": "procurement-security-questionnaire", "expectedActivate": true}
+{"id": "procurement-security-questionnaire-neg-1", "kind": "negative", "query": "invent compliance status", "expectedSkill": "procurement-security-questionnaire", "expectedActivate": false}
+{"id": "procurement-security-questionnaire-neg-2", "kind": "negative", "query": "legal conclusion", "expectedSkill": "procurement-security-questionnaire", "expectedActivate": false}
+{"id": "adoption-change-management-pos-1", "kind": "positive", "query": "adoption", "expectedSkill": "adoption-change-management", "expectedActivate": true}
+{"id": "adoption-change-management-pos-2", "kind": "positive", "query": "training", "expectedSkill": "adoption-change-management", "expectedActivate": true}
+{"id": "adoption-change-management-neg-1", "kind": "negative", "query": "code refactor only", "expectedSkill": "adoption-change-management", "expectedActivate": false}
+{"id": "adoption-change-management-neg-2", "kind": "negative", "query": "user surveillance without consent", "expectedSkill": "adoption-change-management", "expectedActivate": false}
+{"id": "repository-custody-and-revisionset-pos-1", "kind": "positive", "query": "ingest repository", "expectedSkill": "repository-custody-and-revisionset", "expectedActivate": true}
+{"id": "repository-custody-and-revisionset-pos-2", "kind": "positive", "query": "clone source", "expectedSkill": "repository-custody-and-revisionset", "expectedActivate": true}
+{"id": "repository-custody-and-revisionset-neg-1", "kind": "negative", "query": "scan an unapproved repository", "expectedSkill": "repository-custody-and-revisionset", "expectedActivate": false}
+{"id": "repository-custody-and-revisionset-neg-2", "kind": "negative", "query": "reuse a stale checkout", "expectedSkill": "repository-custody-and-revisionset", "expectedActivate": false}
+{"id": "asset-inventory-and-classification-pos-1", "kind": "positive", "query": "repository inventory", "expectedSkill": "asset-inventory-and-classification", "expectedActivate": true}
+{"id": "asset-inventory-and-classification-pos-2", "kind": "positive", "query": "file classification", "expectedSkill": "asset-inventory-and-classification", "expectedActivate": true}
+{"id": "asset-inventory-and-classification-neg-1", "kind": "negative", "query": "assume every file is authored source", "expectedSkill": "asset-inventory-and-classification", "expectedActivate": false}
+{"id": "asset-inventory-and-classification-neg-2", "kind": "negative", "query": "delete generated or vendored code", "expectedSkill": "asset-inventory-and-classification", "expectedActivate": false}
+{"id": "reproducible-build-environment-pos-1", "kind": "positive", "query": "reproduce build", "expectedSkill": "reproducible-build-environment", "expectedActivate": true}
+{"id": "reproducible-build-environment-pos-2", "kind": "positive", "query": "build failure", "expectedSkill": "reproducible-build-environment", "expectedActivate": true}
+{"id": "reproducible-build-environment-neg-1", "kind": "negative", "query": "declare project broken before environment diagnosis", "expectedSkill": "reproducible-build-environment", "expectedActivate": false}
+{"id": "reproducible-build-environment-neg-2", "kind": "negative", "query": "run untrusted code outside sandbox", "expectedSkill": "reproducible-build-environment", "expectedActivate": false}
+{"id": "external-dependency-stub-and-service-virtualization-pos-1", "kind": "positive", "query": "service virtualization", "expectedSkill": "external-dependency-stub-and-service-virtualization", "expectedActivate": true}
+{"id": "external-dependency-stub-and-service-virtualization-pos-2", "kind": "positive", "query": "stub external API", "expectedSkill": "external-dependency-stub-and-service-virtualization", "expectedActivate": true}
+{"id": "external-dependency-stub-and-service-virtualization-neg-1", "kind": "negative", "query": "simulate a service without documenting fidelity limits", "expectedSkill": "external-dependency-stub-and-service-virtualization", "expectedActivate": false}
+{"id": "external-dependency-stub-and-service-virtualization-neg-2", "kind": "negative", "query": "use production credentials in tests", "expectedSkill": "external-dependency-stub-and-service-virtualization", "expectedActivate": false}
+{"id": "support-profile-and-unknown-register-pos-1", "kind": "positive", "query": "support matrix", "expectedSkill": "support-profile-and-unknown-register", "expectedActivate": true}
+{"id": "support-profile-and-unknown-register-pos-2", "kind": "positive", "query": "unknown register", "expectedSkill": "support-profile-and-unknown-register", "expectedActivate": true}
+{"id": "support-profile-and-unknown-register-neg-1", "kind": "negative", "query": "claim all issues found", "expectedSkill": "support-profile-and-unknown-register", "expectedActivate": false}
+{"id": "support-profile-and-unknown-register-neg-2", "kind": "negative", "query": "hide unsupported assets", "expectedSkill": "support-profile-and-unknown-register", "expectedActivate": false}
+{"id": "runtime-observation-and-traffic-capture-pos-1", "kind": "positive", "query": "capture runtime behavior", "expectedSkill": "runtime-observation-and-traffic-capture", "expectedActivate": true}
+{"id": "runtime-observation-and-traffic-capture-pos-2", "kind": "positive", "query": "traffic replay", "expectedSkill": "runtime-observation-and-traffic-capture", "expectedActivate": true}
+{"id": "runtime-observation-and-traffic-capture-neg-1", "kind": "negative", "query": "capture without authorization", "expectedSkill": "runtime-observation-and-traffic-capture", "expectedActivate": false}
+{"id": "runtime-observation-and-traffic-capture-neg-2", "kind": "negative", "query": "store raw secrets or personal data", "expectedSkill": "runtime-observation-and-traffic-capture", "expectedActivate": false}
+{"id": "polyglot-semantic-system-graph-pos-1", "kind": "positive", "query": "system graph", "expectedSkill": "polyglot-semantic-system-graph", "expectedActivate": true}
+{"id": "polyglot-semantic-system-graph-pos-2", "kind": "positive", "query": "semantic repository graph", "expectedSkill": "polyglot-semantic-system-graph", "expectedActivate": true}
+{"id": "polyglot-semantic-system-graph-neg-1", "kind": "negative", "query": "text-only summary", "expectedSkill": "polyglot-semantic-system-graph", "expectedActivate": false}
+{"id": "polyglot-semantic-system-graph-neg-2", "kind": "negative", "query": "regex-only refactor", "expectedSkill": "polyglot-semantic-system-graph", "expectedActivate": false}
+{"id": "business-capability-code-mapping-pos-1", "kind": "positive", "query": "business capability map", "expectedSkill": "business-capability-code-mapping", "expectedActivate": true}
+{"id": "business-capability-code-mapping-pos-2", "kind": "positive", "query": "code ownership", "expectedSkill": "business-capability-code-mapping", "expectedActivate": true}
+{"id": "business-capability-code-mapping-neg-1", "kind": "negative", "query": "infer business truth from names alone", "expectedSkill": "business-capability-code-mapping", "expectedActivate": false}
+{"id": "business-capability-code-mapping-neg-2", "kind": "negative", "query": "replace domain expert approval", "expectedSkill": "business-capability-code-mapping", "expectedActivate": false}
+{"id": "data-event-permission-lineage-pos-1", "kind": "positive", "query": "data lineage", "expectedSkill": "data-event-permission-lineage", "expectedActivate": true}
+{"id": "data-event-permission-lineage-pos-2", "kind": "positive", "query": "event lineage", "expectedSkill": "data-event-permission-lineage", "expectedActivate": true}
+{"id": "data-event-permission-lineage-neg-1", "kind": "negative", "query": "assume framework annotations guarantee authorization", "expectedSkill": "data-event-permission-lineage", "expectedActivate": false}
+{"id": "data-event-permission-lineage-neg-2", "kind": "negative", "query": "ignore batch and offline paths", "expectedSkill": "data-event-permission-lineage", "expectedActivate": false}
+{"id": "git-history-ownership-change-coupling-pos-1", "kind": "positive", "query": "git history analysis", "expectedSkill": "git-history-ownership-change-coupling", "expectedActivate": true}
+{"id": "git-history-ownership-change-coupling-pos-2", "kind": "positive", "query": "code ownership", "expectedSkill": "git-history-ownership-change-coupling", "expectedActivate": true}
+{"id": "git-history-ownership-change-coupling-neg-1", "kind": "negative", "query": "rank individual performance", "expectedSkill": "git-history-ownership-change-coupling", "expectedActivate": false}
+{"id": "git-history-ownership-change-coupling-neg-2", "kind": "negative", "query": "infer blame or intent without evidence", "expectedSkill": "git-history-ownership-change-coupling", "expectedActivate": false}
+{"id": "static-dynamic-evidence-fusion-pos-1", "kind": "positive", "query": "evidence fusion", "expectedSkill": "static-dynamic-evidence-fusion", "expectedActivate": true}
+{"id": "static-dynamic-evidence-fusion-pos-2", "kind": "positive", "query": "combine static and runtime", "expectedSkill": "static-dynamic-evidence-fusion", "expectedActivate": true}
+{"id": "static-dynamic-evidence-fusion-neg-1", "kind": "negative", "query": "majority vote over incompatible evidence", "expectedSkill": "static-dynamic-evidence-fusion", "expectedActivate": false}
+{"id": "static-dynamic-evidence-fusion-neg-2", "kind": "negative", "query": "overwrite contradictions", "expectedSkill": "static-dynamic-evidence-fusion", "expectedActivate": false}
+{"id": "issue-ontology-and-finding-normalization-pos-1", "kind": "positive", "query": "normalize findings", "expectedSkill": "issue-ontology-and-finding-normalization", "expectedActivate": true}
+{"id": "issue-ontology-and-finding-normalization-pos-2", "kind": "positive", "query": "issue ontology", "expectedSkill": "issue-ontology-and-finding-normalization", "expectedActivate": true}
+{"id": "issue-ontology-and-finding-normalization-neg-1", "kind": "negative", "query": "paste scanner output", "expectedSkill": "issue-ontology-and-finding-normalization", "expectedActivate": false}
+{"id": "issue-ontology-and-finding-normalization-neg-2", "kind": "negative", "query": "create unsupported finding", "expectedSkill": "issue-ontology-and-finding-normalization", "expectedActivate": false}
+{"id": "architecture-maintainability-audit-pos-1", "kind": "positive", "query": "architecture audit", "expectedSkill": "architecture-maintainability-audit", "expectedActivate": true}
+{"id": "architecture-maintainability-audit-pos-2", "kind": "positive", "query": "code quality audit", "expectedSkill": "architecture-maintainability-audit", "expectedActivate": true}
+{"id": "architecture-maintainability-audit-neg-1", "kind": "negative", "query": "style-only review", "expectedSkill": "architecture-maintainability-audit", "expectedActivate": false}
+{"id": "architecture-maintainability-audit-neg-2", "kind": "negative", "query": "recommend microservices by default", "expectedSkill": "architecture-maintainability-audit", "expectedActivate": false}
+{"id": "correctness-concurrency-consistency-audit-pos-1", "kind": "positive", "query": "bug audit", "expectedSkill": "correctness-concurrency-consistency-audit", "expectedActivate": true}
+{"id": "correctness-concurrency-consistency-audit-pos-2", "kind": "positive", "query": "race condition", "expectedSkill": "correctness-concurrency-consistency-audit", "expectedActivate": true}
+{"id": "correctness-concurrency-consistency-audit-neg-1", "kind": "negative", "query": "prove all behavior from static text", "expectedSkill": "correctness-concurrency-consistency-audit", "expectedActivate": false}
+{"id": "correctness-concurrency-consistency-audit-neg-2", "kind": "negative", "query": "silently change externally visible semantics", "expectedSkill": "correctness-concurrency-consistency-audit", "expectedActivate": false}
+{"id": "security-privacy-supply-chain-audit-pos-1", "kind": "positive", "query": "security audit", "expectedSkill": "security-privacy-supply-chain-audit", "expectedActivate": true}
+{"id": "security-privacy-supply-chain-audit-pos-2", "kind": "positive", "query": "privacy audit", "expectedSkill": "security-privacy-supply-chain-audit", "expectedActivate": true}
+{"id": "security-privacy-supply-chain-audit-neg-1", "kind": "negative", "query": "penetrate production without authorization", "expectedSkill": "security-privacy-supply-chain-audit", "expectedActivate": false}
+{"id": "security-privacy-supply-chain-audit-neg-2", "kind": "negative", "query": "declare compliance", "expectedSkill": "security-privacy-supply-chain-audit", "expectedActivate": false}
+{"id": "data-database-migration-audit-pos-1", "kind": "positive", "query": "database audit", "expectedSkill": "data-database-migration-audit", "expectedActivate": true}
+{"id": "data-database-migration-audit-pos-2", "kind": "positive", "query": "schema review", "expectedSkill": "data-database-migration-audit", "expectedActivate": true}
+{"id": "data-database-migration-audit-neg-1", "kind": "negative", "query": "run destructive query on production", "expectedSkill": "data-database-migration-audit", "expectedActivate": false}
+{"id": "data-database-migration-audit-neg-2", "kind": "negative", "query": "infer data meaning from column names alone", "expectedSkill": "data-database-migration-audit", "expectedActivate": false}
+{"id": "performance-reliability-observability-audit-pos-1", "kind": "positive", "query": "performance audit", "expectedSkill": "performance-reliability-observability-audit", "expectedActivate": true}
+{"id": "performance-reliability-observability-audit-pos-2", "kind": "positive", "query": "reliability audit", "expectedSkill": "performance-reliability-observability-audit", "expectedActivate": true}
+{"id": "performance-reliability-observability-audit-neg-1", "kind": "negative", "query": "benchmark on non-representative data without caveat", "expectedSkill": "performance-reliability-observability-audit", "expectedActivate": false}
+{"id": "performance-reliability-observability-audit-neg-2", "kind": "negative", "query": "optimize before measuring", "expectedSkill": "performance-reliability-observability-audit", "expectedActivate": false}
+{"id": "test-ci-cd-developer-experience-audit-pos-1", "kind": "positive", "query": "test audit", "expectedSkill": "test-ci-cd-developer-experience-audit", "expectedActivate": true}
+{"id": "test-ci-cd-developer-experience-audit-pos-2", "kind": "positive", "query": "CI audit", "expectedSkill": "test-ci-cd-developer-experience-audit", "expectedActivate": true}
+{"id": "test-ci-cd-developer-experience-audit-neg-1", "kind": "negative", "query": "equate line coverage with correctness", "expectedSkill": "test-ci-cd-developer-experience-audit", "expectedActivate": false}
+{"id": "test-ci-cd-developer-experience-audit-neg-2", "kind": "negative", "query": "disable failing tests to pass", "expectedSkill": "test-ci-cd-developer-experience-audit", "expectedActivate": false}
+{"id": "ux-accessibility-i18n-audit-pos-1", "kind": "positive", "query": "UX audit", "expectedSkill": "ux-accessibility-i18n-audit", "expectedActivate": true}
+{"id": "ux-accessibility-i18n-audit-pos-2", "kind": "positive", "query": "accessibility", "expectedSkill": "ux-accessibility-i18n-audit", "expectedActivate": true}
+{"id": "ux-accessibility-i18n-audit-neg-1", "kind": "negative", "query": "visual redesign without product scope", "expectedSkill": "ux-accessibility-i18n-audit", "expectedActivate": false}
+{"id": "ux-accessibility-i18n-audit-neg-2", "kind": "negative", "query": "claim legal accessibility compliance from automated scan alone", "expectedSkill": "ux-accessibility-i18n-audit", "expectedActivate": false}
+{"id": "ai-agent-system-audit-pos-1", "kind": "positive", "query": "agent audit", "expectedSkill": "ai-agent-system-audit", "expectedActivate": true}
+{"id": "ai-agent-system-audit-pos-2", "kind": "positive", "query": "RAG audit", "expectedSkill": "ai-agent-system-audit", "expectedActivate": true}
+{"id": "ai-agent-system-audit-neg-1", "kind": "negative", "query": "judge quality from demo", "expectedSkill": "ai-agent-system-audit", "expectedActivate": false}
+{"id": "ai-agent-system-audit-neg-2", "kind": "negative", "query": "allow model to certify itself", "expectedSkill": "ai-agent-system-audit", "expectedActivate": false}
+{"id": "cost-finops-sustainability-audit-pos-1", "kind": "positive", "query": "FinOps", "expectedSkill": "cost-finops-sustainability-audit", "expectedActivate": true}
+{"id": "cost-finops-sustainability-audit-pos-2", "kind": "positive", "query": "cost audit", "expectedSkill": "cost-finops-sustainability-audit", "expectedActivate": true}
+{"id": "cost-finops-sustainability-audit-neg-1", "kind": "negative", "query": "personal finance", "expectedSkill": "cost-finops-sustainability-audit", "expectedActivate": false}
+{"id": "cost-finops-sustainability-audit-neg-2", "kind": "negative", "query": "guaranteed savings", "expectedSkill": "cost-finops-sustainability-audit", "expectedActivate": false}
+{"id": "root-cause-risk-prioritization-pos-1", "kind": "positive", "query": "root cause", "expectedSkill": "root-cause-risk-prioritization", "expectedActivate": true}
+{"id": "root-cause-risk-prioritization-pos-2", "kind": "positive", "query": "prioritize findings", "expectedSkill": "root-cause-risk-prioritization", "expectedActivate": true}
+{"id": "root-cause-risk-prioritization-neg-1", "kind": "negative", "query": "sort only by scanner severity", "expectedSkill": "root-cause-risk-prioritization", "expectedActivate": false}
+{"id": "root-cause-risk-prioritization-neg-2", "kind": "negative", "query": "hide low-confidence critical candidates", "expectedSkill": "root-cause-risk-prioritization", "expectedActivate": false}
+{"id": "business-invariant-recovery-pos-1", "kind": "positive", "query": "recover invariants", "expectedSkill": "business-invariant-recovery", "expectedActivate": true}
+{"id": "business-invariant-recovery-pos-2", "kind": "positive", "query": "behavior contract", "expectedSkill": "business-invariant-recovery", "expectedActivate": true}
+{"id": "business-invariant-recovery-neg-1", "kind": "negative", "query": "assume existing behavior is correct", "expectedSkill": "business-invariant-recovery", "expectedActivate": false}
+{"id": "business-invariant-recovery-neg-2", "kind": "negative", "query": "approve business rule without owner", "expectedSkill": "business-invariant-recovery", "expectedActivate": false}
+{"id": "target-architecture-alternatives-and-adr-pos-1", "kind": "positive", "query": "target architecture", "expectedSkill": "target-architecture-alternatives-and-adr", "expectedActivate": true}
+{"id": "target-architecture-alternatives-and-adr-pos-2", "kind": "positive", "query": "ADR", "expectedSkill": "target-architecture-alternatives-and-adr", "expectedActivate": true}
+{"id": "target-architecture-alternatives-and-adr-neg-1", "kind": "negative", "query": "single unqualified rewrite recommendation", "expectedSkill": "target-architecture-alternatives-and-adr", "expectedActivate": false}
+{"id": "target-architecture-alternatives-and-adr-neg-2", "kind": "negative", "query": "technology choice without constraints", "expectedSkill": "target-architecture-alternatives-and-adr", "expectedActivate": false}
+{"id": "transformation-dag-estimation-pos-1", "kind": "positive", "query": "transformation plan", "expectedSkill": "transformation-dag-estimation", "expectedActivate": true}
+{"id": "transformation-dag-estimation-pos-2", "kind": "positive", "query": "refactor DAG", "expectedSkill": "transformation-dag-estimation", "expectedActivate": true}
+{"id": "transformation-dag-estimation-neg-1", "kind": "negative", "query": "one giant patch", "expectedSkill": "transformation-dag-estimation", "expectedActivate": false}
+{"id": "transformation-dag-estimation-neg-2", "kind": "negative", "query": "human-day estimate presented as machine runtime", "expectedSkill": "transformation-dag-estimation", "expectedActivate": false}
+{"id": "changeset-commit-and-provenance-governance-pos-1", "kind": "positive", "query": "atomic commits", "expectedSkill": "changeset-commit-and-provenance-governance", "expectedActivate": true}
+{"id": "changeset-commit-and-provenance-governance-pos-2", "kind": "positive", "query": "changeset governance", "expectedSkill": "changeset-commit-and-provenance-governance", "expectedActivate": true}
+{"id": "changeset-commit-and-provenance-governance-neg-1", "kind": "negative", "query": "git add all", "expectedSkill": "changeset-commit-and-provenance-governance", "expectedActivate": false}
+{"id": "changeset-commit-and-provenance-governance-neg-2", "kind": "negative", "query": "mix unrelated changes", "expectedSkill": "changeset-commit-and-provenance-governance", "expectedActivate": false}
+{"id": "proof-guided-atomic-refactor-execution-pos-1", "kind": "positive", "query": "execute refactor", "expectedSkill": "proof-guided-atomic-refactor-execution", "expectedActivate": true}
+{"id": "proof-guided-atomic-refactor-execution-pos-2", "kind": "positive", "query": "apply transformation plan", "expectedSkill": "proof-guided-atomic-refactor-execution", "expectedActivate": true}
+{"id": "proof-guided-atomic-refactor-execution-neg-1", "kind": "negative", "query": "free-form rewrite without plan", "expectedSkill": "proof-guided-atomic-refactor-execution", "expectedActivate": false}
+{"id": "proof-guided-atomic-refactor-execution-neg-2", "kind": "negative", "query": "skip failing verification", "expectedSkill": "proof-guided-atomic-refactor-execution", "expectedActivate": false}
+{"id": "modernization-strangler-and-rearchitecture-pos-1", "kind": "positive", "query": "modernize legacy system", "expectedSkill": "modernization-strangler-and-rearchitecture", "expectedActivate": true}
+{"id": "modernization-strangler-and-rearchitecture-pos-2", "kind": "positive", "query": "strangler migration", "expectedSkill": "modernization-strangler-and-rearchitecture", "expectedActivate": true}
+{"id": "modernization-strangler-and-rearchitecture-neg-1", "kind": "negative", "query": "big-bang rewrite by default", "expectedSkill": "modernization-strangler-and-rearchitecture", "expectedActivate": false}
+{"id": "modernization-strangler-and-rearchitecture-neg-2", "kind": "negative", "query": "remove legacy path before equivalence evidence", "expectedSkill": "modernization-strangler-and-rearchitecture", "expectedActivate": false}
+{"id": "cross-language-framework-transformation-pos-1", "kind": "positive", "query": "convert repository language", "expectedSkill": "cross-language-framework-transformation", "expectedActivate": true}
+{"id": "cross-language-framework-transformation-pos-2", "kind": "positive", "query": "framework migration", "expectedSkill": "cross-language-framework-transformation", "expectedActivate": true}
+{"id": "cross-language-framework-transformation-neg-1", "kind": "negative", "query": "line-by-line translation", "expectedSkill": "cross-language-framework-transformation", "expectedActivate": false}
+{"id": "cross-language-framework-transformation-neg-2", "kind": "negative", "query": "claim equivalence without native runtime", "expectedSkill": "cross-language-framework-transformation", "expectedActivate": false}
+{"id": "database-schema-routine-data-transformation-pos-1", "kind": "positive", "query": "database migration", "expectedSkill": "database-schema-routine-data-transformation", "expectedActivate": true}
+{"id": "database-schema-routine-data-transformation-pos-2", "kind": "positive", "query": "SQL dialect conversion", "expectedSkill": "database-schema-routine-data-transformation", "expectedActivate": true}
+{"id": "database-schema-routine-data-transformation-neg-1", "kind": "negative", "query": "syntax-only SQL translation", "expectedSkill": "database-schema-routine-data-transformation", "expectedActivate": false}
+{"id": "database-schema-routine-data-transformation-neg-2", "kind": "negative", "query": "destructive production migration without backup", "expectedSkill": "database-schema-routine-data-transformation", "expectedActivate": false}
+{"id": "characterization-differential-mutation-verification-pos-1", "kind": "positive", "query": "verify refactor", "expectedSkill": "characterization-differential-mutation-verification", "expectedActivate": true}
+{"id": "characterization-differential-mutation-verification-pos-2", "kind": "positive", "query": "behavior equivalence", "expectedSkill": "characterization-differential-mutation-verification", "expectedActivate": true}
+{"id": "characterization-differential-mutation-verification-neg-1", "kind": "negative", "query": "declare success from compile only", "expectedSkill": "characterization-differential-mutation-verification", "expectedActivate": false}
+{"id": "characterization-differential-mutation-verification-neg-2", "kind": "negative", "query": "let implementation agent approve itself", "expectedSkill": "characterization-differential-mutation-verification", "expectedActivate": false}
+{"id": "formal-assurance-routing-pos-1", "kind": "positive", "query": "formal verification", "expectedSkill": "formal-assurance-routing", "expectedActivate": true}
+{"id": "formal-assurance-routing-pos-2", "kind": "positive", "query": "TLA+", "expectedSkill": "formal-assurance-routing", "expectedActivate": true}
+{"id": "formal-assurance-routing-neg-1", "kind": "negative", "query": "formalize the entire repository by default", "expectedSkill": "formal-assurance-routing", "expectedActivate": false}
+{"id": "formal-assurance-routing-neg-2", "kind": "negative", "query": "claim proof without checking tool output", "expectedSkill": "formal-assurance-routing", "expectedActivate": false}
+{"id": "e0-e3-readiness-and-evidence-bundle-pos-1", "kind": "positive", "query": "E0 E3 readiness", "expectedSkill": "e0-e3-readiness-and-evidence-bundle", "expectedActivate": true}
+{"id": "e0-e3-readiness-and-evidence-bundle-pos-2", "kind": "positive", "query": "evidence bundle", "expectedSkill": "e0-e3-readiness-and-evidence-bundle", "expectedActivate": true}
+{"id": "e0-e3-readiness-and-evidence-bundle-neg-1", "kind": "negative", "query": "issue E4 or E5 certificate", "expectedSkill": "e0-e3-readiness-and-evidence-bundle", "expectedActivate": false}
+{"id": "e0-e3-readiness-and-evidence-bundle-neg-2", "kind": "negative", "query": "approve stale evidence", "expectedSkill": "e0-e3-readiness-and-evidence-bundle", "expectedActivate": false}
+{"id": "shadow-dual-run-canary-rollback-preparation-pos-1", "kind": "positive", "query": "canary plan", "expectedSkill": "shadow-dual-run-canary-rollback-preparation", "expectedActivate": true}
+{"id": "shadow-dual-run-canary-rollback-preparation-pos-2", "kind": "positive", "query": "shadow traffic", "expectedSkill": "shadow-dual-run-canary-rollback-preparation", "expectedActivate": true}
+{"id": "shadow-dual-run-canary-rollback-preparation-neg-1", "kind": "negative", "query": "perform unapproved production cutover", "expectedSkill": "shadow-dual-run-canary-rollback-preparation", "expectedActivate": false}
+{"id": "shadow-dual-run-canary-rollback-preparation-neg-2", "kind": "negative", "query": "claim E4 or E5", "expectedSkill": "shadow-dual-run-canary-rollback-preparation", "expectedActivate": false}
+{"id": "incident-triage-remediation-and-postmortem-pos-1", "kind": "positive", "query": "incident", "expectedSkill": "incident-triage-remediation-and-postmortem", "expectedActivate": true}
+{"id": "incident-triage-remediation-and-postmortem-pos-2", "kind": "positive", "query": "production failure", "expectedSkill": "incident-triage-remediation-and-postmortem", "expectedActivate": true}
+{"id": "incident-triage-remediation-and-postmortem-neg-1", "kind": "negative", "query": "make destructive production change without incident authority", "expectedSkill": "incident-triage-remediation-and-postmortem", "expectedActivate": false}
+{"id": "incident-triage-remediation-and-postmortem-neg-2", "kind": "negative", "query": "assign blame", "expectedSkill": "incident-triage-remediation-and-postmortem", "expectedActivate": false}
+{"id": "final-handoff-training-support-pos-1", "kind": "positive", "query": "handoff", "expectedSkill": "final-handoff-training-support", "expectedActivate": true}
+{"id": "final-handoff-training-support-pos-2", "kind": "positive", "query": "runbook", "expectedSkill": "final-handoff-training-support", "expectedActivate": true}
+{"id": "final-handoff-training-support-neg-1", "kind": "negative", "query": "declare handoff complete without owner acceptance", "expectedSkill": "final-handoff-training-support", "expectedActivate": false}
+{"id": "final-handoff-training-support-neg-2", "kind": "negative", "query": "transfer secrets in documents", "expectedSkill": "final-handoff-training-support", "expectedActivate": false}
+{"id": "reusable-recipe-skill-learning-pos-1", "kind": "positive", "query": "learn recipe", "expectedSkill": "reusable-recipe-skill-learning", "expectedActivate": true}
+{"id": "reusable-recipe-skill-learning-pos-2", "kind": "positive", "query": "create reusable skill", "expectedSkill": "reusable-recipe-skill-learning", "expectedActivate": true}
+{"id": "reusable-recipe-skill-learning-neg-1", "kind": "negative", "query": "train globally without consent", "expectedSkill": "reusable-recipe-skill-learning", "expectedActivate": false}
+{"id": "reusable-recipe-skill-learning-neg-2", "kind": "negative", "query": "create duplicate skill", "expectedSkill": "reusable-recipe-skill-learning", "expectedActivate": false}
+{"id": "portfolio-multi-repository-governance-pos-1", "kind": "positive", "query": "portfolio assessment", "expectedSkill": "portfolio-multi-repository-governance", "expectedActivate": true}
+{"id": "portfolio-multi-repository-governance-pos-2", "kind": "positive", "query": "many repositories", "expectedSkill": "portfolio-multi-repository-governance", "expectedActivate": true}
+{"id": "portfolio-multi-repository-governance-neg-1", "kind": "negative", "query": "compare teams by raw finding count", "expectedSkill": "portfolio-multi-repository-governance", "expectedActivate": false}
+{"id": "portfolio-multi-repository-governance-neg-2", "kind": "negative", "query": "apply one migration recipe to unsupported repos", "expectedSkill": "portfolio-multi-repository-governance", "expectedActivate": false}
+{"id": "product-feedback-roadmap-loop-pos-1", "kind": "positive", "query": "product feedback", "expectedSkill": "product-feedback-roadmap-loop", "expectedActivate": true}
+{"id": "product-feedback-roadmap-loop-pos-2", "kind": "positive", "query": "roadmap input", "expectedSkill": "product-feedback-roadmap-loop", "expectedActivate": true}
+{"id": "product-feedback-roadmap-loop-neg-1", "kind": "negative", "query": "promise roadmap date", "expectedSkill": "product-feedback-roadmap-loop", "expectedActivate": false}
+{"id": "product-feedback-roadmap-loop-neg-2", "kind": "negative", "query": "rank by loudest customer only", "expectedSkill": "product-feedback-roadmap-loop", "expectedActivate": false}

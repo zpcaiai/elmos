@@ -14,7 +14,7 @@
   "failed": 0,
   "source_digests": {
     "cloud_run_control.py": "sha256:749be1e7942c46b3abc02096521115331cdc4b1dda109c8a205307d2565ba3dd",
-    "deployment_guidance.py": "sha256:12bc88a6417798e411913cbfc214304c485a0fd753a2c9c9f40c88f0f1675e3b"
+    "deployment_guidance.py": "sha256:b4ae14dfefaa2ef5229ad41b1fced921e24144738c552096ed956143a8007bb7"
   },
   "test_digests": {
     "test_cloud_run_control.py": "sha256:48e35d1d45a658fedade62935bdeb684e3606c2190bdf913e8096852a525296a",
@@ -28,8 +28,8 @@
     },
     {
       "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/deployment_guidance.py",
-      "byte_size": 20828,
-      "sha256": "sha256:12bc88a6417798e411913cbfc214304c485a0fd753a2c9c9f40c88f0f1675e3b"
+      "byte_size": 21396,
+      "sha256": "sha256:b4ae14dfefaa2ef5229ad41b1fced921e24144738c552096ed956143a8007bb7"
     },
     {
       "path": "engines/project-synthesis-engine/tests/test_cloud_run_control.py",

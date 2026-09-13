@@ -1,0 +1,36 @@
+skill: elmos-assurance-evidence-graph
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-evidence-graph-A01
+  given: 修改已签报告一个字段
+  when: 在真实集成模块执行对应测试或负例
+  then: 签名校验失败
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-evidence-graph-A02
+  given: 别的tenant的合法证据
+  when: 在真实集成模块执行对应测试或负例
+  then: 拒绝复用
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-evidence-graph-A03
+  given: repo自带根公钥
+  when: 在真实集成模块执行对应测试或负例
+  then: 不得加入服务信任根
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

@@ -1,5 +1,8 @@
 ---
 name: pm-b37-test-migration-agent
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移源测试、保留 Oracle、补充目标测试并阻止弱化断言. Precision Migration B37 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

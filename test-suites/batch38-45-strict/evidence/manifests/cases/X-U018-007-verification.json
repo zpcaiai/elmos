@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U018-007",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:26:21.011609Z",
+  "notes": "Independently verified by Ethan: 供应链篡改与Provenance / version-drift / 场景7"
+}

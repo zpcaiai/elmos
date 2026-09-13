@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "skill_name": "b41-holdout-feedback-calibration",
+  "batch": 41,
+  "batch_title": "Migration Knowledge & Prediction",
+  "implementation_state": "VERIFIED",
+  "external_evidence_status": "LOCAL_EXECUTED",
+  "production_certification": "NOT_CERTIFIED",
+  "runtime_handler": "scripts.batch41.b41_skill_runtime.B41SkillRuntime._handle_holdout_feedback_calibration",
+  "fail_closed_policy": "FAIL_CLOSED_ON_UNKNOWN_STATUS",
+  "metrics_thresholds": {
+    "knowledgeProvenanceCoverageRate": 0.95,
+    "privacyIsolationPassRate": 1.0,
+    "predictionCalibrationPassRate": 1.0
+  }
+}

@@ -37,12 +37,13 @@ public class LiveWorkbenchConfiguration {
 
     @Bean SandboxProviderPort sandboxProviderPort(ObjectMapper json,
             @Value("${elmos.live-workbench.provider.base-uri:}") String baseUri,
+            @Value("${elmos.live-workbench.provider.signing-key:}") String signingKeyInline,
             @Value("${elmos.live-workbench.provider.signing-key-file:}") String signingKeyFile,
             @Value("${elmos.live-workbench.provider.timeout-seconds:10}") long timeoutSeconds,
             @Value("${elmos.live-workbench.provider.allow-loopback-http:false}") boolean allowLoopbackHttp,
             @Value("${elmos.live-workbench.provider.preview-origins:}") String previewOrigins) {
-        if (baseUri.isBlank() || signingKeyFile.isBlank()) return new FailClosedSandboxProvider();
-        String signingKey = readSecret(signingKeyFile);
+        if (baseUri.isBlank() || (signingKeyFile.isBlank() && signingKeyInline.isBlank())) return new FailClosedSandboxProvider();
+        String signingKey = !signingKeyInline.isBlank() ? signingKeyInline : readSecret(signingKeyFile);
         Duration timeout = Duration.ofSeconds(timeoutSeconds);
         return new HttpSandboxProvider(HttpClient.newBuilder().connectTimeout(timeout).build(), json,
                 new HttpSandboxProvider.Configuration(URI.create(baseUri), timeout, signingKey, allowLoopbackHttp,

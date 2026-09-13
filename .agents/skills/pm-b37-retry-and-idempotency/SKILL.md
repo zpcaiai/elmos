@@ -1,5 +1,8 @@
 ---
 name: pm-b37-retry-and-idempotency
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "确保 Agent 工具调用、构建、数据初始化和外部副作用可安全重试. Precision Migration B37 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

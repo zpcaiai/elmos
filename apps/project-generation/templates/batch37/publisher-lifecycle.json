@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "publisher_id": "sample-publisher",
+  "status": "active",
+  "owner": "publisher-ops",
+  "maintainers": [
+    {
+      "person_id": "maintainer-1",
+      "status": "active"
+    }
+  ],
+  "signing_keys": [
+    {
+      "key_id": "key-1",
+      "status": "active",
+      "valid_from": "2026-01-01",
+      "valid_until": "2027-01-01"
+    }
+  ],
+  "reverified_at": "2026-07-01",
+  "next_reverification_at": "2027-01-01",
+  "ownership_transfer": {
+    "supported": true
+  },
+  "offboarding": {
+    "plan_exists": true,
+    "publish_rights_revoked_before_close": true
+  },
+  "open_critical_findings": 0,
+  "evidence_refs": [
+    "publishers/lifecycle-evidence.txt"
+  ]
+}

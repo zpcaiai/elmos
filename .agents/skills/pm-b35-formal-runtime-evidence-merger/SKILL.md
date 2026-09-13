@@ -1,5 +1,8 @@
 ---
 name: pm-b35-formal-runtime-evidence-merger
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "合并形式证明覆盖与运行时验证证据，并显式标记假设和未建模部分. Precision Migration B35 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -22,10 +22,16 @@
       "sha256": "sha256:e032d4a5e4e8e5637763a2c6e9754c07f0b6b9ea68943f457d2825142fa88f9d"
     },
     {
-      "bytes": 616,
+      "bytes": 1513,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/__init__.py",
-      "sha256": "sha256:b62634f90fe636f4067eae6cbd0f66ceac58ca7826132cea7f13a2750d9e77ab"
+      "sha256": "sha256:87bd114cbf4c9566247da84b1ddcdbbde0517af8e9563b0a82a7a87fb7ccec72"
+    },
+    {
+      "bytes": 9390,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/architecture_drift_detector.py",
+      "sha256": "sha256:3270895ae85183f35f27ff1026900b1317beca10d2243bc8769ff8c0fd6c6a04"
     },
     {
       "bytes": 14627,
@@ -50,6 +56,18 @@
       "mode": "0644",
       "path": "src/elmos_project_intelligence/contracts.py",
       "sha256": "sha256:d7e00ffc2ba6b44fcb335afe9a181dbb12468a7baa489edc39ec8f668931fcbc"
+    },
+    {
+      "bytes": 11488,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/dataflow_taint_engine.py",
+      "sha256": "sha256:8d9c428888ce5908c9ffcc845bba153483f311c437439e5b39adaddc14de4c33"
+    },
+    {
+      "bytes": 15762,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/deep_callgraph.py",
+      "sha256": "sha256:59fc62fb2493a8e5ac0f062dbef639ec4e0bbaed42c0b784518cd21a6027ff92"
     },
     {
       "bytes": 4808,
@@ -100,10 +118,10 @@
       "sha256": "sha256:2c466c87d731cc65cfbf1166f2eb9e71706cfe15ffc8c3c912042ccbd366bee2"
     },
     {
-      "bytes": 4193,
+      "bytes": 4172,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/native_snapshot_bridge.py",
-      "sha256": "sha256:4a43f345bc0cc8f2443a2c2496c0b1fcdeb3fa6222ccbb579b8767f1e711f155"
+      "sha256": "sha256:3cd4fe297b95680f5f8aa37139c8558eaa097bffd0751bc9a7f245f41fe5477a"
     },
     {
       "bytes": 23599,
@@ -160,6 +178,150 @@
       "sha256": "sha256:eb48a52a6c7c1b69059f4d108480b2dd47aa7e4263aac79684d1d15f3d3abb1a"
     },
     {
+      "bytes": 47,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/__init__.py",
+      "sha256": "sha256:1d9fae7f7c326b300158ec25486071e93aca016a32376168ad79fca8dac8db4e"
+    },
+    {
+      "bytes": 8075,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/automated_doc_generator.py",
+      "sha256": "sha256:b1d2fea548a7b48cae0e6035acfdc0621fb1d6c76e810ad930e68c912d394617"
+    },
+    {
+      "bytes": 10780,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/clean_architecture_auditor.py",
+      "sha256": "sha256:894262c9cb706a35a94d3b0c531fc95e8c2a6ac1f34d5cd40683ef13fcabb768"
+    },
+    {
+      "bytes": 7405,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/contract_miner_engine.py",
+      "sha256": "sha256:93eb0bbfc9ce0c04cec2b2cccf04f7e91e1be3a5a8f9a6bc597bf6de6e558ec3"
+    },
+    {
+      "bytes": 4743,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/cst_ast_parser_adapters.py",
+      "sha256": "sha256:ebdc0da492eab3cdbd6e8550abf4f4431b05dbd7a9d220762b6715e98d21a039"
+    },
+    {
+      "bytes": 8730,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/db_schema_graph_miner.py",
+      "sha256": "sha256:e8cdbb6590cfad4e4084ee0975efbaf27798e10aecd36742b79c05f12e6f02e0"
+    },
+    {
+      "bytes": 14925,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/dependency_manifest_parser.py",
+      "sha256": "sha256:b1e8dfdba63ac3590328e4dc592041b582ac44e13ca2c33e1f4bcb9feeb323ae"
+    },
+    {
+      "bytes": 7716,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/framework_fingerprint_engine.py",
+      "sha256": "sha256:67463615b66d47ebae11ca1ce59409e5b2d8b006b1f62baee4eaf05dd3e7b2da"
+    },
+    {
+      "bytes": 10419,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/interprocedural_cfg_engine.py",
+      "sha256": "sha256:1ae40222ab8cf017492dade729525fc392b3f3b1ef8076a10de943bba771f2bb"
+    },
+    {
+      "bytes": 10257,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/pr_change_risk_classifier.py",
+      "sha256": "sha256:2d88fcc7818f189ebd086023783cc1d18a3e61a22c5ead7e139def6eab439564"
+    },
+    {
+      "bytes": 10993,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/semantic_clone_detector.py",
+      "sha256": "sha256:f6e6fd5cfdabd3fc15a888a79863187b8d76e2d5f84fb56c32fb70f574104a67"
+    },
+    {
+      "bytes": 10822,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/static_taint_dataflow_engine.py",
+      "sha256": "sha256:66e4d9dcde8761250839a1bb70db109c124551e4ad092b6a1e16105a5feb5696"
+    },
+    {
+      "bytes": 9714,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/technical_debt_quantifier.py",
+      "sha256": "sha256:be8590b203a5031b9cf6e80d8035d2a02ca61aa0bbdd3ec36c7e88c654c544ea"
+    },
+    {
+      "bytes": 11394,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/threat_modeling_stride_engine.py",
+      "sha256": "sha256:41ba137826ec504b496493c9bc1aa56fcf2258ca60532cc50617fded22770c34"
+    },
+    {
+      "bytes": 5022,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/universal_source_ingestor.py",
+      "sha256": "sha256:65214e87d0de02e327726e400348233b872959304d99c01199666465b5385085"
+    },
+    {
+      "bytes": 13193,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/subsystems/universal_symbol_table.py",
+      "sha256": "sha256:a2e143894e9876789bf38126838290a36072b52de16333683c52ffc67bbc5164"
+    },
+    {
+      "bytes": 444,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/task_execution/__init__.py",
+      "sha256": "sha256:21c897a078b19b362e242c5f1d5834a02a77f1f064b6196cb7144662bbc0ad12"
+    },
+    {
+      "bytes": 6637,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/task_execution/scenario_verifier.py",
+      "sha256": "sha256:f7f645e60e52466cca036d70ed294543da7cc8fe8210e04cd17f4ff8f345d061"
+    },
+    {
+      "bytes": 11656,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/task_execution/subsystem_pipelines.py",
+      "sha256": "sha256:f32ee1ce83f20356060dd6957de93331432ba3de9848ad0daffa93cbb2abb1c2"
+    },
+    {
+      "bytes": 2034,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/task_execution/task_resilience.py",
+      "sha256": "sha256:ecf5a27ac3f0768abc0681d6df53d81d629a3c09f562dbd55c4b8f708e4fdf37"
+    },
+    {
+      "bytes": 8570,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/task_execution/task_runner.py",
+      "sha256": "sha256:97ab25153f0ba9e046f151fd57b29c3347c09371ee53abb3f364a668373f36a9"
+    },
+    {
+      "bytes": 8529,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/threat_model_engine.py",
+      "sha256": "sha256:8fee5a40ce40528eb320906c0d2cffcff5e9517001e8f55d9a0ff2377274b7e7"
+    },
+    {
+      "bytes": 2326,
+      "mode": "0644",
+      "path": "tests/test_248_acceptance_scenarios.py",
+      "sha256": "sha256:f36c017f52db80a0332da64d8a6cd0ec7977196daf56c64dbc214bfcf38a6c1c"
+    },
+    {
+      "bytes": 1511,
+      "mode": "0644",
+      "path": "tests/test_500_tasks_execution.py",
+      "sha256": "sha256:155cc7e9b751370830fbda1677cb3365677732c18141eaed2a11bc46e19b8ecf"
+    },
+    {
       "bytes": 12113,
       "mode": "0644",
       "path": "tests/test_cli.py",
@@ -190,16 +352,16 @@
       "sha256": "sha256:5d38ed62c570a3bd34597b277d33ef18aa9493ea652c9941452670159401648a"
     },
     {
-      "bytes": 3121,
+      "bytes": 3103,
       "mode": "0644",
       "path": "tests/test_java_structure.py",
-      "sha256": "sha256:b4563a71fb612ca71d2145904cb647abe5c307fb0a962e636c1aed524c9bf523"
+      "sha256": "sha256:c0c7cf1e6c3ed921be5263a48ce0b5cf67332d91f88dac3a91caabd6877b6a83"
     },
     {
-      "bytes": 1791,
+      "bytes": 1781,
       "mode": "0644",
       "path": "tests/test_native_snapshot.py",
-      "sha256": "sha256:e46b94c4c65e3d73f18cc4da67340481aacd0e99cf6f63985563dca8510eb2a8"
+      "sha256": "sha256:546a9ddc2cd2219d4887bf6edc0603025795a6d912e289c09b80609b3421a142"
     },
     {
       "bytes": 8981,
@@ -238,13 +400,19 @@
       "sha256": "sha256:e2ec8f2f1d208ce79935f8435a691b55480aa8708bbe46fc06f983545cd4f221"
     },
     {
+      "bytes": 1291,
+      "mode": "0644",
+      "path": "tests/test_subsystem_pipelines.py",
+      "sha256": "sha256:adabcb289716784234ae962eb2d2bbce89b62e7581eec37b54e37af2fed808a7"
+    },
+    {
       "bytes": 43701,
       "mode": "0644",
       "path": "uv.lock",
       "sha256": "sha256:aed6f14d43e0bfcb00874300f598dd0bee3767acc8fcd5fcfc60d2b74fb66217"
     }
   ],
-  "engine_tree_sha256": "sha256:02361db98381f65ddb86c6b3ecb5e4d9cc9fb12a4cabf0604c7451aee3081a57",
+  "engine_tree_sha256": "sha256:6932a4079cae946e1afed6ea4a3e98ee84919542f7b83328016ac67eff47131d",
   "executor": "repository-local-self-attested",
   "external_evidence": "NOT_RUN",
   "fixture_path": "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -255,7 +423,7 @@
   "qualification_status": "PASSED",
   "qualifier_path": "tooling/qualify_project_intelligence_runtime.py",
   "qualifier_sha256": "sha256:eaa5c2daa613d48b8a5a213418a6ef8f0843fc27c0d3f9231f3724fec8c2591c",
-  "receipt_digest": "sha256:b112a44ce87035be8573b93b49d5b67fc1e9ad7bd220465ce6f95850c0ea6678",
+  "receipt_digest": "sha256:f3c4c214f471d1b8a5c61e2749c0f138ae981ddfe9e79be6545e6b0cfb339439",
   "replay_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 tooling/qualify_project_intelligence_runtime.py --check",
   "results": [
     {
@@ -3335,17 +3503,17 @@
   ],
   "runtime_environment": {
     "byteorder": "little",
-    "cache_tag": "cpython-314",
-    "executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
-    "executable_sha256": "sha256:c015ab131972822e27ed108cf353582af6ca2fd7daf6296789576c7e7d1ad61a",
-    "hexversion": 51250672,
+    "cache_tag": "cpython-312",
+    "executable": "/Users/stephen/.local/share/uv/python/cpython-3.12.12-macos-aarch64-none/bin/python3.12",
+    "executable_sha256": "sha256:3874a935f7242b660e652d35c25a1b87415fcfea3ee191ff262fcca5c50102c5",
+    "hexversion": 51121392,
     "implementation": "cpython",
     "machine": "arm64",
     "platform": "darwin",
     "release_level": "final",
-    "resolved_executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
+    "resolved_executable": "/Users/stephen/.local/share/uv/python/cpython-3.12.12-macos-aarch64-none/bin/python3.12",
     "serial": 0,
-    "version": "3.14.5"
+    "version": "3.12.12"
   },
   "schema_version": "elmos.project-intelligence.local-qualification.v2",
   "source_package": "elmos-project-intelligence-skills",

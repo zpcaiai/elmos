@@ -1,5 +1,8 @@
 ---
 name: pm-b03-conversion-risk-register
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "维护语义、依赖、数据、并发、性能、平台、合规和交付风险及其缓解措施. Precision Migration B03 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

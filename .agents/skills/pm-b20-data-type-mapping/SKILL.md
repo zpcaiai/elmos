@@ -1,5 +1,8 @@
 ---
 name: pm-b20-data-type-mapping
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "映射数据类型、精度、Scale、编码、时区、NULL、默认值和边界行为. Precision Migration B20 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

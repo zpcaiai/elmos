@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U020-006",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:26:25.216979Z",
+  "notes": "Independently verified by Ethan: 知识隔离、投毒与校准 / replay-idempotency / 场景6"
+}

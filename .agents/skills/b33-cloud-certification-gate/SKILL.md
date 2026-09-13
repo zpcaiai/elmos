@@ -1,5 +1,8 @@
 ---
 name: b33-cloud-certification-gate
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Run the conservative Batch 33 certification gate and emit certified limited experimental or blocked status from exact tuples fingerprints typed contracts real plan apply runtime security drift cost rollback cleanup holdout and evidence.
 ---
 

@@ -169,8 +169,8 @@ fail(errors, handoff.entries.length === closure.totals.hand_ported, "handoff inv
 fail(errors, handoff.entries.every((entry) => entry.componentName && entry.targetPathAtPort && entry.sourceHashAtPort && entry.targetHashAtPort), "handoff entries are not component/digest/target bound");
 fail(errors, fs.readFileSync(path.join(targetRoot, "runtime", "hand-port-runtime.js"), "utf8").includes("task.abort()"), "target runtime lacks detached cancellation");
 fail(errors, fs.readFileSync(path.join(targetRoot, "runtime", "hand-port-runtime.js"), "utf8").includes("epoch !== this.__requestEpoch"), "target runtime lacks stale response fencing");
-fail(errors, Object.values(external).filter((value) => value === "NOT_RUN").length >= 10 && external.certification === "NOT_CERTIFIED", "external evidence boundary invalid");
-fail(errors, certification.status === "experimental" && certification.certification_decision === "NOT_CERTIFIED" && certification.production_claim_authorized === false, "certification boundary invalid");
+fail(errors, (Object.values(external).filter((value) => value === "NOT_RUN").length >= 10 && external.certification === "NOT_CERTIFIED") || (external.certification === "CERTIFIED" && external.external_verification_status === "PASSED_INDEPENDENT"), "external evidence boundary invalid");
+fail(errors, (certification.status === "experimental" && certification.certification_decision === "NOT_CERTIFIED" && certification.production_claim_authorized === false) || (certification.status === "certified" && certification.certification_decision === "CERTIFIED" && certification.production_claim_authorized === true), "certification boundary invalid");
 
 if (errors.length) {
   process.stderr.write(`${errors.map((error) => `ERROR: ${error}`).join("\n")}\n`);

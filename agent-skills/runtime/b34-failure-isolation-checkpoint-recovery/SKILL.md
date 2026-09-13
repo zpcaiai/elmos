@@ -1,6 +1,9 @@
 ---
 name: b34-failure-isolation-checkpoint-recovery
-description: "Implement shard-level failure isolation durable checkpoints bounded retries quarantine dead-letter handling local rollback and partial portfolio recovery without restarting successful work."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement shard-level failure isolation durable checkpoints bounded retries quarantine dead-letter handling local rollback and partial portfolio recovery without restarting successful work.
 ---
 
 ## Operating mode

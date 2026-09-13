@@ -1,6 +1,9 @@
 ---
 name: b33-helm-chart-migration
-description: "Migrate and certify Helm charts values schemas templates hooks dependencies releases upgrades rollbacks tests ownership and rendered Kubernetes contracts without hiding behavior in templates."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Migrate and certify Helm charts values schemas templates hooks dependencies releases upgrades rollbacks tests ownership and rendered Kubernetes contracts without hiding behavior in templates.
 ---
 
 ## Operating mode

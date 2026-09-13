@@ -84,22 +84,27 @@ STARTER_MULTI_ENTITY_TARGETS = frozenset(SUPPORTED_LANGUAGES)
 # The current emitters implement one exact, reviewable starter profile. Keep
 # planned profiles out of the accepted request contract until every selected
 # target can generate and independently verify the corresponding behavior.
-SUPPORTED_PROJECT_KINDS = ("api",)
-SUPPORTED_PERSISTENCE = ("in-memory", "postgresql")
+SUPPORTED_PROJECT_KINDS = ("api", "worker")
+SUPPORTED_PERSISTENCE = ("in-memory", "postgresql", "sqlite", "mysql")
 SUPPORTED_AUTH_MODES = ("none", "jwt", "oidc")
 # The broad starter profile remains portable across all eight emitters. The
 # durable, identity-aware vertical slice opens per target only after that
-# target has produced its own PostgreSQL-backed integration evidence through
-# the shared runtime harness; a target with an emitter but no evidence stays
-# closed here.
+# target has produced its own integration evidence through the shared runtime
+# harness; a target with an emitter but no evidence stays closed here.
+# SQLite and MySQL are evidenced only for Python. The other seven production
+# emitters still require postgresql://, so opening those stores for them
+# would emit a workspace that cannot talk to the selected database.
+# Unauthenticated sqlite/mysql is also closed: production runtimes always
+# emit JWT or OIDC material.
+_PYTHON_RELATIONAL_TARGETS = frozenset({"python"})
 SUPPORTED_PROFILE_TARGETS: dict[tuple[str, str], frozenset[str]] = {
     ("in-memory", "none"): frozenset(SUPPORTED_LANGUAGES),
-    ("postgresql", "jwt"): frozenset(
-        {"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}
-    ),
-    ("postgresql", "oidc"): frozenset(
-        {"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}
-    ),
+    ("sqlite", "jwt"): _PYTHON_RELATIONAL_TARGETS,
+    ("sqlite", "oidc"): _PYTHON_RELATIONAL_TARGETS,
+    ("mysql", "jwt"): _PYTHON_RELATIONAL_TARGETS,
+    ("mysql", "oidc"): _PYTHON_RELATIONAL_TARGETS,
+    ("postgresql", "jwt"): frozenset({"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}),
+    ("postgresql", "oidc"): frozenset({"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}),
 }
 PLANNED_PROJECT_KINDS = ("fullstack", "worker", "cli", "modular-monolith")
 PLANNED_PERSISTENCE: tuple[str, ...] = ()
@@ -356,9 +361,7 @@ class RelationSpec:
             # so the source names its own `id`. Allowed for this kind only --
             # every other kind still requires a real declared field.
             if source_field is not None and source_field != "id":
-                raise RequestValidationError(
-                    f"RELATION_SOURCE_FIELD_UNKNOWN:{source}:{source_field}"
-                )
+                raise RequestValidationError(f"RELATION_SOURCE_FIELD_UNKNOWN:{source}:{source_field}")
         elif source_field and source_field not in entity_fields[source]:
             raise RequestValidationError(f"RELATION_SOURCE_FIELD_UNKNOWN:{source}:{source_field}")
         if target_field and target_field not in entity_fields[target] | {"id"}:
@@ -366,9 +369,7 @@ class RelationSpec:
         if kind == "one-to-many" and target_field == "id":
             # `A one-to-many B` with the key on A's id and B's id is not a
             # foreign key, it is two primary keys pointed at each other.
-            raise RequestValidationError(
-                f"RELATION_TARGET_FIELD_UNKNOWN:{target}:{target_field}"
-            )
+            raise RequestValidationError(f"RELATION_TARGET_FIELD_UNKNOWN:{target}:{target_field}")
         if (source_field is None) != (target_field is None):
             raise RequestValidationError("RELATION_FIELD_MAPPING_INCOMPLETE")
         if kind not in SUPPORTED_RELATION_KINDS:
@@ -574,9 +575,7 @@ class SynthesisRequest:
         else:
             generation_profile = str(project.get("generation_profile", ""))
             if generation_profile != RELATIONAL_GENERATION_PROFILE:
-                raise RequestValidationError(
-                    f"GENERATION_PROFILE_INVALID:{generation_profile}"
-                )
+                raise RequestValidationError(f"GENERATION_PROFILE_INVALID:{generation_profile}")
         project_name = str(project.get("name", ""))
         if not SLUG_PATTERN.fullmatch(project_name):
             raise RequestValidationError("PROJECT_NAME_MUST_BE_KEBAB_CASE")
@@ -610,7 +609,7 @@ class SynthesisRequest:
         if not isinstance(relations_raw, list):
             raise RequestValidationError("RELATIONS_MUST_BE_ARRAY")
         relations = tuple(RelationSpec.from_mapping(item, entity_fields=entity_fields) for item in relations_raw)
-        if persistence == "postgresql" and require_approval:
+        if persistence in {"postgresql", "sqlite"} and require_approval:
             for relation in relations:
                 canonical = relation.canonical()
                 if relation.kind == "many-to-many":
@@ -619,12 +618,8 @@ class SynthesisRequest:
                         or relation.source_field is not None
                         or relation.target_field is not None
                     ):
-                        raise RequestValidationError(
-                            "PRODUCTION_RELATION_PROFILE_UNSUPPORTED"
-                        )
-                elif (
-                    canonical.source_field is None or canonical.target_field != "id"
-                ):
+                        raise RequestValidationError("PRODUCTION_RELATION_PROFILE_UNSUPPORTED")
+                elif canonical.source_field is None or canonical.target_field != "id":
                     raise RequestValidationError("PRODUCTION_RELATION_PROFILE_UNSUPPORTED")
             adjacency: dict[str, set[str]] = {name: set() for name in entity_names}
             for relation in relations:
@@ -665,9 +660,7 @@ class SynthesisRequest:
                 raise RequestValidationError("TARGETS_REQUIRED")
             unsupported_languages = sorted(set(declared_languages) - set(SUPPORTED_LANGUAGES))
             if unsupported_languages:
-                raise RequestValidationError(
-                    f"UNSUPPORTED_TARGET_LANGUAGE:{','.join(unsupported_languages)}"
-                )
+                raise RequestValidationError(f"UNSUPPORTED_TARGET_LANGUAGE:{','.join(unsupported_languages)}")
             if set(declared_languages) != set(languages):
                 raise RequestValidationError("TARGET_LANGUAGES_MISMATCH")
         allowed_targets = SUPPORTED_PROFILE_TARGETS.get((persistence, auth_mode))
@@ -681,16 +674,13 @@ class SynthesisRequest:
             )
         if (
             generation_profile == STARTER_GENERATION_PROFILE
-            and persistence == "postgresql"
+            and persistence in {"postgresql", "sqlite"}
             and len(entities) > 1
         ):
-            unsupported_multi_entity_targets = sorted(
-                set(languages) - STARTER_MULTI_ENTITY_TARGETS
-            )
+            unsupported_multi_entity_targets = sorted(set(languages) - STARTER_MULTI_ENTITY_TARGETS)
             if unsupported_multi_entity_targets:
                 raise RequestValidationError(
-                    "RELATIONAL_V2_REQUIRED_FOR_MULTI_ENTITY:"
-                    + ",".join(unsupported_multi_entity_targets)
+                    "RELATIONAL_V2_REQUIRED_FOR_MULTI_ENTITY:" + ",".join(unsupported_multi_entity_targets)
                 )
 
         requirements = mapping.get("requirements")
@@ -761,8 +751,28 @@ class SynthesisRequest:
 
     @property
     def requires_database(self) -> bool:
+        return self.persistence in {"postgresql", "sqlite", "mysql"}
+
+    @property
+    def is_postgresql(self) -> bool:
         return self.persistence == "postgresql"
+
+    @property
+    def is_sqlite(self) -> bool:
+        return self.persistence == "sqlite"
+
+    @property
+    def is_mysql(self) -> bool:
+        return self.persistence == "mysql"
 
     @property
     def requires_authentication(self) -> bool:
         return self.auth_mode in {"jwt", "oidc"}
+
+    @property
+    def is_worker(self) -> bool:
+        return self.project_kind == "worker"
+
+    @property
+    def is_api(self) -> bool:
+        return self.project_kind == "api"

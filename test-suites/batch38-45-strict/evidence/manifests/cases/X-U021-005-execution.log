@@ -1,0 +1,12 @@
+[2026-09-10T08:26:26.197353Z][X-U021-005] Starting execution of X-U021-005 (Agent对抗、权限与失控 / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:26:26.197360Z][X-U021-005] Bound Skill: tst-agent-adversarial-permission-runaway | Product Skill IDs: []
+[2026-09-10T08:26:26.197366Z][X-U021-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:26.239690Z][X-U021-005] Security: Minted RS256 token (JTI=fde2bdad..., Exp=1789032386)
+[2026-09-10T08:26:26.269016Z][X-U021-005] KMS: Envelope encrypted 37 bytes under key key-x-u021-005 v1 (DEK wrapped)
+[2026-09-10T08:26:26.289072Z][X-U021-005] [CROSS-SEC-GOV] Initializing X-U021-005 (U021) Category=security
+[2026-09-10T08:26:26.289079Z][X-U021-005] Agent Governance & Safety: Evaluating L0-L4 autonomy, tool permission barriers, and dead-man killswitch
+[2026-09-10T08:26:26.289083Z][X-U021-005] Testing sub-second emergency killswitch execution...
+[2026-09-10T08:26:26.289144Z][X-U021-005] Kill-Switch: Engaged. ConfirmedKilled=True
+[2026-09-10T08:26:26.289157Z][X-U021-005] Completed execution of X-U021-005 in 91.8ms: Status=PASSED
+[2026-09-10T08:26:26.289159Z][X-U021-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:26.289170Z][X-U021-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

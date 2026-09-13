@@ -290,9 +290,8 @@ describe("dogfood: scanning real in-tree application code", () => {
   // real application code produces zero engine errors, and every blocked
   // file carries an actionable reason.
   const consoleDir = path.resolve(__dirname, "..", "..", "..", "apps", "web-console");
-  const dogfood = fs.existsSync(consoleDir) ? it : it.skip;
 
-  dogfood("parses real application code without a single engine error", () => {
+  it("parses real application code without a single engine error", () => {
     const report = scanRepository({ repository: consoleDir, sourceFramework: "react" });
     expect(report.totals.discovered).toBeGreaterThan(0);
     // A crash on real code is a defect in this engine, and it must never
@@ -300,7 +299,7 @@ describe("dogfood: scanning real in-tree application code", () => {
     expect(report.totals.scanErrors).toBe(0);
   }, 120000);
 
-  dogfood("gives every blocked real-world file a mapped, explained reason", () => {
+  it("gives every blocked real-world file a mapped, explained reason", () => {
     const report = scanRepository({ repository: consoleDir, sourceFramework: "react" });
     for (const finding of report.findings) {
       expect(finding.reasonCode).toBeTruthy();

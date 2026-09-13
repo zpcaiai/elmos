@@ -1,0 +1,21 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-model-checking
+title: SMT与有限状态协议校验
+priority: P1
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-state-effects
+inputs:
+- 状态机/资源约束
+- 模型边界
+- 风险claims
+outputs:
+- ModelCheckObligations
+- SolverEvidence
+- NativeCounterexampleTests
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

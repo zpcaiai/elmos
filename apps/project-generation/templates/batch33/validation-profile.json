@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "profile_key": "unset-validation",
+  "owner": "UNASSIGNED",
+  "plan": {
+    "commands": [],
+    "destructive_change_limit": 0
+  },
+  "apply": {
+    "mode": "ephemeral-sandbox",
+    "commands": []
+  },
+  "p0_workloads": [],
+  "security": {
+    "critical_findings": 0,
+    "public_exposure": 0,
+    "privilege_expansion": 0
+  },
+  "drift": {
+    "allowed": false,
+    "unknown_resources": 0
+  },
+  "cost": {
+    "currency": "USD",
+    "max_estimated_monthly": 0,
+    "max_test_cost": 0
+  },
+  "rollback": {
+    "commands": [],
+    "destroy_required": true
+  },
+  "representative_workloads": [],
+  "evidence_refs": []
+}

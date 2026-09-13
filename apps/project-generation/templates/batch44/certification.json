@@ -1,0 +1,14 @@
+{
+  "batch": 44,
+  "packKey": "template-pack",
+  "status": "NOT_RUN",
+  "evidenceRefs": [],
+  "holdoutPassRate": 0,
+  "representativePassRate": 0,
+  "criticalFindings": 0,
+  "metrics": {
+    "meteringReconciliationRate": 0,
+    "budgetGuardrailPassRate": 0,
+    "grossMarginEvidenceCoverageRate": 0
+  }
+}

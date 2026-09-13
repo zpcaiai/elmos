@@ -1,0 +1,35 @@
+apiVersion: elmos.ai/v1
+kind: DurableWorkflow
+metadata:
+  id: adapter-conformance
+  version: 5.2.0
+spec:
+  engine: canonical-K7-adapter
+  steps:
+  - id: negotiate
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: authorize
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: positive-tests
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: negative-tests
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: failure-tests
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: fencing-tests
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: side-effect-tests
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: register
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  authority: environment-owned
+  cancellation: bounded
+  completionAuthority: K8

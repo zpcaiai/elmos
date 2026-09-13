@@ -1,0 +1,33 @@
+{
+  "package": "elmos-router-industrial-skillpack",
+  "version": "1.0",
+  "generated_for": "Elmos",
+  "architecture": "Elmos Router + LiteLLM + Direct APIs + OpenRouter",
+  "files": [
+    "ELMOS_ROUTER_SKILL_PACKAGE.md",
+    "IMPLEMENTATION_CHECKLIST.md",
+    "README.md",
+    "REFERENCES.md",
+    "SKILL.md",
+    "adr/ADR-001-routing-boundaries.md",
+    "configs/litellm.example.yaml",
+    "configs/model-registry.example.yaml",
+    "configs/policy.example.yaml",
+    "contracts/error-taxonomy.md",
+    "contracts/model-execution-plan.schema.json",
+    "contracts/route-decision.schema.json",
+    "skills/00-master-orchestrator/SKILL.md",
+    "skills/01-domain-contracts/SKILL.md",
+    "skills/02-model-provider-registry/SKILL.md",
+    "skills/03-policy-and-security/SKILL.md",
+    "skills/04-routing-engine/SKILL.md",
+    "skills/05-litellm-gateway/SKILL.md",
+    "skills/06-native-provider-adapters/SKILL.md",
+    "skills/07-openrouter-adapter/SKILL.md",
+    "skills/08-resilience-and-replay/SKILL.md",
+    "skills/09-cost-rate-limit-accounting/SKILL.md",
+    "skills/10-observability-and-evals/SKILL.md",
+    "skills/11-deployment-and-operations/SKILL.md",
+    "skills/12-certification-and-rollout/SKILL.md"
+  ]
+}

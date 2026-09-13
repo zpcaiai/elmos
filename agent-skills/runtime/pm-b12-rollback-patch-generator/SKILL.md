@@ -1,5 +1,8 @@
 ---
 name: pm-b12-rollback-patch-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成可验证、可逆、按模块或规则粒度回滚的补丁. Precision Migration B12 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

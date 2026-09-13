@@ -1,5 +1,8 @@
 ---
 name: pm-b43-direction-pack-continuous-improvement
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "根据版本、失败、性能和客户私有知识迭代方向包. Precision Migration B43 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

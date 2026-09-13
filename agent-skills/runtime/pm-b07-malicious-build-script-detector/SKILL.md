@@ -1,5 +1,8 @@
 ---
 name: pm-b07-malicious-build-script-detector
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "检测危险安装脚本、宿主访问、凭证读取、持久化、挖矿和供应链行为. Precision Migration B07 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

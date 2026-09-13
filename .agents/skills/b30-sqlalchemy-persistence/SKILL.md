@@ -1,5 +1,8 @@
 ---
 name: b30-sqlalchemy-persistence
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement or certify SQLAlchemy persistence migration, covering declarative and imperative mappings, sessions and unit of work, relationships, loading, queries, transactions, async sessions, events, migrations, provider behavior, and target ORM or data-access profiles.
 ---
 

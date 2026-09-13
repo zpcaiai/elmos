@@ -1,0 +1,29 @@
+{
+  "schema_version": "elmos.precision-migration.compiled-skill-contract.v1",
+  "package_id": "elmos.precision-migration.b01-44",
+  "package_version": "1.0.0",
+  "installed_alias": "pm-b05-repository-semantic-recovery",
+  "namespace": "precision-migration-b01-44",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "engines/composite-engine",
+    "engines/polyglot-route-engine",
+    "scripts/precision_migration/orchestration.py",
+    "scripts/precision_migration/generated_orchestrators.py",
+    "docs/precision-migration-b01-44/orchestrator-implementations.json"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "handler_id": "orchestrator-dag-v2:batch-05-repository-semantic-recovery",
+    "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b05_repository_semantic_recovery",
+    "supported_modes": [
+      "assess"
+    ],
+    "timeout_seconds": 120,
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

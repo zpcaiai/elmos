@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B12-008 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [12]
+Title: Batch 12 离线部署：篡改结果、Digest、Golden、审批、时间戳或删除失败记录
+Capability: 离线部署
+Test Type: evidence_tamper
+Skill: tst-b12-enterprise-platformization
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

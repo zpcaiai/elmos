@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: database-schema-routine-data-transformation
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Oracle to PostgreSQL with routines
+  - Zero-downtime column type change
+  - Database authorization differs across engines
+  negativeControls:
+  - syntax-only SQL translation
+  - destructive production migration without backup
+  - ignore permission semantics
+  checks:
+  - id: database-schema-routine-data-transformation-AC-01
+    requirement: Model source and target types, nulls, collation, precision, transaction, locking, routine, trigger, sequence,
+      and error semantics.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: database-schema-routine-data-transformation-AC-02
+    requirement: Generate expand-migrate-contract steps, backfills, CDC, compatibility views, dual reads or writes, and rollback.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: database-schema-routine-data-transformation-AC-03
+    requirement: Reconcile row counts, keys, relationships, states, monetary totals, checksums, and domain invariants.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: database-schema-routine-data-transformation-AC-04
+    requirement: Preserve or explicitly re-approve authorization, ownership, audit, retention, and deletion behavior.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: database-schema-routine-data-transformation-AC-05
+    requirement: Validate application queries, ORMs, reports, and operational procedures against the target engine.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

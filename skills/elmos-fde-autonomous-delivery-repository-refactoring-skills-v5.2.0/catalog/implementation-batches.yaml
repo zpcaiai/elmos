@@ -1,0 +1,802 @@
+apiVersion: elmos.ai/v1
+kind: ImplementationBatchCatalog
+metadata:
+  version: 5.2.0
+  count: 19
+spec:
+  batches:
+  - id: B00
+    title: Package contracts and canonical bindings
+    dependsOn: []
+    skills:
+    - repository-custody-and-revisionset
+    - support-profile-and-unknown-register
+    - issue-ontology-and-finding-normalization
+    tasks:
+    - B00-T001
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B01
+    title: Authority, identity and append-only ledgers
+    dependsOn:
+    - B00
+    skills:
+    - changeset-commit-and-provenance-governance
+    - e0-e3-readiness-and-evidence-bundle
+    tasks:
+    - B01-T001
+    - B01-T002
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B02
+    title: FDE engagement and customer delivery hub
+    dependsOn:
+    - B00
+    - B01
+    skills:
+    - stakeholder-workflow-discovery
+    - business-baseline-roi
+    - pilot-scope-sow-acceptance
+    - status-risk-decision-communications
+    - procurement-security-questionnaire
+    - adoption-change-management
+    tasks:
+    - B02-T001
+    - B02-T002
+    - B02-T003
+    - B02-T004
+    - B02-T005
+    - B02-T006
+    - B02-T007
+    - B02-T008
+    - B02-T009
+    - B02-T010
+    - B02-T011
+    - B02-T012
+    - B02-T013
+    - B02-T014
+    - B02-T015
+    - B02-T016
+    - B02-T017
+    - B02-T018
+    - B02-T019
+    - B02-T020
+    - B02-T021
+    - B02-T022
+    - B02-T023
+    - B02-T024
+    - B02-T025
+    - B02-T026
+    - B02-T027
+    - B02-T028
+    - B02-T029
+    - B02-T030
+    - B02-T031
+    - B02-T032
+    - B02-T033
+    - B02-T034
+    - B02-T035
+    - B02-T036
+    - B02-T037
+    - B02-T038
+    - B02-T039
+    - B02-T040
+    - B02-T041
+    - B02-T042
+    - B02-T043
+    - B02-T044
+    - B02-T045
+    - B02-T046
+    - B02-T047
+    - B02-T048
+    - B02-T049
+    - B02-T050
+    - B02-T051
+    - B02-T052
+    - B02-T053
+    - B02-T054
+    - B02-T055
+    - B02-T056
+    - B02-T057
+    - B02-T058
+    - B02-T059
+    - B02-T060
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B03
+    title: Repository custody, inventory and support profile
+    dependsOn:
+    - B00
+    - B01
+    skills:
+    - repository-custody-and-revisionset
+    - asset-inventory-and-classification
+    - support-profile-and-unknown-register
+    tasks:
+    - B03-T001
+    - B03-T002
+    - B03-T003
+    - B03-T004
+    - B03-T005
+    - B03-T006
+    - B03-T007
+    - B03-T008
+    - B03-T009
+    - B03-T010
+    - B03-T011
+    - B03-T012
+    - B03-T013
+    - B03-T014
+    - B03-T015
+    - B03-T016
+    - B03-T017
+    - B03-T018
+    - B03-T019
+    - B03-T020
+    - B03-T021
+    - B03-T022
+    - B03-T023
+    - B03-T024
+    - B03-T025
+    - B03-T026
+    - B03-T027
+    - B03-T028
+    - B03-T029
+    - B03-T030
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B04
+    title: Native Runtime Lab and service virtualization
+    dependsOn:
+    - B03
+    skills:
+    - reproducible-build-environment
+    - external-dependency-stub-and-service-virtualization
+    - runtime-observation-and-traffic-capture
+    tasks:
+    - B04-T001
+    - B04-T002
+    - B04-T003
+    - B04-T004
+    - B04-T005
+    - B04-T006
+    - B04-T007
+    - B04-T008
+    - B04-T009
+    - B04-T010
+    - B04-T011
+    - B04-T012
+    - B04-T013
+    - B04-T014
+    - B04-T015
+    - B04-T016
+    - B04-T017
+    - B04-T018
+    - B04-T019
+    - B04-T020
+    - B04-T021
+    - B04-T022
+    - B04-T023
+    - B04-T024
+    - B04-T025
+    - B04-T026
+    - B04-T027
+    - B04-T028
+    - B04-T029
+    - B04-T030
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B05
+    title: Unified semantic system graph
+    dependsOn:
+    - B03
+    - B04
+    skills:
+    - polyglot-semantic-system-graph
+    - business-capability-code-mapping
+    - data-event-permission-lineage
+    - git-history-ownership-change-coupling
+    - static-dynamic-evidence-fusion
+    tasks:
+    - B05-T001
+    - B05-T002
+    - B05-T003
+    - B05-T004
+    - B05-T005
+    - B05-T006
+    - B05-T007
+    - B05-T008
+    - B05-T009
+    - B05-T010
+    - B05-T011
+    - B05-T012
+    - B05-T013
+    - B05-T014
+    - B05-T015
+    - B05-T016
+    - B05-T017
+    - B05-T018
+    - B05-T019
+    - B05-T020
+    - B05-T021
+    - B05-T022
+    - B05-T023
+    - B05-T024
+    - B05-T025
+    - B05-T026
+    - B05-T027
+    - B05-T028
+    - B05-T029
+    - B05-T030
+    - B05-T031
+    - B05-T032
+    - B05-T033
+    - B05-T034
+    - B05-T035
+    - B05-T036
+    - B05-T037
+    - B05-T038
+    - B05-T039
+    - B05-T040
+    - B05-T041
+    - B05-T042
+    - B05-T043
+    - B05-T044
+    - B05-T045
+    - B05-T046
+    - B05-T047
+    - B05-T048
+    - B05-T049
+    - B05-T050
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B06
+    title: Finding ontology, coverage and assessment orchestration
+    dependsOn:
+    - B05
+    skills:
+    - issue-ontology-and-finding-normalization
+    - root-cause-risk-prioritization
+    tasks:
+    - B06-T001
+    - B06-T002
+    - B06-T003
+    - B06-T004
+    - B06-T005
+    - B06-T006
+    - B06-T007
+    - B06-T008
+    - B06-T009
+    - B06-T010
+    - B06-T011
+    - B06-T012
+    - B06-T013
+    - B06-T014
+    - B06-T015
+    - B06-T016
+    - B06-T017
+    - B06-T018
+    - B06-T019
+    - B06-T020
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B07
+    title: Architecture, correctness, security and data audits
+    dependsOn:
+    - B06
+    skills:
+    - architecture-maintainability-audit
+    - correctness-concurrency-consistency-audit
+    - security-privacy-supply-chain-audit
+    - data-database-migration-audit
+    tasks:
+    - B07-T001
+    - B07-T002
+    - B07-T003
+    - B07-T004
+    - B07-T005
+    - B07-T006
+    - B07-T007
+    - B07-T008
+    - B07-T009
+    - B07-T010
+    - B07-T011
+    - B07-T012
+    - B07-T013
+    - B07-T014
+    - B07-T015
+    - B07-T016
+    - B07-T017
+    - B07-T018
+    - B07-T019
+    - B07-T020
+    - B07-T021
+    - B07-T022
+    - B07-T023
+    - B07-T024
+    - B07-T025
+    - B07-T026
+    - B07-T027
+    - B07-T028
+    - B07-T029
+    - B07-T030
+    - B07-T031
+    - B07-T032
+    - B07-T033
+    - B07-T034
+    - B07-T035
+    - B07-T036
+    - B07-T037
+    - B07-T038
+    - B07-T039
+    - B07-T040
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B08
+    title: Performance, QA, UX, AI and FinOps audits
+    dependsOn:
+    - B06
+    skills:
+    - performance-reliability-observability-audit
+    - test-ci-cd-developer-experience-audit
+    - ux-accessibility-i18n-audit
+    - ai-agent-system-audit
+    - cost-finops-sustainability-audit
+    tasks:
+    - B08-T001
+    - B08-T002
+    - B08-T003
+    - B08-T004
+    - B08-T005
+    - B08-T006
+    - B08-T007
+    - B08-T008
+    - B08-T009
+    - B08-T010
+    - B08-T011
+    - B08-T012
+    - B08-T013
+    - B08-T014
+    - B08-T015
+    - B08-T016
+    - B08-T017
+    - B08-T018
+    - B08-T019
+    - B08-T020
+    - B08-T021
+    - B08-T022
+    - B08-T023
+    - B08-T024
+    - B08-T025
+    - B08-T026
+    - B08-T027
+    - B08-T028
+    - B08-T029
+    - B08-T030
+    - B08-T031
+    - B08-T032
+    - B08-T033
+    - B08-T034
+    - B08-T035
+    - B08-T036
+    - B08-T037
+    - B08-T038
+    - B08-T039
+    - B08-T040
+    - B08-T041
+    - B08-T042
+    - B08-T043
+    - B08-T044
+    - B08-T045
+    - B08-T046
+    - B08-T047
+    - B08-T048
+    - B08-T049
+    - B08-T050
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B09
+    title: Invariant recovery and target-state planning
+    dependsOn:
+    - B07
+    - B08
+    skills:
+    - business-invariant-recovery
+    - target-architecture-alternatives-and-adr
+    - transformation-dag-estimation
+    tasks:
+    - B09-T001
+    - B09-T002
+    - B09-T003
+    - B09-T004
+    - B09-T005
+    - B09-T006
+    - B09-T007
+    - B09-T008
+    - B09-T009
+    - B09-T010
+    - B09-T011
+    - B09-T012
+    - B09-T013
+    - B09-T014
+    - B09-T015
+    - B09-T016
+    - B09-T017
+    - B09-T018
+    - B09-T019
+    - B09-T020
+    - B09-T021
+    - B09-T022
+    - B09-T023
+    - B09-T024
+    - B09-T025
+    - B09-T026
+    - B09-T027
+    - B09-T028
+    - B09-T029
+    - B09-T030
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B10
+    title: Proof-guided ChangeSet execution
+    dependsOn:
+    - B09
+    - B01
+    skills:
+    - changeset-commit-and-provenance-governance
+    - proof-guided-atomic-refactor-execution
+    tasks:
+    - B10-T001
+    - B10-T002
+    - B10-T003
+    - B10-T004
+    - B10-T005
+    - B10-T006
+    - B10-T007
+    - B10-T008
+    - B10-T009
+    - B10-T010
+    - B10-T011
+    - B10-T012
+    - B10-T013
+    - B10-T014
+    - B10-T015
+    - B10-T016
+    - B10-T017
+    - B10-T018
+    - B10-T019
+    - B10-T020
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B11
+    title: Modernization, polyglot and database transformation routes
+    dependsOn:
+    - B10
+    skills:
+    - modernization-strangler-and-rearchitecture
+    - cross-language-framework-transformation
+    - database-schema-routine-data-transformation
+    tasks:
+    - B11-T001
+    - B11-T002
+    - B11-T003
+    - B11-T004
+    - B11-T005
+    - B11-T006
+    - B11-T007
+    - B11-T008
+    - B11-T009
+    - B11-T010
+    - B11-T011
+    - B11-T012
+    - B11-T013
+    - B11-T014
+    - B11-T015
+    - B11-T016
+    - B11-T017
+    - B11-T018
+    - B11-T019
+    - B11-T020
+    - B11-T021
+    - B11-T022
+    - B11-T023
+    - B11-T024
+    - B11-T025
+    - B11-T026
+    - B11-T027
+    - B11-T028
+    - B11-T029
+    - B11-T030
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B12
+    title: Verification mesh and formal assurance routing
+    dependsOn:
+    - B10
+    skills:
+    - characterization-differential-mutation-verification
+    - formal-assurance-routing
+    - e0-e3-readiness-and-evidence-bundle
+    tasks:
+    - B12-T001
+    - B12-T002
+    - B12-T003
+    - B12-T004
+    - B12-T005
+    - B12-T006
+    - B12-T007
+    - B12-T008
+    - B12-T009
+    - B12-T010
+    - B12-T011
+    - B12-T012
+    - B12-T013
+    - B12-T014
+    - B12-T015
+    - B12-T016
+    - B12-T017
+    - B12-T018
+    - B12-T019
+    - B12-T020
+    - B12-T021
+    - B12-T022
+    - B12-T023
+    - B12-T024
+    - B12-T025
+    - B12-T026
+    - B12-T027
+    - B12-T028
+    - B12-T029
+    - B12-T030
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B13
+    title: Release rehearsal, incident and handoff
+    dependsOn:
+    - B12
+    skills:
+    - shadow-dual-run-canary-rollback-preparation
+    - incident-triage-remediation-and-postmortem
+    - final-handoff-training-support
+    tasks:
+    - B13-T001
+    - B13-T002
+    - B13-T003
+    - B13-T004
+    - B13-T005
+    - B13-T006
+    - B13-T007
+    - B13-T008
+    - B13-T009
+    - B13-T010
+    - B13-T011
+    - B13-T012
+    - B13-T013
+    - B13-T014
+    - B13-T015
+    - B13-T016
+    - B13-T017
+    - B13-T018
+    - B13-T019
+    - B13-T020
+    - B13-T021
+    - B13-T022
+    - B13-T023
+    - B13-T024
+    - B13-T025
+    - B13-T026
+    - B13-T027
+    - B13-T028
+    - B13-T029
+    - B13-T030
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B14
+    title: Product UX and collaboration surfaces
+    dependsOn:
+    - B02
+    - B06
+    - B09
+    - B12
+    skills: []
+    tasks:
+    - B14-T001
+    - B14-T002
+    - B14-T003
+    - B14-T004
+    - B14-T005
+    - B14-T006
+    - B14-T007
+    - B14-T008
+    - B14-T009
+    - B14-T010
+    - B14-T011
+    - B14-T012
+    - B14-T013
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B15
+    title: Connector and Adapter ecosystem
+    dependsOn:
+    - B01
+    - B03
+    skills: []
+    tasks:
+    - B15-T001
+    - B15-T002
+    - B15-T003
+    - B15-T004
+    - B15-T005
+    - B15-T006
+    - B15-T007
+    - B15-T008
+    - B15-T009
+    - B15-T010
+    - B15-T011
+    - B15-T012
+    - B15-T013
+    - B15-T014
+    - B15-T015
+    - B15-T016
+    - B15-T017
+    - B15-T018
+    - B15-T019
+    - B15-T020
+    - B15-T021
+    - B15-T022
+    - B15-T023
+    - B15-T024
+    - B15-T025
+    - B15-T026
+    - B15-T027
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B16
+    title: Commercial multi-tenant operations, metering and trust center
+    dependsOn:
+    - B01
+    - B14
+    - B15
+    skills: []
+    tasks:
+    - B16-T001
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B17
+    title: Reusable recipe learning, portfolio and roadmap feedback
+    dependsOn:
+    - B13
+    - B16
+    skills:
+    - reusable-recipe-skill-learning
+    - portfolio-multi-repository-governance
+    - product-feedback-roadmap-loop
+    tasks:
+    - B17-T001
+    - B17-T002
+    - B17-T003
+    - B17-T004
+    - B17-T005
+    - B17-T006
+    - B17-T007
+    - B17-T008
+    - B17-T009
+    - B17-T010
+    - B17-T011
+    - B17-T012
+    - B17-T013
+    - B17-T014
+    - B17-T015
+    - B17-T016
+    - B17-T017
+    - B17-T018
+    - B17-T019
+    - B17-T020
+    - B17-T021
+    - B17-T022
+    - B17-T023
+    - B17-T024
+    - B17-T025
+    - B17-T026
+    - B17-T027
+    - B17-T028
+    - B17-T029
+    - B17-T030
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed
+  - id: B18
+    title: Scale certification fixtures and release hardening
+    dependsOn:
+    - B17
+    skills: []
+    tasks:
+    - B18-T001
+    - B18-T002
+    - B18-T003
+    - B18-T004
+    - B18-T005
+    - B18-T006
+    - B18-T007
+    - B18-T008
+    - B18-T009
+    - B18-T010
+    - B18-T011
+    - B18-T012
+    exitCriteria:
+    - All blocking tasks complete
+    - Batch tests pass
+    - No unresolved critical unknown
+    - No duplicate canonical owner
+    - Evidence bundle sealed

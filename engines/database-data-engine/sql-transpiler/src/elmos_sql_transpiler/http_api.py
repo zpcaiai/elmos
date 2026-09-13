@@ -192,9 +192,7 @@ def _assert_fail_closed_assessment(value: dict[str, Any]) -> None:
     if not isinstance(statements, list) or not isinstance(blockers, list) or not blockers:
         raise AssertionError("commercial assessment statements are absent")
     error_blockers = [
-        item
-        for item in blockers
-        if isinstance(item, dict) and item.get("severity") == "ERROR"
+        item for item in blockers if isinstance(item, dict) and item.get("severity") == "ERROR"
     ]
     if state == "BLOCKED":
         if target_sql is not None:
@@ -630,8 +628,7 @@ def _readiness() -> dict[str, str | int]:
         or skills.get("certification") != "NOT_CERTIFIED"
         or production.get("targetCount") != 13
         or production.get("productionBoundaries", {}).get("externalExecution") != "NOT_RUN"
-        or production.get("productionBoundaries", {}).get("certification")
-        != "NOT_CERTIFIED"
+        or production.get("productionBoundaries", {}).get("certification") != "NOT_CERTIFIED"
     ):
         raise RuntimeError("ChinaDB commercial capability registry is not fail closed")
     return {
@@ -803,9 +800,7 @@ async def production_plan_endpoint(request: Request) -> Response:
         finally:
             await _production_plan_gate.release()
         _assert_production_qualification_result(result)
-        return _json_response(
-            _bounded_json_bytes(result, maximum=MAX_HTTP_RESPONSE_BYTES)
-        )
+        return _json_response(_bounded_json_bytes(result, maximum=MAX_HTTP_RESPONSE_BYTES))
     except _ResponseLimitExceeded:
         return _error_response(
             SidecarFailure(

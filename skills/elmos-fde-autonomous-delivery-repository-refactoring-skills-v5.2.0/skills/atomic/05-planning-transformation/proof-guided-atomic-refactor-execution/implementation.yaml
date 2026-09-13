@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: proof-guided-atomic-refactor-execution
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: ProofGuidedAtomicRefactorExecutionService
+    workflow: ProofGuidedAtomicRefactorExecutionWorkflow
+    policyGate: ProofGuidedAtomicRefactorExecutionPolicyGate
+    evidenceProducer: ProofGuidedAtomicRefactorExecutionEvidenceProducer
+    repositoryPort: ProofGuidedAtomicRefactorExecutionRepositoryPort
+  requiredPorts:
+  - id: recipe.execute
+    direction: outbound
+  - id: compiler.refactor
+    direction: inbound
+  - id: sir.transform
+    direction: outbound
+  - id: test.execute
+    direction: outbound
+  - id: checkpoint.create
+    direction: outbound
+  - id: rollback.execute
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/proof-guided-atomic-refactor-execution/runs
+  - GET /api/v1/skills/proof-guided-atomic-refactor-execution/runs/{runId}
+  - POST /api/v1/skills/proof-guided-atomic-refactor-execution/runs/{runId}/cancel
+  - POST /api/v1/skills/proof-guided-atomic-refactor-execution/runs/{runId}/resume
+  events:
+  - elmos.skill.proof-guided-atomic-refactor-execution.requested.v1
+  - elmos.skill.proof-guided-atomic-refactor-execution.checkpointed.v1
+  - elmos.skill.proof-guided-atomic-refactor-execution.completed.v1
+  - elmos.skill.proof-guided-atomic-refactor-execution.failed.v1
+  workflowSteps:
+  - Load one approved DAG step, exact RevisionSet, invariants, and expected delta.
+  - Select the highest-confidence deterministic transformation mechanism.
+  - Execute in an isolated workspace with tool-result interception.
+  - Run step-local compile, static, test, contract, and policy checks.
+  - Request independent verification and approval according to risk.
+  - Commit or roll back, update ledgers, and release the capability lease.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

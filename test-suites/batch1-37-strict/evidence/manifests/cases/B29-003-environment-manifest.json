@@ -1,0 +1,5 @@
+{
+  "role": "environment-manifest",
+  "case_id": "B29-003",
+  "ref": "shared/environment.json"
+}

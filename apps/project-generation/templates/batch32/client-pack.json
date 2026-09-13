@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "pack_key": "client-source-to-target",
+  "version": "0.1.0",
+  "mode": "modernization",
+  "status": "research",
+  "owner": "UNASSIGNED",
+  "maintenance_owner": "UNASSIGNED",
+  "ux_owner": "UNASSIGNED",
+  "accessibility_owner": "UNASSIGNED",
+  "source": {
+    "stack": "UNSET",
+    "versions": [
+      "UNSET"
+    ],
+    "language": "UNSET",
+    "language_versions": [
+      "UNSET"
+    ],
+    "runtime": "UNSET",
+    "runtime_versions": [
+      "UNSET"
+    ],
+    "build_tool": "UNSET",
+    "package_manager": "UNSET",
+    "router": [],
+    "renderer": [],
+    "state": [],
+    "forms": [],
+    "styling": [],
+    "design_system": [],
+    "api_client": [],
+    "identity": [],
+    "i18n": [],
+    "test_tools": [],
+    "browsers": [
+      "chromium-UNSET"
+    ],
+    "devices": []
+  },
+  "target": {
+    "stack": "UNSET",
+    "versions": [
+      "UNSET"
+    ],
+    "language": "UNSET",
+    "language_versions": [
+      "UNSET"
+    ],
+    "runtime": "UNSET",
+    "runtime_versions": [
+      "UNSET"
+    ],
+    "build_tool": "UNSET",
+    "package_manager": "UNSET",
+    "router": [],
+    "renderer": [],
+    "state": [],
+    "forms": [],
+    "styling": [],
+    "design_system": [],
+    "api_client": [],
+    "identity": [],
+    "i18n": [],
+    "test_tools": [],
+    "browsers": [
+      "chromium-UNSET"
+    ],
+    "devices": []
+  },
+  "scope": {
+    "journeys": [],
+    "routes": [],
+    "component_roots": [],
+    "excluded": []
+  },
+  "paths": {
+    "source_fingerprint": "source-fingerprint/fingerprint.json",
+    "ui_ir": "ui-ir/model.json",
+    "target_profile": "target-profile/profile.json",
+    "acceptance_profile": "acceptance/acceptance-profile.json",
+    "support_matrix": "support-matrix.json",
+    "evidence": "certification/evidence.json",
+    "certification": "certification/certification.json"
+  },
+  "gates": {
+    "build": "required",
+    "startup_or_launch": "required",
+    "p0_journeys": "required",
+    "visual": "required",
+    "accessibility": "required",
+    "security": "required",
+    "holdout": "required"
+  }
+}

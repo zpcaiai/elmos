@@ -1,5 +1,8 @@
 ---
 name: pm-b30-input-and-environment-synchronizer
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "同步输入、配置、依赖、数据库、外部返回、Locale、时区和平台状态. Precision Migration B30 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,5 +1,8 @@
 ---
 name: pm-b33-proof-obligations
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从 Typed/Effect/State/Observation IR 自动生成可由 SMT、Lean 或模型检查器处理的转换证明义务. Precision Migration B33 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

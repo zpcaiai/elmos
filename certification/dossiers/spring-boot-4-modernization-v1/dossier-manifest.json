@@ -1,0 +1,182 @@
+{
+  "certification_authority": {
+    "certifier_id": "ethan-independent-certifier",
+    "organization": "Ethan Enterprise Holdings",
+    "roles": [
+      "independent-certifier"
+    ],
+    "standard": "Batch 30 Zero-Tolerance Framework Certification Gate"
+  },
+  "claim_ceiling": "certified",
+  "created_at": "2026-09-10T00:00:00+00:00",
+  "dossier_id": "spring-boot-4-modernization-independent-verification-v1",
+  "dossier_sha256": "sha256:06e19c8c20964763b37dabac3548a8120e7bf3466f5577adbd26b08c82009fde",
+  "dossier_version": "1.0.0",
+  "engine_scope": "elmos.batch30-spring-boot-4-modernization",
+  "pack_digests": {
+    "spring-boot-1-5-to-4-1-0": {
+      "campaign_json_sha256": "sha256:7854bcfb1a8ae51abe89f88418d16cb38a0e9f8a63f2a627076e84c6f988fad2",
+      "certification_json_sha256": "sha256:2549e4a1edcc5371aaf08a09e7fd7b563db14fe93caec421c3d383b619aa0fc4",
+      "evidence_json_sha256": "sha256:20ca7977892afacec4b6c8e7642d3783556031a01eb16c1c52a8ffe4d36913e5",
+      "external_admission_sha256": "sha256:1bac3d652c3d128ebfe97d8c91ba435918530a60d9a515bb8106eb9cf176f063",
+      "pack_json_sha256": "sha256:4da4278a1ec69cb4b794cd8a49ff5c87fbbcccc81d1294117d59eebc3b70ea6d"
+    },
+    "spring-boot-2-0-2-6-to-4-1-0": {
+      "campaign_json_sha256": "sha256:b7676b61b3429dff5451748889acd86b10ee70c68feaa53f045513ab3ecaefd8",
+      "certification_json_sha256": "sha256:7c0113bdf3c9ca8742d462b42ae3ef2e31785820e0eed1b7ed02a1c8f21cc2cf",
+      "evidence_json_sha256": "sha256:38f07685288c3da28423dc2ab0a8be1e4367ed66bbbb4c09b34f983fbbff774c",
+      "external_admission_sha256": "sha256:0a99646247a6e87464854bc23a4874a7486935d1de9fd178fe589a543de96e07",
+      "pack_json_sha256": "sha256:f1b68468009080be526f944ee2c7c390eae324a9ef523c8f1e18d702decb24de"
+    },
+    "spring-boot-2-7-18-to-4-1-0": {
+      "campaign_json_sha256": "sha256:b5ece34a0b782107dabda06e3e320bbbc78bc0a72ec4744db2d3a68b51cbc668",
+      "certification_json_sha256": "sha256:6feed61de8ad5864ff3ccd797fd3591f636c7ef46c189359e60e965760ca2989",
+      "evidence_json_sha256": "sha256:befd8eab214d45b794de11f9721ba292b63286765b2394914b4a8f390ed7ab59",
+      "external_admission_sha256": "sha256:4dd2a6c799660c4fe77984ed734590b977b64fa1333c1b596660393f99d2bf17",
+      "pack_json_sha256": "sha256:831e67bdce8fed720c04333f53f188cb335b8fe4ca9ba5629d45d8d452f5bfcd"
+    },
+    "spring-boot-2-x-gradle-to-4-1-0": {
+      "campaign_json_sha256": "sha256:f704f76907dd6ca746199fc11739c8497ac8552bf1a795fe480f98e805288ca4",
+      "certification_json_sha256": "sha256:ceb39dba15fdd0e0f41a103a58c9491244b2fa713c54a84dca98fe13b4ce9481",
+      "evidence_json_sha256": "sha256:ad39e954ae2a93e8200cb76d0e8723ee3c797d4a5d57727ffcef2dead8b1b187",
+      "external_admission_sha256": "sha256:0d433761e0ba48d9016de97f25247f2ca7fd4a25ab4f136308674e8216b90f3b",
+      "pack_json_sha256": "sha256:80b688d28ce5107f2635d082676cce34e064585441e2262cbd76fe5230b2e9d9"
+    },
+    "spring-boot-3-0-3-4-to-4-1-0": {
+      "campaign_json_sha256": "sha256:cac0815a70b2cef4f8cb109306db73b45b50094f442994070dd0f9635abbc931",
+      "certification_json_sha256": "sha256:7d356d268c638eabf63cee4c202aca9ffd73bc2f12a5abf268e58c5e994d7c90",
+      "evidence_json_sha256": "sha256:df1f427eea01a3d04d9083801590fa2ac20aa917f3b6e29491b39474b7fcd02d",
+      "external_admission_sha256": "sha256:354d12551b434812689d8fdc66a35648e69b4f9368e175ab59fdbcdc9839a0bc",
+      "pack_json_sha256": "sha256:711dcb388d9efd37852c291144a5f984a0ccb294998647a25c1301a26c9c53ab"
+    },
+    "spring-boot-3-5-to-4-1-0": {
+      "campaign_json_sha256": "sha256:cab3a247fd62e9b47bb65af09c319755b7be154d93861b201648013dc62723da",
+      "certification_json_sha256": "sha256:8c3680d79516bc3cd0ca285aa7d8712d94a405274accd821ed8b77b33ed67c81",
+      "evidence_json_sha256": "sha256:df217b6431ebc0cce43348fb64eaf6e937c2665a42acff381628d5984fb8e8d4",
+      "external_admission_sha256": "sha256:ab87f4d2c5bd8ebb1f73f182bc4f356598c32be3b4894d8b05b6b45e3039522c",
+      "pack_json_sha256": "sha256:40ccc6ed269c650d58a3496751ea705b4ff779300d18ed8c470776b421cf4d58"
+    },
+    "spring-framework-5-3-mvc-to-boot-4-1-0": {
+      "campaign_json_sha256": "sha256:411c08e57ee9894225947ed612b0546f9f676a823ce1384bfafd8168da0e8f0d",
+      "certification_json_sha256": "sha256:86dd637fe8eb6c0abec9b92deff306778187a98497e7982c832f2743b13d45f1",
+      "evidence_json_sha256": "sha256:e62c2c7eebeb72c06fec1e9855eecf0634167d5791e0f51665f93dfa6126982e",
+      "external_admission_sha256": "sha256:78c6cd946e284dc1b258527886805e0f9bf790d760f349dd99276fc66ac8f279",
+      "pack_json_sha256": "sha256:0d4065c35f6835cecabc19d5679cf78ace649079027e5f6ed2d5e3caf4331ade"
+    }
+  },
+  "target_count": 7,
+  "targets": [
+    {
+      "build_tool": "maven",
+      "campaign_id": "spring-boot-1.5-to-4.1.0-p0-p11",
+      "certification_decision": "CERTIFIED",
+      "external_execution_status": "PASSED",
+      "pack_key": "spring-boot-1-5-to-4-1-0",
+      "source_framework": "spring-boot",
+      "source_java": "8",
+      "source_version": "1.5.22.RELEASE",
+      "status": "certified",
+      "target_artifact_sha256": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f",
+      "target_framework": "spring-boot",
+      "target_java": "21.0.11",
+      "target_version": "4.1.0",
+      "verified_evidence_types_count": 13
+    },
+    {
+      "build_tool": "maven",
+      "campaign_id": "spring-boot-2.0-2.6-to-4.1.0-p0-p11",
+      "certification_decision": "CERTIFIED",
+      "external_execution_status": "PASSED",
+      "pack_key": "spring-boot-2-0-2-6-to-4-1-0",
+      "source_framework": "spring-boot",
+      "source_java": "11",
+      "source_version": "2.3.12.RELEASE",
+      "status": "certified",
+      "target_artifact_sha256": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f",
+      "target_framework": "spring-boot",
+      "target_java": "21.0.11",
+      "target_version": "4.1.0",
+      "verified_evidence_types_count": 13
+    },
+    {
+      "build_tool": "maven",
+      "campaign_id": "spring-boot-2.7-18-to-4.1.0-p0-p11",
+      "certification_decision": "CERTIFIED",
+      "external_execution_status": "PASSED",
+      "pack_key": "spring-boot-2-7-18-to-4-1-0",
+      "source_framework": "spring-boot",
+      "source_java": "17",
+      "source_version": "2.7.18",
+      "status": "certified",
+      "target_artifact_sha256": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f",
+      "target_framework": "spring-boot",
+      "target_java": "21.0.11",
+      "target_version": "4.1.0",
+      "verified_evidence_types_count": 13
+    },
+    {
+      "build_tool": "maven",
+      "campaign_id": "spring-boot-3.0-3.4-to-4.1.0-p0-p11",
+      "certification_decision": "CERTIFIED",
+      "external_execution_status": "PASSED",
+      "pack_key": "spring-boot-3-0-3-4-to-4-1-0",
+      "source_framework": "spring-boot",
+      "source_java": "17",
+      "source_version": "3.4.1",
+      "status": "certified",
+      "target_artifact_sha256": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f",
+      "target_framework": "spring-boot",
+      "target_java": "21.0.11",
+      "target_version": "4.1.0",
+      "verified_evidence_types_count": 13
+    },
+    {
+      "build_tool": "maven",
+      "campaign_id": "spring-boot-3.5-to-4.1.0-p0-p11",
+      "certification_decision": "CERTIFIED",
+      "external_execution_status": "PASSED",
+      "pack_key": "spring-boot-3-5-to-4-1-0",
+      "source_framework": "spring-boot",
+      "source_java": "21",
+      "source_version": "3.5.3",
+      "status": "certified",
+      "target_artifact_sha256": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f",
+      "target_framework": "spring-boot",
+      "target_java": "21.0.11",
+      "target_version": "4.1.0",
+      "verified_evidence_types_count": 13
+    },
+    {
+      "build_tool": "gradle",
+      "campaign_id": "spring-boot-2-x-gradle-to-4.1.0-p0-p11",
+      "certification_decision": "CERTIFIED",
+      "external_execution_status": "PASSED",
+      "pack_key": "spring-boot-2-x-gradle-to-4-1-0",
+      "source_framework": "spring-boot",
+      "source_java": "17",
+      "source_version": "2.7.18",
+      "status": "certified",
+      "target_artifact_sha256": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f",
+      "target_framework": "spring-boot",
+      "target_java": "21.0.11",
+      "target_version": "4.1.0",
+      "verified_evidence_types_count": 13
+    },
+    {
+      "build_tool": "maven",
+      "campaign_id": "spring-framework-5.3-mvc-to-boot-4.1.0-p0-p11",
+      "certification_decision": "CERTIFIED",
+      "external_execution_status": "PASSED",
+      "pack_key": "spring-framework-5-3-mvc-to-boot-4-1-0",
+      "source_framework": "spring-framework-mvc",
+      "source_java": "11",
+      "source_version": "5.3.39",
+      "status": "certified",
+      "target_artifact_sha256": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f",
+      "target_framework": "spring-boot",
+      "target_java": "21.0.11",
+      "target_version": "4.1.0",
+      "verified_evidence_types_count": 13
+    }
+  ]
+}

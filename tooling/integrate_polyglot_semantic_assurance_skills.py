@@ -118,7 +118,7 @@ COLLISIONS: Mapping[str, Mapping[str, str]] = {
         "owner_file": "compiled-contract.json",
         "owner_field": "namespace",
         "owner_value": "elmos-7plus1-commercial-v1",
-        "skill_sha256": "7467e1994fc851144b05700da86db4544e98672dd308fe1595b55aa45540776d",
+        "skill_sha256": "b9d725b1f121861143c9b705274e0cf111913dd2fda139f5218d45ae7518c0be",
     },
     "elmos-proof-obligation-generator": {
         "owner": "elmos-repository-task-decomposition-cost-router-skills:2.0.0",

@@ -200,6 +200,8 @@ ROUTED_PAIRS: tuple[tuple[Language, Language], ...] = COMPLETE_MATRIX_DIRECTED_P
 
 TYPED_PURE_FUNCTION_PROFILE = "typed-pure-function-v1"
 TYPED_PURE_MODULE_PROFILE = "typed-pure-module-v1"
+ENTERPRISE_PRODUCTION_PROFILE = "enterprise-production-v1"
+ENTERPRISE_INDUSTRIAL_PROFILE = "enterprise-industrial-v1"
 
 
 def is_routed_pair(source: str, target: str) -> bool:

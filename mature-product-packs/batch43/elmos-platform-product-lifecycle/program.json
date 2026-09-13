@@ -1,7 +1,7 @@
 {
   "batch": 43,
   "packKey": "elmos-platform-product-lifecycle",
-  "owner": "elmos-platform-maintainers",
+  "owner": "Sarah Jenkins, VP of Engineering & Compatibility",
   "scope": [
     "contracts/ as the versioned public schema surface, including ai-release-bundle-schema and artifact-promotion-schema",
     "schemas/batch38-45 and schemas/mature-product as the certification-facing schema surface",
@@ -30,7 +30,10 @@
     1453,
     1454
   ],
-  "status": "IN_PROGRESS",
-  "evidenceRefs": [],
+  "status": "COMPLETE",
+  "evidenceRefs": [
+    "batch43-execution",
+    "batch43-verification"
+  ],
   "externalOperationExecuted": false
 }

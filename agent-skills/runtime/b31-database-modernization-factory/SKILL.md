@@ -1,6 +1,15 @@
 ---
 name: b31-database-modernization-factory
-description: "Implement and certify a directional, version-specific database or data-platform modernization pack with workload discovery, canonical database IR, schema/query/routine/pipeline transformations, real source/target execution, data reconciliation, holdout workloads, and evidence. Use for Batch 31 pack creation or major expansion."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
+description: Implement and certify a directional, version-specific database or data-platform modernization pack with workload discovery, canonical database IR, schema/query/routine/pipeline transformations, real source/target execution, data reconciliation, holdout workloads, and evidence. Use for Batch 31 pack creation or major expansion.
 ---
 
 ## Operating mode

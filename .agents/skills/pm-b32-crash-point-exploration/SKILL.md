@@ -1,5 +1,8 @@
 ---
 name: pm-b32-crash-point-exploration
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在事务、写入、消息、ACK、补偿和持久化边界注入进程崩溃. Precision Migration B32 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

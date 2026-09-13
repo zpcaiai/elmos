@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "route_key": "java-to-csharp",
+  "route_version": "0.1.0",
+  "runs": [],
+  "metrics": {
+    "first_build_pass_rate": 0,
+    "build_green_rate": 0,
+    "p0_behavior_pass_rate": 0,
+    "source_map_coverage": 0,
+    "manual_hours": 0,
+    "cost_per_verified_workload": 0
+  },
+  "critical_unknown_semantics": 0,
+  "critical_behavior_regressions": 0,
+  "test_integrity_violations": 0,
+  "notes": []
+}

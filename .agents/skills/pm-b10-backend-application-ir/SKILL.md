@@ -1,5 +1,8 @@
 ---
 name: pm-b10-backend-application-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "定义应用、模块、端口、服务、命令、查询、实体和部署边界. Precision Migration B10 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

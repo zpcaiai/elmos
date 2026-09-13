@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "skill_name": "b39-sla-service-credit-governance",
+  "batch": 39,
+  "batch_title": "Global SRE & Production Operations",
+  "implementation_state": "VERIFIED",
+  "external_evidence_status": "LOCAL_EXECUTED",
+  "production_certification": "NOT_CERTIFIED",
+  "runtime_handler": "scripts.batch39.b39_skill_runtime.B39SkillRuntime._handle_sla_service_credit_governance",
+  "fail_closed_policy": "FAIL_CLOSED_ON_UNKNOWN_STATUS",
+  "metrics_thresholds": {
+    "sloPassRate": 1.0,
+    "restorePassRate": 1.0,
+    "incidentExercisePassRate": 1.0
+  }
+}

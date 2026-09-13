@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B03-008 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [3]
+Title: Batch 3 UIR版本兼容：篡改结果、Digest、Golden、审批、时间戳或删除失败记录
+Capability: UIR版本兼容
+Test Type: evidence_tamper
+Skill: tst-b03-unified-ir
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

@@ -1,5 +1,8 @@
 ---
 name: pm-b13-egraph-equivalence-search
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "对局部纯表达式和数据流进行等价饱和，选择目标语言最优形式. Precision Migration B13 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

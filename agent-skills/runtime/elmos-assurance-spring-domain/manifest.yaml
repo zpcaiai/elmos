@@ -1,0 +1,21 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-spring-domain
+title: Spring旧项目原生翻新集成
+priority: P0
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-differential-runtime
+inputs:
+- 旧仓库/runtime
+- 批准目标版本
+- Framework Semantics Pack
+outputs:
+- BehaviorRecorder
+- SpringMigrationAdapter
+- NativeSpringRoute
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

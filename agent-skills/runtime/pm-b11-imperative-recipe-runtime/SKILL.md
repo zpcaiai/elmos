@@ -1,5 +1,8 @@
 ---
 name: pm-b11-imperative-recipe-runtime
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "运行需要全局分析、多文件状态或复杂生成逻辑的命令式 Recipe. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

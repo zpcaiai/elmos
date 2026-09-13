@@ -1,5 +1,8 @@
 ---
 name: pm-b11-code-example-rule-induction
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从正反代码样例、失败案例和人工修复中归纳候选规则及适用条件. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

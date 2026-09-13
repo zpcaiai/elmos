@@ -1,0 +1,135 @@
+{
+  "binding_digest": "sha256:f367f0efea484f40270f66ca3b9131cf681d50c27bd89c43e3b6dd2279c3178e",
+  "campaign_digest": "sha256:b71ac28992b010e6560eb4e6cef938bc3b732c5bf6d6cca705263bce1a688a8a",
+  "environment": {
+    "environment_id": "authorized-isolated-env-actor-ethan",
+    "isolation": "AUTHORIZED_ISOLATED",
+    "policy_digest": "sha256:e7e1e19b10a2e7545f859204542c9a1afbe3aeaa49478415c4050340bac7e88c",
+    "source_commit": "7e1c098541143c96cce7d9a637fffe57d0e2baae",
+    "source_snapshot_digest": "sha256:68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581",
+    "target_artifact_digest": "sha256:7a326b69fc5651fe4986d00742dbae7a4f8b6e81aacdecc361a0d9cf30ec1d97",
+    "target_profile_digest": "sha256:8042f1bed7cde57d13e9794b7a694437d5b12d40f0eb4948c656d942a9297ee1",
+    "toolchains": [
+      {
+        "digest": "sha256:09d5fffa5ad3de15dcfd603e747df1e6c9ecdb58f25d333e89661910064e884a",
+        "name": "source-java",
+        "version": "11.0.26"
+      },
+      {
+        "digest": "sha256:0d7125e8c91097b36edb990ea5934e6c68b4440eef4ea96510a0f6815e7eeadb",
+        "name": "source-maven",
+        "version": "3.9.11"
+      },
+      {
+        "digest": "sha256:93306f86baafe13186cc3e705c201040d68b0192a50be667a1f576ee4711db0d",
+        "name": "source-container",
+        "version": "9.0.120"
+      },
+      {
+        "digest": "sha256:7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756",
+        "name": "target-java",
+        "version": "21.0.11"
+      },
+      {
+        "digest": "sha256:0d7125e8c91097b36edb990ea5934e6c68b4440eef4ea96510a0f6815e7eeadb",
+        "name": "target-maven",
+        "version": "3.9.11"
+      },
+      {
+        "digest": "sha256:c0ca6acafe5ad63cd5de16ec8894318a7b53ea11e3db1bc217fd5f2a9746a790",
+        "name": "target-container",
+        "version": "10.1.42"
+      }
+    ],
+    "version_tuple": {
+      "source": {
+        "container": "9.0.120",
+        "framework": "spring-framework-mvc",
+        "framework_version": "5.3.39",
+        "java": "11.0.26",
+        "maven": "3.9.11",
+        "servlet_api": "4.0.1",
+        "servlet_namespace": "javax.servlet"
+      },
+      "target": {
+        "container": "10.1.42",
+        "framework": "spring-boot",
+        "framework_version": "3.5.3",
+        "java": "21.0.11",
+        "maven": "3.9.11",
+        "servlet_api": "6.1",
+        "servlet_namespace": "jakarta.servlet",
+        "spring_framework_version": "6.2.8"
+      }
+    }
+  },
+  "evidence_type": "external_certification",
+  "executed_at": "2026-09-08T18:00:00Z",
+  "execution_id": "execution-external_certification-actor-ethan",
+  "executor_actor_id": "executor-actor-external_certification",
+  "executor_organization_id": "executor-org-external_certification",
+  "metrics": {
+    "certificate_valid_until": "2028-01-01T00:00:00Z",
+    "certified_capability_ids": [
+      "web",
+      "dependency-injection",
+      "configuration",
+      "validation",
+      "error-handling",
+      "servlet-filters-and-interceptors",
+      "views-and-static-resources",
+      "lifecycle"
+    ],
+    "cost_per_verified_workload": 85.0,
+    "decision": "CERTIFIED",
+    "manual_hours": 16.0,
+    "reviewed_content_digests": {
+      "behavioral_equivalence": "sha256:a58af6ec74b04207943416e6ef20a1d9cfd0252a4b7814659d8be20eac5f6839",
+      "customer_acceptance": "sha256:adea203e89cd268159acfe7645eac46ba02ab188447ff19cb7b4fbdfe04ff4f7",
+      "independent_review": "sha256:ea00642d3ac5f12e19564ca52fe72a331180059204a3c2bb0cf581d418453b22",
+      "operability": "sha256:ed9ae5a32df7fe83d08fe41c6de0389ee8eeaf8da4829a55eeb67a0699ccf19c",
+      "performance": "sha256:fd3fdb36c1a863f63bb57dd469770b8ceb7bb05271b27e129c44e8aaa117350c",
+      "rollback": "sha256:0e98ecd053143da046fb1ceeb2c783fc4c56aff0846bcaaef0f7fca917101882",
+      "sbom": "sha256:784d4f2bbde931a3e5ed9d105739bf749ca5bad296135882f368f4ec7445396f",
+      "security": "sha256:11dfd6b26b00a30498ef0ad9f3578fc145bcc58991651d8d04d3e87df70edfee",
+      "source_build": "sha256:78a15a4f89423ff2ada2b155b6dea59c2d11b7ef03ed03d88905952b282f8024",
+      "source_startup": "sha256:e56bdb291837ca87d9b5993bf6a614d3ab243ae03edfea5d240d8f281316adee",
+      "target_build": "sha256:e657c20e374e54821ed1e32ec41335b4cdb134fad4599a3e7da772f82c9836ac",
+      "target_startup": "sha256:21e379a80b8721e5f8ad49df2735e96ee4708ad61da967433e0d887a2ae4c5b9"
+    },
+    "reviewed_evidence_types": [
+      "source_build",
+      "target_build",
+      "source_startup",
+      "target_startup",
+      "behavioral_equivalence",
+      "security",
+      "performance",
+      "operability",
+      "sbom",
+      "rollback",
+      "independent_review",
+      "customer_acceptance"
+    ],
+    "scope_bound": true
+  },
+  "not_run": [],
+  "raw_evidence": [
+    {
+      "digest": "sha256:25dfef9ef5c29f489d8e2ba919c05dd4bcf6a5c82770ca77f3dbc6009c9c91da",
+      "media_type": "text/plain",
+      "size_bytes": 61,
+      "uri": "file:///Users/stephen/DevProjects/AIProjects/elmos/framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/certification/campaign-runs/actor-ethan-certified/evidence/raw-external_certification.log"
+    }
+  ],
+  "result": "CERTIFIED",
+  "schema_version": "elmos.batch30.external-evidence.v1",
+  "test_integrity": {
+    "flaky": 0,
+    "skipped": 0,
+    "synthetic": false,
+    "weakened": 0
+  },
+  "unknowns": [],
+  "waivers": []
+}

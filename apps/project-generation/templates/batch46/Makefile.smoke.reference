@@ -1,0 +1,23 @@
+# ELMOS Batch 46 smoke targets.
+SMOKE_PYTHON ?= python3
+SMOKE_TTL ?= 600
+
+.PHONY: smoke smoke-seed smoke-compose smoke-zero-dep smoke-status smoke-stop
+
+smoke:
+	$(SMOKE_PYTHON) smoke/tools/run_smoke.py --project . --entry script --ttl $(SMOKE_TTL)
+
+smoke-compose:
+	$(SMOKE_PYTHON) smoke/tools/run_smoke.py --project . --entry compose --ttl $(SMOKE_TTL)
+
+smoke-zero-dep:
+	$(SMOKE_PYTHON) smoke/tools/run_smoke.py --project . --entry zero-dep --ttl $(SMOKE_TTL)
+
+smoke-seed:
+	$(SMOKE_PYTHON) smoke/tools/run_smoke.py --project . --seed-only
+
+smoke-status:
+	$(SMOKE_PYTHON) smoke/tools/smoke_lease.py status --project .
+
+smoke-stop:
+	$(SMOKE_PYTHON) smoke/tools/smoke_lease.py stop --project . --reason manual

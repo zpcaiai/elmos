@@ -1,5 +1,8 @@
 ---
 name: pm-b25-postgresql-array-range-composite
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Array、Range、Multirange、Composite 和相关操作符. Precision Migration B25 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

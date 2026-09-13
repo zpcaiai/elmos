@@ -684,7 +684,6 @@ def _walk_repository(
                 continue
             content: bytes | None
             try:
-                content: bytes | None
                 if retain_content:
                     retained_content = _stable_read(os.path.join(current, name))
                     content: bytes | None = retained_content

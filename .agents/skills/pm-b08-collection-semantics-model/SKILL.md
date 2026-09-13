@@ -1,5 +1,8 @@
 ---
 name: pm-b08-collection-semantics-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "建模顺序、唯一性、相等、哈希、可变性、惰性与并发集合语义. Precision Migration B08 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

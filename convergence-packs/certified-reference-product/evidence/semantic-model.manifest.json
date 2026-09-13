@@ -1,0 +1,10 @@
+{
+  "artifact_sha256": "4ad461b5044b5437209715bae7517768b934e4dac5149f7041a45cbf0d745384",
+  "environment_sha256": "26458dfb82576a1dac386c9246d9815d02345816ac4923064f5188ec59e7f6d7",
+  "files": [
+    {
+      "path": "evidence/semantic-model.log",
+      "sha256": "54e581e9978f25d7fec42e67c1b285bad2374644d63cc6c925f6a881ed67f362"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B27-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [27]
+Title: Batch 27 Protected Region：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: Protected Region
+Test Type: dependency_failure
+Skill: tst-b27-incremental-production-factory
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

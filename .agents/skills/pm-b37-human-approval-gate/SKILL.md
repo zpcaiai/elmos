@@ -1,5 +1,8 @@
 ---
 name: pm-b37-human-approval-gate
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在高风险、规格冲突、语义损失、生产切流和例外放行处要求人工批准. Precision Migration B37 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

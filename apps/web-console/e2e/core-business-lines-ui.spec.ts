@@ -151,6 +151,161 @@ test("SQL 预检明确显示部署运行器缺失而不是泛化失败", async (
   await expect(page.getByText("预检未执行", { exact: true })).toBeVisible();
 });
 
+test("SQL 预检 LOCAL_EMITTED 分支展示本地目标 SQL 且保持未认证", async ({ page }) => {
+  await page.route("**/api/database-sql/preflight", async (route) => {
+    const body = route.request().postDataJSON() as {
+      queryId: string;
+      sourceProfile: string;
+      targetId: string;
+      targetVersion: string;
+      targetEdition: string;
+      compatibilityMode: string;
+      targetDriver: string;
+      targetCharset: string;
+      targetCollation: string;
+      targetTimeZone: string;
+      capabilitySnapshotDigest: string;
+      sql: string;
+    };
+    const sourceDigest = `sha256:${createHash("sha256").update(body.sql).digest("hex")}`;
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        schemaVersion: "1.0",
+        queryId: body.queryId,
+        sourceProfile: body.sourceProfile,
+        target: {
+          id: body.targetId,
+          label: "DM8",
+          version: body.targetVersion,
+          edition: body.targetEdition,
+          compatibilityMode: body.compatibilityMode,
+          driver: body.targetDriver,
+          charset: body.targetCharset,
+          collation: body.targetCollation,
+          timeZone: body.targetTimeZone,
+          adapterId: "chinadb.dm8.target-adapter.v1",
+          implementationStatus: "LOCAL_ADAPTER",
+        },
+        routeId: "oracle--to--dm8",
+        state: "LOCAL_EMITTED",
+        sourceDigest,
+        capabilitySnapshotDigest: body.capabilitySnapshotDigest,
+        statements: [{
+          index: 0,
+          kind: "SELECT",
+          sourceAst: { select: { this: "1" } },
+          obligations: ["TARGET_SEMANTICS_REVIEW_REQUIRED"],
+        }],
+        blockers: [{
+          code: "TARGET_CAPABILITY_SNAPSHOT_NOT_EXTERNALLY_VERIFIED",
+          severity: "WARNING",
+          statementIndex: null,
+          message: "Local emission does not consume an independently collected target capability snapshot.",
+        }],
+        targetSql: "SELECT 1 FROM t;\n",
+        verification: {
+          sourceParse: "PASSED",
+          targetAdapter: "PASSED",
+          targetEmit: "PASSED",
+          targetReparse: "PASSED",
+          sourceExecution: "NOT_RUN",
+          targetExecution: "NOT_RUN",
+          resultEquivalence: "NOT_RUN",
+          externalExecution: "NOT_RUN",
+        },
+        certification: "NOT_CERTIFIED",
+      }),
+    });
+  });
+
+  await page.goto("/migration/sql");
+  await page.getByRole("button", { name: "运行 SQL 预检" }).click();
+
+  await expect(page.getByRole("heading", { name: "预检结果：本地已发射" })).toBeVisible();
+  await expect(page.getByLabel("本地发射的目标 SQL")).toContainText("SELECT 1 FROM t");
+  await expect(page.getByText("此 SQL 未经目标库执行或等价验证，不得当作认证产物。")).toBeVisible();
+  await expect(page.getByText("NOT_CERTIFIED")).toBeVisible();
+});
+
+test("SQL 预检 BLOCKED 分支展示阻断原因且不生成目标 SQL", async ({ page }) => {
+  await page.route("**/api/database-sql/preflight", async (route) => {
+    const body = route.request().postDataJSON() as {
+      queryId: string;
+      sourceProfile: string;
+      targetId: string;
+      targetVersion: string;
+      targetEdition: string;
+      compatibilityMode: string;
+      targetDriver: string;
+      targetCharset: string;
+      targetCollation: string;
+      targetTimeZone: string;
+      capabilitySnapshotDigest: string;
+      sql: string;
+    };
+    const sourceDigest = `sha256:${createHash("sha256").update(body.sql).digest("hex")}`;
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        schemaVersion: "1.0",
+        queryId: body.queryId,
+        sourceProfile: body.sourceProfile,
+        target: {
+          id: body.targetId,
+          label: "DM8",
+          version: body.targetVersion,
+          edition: body.targetEdition,
+          compatibilityMode: body.compatibilityMode,
+          driver: body.targetDriver,
+          charset: body.targetCharset,
+          collation: body.targetCollation,
+          timeZone: body.targetTimeZone,
+          adapterId: "chinadb.dm8.target-adapter.v1",
+          implementationStatus: "LOCAL_ADAPTER",
+        },
+        routeId: "oracle--to--dm8",
+        state: "BLOCKED",
+        sourceDigest,
+        capabilitySnapshotDigest: body.capabilitySnapshotDigest,
+        statements: [{
+          index: 0,
+          kind: "SELECT",
+          sourceAst: { select: { this: "1" } },
+          obligations: ["OPAQUE_COMMAND_SEMANTICS"],
+        }],
+        blockers: [{
+          code: "COMPATIBILITY_MODE_NOT_MAPPED",
+          severity: "ERROR",
+          statementIndex: null,
+          message: "The requested compatibility mode is not in this target's local allow-list.",
+        }],
+        targetSql: null,
+        verification: {
+          sourceParse: "PASSED",
+          targetAdapter: "NOT_RUN",
+          targetEmit: "NOT_RUN",
+          targetReparse: "NOT_RUN",
+          sourceExecution: "NOT_RUN",
+          targetExecution: "NOT_RUN",
+          resultEquivalence: "NOT_RUN",
+          externalExecution: "NOT_RUN",
+        },
+        certification: "NOT_CERTIFIED",
+      }),
+    });
+  });
+
+  await page.goto("/migration/sql");
+  await page.getByRole("button", { name: "运行 SQL 预检" }).click();
+
+  await expect(page.getByRole("heading", { name: "预检结果：已阻断" })).toBeVisible();
+  await expect(page.getByText("NULL · 未生成")).toBeVisible();
+  await expect(page.getByText("COMPATIBILITY_MODE_NOT_MAPPED")).toBeVisible();
+});
+
 test("发现报告在权威路线本地 Profile 未通过时由服务端拒绝", async ({ request }) => {
   const digest = "c".repeat(64);
   const snapshot = "d".repeat(64);

@@ -1,5 +1,8 @@
 ---
 name: pm-b30-external-call-comparator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "比较外部调用参数、次数、顺序、幂等、超时、错误和不可逆意图. Precision Migration B30 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

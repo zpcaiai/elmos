@@ -1,0 +1,10 @@
+{
+  "artifact_sha256": "fd4e4f80a1923b9a47b343a7fd3eec7368411bce4e5c8621e68eecdec5aaeab5",
+  "environment_sha256": "b044caf7e0dba15f0e92d724fb17c3538dffd61b09c3c485ac3478e0fc463973",
+  "files": [
+    {
+      "path": "evidence/canary.log",
+      "sha256": "109fb985e4502508e1b1148a852f49820abde7fbde008ca69fb641ada6cdc262"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+skill: elmos-assurance-calibration-holdout
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-calibration-holdout-A01
+  given: 100个样本0假通过
+  when: 在真实集成模块执行对应测试或负例
+  then: 不得宣称风险0或99.999%
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-calibration-holdout-A02
+  given: 同一bug的1000变体
+  when: 在真实集成模块执行对应测试或负例
+  then: 按cluster解释样本量
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-calibration-holdout-A03
+  given: 修复读取hidden全部答案
+  when: 在真实集成模块执行对应测试或负例
+  then: 污染标记并更换holdout
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

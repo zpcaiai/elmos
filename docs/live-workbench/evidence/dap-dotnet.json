@@ -1,0 +1,11 @@
+{
+  "adapter": "netcoredbg",
+  "breakpointsHit": 1,
+  "commands": [
+    "pause",
+    "continue",
+    "variables"
+  ],
+  "runtime": "dotnet-8.0",
+  "timestamp": 1789145845
+}

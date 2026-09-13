@@ -9,6 +9,10 @@ import sqlite3
 from collections.abc import Iterator, Mapping
 from copy import deepcopy
 from pathlib import Path
+import sys
+_TESTS_DIR = Path(__file__).resolve().parent
+if str(_TESTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_TESTS_DIR))
 
 import pytest
 
@@ -1997,3 +2001,13 @@ def test_dual_root_projection_and_matching_receipt_cannot_self_authenticate(tmp_
         "status": "MISSING_OR_INVALID",
         "valid": False,
     }
+
+
+def load_tests(loader: object, tests: object, pattern: object) -> unittest.TestSuite:
+    import unittest
+    return pytest.build_test_suite(sys.modules[__name__])
+
+
+if __name__ == "__main__":
+    import unittest
+    unittest.main()

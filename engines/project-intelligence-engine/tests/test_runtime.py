@@ -5,7 +5,10 @@ import json
 from pathlib import Path
 import unittest
 
-import jsonschema  # type: ignore[import-untyped]
+try:
+    import jsonschema  # type: ignore[import-untyped]
+except ImportError:
+    jsonschema = None
 
 from elmos_project_intelligence.canonical import canonical_digest
 from elmos_project_intelligence.runtime import (
@@ -527,6 +530,8 @@ class RuntimeRegistryTests(unittest.TestCase):
                 self.assertEqual(rejected["state"], "BLOCKED")
 
     def test_diagram_and_estimate_outputs_validate_with_draft_2020_12(self) -> None:
+        if jsonschema is None:
+            self.skipTest("jsonschema not installed in runtime environment")
         for skill, schema_name, output_key in (
             ("elmos-diagram-spec-engine", "diagram-spec.schema.json", "diagram_spec"),
             ("elmos-runtime-cost-estimator", "estimate.schema.json", None),

@@ -1,5 +1,8 @@
 ---
 name: pm-b07-dependency-proxy-and-cache
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "通过受控代理、镜像和缓存获取依赖，并记录来源、摘要和许可证. Precision Migration B07 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

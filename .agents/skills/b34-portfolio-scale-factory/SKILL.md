@@ -1,5 +1,8 @@
 ---
 name: b34-portfolio-scale-factory
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement and certify an enterprise-scale migration portfolio pack spanning repository discovery dependency graphs work-unit partitioning distributed workflows runner fleets caches transfers campaigns pull requests recovery fairness budgets benchmarks forecasting and disaster replay.
 ---
 

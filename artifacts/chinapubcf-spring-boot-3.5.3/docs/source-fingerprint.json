@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "source": {
+    "repository": "https://github.com/giftfuture/chinapubcf",
+    "commit": "df038f57318d2bff1bc2041db718ac91316562ee",
+    "commitDate": "2015-04-14",
+    "treeDigestSha256": "d4013ba138b027f96a7cbf322aec58bd5b90211acf2e9862e432bc01d1f026f2",
+    "fileCount": 145,
+    "javaSourceCount": 42,
+    "licenseDetected": false
+  },
+  "framework": {
+    "family": "Java EE Servlet/JSP",
+    "servletSpec": "2.5",
+    "sourceJava": "1.6.0_43",
+    "container": "Tomcat 7",
+    "springDetected": false,
+    "buildDefinitionDetected": false
+  },
+  "capabilities": [
+    "catalog paging",
+    "registration and session login",
+    "rating capture",
+    "purchased-book listing",
+    "user-based recommendation",
+    "item-based recommendation",
+    "Slope One recommendation",
+    "combined recommendation",
+    "JSON XML and text responses"
+  ],
+  "data": {
+    "dialect": "MySQL 5.1-era export",
+    "jndiName": "jdbc/chinapubcf",
+    "books": 23,
+    "users": 9,
+    "ratings": 36,
+    "duplicateRatingPolicyInTarget": "latest ratingId wins"
+  },
+  "risks": [
+    "SQL assembled by string concatenation",
+    "plaintext and MD5 password material",
+    "credential fields returned to clients and session",
+    "global static database state",
+    "hard-coded MySQL root fallback",
+    "exceptions swallowed",
+    "vendored obsolete dependencies",
+    "no reproducible source build or automated test suite"
+  ],
+  "unknowns": [
+    "production Tomcat and JNDI configuration",
+    "historical MySQL collation and server settings",
+    "expected behavior of the declared but absent Axis JWS service",
+    "production traffic and performance profile"
+  ]
+}

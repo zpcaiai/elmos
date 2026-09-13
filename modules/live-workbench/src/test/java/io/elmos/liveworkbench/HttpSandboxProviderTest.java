@@ -38,6 +38,33 @@ class HttpSandboxProviderTest {
         assertFalse(provider.ready());
     }
 
+    @Test void liveDockerSandboxProviderLifecycleWhenDaemonIsRunning() {
+        HttpSandboxProvider provider = new HttpSandboxProvider(HttpClient.newHttpClient(), new ObjectMapper(),
+                new HttpSandboxProvider.Configuration(URI.create("http://127.0.0.1:8099"), Duration.ofSeconds(15),
+                        "0123456789abcdef0123456789abcdef", true, Set.of("https://preview.example.test")));
+        if (!provider.ready()) {
+            return;
+        }
+        PrincipalScope scope = new PrincipalScope("tenant-test", "account-test", "actor-test", "env-test", Set.of());
+        String snapshot = LwDigest.sha256("snapshot-test");
+        String sessionId = "java-sess-" + System.currentTimeMillis();
+        CreateSessionRequest req = new CreateSessionRequest("repo-test", snapshot, "del-1", "java-21", "ecommerce", "debug", 1, true);
+        ProviderAllocation alloc = provider.allocate(scope, sessionId, req, "idem-alloc", System.currentTimeMillis() / 1000 + 600);
+        assertNotNull(alloc.providerSessionId());
+        assertTrue(alloc.providerSessionId().startsWith("docker-"));
+
+        SessionView session = new SessionView("tenant-test", "account-test", "actor-test", sessionId, "del-1", "repo-test",
+                snapshot, "java-21", "ecommerce", "debug", 1, 1, SessionState.READY, RuntimeStatus.RUNNING,
+                1, 10L, System.currentTimeMillis() / 1000 + 600, 700, alloc.providerSessionId(), alloc.resourceLeaseId(),
+                alloc.members(), List.of(), 1);
+        ProviderCommandResult cmdRes = provider.dispatchDebug(scope, session, "cmd-step", "idem-step", new DebugRequest("stepIn", LwDigest.sha256("{}"), 1, "ctl"));
+        assertEquals(CommandState.COMMITTED, cmdRes.state());
+
+        CleanupOutcome cleanup = provider.cleanup(scope, session, "test-complete");
+        assertEquals(SessionState.CLEANED, cleanup.status());
+        assertTrue(Boolean.TRUE.equals(cleanup.memberChecks().get("containerKilled")));
+    }
+
     private static HttpSandboxProvider.Configuration configuration(String value) {
         return new HttpSandboxProvider.Configuration(URI.create(value), Duration.ofSeconds(1),
                 "0123456789abcdef0123456789abcdef", false, Set.of());

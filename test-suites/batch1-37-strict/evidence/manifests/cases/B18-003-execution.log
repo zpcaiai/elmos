@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B18-003 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [18]
+Title: Batch 18 Identity整合：提供畸形、缺失、冲突、未知或明确不支持的输入
+Capability: Identity整合
+Test Type: negative
+Skill: tst-b18-ma-group-migration
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

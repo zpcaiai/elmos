@@ -1,0 +1,11 @@
+[2026-09-10T08:25:51.734955Z][B43-008] Starting execution of B43-008 (Batch 43版本与LTS / evidence-tamper / 场景8) [Category=evidence-tamper, Priority=P2]
+[2026-09-10T08:25:51.734960Z][B43-008] Bound Skill: tst-b43-product-lifecycle-lts | Product Skill IDs: [1442]
+[2026-09-10T08:25:51.734961Z][B43-008] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:51.756489Z][B43-008] Security: Minted RS256 token (JTI=43d08361..., Exp=1789032351)
+[2026-09-10T08:25:51.787410Z][B43-008] KMS: Envelope encrypted 34 bytes under key key-b43-008 v1 (DEK wrapped)
+[2026-09-10T08:25:51.808473Z][B43-008] [B43-PRODUCT-LIFECYCLE] Initializing product lifecycle compatibility for B43-008
+[2026-09-10T08:25:51.808482Z][B43-008] Executing Batch 43 product lifecycle scenario B43-008 [Category=evidence-tamper]...
+[2026-09-10T08:25:51.808484Z][B43-008] Release Governance: Automated semver bump rules and changelog generation verified
+[2026-09-10T08:25:51.808503Z][B43-008] Completed execution of B43-008 in 73.5ms: Status=PASSED
+[2026-09-10T08:25:51.808506Z][B43-008] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:51.808518Z][B43-008] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

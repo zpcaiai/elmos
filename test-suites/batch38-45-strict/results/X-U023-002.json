@@ -1,15 +1,19 @@
 {
   "case_id": "X-U023-002",
-  "status": "not-run",
-  "artifact_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "environment_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "started_at": null,
-  "finished_at": null,
-  "execution_kind": null,
-  "evidence": [],
-  "replay_command": null,
-  "trace_coverage": 0.0,
-  "authorization_refs": [],
+  "status": "passed",
+  "artifact_digest": "sha256:b7b94ba4bed96aedc93ef251b53321d74026bab2278b1c5db46409137d29ac95",
+  "environment_digest": "sha256:d4c6bb387cf1b7c6da991a408b7e0098afe1bde41995ab8345f2b41fbaebeb1d",
+  "started_at": "2026-09-10T08:26:27.583554Z",
+  "finished_at": "2026-09-10T08:26:27.809976Z",
+  "execution_kind": "real",
+  "evidence": [
+    "evidence/manifests/X-U023-002.json"
+  ],
+  "replay_command": "./evidence/manifests/shared/replay.sh --case X-U023-002",
+  "trace_coverage": 1.0,
+  "authorization_refs": [
+    "auth-elmos-mature-platform-b38-45"
+  ],
   "counters": {
     "cross_tenant_access": 0,
     "data_loss": 0,
@@ -24,5 +28,6 @@
     "stale_mandatory_evidence": 0,
     "unreplayed_critical_failure": 0
   },
-  "findings": []
+  "findings": [],
+  "duration_seconds": 0.22642302513122559
 }

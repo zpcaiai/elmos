@@ -1,0 +1,10 @@
+{
+  "artifact_sha256": "65b52ff3986b5ad33bd0ebdb49a989113e42ea761a96a4558f6644f86c8b582f",
+  "environment_sha256": "a853a5d31a8421e48892d82b80695f938352a33bda9b65dc3c13df79338e6902",
+  "files": [
+    {
+      "path": "evidence/raw-2.log",
+      "sha256": "85b441f18d8f3495e9c32fd192671c12f90e1d97793e48822e7d5f715af8552b"
+    }
+  ]
+}

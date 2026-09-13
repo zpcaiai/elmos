@@ -1,5 +1,8 @@
 ---
 name: pm-b19-database-security-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达用户、角色、授权、RLS、加密、审计和安全上下文. Precision Migration B19 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

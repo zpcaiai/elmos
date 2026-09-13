@@ -1,0 +1,13 @@
+[2026-09-10T08:26:12.871944Z][X-U004-008] Starting execution of X-U004-008 (Evidence完整性与防伪 / evidence-tamper / 场景8) [Category=evidence-tamper, Priority=P2]
+[2026-09-10T08:26:12.871951Z][X-U004-008] Bound Skill: tst-b38-45-evidence-integrity-anti-cheating | Product Skill IDs: []
+[2026-09-10T08:26:12.871953Z][X-U004-008] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:12.886208Z][X-U004-008] Security: Minted RS256 token (JTI=6dbe7632..., Exp=1789032372)
+[2026-09-10T08:26:12.990601Z][X-U004-008] KMS: Envelope encrypted 37 bytes under key key-x-u004-008 v1 (DEK wrapped)
+[2026-09-10T08:26:13.033742Z][X-U004-008] [CROSS-ORCHESTRATION] Initializing cross-cutting orchestration for X-U004-008 (U004)
+[2026-09-10T08:26:13.033755Z][X-U004-008] Executing category=evidence-tamper on U004
+[2026-09-10T08:26:13.033763Z][X-U004-008] Evidence Integrity & Anti-Cheating: Validating non-repudiation controls...
+[2026-09-10T08:26:13.033767Z][X-U004-008] Modifying 1 byte in evidence log file and testing SHA-256 verifier...
+[2026-09-10T08:26:13.033784Z][X-U004-008] Tamper Check: Original=6c25d81a2206... Tampered=b71ec1d614fb... Detected=True
+[2026-09-10T08:26:13.033814Z][X-U004-008] Completed execution of X-U004-008 in 161.9ms: Status=PASSED
+[2026-09-10T08:26:13.033818Z][X-U004-008] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:13.033868Z][X-U004-008] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

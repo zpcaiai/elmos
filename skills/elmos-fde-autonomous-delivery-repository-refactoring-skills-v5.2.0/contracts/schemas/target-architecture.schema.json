@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/fde/5.2.0/TargetArchitecture.schema.json",
+  "title": "TargetArchitecture",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "architectureId",
+    "option",
+    "components",
+    "decisions",
+    "invariants",
+    "risks",
+    "exitConditions"
+  ],
+  "properties": {
+    "architectureId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "option": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "conservative",
+        "balanced",
+        "strategic"
+      ]
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "invariants": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "exitConditions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    }
+  }
+}

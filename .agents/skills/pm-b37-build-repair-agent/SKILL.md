@@ -1,5 +1,8 @@
 ---
 name: pm-b37-build-repair-agent
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "消费结构化编译/构建诊断，生成最小修复并持续验证. Precision Migration B37 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

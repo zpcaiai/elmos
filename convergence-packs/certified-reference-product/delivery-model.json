@@ -1,0 +1,9 @@
+{
+  "unit_cost": 100.0,
+  "gross_margin": 0.45,
+  "cycle_time_days": 60,
+  "manual_hours": 500,
+  "expert_bottlenecks": [],
+  "risk_reserve": 0.1,
+  "repeatable_projects": 2
+}

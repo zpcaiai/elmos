@@ -1,5 +1,8 @@
 ---
 name: pm-b10-scheduled-job-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达调度、并发策略、补偿、重跑、锁和失败恢复. Precision Migration B10 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

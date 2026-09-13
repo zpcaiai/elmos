@@ -1,5 +1,8 @@
 ---
 name: pm-b15-backend-semantic-lowering
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将常见跨语言语义鸿沟显式 Lowering，并为类型、Effect、资源、并发、框架和运维语义建立验证义务. Precision Migration B15 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

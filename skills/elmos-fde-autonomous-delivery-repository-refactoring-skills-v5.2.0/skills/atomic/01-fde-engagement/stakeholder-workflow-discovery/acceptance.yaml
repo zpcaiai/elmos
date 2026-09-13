@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: stakeholder-workflow-discovery
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - New customer discovery with incomplete documentation
+  - Conflicting business and engineering descriptions
+  - Workflow contains manual shadow steps
+  negativeControls:
+  - implement a known code change
+  - summarize an already approved specification
+  checks:
+  - id: stakeholder-workflow-discovery-AC-01
+    requirement: Capture sponsor, business owner, subject-matter experts, security, data, operations, and end-user roles.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: stakeholder-workflow-discovery-AC-02
+    requirement: Model happy paths, exception paths, handoffs, approvals, and undocumented workarounds.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: stakeholder-workflow-discovery-AC-03
+    requirement: Separate observed facts, stakeholder claims, assumptions, conflicts, and unknowns.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: stakeholder-workflow-discovery-AC-04
+    requirement: Link every proposed opportunity to a baseline metric and accountable owner.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: stakeholder-workflow-discovery-AC-05
+    requirement: Persist decisions and action items with due dates and evidence references.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

@@ -7,6 +7,7 @@ the ASP.NET authentication middleware, so the issuer, audience, expiry and
 tenant-claim checks are all visible in one place instead of spread across
 options objects.
 """
+
 from __future__ import annotations
 
 import json
@@ -191,14 +192,10 @@ def _store_source(request: SynthesisRequest) -> str:
         )
         read_arguments = ",\n                    ".join(
             ["Id = reader.GetGuid(0).ToString()"]
-            + [
-                f"{pascal(field.name)} = {_reader(field, index + 1)}"
-                for index, field in enumerate(entity.fields)
-            ]
+            + [f"{pascal(field.name)} = {_reader(field, index + 1)}" for index, field in enumerate(entity.fields)]
         )
         upsert_parameters = "\n                    ".join(
-            f"command.Parameters.AddWithValue(payload.{pascal(field.name)});"
-            for field in entity.fields
+            f"command.Parameters.AddWithValue(payload.{pascal(field.name)});" for field in entity.fields
         )
         classes.append(
             f"""
@@ -311,17 +308,19 @@ def _store_source(request: SynthesisRequest) -> str:
 
 def _program_source(request: SynthesisRequest, port: int) -> str:
     registrations = "\n        ".join(
-        f"builder.Services.AddSingleton<{pascal(entity.singular)}Store>();"
-        for entity in request.entities
+        f"builder.Services.AddSingleton<{pascal(entity.singular)}Store>();" for entity in request.entities
     )
     route_blocks: list[str] = []
     for entity in request.entities:
         entity_class = pascal(entity.singular)
-        required_checks = "\n            ".join(
-            f'if (string.IsNullOrWhiteSpace(payload.{pascal(field.name)})) return Results.UnprocessableEntity(new {{ error = "PAYLOAD_INVALID" }});'
-            for field in entity.fields
-            if field.required and field.type == "string"
-        ) or "_ = payload;"
+        required_checks = (
+            "\n            ".join(
+                f'if (string.IsNullOrWhiteSpace(payload.{pascal(field.name)})) return Results.UnprocessableEntity(new {{ error = "PAYLOAD_INVALID" }});'
+                for field in entity.fields
+                if field.required and field.type == "string"
+            )
+            or "_ = payload;"
+        )
         route_blocks.append(
             f"""
         application.MapGet("/{entity.plural}", async (HttpRequest request, {entity_class}Store store) =>
@@ -413,11 +412,36 @@ def _program_source(request: SynthesisRequest, port: int) -> str:
             application.Services.GetRequiredService<TenantAuthenticator>()
                 .TenantFrom(request.Headers.Authorization.ToString());
 
+        application.Use(async (context, next) =>
+        {{
+            context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+            context.Response.Headers.Append("X-Frame-Options", "DENY");
+            context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'");
+            context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+            await next();
+        }});
+
         application.MapGet("/health", () => Results.Ok(new
         {{
             status = "UP",
             service = "{request.project_name}",
         }}));
+
+        application.MapGet("/health/live", () => Results.Ok(new
+        {{
+            status = "UP",
+            service = "{request.project_name}",
+        }}));
+
+        application.MapGet("/health/ready", () => Results.Ok(new
+        {{
+            status = "UP",
+            service = "{request.project_name}",
+        }}));
+
+        application.MapGet("/metrics", () => Results.Text(
+            "# HELP http_requests_total Total HTTP requests\\n# TYPE http_requests_total counter\\nhttp_requests_total 1\\n",
+            "text/plain; version=0.0.4"));
 
         {routes}
 
@@ -426,6 +450,7 @@ def _program_source(request: SynthesisRequest, port: int) -> str:
         public partial class Program {{ }}
         """
     )
+
 
 def _integration_test_source(request: SynthesisRequest) -> str:
     entity = request.entities[0]
@@ -802,9 +827,7 @@ def render_dotnet_production(request: SynthesisRequest, port: int) -> dict[str, 
             framework="ASP.NET Core minimal API + Npgsql",
             port=port,
             commands=(
-                "dotnet test -c Release\n"
-                "python3 scripts/local_runtime.py --verify\n"
-                "python3 scripts/local_runtime.py"
+                "dotnet test -c Release\npython3 scripts/local_runtime.py --verify\npython3 scripts/local_runtime.py"
             ),
         ),
         "description.txt": escape(request.description) + "\n",

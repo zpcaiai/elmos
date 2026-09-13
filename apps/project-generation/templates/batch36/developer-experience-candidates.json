@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "candidates": [
+    {
+      "pack_key": "intellij-java-to-csharp",
+      "business_value": 9,
+      "developer_reach": 8,
+      "security_readiness": 8,
+      "implementation_effort": 5,
+      "existing_assets": 8
+    },
+    {
+      "pack_key": "airgap-all-hosts",
+      "business_value": 7,
+      "developer_reach": 4,
+      "security_readiness": 3,
+      "implementation_effort": 9,
+      "existing_assets": 2
+    }
+  ]
+}

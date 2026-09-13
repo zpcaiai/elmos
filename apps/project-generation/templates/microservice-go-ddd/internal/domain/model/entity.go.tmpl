@@ -1,0 +1,126 @@
+package model
+
+import (
+	"errors"
+	"strings"
+	"time"
+)
+
+// Common domain errors
+var (
+	ErrEmptyEntityName  = errors.New("entity name cannot be empty")
+	ErrEntityInactive   = errors.New("entity is inactive")
+	ErrInvalidStatus    = errors.New("invalid entity status transition")
+)
+
+// EntityStatus represents the lifecycle state of the Entity
+type EntityStatus string
+
+const (
+	StatusPending  EntityStatus = "PENDING"
+	StatusActive   EntityStatus = "ACTIVE"
+	StatusInactive EntityStatus = "INACTIVE"
+	StatusArchived EntityStatus = "ARCHIVED"
+)
+
+// Entity is the sample Aggregate Root adhering to DDD principles.
+type Entity struct {
+	id          string
+	name        string
+	description string
+	status      EntityStatus
+	createdAt   time.Time
+	updatedAt   time.Time
+}
+
+// NewEntity creates a new Entity domain model enforcing domain invariants.
+func NewEntity(id, name, description string) (*Entity, error) {
+	trimmedName := strings.TrimSpace(name)
+	if trimmedName == "" {
+		return nil, ErrEmptyEntityName
+	}
+
+	now := time.Now().UTC()
+	return &Entity{
+		id:          id,
+		name:        trimmedName,
+		description: strings.TrimSpace(description),
+		status:      StatusPending,
+		createdAt:   now,
+		updatedAt:   now,
+	}, nil
+}
+
+// Reconstitute re-creates an Entity from persistence without validation.
+func Reconstitute(id, name, description string, status EntityStatus, createdAt, updatedAt time.Time) *Entity {
+	return &Entity{
+		id:          id,
+		name:        name,
+		description: description,
+		status:      status,
+		createdAt:   createdAt,
+		updatedAt:   updatedAt,
+	}
+}
+
+// ID returns the unique entity identifier.
+func (e *Entity) ID() string {
+	return e.id
+}
+
+// Name returns the entity name.
+func (e *Entity) Name() string {
+	return e.name
+}
+
+// Description returns the entity description.
+func (e *Entity) Description() string {
+	return e.description
+}
+
+// Status returns the current entity status.
+func (e *Entity) Status() EntityStatus {
+	return e.status
+}
+
+// CreatedAt returns entity creation timestamp.
+func (e *Entity) CreatedAt() time.Time {
+	return e.createdAt
+}
+
+// UpdatedAt returns entity last update timestamp.
+func (e *Entity) UpdatedAt() time.Time {
+	return e.updatedAt
+}
+
+// Activate transitions the entity to ACTIVE state.
+func (e *Entity) Activate() error {
+	if e.status == StatusArchived {
+		return ErrInvalidStatus
+	}
+	e.status = StatusActive
+	e.updatedAt = time.Now().UTC()
+	return nil
+}
+
+// Deactivate transitions the entity to INACTIVE state.
+func (e *Entity) Deactivate() error {
+	if e.status == StatusArchived {
+		return ErrInvalidStatus
+	}
+	e.status = StatusInactive
+	e.updatedAt = time.Now().UTC()
+	return nil
+}
+
+// UpdateDetails updates the name and description with invariant checks.
+func (e *Entity) UpdateDetails(name, description string) error {
+	trimmedName := strings.TrimSpace(name)
+	if trimmedName == "" {
+		return ErrEmptyEntityName
+	}
+	e.name = trimmedName
+	e.description = strings.TrimSpace(description)
+	e.updatedAt = time.Now().UTC()
+	return nil
+}

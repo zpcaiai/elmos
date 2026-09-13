@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: test-ci-cd-developer-experience-audit
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: TestCiCdDeveloperExperienceAuditService
+    workflow: TestCiCdDeveloperExperienceAuditWorkflow
+    policyGate: TestCiCdDeveloperExperienceAuditPolicyGate
+    evidenceProducer: TestCiCdDeveloperExperienceAuditEvidenceProducer
+    repositoryPort: TestCiCdDeveloperExperienceAuditRepositoryPort
+  requiredPorts:
+  - id: test.execute
+    direction: outbound
+  - id: coverage.collect
+    direction: outbound
+  - id: mutation.execute
+    direction: outbound
+  - id: ci.inspect
+    direction: outbound
+  - id: pipeline.analyze
+    direction: inbound
+  - id: finding.append
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/test-ci-cd-developer-experience-audit/runs
+  - GET /api/v1/skills/test-ci-cd-developer-experience-audit/runs/{runId}
+  - POST /api/v1/skills/test-ci-cd-developer-experience-audit/runs/{runId}/cancel
+  - POST /api/v1/skills/test-ci-cd-developer-experience-audit/runs/{runId}/resume
+  events:
+  - elmos.skill.test-ci-cd-developer-experience-audit.requested.v1
+  - elmos.skill.test-ci-cd-developer-experience-audit.checkpointed.v1
+  - elmos.skill.test-ci-cd-developer-experience-audit.completed.v1
+  - elmos.skill.test-ci-cd-developer-experience-audit.failed.v1
+  workflowSteps:
+  - Inventory suites, commands, environments, test data, and pipeline stages.
+  - Build requirement-to-test and change-to-test traceability.
+  - Run tests repeatedly and under controlled perturbations to identify flakiness.
+  - Measure assertion, mutation, fixture, and critical-journey coverage.
+  - Analyze pipeline failures, duration, cache, approvals, and artifact provenance.
+  - Publish findings and a prioritized quality-engineering plan.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

@@ -1,0 +1,20 @@
+# Illustrative LiteLLM config.
+# Validate against the exact LiteLLM version pinned by Elmos before deployment.
+
+model_list:
+  - model_name: elmos-unified-coding
+    litellm_params:
+      model: openai/<deployment-or-model>
+      api_key: os.environ/OPENAI_API_KEY
+
+  - model_name: elmos-openrouter-longtail
+    litellm_params:
+      model: openrouter/<provider>/<model>
+      api_key: os.environ/OPENROUTER_API_KEY
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/LITELLM_DATABASE_URL
+
+# Elmos owns semantic cross-model routing.
+# Configure LiteLLM retries/fallbacks only within deployment groups explicitly allowed by Elmos.

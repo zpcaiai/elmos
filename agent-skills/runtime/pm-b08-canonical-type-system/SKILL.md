@@ -1,5 +1,8 @@
 ---
 name: pm-b08-canonical-type-system
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "建立跨语言统一且不丢失关键语义的类型系统，作为类型恢复、Lowering、验证和代码生成的共同契约. Precision Migration B08 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

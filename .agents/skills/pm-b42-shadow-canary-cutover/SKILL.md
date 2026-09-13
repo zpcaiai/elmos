@@ -1,5 +1,8 @@
 ---
 name: pm-b42-shadow-canary-cutover
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在生产真实输入下通过影子、事件回放、双写验证、灰度、Strangler 和自动回滚安全替换旧系统. Precision Migration B42 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

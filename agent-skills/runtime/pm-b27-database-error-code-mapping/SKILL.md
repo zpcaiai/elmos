@@ -1,5 +1,8 @@
 ---
 name: pm-b27-database-error-code-mapping
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "映射唯一、外键、死锁、超时、序列化失败和供应商错误码. Precision Migration B27 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

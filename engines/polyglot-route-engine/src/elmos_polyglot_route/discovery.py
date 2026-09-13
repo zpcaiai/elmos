@@ -919,7 +919,7 @@ def _read_work_unit_source(
                 raise RouteError(f"WORK_UNIT_SOURCE_NOT_REGULAR:{relative}")
             if before.st_size > MAX_FILE_BYTES:
                 raise RouteError(f"WORK_UNIT_SOURCE_TOO_LARGE:{relative}")
-            chunks: list[bytes] = []
+            chunks = []
             remaining = before.st_size
             while remaining:
                 chunk = os.read(file_fd, min(remaining, 64 * 1024))

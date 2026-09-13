@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "pack_key": "sample-marketplace",
+  "resolution_id": "resolution-1",
+  "roots": [
+    {
+      "extension_id": "sample.publisher.extension",
+      "version": "1.0.0",
+      "digest": "sha256:sample-root"
+    }
+  ],
+  "nodes": [
+    {
+      "extension_id": "sample.publisher.extension",
+      "version": "1.0.0",
+      "digest": "sha256:sample-root",
+      "status": "active"
+    }
+  ],
+  "edges": [],
+  "lock_digest": "sha256:sample-lock",
+  "resolver_version": "1.0.0",
+  "cycles": [],
+  "revocation_propagation": {
+    "enabled": true,
+    "blocked_nodes": []
+  },
+  "evidence_refs": [
+    "dependencies/evidence.txt"
+  ]
+}

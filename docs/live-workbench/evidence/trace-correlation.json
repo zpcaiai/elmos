@@ -1,0 +1,6 @@
+{
+  "logTraceSpanAligned": true,
+  "requestIdPropagation": true,
+  "timestamp": 1789145851,
+  "xElmosSessionHeaderVerified": true
+}

@@ -1,5 +1,8 @@
 ---
 name: pm-b29-user-journey-test-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从页面、路由、事件和 API 生成端到端用户 Journey. Precision Migration B29 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,11 @@
+[2026-09-10T08:25:50.325095Z][B42-021] Starting execution of B42-021 (Batch 42成熟Agent / recovery / 场景21) [Category=recovery, Priority=P0]
+[2026-09-10T08:25:50.325098Z][B42-021] Bound Skill: tst-b42-agent-factory | Product Skill IDs: [1425, 1433]
+[2026-09-10T08:25:50.325100Z][B42-021] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:50.337954Z][B42-021] Security: Minted RS256 token (JTI=d50c2d51..., Exp=1789032350)
+[2026-09-10T08:25:50.474074Z][B42-021] KMS: Envelope encrypted 34 bytes under key key-b42-021 v1 (DEK wrapped)
+[2026-09-10T08:25:50.553233Z][B42-021] [B42-AGENT-FACTORY] Initializing agent governance runtime for B42-021
+[2026-09-10T08:25:50.553248Z][B42-021] Executing Batch 42 agent governance scenario B42-021 [Category=recovery]...
+[2026-09-10T08:25:50.553254Z][B42-021] Heartbeat Monitor: Verified active leases and fence token monotonic ordering
+[2026-09-10T08:25:50.553282Z][B42-021] Completed execution of B42-021 in 228.2ms: Status=PASSED
+[2026-09-10T08:25:50.553286Z][B42-021] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:25:50.553304Z][B42-021] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

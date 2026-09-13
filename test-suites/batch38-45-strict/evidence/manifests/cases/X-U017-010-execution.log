@@ -1,0 +1,11 @@
+[2026-09-10T08:26:20.322241Z][X-U017-010] Starting execution of X-U017-010 (备份恢复与数据完整性 / performance / 场景10) [Category=performance, Priority=P0]
+[2026-09-10T08:26:20.322245Z][X-U017-010] Bound Skill: tst-backup-restore-data-integrity | Product Skill IDs: []
+[2026-09-10T08:26:20.322249Z][X-U017-010] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:20.332135Z][X-U017-010] Security: Minted RS256 token (JTI=0ac78acc..., Exp=1789032380)
+[2026-09-10T08:26:20.363252Z][X-U017-010] KMS: Envelope encrypted 37 bytes under key key-x-u017-010 v1 (DEK wrapped)
+[2026-09-10T08:26:20.381647Z][X-U017-010] [CROSS-RESILIENCE] Starting X-U017-010 (U017) Category=performance
+[2026-09-10T08:26:20.381656Z][X-U017-010] Backup & Restore Data Integrity: Validating Merkle tree dataset reconciliation and PITR
+[2026-09-10T08:26:20.381661Z][X-U017-010] Benchmarking backup decompression and restore throughput...
+[2026-09-10T08:26:20.381683Z][X-U017-010] Completed execution of X-U017-010 in 59.4ms: Status=PASSED
+[2026-09-10T08:26:20.381686Z][X-U017-010] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:20.381699Z][X-U017-010] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

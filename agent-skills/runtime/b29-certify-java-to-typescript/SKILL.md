@@ -1,6 +1,9 @@
 ---
 name: b29-certify-java-to-typescript
-description: "Implement or certify the directed Java-to-TypeScript migration route, including source semantics, target lowering, compatibility strategy, corpus, real builds, behavior evidence, and route manifest. Use only for Java source and TypeScript target work."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement or certify the directed Java-to-TypeScript migration route, including source semantics, target lowering, compatibility strategy, corpus, real builds, behavior evidence, and route manifest. Use only for Java source and TypeScript target work.
 ---
 
 ## Operating mode

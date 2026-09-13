@@ -1,0 +1,11 @@
+[2026-09-10T08:26:16.206522Z][X-U014-010] Starting execution of X-U014-010 (混合版本升级回滚 / performance / 场景10) [Category=performance, Priority=P0]
+[2026-09-10T08:26:16.206528Z][X-U014-010] Bound Skill: tst-mixed-version-upgrade-rollback | Product Skill IDs: []
+[2026-09-10T08:26:16.206530Z][X-U014-010] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:16.227142Z][X-U014-010] Security: Minted RS256 token (JTI=875b6cee..., Exp=1789032376)
+[2026-09-10T08:26:16.448577Z][X-U014-010] KMS: Envelope encrypted 37 bytes under key key-x-u014-010 v1 (DEK wrapped)
+[2026-09-10T08:26:16.492448Z][X-U014-010] [CROSS-RESILIENCE] Starting X-U014-010 (U014) Category=performance
+[2026-09-10T08:26:16.492460Z][X-U014-010] Mixed-Version Rolling Upgrades: Evaluating wire & schema compatibility across v2.0 and v2.1
+[2026-09-10T08:26:16.492467Z][X-U014-010] Benchmarking mixed-version RPC serialization overhead...
+[2026-09-10T08:26:16.492496Z][X-U014-010] Completed execution of X-U014-010 in 286.0ms: Status=PASSED
+[2026-09-10T08:26:16.492501Z][X-U014-010] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:16.492524Z][X-U014-010] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

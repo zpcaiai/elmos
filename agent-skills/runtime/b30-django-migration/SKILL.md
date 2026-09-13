@@ -1,6 +1,9 @@
 ---
 name: b30-django-migration
-description: "Implement or certify a Django source or target migration pack covering settings, apps, URL routing, middleware, ORM, migrations, authentication/permissions, forms, templates, signals, admin, caching, management commands, tasks, and Django REST Framework when present."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement or certify a Django source or target migration pack covering settings, apps, URL routing, middleware, ORM, migrations, authentication/permissions, forms, templates, signals, admin, caching, management commands, tasks, and Django REST Framework when present.
 ---
 
 ## Operating mode

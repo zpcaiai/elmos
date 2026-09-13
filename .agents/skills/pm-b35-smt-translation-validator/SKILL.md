@@ -1,5 +1,8 @@
 ---
 name: pm-b35-smt-translation-validator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将源目标 Core IR 编码为 SMT 关系，证明等价或寻找反例. Precision Migration B35 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

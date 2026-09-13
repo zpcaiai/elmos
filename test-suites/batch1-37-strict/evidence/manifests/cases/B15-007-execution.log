@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B15-007 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [15]
+Title: Batch 15 风险Register：改变工具链、Schema、Provider、配置或依赖版本并重放
+Capability: 风险Register
+Test Type: version_drift
+Skill: tst-b15-company-operating-system
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

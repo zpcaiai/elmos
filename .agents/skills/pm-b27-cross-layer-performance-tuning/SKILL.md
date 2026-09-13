@@ -1,5 +1,8 @@
 ---
 name: pm-b27-cross-layer-performance-tuning
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "联合调优 SQL、索引、ORM、连接池、批处理、缓存和应用调用模式. Precision Migration B27 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

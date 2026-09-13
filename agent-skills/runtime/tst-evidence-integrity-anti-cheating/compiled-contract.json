@@ -1,0 +1,32 @@
+{
+  "schema_version": "elmos.strict-test-suite.compiled-skill-contract.v1",
+  "package_id": "elmos.migration-platform-strict-tests",
+  "package_version": "1.0.0",
+  "installed_alias": "tst-evidence-integrity-anti-cheating",
+  "namespace": "elmos-strict-test-suite",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute",
+    "skill_name": "tst-evidence-integrity-anti-cheating",
+    "title": "证据完整性与反作弊",
+    "suite_source": "batch1-37-strict",
+    "case_count": 6,
+    "case_ids": [
+      "TS-GOV-04-001",
+      "TS-GOV-04-002",
+      "TS-GOV-04-003",
+      "TS-GOV-04-004",
+      "TS-GOV-04-005",
+      "TS-GOV-04-006"
+    ],
+    "module_path": "scripts/test-suite/tst_skill_runtime.py",
+    "runtime_class": "TstSkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-sequence
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Sequence、缓存、循环、取值和并发语义. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

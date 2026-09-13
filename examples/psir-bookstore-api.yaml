@@ -1,0 +1,131 @@
+# Example Project Specification IR (PSIR)
+# This YAML defines a complete project that can be generated in multiple languages
+
+project_name: bookstore-api
+description: >
+  A RESTful bookstore API with user authentication, book management,
+  and order processing. Supports CRUD operations on books, user registration
+  and login with JWT tokens, and order placement with inventory tracking.
+
+language: java          # Target language (java, python, typescript, csharp, go)
+framework: spring-boot  # Framework (spring-boot, fastapi, nestjs, aspnet, gin)
+project_type: rest_api   # Project type (rest_api, graphql_api, grpc_service, web_app, cli_tool, library, microservice)
+
+database:
+  type: postgresql
+  name: bookstore_db
+
+auth:
+  type: jwt
+  roles:
+    - ADMIN
+    - USER
+    - GUEST
+
+entities:
+  - name: User
+    fields:
+      - { name: id, type: uuid, required: true, unique: true }
+      - { name: username, type: string, required: true, unique: true, max_length: 50 }
+      - { name: email, type: string, required: true, unique: true, max_length: 255 }
+      - { name: password_hash, type: string, required: true }
+      - { name: role, type: string, required: true, default_value: "USER" }
+      - { name: created_at, type: datetime, required: true }
+      - { name: active, type: boolean, required: true, default_value: true }
+    relationships:
+      - { target: Order, type: one_to_many, field: orders }
+
+  - name: Book
+    fields:
+      - { name: id, type: uuid, required: true, unique: true }
+      - { name: title, type: string, required: true, max_length: 200 }
+      - { name: author, type: string, required: true, max_length: 100 }
+      - { name: isbn, type: string, required: true, unique: true, max_length: 13 }
+      - { name: price, type: decimal, required: true, min_value: 0 }
+      - { name: stock, type: int, required: true, min_value: 0, default_value: 0 }
+      - { name: description, type: text }
+      - { name: published_date, type: date }
+      - { name: category, type: string, max_length: 50 }
+      - { name: created_at, type: datetime, required: true }
+
+  - name: Order
+    fields:
+      - { name: id, type: uuid, required: true, unique: true }
+      - { name: order_date, type: datetime, required: true }
+      - { name: status, type: string, required: true, default_value: "PENDING" }
+      - { name: total_amount, type: decimal, required: true }
+      - { name: shipping_address, type: text }
+    relationships:
+      - { target: User, type: many_to_one, field: user }
+      - { target: OrderItem, type: one_to_many, field: items }
+
+  - name: OrderItem
+    fields:
+      - { name: id, type: uuid, required: true, unique: true }
+      - { name: quantity, type: int, required: true, min_value: 1 }
+      - { name: unit_price, type: decimal, required: true }
+    relationships:
+      - { target: Order, type: many_to_one, field: order }
+      - { target: Book, type: many_to_one, field: book }
+
+endpoints:
+  # Auth endpoints
+  - { method: POST, path: /api/auth/register, description: "Register a new user", request_body: User, auth_required: false }
+  - { method: POST, path: /api/auth/login, description: "Login and get JWT token", auth_required: false }
+
+  # Book endpoints
+  - { method: GET, path: /api/books, description: "List all books with pagination", response_body: Book, auth_required: false }
+  - { method: GET, path: /api/books/{id}, description: "Get book by ID", response_body: Book, auth_required: false }
+  - { method: POST, path: /api/books, description: "Create a new book", request_body: Book, response_body: Book, auth_required: true, roles: [ADMIN] }
+  - { method: PUT, path: /api/books/{id}, description: "Update a book", request_body: Book, response_body: Book, auth_required: true, roles: [ADMIN] }
+  - { method: DELETE, path: /api/books/{id}, description: "Delete a book", auth_required: true, roles: [ADMIN] }
+
+  # Order endpoints
+  - { method: GET, path: /api/orders, description: "List user orders", response_body: Order, auth_required: true, roles: [USER, ADMIN] }
+  - { method: GET, path: /api/orders/{id}, description: "Get order by ID", response_body: Order, auth_required: true }
+  - { method: POST, path: /api/orders, description: "Place a new order", request_body: Order, response_body: Order, auth_required: true, roles: [USER] }
+  - { method: PUT, path: /api/orders/{id}/cancel, description: "Cancel an order", auth_required: true, roles: [USER, ADMIN] }
+
+  # User management
+  - { method: GET, path: /api/users/me, description: "Get current user profile", response_body: User, auth_required: true }
+  - { method: PUT, path: /api/users/me, description: "Update current user profile", request_body: User, auth_required: true }
+  - { method: GET, path: /api/users, description: "List all users (admin)", response_body: User, auth_required: true, roles: [ADMIN] }
+
+services:
+  - name: BookService
+    methods:
+      - { name: findAll, description: "List books with pagination and filtering" }
+      - { name: findById, description: "Find book by ID" }
+      - { name: create, description: "Create book with validation" }
+      - { name: update, description: "Update book" }
+      - { name: delete, description: "Soft delete book" }
+      - { name: search, description: "Search books by title or author" }
+    dependencies: [BookRepository]
+
+  - name: OrderService
+    methods:
+      - { name: placeOrder, description: "Create order with stock validation" }
+      - { name: cancelOrder, description: "Cancel order and restore stock" }
+      - { name: findUserOrders, description: "Get orders for current user" }
+      - { name: calculateTotal, description: "Calculate order total" }
+    dependencies: [OrderRepository, BookService]
+
+  - name: UserService
+    methods:
+      - { name: register, description: "Register new user with password hashing" }
+      - { name: authenticate, description: "Authenticate and issue JWT" }
+      - { name: findByUsername, description: "Find user by username" }
+      - { name: updateProfile, description: "Update user profile" }
+    dependencies: [UserRepository]
+
+config:
+  port: 8080
+  env_vars:
+    DATABASE_URL: "postgresql://localhost:5432/bookstore_db"
+    JWT_SECRET: "change-me-in-production"
+    JWT_EXPIRATION_HOURS: "24"
+  features:
+    - pagination
+    - swagger-ui
+    - health-check
+    - cors

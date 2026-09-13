@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{.ServiceName}}-config
+  namespace: {{.Namespace}}
+  labels:
+    app.kubernetes.io/name: {{.ServiceName}}
+    app.kubernetes.io/instance: {{.ServiceName}}-{{.Environment}}
+    app.kubernetes.io/version: "{{.Version}}"
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: {{.ProjectName}}
+data:
+  APP_ENV: "{{.Environment}}"
+  HOST: "0.0.0.0"
+  PORT: "{{.Port}}"
+  LOG_LEVEL: "INFO"
+  LOG_FORMAT: "json"
+  DATABASE_URL: "{{.Database}}://user:pass@{{.ServiceName}}-db:5432/{{.ServiceName}}"
+  EXTERNAL_SERVICE_URL: "http://{{.ServiceName}}-downstream:8080"

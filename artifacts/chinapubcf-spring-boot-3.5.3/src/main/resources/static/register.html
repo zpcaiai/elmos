@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChinaPub 用户注册</title>
+  <link rel="stylesheet" href="style/app.css">
+  <script src="script/app.js" defer></script>
+</head>
+<body data-page="register">
+<header><div><p class="eyebrow">ChinaPub</p><h1>创建账户</h1></div><nav><a href="index.html">返回登录</a></nav></header>
+<main>
+  <section class="panel narrow">
+    <form id="register-form">
+      <label>用户名<input name="name" minlength="4" maxlength="20" pattern="[A-Za-z0-9_\u4e00-\u9fff]+" required></label>
+      <label>邮箱<input name="email" type="email" autocomplete="email" required></label>
+      <label>密码<input name="usrpwd" type="password" minlength="8" maxlength="72" autocomplete="new-password" required></label>
+      <label>身份<select name="status"><option>学生</option><option>教师</option><option>上班族</option><option>自由职业</option><option>其他职业</option></select></label>
+      <label>喜欢的领域<input name="admirefield" placeholder="例如：Java, 架构"></label>
+      <label>擅长领域<input name="expertat"></label>
+      <label>标签<input name="tag"></label>
+      <label>从哪里知道 ChinaPub<input name="knowfrom"></label>
+      <button type="submit">注册</button>
+    </form>
+    <p id="register-message" role="status"></p>
+  </section>
+</main>
+</body>
+</html>

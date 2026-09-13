@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-synonym
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移公私有 Synonym、解析优先级、权限和跨 Schema 引用. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

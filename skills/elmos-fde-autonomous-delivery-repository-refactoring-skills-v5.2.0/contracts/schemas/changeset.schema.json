@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/fde/5.2.0/ChangeSet.schema.json",
+  "title": "ChangeSet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "changeSetId",
+    "planId",
+    "stepId",
+    "baseRevision",
+    "resultRevision",
+    "files",
+    "provenance",
+    "status"
+  ],
+  "properties": {
+    "changeSetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "planId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stepId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "baseRevision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resultRevision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "operation",
+          "beforeHash",
+          "afterHash"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "operation": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "add",
+              "modify",
+              "delete",
+              "rename"
+            ]
+          },
+          "beforeHash": {
+            "type": "string",
+            "minLength": 1
+          },
+          "afterHash": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "skillVersion",
+        "toolVersions",
+        "environmentId",
+        "executionId"
+      ],
+      "properties": {
+        "skillVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "toolVersions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "environmentId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "executionId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "unexpectedDeltas": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "verificationRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "proposed",
+        "executed",
+        "intercepted",
+        "accepted",
+        "rejected",
+        "reverted"
+      ]
+    }
+  }
+}

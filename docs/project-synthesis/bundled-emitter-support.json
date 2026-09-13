@@ -5,7 +5,9 @@
   "scope": "bundled-api-emitter",
   "local_execution_status": "PASSED_LOCAL",
   "local_evidence": "docs/project-synthesis/local-production-profile-matrix.json",
-  "independent_verification_status": "NOT_RUN",
+  "independent_verification_status": "PASSED",
+  "independent_verification_report": "certification/reports/generation-v1-certification-report.json",
+  "independent_verification_dossier": "certification/dossiers/generation-v1/",
   "claim_ceiling": "limited",
   "profiles": [
     {

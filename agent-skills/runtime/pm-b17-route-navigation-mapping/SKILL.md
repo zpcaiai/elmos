@@ -1,5 +1,8 @@
 ---
 name: pm-b17-route-navigation-mapping
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "映射路由、参数、守卫、返回栈、Tab、深链接和页面恢复. Precision Migration B17 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

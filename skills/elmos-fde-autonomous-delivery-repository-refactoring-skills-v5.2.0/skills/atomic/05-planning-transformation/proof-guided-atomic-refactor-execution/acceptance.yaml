@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: proof-guided-atomic-refactor-execution
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Type-safe API rename across monorepo
+  - Extract application service from controllers
+  - Refactor retry logic without duplicating side effects
+  negativeControls:
+  - free-form rewrite without plan
+  - skip failing verification
+  - production write without approval
+  checks:
+  - id: proof-guided-atomic-refactor-execution-AC-01
+    requirement: Prefer compiler refactoring APIs, typed LST or AST recipes, and Semantic IR transformations over free-form
+      patches.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: proof-guided-atomic-refactor-execution-AC-02
+    requirement: Bind each execution to an invocation-scoped capability lease and environment-owned authority.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: proof-guided-atomic-refactor-execution-AC-03
+    requirement: Checkpoint before side effects and after each accepted atomic ChangeSet.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: proof-guided-atomic-refactor-execution-AC-04
+    requirement: Generate or update tests and observability before changing high-risk behavior.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: proof-guided-atomic-refactor-execution-AC-05
+    requirement: Stop, compensate, or roll back when proof obligations fail or scope drifts.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

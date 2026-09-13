@@ -1,5 +1,8 @@
 ---
 name: pm-b29-protobuf-api-test-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从 Protobuf/gRPC Schema、Field rule 和流式接口生成测试. Precision Migration B29 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

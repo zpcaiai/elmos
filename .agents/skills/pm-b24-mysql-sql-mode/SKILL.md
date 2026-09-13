@@ -1,5 +1,8 @@
 ---
 name: pm-b24-mysql-sql-mode
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 STRICT、ONLY_FULL_GROUP_BY、NO_ZERO_DATE 等 SQL Mode 影响. Precision Migration B24 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

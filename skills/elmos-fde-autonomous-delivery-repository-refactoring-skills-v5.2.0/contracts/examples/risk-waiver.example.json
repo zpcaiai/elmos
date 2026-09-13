@@ -1,0 +1,13 @@
+{
+  "waiverId": "W-001",
+  "riskRef": "F-001",
+  "reason": "Pilot is read-only and isolated",
+  "owner": "engagement-owner",
+  "approver": "customer-risk-owner",
+  "expiresAt": "2026-10-01T00:00:00Z",
+  "compensatingControls": [
+    "No production writes",
+    "Daily reconciliation"
+  ],
+  "status": "requested"
+}

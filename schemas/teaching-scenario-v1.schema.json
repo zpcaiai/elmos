@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Teaching Scenario",
+  "type": "object",
+  "properties": {
+    "scenario_id": { "type": "string" },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "category": { "type": "string" },
+    "difficulty": { "type": "string" },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_id": { "type": "string" },
+          "title": { "type": "string" },
+          "instruction": { "type": "string" },
+          "expected_action": { "type": "string" },
+          "hints": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "validation_criteria": { "type": "object" }
+        },
+        "required": ["step_id", "instruction"]
+      }
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "learning_objectives": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "estimated_duration_minutes": { "type": "integer" }
+  },
+  "required": ["scenario_id", "title"]
+}

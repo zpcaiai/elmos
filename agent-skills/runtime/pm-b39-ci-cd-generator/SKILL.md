@@ -1,5 +1,8 @@
 ---
 name: pm-b39-ci-cd-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成构建、测试、安全、制品、部署、回滚和证据流水线. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

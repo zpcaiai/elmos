@@ -1,0 +1,11 @@
+{
+  "captured_at": "2025-09-10T08:00:00+00:00",
+  "corpora": [
+    "development",
+    "negative",
+    "holdout"
+  ],
+  "data_isolation": true,
+  "fixture_id": "f1667a90-8df3-5fa6-a571-18a2b8bcc95f",
+  "type": "synthetic-deterministic"
+}

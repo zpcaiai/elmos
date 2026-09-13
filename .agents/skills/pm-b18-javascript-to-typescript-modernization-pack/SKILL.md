@@ -1,5 +1,8 @@
 ---
 name: pm-b18-javascript-to-typescript-modernization-pack
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将 JavaScript 仓库迁移为严格 TypeScript，恢复类型、对象 Shape、Nullability 和运行时校验. Precision Migration B18 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

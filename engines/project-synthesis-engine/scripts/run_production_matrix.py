@@ -52,14 +52,8 @@ def matrix_cases(
         opened = SUPPORTED_PROFILE_TARGETS[("postgresql", auth_mode)]
         missing = set(selected_languages) - set(opened)
         if missing:
-            raise ValueError(
-                f"PRODUCTION_PROFILE_NOT_OPEN:{auth_mode}:{','.join(sorted(missing))}"
-            )
-    return tuple(
-        (language, auth_mode)
-        for language in selected_languages
-        for auth_mode in selected_auth_modes
-    )
+            raise ValueError(f"PRODUCTION_PROFILE_NOT_OPEN:{auth_mode}:{','.join(sorted(missing))}")
+    return tuple((language, auth_mode) for language in selected_languages for auth_mode in selected_auth_modes)
 
 
 def run_case(language: str, auth_mode: str) -> dict[str, Any]:
@@ -136,8 +130,7 @@ def run_matrix(
         or result.get("status") != "PASSED"
         or result.get("cleanup_status") != "PASSED"
         or any(
-            probe.get("status") != "PASSED"
-            or probe.get("integration_status") != "PASSED"
+            probe.get("status") != "PASSED" or probe.get("integration_status") != "PASSED"
             for probe in result["startup_probes"]
             if isinstance(probe, dict)
         )
@@ -160,8 +153,7 @@ def run_matrix(
             "python": sys.version.split()[0],
         },
         "replay": (
-            "uv --directory engines/project-synthesis-engine run --locked "
-            "python scripts/run_production_matrix.py"
+            "uv --directory engines/project-synthesis-engine run --locked python scripts/run_production_matrix.py"
         ),
         "production_delivery_status": "NOT_RUN",
         "independent_verification_status": "NOT_RUN",

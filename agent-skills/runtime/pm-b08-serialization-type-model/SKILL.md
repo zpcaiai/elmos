@@ -1,5 +1,8 @@
 ---
 name: pm-b08-serialization-type-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "统一 JSON、Protobuf、数据库、消息和配置的可观察序列化表示. Precision Migration B08 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

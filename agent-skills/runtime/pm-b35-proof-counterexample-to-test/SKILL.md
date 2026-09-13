@@ -1,5 +1,8 @@
 ---
 name: pm-b35-proof-counterexample-to-test
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "把 SMT、Lean、模型检查或符号执行反例转换为永久回归测试. Precision Migration B35 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

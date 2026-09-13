@@ -1,0 +1,87 @@
+{
+  "kind": "elmos.project-synthesis.production-readiness-audit",
+  "timestamp": "2026-09-11T12:27:55.175623+00:00",
+  "audit_version": "1.0.0",
+  "overall_status": "PASSED",
+  "overall_score_percent": 100.0,
+  "target_count": 8,
+  "targets_passed": 8,
+  "production_nfr_contract": {
+    "liveness_probe": "/health/live",
+    "readiness_probe": "/health/ready",
+    "metrics_endpoint": "/metrics",
+    "required_security_headers": [
+      "X-Content-Type-Options",
+      "X-Frame-Options",
+      "Content-Security-Policy",
+      "Strict-Transport-Security"
+    ],
+    "graceful_shutdown": true
+  },
+  "target_audits": [
+    {
+      "language": "java",
+      "status": "PASSED",
+      "score_percent": 100.0,
+      "checks_passed": 4,
+      "checks_total": 4,
+      "findings": []
+    },
+    {
+      "language": "python",
+      "status": "PASSED",
+      "score_percent": 100.0,
+      "checks_passed": 4,
+      "checks_total": 4,
+      "findings": []
+    },
+    {
+      "language": "csharp",
+      "status": "PASSED",
+      "score_percent": 100.0,
+      "checks_passed": 4,
+      "checks_total": 4,
+      "findings": []
+    },
+    {
+      "language": "typescript",
+      "status": "PASSED",
+      "score_percent": 100.0,
+      "checks_passed": 4,
+      "checks_total": 4,
+      "findings": []
+    },
+    {
+      "language": "go",
+      "status": "PASSED",
+      "score_percent": 100.0,
+      "checks_passed": 4,
+      "checks_total": 4,
+      "findings": []
+    },
+    {
+      "language": "kotlin",
+      "status": "PASSED",
+      "score_percent": 100.0,
+      "checks_passed": 4,
+      "checks_total": 4,
+      "findings": []
+    },
+    {
+      "language": "php",
+      "status": "PASSED",
+      "score_percent": 100.0,
+      "checks_passed": 4,
+      "checks_total": 4,
+      "findings": []
+    },
+    {
+      "language": "rust",
+      "status": "PASSED",
+      "score_percent": 100.0,
+      "checks_passed": 4,
+      "checks_total": 4,
+      "findings": []
+    }
+  ]
+}

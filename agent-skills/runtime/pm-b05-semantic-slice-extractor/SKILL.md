@@ -1,5 +1,8 @@
 ---
 name: pm-b05-semantic-slice-extractor
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "围绕入口、业务能力或风险点提取最小可转换和可验证语义切片. Precision Migration B05 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

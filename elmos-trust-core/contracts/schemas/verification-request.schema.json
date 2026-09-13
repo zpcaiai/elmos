@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/verification-request.v1.json",
+  "title": "Elmos VerificationRequest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["projectId", "sourceRef", "caseSet", "requestedLevel"],
+  "properties": {
+    "projectId": {"type": "string", "minLength": 1},
+    "sourceRef": {"type": "string", "minLength": 1},
+    "caseSet": {"type": "string", "minLength": 1},
+    "requestedLevel": {"enum": ["E0", "E1", "E2", "E3", "E4", "E5"]}
+  }
+}

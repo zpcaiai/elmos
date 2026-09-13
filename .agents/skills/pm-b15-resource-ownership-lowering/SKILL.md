@@ -1,5 +1,8 @@
 ---
 name: pm-b15-resource-ownership-lowering
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 GC、RAII、ARC、Ownership、Borrow、Dispose、defer 和上下文管理. Precision Migration B15 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

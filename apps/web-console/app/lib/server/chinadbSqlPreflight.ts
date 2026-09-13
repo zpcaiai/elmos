@@ -480,20 +480,34 @@ export async function assessChinaDbSqlLocally(
       });
 
       child.on("close", (code) => {
-        if (code === 0) {
-          finish(stdoutBuffer);
-        } else {
+        // commercial-assess is typed fail-closed: LOCAL_EMITTED exits 0,
+        // BLOCKED exits 3 with the same assessment JSON on stdout. Both
+        // are successful local evaluations, not runner crashes.
+        if (code === 0 || code === 3) {
           try {
-            const parsedError = JSON.parse(stdoutBuffer);
-            if (parsedError && typeof parsedError === "object" && parsedError.message) {
-              finish(undefined, new ChinaDbSqlPolicyError(400, "CHINADB_SQL_LOCAL_EXECUTION_REJECTED", String(parsedError.message)));
+            const parsedAssessment = JSON.parse(stdoutBuffer) as { state?: string };
+            const state = parsedAssessment?.state;
+            if (
+              (code === 0 && state === "LOCAL_EMITTED")
+              || (code === 3 && state === "BLOCKED")
+            ) {
+              finish(stdoutBuffer);
               return;
             }
           } catch {
-            // not json
+            // fallthrough
           }
-          finish(undefined, new ChinaDbSqlPolicyError(502, "CHINADB_SQL_LOCAL_EXECUTION_FAILED", `本地 SQL 预检退出异常 (code ${code}): ${stderrBuffer.slice(0, 500)}`));
         }
+        try {
+          const parsedError = JSON.parse(stdoutBuffer);
+          if (parsedError && typeof parsedError === "object" && parsedError.message) {
+            finish(undefined, new ChinaDbSqlPolicyError(400, "CHINADB_SQL_LOCAL_EXECUTION_REJECTED", String(parsedError.message)));
+            return;
+          }
+        } catch {
+          // not json
+        }
+        finish(undefined, new ChinaDbSqlPolicyError(502, "CHINADB_SQL_LOCAL_EXECUTION_FAILED", `本地 SQL 预检退出异常 (code ${code}): ${stderrBuffer.slice(0, 500)}`));
       });
     });
 

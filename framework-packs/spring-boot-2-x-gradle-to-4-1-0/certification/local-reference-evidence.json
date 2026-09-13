@@ -1,0 +1,98 @@
+{
+  "authorized_customer_repository": "NOT_RUN",
+  "behavioral_parity": true,
+  "build_tool": "gradle",
+  "certification_status": "NOT_CERTIFIED",
+  "execution_status": "PASSED_LOCAL",
+  "external_evidence_status": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "probe_ids": [
+    42,
+    7,
+    1001
+  ],
+  "recorded_tuple": {
+    "source_boot": "2.7.18",
+    "source_java": "17",
+    "target_boot": "4.1.0",
+    "target_java": "21"
+  },
+  "rootless_runner": "NOT_RUN",
+  "route_id": "boot-2.x-gradle-to-boot-4.1.0-java-21",
+  "schema_version": 1,
+  "source": {
+    "boot": "2.7.18",
+    "build": "PASSED",
+    "build_tail": "To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.\nDaemon will be stopped at the end of the build \n> Task :compileJava\n> Task :processResources\n> Task :classes\n> Task :bootJarMainClassName\n> Task :bootJar\n> Task :jar\n> Task :assemble\n> Task :compileTestJava\n> Task :processTestResources NO-SOURCE\n> Task :testClasses\n> Task :test\n> Task :check\n> Task :build\n\n[Incubating] Problems report is available at: file:///Users/stephen/DevProjects/AIProjects/elmos/build/spring-route-reference/boot-2.x-gradle-to-boot-4.1.0-java-21/source/build/reports/problems/problems-report.html\n\nDeprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.\n\nYou can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.\n\nFor more on this, please refer to https://docs.gradle.org/8.14.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.\n\nBUILD SUCCESSFUL in 15s\n7 actionable tasks: 7 executed\n",
+    "health_path": "/actuator/health",
+    "java": "java version \"17.0.11\" 2024-04-16 LTS",
+    "runtime": {
+      "health": {
+        "status": "UP"
+      },
+      "jar_sha256": "1ce7869dfa00ab1dabc505638e9c42cef745dd4b5dc68705a4497911d724929d",
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "id": 7,
+          "status": "REVIEW"
+        }
+      }
+    }
+  },
+  "target": {
+    "boot": "4.1.0",
+    "build": "PASSED",
+    "build_tail": "To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.\nDaemon will be stopped at the end of the build \n> Task :compileJava\n> Task :processResources UP-TO-DATE\n> Task :classes\n> Task :resolveMainClassName\n> Task :bootJar\n> Task :jar\n> Task :assemble\n> Task :compileTestJava\n> Task :processTestResources NO-SOURCE\n> Task :testClasses\n> Task :test\n> Task :check\n> Task :build\n\nBUILD SUCCESSFUL in 14s\n7 actionable tasks: 6 executed, 1 up-to-date\n",
+    "health_path": "/actuator/health",
+    "java": "openjdk version \"21.0.11\" 2026-04-21",
+    "runtime": {
+      "health": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      },
+      "jar_sha256": "4e781ff731904a11b6237ac896f42a69d8a3915bc32d667c473f8b030b49f99e",
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "id": 7,
+          "status": "REVIEW"
+        }
+      }
+    }
+  },
+  "transformation": {
+    "engine": "OpenRewrite",
+    "gradle": "Gradle 8.14.3",
+    "output_tail": "            org.openrewrite.gradle.plugins.UpgradePluginVersion\n        org.openrewrite.gradle.plugins.UpgradePluginVersion: {pluginIdPattern=org.springframework.boot, newVersion=4.1.0}\n        org.openrewrite.java.migrate.UpgradeToJava21\n            org.openrewrite.java.migrate.UpgradeBuildToJava21\n                org.openrewrite.java.migrate.UpgradeJavaVersion\n                    org.openrewrite.gradle.UpdateJavaCompatibility\n            org.openrewrite.gradle.RemoveDependency: {groupId=javax.xml.bind, artifactId=jaxb-api}\nPlease review and commit the results.\nEstimate time saved: 1h 20m\n\n[Incubating] Problems report is available at: file:///Users/stephen/DevProjects/AIProjects/elmos/build/spring-route-reference/boot-2.x-gradle-to-boot-4.1.0-java-21/migrated/build/reports/problems/problems-report.html\n\nDeprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.\n\nYou can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.\n\nFor more on this, please refer to https://docs.gradle.org/8.14.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.\n\nBUILD SUCCESSFUL in 58s\n4 actionable tasks: 4 executed\n",
+    "recipe_id": "io.elmos.openrewrite.SpringBoot2xGradleToBoot4_1_0Java21",
+    "recipe_path": "apps/java-engine-worker/src/main/resources/rewrite/spring-to-boot-4.1.0.yml",
+    "recipe_sha256": "5df003b433073e66afd0e5184b02a9cceb1ebdce6d8e2f073da67a8ea510e610",
+    "rewrite_plugin": "7.37.0",
+    "rewrite_spring": "6.35.0"
+  },
+  "pack_key": "spring-boot-2-x-gradle-to-4-1-0"
+}

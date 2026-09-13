@@ -1,5 +1,8 @@
 ---
 name: pm-b21-stored-procedure-parser
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "解析过程、函数、Package、变量、游标、异常、事务和动态 SQL. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,8 @@
+{
+  "case_id": "TS-GOV-02-004",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:55:52Z",
+  "notes": "Independently verified by Ethan: 能力—需求—用例—证据追踪：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行"
+}

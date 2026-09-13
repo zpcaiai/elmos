@@ -1,5 +1,8 @@
 ---
 name: pm-b12-import-and-namespace-rewriter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "精确更新 Import、Namespace、模块路径、别名和依赖声明. Precision Migration B12 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B90 Sas Estate Discovery and Inventory"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b90-sas-estate-discovery-and-inventory to execute this ELMOS Language Pack Skill with fail-closed evidence."

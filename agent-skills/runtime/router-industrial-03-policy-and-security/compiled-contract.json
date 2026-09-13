@@ -1,0 +1,20 @@
+{
+  "schema_version": "elmos.router-industrial.compiled-skill-contract.v1",
+  "package_id": "elmos.router-industrial.skills",
+  "package_version": "1.0.0",
+  "installed_alias": "router-industrial-03-policy-and-security",
+  "namespace": "router-industrial-v1",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "handler_id": "dispatch_router_industrial_03_policy_and_security",
+    "dispatcher": "dispatch_skill",
+    "module_path": "engines/router-industrial-engine/src/router_industrial/skill_runtime.py",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

@@ -1,5 +1,8 @@
 ---
 name: b34-fair-scheduling-priority-noisy-neighbor
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement weighted fair scheduling priority classes aging quotas deadlines bounded preemption per-tenant concurrency and noisy-neighbor controls across workflow queues runner fleets models storage and transfer.
 ---
 

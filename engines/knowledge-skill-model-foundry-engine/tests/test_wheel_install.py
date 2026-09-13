@@ -56,6 +56,9 @@ class WheelInstallTests(unittest.TestCase):
                 "UV_OFFLINE": "1",
             }
             command_env.pop("PYTHONPATH", None)
+            command_env.pop("UV_PROJECT_ENVIRONMENT", None)
+            command_env.pop("UV_PROJECT", None)
+            command_env.pop("VIRTUAL_ENV", None)
             built = _run(
                 uv,
                 "build",

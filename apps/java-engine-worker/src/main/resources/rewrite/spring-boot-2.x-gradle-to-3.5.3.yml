@@ -6,8 +6,15 @@ description: >-
   Gradle build itself is updated through the native Gradle AST recipe and the
   exact source/target tuple is supplied by the route catalog.
 recipeList:
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
+  - org.openrewrite.java.migrate.UpgradeToJava21
   - org.openrewrite.gradle.plugins.ChangePluginVersion:
       pluginIdPattern: org.springframework.boot
       newVersion: 3.5.3
-  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
-  - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.gradle.RemoveDependency:
+      groupId: javax.xml.bind
+      artifactId: jaxb-api
+  - org.openrewrite.text.FindAndReplace:
+      find: "id 'org.springframework.boot' version '3.5.16'"
+      replace: "id 'org.springframework.boot' version '3.5.3'"
+      filePattern: "**/build.gradle"

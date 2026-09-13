@@ -1,0 +1,38 @@
+{
+  "customer_experience": [
+    "Portfolio",
+    "Migration Studio",
+    "Validation",
+    "Release",
+    "Operations",
+    "Marketplace"
+  ],
+  "control_plane_kernel": [
+    "Tenant",
+    "Project",
+    "Repository",
+    "Workflow Runtime",
+    "Policy Engine",
+    "Capability Registry",
+    "Evidence Graph",
+    "Certification",
+    "Economics"
+  ],
+  "execution_plane": [
+    "Private Runner",
+    "Build/Test Workers",
+    "Migration Engines",
+    "Validation Engines",
+    "Agent Workers"
+  ],
+  "extension_layer": [
+    "Language Packs",
+    "Framework Packs",
+    "Database Packs",
+    "Cloud Packs",
+    "Vertical Packs",
+    "Marketplace Extensions"
+  ],
+  "trust_boundaries": [],
+  "data_flows": []
+}
