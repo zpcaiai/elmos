@@ -28,6 +28,14 @@ class PortableClientPackGateTest(unittest.TestCase):
                 manifest["frontend_formal_route_campaign_v2"] = "campaign-v2.json"
             (pack / "pack.json").write_text(json.dumps(manifest), encoding="utf-8")
 
+    def test_ci_uses_the_inventory_aware_portable_pack_gate(self) -> None:
+        workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        frontend_job = workflow.split("  frontend-client-engine:\n", 1)[1].split(
+            "  polyglot-route-pack-contracts:\n", 1
+        )[0]
+        self.assertIn("make batch32-client-packs-portable-gate", frontend_job)
+        self.assertNotIn("find client-packs", frontend_job)
+
     def test_v1_portable_validation_never_executes_the_captured_solver(self) -> None:
         pack = ROOT / "client-packs/frontend-72-route-equivalence-v1"
         with mock.patch.object(
