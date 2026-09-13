@@ -254,7 +254,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             "a8631915e0533453ed830611f224da7c794616e1814ebe17ad73a8a68edbb1a2",
             "a53b324db78c1146ff9ce68700f952e3997f4a1965ee6c6a802f6d3bdcd625ad",
             "48c160c3aaa46cb69e5874370d820c2bc8be0712f6ee690fa10581ad966474a7",
-            "b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
+            "e9a6a82cd020a4d83a4c9f04e4721f9e9ba74ba53688d24378b9925a7152d1cd",
             "a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
         ):
             self.assertIn(pinned_value, verifier)

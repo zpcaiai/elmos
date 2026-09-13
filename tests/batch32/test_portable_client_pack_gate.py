@@ -255,6 +255,17 @@ class PortableClientPackGateTest(unittest.TestCase):
             with self.assertRaisesRegex(portable.PortableGateError, "duplicate"):
                 portable.validate_all(root)
 
+    def test_repository_auxiliary_output_is_fail_closed(self) -> None:
+        output = ROOT / "client-packs/web-console-full-syntax-wechat"
+        portable.validate_auxiliary_output(output)
+        closure = json.loads(
+            (output / "transformations/component-migration-closure.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        closure["entries"][0]["certification"] = "CERTIFIED"
+        self.assertEqual(["$.entries[0].certification"], portable.certified_paths(closure))
+
 
 if __name__ == "__main__":
     unittest.main()

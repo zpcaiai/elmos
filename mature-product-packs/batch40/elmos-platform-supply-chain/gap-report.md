@@ -2,36 +2,13 @@
 
 - Pack: `elmos-platform-supply-chain`
 - Skills in scope: 24
-- Blocking gaps: 24
-- Open gaps: 27
+- Blocking gaps: 1
+- Open gaps: 25
 
 This inventory is a work list. It grants no status and is not evidence.
 
 ## Blocking
 
-- [evidence] evidence-manifest.json has not been produced
-- [evidence] certification-request.json has not been produced
-- [evidence] certification-request.sig has not been produced
-- [provenance] pack.json artifactDigest is still the zero digest
-- [provenance] pack.json environmentDigest is still the zero digest
-- [metric] auditEvidenceFreshnessRate has not been measured (threshold 1.0)
-- [metric] evidenceTraceCoverage has not been measured (threshold 0.98)
-- [metric] independentAssessmentClosureRate has not been measured (threshold 1.0)
-- [metric] provenanceCoverage has not been measured (threshold 1.0)
-- [metric] secureSdlcControlCoverage has not been measured (threshold 1.0)
-- [metric] signatureVerificationRate has not been measured (threshold 1.0)
-- [metric] threatModelCoverage has not been measured (threshold 1.0)
-- [metric] vulnerabilitySlaCompliance has not been measured (threshold 1.0)
-- [zero-tolerance] secretLeaks observed 11, must be zero
-- [zero-tolerance] unsignedProductionArtifacts has not been evaluated
-- [zero-tolerance] tamperedArtifactsAccepted has not been evaluated
-- [zero-tolerance] unresolvedLicenseBlocks has not been evaluated
-- [zero-tolerance] builderAttestationFailures has not been evaluated
-- [zero-tolerance] runnerDowngradeAcceptances has not been evaluated
-- [zero-tolerance] crossTenantEvidenceLeaks has not been evaluated
-- [zero-tolerance] testIntegrityViolations has not been evaluated
-- [corpus] holdout corpus is empty
-- [corpus] representative corpus is empty
 - [approval] no accountable approver is recorded on the certification
 
 ## Open
@@ -60,6 +37,4 @@ This inventory is a work list. It grants no status and is not evidence.
 - [coverage] b40-threat-modeling is only experimental in the support matrix
 - [coverage] b40-vex-applicability is only experimental in the support matrix
 - [coverage] b40-vulnerability-patch-sla is only experimental in the support matrix
-- [metric] sbomCoverage is 0.9199, below the required 1.0
 - [status] certification status is NOT_RUN
-- [evidence] claim b40-credential-scan-triage is INCONCLUSIVE

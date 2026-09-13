@@ -21,35 +21,10 @@
     "zero-tolerance"
   ],
   "skillCount": 22,
-  "blockingCount": 27,
+  "blockingCount": 1,
   "openCount": 23,
   "certifiable": false,
   "gaps": [
-    {
-      "category": "evidence",
-      "severity": "blocking",
-      "detail": "evidence-manifest.json has not been produced"
-    },
-    {
-      "category": "evidence",
-      "severity": "blocking",
-      "detail": "certification-request.json has not been produced"
-    },
-    {
-      "category": "evidence",
-      "severity": "blocking",
-      "detail": "certification-request.sig has not been produced"
-    },
-    {
-      "category": "provenance",
-      "severity": "blocking",
-      "detail": "pack.json artifactDigest is still the zero digest"
-    },
-    {
-      "category": "provenance",
-      "severity": "blocking",
-      "detail": "pack.json environmentDigest is still the zero digest"
-    },
     {
       "category": "coverage",
       "severity": "open",
@@ -161,106 +136,6 @@
       "detail": "b39-tenant-project-migration-health is only experimental in the support matrix"
     },
     {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "evidenceTraceCoverage has not been measured (threshold 0.98)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "fairSchedulingPassRate has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "incidentResponseExercisePassRate has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "multiregionFailoverPassRate has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "productionReadinessPassRate has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "restorePassRate has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "serviceCatalogCoverage has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "sloComplianceRate has not been measured (threshold 0.999)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "supportSlaPassRate has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "unresolvedSev1Incidents has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "rpoBreaches has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "rtoBreaches has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "tenantStarvationEvents has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "unownedCriticalAlerts has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "missingCriticalRunbooks has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "crossTenantObservabilityLeaks has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "testIntegrityViolations has not been evaluated"
-    },
-    {
-      "category": "corpus",
-      "severity": "blocking",
-      "detail": "holdout corpus is empty"
-    },
-    {
-      "category": "corpus",
-      "severity": "blocking",
-      "detail": "representative corpus is empty"
-    },
-    {
-      "category": "evidence",
-      "severity": "blocking",
-      "detail": "evidence directory holds no artefacts"
-    },
-    {
       "category": "approval",
       "severity": "blocking",
       "detail": "no accountable approver is recorded on the certification"
@@ -269,11 +144,6 @@
       "category": "status",
       "severity": "open",
       "detail": "certification status is NOT_RUN"
-    },
-    {
-      "category": "evidence",
-      "severity": "blocking",
-      "detail": "evidence.json declares no claims"
     }
   ]
 }

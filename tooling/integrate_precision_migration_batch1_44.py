@@ -627,9 +627,16 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
     for record in records:
         destination = generated_root / str(record["name"])
         destination.mkdir()
-        skill_text = normalized_skill(record, records)
+        skill_text = promoted_skill_text(
+            str(record["name"]), normalized_skill(record, records)
+        )
         (destination / "SKILL.md").write_text(skill_text, encoding="utf-8")
         write_interface(destination, record, write_openai_yaml)
+        (destination / "compiled-contract.json").write_text(
+            json.dumps(compiled_skill_contract(record), ensure_ascii=False, indent=2)
+            + "\n",
+            encoding="utf-8",
+        )
         installed = dict(record)
         installed["source_sha256"] = sha256(
             (SOURCE / str(record["source_path"])).read_bytes()
@@ -741,20 +748,6 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
         encoding="utf-8",
     )
 
-    # The promotion is a repository-owned local wrapper overlay.  Preserve the
-    # immutable source-derived manifest digests above, while making the exact
-    # installed trees (including their compiled contracts) reproducible here.
-    for record in installed_records:
-        destination = generated_root / str(record["name"])
-        skill_path = destination / "SKILL.md"
-        skill_path.write_text(
-            promoted_skill_text(str(record["name"]), skill_path.read_text(encoding="utf-8")),
-            encoding="utf-8",
-        )
-        (destination / "compiled-contract.json").write_text(
-            json.dumps(compiled_skill_contract(record), ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
     paths = {str(record["name"]): generated_root / str(record["name"]) for record in records}
     paths["__manifest__"] = manifest_path
     paths["__web__"] = web_path

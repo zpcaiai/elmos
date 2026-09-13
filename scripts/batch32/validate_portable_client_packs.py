@@ -40,6 +40,8 @@ EXPECTED_PACK_MODES = {
     "frt-g01-g30-platform": "ordinary",
     "web-console-next16-react19-wechat-v1": "ordinary",
 }
+EXPECTED_AUXILIARY_OUTPUTS = {"web-console-full-syntax-wechat"}
+RELEASE_CONTROL_INCIDENT = "ELMOS-CERT-KEY-2026-09-13-01"
 
 
 class PortableGateError(RuntimeError):
@@ -86,6 +88,23 @@ def run_checked(command: list[str], *, cwd: Path, label: str) -> dict[str, Any]:
         text=True,
         check=False,
         timeout=COMMAND_TIMEOUT_SECONDS,
+    )
+    if completed.returncode != 0:
+        detail = (completed.stderr or completed.stdout).strip()[-4000:]
+        raise PortableGateError(
+            f"{pack.name} client gate failed with exit "
+            f"{completed.returncode}: {detail}"
+        )
+    if "GATE PASS:" not in completed.stdout:
+        raise PortableGateError(f"{pack.name} client gate omitted pass receipt")
+    if "decision=NOT_CERTIFIED" not in completed.stdout:
+        raise PortableGateError(f"{pack.name} portable gate may not grant certification")
+    return PackOutcome(
+        pack_key=str(manifest.get("pack_key", pack.name)),
+        mode="portable-production-gate",
+        structural_status="PASSED",
+        certification_decision="NOT_CERTIFIED",
+        native_receipt_replay="NOT_APPLICABLE",
     )
     result = parse_last_json(completed.stdout, label)
     if completed.returncode != 0:
@@ -170,38 +189,95 @@ def validate_ordinary(pack: Path, manifest: dict[str, Any]) -> PackOutcome:
         check=False,
         timeout=COMMAND_TIMEOUT_SECONDS,
     )
-    if completed.returncode != 0:
-        detail = (completed.stderr or completed.stdout).strip()[-4000:]
+
+
+def certified_paths(value: Any, path: str = "$") -> list[str]:
+    findings: list[str] = []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            child_path = f"{path}.{key}"
+            if isinstance(child, str) and child == "CERTIFIED":
+                findings.append(child_path)
+            findings.extend(certified_paths(child, child_path))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            findings.extend(certified_paths(child, f"{path}[{index}]"))
+    return findings
+
+
+def validate_auxiliary_output(output: Path) -> None:
+    """Validate a generated target without pretending it is a client pack."""
+    if output.is_symlink():
+        raise PortableGateError(f"auxiliary output may not be a symlink: {output.name}")
+    handoff = load_object(output / "target-project/handoff.json")
+    closure = load_object(output / "transformations/component-migration-closure.json")
+    if handoff.get("pack_key") != output.name:
+        raise PortableGateError(f"{output.name} handoff identity mismatch")
+    if closure.get("pack_key") != "web-console-next16-react19-wechat-v1":
+        raise PortableGateError(f"{output.name} source pack identity mismatch")
+    if closure.get("certification") != "NOT_CERTIFIED":
+        raise PortableGateError(f"{output.name} must remain NOT_CERTIFIED")
+    control = closure.get("release_control_downgrade")
+    if not isinstance(control, dict) or control.get("incident_id") != RELEASE_CONTROL_INCIDENT:
+        raise PortableGateError(f"{output.name} lacks release-control downgrade binding")
+    findings = certified_paths(closure)
+    if findings:
         raise PortableGateError(
-            f"{pack.name} client gate failed with exit "
-            f"{completed.returncode}: {detail}"
+            f"{output.name} retains unsupported certification claims: {findings[:5]}"
         )
-    if "GATE PASS:" not in completed.stdout:
-        raise PortableGateError(f"{pack.name} client gate omitted pass receipt")
-    if "decision=NOT_CERTIFIED" not in completed.stdout:
-        raise PortableGateError(f"{pack.name} portable gate may not grant certification")
-    return PackOutcome(
-        pack_key=str(manifest.get("pack_key", pack.name)),
-        mode="portable-production-gate",
-        structural_status="PASSED",
-        certification_decision="NOT_CERTIFIED",
-        native_receipt_replay="NOT_APPLICABLE",
-    )
-
-
+    entries = closure.get("entries")
+    if not isinstance(entries, list) or len(entries) != 71:
+        raise PortableGateError(f"{output.name} component inventory is not exact")
+    declared_files: set[str] = set()
+    for index, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            raise PortableGateError(f"{output.name} entry {index} is invalid")
+        if entry.get("certification") != "NOT_CERTIFIED":
+            raise PortableGateError(f"{output.name} entry {index} is not fail-closed")
+        if entry.get("runtime_evidence") != "LOCAL_EXECUTED_SELF_ATTESTED":
+            raise PortableGateError(f"{output.name} entry {index} overstates runtime evidence")
+        if entry.get("independent_evidence") != "NOT_RUN":
+            raise PortableGateError(f"{output.name} entry {index} overstates independent evidence")
+        target_files = entry.get("target_files")
+        if not isinstance(target_files, list) or len(target_files) != 4:
+            raise PortableGateError(f"{output.name} entry {index} target inventory is invalid")
+        for relative in target_files:
+            if not isinstance(relative, str) or not relative.startswith("target-project/components/"):
+                raise PortableGateError(f"{output.name} entry {index} target path is invalid")
+            target = output / relative
+            if not target.is_file() or target.is_symlink():
+                raise PortableGateError(f"{output.name} target is missing or unsafe: {relative}")
+            declared_files.add(relative)
+    actual_files = {
+        path.relative_to(output).as_posix()
+        for path in (output / "target-project/components").rglob("*")
+        if path.is_file()
+    }
+    if declared_files != actual_files:
+        raise PortableGateError(
+            f"{output.name} target inventory drifted: "
+            f"missing={sorted(declared_files - actual_files)[:5]} "
+            f"unexpected={sorted(actual_files - declared_files)[:5]}"
+        )
 def validate_all(pack_root: Path) -> list[PackOutcome]:
     resolved_root = pack_root.resolve(strict=True)
     if not resolved_root.is_dir() or resolved_root.is_symlink():
         raise PortableGateError("client pack root must be a real directory")
-    packs = sorted(path for path in resolved_root.iterdir() if path.is_dir())
-    actual_names = {pack.name for pack in packs}
+    directories = sorted(path for path in resolved_root.iterdir() if path.is_dir())
+    actual_names = {path.name for path in directories}
     expected_names = set(EXPECTED_PACK_MODES)
-    if actual_names != expected_names:
+    auxiliary_names = actual_names & EXPECTED_AUXILIARY_OUTPUTS
+    unknown_names = actual_names - expected_names - EXPECTED_AUXILIARY_OUTPUTS
+    if expected_names - actual_names or unknown_names:
         raise PortableGateError(
             "client pack inventory mismatch: "
             f"missing={sorted(expected_names - actual_names)} "
-            f"unexpected={sorted(actual_names - expected_names)}"
+            f"unexpected={sorted(unknown_names)}"
         )
+    for output in directories:
+        if output.name in auxiliary_names:
+            validate_auxiliary_output(output)
+    packs = [path for path in directories if path.name in expected_names]
     prepared: list[tuple[Path, dict[str, Any], bool, bool]] = []
     seen_pack_keys: set[str] = set()
     for pack in packs:

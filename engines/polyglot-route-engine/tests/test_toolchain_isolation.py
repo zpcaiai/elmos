@@ -549,8 +549,14 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         getattr(refreshed_hosted, field) == getattr(current_hosted, field)
         for field in dotnet_fields
     )
-    assert refreshed_hosted.php_tree_sha256 == current_hosted.php_tree_sha256
-    assert refreshed_hosted.php_tree_bytes == current_hosted.php_tree_bytes
+    assert refreshed_hosted.php_tree_sha256 == (
+        "ca33ea07e927e25416bc906af465ba6713824e3e5af66fb974f319e92c43d6d9"
+    )
+    assert refreshed_hosted.php_tree_bytes == 129_938_026
+    assert refreshed_hosted.php_tree_record_count == 644
+    assert refreshed_hosted.php_tree_file_count == 533
+    assert refreshed_hosted.php_tree_directory_count == 109
+    assert refreshed_hosted.php_tree_sha256 != current_hosted.php_tree_sha256
 
     with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_MISMATCH"):
         toolchains._select_homebrew_route_bundle_profile(

@@ -614,7 +614,7 @@ SOLVER_RESULT_KEYS = {
 }
 
 EXPECTED_PROFILES: dict[str, dict[str, Any]] = {
-    "angular": {"framework_version": "22.0.8", "platforms": ["WEB"], "kind": "node"},
+    "angular": {"framework_version": "22.1.4", "platforms": ["WEB"], "kind": "node"},
     "flutter": {
         "framework_version": "3.44.1",
         "platforms": ["ANDROID", "IOS", "WEB"],
@@ -2901,19 +2901,19 @@ EXPECTED_NODE_PACKAGES: dict[str, dict[str, Any]] = {
             "test": "ng build --configuration development",
         },
         "dependencies": {
-            "@angular/common": "22.0.8",
-            "@angular/compiler": "22.0.8",
-            "@angular/core": "22.0.8",
-            "@angular/platform-browser": "22.0.8",
-            "@angular/router": "22.0.8",
+            "@angular/common": "22.1.4",
+            "@angular/compiler": "22.1.4",
+            "@angular/core": "22.1.4",
+            "@angular/platform-browser": "22.1.4",
+            "@angular/router": "22.1.4",
             "rxjs": "7.8.2",
             "tslib": "2.8.1",
             "zone.js": "0.16.2",
         },
         "devDependencies": {
-            "@angular/build": "22.0.8",
-            "@angular/cli": "22.0.8",
-            "@angular/compiler-cli": "22.0.8",
+            "@angular/build": "22.1.4",
+            "@angular/cli": "22.1.4",
+            "@angular/compiler-cli": "22.1.4",
             "typescript": "6.0.3",
         },
         "commands": [("test",), ("build",)],

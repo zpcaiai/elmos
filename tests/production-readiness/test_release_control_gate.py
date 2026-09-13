@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import unittest
 from pathlib import Path
 
@@ -36,6 +37,29 @@ class ReleaseControlGateTest(unittest.TestCase):
         self.assertEqual(bom["bomFormat"], "CycloneDX")
         self.assertNotIn("version", bom["components"][0])
         self.assertEqual(bom["metadata"]["properties"][1]["value"], "PARTIAL_LOCAL_INVENTORY_ONLY")
+
+    def test_revoked_mature_product_certifications_are_fail_closed(self) -> None:
+        passed, errors = MODULE.check_untrusted_reports()
+        self.assertTrue(passed, errors)
+        ledger = json.loads(
+            (ROOT / "release-control/untrusted-certification-reports.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(8, len(ledger["mature_product_packs"]))
+        for record in ledger["mature_product_packs"]:
+            pack = ROOT / record["path"]
+            certification = json.loads(
+                (pack / "certification.json").read_text(encoding="utf-8")
+            )
+            gate = json.loads((pack / "gate-result.json").read_text(encoding="utf-8"))
+            self.assertEqual("NOT_RUN", certification["status"])
+            self.assertEqual("BLOCKED", gate["status"])
+            self.assertFalse(gate["eligible"])
+
+    def test_dependabot_exceptions_are_digest_bound_and_not_certified(self) -> None:
+        passed, errors = MODULE.check_dependabot_governance()
+        self.assertTrue(passed, errors)
 
 
 if __name__ == "__main__":

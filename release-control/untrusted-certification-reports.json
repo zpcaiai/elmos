@@ -18,5 +18,65 @@
     "certification/reports/polyglot-routes-certification-report.json",
     "certification/reports/spring-boot-4-modernization-v1-certification-report.json",
     "certification/reports/spring-modernization-v1-certification-report.json"
+  ],
+  "structured_reports": [
+    {
+      "path": "client-packs/web-console-full-syntax-wechat/transformations/component-migration-closure.json",
+      "prior_report_sha256": "sha256:801b6ab33231799a139fe285552c8174e590a7a8c83fe30773528d43fcbc8d1d",
+      "prior_certified_claim_count": 71,
+      "required_entry_certification": "NOT_CERTIFIED",
+      "required_entry_runtime_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "required_entry_independent_evidence": "NOT_RUN"
+    }
+  ],
+  "mature_product_packs": [
+    {
+      "batch": 38,
+      "path": "mature-product-packs/batch38/elmos-platform-deployment-matrix",
+      "prior_certification_sha256": "sha256:03fad2db5239e60c27d63ff2b40d2d2019276a4aa80beafc63023fd36e662876",
+      "prior_gate_result_sha256": "sha256:b41ec0d7f4b4b561af4ddc3f6c1aee294dab776b5c22d1bef9e686e318f7a463"
+    },
+    {
+      "batch": 39,
+      "path": "mature-product-packs/batch39/elmos-platform-sre-operations",
+      "prior_certification_sha256": "sha256:d66dcbfd0162ae30d6fcea5ee2a504144abe58a74b2be176ea2f91378a5a5fa2",
+      "prior_gate_result_sha256": "sha256:e45388501678b62c328f99faf842f50ccdaac710a813a5803a1ab79765948439"
+    },
+    {
+      "batch": 40,
+      "path": "mature-product-packs/batch40/elmos-platform-supply-chain",
+      "prior_certification_sha256": "sha256:011777cdf851bac43f5840708b502823e8ba565a89549a7c164ddec3ba0f70cf",
+      "prior_gate_result_sha256": "sha256:292b0668f885b38123aa923920496676085a5caf46bf3793c22e9f1dfde46387"
+    },
+    {
+      "batch": 41,
+      "path": "mature-product-packs/batch41/elmos-platform-knowledge-flywheel",
+      "prior_certification_sha256": "sha256:a0dbb36bcf015a5293617d163a685b47b0d3c4c7b65acc0c9ca8c7f978dfe989",
+      "prior_gate_result_sha256": "sha256:824491315a1e6ec60e909276ec31c9f6a0b1d80ac03a91969dbf1c868bd66e31"
+    },
+    {
+      "batch": 42,
+      "path": "mature-product-packs/batch42/elmos-platform-agent-factory",
+      "prior_certification_sha256": "sha256:50be1ce96e74f0a546b0580808d9ea0bf2e1fc2f6ad9b9fc437ef32d5ddeba7a",
+      "prior_gate_result_sha256": "sha256:f0519527f56a5129f621dbc0adc895b132f2ecff493de6f5ef9cf37072c1cf79"
+    },
+    {
+      "batch": 43,
+      "path": "mature-product-packs/batch43/elmos-platform-product-lifecycle",
+      "prior_certification_sha256": "sha256:0a8e1864128bf0aecad0059f4a8407adee7a88297c197e6d458d7fc2bea8fff9",
+      "prior_gate_result_sha256": "sha256:c0da58312294e09e67b0543f464ac6967a3fa6e1818571c2f2b23cfbcdf0d62a"
+    },
+    {
+      "batch": 44,
+      "path": "mature-product-packs/batch44/elmos-platform-finops",
+      "prior_certification_sha256": "sha256:70a4d40cc5f02c9a2904c3af96998e22b289083a2a0831e77f6759c0d0b641aa",
+      "prior_gate_result_sha256": "sha256:5a7148e29400db397071154920fc430534cade5a78a0faded425e79facc55284"
+    },
+    {
+      "batch": 45,
+      "path": "mature-product-packs/batch45/elmos-platform-production-readiness",
+      "prior_certification_sha256": "sha256:6d8805207999f312e4ff7fbaf445c84245fb91b1af669e2d4175753529d7975e",
+      "prior_gate_result_sha256": "sha256:6a36a8c525f105cbff4ce24d098598c5c82418389a398cd2705d68fe5fbc379f"
+    }
   ]
 }

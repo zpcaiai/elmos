@@ -158,6 +158,155 @@ def check_untrusted_reports() -> tuple[bool, list[str]]:
         root_values = [payload.get(key) for key in DECISION_KEYS if isinstance(payload, dict)]
         if "NOT_CERTIFIED" not in root_values:
             errors.append(f"{relative}:root decision is not NOT_CERTIFIED")
+    for record in ledger.get("structured_reports", []):
+        relative = record.get("path")
+        path = ROOT / str(relative)
+        if not path.is_file():
+            errors.append(f"{relative}:missing")
+            continue
+        payload = read_json(path)
+        findings = decisive_certified_values(payload)
+        if findings:
+            errors.extend(f"{relative}:{finding}" for finding in findings)
+        control = payload.get("release_control_downgrade", {})
+        if payload.get("certification") != "NOT_CERTIFIED":
+            errors.append(f"{relative}:root certification is not NOT_CERTIFIED")
+        if control.get("incident_id") != ledger.get("incident_id"):
+            errors.append(f"{relative}:downgrade incident binding is missing")
+        entries = payload.get("entries", [])
+        for index, entry in enumerate(entries):
+            if entry.get("certification") != record.get("required_entry_certification"):
+                errors.append(f"{relative}:entries[{index}].certification")
+            if entry.get("runtime_evidence") != record.get("required_entry_runtime_evidence"):
+                errors.append(f"{relative}:entries[{index}].runtime_evidence")
+            if entry.get("independent_evidence") != record.get("required_entry_independent_evidence"):
+                errors.append(f"{relative}:entries[{index}].independent_evidence")
+    for record in ledger.get("mature_product_packs", []):
+        relative = str(record.get("path"))
+        pack = ROOT / relative
+        if not pack.is_dir():
+            errors.append(f"{relative}:missing")
+            continue
+        certification = read_json(pack / "certification.json")
+        gate = read_json(pack / "gate-result.json")
+        pack_document = read_json(pack / "pack.json")
+        support = read_json(pack / "support-matrix.json")
+        request = read_json(pack / "certification-request.json")
+        if certification.get("status") != "NOT_RUN" or certification.get("evidenceRefs") != []:
+            errors.append(f"{relative}:certification was not withdrawn to NOT_RUN")
+        if gate.get("status") != "BLOCKED" or gate.get("eligible") is not False:
+            errors.append(f"{relative}:gate result was not withdrawn to BLOCKED")
+        if pack_document.get("status") != "experimental":
+            errors.append(f"{relative}:pack status is not experimental")
+        if any(item.get("status") != "experimental" for item in support.get("capabilities", [])):
+            errors.append(f"{relative}:support matrix retains promoted capability status")
+        if request.get("keyId") != "ethan-independent-certifier":
+            errors.append(f"{relative}:withdrawn request key identity drifted")
+        if "Status: `BLOCKED`" not in (pack / "gate-report.md").read_text(encoding="utf-8"):
+            errors.append(f"{relative}:gate report is not BLOCKED")
+        for digest_key in ("prior_certification_sha256", "prior_gate_result_sha256"):
+            if not re.fullmatch(r"sha256:[0-9a-f]{64}", str(record.get(digest_key))):
+                errors.append(f"{relative}:{digest_key} is invalid")
+        if int(record.get("batch", 0)) == 45:
+            domains = sorted((pack / "domain-gates").glob("batch*-gate-result.json"))
+            if len(domains) != 7:
+                errors.append(f"{relative}:expected 7 withdrawn domain gates")
+            for domain in domains:
+                payload = read_json(domain)
+                if payload.get("status") != "BLOCKED" or payload.get("eligible") is not False:
+                    errors.append(f"{relative}:{domain.name} is not BLOCKED")
+    return not errors, errors
+
+
+def check_dependabot_governance() -> tuple[bool, list[str]]:
+    """Validate the committed, digest-bound residual-risk record offline.
+
+    GitHub disposition is an external fact and is reconciled by the governance
+    operation before candidate creation. This check proves that the committed
+    snapshot, exception decisions, VEX, provenance, and current manifest bytes
+    still agree; it does not relabel a dismissal as a dependency fix.
+    """
+
+    errors: list[str] = []
+    root = ROOT / "release-control/dependencies"
+    paths = {
+        "snapshot": root / "dependabot-open-alerts.json",
+        "registry": root / "dependabot-exception-registry.json",
+        "vex": root / "dependabot-vex.json",
+        "provenance": root / "dependabot-vex-provenance.json",
+    }
+    missing = [str(path.relative_to(ROOT)) for path in paths.values() if not path.is_file()]
+    if missing:
+        return False, [f"{path}:missing" for path in missing]
+
+    snapshot = read_json(paths["snapshot"])
+    registry = read_json(paths["registry"])
+    vex = read_json(paths["vex"])
+    provenance = read_json(paths["provenance"])
+    if not isinstance(snapshot, list):
+        return False, ["Dependabot snapshot is not a list"]
+    normalized_snapshot = sorted(snapshot, key=lambda item: int(item["alert_number"]))
+    snapshot_digest = "sha256:" + hashlib.sha256(
+        json.dumps(normalized_snapshot, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    exceptions = registry.get("exceptions", [])
+    if (
+        registry.get("schema_version") != "2.1"
+        or registry.get("source_alert_snapshot_digest") != snapshot_digest
+        or registry.get("fixed_claims") != []
+        or registry.get("certification") != "NOT_CERTIFIED"
+        or not isinstance(exceptions, list)
+    ):
+        errors.append("Dependabot exception registry is invalid or not snapshot-bound")
+        exceptions = [] if not isinstance(exceptions, list) else exceptions
+    if len(snapshot) != len(exceptions):
+        errors.append("Dependabot snapshot and exception counts differ")
+    now = datetime.now(timezone.utc)
+    for exception in exceptions:
+        manifest = exception.get("manifest", {})
+        relative = manifest.get("path")
+        path = ROOT / str(relative)
+        if (
+            exception.get("decision") != "dismiss_tolerable_risk"
+            or exception.get("vex_status") != "not_affected"
+            or exception.get("status") != "ACTIVE"
+        ):
+            errors.append(f"Dependabot exception {exception.get('alert_number')} is not fail-closed")
+        try:
+            expiry = datetime.fromisoformat(str(exception.get("expires_at")))
+            if expiry.tzinfo is None or expiry.astimezone(timezone.utc) <= now:
+                errors.append(f"Dependabot exception {exception.get('alert_number')} expired")
+        except ValueError:
+            errors.append(f"Dependabot exception {exception.get('alert_number')} has invalid expiry")
+        if not path.is_file():
+            errors.append(f"{relative}:missing")
+        elif manifest.get("sha256") != sha256_file(path) or manifest.get("bytes") != path.stat().st_size:
+            errors.append(f"{relative}:manifest identity changed")
+
+    metadata = vex.get("metadata", {})
+    records = vex.get("records", [])
+    if (
+        vex.get("status") != "review"
+        or metadata.get("sourceAlertSnapshotDigest") != snapshot_digest
+        or metadata.get("githubDisposition") != "DISMISSED"
+        or metadata.get("dismissedCount") != len(exceptions)
+        or metadata.get("independentVerification") != "NOT_RUN"
+        or metadata.get("certification") != "NOT_CERTIFIED"
+        or len(records) != len(exceptions)
+        or any(record.get("analysis", {}).get("state") != "NOT_AFFECTED" for record in records)
+    ):
+        errors.append("Dependabot VEX is incomplete or overclaims its evidence")
+    expected_registry_sha = sha256_file(paths["registry"])
+    source = provenance.get("source", {})
+    if (
+        provenance.get("status") != "LOCAL_EXECUTED_SELF_ATTESTED"
+        or provenance.get("externalOperationExecuted") is not True
+        or provenance.get("independentVerification") != "NOT_RUN"
+        or provenance.get("certification") != "NOT_CERTIFIED"
+        or source.get("alertSnapshotDigest") != snapshot_digest
+        or source.get("registry", {}).get("sha256") != expected_registry_sha
+    ):
+        errors.append("Dependabot VEX provenance is incomplete or drifted")
     return not errors, errors
 
 
@@ -218,6 +367,8 @@ def run(candidate_sha: str, output_dir: Path) -> int:
     record("revocation-ledger-and-trust-stores", revoked_ok, revoked_errors)
     reports_ok, report_errors = check_untrusted_reports()
     record("untrusted-certified-reports-downgraded", reports_ok, report_errors)
+    dependabot_ok, dependabot_errors = check_dependabot_governance()
+    record("dependabot-vex-and-exception-governance", dependabot_ok, dependabot_errors)
 
     failures = read_json(ROOT / "release-control/ci-failures-2026-09-13.json")
     record("eleven-ci-failures-inventory", len(failures.get("failures", [])) == 11,

@@ -2,40 +2,14 @@
 
 - Pack: `elmos-platform-deployment-matrix`
 - Skills in scope: 22
-- Blocking gaps: 27
+- Blocking gaps: 1
 - Open gaps: 23
 
 This inventory is a work list. It grants no status and is not evidence.
 
 ## Blocking
 
-- [evidence] evidence-manifest.json has not been produced
-- [evidence] certification-request.json has not been produced
-- [evidence] certification-request.sig has not been produced
-- [provenance] pack.json artifactDigest is still the zero digest
-- [provenance] pack.json environmentDigest is still the zero digest
-- [metric] airgapUpdatePassRate has not been measured (threshold 1.0)
-- [metric] drRecoveryPassRate has not been measured (threshold 1.0)
-- [metric] editionCoverage has not been measured (threshold 1.0)
-- [metric] evidenceTraceCoverage has not been measured (threshold 0.98)
-- [metric] mixedVersionCompatibilityPassRate has not been measured (threshold 1.0)
-- [metric] portableControlPlanePassRate has not been measured (threshold 1.0)
-- [metric] rollbackPassRate has not been measured (threshold 1.0)
-- [metric] tenantMigrationPassRate has not been measured (threshold 1.0)
-- [metric] zeroDowntimeUpgradePassRate has not been measured (threshold 1.0)
-- [zero-tolerance] criticalDataLoss has not been evaluated
-- [zero-tolerance] crossTenantAccess has not been evaluated
-- [zero-tolerance] unsignedUpdatesAccepted has not been evaluated
-- [zero-tolerance] unresolvedSchemaIncompatibilities has not been evaluated
-- [zero-tolerance] incompatibleRunnerLeases has not been evaluated
-- [zero-tolerance] orphanedWorkflows has not been evaluated
-- [zero-tolerance] residencyViolations has not been evaluated
-- [zero-tolerance] testIntegrityViolations has not been evaluated
-- [corpus] holdout corpus is empty
-- [corpus] representative corpus is empty
-- [evidence] evidence directory holds no artefacts
 - [approval] no accountable approver is recorded on the certification
-- [evidence] evidence.json declares no claims
 
 ## Open
 

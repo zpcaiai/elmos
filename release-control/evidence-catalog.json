@@ -22,6 +22,11 @@
       "authority": "ci-generated-candidate-evidence",
       "default_evidence_class": "LOCAL_EXECUTED_SELF_ATTESTED",
       "committed": false
+    },
+    {
+      "path": "release-control/dependencies",
+      "authority": "digest-bound-dependency-governance-record",
+      "default_evidence_class": "LOCAL_EXECUTED_SELF_ATTESTED"
     }
   ],
   "external_evidence_requirements": {

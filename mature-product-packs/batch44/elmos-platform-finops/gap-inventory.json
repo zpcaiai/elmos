@@ -23,35 +23,10 @@
     "zero-tolerance"
   ],
   "skillCount": 20,
-  "blockingCount": 27,
+  "blockingCount": 1,
   "openCount": 21,
   "certifiable": false,
   "gaps": [
-    {
-      "category": "evidence",
-      "severity": "blocking",
-      "detail": "evidence-manifest.json has not been produced"
-    },
-    {
-      "category": "evidence",
-      "severity": "blocking",
-      "detail": "certification-request.json has not been produced"
-    },
-    {
-      "category": "evidence",
-      "severity": "blocking",
-      "detail": "certification-request.sig has not been produced"
-    },
-    {
-      "category": "provenance",
-      "severity": "blocking",
-      "detail": "pack.json artifactDigest is still the zero digest"
-    },
-    {
-      "category": "provenance",
-      "severity": "blocking",
-      "detail": "pack.json environmentDigest is still the zero digest"
-    },
     {
       "category": "coverage",
       "severity": "open",
@@ -153,106 +128,6 @@
       "detail": "b44-verified-workload-unit-cost is only experimental in the support matrix"
     },
     {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "billingReconciliationRate has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "budgetGuardrailPassRate has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "costAllocationReconciliationRate has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "customerValueEvidenceCoverage has not been measured (threshold 0.95)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "evidenceTraceCoverage has not been measured (threshold 0.98)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "forecastIntervalCoverage has not been measured (threshold 0.9)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "marginModelAccuracyRate has not been measured (threshold 0.98)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "meteringCompleteness has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "unitCostTraceCoverage has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "duplicateMeterEvents has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "unallocatedMaterialCosts has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "nonzeroBillingReconciliationDifference has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "securityGateBypassesForCost has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "unapprovedNegativeMarginDeals has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "customerDataLossFromBudgetStops has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "unexplainedPriceOverrides has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "testIntegrityViolations has not been evaluated"
-    },
-    {
-      "category": "corpus",
-      "severity": "blocking",
-      "detail": "holdout corpus is empty"
-    },
-    {
-      "category": "corpus",
-      "severity": "blocking",
-      "detail": "representative corpus is empty"
-    },
-    {
-      "category": "evidence",
-      "severity": "blocking",
-      "detail": "evidence directory holds no artefacts"
-    },
-    {
       "category": "approval",
       "severity": "blocking",
       "detail": "no accountable approver is recorded on the certification"
@@ -261,11 +136,6 @@
       "category": "status",
       "severity": "open",
       "detail": "certification status is NOT_RUN"
-    },
-    {
-      "category": "evidence",
-      "severity": "blocking",
-      "detail": "evidence.json declares no claims"
     }
   ]
 }

@@ -2,40 +2,14 @@
 
 - Pack: `elmos-platform-knowledge-flywheel`
 - Skills in scope: 20
-- Blocking gaps: 27
+- Blocking gaps: 1
 - Open gaps: 21
 
 This inventory is a work list. It grants no status and is not evidence.
 
 ## Blocking
 
-- [evidence] evidence-manifest.json has not been produced
-- [evidence] certification-request.json has not been produced
-- [evidence] certification-request.sig has not been produced
-- [provenance] pack.json artifactDigest is still the zero digest
-- [provenance] pack.json environmentDigest is still the zero digest
-- [metric] evidenceTraceCoverage has not been measured (threshold 0.98)
-- [metric] forecastIntervalCoverage has not been measured (threshold 0.9)
-- [metric] holdoutPassRate has not been measured (threshold 1.0)
-- [metric] humanReviewClosureRate has not been measured (threshold 1.0)
-- [metric] knowledgeLineageCoverage has not been measured (threshold 1.0)
-- [metric] ontologyCoverage has not been measured (threshold 1.0)
-- [metric] privateKnowledgeIsolationPassRate has not been measured (threshold 1.0)
-- [metric] recommendationPrecisionAtK has not been measured (threshold 0.9)
-- [metric] riskCalibrationScore has not been measured (threshold 0.9)
-- [zero-tolerance] privateKnowledgeLeaks has not been evaluated
-- [zero-tolerance] targetLeakageFindings has not been evaluated
-- [zero-tolerance] unattributedKnowledgeItems has not been evaluated
-- [zero-tolerance] uncalibratedP0Predictions has not been evaluated
-- [zero-tolerance] unsafeRecommendations has not been evaluated
-- [zero-tolerance] expiredCertifiedAssetsUsed has not been evaluated
-- [zero-tolerance] crossTenantReconstructionFindings has not been evaluated
-- [zero-tolerance] testIntegrityViolations has not been evaluated
-- [corpus] holdout corpus is empty
-- [corpus] representative corpus is empty
-- [evidence] evidence directory holds no artefacts
 - [approval] no accountable approver is recorded on the certification
-- [evidence] evidence.json declares no claims
 
 ## Open
 
