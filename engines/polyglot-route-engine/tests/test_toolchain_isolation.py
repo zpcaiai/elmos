@@ -499,7 +499,7 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         build_version="25F84",
     )
     current_hosted = toolchains._select_homebrew_route_bundle_profile(
-        image_version="20260907.0351.1",
+        image_version="20260831.0337.3",
         product_version="26.6.2",
         build_version="25G83",
     )
@@ -541,6 +541,7 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
     assert current_hosted.dotnet_muxer_sha256 == (
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
     )
+    assert current_hosted.profile_id == "github-macos26-20260831.0337.3"
     assert current_hosted.php_tree_sha256 == (
         "60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f"
     )
