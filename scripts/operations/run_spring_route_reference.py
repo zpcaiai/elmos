@@ -1253,14 +1253,16 @@ def install_elmos_recipe_artifact(
     names ``io.elmos.recipes.*`` while still being able to discover the
     upstream ``rewrite-spring`` recipes.
     """
+    recipe_pom = repo / "recipes/elmos-java-recipes/pom.xml"
+    if not recipe_pom.is_file():
+        raise RunFailure(f"ELMOS_RECIPE_POM_MISSING:{recipe_pom}")
     result = run(
         [
             maven,
             "-B",
             "--no-transfer-progress",
-            "-pl",
-            "recipes/elmos-java-recipes",
-            "-am",
+            "-f",
+            str(recipe_pom),
             "-DskipTests",
             "install",
         ],
@@ -1657,6 +1659,16 @@ def run_selected_route(
         return 1
 
     write_json_atomic(destination, evidence)
+    stale_attempt = failure_attempt_destination(repo, route)
+    try:
+        stale_attempt.unlink(missing_ok=True)
+    except OSError as cleanup_failure:
+        print(
+            "STALE_ATTEMPT_CLEANUP_FAILED: "
+            f"{type(cleanup_failure).__name__}: {cleanup_failure}",
+            file=sys.stderr,
+        )
+        return 1
     if pack_dir_arg:
         pack_dir = Path(pack_dir_arg).resolve()
         pack_key_path = pack_dir / "pack.json"
