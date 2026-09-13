@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "svelte--to--vue2",
-  "formal_input_digest": "sha256:e78f7814c5efe5d7dfe2abef44ae88c33b6a64ec28aac247b9d574ed42ff5311",
-  "solver_input_digest": "sha256:5757b9cf1941402f89ec0d84a84a6339a0cf9016382449485382e7100afeee2a",
-  "smt2_digest": "sha256:5757b9cf1941402f89ec0d84a84a6339a0cf9016382449485382e7100afeee2a",
+  "formal_input_digest": "sha256:a98aa89462de132ffd2abc647a23c20d11db37ac663e8198a0c1c38f4a2a97d1",
+  "solver_input_digest": "sha256:cdecf2fadd8ec53b967039f64ccedb5f42b3bcda0e53ead9d0309cc9aa646d94",
+  "smt2_digest": "sha256:cdecf2fadd8ec53b967039f64ccedb5f42b3bcda0e53ead9d0309cc9aa646d94",
   "precheck_status": "PASSED"
 }

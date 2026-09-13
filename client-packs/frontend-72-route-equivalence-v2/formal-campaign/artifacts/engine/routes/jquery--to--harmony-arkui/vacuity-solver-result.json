@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "jquery--to--harmony-arkui",
-  "formal_input_digest": "sha256:6455f0e510773afef1e510672baa638d0cd4dd96a82de6dd4383d54640070c81",
-  "solver_input_digest": "sha256:14107b4c093a041f9547ff86c941b758f5eed634e8e5675f712c1cd6ebede352",
-  "smt2_digest": "sha256:14107b4c093a041f9547ff86c941b758f5eed634e8e5675f712c1cd6ebede352",
+  "formal_input_digest": "sha256:cf3279bbf90f4904f6cd7877afb1d634f70e6308c650c30d08591936c7aa2e4b",
+  "solver_input_digest": "sha256:e340a8b17504fa984b8b87d8946fdc76068250c26c6c26ca685bf2f8e76e9c78",
+  "smt2_digest": "sha256:e340a8b17504fa984b8b87d8946fdc76068250c26c6c26ca685bf2f8e76e9c78",
   "precheck_status": "PASSED"
 }

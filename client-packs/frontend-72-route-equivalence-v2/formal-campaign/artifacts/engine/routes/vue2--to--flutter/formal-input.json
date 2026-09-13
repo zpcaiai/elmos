@@ -202,7 +202,7 @@
   "chunk_digest": "sha256:2f62f8d1e57d4302dc7e10180acbb4198c074c0f2bbeff80f99c7ac7c43c924c",
   "chunk_equal": true,
   "scenario_manifest_digest": "sha256:52f60c2c8a65d2d0419be96e71357b90f3d2713e9895f5c532db923e76cfe619",
-  "mutation_campaign_digest": "sha256:6044652ab834eec0651dcf73b1f254849b4ec6d6409fbc547ce80cc33d52a41a",
+  "mutation_campaign_digest": "sha256:e1ef99ba42405a1c6015594ee2cf513b9f9c98298bb9377ce3ca07b14987e76b",
   "semantic_block_ids": [
     "route-navigation-deeplink-404",
     "component-template-view",
