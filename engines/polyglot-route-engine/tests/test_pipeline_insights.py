@@ -170,9 +170,7 @@ def test_pipeline_report_and_manifest_share_fail_closed_behavior_insights(tmp_pa
         "status",
         "unit_batch_status",
     }
-    assert {field: manifest[field] for field in shared_fields} == {
-        field: report[field] for field in shared_fields
-    }
+    assert {field: manifest[field] for field in shared_fields} == {field: report[field] for field in shared_fields}
 
     behavior = report["behavior_coverage"]
     assert behavior["status"] == "NOT_RUN"

@@ -126,9 +126,7 @@ def test_engine_and_campaign_authorities_declare_the_same_matrix() -> None:
     # Route keys are also filesystem names under routes/.  A pair the engine
     # can route but whose key the campaign spells differently would silently
     # look like a missing pack rather than a disagreement.
-    assert len(route_sets.ALL_DECLARED_ROUTE_KEYS) == len(
-        set(route_sets.ALL_DECLARED_ROUTE_KEYS)
-    )
+    assert len(route_sets.ALL_DECLARED_ROUTE_KEYS) == len(set(route_sets.ALL_DECLARED_ROUTE_KEYS))
 
 
 @requires_route_sets
@@ -171,9 +169,7 @@ def test_derived_partitions_still_point_at_the_base_they_were_written_against() 
 
     assert all(V3_LANGUAGES & _ends(key) for key in route_sets.V3_EXACT_ROUTE_KEYS)
 
-    assert all(
-        "javascript" in _ends(key) for key in route_sets.NODEJS_EXACT_ROUTE_KEYS
-    )
+    assert all("javascript" in _ends(key) for key in route_sets.NODEJS_EXACT_ROUTE_KEYS)
     # Every deprecated direction is owned, and only by the two partitions that
     # can own one: the javascript partition, plus the php partition for the two
     # php-to-javascript directions filed during the PHP campaign.

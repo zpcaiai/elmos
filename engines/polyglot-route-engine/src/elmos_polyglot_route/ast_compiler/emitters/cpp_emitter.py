@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ..ir import UniversalClass, UniversalField, UniversalMethod, UniversalModule, UniversalParam, UniversalType
+from ..ir import UniversalType
 from .base import BaseEmitter
 
 
@@ -15,10 +15,21 @@ class CppEmitter(BaseEmitter):
     def format_type(self, t: UniversalType) -> str:
         if t.kind == "primitive":
             m = {
-                "i8": "int8_t", "i16": "int16_t", "i32": "int32_t", "i64": "int64_t",
-                "u8": "uint8_t", "u16": "uint16_t", "u32": "uint32_t", "u64": "uint64_t",
-                "f32": "float", "f64": "double", "bool": "bool",
-                "char": "char", "string": "std::string", "void": "void", "any": "std::any"
+                "i8": "int8_t",
+                "i16": "int16_t",
+                "i32": "int32_t",
+                "i64": "int64_t",
+                "u8": "uint8_t",
+                "u16": "uint16_t",
+                "u32": "uint32_t",
+                "u64": "uint64_t",
+                "f32": "float",
+                "f64": "double",
+                "bool": "bool",
+                "char": "char",
+                "string": "std::string",
+                "void": "void",
+                "any": "std::any",
             }
             return m.get(t.name, "void")
         elif t.kind == "list":
@@ -37,4 +48,3 @@ class CppEmitter(BaseEmitter):
             elem = self.format_type(t.element_type or UniversalType.string_type())
             return f"std::optional<{elem}>"
         return t.name or "void"
-

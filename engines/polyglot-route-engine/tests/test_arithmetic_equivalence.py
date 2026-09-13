@@ -24,6 +24,7 @@ type stripping -- over a boundary corpus, and asserts the one asymmetry the
 profile documents: TypeScript may fail where Python succeeds, but only outside
 the safe-integer range, and it may never answer a different value.
 """
+
 from __future__ import annotations
 
 import json
@@ -172,9 +173,7 @@ def test_every_other_target_already_grouped_and_still_does(language: Language) -
 # 2. R1 -- integer overflow is an error
 # --------------------------------------------------------------------------
 
-_ADD = _function(
-    "add", [("a", "integer"), ("b", "integer")], "integer", _binary("+", _name("a"), _name("b"))
-)
+_ADD = _function("add", [("a", "integer"), ("b", "integer")], "integer", _binary("+", _name("a"), _name("b")))
 
 _CHECKED_ADD_SPELLING: dict[Language, str] = {
     "java": "Math.addExact(a, b)",
@@ -216,15 +215,9 @@ def test_python_addition_raises_instead_of_growing_past_the_canonical_range() ->
 # 3. R2 -- division or remainder by zero is an error
 # --------------------------------------------------------------------------
 
-_DIVIDE = _function(
-    "divide", [("a", "integer"), ("b", "integer")], "integer", _binary("/", _name("a"), _name("b"))
-)
-_REMAINDER = _function(
-    "rem", [("a", "integer"), ("b", "integer")], "integer", _binary("%", _name("a"), _name("b"))
-)
-_FLOAT_DIVIDE = _function(
-    "ratio", [("a", "number"), ("b", "number")], "number", _binary("/", _name("a"), _name("b"))
-)
+_DIVIDE = _function("divide", [("a", "integer"), ("b", "integer")], "integer", _binary("/", _name("a"), _name("b")))
+_REMAINDER = _function("rem", [("a", "integer"), ("b", "integer")], "integer", _binary("%", _name("a"), _name("b")))
+_FLOAT_DIVIDE = _function("ratio", [("a", "number"), ("b", "number")], "number", _binary("/", _name("a"), _name("b")))
 
 
 def test_typescript_integer_division_by_zero_no_longer_answers_infinity() -> None:
@@ -270,9 +263,7 @@ def test_float_division_guard_fixtures_cover_every_non_python_active_target() ->
 
 
 @pytest.mark.parametrize(("language", "expected"), _FLOAT_DIVISION_GUARDS.items())
-def test_float_division_guards_the_divisor_everywhere_python_raises(
-    language: Language, expected: str
-) -> None:
+def test_float_division_guards_the_divisor_everywhere_python_raises(language: Language, expected: str) -> None:
     # Python raises on 1.0 / 0.0; the other active runtimes do not all share
     # that behavior. The canonical rule makes every supported target agree on
     # "error".
@@ -392,9 +383,7 @@ def _typescript_outcomes(source: str, name: str) -> list[Any]:
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="node is required for the TypeScript half")
 @pytest.mark.parametrize(("name", "unit"), _DIFFERENTIAL_UNITS, ids=[n for n, _ in _DIFFERENTIAL_UNITS])
-def test_python_and_typescript_agree_or_typescript_fails_earlier(
-    name: str, unit: dict[str, Any]
-) -> None:
+def test_python_and_typescript_agree_or_typescript_fails_earlier(name: str, unit: dict[str, Any]) -> None:
     ir = _ir(unit)
     python = _python_outcomes(emit(ir, "python").content, name)
     typescript = _typescript_outcomes(emit(ir, "typescript").content, name)
@@ -407,9 +396,9 @@ def test_python_and_typescript_agree_or_typescript_fails_earlier(
         # answer a different value, and it may never succeed where Python
         # failed.
         assert actual == "ERROR", f"{name}{arguments}: python={expected!r} typescript={actual!r}"
-        assert expected == "ERROR" or abs(expected) > SAFE_MAX or any(
-            abs(value) > SAFE_MAX for value in arguments
-        ), f"{name}{arguments}: typescript failed inside the safe range"
+        assert expected == "ERROR" or abs(expected) > SAFE_MAX or any(abs(value) > SAFE_MAX for value in arguments), (
+            f"{name}{arguments}: typescript failed inside the safe range"
+        )
 
 
 def test_rust_integer_division_compiles_under_the_harness_warning_flags() -> None:
@@ -423,9 +412,7 @@ def test_rust_integer_division_compiles_under_the_harness_warning_flags() -> Non
 
 
 @pytest.mark.parametrize(("language", "expected"), [("cpp", "INT64_MIN"), ("objc", "LLONG_MIN")])
-def test_the_most_negative_literal_uses_the_macro_in_c_and_objective_c(
-    language: str, expected: str
-) -> None:
+def test_the_most_negative_literal_uses_the_macro_in_c_and_objective_c(language: str, expected: str) -> None:
     # `-9223372036854775808LL` is unary minus applied to a constant that does
     # not fit a signed 64-bit type; GCC and Clang reject it under -Werror.
     unit = _function("least", [], "integer", {"kind": "literal", "value": INTEGER_MIN})

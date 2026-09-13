@@ -1,19 +1,19 @@
 """Universal AST Compiler package for Polyglot Routes (M29)."""
 
+from .compiler import UniversalAstCompiler, compile_polyglot_ast, default_compiler
+from .emitters import BaseEmitter, get_emitter
 from .ir import (
-    UniversalType,
     UniversalAnnotation,
-    UniversalParam,
+    UniversalClass,
     UniversalField,
     UniversalMethod,
-    UniversalClass,
     UniversalModule,
+    UniversalParam,
+    UniversalType,
 )
-from .compiler import UniversalAstCompiler, compile_polyglot_ast, default_compiler
-from .parsers import get_parser, BaseAstParser, BaseParser
 from .lowering import SemanticLoweringEngine
+from .parsers import BaseAstParser, BaseParser, get_parser
 from .shims import ShimRegistry
-from .emitters import get_emitter, BaseEmitter
 
 __all__ = [
     "UniversalType",
@@ -27,7 +27,8 @@ __all__ = [
     "compile_polyglot_ast",
     "default_compiler",
     "get_parser",
-    "BaseAstParser, BaseParser",
+    "BaseAstParser",
+    "BaseParser",
     "SemanticLoweringEngine",
     "ShimRegistry",
     "get_emitter",

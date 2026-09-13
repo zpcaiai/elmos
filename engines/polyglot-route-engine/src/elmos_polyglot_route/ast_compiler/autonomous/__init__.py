@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from .compiler_diagnostics import NativeCompilerDiagnostic, CompilerDiagnosticParser
-from .repair_loop import AutonomousRepairLoop, RepairResult, RepairFix
+from .compiler_diagnostics import CompilerDiagnosticParser, NativeCompilerDiagnostic
+from .repair_loop import AutonomousRepairLoop, RepairFix, RepairResult
 from .smt_repair import (
     SmtAutonomousRepairEngine,
     SmtBoundsAndOverflowSolver,

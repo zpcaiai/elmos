@@ -12,7 +12,6 @@ from elmos_polyglot_route.enterprise_transpiler import (
 )
 from elmos_polyglot_route.polyglot_handoff_ledger import (
     PolyglotHandoffLedger,
-    PolyglotObligationFinding,
 )
 
 

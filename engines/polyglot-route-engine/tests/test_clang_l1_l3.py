@@ -197,13 +197,7 @@ def test_objc_let_assign_and_for(tmp_path: Path) -> None:
 
 @requires_clang
 def test_cpp_parameter_reassignment_fails_closed(tmp_path: Path) -> None:
-    source = (
-        "#include <cstdint>\n"
-        "std::int64_t bad(std::int64_t n) {\n"
-        "    n = n + 1;\n"
-        "    return n;\n"
-        "}\n"
-    )
+    source = "#include <cstdint>\nstd::int64_t bad(std::int64_t n) {\n    n = n + 1;\n    return n;\n}\n"
     with pytest.raises(RouteError, match="CPP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:n"):
         _analyze(tmp_path, ".cpp", "cpp", source, "bad")
 

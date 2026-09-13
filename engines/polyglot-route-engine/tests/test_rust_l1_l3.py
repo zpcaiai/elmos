@@ -79,10 +79,7 @@ def test_rust_euclid_gcd_while(tmp_path: Path) -> None:
 def test_rust_tail_expression_implicit_return(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "pub fn square(x: i64) -> i64 {\n"
-        "    let result: i64 = x * x;\n"
-        "    result\n"
-        "}",
+        "pub fn square(x: i64) -> i64 {\n    let result: i64 = x * x;\n    result\n}",
     )
     semantic = analyze(source, "rust", "square")
     fn = semantic.functions[0]

@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import re
-from typing import NamedTuple, List
+from typing import NamedTuple
+
 
 class KotlinDiagnostic(NamedTuple):
     line: int
     column: int
     message: str
     category: str
+
 
 class KotlinStrictSemanticValidator:
     """Validates Kotlin code against official language specification syntax, types, and scoping rules."""
@@ -28,7 +30,7 @@ class KotlinStrictSemanticValidator:
                 continue
 
             # Check matching braces balance tracking
-            brace_depth += stripped.count('{') - stripped.count('}')
+            brace_depth += stripped.count("{") - stripped.count("}")
 
             # Package and import validation
             if stripped.startswith("package "):
@@ -45,13 +47,18 @@ class KotlinStrictSemanticValidator:
 
             # Class declaration validation
             if "class " in stripped or "interface " in stripped:
-                cls_match = re.search(r"(?:data\s+|open\s+|sealed\s+|abstract\s+)?(?:class|interface)\s+([A-Za-z_][A-Za-z0-9_]*)", stripped)
+                cls_match = re.search(
+                    r"(?:data\s+|open\s+|sealed\s+|abstract\s+)?(?:class|interface)\s+([A-Za-z_][A-Za-z0-9_]*)",
+                    stripped,
+                )
                 if not cls_match:
                     diags.append(KotlinDiagnostic(idx, 1, "Malformed class or interface header", "syntax_error"))
 
             # Function declaration validation
             if "fun " in stripped:
-                fun_match = re.search(r"(?:suspend\s+|override\s+|private\s+|public\s+)?fun\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(", stripped)
+                fun_match = re.search(
+                    r"(?:suspend\s+|override\s+|private\s+|public\s+)?fun\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(", stripped
+                )
                 if not fun_match:
                     diags.append(KotlinDiagnostic(idx, 1, "Malformed function signature", "syntax_error"))
 

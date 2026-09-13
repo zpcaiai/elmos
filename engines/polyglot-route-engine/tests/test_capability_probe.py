@@ -10,6 +10,7 @@ The probe never infers -- it calls the real entry point. These tests protect
 the part that makes its output trustworthy: a machine without the pinned
 toolchain must produce `NOT_PROBED`, never a capability claim.
 """
+
 from __future__ import annotations
 
 import os
@@ -93,17 +94,19 @@ def test_a_missing_toolchain_is_never_reported_as_a_capability_gap() -> None:
     Collapsing "cannot be probed here" into "not supported" is the same class
     of mistake as collapsing an intermediate rejection into a boundary.
     """
-    assert capability_probe._verdict(
-        lambda: (_ for _ in ()).throw(
-            capability_probe.RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:swiftc")
+    assert (
+        capability_probe._verdict(
+            lambda: (_ for _ in ()).throw(capability_probe.RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:swiftc"))
         )
-    ) == "NOT_PROBED:EXACT_TOOLCHAIN_UNAVAILABLE"
+        == "NOT_PROBED:EXACT_TOOLCHAIN_UNAVAILABLE"
+    )
 
-    assert capability_probe._verdict(
-        lambda: (_ for _ in ()).throw(
-            capability_probe.RouteError("PYTHON_UNSUPPORTED_STATEMENT:While")
+    assert (
+        capability_probe._verdict(
+            lambda: (_ for _ in ()).throw(capability_probe.RouteError("PYTHON_UNSUPPORTED_STATEMENT:While"))
         )
-    ) == "REJECTED:PYTHON_UNSUPPORTED_STATEMENT"
+        == "REJECTED:PYTHON_UNSUPPORTED_STATEMENT"
+    )
 
 
 @pytest.mark.parametrize("language", ["kotlin", "react", "flutter", "vb6", "vcpp6"])
@@ -145,22 +148,24 @@ def test_an_unregistered_toolchain_is_a_boundary_not_a_missing_machine() -> None
     source anywhere -- letting it sit in the "re-run elsewhere" bucket would
     hide a real gap behind an instruction nobody could ever satisfy.
     """
-    assert capability_probe._verdict(
-        lambda: (_ for _ in ()).throw(
-            capability_probe.RouteError("EXACT_TOOLCHAIN_UNREGISTERED:flutter")
+    assert (
+        capability_probe._verdict(
+            lambda: (_ for _ in ()).throw(capability_probe.RouteError("EXACT_TOOLCHAIN_UNREGISTERED:flutter"))
         )
-    ) == "REJECTED:EXACT_TOOLCHAIN_UNREGISTERED"
+        == "REJECTED:EXACT_TOOLCHAIN_UNREGISTERED"
+    )
 
-    assert capability_probe._verdict(
-        lambda: (_ for _ in ()).throw(
-            capability_probe.RouteError("EXACT_TOOLCHAIN_PLATFORM_MISMATCH:go")
+    assert (
+        capability_probe._verdict(
+            lambda: (_ for _ in ()).throw(capability_probe.RouteError("EXACT_TOOLCHAIN_PLATFORM_MISMATCH:go"))
         )
-    ) == "NOT_PROBED:EXACT_TOOLCHAIN_PLATFORM_MISMATCH"
+        == "NOT_PROBED:EXACT_TOOLCHAIN_PLATFORM_MISMATCH"
+    )
 
 
 @requires_real_probe
 def test_no_cell_is_left_unprobed_for_want_of_a_fixture() -> None:
-    """"Nobody wrote a fixture" and "there is no frontend" must not share a cell.
+    """ "Nobody wrote a fixture" and "there is no frontend" must not share a cell.
 
     The first run of this probe reported NO_FIXTURE for kotlin, react and
     flutter, which read as a capability gap and was really a gap in the probe.

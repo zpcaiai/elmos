@@ -101,13 +101,9 @@ def _emitted(ir: SemanticIR, language: str) -> tuple[str, Any]:
     """
     plan = plan_identifiers(ir, language)
     renames: dict[str, str] = {}
-    for source_function, target_function in zip(
-        ir.functions, target_ir_view(ir, plan).functions, strict=True
-    ):
+    for source_function, target_function in zip(ir.functions, target_ir_view(ir, plan).functions, strict=True):
         renames[source_function.name] = target_function.name
-        for source, target in zip(
-            source_function.parameters, target_function.parameters, strict=True
-        ):
+        for source, target in zip(source_function.parameters, target_function.parameters, strict=True):
             renames[source.name] = target.name
 
     def planned(spelling: str) -> str:
@@ -470,9 +466,7 @@ def test_emitted_objc_boolean_branch_relifts_true_and_false_and_tamper_fails_clo
     emitted = emit(source_ir, "objc", identifier_plan=plan)
     target = tmp_path / emitted.relative_path
     target.write_text(emitted.content, encoding="utf-8")
-    relifted = alpha_normalize_target(
-        source_ir, analyze(target, "objc", symbol, emitted_target=True), plan
-    )
+    relifted = alpha_normalize_target(source_ir, analyze(target, "objc", symbol, emitted_target=True), plan)
     assert relifted.functions[0].semantic_mapping() == source_ir.functions[0].semantic_mapping()
 
     tampered = emitted.content.replace("return NO;", "return 2;", 1)
@@ -612,9 +606,7 @@ def test_swift_emitted_target_relifts_exact_integer_to_double_widening(
         "func f() -> Double { return Double(1.5) }",
     ],
 )
-def test_swift_emitted_target_rejects_noncanonical_double_calls(
-    tmp_path: Path, declaration: str
-) -> None:
+def test_swift_emitted_target_rejects_noncanonical_double_calls(tmp_path: Path, declaration: str) -> None:
     from elmos_polyglot_route.native import analyze
 
     source = tmp_path / "invalid-widening.swift"

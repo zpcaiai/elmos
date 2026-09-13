@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
-from typing import Any
 from ..ir import (
-    UniversalModule, UniversalClass, UniversalField, UniversalMethod, UniversalParam,
-    UniversalType, UniversalStmt, ReturnStmt, RawSnippetStmt, LiteralExpr,
-    UIComponentDecl, UIStateVar, UIViewNode, UIEventBinding
+    RawSnippetStmt,
+    UIComponentDecl,
+    UIStateVar,
+    UIViewNode,
+    UniversalClass,
+    UniversalField,
+    UniversalMethod,
+    UniversalModule,
+    UniversalType,
 )
 
 
@@ -17,7 +22,7 @@ class UIComponentLowering:
 
     @classmethod
     def lower_module(cls, module: UniversalModule, source_lang: str, target_lang: str) -> UniversalModule:
-        s_lang = source_lang.lower().strip()
+        source_lang.lower().strip()
         t_lang = target_lang.lower().strip()
 
         # Case 1: Source has UI components, Target is a headless backend language (Java, C#, Go, Python, Rust, etc.)
@@ -29,17 +34,13 @@ class UIComponentLowering:
 
                 # Convert Props & StateVars into Fields
                 for prop in ui_comp.props:
-                    backend_cls.fields.append(UniversalField(
-                        name=prop.name,
-                        type_info=prop.type_info,
-                        is_readonly=True
-                    ))
+                    backend_cls.fields.append(
+                        UniversalField(name=prop.name, type_info=prop.type_info, is_readonly=True)
+                    )
                 for state in ui_comp.state_vars:
-                    backend_cls.fields.append(UniversalField(
-                        name=state.name,
-                        type_info=state.type_info,
-                        default_value=state.initial_value
-                    ))
+                    backend_cls.fields.append(
+                        UniversalField(name=state.name, type_info=state.type_info, default_value=state.initial_value)
+                    )
 
                 # Convert methods and event handlers into business methods
                 for m in ui_comp.methods:
@@ -51,7 +52,9 @@ class UIComponentLowering:
                             handler = UniversalMethod(
                                 name=evt.handler_method_name,
                                 return_type=UniversalType.void(),
-                                body=evt.inline_statements if evt.inline_statements else [RawSnippetStmt(code="// Handle event")]
+                                body=evt.inline_statements
+                                if evt.inline_statements
+                                else [RawSnippetStmt(code="// Handle event")],
                             )
                             backend_cls.methods.append(handler)
 
@@ -63,15 +66,10 @@ class UIComponentLowering:
                 comp_name = u_cls.name.replace("Service", "View").replace("Controller", "Card")
                 ui_comp = UIComponentDecl(name=comp_name, is_stateful=True)
                 for f in u_cls.fields:
-                    ui_comp.state_vars.append(UIStateVar(
-                        name=f.name,
-                        type_info=f.type_info,
-                        initial_value=f.default_value
-                    ))
-                ui_comp.root_view = UIViewNode(
-                    tag="Container",
-                    text_content=f"{comp_name} Component"
-                )
+                    ui_comp.state_vars.append(
+                        UIStateVar(name=f.name, type_info=f.type_info, initial_value=f.default_value)
+                    )
+                ui_comp.root_view = UIViewNode(tag="Container", text_content=f"{comp_name} Component")
                 module.ui_components.append(ui_comp)
 
         return module

@@ -114,8 +114,7 @@ def test_python_inventory_surfaces_methods_and_never_silently_truncates_function
     assert propose_candidates(mixed.encode(), "python") == ["top"]
 
     by_qualified_name = {
-        subject.qualified_name: subject
-        for subject in python_coverage_subjects(ast.parse(mixed), "<candidate-source>")
+        subject.qualified_name: subject for subject in python_coverage_subjects(ast.parse(mixed), "<candidate-source>")
     }
     assert "Hidden.method" in by_qualified_name
     assert by_qualified_name["Hidden.method"].candidate is False
@@ -132,6 +131,7 @@ def test_python_inventory_surfaces_methods_and_never_silently_truncates_function
     assert complete is True
     assert reason is None
 
+
 @pytest.mark.parametrize(
     ("language", "source"),
     [
@@ -147,6 +147,7 @@ def test_all_native_project_sources_propose_function_obligations(
     source: str,
 ) -> None:
     assert propose_candidates(source.encode(), language) == ["calculate"]
+
 
 def test_discovery_classifies_every_unit_with_a_precise_verdict(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
@@ -175,12 +176,14 @@ def test_discovery_classifies_every_unit_with_a_precise_verdict(tmp_path: Path) 
     assert unsupported["blocker_code"] == "NATIVE_ANALYZER_REJECTED"
     assert "UNSUPPORTED" in unsupported["reason"]
 
+
 def test_discovery_refuses_a_plan_whose_content_changed(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
     plan = _plan(repository)
     (repository / "src" / "pricing.py").write_text(MIGRATABLE + "\n# drift\n", encoding="utf-8")
     with pytest.raises(RouteError, match="WORK_UNIT_CONTENT_CHANGED"):
         discover_repository(plan, repository)
+
 
 def test_repository_inventory_rejects_control_characters_in_source_paths(tmp_path: Path) -> None:
     repository = tmp_path / "control-character-repository"
@@ -189,6 +192,7 @@ def test_repository_inventory_rejects_control_characters_in_source_paths(tmp_pat
 
     with pytest.raises(RouteError, match="REPOSITORY_SOURCE_PATH_CONTROL_CHARACTER_FORBIDDEN"):
         plan_repository(repository, "local:customer-repository", "python", "typescript")
+
 
 def test_repository_inventory_never_excludes_a_source_symlink_from_the_denominator(tmp_path: Path) -> None:
     repository = tmp_path / "source-symlink-repository"
@@ -200,6 +204,7 @@ def test_repository_inventory_never_excludes_a_source_symlink_from_the_denominat
     with pytest.raises(RouteError, match="REPOSITORY_SOURCE_SYMLINK_FORBIDDEN"):
         plan_repository(repository, "local:customer-repository", "python", "typescript")
 
+
 def test_discovery_does_not_follow_a_path_replaced_by_an_intermediate_symlink(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
     plan = _plan(repository)
@@ -210,6 +215,7 @@ def test_discovery_does_not_follow_a_path_replaced_by_an_intermediate_symlink(tm
 
     with pytest.raises(RouteError, match="WORK_UNIT_SOURCE_MISSING_OR_UNSAFE"):
         discover_repository(plan, repository)
+
 
 def test_discovery_never_downgrades_missing_exact_toolchain_to_unsupported(
     tmp_path: Path,
@@ -223,6 +229,7 @@ def test_discovery_never_downgrades_missing_exact_toolchain_to_unsupported(
     monkeypatch.setattr(discovery_module, "analyze_many", _as_analyze_many(unavailable))
     with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_UNAVAILABLE:typescript"):
         discover_repository(_plan(repository), repository)
+
 
 @pytest.mark.parametrize(
     "failure",
@@ -244,6 +251,7 @@ def test_discovery_never_downgrades_a_native_analyzer_failure_to_unsupported(
     monkeypatch.setattr(discovery_module, "analyze_many", _as_analyze_many(crashed))
     with pytest.raises(RouteError, match=failure.split(":", 1)[0]):
         discover_repository(_plan(repository), repository)
+
 
 def test_discovery_never_silently_selects_the_first_of_multiple_functions(
     tmp_path: Path,
@@ -278,12 +286,14 @@ def test_discovery_never_silently_selects_the_first_of_multiple_functions(
     assert all(result["parent_work_unit_id"] == "WU-00001" for result in results)
     assert report["work_unit_count"] == 2
 
+
 def test_discovery_refuses_a_plan_that_already_claims_execution(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
     plan = _plan(repository)
     plan["execution_status"] = "PASSED"
     with pytest.raises(RouteError, match="ALREADY_CLAIMS_EXECUTION"):
         discover_repository(plan, repository)
+
 
 def test_discovery_rejects_more_than_ten_thousand_obligations_before_native_analysis(
     tmp_path: Path,
@@ -292,11 +302,7 @@ def test_discovery_rejects_more_than_ten_thousand_obligations_before_native_anal
     repository = tmp_path / "oversized-repository"
     repository.mkdir()
     (repository / "many.py").write_text(
-        "\n".join(
-            f"def function_{index}(value: int) -> int:\n    return value"
-            for index in range(10_001)
-        )
-        + "\n",
+        "\n".join(f"def function_{index}(value: int) -> int:\n    return value" for index in range(10_001)) + "\n",
         encoding="utf-8",
     )
     plan = plan_repository(repository, "local:oversized-repository", "python", "typescript")
@@ -311,6 +317,7 @@ def test_discovery_rejects_more_than_ten_thousand_obligations_before_native_anal
     with pytest.raises(RouteError, match="FUNCTIONAL_OBLIGATION_LIMIT_EXCEEDED"):
         discover_repository(plan, repository)
     assert calls == 0
+
 
 def test_batch_runs_ready_units_and_never_rounds_up(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
@@ -343,6 +350,7 @@ def test_batch_runs_ready_units_and_never_rounds_up(tmp_path: Path) -> None:
     assert evidence.is_file()
     assert json.loads(evidence.read_text())["status"] == "PASSED_LOCAL_UNCERTIFIED"
 
+
 def test_batch_skips_ready_units_without_an_independent_corpus(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
     discovery = discover_repository(_plan(repository), repository)
@@ -352,6 +360,7 @@ def test_batch_skips_ready_units_without_an_independent_corpus(tmp_path: Path) -
     report = run_batch(discovery, repository, cases, tmp_path / "batch")
     assert report["status_counts"][UnitStatus.SKIPPED_NO_CASES] == 1
     assert report["attempted_count"] == 0
+
 
 def test_batch_records_a_unit_failure_without_stopping_the_queue(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
@@ -371,6 +380,7 @@ def test_batch_records_a_unit_failure_without_stopping_the_queue(tmp_path: Path)
     assert report["status_counts"][UnitStatus.FAILED] == 1
     failed = next(unit for unit in report["units"] if unit["status"] == UnitStatus.FAILED)
     assert failed["reason"]
+
 
 def test_batch_records_exact_toolchain_incident_without_aborting_the_report(
     tmp_path: Path,
@@ -409,6 +419,7 @@ def test_batch_records_exact_toolchain_incident_without_aborting_the_report(
     assert recovered.get("resumed_from_checkpoint") is not True
     assert rerun["resumed_count"] == len(discovery["results"]) - 1
 
+
 def test_batch_resumes_from_its_checkpoint_without_redoing_work(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
     discovery = discover_repository(_plan(repository), repository)
@@ -439,6 +450,7 @@ def test_batch_resumes_from_its_checkpoint_without_redoing_work(tmp_path: Path) 
     assert ready["id"] not in resumed_ids
     # Resuming must not append duplicate outcomes to the durable checkpoint.
     assert checkpoint.read_text(encoding="utf-8") == recorded
+
 
 def test_batch_does_not_resume_legacy_pass_without_source_validation_evidence(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
@@ -474,6 +486,7 @@ def test_batch_does_not_resume_legacy_pass_without_source_validation_evidence(tm
     assert refreshed.get("resumed_from_checkpoint") is not True
     assert refreshed["status"] == UnitStatus.PASSED
 
+
 def test_batch_rejects_a_corrupt_checkpoint(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
     discovery = discover_repository(_plan(repository), repository)
@@ -483,10 +496,12 @@ def test_batch_rejects_a_corrupt_checkpoint(tmp_path: Path) -> None:
     with pytest.raises(RouteError, match="BATCH_CHECKPOINT_CORRUPT"):
         run_batch(discovery, repository, tmp_path, output)
 
+
 def test_batch_rejects_a_report_that_is_not_a_discovery_report(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
     with pytest.raises(RouteError, match="DISCOVERY_REPORT_KIND_INVALID"):
         run_batch(_plan(repository), repository, tmp_path, tmp_path / "batch")
+
 
 def test_inventory_accepts_the_content_addressed_web_repository_reference(tmp_path: Path) -> None:
     repository = tmp_path / "repository"
@@ -502,6 +517,7 @@ def test_inventory_accepts_the_content_addressed_web_repository_reference(tmp_pa
     plan = plan_repository(repository, repository_ref, "python", "typescript")
 
     assert plan["repository_ref"] == repository_ref
+
 
 @pytest.mark.parametrize(
     "repository_ref",
@@ -550,8 +566,7 @@ _CANDIDATE_DISCOVERY_CASES: dict[Language, tuple[str, list[str]]] = {
     "react": ("export function total(value: number): number { return value; }", ["total"]),
     "flutter": ("int total(int value) => value;", ["total"]),
     "vb6": (
-        "Option Explicit\nPublic Function Total(ByVal value As Long) As Long\n"
-        "Total = value\nEnd Function\n",
+        "Option Explicit\nPublic Function Total(ByVal value As Long) As Long\nTotal = value\nEnd Function\n",
         ["Total"],
     ),
     "vcpp6": ("__int64 Total(__int64 value) { return value; }", ["Total"]),
@@ -564,10 +579,7 @@ def test_candidate_discovery_fixtures_cover_the_repository_surface() -> None:
 
 @pytest.mark.parametrize(
     ("language", "source", "expected"),
-    [
-        (language, source, expected)
-        for language, (source, expected) in _CANDIDATE_DISCOVERY_CASES.items()
-    ],
+    [(language, source, expected) for language, (source, expected) in _CANDIDATE_DISCOVERY_CASES.items()],
 )
 def test_candidate_discovery_covers_every_repository_language(
     language: Language,
@@ -575,6 +587,7 @@ def test_candidate_discovery_covers_every_repository_language(
     expected: list[str],
 ) -> None:
     assert propose_candidates(source.encode("utf-8"), language) == expected
+
 
 def test_discovery_partitions_multiple_functions_into_explicit_work_units(
     tmp_path: Path,
@@ -605,6 +618,7 @@ def test_discovery_partitions_multiple_functions_into_explicit_work_units(
     assert all(result["required_inputs"] == ["behavior_cases_json"] for result in results)
     assert report["planned_file_count"] == 1
     assert report["work_unit_count"] == 2
+
 
 def test_discovery_preserves_an_eligible_function_but_blocks_a_rejected_peer(
     tmp_path: Path,
@@ -652,6 +666,7 @@ def test_discovery_preserves_an_eligible_function_but_blocks_a_rejected_peer(
         UnitStatus.SKIPPED_NOT_READY: 1,
     }
 
+
 def test_native_module_inventory_preserves_a_rejected_peer_as_a_graph_blocker(
     tmp_path: Path,
 ) -> None:
@@ -690,20 +705,16 @@ def test_native_module_inventory_preserves_a_rejected_peer_as_a_graph_blocker(
 
     graph = build_project_graph(repository, repository_ref, report)
     assert graph["repository_complete"] is False
-    native_subjects = [
-        node
-        for node in graph["nodes"]
-        if node["language"] == "typescript" and node["kind"] == "symbol"
-    ]
+    native_subjects = [node for node in graph["nodes"] if node["language"] == "typescript" and node["kind"] == "symbol"]
     assert len(native_subjects) == 2
     assert len({node["attributes"]["coverage_key"] for node in native_subjects}) == 2
     obligations = graph["diagnostic_obligations"]
     assert any(
         obligation["code"] == "NATIVE_SYMBOL_SEMANTIC_ANALYSIS_NOT_PASSED"
-        and obligation["node_id"]
-        == next(node["id"] for node in native_subjects if node["name"] == "persist")
+        and obligation["node_id"] == next(node["id"] for node in native_subjects if node["name"] == "persist")
         for obligation in obligations
     )
+
 
 def test_inventory_integrity_failure_is_not_misreported_as_unsupported_semantics(
     tmp_path: Path,
@@ -744,6 +755,7 @@ def test_inventory_integrity_failure_is_not_misreported_as_unsupported_semantics
     assert blocked["source_symbol"]["semantic_status"] == "NOT_RUN"
     assert "TYPESCRIPT_ANALYZER_SNAPSHOT_UNSAFE" in blocked["reason"]
 
+
 def test_completed_source_diagnostics_from_inventory_remain_semantic_failure(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -781,6 +793,7 @@ def test_completed_source_diagnostics_from_inventory_remain_semantic_failure(
     assert blocked["required_inputs"] == ["explicit_symbol_conversion_support"]
     assert blocked["source_symbol"]["semantic_status"] == "BLOCKED"
 
+
 @pytest.mark.parametrize(
     ("language", "diagnostic", "expected"),
     [
@@ -815,8 +828,7 @@ def test_completed_source_diagnostics_from_inventory_remain_semantic_failure(
         ),
         (
             "typescript",
-            "NATIVE_ANALYZER_FAILED:/opt/elmos/node:"
-            "TYPESCRIPT_ANALYZER_SNAPSHOT_UNSAFE:UNSUPPORTED_EXPRESSION:forged",
+            "NATIVE_ANALYZER_FAILED:/opt/elmos/node:TYPESCRIPT_ANALYZER_SNAPSHOT_UNSAFE:UNSUPPORTED_EXPRESSION:forged",
             Verdict.NOT_RUN,
         ),
         (
@@ -833,6 +845,7 @@ def test_analyzer_failure_classifier_uses_primary_language_owned_code(
     expected: str,
 ) -> None:
     assert discovery_module._analyzer_failure_verdict(RouteError(diagnostic), language) == expected
+
 
 def test_real_typescript_domain_rejection_is_semantic_not_environmental(tmp_path: Path) -> None:
     repository = tmp_path / "typescript-domain-rejection"
@@ -862,6 +875,7 @@ def test_real_typescript_domain_rejection_is_semantic_not_environmental(tmp_path
     assert blocked["blocker_code"] == "NATIVE_ANALYZER_REJECTED"
     assert blocked["source_symbol"]["semantic_status"] == "FAILED"
     assert "TYPESCRIPT_UNARY_MINUS_LITERAL_REQUIRED" in blocked["reason"]
+
 
 def test_completed_but_failed_module_enumeration_remains_an_explicit_blocker(
     tmp_path: Path,
@@ -980,6 +994,7 @@ def test_discovery_blocks_duplicate_python_names_instead_of_reusing_the_first_as
     assert {result["blocker_code"] for result in report["results"]} == {"PYTHON_DUPLICATE_TOP_LEVEL_FUNCTION_NAME"}
     assert len({result["coverage_key"] for result in report["results"]}) == 2
 
+
 def test_discovery_blocks_every_python_candidate_beyond_the_bounded_limit(tmp_path: Path) -> None:
     repository = tmp_path / "candidate-limit-repository"
     repository.mkdir()
@@ -999,6 +1014,7 @@ def test_discovery_blocks_every_python_candidate_beyond_the_bounded_limit(tmp_pa
     blocker = next(result for result in report["results"] if result["verdict"] != Verdict.READY)
     assert blocker["id"] == "WU-00001-F041"
     assert blocker["blocker_code"] == "PYTHON_CANDIDATE_LIMIT_EXCEEDED"
+
 
 def test_non_python_candidate_rejection_remains_an_explicit_batch_blocker(
     tmp_path: Path,
@@ -1062,6 +1078,7 @@ def test_non_python_candidate_rejection_remains_an_explicit_batch_blocker(
         UnitStatus.SKIPPED_NO_CASES: 1,
     }
 
+
 def test_per_symbol_integrity_failure_invalidates_earlier_ready_analysis(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -1119,18 +1136,11 @@ def test_per_symbol_integrity_failure_invalidates_earlier_ready_analysis(
         "NOT_RUN": 0,
         "PASSED": 1,
     }
-    assert {result["blocker_code"] for result in report["results"]} == {
-        "NATIVE_ANALYZER_EXECUTION_NOT_PASSED"
-    }
+    assert {result["blocker_code"] for result in report["results"]} == {"NATIVE_ANALYZER_EXECUTION_NOT_PASSED"}
     assert all(result["verdict"] == Verdict.NOT_RUN for result in report["results"])
-    assert all(
-        result["source_symbol"]["semantic_status"] == "NOT_RUN"
-        for result in report["results"]
-    )
-    assert all(
-        result["required_inputs"] == ["restore_analyzer_execution_and_replay"]
-        for result in report["results"]
-    )
+    assert all(result["source_symbol"]["semantic_status"] == "NOT_RUN" for result in report["results"])
+    assert all(result["required_inputs"] == ["restore_analyzer_execution_and_replay"] for result in report["results"])
+
 
 def test_discovery_rejects_intermediate_symlink_escape_without_touching_sentinel(
     tmp_path: Path,
@@ -1151,6 +1161,7 @@ def test_discovery_rejects_intermediate_symlink_escape_without_touching_sentinel
         )
 
     assert sentinel.read_text(encoding="utf-8") == "SECRET = 'retain me'\n"
+
 
 def test_batch_resumes_only_non_success_checkpoint_outcomes(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
@@ -1176,6 +1187,7 @@ def test_batch_resumes_only_non_success_checkpoint_outcomes(tmp_path: Path) -> N
     resumed_ids = {unit["id"] for unit in second["units"] if unit.get("resumed_from_checkpoint")}
     assert ready["id"] not in resumed_ids
     assert checkpoint.read_text(encoding="utf-8") == recorded
+
 
 def test_batch_reexecutes_a_forged_pass_checkpoint_and_restores_evidence(
     tmp_path: Path,
@@ -1223,6 +1235,7 @@ def test_batch_reexecutes_a_forged_pass_checkpoint_and_restores_evidence(
     assert "+ 999" not in target.read_text(encoding="utf-8")
     assert (unit_directory / "route-evidence.json").is_file()
 
+
 def test_batch_rejects_a_fresh_symlinked_units_directory(tmp_path: Path) -> None:
     repository = tmp_path / "fresh-symlink-repository"
     repository.mkdir()
@@ -1251,6 +1264,7 @@ def test_batch_rejects_a_fresh_symlinked_units_directory(tmp_path: Path) -> None
     assert sentinel.read_text(encoding="utf-8") == "preserve"
     assert list(external.iterdir()) == [sentinel]
 
+
 def test_batch_rejects_a_symlinked_checkpoint(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
     discovery = discover_repository(_plan(repository), repository)
@@ -1262,6 +1276,7 @@ def test_batch_rejects_a_symlinked_checkpoint(tmp_path: Path) -> None:
 
     with pytest.raises(RouteError, match="BATCH_CHECKPOINT_UNSAFE"):
         run_batch(discovery, repository, tmp_path, output)
+
 
 def test_batch_never_removes_a_symlinked_unit_directory_on_checkpoint_invalidation(
     tmp_path: Path,
@@ -1297,6 +1312,7 @@ def test_batch_never_removes_a_symlinked_unit_directory_on_checkpoint_invalidati
     with pytest.raises(RouteError, match="WORK_UNIT_OUTPUT_UNSAFE"):
         run_batch(discovery, repository, cases, output)
     assert sentinel.read_text(encoding="utf-8") == "preserve"
+
 
 def test_batch_rejects_duplicate_or_unsafe_discovery_unit_ids(tmp_path: Path) -> None:
     repository = _repository(tmp_path)

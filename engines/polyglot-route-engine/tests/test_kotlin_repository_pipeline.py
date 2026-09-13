@@ -109,10 +109,7 @@ def test_kotlin_repository_inventory_uses_kt_and_keeps_kts_fail_closed(
     assert public_inventory["enumeration_status"] == inventory["enumeration_status"]
     assert public_inventory["analyzer"] == inventory["analyzer"]
     assert public_inventory["analyzer_version"] == inventory["analyzer_version"]
-    assert (
-        public_inventory["subjects"][0]["qualified_name"]
-        == inventory["subjects"][0]["qualified_name"]
-    )
+    assert public_inventory["subjects"][0]["qualified_name"] == inventory["subjects"][0]["qualified_name"]
 
     graph = build_project_graph(repository, "local:kotlin-inventory", discovery)
     assert graph["repository_complete"] is False
@@ -295,21 +292,11 @@ def test_kotlin_target_repository_assembles_compiles_and_runs_two_files(
     assert manifest["included_unit_count"] == 2
     kotlin_identity = manifest["build_verification"]["kotlin_exact_toolchain"]
     assert kotlin_identity["version"] == EXPECTED_KOTLIN_VERSION
-    assert any(
-        value.startswith("kotlin-compiler-jar-sha256=")
-        for value in kotlin_identity["profile"]
-    )
-    assert any(
-        value.startswith("kotlin-jvm-release-sha256=")
-        for value in kotlin_identity["profile"]
-    )
-    assert manifest["build_verification"][
-        "kotlin_exact_toolchain_sha256"
-    ].startswith("sha256:")
+    assert any(value.startswith("kotlin-compiler-jar-sha256=") for value in kotlin_identity["profile"])
+    assert any(value.startswith("kotlin-jvm-release-sha256=") for value in kotlin_identity["profile"])
+    assert manifest["build_verification"]["kotlin_exact_toolchain_sha256"].startswith("sha256:")
     tampered_manifest = json.loads(json.dumps(manifest))
-    tampered_manifest["build_verification"]["kotlin_exact_toolchain"][
-        "profile"
-    ][0] += "-tampered"
+    tampered_manifest["build_verification"]["kotlin_exact_toolchain"]["profile"][0] += "-tampered"
     with pytest.raises(
         RouteError,
         match="^ASSEMBLY_KOTLIN_BUILD_TOOLCHAIN_IDENTITY_DRIFT$",

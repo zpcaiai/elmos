@@ -81,10 +81,7 @@ def test_python_ast_builds_stable_file_module_symbol_and_import_graph(tmp_path: 
     coverage_nodes = [node for node in _nodes(first) if node["kind"] in {"symbol", "effect"}]
     coverage_keys = [node["attributes"]["coverage_key"] for node in coverage_nodes]
     assert len(coverage_keys) == len(set(coverage_keys)) == 5
-    assert all(
-        node["attributes"]["conversion_coverage_requirement"] == "REQUIRED"
-        for node in coverage_nodes
-    )
+    assert all(node["attributes"]["conversion_coverage_requirement"] == "REQUIRED" for node in coverage_nodes)
 
     contains = [edge for edge in _edges(first) if edge["kind"] == EdgeKind.CONTAINS]
     assert any(edge["source"] == price_file["id"] and edge["target"] == price_module["id"] for edge in contains)
@@ -135,9 +132,7 @@ def test_real_json_toml_and_xml_parsers_emit_typed_build_dependencies(tmp_path: 
     graph = build_project_graph(repository, "local:descriptors")
 
     assert graph["repository_complete"] is False
-    assert {
-        item["code"] for item in _diagnostics(graph)
-    } == {"BUILD_DESCRIPTOR_MIGRATION_NOT_RUN"}
+    assert {item["code"] for item in _diagnostics(graph)} == {"BUILD_DESCRIPTOR_MIGRATION_NOT_RUN"}
     descriptor_nodes = [node for node in _nodes(graph) if node["kind"] == "file"]
     assert {node["attributes"]["descriptor_parser"] for node in descriptor_nodes} == {
         "python-json",
@@ -235,10 +230,7 @@ def test_detectable_non_python_languages_are_classified_but_semantics_stay_not_r
         "sample.ts": "export function sample(): void {}",
         "sample.tsx": "export function sample(): void {}",
         "sample.dart": "void sample() {}",
-        "sample.bas": (
-            "Option Explicit\nPublic Function Sample() As Long\n"
-            "Sample = 0\nEnd Function\n"
-        ),
+        "sample.bas": ("Option Explicit\nPublic Function Sample() As Long\nSample = 0\nEnd Function\n"),
     }
     for filename, content in sources.items():
         (repository / filename).write_text(content, encoding="utf-8")
@@ -393,11 +385,7 @@ def test_ignored_directory_scope_is_explicit_and_blocks_repository_completeness(
             "verification_status": EvidenceStatus.NOT_RUN,
         }
     ]
-    obligation = next(
-        item
-        for item in _diagnostics(graph)
-        if item["source_location"]["path"] == "vendor"
-    )
+    obligation = next(item for item in _diagnostics(graph) if item["source_location"]["path"] == "vendor")
     assert obligation["code"] == "INVENTORY_ENTRY_NOT_READ"
     assert obligation["verification_status"] == EvidenceStatus.NOT_RUN
     assert all(node.get("path") != "vendor/custom.py" for node in _nodes(graph))

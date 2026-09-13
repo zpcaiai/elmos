@@ -8,7 +8,6 @@ and analyzes function purity and side-effects.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set, Tuple
 
 from .base import (
     AssignStmt,
@@ -23,12 +22,11 @@ from .base import (
     TryCatchFinallyStmt,
     UniversalExpr,
     UniversalMethod,
-    UniversalParam,
     UniversalStmt,
     VarDeclStmt,
     WhileStmt,
 )
-from .cfg import BasicBlock, ControlFlowGraph
+from .cfg import ControlFlowGraph
 
 
 @dataclass
@@ -38,7 +36,7 @@ class Definition:
     version: int
     block_id: int
     stmt_index: int
-    expr: Optional[UniversalExpr] = None
+    expr: UniversalExpr | None = None
 
 
 @dataclass
@@ -74,7 +72,7 @@ class DataFlowGraph:
         self.definitions: list[Definition] = []
         self.uses: list[Use] = []
         self.def_use_chains: dict[int, list[int]] = {}  # def_id -> list of use_id
-        self.use_def_chains: dict[int, int] = {}       # use_id -> def_id
+        self.use_def_chains: dict[int, int] = {}  # use_id -> def_id
         self.liveness: dict[int, LivenessInfo] = {}
         self.phi_nodes: dict[int, list[PhiNode]] = {b: [] for b in cfg.blocks}
         self._analyze_blocks()
@@ -95,7 +93,14 @@ class DataFlowGraph:
                     v_name = stmt.name
                     var_versions[v_name] = var_versions.get(v_name, 0) + 1
                     ver = var_versions[v_name]
-                    d = Definition(def_id=def_counter, var_name=v_name, version=ver, block_id=b_id, stmt_index=s_idx, expr=stmt.initial_value)
+                    d = Definition(
+                        def_id=def_counter,
+                        var_name=v_name,
+                        version=ver,
+                        block_id=b_id,
+                        stmt_index=s_idx,
+                        expr=stmt.initial_value,
+                    )
                     self.definitions.append(d)
                     self.def_use_chains[def_counter] = []
                     def_counter += 1
@@ -114,7 +119,14 @@ class DataFlowGraph:
                         v_name = stmt.target.name
                         var_versions[v_name] = var_versions.get(v_name, 0) + 1
                         ver = var_versions[v_name]
-                        d = Definition(def_id=def_counter, var_name=v_name, version=ver, block_id=b_id, stmt_index=s_idx, expr=stmt.value)
+                        d = Definition(
+                            def_id=def_counter,
+                            var_name=v_name,
+                            version=ver,
+                            block_id=b_id,
+                            stmt_index=s_idx,
+                            expr=stmt.value,
+                        )
                         self.definitions.append(d)
                         self.def_use_chains[def_counter] = []
                         def_counter += 1
@@ -144,7 +156,7 @@ class DataFlowGraph:
                         self.uses.append(u)
                         use_counter += 1
 
-    def _extract_uses_from_expr(self, expr: Optional[UniversalExpr]) -> list[str]:
+    def _extract_uses_from_expr(self, expr: UniversalExpr | None) -> list[str]:
         if not expr:
             return []
         uses: list[str] = []
@@ -222,7 +234,21 @@ class DataFlowGraph:
             elif isinstance(stmt, ExprStmt):
                 if isinstance(stmt.expr, MethodCallExpr):
                     m_name = (stmt.expr.method_name or "").lower()
-                    if any(io_kw in m_name for io_kw in ("print", "write", "send", "log", "save", "delete", "post", "put", "increment", "decrement")):
+                    if any(
+                        io_kw in m_name
+                        for io_kw in (
+                            "print",
+                            "write",
+                            "send",
+                            "log",
+                            "save",
+                            "delete",
+                            "post",
+                            "put",
+                            "increment",
+                            "decrement",
+                        )
+                    ):
                         impure_reasons.append(f"Performs I/O or mutating call: {stmt.expr.method_name}")
             elif isinstance(stmt, IfElseStmt):
                 for s in stmt.then_body:

@@ -81,7 +81,6 @@ _MAX_PIPELINE_JSON_BYTES = 64 * 1024 * 1024
 _ARTIFACT_CACHE_DIRECTORIES = frozenset({".build"})
 
 
-
 def _validate_handoff_targets(output: Path) -> None:
     for name in (
         ARTIFACT_NAME,
@@ -558,10 +557,7 @@ def _uniform_discovery_not_run_diagnostic(discovery: dict[str, Any]) -> str | No
         or len(inventories) != len(results)
     ):
         return None
-    if any(
-        not isinstance(result, dict) or result.get("verdict") != "NOT_RUN"
-        for result in results
-    ):
+    if any(not isinstance(result, dict) or result.get("verdict") != "NOT_RUN" for result in results):
         return None
 
     diagnostics: set[str] = set()
@@ -569,12 +565,7 @@ def _uniform_discovery_not_run_diagnostic(discovery: dict[str, Any]) -> str | No
         if not isinstance(inventory, dict) or inventory.get("enumeration_status") != "NOT_RUN":
             return None
         observed = inventory.get("diagnostics")
-        if (
-            not isinstance(observed, list)
-            or len(observed) != 1
-            or not isinstance(observed[0], str)
-            or not observed[0]
-        ):
+        if not isinstance(observed, list) or len(observed) != 1 or not isinstance(observed[0], str) or not observed[0]:
             return None
         diagnostic = observed[0]
         if re.fullmatch(r"[A-Z][A-Z0-9_]*(?::[A-Za-z0-9_.:/<>=+,\-]+)*", diagnostic) is None:
@@ -723,16 +714,12 @@ def _neutral_project_snapshot(graph: dict[str, object]) -> str:
     for entry in excluded:
         if not isinstance(entry, dict):
             raise RouteError("PROJECT_GRAPH_NEUTRAL_SNAPSHOT_INVALID")
-        excluded_identity.append(
-            [entry.get("path"), entry.get("reason"), entry.get("verification_status")]
-        )
+        excluded_identity.append([entry.get("path"), entry.get("reason"), entry.get("verification_status")])
     payload = {
         "files": sorted(files, key=lambda item: str(item[0])),
         "excluded_entries": sorted(excluded_identity, key=lambda item: str(item[0])),
     }
-    return hashlib.sha256(
-        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    ).hexdigest()
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
 
 
 def _write_and_verify_project_graph(output: Path, graph: dict[str, object]) -> dict[str, Any]:
@@ -1099,9 +1086,7 @@ def _run_repository_pipeline_attempt(
                     build_status = "PASSED"
                     runtime_status = _assembly_failure_status(error)
                     try:
-                        assembly = json.loads(
-                            (assembly_staging / "assembly-manifest.json").read_text(encoding="utf-8")
-                        )
+                        assembly = json.loads((assembly_staging / "assembly-manifest.json").read_text(encoding="utf-8"))
                     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as manifest_error:
                         raise RouteError("PIPELINE_ASSEMBLY_MANIFEST_UNREADABLE") from manifest_error
                 else:
@@ -1244,9 +1229,7 @@ def _run_repository_pipeline_attempt(
                     "success_rate_basis_points": functional_conversion["success_rate_basis_points"],
                     "measurement_status": functional_conversion["measurement_status"],
                     "denominator_complete": functional_conversion["denominator_complete"],
-                    "project_success_rate_display": functional_conversion[
-                        "project_success_rate_display"
-                    ],
+                    "project_success_rate_display": functional_conversion["project_success_rate_display"],
                     "code_artifact_ready": True,
                     "cases_manifest_sha256": cases_manifest_sha256,
                 },
@@ -1333,9 +1316,7 @@ def _run_repository_pipeline_attempt(
         ),
         "build_verification": {
             "status": build_status,
-            "commands": (assembly.get("build_verification", {}) or {}).get("commands", [])
-            if assembly
-            else [],
+            "commands": (assembly.get("build_verification", {}) or {}).get("commands", []) if assembly else [],
             "toolchain": {
                 "language": (assembly.get("build_verification", {}) or {}).get("toolchain_language")
                 if assembly
@@ -1348,9 +1329,7 @@ def _run_repository_pipeline_attempt(
         },
         "runtime_verification": {
             "status": runtime_status,
-            "commands": (assembly.get("runtime_verification", {}) or {}).get("commands", [])
-            if assembly
-            else [],
+            "commands": (assembly.get("runtime_verification", {}) or {}).get("commands", []) if assembly else [],
             "toolchain": {
                 "language": (assembly.get("runtime_verification", {}) or {}).get("toolchain_language")
                 if assembly
@@ -1383,8 +1362,6 @@ def _run_repository_pipeline_attempt(
     return report
 
 
-
-
 _BEHAVIOR_COVERAGE_STATUSES = ("FAILED", "NOT_RUN", "PASSED", "UNKNOWN")
 _BATCH_TO_BEHAVIOR_STATUS = {
     "FAILED": "FAILED",
@@ -1392,6 +1369,8 @@ _BATCH_TO_BEHAVIOR_STATUS = {
     "SKIPPED_NO_CASES": "NOT_RUN",
     "SKIPPED_NOT_READY": "NOT_RUN",
 }
+
+
 def _behavior_coverage_summary(
     discovery: dict[str, Any],
     batch: dict[str, Any],
@@ -1585,10 +1564,7 @@ def run_repository_pipeline(
     therefore be refused before anything is moved, or a typo would destroy a
     perfectly good previous result.
     """
-    if (
-        source_language not in SUPPORTED_LANGUAGES
-        or target_language not in SUPPORTED_LANGUAGES
-    ):
+    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
         raise RouteError("UNSUPPORTED_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")

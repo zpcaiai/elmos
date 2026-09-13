@@ -75,8 +75,7 @@ _BUILD_COMMANDS: dict[Language, list[str]] = {
     "cpp": ["cmake -S . -B build", "cmake --build build --config Release"],
     "objc": ["cmake -S . -B build", "cmake --build build --config Release"],
     "swift": ["swift build -c release --disable-sandbox"],
-    "php": ["composer install --no-dev --optimize-autoloader",
-            "find src -name '*.php' -type f -exec php -l {} \\;"],
+    "php": ["composer install --no-dev --optimize-autoloader", "find src -name '*.php' -type f -exec php -l {} \\;"],
     "flutter": [
         "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --suppress-analytics analyze --format=json --fatal-infos --fatal-warnings --packages=.dart_tool/package_config.json --sdk-path=$FLUTTER_ROOT/bin/cache/dart-sdk lib",  # noqa: E501 - 钉死的命令行原文，拆行会改变要比对的字符串
         "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --suppress-analytics compile kernel --packages=.dart_tool/package_config.json --verbosity=error --link-platform --no-embed-sources --output=build/elmos_repository.dill lib/main.dart",  # noqa: E501 - 钉死的命令行原文，拆行会改变要比对的字符串
@@ -84,7 +83,7 @@ _BUILD_COMMANDS: dict[Language, list[str]] = {
     ],
     "vb6": ["VB6.EXE /Make elmos-migrated.vbp /Out vb6-build.log"],
     "vcpp6": [
-        "$sources = Get-Content vcpp6-sources.rsp; foreach ($quoted in $sources) { $source = $quoted.Trim('\"'); $unit = Split-Path (Split-Path $source -Parent) -Leaf; & CL.EXE /nologo /GX /W4 /WX /MD /c $source \"/Fobuild/$unit.obj\"; if ($LASTEXITCODE) { exit $LASTEXITCODE } }",  # noqa: E501 - exact PowerShell guidance; splitting changes the command
+        '$sources = Get-Content vcpp6-sources.rsp; foreach ($quoted in $sources) { $source = $quoted.Trim(\'"\'); $unit = Split-Path (Split-Path $source -Parent) -Leaf; & CL.EXE /nologo /GX /W4 /WX /MD /c $source "/Fobuild/$unit.obj"; if ($LASTEXITCODE) { exit $LASTEXITCODE } }',  # noqa: E501 - exact PowerShell guidance; splitting changes the command
         "& LINK.EXE /NOLOGO /DLL /OUT:build/elmos-migrated.dll build\\*.obj",
     ],
 }

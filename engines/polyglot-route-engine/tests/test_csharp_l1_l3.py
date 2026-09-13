@@ -5,6 +5,7 @@ Verifies end-to-end extraction of:
 - L2: while loops with break/continue
 - L3: for loops with range/step
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -16,9 +17,7 @@ from elmos_polyglot_route.native import analyze
 def _source(tmp_path: Path, code: str) -> Path:
     p = tmp_path / "Program.cs"
     p.write_text(
-        "public static class Program {\n"
-        f"    {code}\n"
-        "}\n",
+        f"public static class Program {{\n    {code}\n}}\n",
         encoding="utf-8",
     )
     return p

@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Dict, Any
-
 
 class SystemShimRegistry:
     """Maps system-level string, numeric, and memory constructs across C++, Rust, ObjC, Swift, and GC."""
 
-    TYPE_MAPPINGS: Dict[str, Dict[str, str]] = {
+    TYPE_MAPPINGS: dict[str, dict[str, str]] = {
         "string": {
             "cpp": "std::string",
             "rust": "String",
@@ -47,7 +45,7 @@ class SystemShimRegistry:
             "typescript": "{T}",
             "vb6": "{T}",
             "vcpp6": "{T}*",
-        }
+        },
     }
 
     @classmethod

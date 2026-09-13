@@ -4,6 +4,7 @@ The report counts declared functional obligations, never source files.  It is
 written as content-addressed JSON and Chinese Markdown, with deterministic
 shards when a complete report would exceed the bounded single-file envelope.
 """
+
 from __future__ import annotations
 
 import ast
@@ -542,9 +543,7 @@ def _block_mapping_precision(block: dict[str, Any] | None) -> float:
     return 0.0
 
 
-def _mapping_confidence(
-    source_block: dict[str, Any], target_block: dict[str, Any] | None
-) -> float:
+def _mapping_confidence(source_block: dict[str, Any], target_block: dict[str, Any] | None) -> float:
     if target_block is None:
         return 0.0
     return min(_block_mapping_precision(source_block), _block_mapping_precision(target_block))
@@ -725,9 +724,7 @@ def build_conversion_report(
                 selected_consumed = True
             rejection_list = rejections.get(name, [])
             rejection = rejection_list.pop(0) if rejection_list else None
-            status, failure = _callable_outcome(
-                result, outcome, name, selected, rejection, build_status, build_reason
-            )
+            status, failure = _callable_outcome(result, outcome, name, selected, rejection, build_status, build_reason)
             source_block = _source_block(
                 obligation_id,
                 source_path,
@@ -776,9 +773,7 @@ def build_conversion_report(
             index = len(candidates) + 1
             obligation_id = f"{unit_id}:FO-{index:03d}"
             reason = (
-                result.get("candidate_enumeration_reason")
-                or result.get("reason")
-                or "FUNCTION_INVENTORY_INCOMPLETE"
+                result.get("candidate_enumeration_reason") or result.get("reason") or "FUNCTION_INVENTORY_INCOMPLETE"
             )
             source_block = _source_block(
                 obligation_id,
@@ -819,12 +814,7 @@ def build_conversion_report(
     measurement_status = "MEASURED" if denominator_complete else "INDETERMINATE"
     project_display = display if denominator_complete else "0.00%–100.00% (INDETERMINATE)"
     runtime_gate_passed = runtime_status is None or runtime_status == "PASSED"
-    if (
-        numerator == len(functions)
-        and denominator_complete
-        and build_status == "PASSED"
-        and runtime_gate_passed
-    ):
+    if numerator == len(functions) and denominator_complete and build_status == "PASSED" and runtime_gate_passed:
         status = "COMPLETE"
     elif numerator == 0:
         status = "BLOCKED"
@@ -853,9 +843,7 @@ def build_conversion_report(
     evidence_boundary: dict[str, Any] = {
         "local_target_build": build_status,
         "target_behavior_oracle": "PASSED_PER_VERIFIED_FUNCTION" if numerator > 0 else "NOT_RUN",
-        "source_target_declared_case_equivalence": (
-            "PASSED_PER_VERIFIED_FUNCTION" if numerator > 0 else "NOT_RUN"
-        ),
+        "source_target_declared_case_equivalence": ("PASSED_PER_VERIFIED_FUNCTION" if numerator > 0 else "NOT_RUN"),
         "source_target_runtime_equivalence": "NOT_RUN",
         "independent_verification": "NOT_RUN",
         "external_verification": "NOT_RUN",
@@ -1146,8 +1134,7 @@ def validate_conversion_report(report: dict[str, Any]) -> None:
             or mapping.get("freshness") != "FRESH"
             or mapping.get("confidence") != _mapping_confidence(source_blocks[0], target_block)
             or mapping.get("source_block_ids") != [source_blocks[0]["block_id"]]
-            or mapping.get("target_block_ids")
-            != ([target_block["block_id"]] if target_block is not None else [])
+            or mapping.get("target_block_ids") != ([target_block["block_id"]] if target_block is not None else [])
             or mapping.get("provenance_refs") != [evidence_refs[0]]
         ):
             raise RouteError("FUNCTION_REPORT_MAPPING_INVALID")
@@ -1183,9 +1170,7 @@ def validate_conversion_report(report: dict[str, Any]) -> None:
         raise RouteError("FUNCTION_REPORT_BLOCKERS_INVALID")
     evidence_boundary = report.get("evidence_boundary")
     assembled_runtime = (
-        evidence_boundary.get("assembled_project_runtime")
-        if isinstance(evidence_boundary, dict)
-        else None
+        evidence_boundary.get("assembled_project_runtime") if isinstance(evidence_boundary, dict) else None
     )
     if assembled_runtime is not None and assembled_runtime not in {"PASSED", "FAILED", "NOT_RUN"}:
         raise RouteError("FUNCTION_REPORT_RUNTIME_STATUS_INVALID")
@@ -1273,9 +1258,7 @@ def _failure_summaries(report: dict[str, Any]) -> list[dict[str, Any]]:
                 "status": item["status"],
                 "failure_code": failure["reason_code"],
                 "failure_reason": _bounded(failure["description"], 1_200),
-                "improvement_actions": [
-                    _bounded(action["method"], 600) for action in item["improvement_actions"]
-                ],
+                "improvement_actions": [_bounded(action["method"], 600) for action in item["improvement_actions"]],
             }
         )
     return failures[:MAX_FAILURE_SUMMARIES]
@@ -1309,12 +1292,8 @@ def _summary(
         "reported_obligation_count": metric["reported_obligation_count"],
         "unknown_scope_count": metric["unknown_scope_count"],
         "unreported_obligation_count": metric["unreported_obligation_count"],
-        "project_success_rate_lower_bound_basis_points": metric[
-            "project_success_rate_lower_bound_basis_points"
-        ],
-        "project_success_rate_upper_bound_basis_points": metric[
-            "project_success_rate_upper_bound_basis_points"
-        ],
+        "project_success_rate_lower_bound_basis_points": metric["project_success_rate_lower_bound_basis_points"],
+        "project_success_rate_upper_bound_basis_points": metric["project_success_rate_upper_bound_basis_points"],
         "project_success_rate_display": metric["project_success_rate_display"],
         "verified_count": metric["numerator"],
         "failed_count": failed_count,

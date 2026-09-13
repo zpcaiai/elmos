@@ -97,11 +97,7 @@ def _pe_machine(content: bytes, code: str) -> int:
 
 def _required_text(manifest: Mapping[str, object], key: str) -> str:
     value = manifest.get(key)
-    if (
-        not isinstance(value, str)
-        or not value.strip()
-        or any(ord(character) < 32 for character in value)
-    ):
+    if not isinstance(value, str) or not value.strip() or any(ord(character) < 32 for character in value):
         raise RouteError(f"VCPP6_TOOLCHAIN_MANIFEST_FIELD_INVALID:{key}")
     return value.strip()
 
@@ -148,14 +144,11 @@ def resolve_vcpp6_toolchain(
         "x86_64",
     }:
         raise RouteError(
-            "EXACT_TOOLCHAIN_PLATFORM_MISMATCH:vcpp6:expected=Windows/x86-compatible:"
-            f"observed={system}/{machine}"
+            f"EXACT_TOOLCHAIN_PLATFORM_MISMATCH:vcpp6:expected=Windows/x86-compatible:observed={system}/{machine}"
         )
 
     raw_manifest = values.get("ELMOS_VCPP6_TOOLCHAIN_MANIFEST", "").strip()
-    expected_manifest_sha256 = values.get(
-        "ELMOS_VCPP6_TOOLCHAIN_MANIFEST_SHA256", ""
-    ).strip().lower()
+    expected_manifest_sha256 = values.get("ELMOS_VCPP6_TOOLCHAIN_MANIFEST_SHA256", "").strip().lower()
     if not raw_manifest or _SHA256.fullmatch(expected_manifest_sha256) is None:
         raise RouteError("VCPP6_VENDOR_COMPILER_RUNTIME_REQUIRED")
     manifest_path = Path(raw_manifest)
@@ -203,19 +196,10 @@ def resolve_vcpp6_toolchain(
     }
     if any(not path.is_absolute() for path in paths.values()) or len(set(paths.values())) != 3:
         raise RouteError("VCPP6_TOOLCHAIN_PATH_INVALID")
-    contents = {
-        name: _stable_file(path, f"VCPP6_{name.upper()}_UNSAFE_OR_MISSING")
-        for name, path in paths.items()
-    }
-    digests = {
-        name: _required_text(manifest, f"{name}_sha256").lower()
-        for name in paths
-    }
+    contents = {name: _stable_file(path, f"VCPP6_{name.upper()}_UNSAFE_OR_MISSING") for name, path in paths.items()}
+    digests = {name: _required_text(manifest, f"{name}_sha256").lower() for name in paths}
     for name in paths:
-        if (
-            _SHA256.fullmatch(digests[name]) is None
-            or hashlib.sha256(contents[name]).hexdigest() != digests[name]
-        ):
+        if _SHA256.fullmatch(digests[name]) is None or hashlib.sha256(contents[name]).hexdigest() != digests[name]:
             raise RouteError(f"VCPP6_{name.upper()}_DIGEST_MISMATCH")
         if _pe_machine(contents[name], f"VCPP6_{name.upper()}_PE_IDENTITY_INVALID") != 0x014C:
             raise RouteError(f"VCPP6_{name.upper()}_ARCHITECTURE_MISMATCH")

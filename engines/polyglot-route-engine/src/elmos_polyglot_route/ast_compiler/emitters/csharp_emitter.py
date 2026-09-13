@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ..ir import UniversalClass, UniversalField, UniversalMethod, UniversalModule, UniversalParam, UniversalType
+from ..ir import UniversalType
 from .base import BaseEmitter
 
 
@@ -13,10 +13,21 @@ class CSharpEmitter(BaseEmitter):
     def format_type(self, t: UniversalType) -> str:
         if t.kind == "primitive":
             m = {
-                "i8": "sbyte", "i16": "short", "i32": "int", "i64": "long",
-                "u8": "byte", "u16": "ushort", "u32": "uint", "u64": "ulong",
-                "f32": "float", "f64": "double", "bool": "bool",
-                "char": "char", "string": "string", "void": "void", "any": "object"
+                "i8": "sbyte",
+                "i16": "short",
+                "i32": "int",
+                "i64": "long",
+                "u8": "byte",
+                "u16": "ushort",
+                "u32": "uint",
+                "u64": "ulong",
+                "f32": "float",
+                "f64": "double",
+                "bool": "bool",
+                "char": "char",
+                "string": "string",
+                "void": "void",
+                "any": "object",
             }
             return m.get(t.name, "object")
         elif t.kind == "list":
@@ -27,4 +38,3 @@ class CSharpEmitter(BaseEmitter):
             v = self.format_type(t.value_type or UniversalType.string_type())
             return f"System.Collections.Generic.Dictionary<{k}, {v}>"
         return t.name or "object"
-

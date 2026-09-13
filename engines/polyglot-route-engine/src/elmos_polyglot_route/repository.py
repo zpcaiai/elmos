@@ -217,10 +217,7 @@ def plan_repository(
     )
     if language_lifecycle is None:
         raise RouteError("UNSUPPORTED_LANGUAGE")
-    if (
-        language_lifecycle == REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
-        and not allow_deprecated_replay
-    ):
+    if language_lifecycle == REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY and not allow_deprecated_replay:
         raise RouteError("UNSUPPORTED_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
@@ -288,19 +285,12 @@ def plan_repository(
                 "lines": content.count(b"\n") + (1 if content and not content.endswith(b"\n") else 0),
             }
             if language == "javascript":
-                if (
-                    language_lifecycle
-                    == REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
-                ):
+                if language_lifecycle == REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY:
                     descriptor = javascript_esm_descriptor(path, root)
-                    entry["language_lifecycle"] = (
-                        REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
-                    )
+                    entry["language_lifecycle"] = REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
                     if descriptor is not None:
                         entry["javascript_esm_descriptor"] = descriptor
-                        javascript_esm_descriptors.append(
-                            {"source_path": relative, **descriptor}
-                        )
+                        javascript_esm_descriptors.append({"source_path": relative, **descriptor})
                 else:
                     # JavaScript remains visible and content-addressed in an
                     # active mixed repository, but its retired ESM/CJS route
@@ -339,12 +329,8 @@ def plan_repository(
         ]
         + (
             [
-                "react-package:"
-                f"{react_descriptor['package']['sha256']}:"
-                f"{react_descriptor['package']['bytes']}",
-                "react-tsconfig:"
-                f"{react_descriptor['tsconfig']['sha256']}:"
-                f"{react_descriptor['tsconfig']['bytes']}",
+                f"react-package:{react_descriptor['package']['sha256']}:{react_descriptor['package']['bytes']}",
+                f"react-tsconfig:{react_descriptor['tsconfig']['sha256']}:{react_descriptor['tsconfig']['bytes']}",
             ]
             if react_descriptor is not None
             else []

@@ -467,9 +467,7 @@ def test_csharp_analyzer_cross_process_cache_refuses_a_tampered_entry(
         # The first call missed and therefore built into a temporary directory,
         # which cleanup has now removed; the copy that matters is the published
         # one, so find it in this test's isolated cache.
-        cached = sorted(
-            (tmp_path / "analyzer-binary-cache").rglob(native._CSHARP_ANALYZER_ENTRYPOINT)
-        )
+        cached = sorted((tmp_path / "analyzer-binary-cache").rglob(native._CSHARP_ANALYZER_ENTRYPOINT))
         assert len(cached) == 1, f"expected exactly one published analyzer, found {cached}"
         target = cached[0]
         honest = target.read_bytes()

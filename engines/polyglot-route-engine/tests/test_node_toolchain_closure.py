@@ -61,9 +61,7 @@ def test_node26_profile_registry_is_complete_and_includes_the_hosted_image() -> 
         "process_versions_sha256": toolchains._NODE26_PROCESS_VERSIONS_SHA256,
     }
     assert all(
-        toolchains.node_closure_profile_id(str(profile["closure_sha256"]))
-        == profile["profile"]
-        for profile in profiles
+        toolchains.node_closure_profile_id(str(profile["closure_sha256"])) == profile["profile"] for profile in profiles
     )
 
 
@@ -98,9 +96,7 @@ def test_node_runtime_identity_rejects_process_from_another_complete_profile(
     hosted = next(profile for profile in profiles if profile["profile"] == profile_id)
     hosted_process = '{"node":"26.0.0","profile":"hosted-only"}'
     hosted["process_versions"] = hosted_process
-    hosted["process_versions_sha256"] = hashlib.sha256(
-        hosted_process.encode("ascii")
-    ).hexdigest()
+    hosted["process_versions_sha256"] = hashlib.sha256(hosted_process.encode("ascii")).hexdigest()
     monkeypatch.setattr(toolchains, "_EXPECTED_NODE_CLOSURE_PROFILES", profiles)
     legacy = toolchains._EXPECTED_NODE_CLOSURE_PROFILES[0]
     observed_identity = json.dumps(
@@ -340,8 +336,7 @@ def test_typescript_closure_identity_is_relocatable_after_live_binding(
                 "kind": "elmos.typescript-5.9.2-full-stdlib-compiler-closure",
                 "package_root": toolchains._typescript_package_root_binding(),
                 "directories": [
-                    toolchains._typescript_package_directory_binding(relative)
-                    for relative in ("bin", "lib")
+                    toolchains._typescript_package_directory_binding(relative) for relative in ("bin", "lib")
                 ],
                 "files": [
                     toolchains._typescript_file_binding(
@@ -378,10 +373,7 @@ def test_typescript_closure_identity_is_relocatable_after_live_binding(
             "nlink": toolchains._TYPESCRIPT_IDENTITY_CANONICAL_PACKAGE_NLINK,
         }
         assert [item["nlink"] for item in directories] == [3, 107]
-        assert files[0]["resolved_path"] == str(
-            toolchains._TYPESCRIPT_IDENTITY_CANONICAL_ROOT
-            / "lib/lib.example.d.ts"
-        )
+        assert files[0]["resolved_path"] == str(toolchains._TYPESCRIPT_IDENTITY_CANONICAL_ROOT / "lib/lib.example.d.ts")
     finally:
         for root in roots:
             for path in (root / "bin", root / "lib"):
@@ -412,10 +404,7 @@ def test_typescript_canonical_identity_rejects_same_size_content_tampering(
         "schema_version": 2,
         "kind": "elmos.typescript-5.9.2-full-stdlib-compiler-closure",
         "package_root": toolchains._typescript_package_root_binding(),
-        "directories": [
-            toolchains._typescript_package_directory_binding(relative)
-            for relative in ("bin", "lib")
-        ],
+        "directories": [toolchains._typescript_package_directory_binding(relative) for relative in ("bin", "lib")],
         "files": [
             toolchains._typescript_file_binding(
                 declaration,
@@ -505,9 +494,7 @@ def test_node_closure_binds_every_component_edge_and_explicit_system_boundary(
     assert isinstance(system_edges, list)
 
     expected_profile = next(
-        profile
-        for profile in toolchains._EXPECTED_NODE_CLOSURE_PROFILES
-        if profile["profile"] == closure_profile
+        profile for profile in toolchains._EXPECTED_NODE_CLOSURE_PROFILES if profile["profile"] == closure_profile
     )
     assert node_closure["sha256"] == expected_profile["closure_sha256"]
     assert node_closure["topology_sha256"] == expected_profile["topology_sha256"]
@@ -594,9 +581,7 @@ def test_node_closure_rejects_libada_content_drift_even_with_recomputed_identity
     components = manifest["components"]
     assert isinstance(components, list)
     libada = next(
-        component
-        for component in components
-        if component["resolved_path"] == str(toolchains._EXPECTED_NODE_LIBADA)
+        component for component in components if component["resolved_path"] == str(toolchains._EXPECTED_NODE_LIBADA)
     )
     libada["sha256"] = "4" * 64
     forged = toolchains._node_closure_identity(manifest)
@@ -633,8 +618,7 @@ def test_node_closure_accepts_each_complete_legacy_profile(
 
 def test_ci_installer_preserves_the_legacy_libada_profile_matrix() -> None:
     installer = (
-        Path(__file__).resolve().parents[3]
-        / "scripts/toolchains/install_polyglot_route_ci_toolchains.sh"
+        Path(__file__).resolve().parents[3] / "scripts/toolchains/install_polyglot_route_ci_toolchains.sh"
     ).read_text(encoding="utf-8")
     for profile in toolchains._EXPECTED_NODE_CLOSURE_PROFILES:
         if not str(profile["qualification_host"]).startswith("legacy-"):
@@ -646,18 +630,13 @@ def test_ci_installer_preserves_the_legacy_libada_profile_matrix() -> None:
 
 def test_ci_installer_pins_every_node_formula_for_each_host_profile() -> None:
     installer = (
-        Path(__file__).resolve().parents[3]
-        / "scripts/toolchains/install_polyglot_route_ci_toolchains.sh"
+        Path(__file__).resolve().parents[3] / "scripts/toolchains/install_polyglot_route_ci_toolchains.sh"
     ).read_text(encoding="utf-8")
     closure_body = installer.split("install_pinned_node26_closure() {", 1)[1].split(
         "\npreflight_exact_route_toolchain() {", 1
     )[0]
     formula_table = closure_body.rsplit("done <<EOF", 1)[1].split("\nEOF", 1)[0]
-    observed = {
-        tuple(line.split("|", 1))
-        for line in formula_table.splitlines()
-        if "|" in line
-    }
+    observed = {tuple(line.split("|", 1)) for line in formula_table.splitlines() if "|" in line}
     expected = {
         ("fmt", "12.2.0"),
         ("ca-certificates", "2026-08-13"),
@@ -687,21 +666,13 @@ def test_ci_installer_pins_every_node_formula_for_each_host_profile() -> None:
     assert observed == expected
     assert "HOMEBREW_NO_INSTALL_UPGRADE=1" in installer
     assert "brew install \\\n    brotli" not in closure_body
-    assert (
-        'HOST_PROFILE="${ImageVersion:-}:$(sw_vers -productVersion):'
-        '$(sw_vers -buildVersion)"'
-        in installer
-    )
+    assert 'HOST_PROFILE="${ImageVersion:-}:$(sw_vers -productVersion):$(sw_vers -buildVersion)"' in installer
     assert '"20260728.0273.1:26.5.2:25F84"' in installer
     assert '"20260831.0337.3:26.6.2:25G83"' in installer
     assert '"20260907.0351.1:26.6.2:25G83"' in installer
 
-    frontend = installer.split('if [[ "${CI_PROFILE}" == "frontend-formal" ]]', 1)[
-        1
-    ].split("\n  exit 0\nfi", 1)[0]
-    assert frontend.index("preflight_exact_route_toolchain javascript") < frontend.index(
-        '>>"${GITHUB_PATH}"'
-    )
+    frontend = installer.split('if [[ "${CI_PROFILE}" == "frontend-formal" ]]', 1)[1].split("\n  exit 0\nfi", 1)[0]
+    assert frontend.index("preflight_exact_route_toolchain javascript") < frontend.index('>>"${GITHUB_PATH}"')
     full_preflight = installer.rindex("preflight_exact_route_toolchain javascript")
     environment_export = installer.index('} >>"${GITHUB_ENV}"', full_preflight)
     assert full_preflight < environment_export
@@ -831,11 +802,7 @@ def test_typescript_closure_rejects_missing_or_tampered_stdlib_with_recomputed_i
     assert isinstance(manifest, dict)
     files = manifest["files"]
     assert isinstance(files, list)
-    selected = next(
-        item
-        for item in files
-        if item["role"] == "standard-library:lib.es2022.full.d.ts"
-    )
+    selected = next(item for item in files if item["role"] == "standard-library:lib.es2022.full.d.ts")
     if mutation == "missing":
         files.remove(selected)
     else:
