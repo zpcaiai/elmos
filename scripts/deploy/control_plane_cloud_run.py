@@ -456,9 +456,69 @@ def reactor_module_paths(revision: str) -> tuple[str, ...]:
     return values
 
 
+def normalize_reactor_resource_path(module: str, value: str) -> str:
+    if not value or "${" in value or "\\" in value:
+        raise DeploymentError("Maven reactor contains an unsafe resource path")
+    raw = PurePosixPath(value)
+    if raw.is_absolute():
+        raise DeploymentError("Maven reactor contains an unsafe resource path")
+    parts = list(PurePosixPath(module).parts)
+    for part in raw.parts:
+        if part in {"", "."}:
+            continue
+        if part == "..":
+            if not parts:
+                raise DeploymentError("Maven reactor resource escapes the repository")
+            parts.pop()
+        else:
+            parts.append(part)
+    if not parts or parts[0] not in {
+        "apps", "contracts", "engines", "modules", "recipes", "skills"
+    }:
+        raise DeploymentError("Maven reactor contains an unsafe resource path")
+    return PurePosixPath(*parts).as_posix()
+
+
+def reactor_resource_paths(revision: str, modules: Sequence[str]) -> tuple[str, ...]:
+    resources: set[str] = set()
+    for module in modules:
+        completed = subprocess.run(
+            ["git", "show", f"{revision}:{module}/pom.xml"],
+            cwd=REPOSITORY_ROOT,
+            check=True,
+            stdout=subprocess.PIPE,
+        )
+        try:
+            root = ET.fromstring(completed.stdout)
+        except ET.ParseError as exc:
+            raise DeploymentError(f"Maven reactor POM is invalid: {module}") from exc
+        namespace = root.tag.removesuffix("project")
+        directories = root.findall(
+            f"{namespace}build/{namespace}resources/"
+            f"{namespace}resource/{namespace}directory"
+        )
+        module_parts = PurePosixPath(module).parts
+        for directory in directories:
+            path = normalize_reactor_resource_path(module, (directory.text or "").strip())
+            if PurePosixPath(path).parts[: len(module_parts)] == module_parts:
+                continue
+            exists = subprocess.run(
+                ["git", "cat-file", "-e", f"{revision}:{path}"],
+                cwd=REPOSITORY_ROOT,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+            )
+            if exists.returncode != 0:
+                raise DeploymentError(f"Maven reactor resource is missing: {path}")
+            resources.add(path)
+    return tuple(sorted(resources))
+
+
 @contextlib.contextmanager
 def exact_maven_build_context(revision: str) -> Iterator[Path]:
     modules = reactor_module_paths(revision)
+    resources = reactor_resource_paths(revision, modules)
     with tempfile.TemporaryDirectory(prefix="elmos-control-plane-context-") as temporary_raw:
         temporary = Path(temporary_raw)
         context = temporary / "context"
@@ -467,7 +527,7 @@ def exact_maven_build_context(revision: str) -> Iterator[Path]:
         subprocess.run(
             [
                 "git", "archive", "--format=tar", f"--output={archive}",
-                revision, "--", "pom.xml", *modules,
+                revision, "--", "pom.xml", *modules, *resources,
             ],
             cwd=REPOSITORY_ROOT,
             check=True,

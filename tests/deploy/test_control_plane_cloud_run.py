@@ -184,11 +184,28 @@ def test_exact_maven_build_context_excludes_non_reactor_payloads() -> None:
         ["git", "rev-parse", "HEAD"], cwd=ROOT, check=True, capture_output=True, text=True
     ).stdout.strip()
     modules = MODULE.reactor_module_paths(revision)
+    resources = MODULE.reactor_resource_paths(revision, modules)
     assert "apps/control-plane" in modules
     assert all(path.split("/", 1)[0] in {"apps", "contracts", "engines", "modules", "recipes"} for path in modules)
+    assert resources == (
+        "contracts/pricing-catalog-schema",
+        "skills/elmos-batch105-108/compiled-contracts",
+    )
     with MODULE.exact_maven_build_context(revision) as context:
         assert (context / "pom.xml").is_file()
         assert (context / "apps/control-plane/Dockerfile").is_file()
+        assert (context / "contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json").is_file()
+        assert (context / "skills/elmos-batch105-108/compiled-contracts/B105-S01.compiled.json").is_file()
         assert not (context / "routes").exists()
-        assert not (context / "skills").exists()
+        assert not (context / "skills/subskills").exists()
         assert not (context / "client-packs").exists()
+
+
+def test_maven_resource_path_normalization_fails_closed() -> None:
+    assert MODULE.normalize_reactor_resource_path(
+        "modules/example", "../../skills/example/compiled-contracts"
+    ) == "skills/example/compiled-contracts"
+    with pytest.raises(MODULE.DeploymentError, match="escapes the repository"):
+        MODULE.normalize_reactor_resource_path("modules/example", "../../../outside")
+    with pytest.raises(MODULE.DeploymentError, match="unsafe resource path"):
+        MODULE.normalize_reactor_resource_path("modules/example", "${repository.root}/secret")
