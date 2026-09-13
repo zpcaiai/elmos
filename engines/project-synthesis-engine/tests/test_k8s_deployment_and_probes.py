@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import http.server
+import subprocess
 import threading
 
 import yaml
@@ -73,6 +74,37 @@ def test_k8s_offline_validation_rejects_incomplete_resources(monkeypatch):
 
     assert valid is False
     assert "metadata.name" in msg
+
+
+def test_k8s_client_validation_does_not_contact_stale_cluster(monkeypatch):
+    monkeypatch.setattr(LocalK8sDetector, "detect_cluster", lambda: (True, "stale-context"))
+    monkeypatch.setattr("shutil.which", lambda _name: "/usr/local/bin/kubectl")
+    observed: list[list[str]] = []
+
+    def run(command, **_kwargs):
+        observed.append(command)
+        return subprocess.CompletedProcess(command, 0, "validated\n", "")
+
+    monkeypatch.setattr("subprocess.run", run)
+    controller = K8sDeploymentController(kubectl_bin="/usr/local/bin/kubectl")
+    valid, msg = controller.dry_run_validate(
+        generate_enterprise_k8s_manifests(app_name="payment-service")
+    )
+
+    assert valid is True
+    assert msg == "validated\n"
+    assert observed == [
+        [
+            "/usr/local/bin/kubectl",
+            "create",
+            "--dry-run=client",
+            "--validate=false",
+            "-f",
+            "-",
+            "-o",
+            "yaml",
+        ]
+    ]
 
 
 class _MockHealthHandler(http.server.BaseHTTPRequestHandler):
