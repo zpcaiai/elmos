@@ -8,17 +8,17 @@
   "owner": "elmos-security-owner",
   "source": {
     "repository": "zpcaiai/elmos",
-    "generatedAt": "2026-09-13T06:39:21.928381Z",
-    "alertSnapshotDigest": "sha256:4e2cefbda71261d8454d4e5aca7a853ac68b0883bd2e383233444a05c0403aee",
+    "generatedAt": "2026-09-13T10:39:57.561047Z",
+    "alertSnapshotDigest": "sha256:566d34711ddc7b1f8c0ce2d421300ee2e686cbd5e141a78a01a4f52449aa42de",
     "registry": {
       "path": "release-control/dependencies/dependabot-exception-registry.json",
-      "sha256": "sha256:df78a12f1569d233765058ff44ae6c3989c22b76ecc25c9ef0ac746ae85e62bb",
-      "bytes": 11846
+      "sha256": "sha256:116327681407b693298014dcb2febfbdffb07841005d93e4a84330751f0d6be7",
+      "bytes": 17768
     }
   },
   "analyzer": {
     "path": "scripts/dependabot_governance.py",
-    "sha256": "sha256:73d30db35530f77d83f688164ea39f726e356a069933848dee396418a2ba4922"
+    "sha256": "sha256:82d6f835ae9c7d9b223d49c4c80147e0aac040b06c75d98c595c1e16c7399c74"
   },
   "externalOperationExecuted": true,
   "independentVerification": "NOT_RUN",
