@@ -41,6 +41,7 @@ from route_runtime_metadata import (  # noqa: E402
     exact_toolchain_contract_sha256,
     exact_toolchain_record_sha256,
 )
+from route_sets import SUPPORTED_ROUTE_LANGUAGES  # noqa: E402
 
 MANIFEST_PATH = ROOT / "toolchains" / "runtime-manifest.json"
 INSTALLER_PATH = ROOT / "scripts" / "toolchains" / "install_project_synthesis_toolchains.sh"
@@ -55,7 +56,18 @@ NON_EXECUTING_POLICIES = frozenset(
 )
 INSTALL_POLICIES = ACTIVE_POLICIES | NON_EXECUTING_POLICIES
 REQUIRED_PROFILES = frozenset(
-    {"core", "synthesis", "routes-macos", "b66-80", "spring-legacy", "frontend-native", "language-packs", "all"}
+    {
+        "core",
+        "synthesis",
+        "routes-macos",
+        "routes-windows-vb6",
+        "routes-windows-vcpp6",
+        "b66-80",
+        "spring-legacy",
+        "frontend-native",
+        "language-packs",
+        "all",
+    }
 )
 SYNTHESIS_LANGUAGES = frozenset(
     {"java", "python", "csharp", "typescript", "go", "kotlin", "php", "rust"}
@@ -76,7 +88,7 @@ SYNTHESIS_REQUIRED_RUNTIME_IDS = frozenset(
         "postgresql-17.5",
     }
 )
-ROUTE_LANGUAGES = frozenset(
+ROUTES_MACOS_LANGUAGES = frozenset(
     {
         "java",
         "python",
@@ -93,6 +105,9 @@ ROUTE_LANGUAGES = frozenset(
         "flutter",
     }
 )
+ROUTES_WINDOWS_VB6_LANGUAGES = frozenset({"vb6"})
+ROUTES_WINDOWS_VCPP6_LANGUAGES = frozenset({"vcpp6"})
+ROUTE_LANGUAGES = frozenset(SUPPORTED_ROUTE_LANGUAGES)
 ROUTE_REQUIRED_RUNTIME_IDS = frozenset(
     {
         "java-21",
@@ -111,6 +126,8 @@ ROUTE_REQUIRED_RUNTIME_IDS = frozenset(
         "flutter-3.44.1",
     }
 )
+VB6_ROUTE_RUNTIME_IDS = frozenset({"vb6-route-sp6"})
+VCPP6_ROUTE_RUNTIME_IDS = frozenset({"vcpp6-route-sp6"})
 DARWIN_ARM64_EXACT_RUNTIME_IDS = frozenset(
     {
         "kotlin-route-2.2.20",
@@ -163,6 +180,11 @@ SYNTHESIS_EXCLUDED_SHARED_LANGUAGES = frozenset({"javascript"})
 AUTOMATED_INSTALL_PROFILES = frozenset({"core", "synthesis", "routes-macos", "all"})
 ROUTE_RECEIPT_ACTIVE_LANGUAGES = EXACT_TOOLCHAIN_ACTIVE_LANGUAGES
 MAX_ROUTE_RECEIPT_BYTES = 8 * 1024 * 1024
+# The exact route receipt hashes complete, immutable distributions (including
+# Python, Go, PHP, Kotlin, and Flutter's bundled Dart SDK), not only executable
+# banners.  Five minutes is below the observed cost of that work on a busy
+# shared host, so keep a finite but realistic 15-minute process budget.
+MAX_ROUTE_RECEIPT_SECONDS = 15 * 60
 
 
 @dataclass(frozen=True)
@@ -267,6 +289,10 @@ PROBE_COMMANDS: dict[str, ProbeCommand] = {
         ("pnpm",),
         ("{toolchain_root}/node/26.0.0/bin/pnpm", "/opt/homebrew/bin/pnpm"),
         executable_env="ELMOS_PNPM",
+        # The Homebrew launcher enters Node before printing its exact version.
+        # Keep that cold start bounded without treating shared-host contention
+        # as a semantic version mismatch.
+        timeout_seconds=45.0,
     ),
     "tsc": ProbeCommand(
         "tsc",
@@ -291,6 +317,11 @@ PROBE_COMMANDS: dict[str, ProbeCommand] = {
         ("gradle",),
         ("{toolchain_root}/gradle/8.14.3/bin/gradle", "/opt/homebrew/bin/gradle"),
         executable_env="ELMOS_GRADLE",
+        # A cold Gradle launcher has to initialize the JVM before printing its
+        # immutable version banner.  Fifteen seconds intermittently classified
+        # the exact managed binary as VERSION_MISMATCH on a busy shared host;
+        # keep the probe bounded but align it with the Kotlin compiler budget.
+        timeout_seconds=45.0,
     ),
     "kotlinc": ProbeCommand(
         "kotlinc",
@@ -744,10 +775,63 @@ def validate_manifest(manifest: Mapping[str, Any]) -> list[str]:
             f"expected={','.join(sorted(SYNTHESIS_LANGUAGES))};observed={','.join(sorted(synthesis_languages))}"
         )
     route_languages = _profile_languages(manifest, "routes-macos") & KNOWN_APPLICATION_LANGUAGES
-    if route_languages != ROUTE_LANGUAGES:
+    if route_languages != ROUTES_MACOS_LANGUAGES:
         errors.append(
             "routes-macos profile language coverage mismatch: "
-            f"expected={','.join(sorted(ROUTE_LANGUAGES))};observed={','.join(sorted(route_languages))}"
+            f"expected={','.join(sorted(ROUTES_MACOS_LANGUAGES))};observed={','.join(sorted(route_languages))}"
+        )
+    external_route_profiles = (
+        ("routes-windows-vb6", ROUTES_WINDOWS_VB6_LANGUAGES, VB6_ROUTE_RUNTIME_IDS),
+        (
+            "routes-windows-vcpp6",
+            ROUTES_WINDOWS_VCPP6_LANGUAGES,
+            VCPP6_ROUTE_RUNTIME_IDS,
+        ),
+    )
+    for profile_name, expected_languages, expected_ids in external_route_profiles:
+        profile = profiles.get(profile_name)
+        if not isinstance(profile, dict):
+            continue
+        required = profile.get("required")
+        optional = profile.get("optional")
+        if required != []:
+            errors.append(f"profile {profile_name} required runtimes must be empty")
+        if isinstance(optional, list) and (
+            frozenset(optional) != expected_ids or len(optional) != len(expected_ids)
+        ):
+            observed_ids = frozenset(str(item) for item in optional)
+            errors.append(
+                f"profile {profile_name} optional runtime ids mismatch: "
+                f"missing={','.join(sorted(expected_ids - observed_ids)) or '-'};"
+                f"extra={','.join(sorted(observed_ids - expected_ids)) or '-'}"
+            )
+        observed_languages = (
+            _profile_languages(manifest, profile_name, required_only=False)
+            & KNOWN_APPLICATION_LANGUAGES
+        )
+        if observed_languages != expected_languages:
+            errors.append(
+                f"{profile_name} profile language coverage mismatch: "
+                f"expected={','.join(sorted(expected_languages))};"
+                f"observed={','.join(sorted(observed_languages))}"
+            )
+    all_route_languages = frozenset(
+        language
+        for profile_name in (
+            "routes-macos",
+            "routes-windows-vb6",
+            "routes-windows-vcpp6",
+        )
+        for language in (
+            _profile_languages(manifest, profile_name, required_only=False)
+            & KNOWN_APPLICATION_LANGUAGES
+        )
+    )
+    if all_route_languages != ROUTE_LANGUAGES:
+        errors.append(
+            "combined route profile language coverage mismatch: "
+            f"expected={','.join(sorted(ROUTE_LANGUAGES))};"
+            f"observed={','.join(sorted(all_route_languages))}"
         )
 
     bindings = manifest.get("batch_bindings")
@@ -1413,7 +1497,7 @@ def _run_route_exact_receipt(
             text=True,
             capture_output=True,
             check=False,
-            timeout=300,
+            timeout=MAX_ROUTE_RECEIPT_SECONDS,
         )
         after = ROUTE_RECEIPT_PATH.lstat()
     except (OSError, subprocess.TimeoutExpired) as error:

@@ -18,9 +18,11 @@
 | 回调故障恢复 | PROCESSING/FAILED/COMPLETED claim；原始事件同事实幂等 | 履约首试失败后二试成功、完成后拒绝重放 | `DONE_LOCAL` |
 | 租户和操作者隔离 | JWT scope、委托 scope、FORCE RLS、SECURITY DEFINER 白名单 | 最小权限角色、跨租户/跨 actor 负向测试 | `DONE_LOCAL` |
 | 用户充值可见闭环 | 定价页展示组织 Credit 可用/冻结/总额、本人订单和本人流水；二维码订单轮询终态 | 付款前保持 0、`FULFILLED` 后显示 500 Credit 与 `PURCHASE` 流水的桌面/移动旅程 | `DONE_LOCAL` |
+| Credit 双分录与可靠事件 | 每次账户变化写平衡 journal 和同事务 outbox；账户可按 journal 对账/重建 | PostgreSQL 提交时守恒、1000 并发、同 ID 重试和幂等重建 | `DONE_LOCAL` |
 | 生产商户收款 | 商户号、证书、回调域名、真实资金与退款/对账 | 尚无提供方/资金凭证 | `NOT_RUN` |
 | 法务税务开票 | 中国大陆主体、协议、隐私、发票、税率 | 尚无责任人签核证据 | `NOT_RUN` |
-| 生产发布 | 生产数据库迁移、密钥注入、域名、监控、回滚演练 | 尚未获得部署授权 | `NOT_RUN` |
+| 生产数据库迁移 | `commercial-production` 严格目标绑定、V86→V87、前后校验和运行角色授权 | GitHub Actions run `34713508064` | `PASS_EXTERNAL` |
+| 应用与 live billing 发布 | 密钥注入、域名、监控、回滚演练、真实资金 smoke | 尚无完整发布证据 | `NOT_RUN` |
 | 独立认证 | 独立人员/机构复验真实资金闭环 | 无独立证据 | `NOT_CERTIFIED` |
 
 ## 失败关闭规则
@@ -38,6 +40,9 @@
 8. SELF 历史只返回当前 actor；组织视图必须具备管理 scope。
 9. 浏览器返回页、二维码和 `PAID` 状态不增加余额；只有 `FULFILLED` 与服务端账本才显示到账。
 10. `RECONCILIATION_REQUIRED` 停止自动购买重试并提示用户不要重复付款。
+11. Credit journal 事务/posting 不可修改且提交时借贷守恒；V87 后每次账户变化同事务生成一个
+    稳定 outbox event，迁移 opening transaction 不对外发布。
+12. 投影漂移不能用手工 SQL 修正；只能由 reconciler 角色带 actor、reason 和幂等键从 journal 重建。
 
 ## 发布门禁
 
@@ -47,7 +52,8 @@
 - 回调 HTTPS 域名、备案、证书轮换和网络准入通过；
 - 法务、隐私、税务、退款、服务条款和电子发票责任人签核；
 - 单位经济成本样本通过，价格/额度不会造成未批准的亏损风险；
-- 生产 PostgreSQL 备份、V1–V95 validate/migrate/validate、监控和回滚演练通过；
+- 生产 PostgreSQL 备份、V1–V96 validate/migrate/validate、总账/outbox、托管计费与对象回收
+  监控和回滚演练通过；
 - 独立验证者复核订单、资金、provider receipt、Credit/权益和 Token 历史逐笔一致。
 
 仓库门禁 `scripts/commercial/validate_pricing_catalog_publication.py --check-publishable`

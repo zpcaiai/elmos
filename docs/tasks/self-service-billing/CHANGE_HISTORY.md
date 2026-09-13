@@ -1,5 +1,17 @@
 # 自助计费修改历史
 
+## 2026-09-13 — Credit 双分录、outbox 与投影恢复
+
+- 新增 V87 不可变 Credit journal transaction/posting 和提交时借贷守恒约束。
+- 对已有余额生成 opening transaction；之后购买、预留、结算、释放和到期均自动记双分录。
+- 新增与 journal 同事务写入的 outbox，独立 publisher 以租约领取、同 event ID 失败重试并完成发布。
+- 新增只读对账 API，以及 reconciler 角色限定、actor/reason/idempotency 绑定的投影重建审计。
+- 新增真实 PostgreSQL 17.5 全迁移、1000 并发不超支、不平衡提交拒绝、outbox 重试与重建测试。
+- 主线合并后 `commercial-production` run `34713508064` 在批准的 Neon PostgreSQL 17.11
+  完成 V86→V87、前后 Flyway 校验和最小权限运行角色授权。
+- 促销/退款分类、双人人工调整、真实 provider/bank 结算、生产迁移和独立认证仍保持
+  `PARTIAL` / `MISSING` / `NOT_RUN` / `NOT_CERTIFIED`。
+
 ## 2026-09-08 — Credit、一次性项目订单与用户 Token 历史
 
 - 新增目录 `2026-09-08.1`：保留三档订阅套餐的精确价格/额度快照，并增加

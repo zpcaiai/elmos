@@ -3,13 +3,15 @@
 ## 权威版本
 
 - 数据库：PostgreSQL 17.5
-- Flyway：V1–V95；基础计费为 `V49__self_service_billing_and_usage.sql`，
+- Flyway：V1–V96；基础计费为 `V49__self_service_billing_and_usage.sql`，
   Credit/一次性订单与用户维度扩展为 `V83__commercial_credit_and_one_time_orders.sql`，
-  ELMPay 摘要目录与支付生命周期加固为 V84–V85，当前订阅目录快照升级为 V86；
-  V94–V95 前向绑定托管计费/对象回收，并修复目录触发器的 digest schema 与
-  provider 不变量
+  支付生命周期加固为 V84–V85，订阅目录快照升级为 V86，Credit 双分录、事务性
+  outbox、投影对账和受控重建为 `V87__commercial_credit_double_entry_and_outbox.sql`；
+  V94–V95 前向绑定托管计费/对象回收并修复目录触发器的 digest schema 与 provider
+  不变量，原候选 V87 CAS publication pin 因已发布的 Credit V87 而前向重编号为
+  `V96__cas_publication_pins.sql`
 - 目录版本：`2026-09-08.1`；V86 保存权威三档订阅快照并重绑定试用/账期函数，
-  V49 与旧目录版本保持不可变
+  V49、已发布的 V87 与旧目录版本保持不可变
 - 数量：`numeric(30,0)`，只接受非负整数
 - 金额：人民币分，`numeric(19,0)`；提供方成本使用 `numeric(30,6)` 并带显式币种
 
@@ -27,7 +29,10 @@
 | 告警 | `usage_alert_preferences`、`usage_alert_deliveries` | 乐观锁偏好与阈值越界通知事实 |
 | 商品 | `commercial_products` | 不可变 Credit 包与单项目一次性商品快照 |
 | 商品订单 | `commercial_orders`、`commercial_order_directory` | 租户订单与回调前最小查单目录 |
-| 购买 Credit | `commercial_credit_accounts`、`commercial_credit_lots`、`commercial_credit_ledger_entries` | 余额、FIFO 到期批次与追加账本 |
+| 购买 Credit | `commercial_credit_accounts`、`commercial_credit_lots`、`commercial_credit_ledger_entries` | 余额、FIFO 到期批次与用户可见的追加式历史 |
+| Credit 财务总账 | `commercial_credit_journal_transactions`、`commercial_credit_journal_entries` | 每次余额/冻结额变化的不可变、平衡双分录事实 |
+| Credit 可靠事件 | `commercial_credit_outbox_events`、`commercial_credit_outbox_delivery_attempts` | 与总账同一事务写入、租约领取、失败重试、发布状态与不可变尝试历史 |
+| Credit 重建审计 | `commercial_credit_projection_rebuilds` | 按组织、actor、原因和幂等键记录投影重建前后事实 |
 | 单项目权益 | `project_generation_entitlements` | actor/project 绑定的一次性生成权益 |
 | 生成资金预留 | `commercial_credit_reservations`、`commercial_credit_reservation_lots` | 一次性权益优先、Credit 次选的并发安全预留 |
 
@@ -46,6 +51,12 @@
 11. 回调 claim 只有 `PROCESSING/COMPLETED/FAILED`；失败可重领，完成不可重放。
 12. Token 预留、事件和账本携带 actor/project/job/model，SELF 查询强制 actor 过滤；
     生产模型调用的 INPUT/CACHE_READ/OUTPUT/REASONING 事实按 provider receipt 去重并并入同一历史。
+13. Credit 账户每一次 `balance` / `reserved` 变化都必须写一个至少含两条 posting 的双分录事务；
+    延迟约束在提交时验证借方总额等于贷方总额。
+14. Credit 总账事务与 posting 只追加不可修改；V87 生效后的账户变化在同一事务内生成一个
+    稳定 event ID 的 outbox 事件。迁移 opening transaction 不对外发布，避免把历史余额冒充新事件。
+15. `commercial_credit_accounts` 是可重建投影；对账必须为零漂移且无不平衡事务，漂移只能由
+    `elmos_credit_reconciler` 角色通过带 actor、原因和幂等键的函数修复。
 
 ## 数据库函数
 
@@ -66,6 +77,10 @@
 | `elmos_commercial_fulfill_order` | 支付确认后恰好一次发 Credit 或项目权益 |
 | `elmos_commercial_reserve_generation` | 项目权益优先、Credit FIFO 的原子预留 |
 | `elmos_commercial_settle_generation` / `elmos_commercial_release_generation` | 结算或释放生成资金 |
+| `elmos_commercial_credit_reconcile` | 比较账户投影与双分录总账，报告余额/冻结额漂移和不平衡事务数 |
+| `elmos_commercial_rebuild_credit_projection` | 仅 reconciler 角色按组织从总账幂等重建投影并写不可变审计 |
+| `elmos_claim_commercial_credit_outbox` | 仅 publisher 角色使用 `SKIP LOCKED` 租约批量领取待发布事件 |
+| `elmos_complete_commercial_credit_outbox` | 仅 publisher 角色完成发布或对同一事件安排可审计重试 |
 
 ## RLS 与索引
 
@@ -79,10 +94,16 @@ WITH CHECK (organization_id = current_setting('app.organization_id', true))
 关键索引覆盖组织/状态/账期、订阅/事件时间、幂等键和提供方引用。价格目录表不含租户数据，
 可由服务读取；支付密钥、JWT、数据库密码不进入任何业务表。
 
+总账和重建审计同样启用 `FORCE ROW LEVEL SECURITY`，posting 通过组合外键绑定事务所属组织。
+跨租户 outbox 不授予应用运行角色直接表权限，只允许独立 `elmos_credit_outbox_publisher`
+角色调用租约函数；应用运行角色仅可读取本组织总账/重建审计并执行只读对账函数。
+
 ## 已验证与未验证
 
-- 空数据库 V1–V95 重放、RLS、并发硬停止、幂等、试用防滥用、阈值告警、
-  Credit/一次性权益和对账结案：
+- 空数据库 V1–V96 重放、RLS、并发硬停止、幂等、试用防滥用、阈值告警、
+  Credit/一次性权益、双分录守恒、outbox 重试、投影重建、托管计费与对象回收：
   由本地 PostgreSQL 17 集成测试验证。
-- 生产项目/分支/数据库上的表、策略与 Flyway 历史：`NOT_RUN`。
+- `commercial-production` GitHub Environment 已通过 run `34713508064` 在批准的 Neon
+  PostgreSQL 17.11 把 schema 从 V86 升到 V87，并执行迁移前后 Flyway 验证和运行角色授权；
+  日志中的精确连接目标已脱敏；V88–V96、应用部署与生产业务读回仍为 `NOT_RUN`。
 - 生产回填：本版本没有旧的权威自助计费事实可安全推断，因此不生成虚构回填。

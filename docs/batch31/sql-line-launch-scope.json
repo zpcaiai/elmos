@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "elmos.batch31.sql-line-launch-scope",
-  "release_channel": "GA",
+  "release_channel": "PREFLIGHT_BETA",
   "routes": [
     {
       "route_id": "sqlite-3.53.3-to-postgresql-17.5",
@@ -44,8 +44,8 @@
         "offline-backfill",
         "backup-restore"
       ],
-      "status": "certified",
-      "release_eligible": true
+      "status": "experimental",
+      "release_eligible": false
     },
     {
       "route_id": "postgresql-17.5-to-dm8-8.1.3.140",
@@ -85,8 +85,8 @@
         "ordering",
         "pagination"
       ],
-      "status": "certified",
-      "release_eligible": true
+      "status": "research",
+      "release_eligible": false
     },
     {
       "route_id": "postgresql-17.5-to-postgresql-17.5-neon",
@@ -126,12 +126,16 @@
         "tenant-isolation-rls",
         "neon-production-cutover"
       ],
-      "status": "certified",
-      "release_eligible": true
+      "status": "experimental",
+      "release_eligible": false
     }
   ],
   "excluded_claims": [
     "unsupported-legacy-dialects",
-    "unverified-vendor-matrix"
+    "unverified-vendor-matrix",
+    "real-chinadb-execution",
+    "dedicated-runner-75ms-qualification",
+    "independent-certification",
+    "production-release"
   ]
 }

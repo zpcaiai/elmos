@@ -14,6 +14,7 @@ from .catalog import PACKAGE_DIRECTORY, validate_artifact_payload
 from .canonical import canonical_digest, finite_json, redact_json, redact_text
 from .contracts import ArtifactEnvelope, CapabilityResult, RuntimeRequest, utc_now
 from .external_evidence import not_run_external_status
+from .java_ast_toolkit import JavaLexer
 from .snapshot import RepositorySnapshot, capture_repository
 
 
@@ -219,12 +220,13 @@ def _transform(request: RuntimeRequest, profile: OperationProfile, model: Forens
         changes = _namespace_changes(snapshot, jakarta=profile.kind == "jakarta")
         payload = {"mode": "staged-only", "changes": changes, "changedFiles": len(changes), "sourceSnapshotDigest": snapshot.digest, "targetBuild": "NOT_RUN", "gitMutation": False}
     elif profile.kind == "generator":
-        files = _generate_controllers(model, profile.code)
-        payload = {"mode": "staged-only", "target": {"springBoot": "4.x", "springFramework": "7.x", "jakartaEE": "11", "servlet": "6.1", "java": 21}, "files": files, "sourceSnapshotDigest": snapshot.digest, "targetBuild": "NOT_RUN", "gitMutation": False}
+        files, obligations = _generate_controllers(model, profile.code, snapshot)
+        payload = {"mode": "staged-only", "target": {"springBoot": "4.x", "springFramework": "7.x", "jakartaEE": "11", "servlet": "6.1", "java": 21}, "files": files, "semanticObligations": obligations, "sourceSnapshotDigest": snapshot.digest, "targetBuild": "NOT_RUN", "gitMutation": False}
     elif profile.kind == "security-generator":
         payload = {"files": {"src/main/java/org/elmos/legacyweb/LegacySecurityConfiguration.java": _security_config(model)}, "allowlistedBindings": [binding["sourceName"] for binding in model.ir.get("bindings", [])], "csrf": "preserve-and-explicit", "authorization": "preserve-and-explicit", "targetBuild": "NOT_RUN"}
     elif profile.kind == "jsp":
-        payload = {"viewStrategy": "preserve", "jspViews": list(model.ir["views"]), "modernization": "deferred-independent-wave", "packaging": "traditional-war", "targetBuild": "NOT_RUN"}
+        translated, blockers, source_map = _translate_jsp_views(snapshot)
+        payload = {"viewStrategy": "thymeleaf-candidate" if translated and not blockers else "hybrid-preserve", "jspViews": list(model.ir["views"]), "files": translated, "blockingObligations": blockers, "sourceMap": source_map, "modernization": "deterministic-supported-subset", "packaging": "executable-jar-candidate" if translated and not blockers else "traditional-war", "targetBuild": "NOT_RUN"}
     else:
         payload = {"changes": [], "reason": "unsupported transform profile"}
     return _success(request, profile, payload, evidence_refs=(f"ev:snapshot:{snapshot.digest}",), confidence=0.68)
@@ -233,7 +235,7 @@ def _transform(request: RuntimeRequest, profile: OperationProfile, model: Forens
 def _source_map(request: RuntimeRequest, profile: OperationProfile, model: ForensicModel | None, snapshot: RepositorySnapshot | None) -> CapabilityResult:
     if model is None or snapshot is None:
         return _blocked(request, profile, "repository_root is required for source mapping")
-    generated = _generate_controllers(model, "source-map")
+    generated, _ = _generate_controllers(model, "source-map", snapshot)
     target_digest = canonical_digest(generated)
     mappings = []
     for endpoint in model.ir["endpoints"]:
@@ -247,7 +249,8 @@ def _change_set(request: RuntimeRequest, profile: OperationProfile, model: Foren
     if not isinstance(change_set, Mapping):
         if model is None or snapshot is None:
             return _blocked(request, profile, "change_set or repository_root is required")
-        change_set = {"files": _generate_controllers(model, "change-set"), "sourceSnapshotDigest": snapshot.digest}
+        generated, obligations = _generate_controllers(model, "change-set", snapshot)
+        change_set = {"files": generated, "semanticObligations": obligations, "sourceSnapshotDigest": snapshot.digest}
     digest = canonical_digest(change_set)
     payload = {"changeSetId": "changeset:" + digest.removeprefix("sha256:")[:24], "digest": digest, "state": "STAGED", "idempotencyKey": request.idempotency_key, "fencingToken": request.authority.fencing_token, "gitMutation": False, "committed": False, "reversible": True, "payload": finite_json(dict(change_set))}
     if request.authority.profile != "transform":
@@ -419,13 +422,15 @@ def _java_string(value: Any) -> str:
     return str(value).replace("\\", "\\\\").replace('"', '\\"').replace("\r", "\\r").replace("\n", "\\n")
 
 
-def _generate_controllers(model: ForensicModel, reason: str) -> dict[str, str]:
+def _generate_controllers(model: ForensicModel, reason: str, snapshot: RepositorySnapshot | None = None) -> tuple[dict[str, str], list[dict[str, Any]]]:
     files: dict[str, str] = {}
+    obligations: list[dict[str, Any]] = []
     bindings = {item["id"]: item for item in model.ir.get("bindings", [])}
     for endpoint in model.ir["endpoints"]:
         if endpoint["owner"]["framework"] not in {"struts1", "struts2", "servlet"}:
             continue
-        annotations = ["@Controller", f'@RequestMapping(path = "{_java_string(endpoint["pathPattern"])}", method = RequestMethod.{endpoint["methods"][0]})']
+        annotations = ["@Controller"]
+        method_annotation = f'    @RequestMapping(path = "{_java_string(endpoint["pathPattern"])}", method = RequestMethod.{endpoint["methods"][0]})'
         class_name = _java_identifier(str(endpoint["owner"]["symbol"]).split(".")[-1].replace("$", "_")) + "Controller"
         params = []
         for binding_id in endpoint.get("bindingIds", []):
@@ -441,9 +446,107 @@ def _generate_controllers(model: ForensicModel, reason: str) -> dict[str, str]:
         target = next((item.get("target") for item in navigation if item.get("target")), "/WEB-INF/jsp/legacy-preserved.jsp")
         kind = next((item.get("kind") for item in navigation if item.get("target")), "forward")
         prefix = "redirect: " if kind == "redirect" else "forward: "
-        body = ["package org.elmos.legacyweb.generated;", "", "import org.springframework.stereotype.Controller;", "import org.springframework.web.bind.annotation.RequestMapping;", "import org.springframework.web.bind.annotation.RequestMethod;", "import org.springframework.web.bind.annotation.RequestParam;", "", *annotations, f"public final class {class_name} {{", f"    // Generated from {_java_string(endpoint['owner']['symbol'])} using {_java_string(reason)}.", "    // Every recovered scalar binding is explicit; unresolved nested conversion remains a verification gate.", f"    public String handle({', '.join(params)}) {{", f"        return \"{_java_string(prefix + str(target))}\";", "    }", "}", ""]
+        action_semantics = _recover_action_semantics(snapshot, endpoint)
+        port_name = class_name.removesuffix("Controller") + "UseCase"
+        constructor = [f"    private final {port_name} useCase;", "", f"    public {class_name}({port_name} useCase) {{", "        this.useCase = useCase;", "    }", ""]
+        input_values = ", ".join(variable for variable in [re.sub(r"[^A-Za-z0-9_]", "_", str(bindings[item]["sourceName"])) for item in endpoint.get("bindingIds", []) if item in bindings])
+        invocation = [f"        {port_name}.Outcome outcome = useCase.execute(new {port_name}.Input({input_values}));", "        return switch (outcome.result()) {"]
+        navigation_cases = []
+        for item in navigation:
+            if not item.get("target"):
+                continue
+            nav_prefix = "redirect: " if item.get("kind") == "redirect" else "forward: "
+            navigation_cases.append(f'            case "{_java_string(item.get("when", "success"))}" -> "{_java_string(nav_prefix + str(item["target"]))}";')
+        invocation.extend(navigation_cases or [f'            case "success" -> "{_java_string(prefix + str(target))}";'])
+        invocation.extend(["            default -> throw new IllegalStateException(\"Unmapped legacy action result: \" + outcome.result());", "        };", "    }"])
+        body = ["package org.elmos.legacyweb.generated;", "", "import org.springframework.stereotype.Controller;", "import org.springframework.web.bind.annotation.RequestMapping;", "import org.springframework.web.bind.annotation.RequestMethod;", "import org.springframework.web.bind.annotation.RequestParam;", "", *annotations, f"public final class {class_name} {{", f"    // Generated from {_java_string(endpoint['owner']['symbol'])} using {_java_string(reason)}.", *constructor, method_annotation, f"    public String handle({', '.join(params)}) {{", *invocation, "}", ""]
         files[_controller_path(endpoint)] = "\n".join(body)
-    return files
+        input_components = ", ".join(f"String {re.sub(r'[^A-Za-z0-9_]', '_', str(bindings[item]['sourceName']))}" for item in endpoint.get("bindingIds", []) if item in bindings)
+        port_body = ["package org.elmos.legacyweb.generated;", "", f"public interface {port_name} {{", f"    record Input({input_components}) {{}}", "    record Outcome(String result) {", "        public Outcome {", "            if (result == null || result.isBlank()) throw new IllegalArgumentException(\"legacy result is required\");", "        }", "    }", "", "    Outcome execute(Input input);", "}", ""]
+        port_path = _controller_path(endpoint).replace("Controller.java", "UseCase.java")
+        files[port_path] = "\n".join(port_body)
+        if action_semantics["method"] is None:
+            obligations.append({"endpointId": endpoint["id"], "severity": "critical", "reason": "action entry method was not structurally recovered", "blocks": ["target-build", "behavior-equivalence"]})
+        else:
+            obligations.append({"endpointId": endpoint["id"], "severity": "high", "reason": "implement use-case port from recovered action body before cutover", "sourceMethod": action_semantics["method"], "sourceBodyDigest": action_semantics["bodyDigest"], "returnExpressions": action_semantics["returnExpressions"], "blocks": ["behavior-equivalence"]})
+    return files, obligations
+
+
+def _recover_action_semantics(snapshot: RepositorySnapshot | None, endpoint: Mapping[str, Any]) -> dict[str, Any]:
+    if snapshot is None:
+        return {"method": None, "bodyDigest": None, "returnExpressions": []}
+    symbol = str(endpoint["owner"]["symbol"])
+    class_name = symbol.split(".")[-1]
+    candidates = [item for item in snapshot.files if item.kind == "file" and item.text is not None and item.path.endswith("/" + class_name + ".java")]
+    for candidate in candidates:
+        source = candidate.text or ""
+        tokens = JavaLexer(source).tokenize(include_trivia=False)
+        for method_name in ("execute", "perform", "doExecute"):
+            for index, token in enumerate(tokens[:-1]):
+                if token.value != method_name or tokens[index + 1].value != "(":
+                    continue
+                cursor = index + 1
+                parentheses = 0
+                while cursor < len(tokens):
+                    if tokens[cursor].value == "(": parentheses += 1
+                    elif tokens[cursor].value == ")":
+                        parentheses -= 1
+                        if parentheses == 0:
+                            break
+                    cursor += 1
+                cursor += 1
+                while cursor < len(tokens) and tokens[cursor].value not in {"{", ";"}:
+                    cursor += 1
+                if cursor >= len(tokens) or tokens[cursor].value != "{":
+                    continue
+                open_brace = tokens[cursor]
+                braces = 1
+                cursor += 1
+                while cursor < len(tokens) and braces:
+                    if tokens[cursor].value == "{": braces += 1
+                    elif tokens[cursor].value == "}": braces -= 1
+                    cursor += 1
+                if braces:
+                    continue
+                close_brace = tokens[cursor - 1]
+                body = source[open_brace.end_pos:close_brace.start_pos]
+                returns = [match.group(1).strip() for match in re.finditer(r"\breturn\s+([^;]+);", body)]
+                return {"method": f"{symbol}#{method_name}", "bodyDigest": canonical_digest(body), "returnExpressions": returns}
+    return {"method": None, "bodyDigest": None, "returnExpressions": []}
+
+
+def _translate_jsp_views(snapshot: RepositorySnapshot) -> tuple[dict[str, str], list[dict[str, Any]], list[dict[str, Any]]]:
+    files: dict[str, str] = {}
+    blockers: list[dict[str, Any]] = []
+    mappings: list[dict[str, Any]] = []
+    for source in snapshot.files:
+        if source.kind != "file" or source.text is None or not source.path.endswith(".jsp"):
+            continue
+        unsupported = sorted(set(re.findall(r"<((?:fmt|sql|x|tiles|display):[A-Za-z0-9_-]+)", source.text)))
+        scriptlets = bool(re.search(r"<%(?!@|--)[\s\S]*?%>", source.text))
+        if unsupported or scriptlets:
+            blockers.append({"source": source.path, "severity": "critical", "unsupportedTags": unsupported, "scriptlet": scriptlets, "blocks": ["view-equivalence", "jar-packaging"]})
+            continue
+        translated = re.sub(r"<%@\s*(?:taglib|page)[\s\S]*?%>\s*", "", source.text)
+        translated = re.sub(r'<(?:c:out|bean:write)\s+(?:value|name)="(?:\$\{)?([^"}]+)\}?"\s*/>', r'<span th:text="${\1}"></span>', translated)
+        translated = re.sub(r'<c:if\s+test="([^"]+)">', r'<th:block th:if="\1">', translated).replace("</c:if>", "</th:block>")
+        translated = re.sub(r'<c:forEach\s+var="([^"]+)"\s+items="([^"]+)">', r'<th:block th:each="\1 : \2">', translated).replace("</c:forEach>", "</th:block>")
+        translated = re.sub(r'<html:form\s+action="([^"]+)">', r'<form th:action="@{\1}" method="post">', translated).replace("</html:form>", "</form>")
+        translated = re.sub(r'<html:text\s+property="([^"]+)"\s*/>', r'<input type="text" th:field="*{\1}"/>', translated)
+        if "xmlns:th=" not in translated:
+            if re.search(r"<html(?:\s|>)", translated, re.IGNORECASE):
+                translated = re.sub(r"<html", '<html xmlns:th="http://www.thymeleaf.org"', translated, count=1, flags=re.IGNORECASE)
+            else:
+                translated = '<html xmlns:th="http://www.thymeleaf.org"><body>\n' + translated + "\n</body></html>"
+        relative = source.path
+        for prefix in ("src/main/webapp/WEB-INF/jsp/", "src/main/webapp/WEB-INF/views/", "WEB-INF/jsp/", "WEB-INF/views/"):
+            if relative.startswith(prefix):
+                relative = relative[len(prefix):]
+                break
+        target = "src/main/resources/templates/" + relative.removesuffix(".jsp") + ".html"
+        files[target] = translated
+        mappings.append({"source": source.path, "target": target, "sourceDigest": source.digest, "targetDigest": canonical_digest(translated), "translator": "jsp-jstl-thymeleaf-supported-subset-v1"})
+    return files, blockers, mappings
 
 
 def _security_config(model: ForensicModel) -> str:

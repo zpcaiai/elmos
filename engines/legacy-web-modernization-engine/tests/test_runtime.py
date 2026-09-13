@@ -197,15 +197,37 @@ class RuntimeTests(unittest.TestCase):
         try:
             generated = dispatch(request(root, "51-struts1-to-springmvc-generator"))
             files = generated["artifacts"][0]["payload"]["files"]
-            source = next(iter(files.values()))
+            source = next(value for path, value in files.items() if path.endswith("Controller.java"))
             self.assertIn('@RequestParam(name = "customerId"', source)
             self.assertNotIn("_legacyRequest", source)
             self.assertIn("forward: /WEB-INF/jsp/success.jsp", source)
+            self.assertIn("useCase.execute", source)
+            self.assertTrue(any(path.endswith("UseCase.java") for path in files))
+            obligations = generated["artifacts"][0]["payload"]["semanticObligations"]
+            self.assertEqual(obligations[0]["sourceMethod"], "com.acme.CreateOrderAction#execute")
+            self.assertIn("behavior-equivalence", obligations[0]["blocks"])
 
             security = dispatch(request(root, "55-spring-security-validation-transaction-generator"))
             security_source = next(iter(security["artifacts"][0]["payload"]["files"].values()))
             self.assertIn("anyRequest().denyAll()", security_source)
             self.assertIn("csrf(Customizer.withDefaults())", security_source)
+        finally:
+            holder.cleanup()
+
+    def test_jsp_supported_subset_generates_thymeleaf_and_blocks_scriptlets(self) -> None:
+        holder, root = fixture_root()
+        try:
+            result = dispatch(request(root, "56-jsp-preserve-or-modernize"))
+            payload = result["artifacts"][0]["payload"]
+            self.assertEqual(payload["viewStrategy"], "thymeleaf-candidate")
+            self.assertIn("src/main/resources/templates/success.html", payload["files"])
+            self.assertIn('th:text="${order}"', payload["files"]["src/main/resources/templates/success.html"])
+
+            (root / "WEB-INF/jsp/unsafe.jsp").write_text("<% Runtime.getRuntime().exec(request.getParameter(\"x\")); %>", encoding="utf-8")
+            blocked = dispatch(request(root, "56-jsp-preserve-or-modernize"))["artifacts"][0]["payload"]
+            self.assertEqual(blocked["viewStrategy"], "hybrid-preserve")
+            self.assertTrue(any(item["scriptlet"] for item in blocked["blockingObligations"]))
+            self.assertNotIn("src/main/resources/templates/unsafe.html", blocked["files"])
         finally:
             holder.cleanup()
 

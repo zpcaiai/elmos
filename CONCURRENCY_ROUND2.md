@@ -179,7 +179,7 @@ actual code plus negative/concurrency regression evidence before closure.
   metadata tombstoning. New upload grants now reject tombstoned/quarantined
   identities and size/backend/key drift, but that cannot revoke old URLs.
   Enabling the host scheduler fails before any metadata/provider effect until
-  a trusted backend protocol can prove writer quiescence. V87 supplies only the
+  a trusted backend protocol can prove writer quiescence. V96 supplies only the
   bounded tenant/transaction/retention path. Tests of DELETE 204/404/500 do not
   prove absence of a late writer. See `modules/persistence/OBJECT_GC_HOST.md`.
 

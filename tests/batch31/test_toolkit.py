@@ -297,7 +297,7 @@ class ToolkitTests(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 3)
 
-    def test_release_gate_accepts_release_ready_pack(self):
+    def test_release_gate_rejects_self_attested_pack_as_release_ready(self):
         for pack_name in (
             "sqlite-3-53-3-to-postgresql-17-5",
             "postgresql-to-dm8",
@@ -313,7 +313,7 @@ class ToolkitTests(unittest.TestCase):
                 ],
                 check=False,
             )
-            self.assertEqual(result.returncode, 0)
+            self.assertEqual(result.returncode, 3)
 
     def test_validator_executes_formal_support_schema(self):
         with tempfile.TemporaryDirectory() as td:

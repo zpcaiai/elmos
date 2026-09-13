@@ -737,6 +737,9 @@ jobs:
           python-version: "3.12"
       - name: Install locked uv tool
         run: python -m pip install --disable-pip-version-check uv==0.11.16
+      - name: Build native CDC comparator
+        working-directory: engines/sql-dialect-engine/cdc-engine-rust
+        run: cargo build --locked --release
       - name: Verify SQL Dialect Engine
         working-directory: engines/sql-dialect-engine
         run: |

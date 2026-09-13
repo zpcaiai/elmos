@@ -24,6 +24,17 @@ public interface CommercialOrderPort {
             String projectId, String jobId, Instant expiresAt, Instant occurredAt
     ) {}
 
+    record CreditReconciliation(
+            String organizationId, BigDecimal projectedBalance, BigDecimal journalBalance,
+            BigDecimal projectedReserved, BigDecimal journalReserved,
+            BigDecimal balanceDrift, BigDecimal reservedDrift, long unbalancedTransactions
+    ) {
+        public boolean drifted() {
+            return balanceDrift.signum() != 0 || reservedDrift.signum() != 0
+                    || unbalancedTransactions != 0;
+        }
+    }
+
     record GenerationReservation(
             String reservationId, String decision, String fundingSource,
             BigDecimal remainingCredits
@@ -47,6 +58,8 @@ public interface CommercialOrderPort {
 
     List<CreditLedgerEntry> creditLedger(String organizationId, String actorId,
                                          int limit, int offset, boolean organizationScope);
+
+    CreditReconciliation creditReconciliation(String organizationId);
 
     GenerationReservation reserveGeneration(String reservationId, String organizationId,
                                             String actorId, String projectId, String jobId,

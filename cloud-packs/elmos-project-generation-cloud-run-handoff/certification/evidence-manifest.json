@@ -14,8 +14,8 @@
     },
     {
       "path": "certification/local-control-evidence.json",
-      "byte_size": 3363,
-      "sha256": "2587152cb92cc59582bcc491ccf6f488896c901c9e72bafa9c7b6f904e2da540"
+      "byte_size": 3364,
+      "sha256": "b59e431552ad094032b81996bfa46a7895e3b7ffbbd45b602febeb6fab1a57d5"
     },
     {
       "path": "corpus/development/cases.json",

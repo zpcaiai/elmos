@@ -30,6 +30,12 @@ Micrometer 指标：
    `CHECKOUT_PREPARE_OUTCOME_UNKNOWN` 与 `PAYMENT_AFTER_LOCAL_EXPIRY`。
 9. 定价页的 Credit 面板应从 `/billing/credits`、`/billing/credits/ledger` 和
    `/billing/orders` 得到一致事实；存在待付款订单时每四秒读取一次，页面隐藏时停止轮询。
+10. 使用 `commercial:usage:admin` 调用
+    `GET /commercial/v1/billing/credits/reconciliation`；`balanceDrift`、`reservedDrift` 或
+    `unbalancedTransactions` 任一非零都必须进入财务事故处理，禁止手工 UPDATE 余额。
+11. 监控 `commercial_credit_outbox_events` 的最老 `PENDING`/`IN_FLIGHT` 年龄、租约到期、
+    `attempt_count` 和 `last_error`，并用 `commercial_credit_outbox_delivery_attempts` 保留每次
+    完成/重试证据；发布器只能持有 `elmos_credit_outbox_publisher` 角色。
 
 ## 生产配置
 
@@ -73,6 +79,17 @@ ELMPay 聚合出口：见 [ELMPAY_INTEGRATION.md](ELMPAY_INTEGRATION.md)。启�
 
 管理员结案不会修改原始 provider event。
 
+## Credit 总账对账与投影重建
+
+1. 先运行只读对账接口并保存组织、投影值、总账值、漂移量、时间和部署 revision。
+2. 任一不平衡事务表示不可自动恢复：关闭充值和生成入口，保全数据库及 outbox 证据并升级处理。
+3. 只有投影漂移且所有总账事务平衡时，才允许独立运维身份临时继承
+   `elmos_credit_reconciler`，调用 `elmos_commercial_rebuild_credit_projection(actor, reason, idempotency)`。
+4. actor 必须是可审计主体，reason 必须引用事故/变更单；同一恢复动作复用同一幂等键。
+5. 重建后再次运行只读对账，确认所有漂移为零，并核对
+   `commercial_credit_projection_rebuilds` 的 before/after 值。不得删除或修改重建记录。
+6. outbox 发布失败必须用同一 event ID 调用完成函数安排重试；不得插入替代事件来掩盖失败。
+
 ## 用量争议
 
 1. 从 CSV/历史接口定位 `meter_id`、token class、provider、actor 与时间桶。
@@ -94,12 +111,13 @@ ELMPay 聚合出口：见 [ELMPAY_INTEGRATION.md](ELMPAY_INTEGRATION.md)。启�
 
 ## 发布与回滚
 
-1. 先备份并在同版本影子库执行 Flyway `validate → migrate → validate` 到 V94。
+1. 先备份并在同版本影子库执行 Flyway `validate → migrate → validate` 到 V96。
 2. 注入只读目录/白名单函数权限的运行角色和支付 Secret，保持 live billing 关闭。
 3. 执行真实小额付款、回调重发、延迟回调、退款和逐笔对账；保存提供方 receipt。
 4. 外部门禁全部签核后发布新的 `PUBLISHED` 目录版本，再开启 live billing，并采用灰度流量。
 5. 异常回滚先关闭 `ELMOS_BILLING_LIVE_ENABLED` 和新生成入口；保留订单、回调、账本和
-   Token 事实供对账。V83–V95 是前向审计迁移，不做删除式 down migration。
+   Token 事实供对账。V83–V96 是前向审计迁移，不做删除式 down migration；回滚应用版本前
+   必须确认旧应用不会绕过 V87 的 posting trigger、V94–V96 的托管计费/回收围栏和最小权限角色。
 
 ## 邮件告警
 
