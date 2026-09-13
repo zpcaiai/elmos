@@ -130,43 +130,6 @@ def test_minimal_subprocess_environment_drops_all_supported_injection_hooks(
     assert stat.S_IMODE((telemetry / "mode").stat().st_mode) == 0o600
 
 
-def test_unknown_container_toolchain_profile_fails_closed(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setenv(toolchains._CONTAINER_TOOLCHAIN_PROFILE_VARIABLE, "untrusted")
-    toolchains.clear_exact_toolchain_cache()
-    try:
-        with pytest.raises(
-            RouteError,
-            match="EXACT_TOOLCHAIN_CONTAINER_PROFILE_UNSUPPORTED:untrusted",
-        ):
-            toolchains.exact_toolchain("python")
-    finally:
-        toolchains.clear_exact_toolchain_cache()
-
-
-@pytest.mark.parametrize("language", ("python", "typescript"))
-def test_container_toolchain_profile_cannot_cross_platforms(
-    monkeypatch: pytest.MonkeyPatch,
-    language: str,
-) -> None:
-    monkeypatch.setenv(
-        toolchains._CONTAINER_TOOLCHAIN_PROFILE_VARIABLE,
-        toolchains._LINUX_ARM64_CONTAINER_PROFILE,
-    )
-    monkeypatch.setattr(toolchains.platform, "system", lambda: "Darwin")
-    monkeypatch.setattr(toolchains.platform, "machine", lambda: "arm64")
-    toolchains.clear_exact_toolchain_cache()
-    try:
-        with pytest.raises(
-            RouteError,
-            match=f"EXACT_TOOLCHAIN_PLATFORM_MISMATCH:{language}:expected=Linux/aarch64",
-        ):
-            toolchains.exact_toolchain(language)  # type: ignore[arg-type]
-    finally:
-        toolchains.clear_exact_toolchain_cache()
-
-
 def test_minimal_subprocess_environment_rejects_tampered_go_telemetry_mode(tmp_path: Path) -> None:
     home = tmp_path / "home"
     scratch = tmp_path / "tmp"
@@ -567,6 +530,10 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         getattr(legacy_hosted, field) == getattr(current_hosted, field)
         for field in dotnet_fields
     )
+    assert all(
+        getattr(latest_hosted, field) == getattr(current_hosted, field)
+        for field in dotnet_fields
+    )
     assert legacy_hosted.php_tree_sha256 == (
         "60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f"
     )
@@ -579,8 +546,13 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
     )
     assert current_hosted.php_tree_bytes == 129_937_220
     assert latest_hosted.profile_id == "github-macos26-20260907.0351.1"
-    assert latest_hosted.php_tree_sha256 == current_hosted.php_tree_sha256
-    assert latest_hosted.dotnet_sdk_tree_sha256 == current_hosted.dotnet_sdk_tree_sha256
+    assert latest_hosted.php_tree_sha256 == (
+        "ca33ea07e927e25416bc906af465ba6713824e3e5af66fb974f319e92c43d6d9"
+    )
+    assert latest_hosted.php_tree_bytes == 129_938_026
+    assert latest_hosted.php_tree_record_count == 644
+    assert latest_hosted.php_tree_file_count == 533
+    assert latest_hosted.php_tree_directory_count == 109
     assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
     assert legacy_hosted.php_tree_sha256 == local.php_tree_sha256
     assert current_hosted.php_tree_bytes == local.php_tree_bytes

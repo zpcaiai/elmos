@@ -479,6 +479,9 @@ class HomebrewRouteBundleProfile:
     dotnet_hostpolicy_sha256: str
     php_tree_sha256: str
     php_tree_bytes: int
+    php_tree_record_count: int
+    php_tree_file_count: int
+    php_tree_directory_count: int
 
 
 _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
@@ -502,6 +505,9 @@ _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
     dotnet_hostpolicy_sha256=_EXPECTED_DOTNET_HOSTPOLICY_SHA256,
     php_tree_sha256="60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
     php_tree_bytes=129_937_220,
+    php_tree_record_count=643,
+    php_tree_file_count=532,
+    php_tree_directory_count=109,
 )
 _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     profile_id="github-macos26-20260831.0337.3",
@@ -524,6 +530,19 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
     php_tree_sha256="60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
     php_tree_bytes=129_937_220,
+    php_tree_record_count=643,
+    php_tree_file_count=532,
+    php_tree_directory_count=109,
+)
+_HOMEBREW_ROUTE_LATEST_HOSTED_PROFILE = replace(
+    _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
+    profile_id="github-macos26-20260907.0351.1",
+    image_version="20260907.0351.1",
+    php_tree_sha256="ca33ea07e927e25416bc906af465ba6713824e3e5af66fb974f319e92c43d6d9",
+    php_tree_bytes=129_938_026,
+    php_tree_record_count=644,
+    php_tree_file_count=533,
+    php_tree_directory_count=109,
 )
 _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
     _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
@@ -533,11 +552,9 @@ _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
     build_version="25F84",
     php_tree_sha256="60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
     php_tree_bytes=129_937_220,
-)
-_HOMEBREW_ROUTE_LATEST_HOSTED_PROFILE = replace(
-    _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
-    profile_id="github-macos26-20260907.0351.1",
-    image_version="20260907.0351.1",
+    php_tree_record_count=643,
+    php_tree_file_count=532,
+    php_tree_directory_count=109,
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LOCAL_PROFILE,
@@ -4236,6 +4253,11 @@ _APPLE_ROUTE_CURRENT_PROFILE = AppleRouteHostProfile(
     codesign_sha256=_APPLE_ROUTE_LOCAL_PROFILE.codesign_sha256,
     codesign_bytes=_APPLE_ROUTE_LOCAL_PROFILE.codesign_bytes,
 )
+_APPLE_ROUTE_LATEST_PROFILE = replace(
+    _APPLE_ROUTE_CURRENT_PROFILE,
+    profile_id="github-macos26-20260907.0351.1",
+    image_version="20260907.0351.1",
+)
 
 _APPLE_ROUTE_LATEST_PROFILE = replace(
     _APPLE_ROUTE_CURRENT_PROFILE,
@@ -4983,9 +5005,9 @@ def _php_tree_identity() -> dict[str, object]:
     expected = {
         "root": str(_EXPECTED_PHP_ROOT),
         "sha256": bundle_profile.php_tree_sha256,
-        "record_count": _EXPECTED_PHP_TREE_RECORD_COUNT,
-        "file_count": _EXPECTED_PHP_TREE_FILE_COUNT,
-        "directory_count": _EXPECTED_PHP_TREE_DIRECTORY_COUNT,
+        "record_count": bundle_profile.php_tree_record_count,
+        "file_count": bundle_profile.php_tree_file_count,
+        "directory_count": bundle_profile.php_tree_directory_count,
         "bytes": bundle_profile.php_tree_bytes,
         "symlinks": _EXPECTED_PHP_TREE_SYMLINKS,
         "unbound_symlinks": _EXPECTED_PHP_TREE_UNBOUND_SYMLINKS,

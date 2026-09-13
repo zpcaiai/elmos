@@ -1,8 +1,9 @@
 ---
 name: pm-precision-migration-orchestrator
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "Routes assessment, conversion, repair, formal verification, complete project generation, evidence certification and production cutover across all 44 batches. Use to route Precision Migration work across B01-B44 with fail-closed evidence."
 ---
 

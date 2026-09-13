@@ -31,9 +31,6 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.precision_migration.contracts import compile_contract
-from scripts.precision_migration.promotion import (
-    PROMOTION_METADATA as PROMOTION_METADATA_BYTES,
-)
 
 SOURCE = ROOT / "skills" / "precision-migration-skills-batch-01-44"
 RUNTIME_ROOT = ROOT / "agent-skills" / "runtime"
@@ -583,8 +580,11 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
     for record in records:
         destination = generated_root / str(record["name"])
         destination.mkdir()
-        skill_text = normalized_skill(record, records)
-        (destination / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        skill_content = promoted_skill_content(
+            normalized_skill(record, records).encode("utf-8"),
+            str(record["name"]),
+        )
+        (destination / "SKILL.md").write_bytes(skill_content)
         write_interface(destination, record, write_openai_yaml)
         installed = dict(record)
         installed["source_sha256"] = sha256(
@@ -725,28 +725,46 @@ def directories_equal(left: Path, right: Path) -> bool:
     return left_files == right_files
 
 
-PROMOTION_METADATA = PROMOTION_METADATA_BYTES.decode("utf-8")
+LEGACY_PROMOTION_METADATA = (
+    'implementation_state: "VERIFIED"\n'
+    'external_evidence_status: "LOCAL_EXECUTED"\n'
+    'production_certification: "NOT_CERTIFIED"\n'
+)
+PROMOTION_METADATA = (
+    "metadata:\n"
+    '  implementation_state: "VERIFIED"\n'
+    '  external_evidence_status: "LOCAL_EXECUTED"\n'
+    '  production_certification: "NOT_CERTIFIED"\n'
+)
 
 
 def normalize_promotion_metadata(content: bytes) -> bytes:
     """Remove only the exact repository-owned promotion overlay."""
-    marker = PROMOTION_METADATA.encode("utf-8")
-    if marker not in content:
+    markers = tuple(
+        value.encode("utf-8")
+        for value in (PROMOTION_METADATA, LEGACY_PROMOTION_METADATA)
+    )
+    present = [marker for marker in markers if marker in content]
+    if len(present) != 1 or content.count(present[0]) != 1:
         return content
-    if content.count(marker) != 1:
-        return content
-    return content.replace(marker, b"", 1)
+    return content.replace(present[0], b"", 1)
 
 
 def promoted_skill_content(content: bytes, name: str) -> bytes:
     marker = f"name: {name}\n".encode("utf-8")
     if content.count(marker) != 1:
         fail(f"cannot apply exact promotion metadata: {name}")
-    if PROMOTION_METADATA.encode("utf-8") in content:
+    canonical = PROMOTION_METADATA.encode("utf-8")
+    legacy = LEGACY_PROMOTION_METADATA.encode("utf-8")
+    if content.count(canonical) == 1 and legacy not in content:
         return content
+    if content.count(legacy) == 1 and canonical not in content:
+        return content.replace(legacy, canonical, 1)
+    if canonical in content or legacy in content or b"\nmetadata:\n" in content:
+        fail(f"ambiguous promotion metadata: {name}")
     return content.replace(
         marker,
-        marker + PROMOTION_METADATA.encode("utf-8"),
+        marker + canonical,
         1,
     )
 

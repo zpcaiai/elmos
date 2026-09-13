@@ -201,7 +201,6 @@ def build() -> dict[str, Any]:
             "scripts/precision_migration/native.py",
             "scripts/precision_migration/orchestration.py",
             "scripts/precision_migration/production_runtime.py",
-            "scripts/precision_migration/promotion.py",
             "scripts/precision_migration/qualify_external_engineering.py",
             "scripts/precision_migration/runtime.py",
             "scripts/precision_migration/trust.py",
