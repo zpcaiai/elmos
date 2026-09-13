@@ -15,6 +15,33 @@ from typing import Any
 
 from sqlglot import exp, parse_one
 
+SUPPORTED_UPSERT_SOURCES = frozenset(
+    {
+        "postgres",
+        "postgresql",
+        "mysql",
+        "oracle",
+        "dm8",
+        "sqlserver",
+        "tsql",
+        "opengauss",
+        "kingbase",
+        "kingbasees",
+        "tidb",
+        "goldendb",
+        "oceanbase-mysql",
+        "oceanbase_mysql",
+        "gbase-8a",
+        "gbase8a",
+        "gbase-8c",
+        "gbase8c",
+        "highgo",
+        "highgo-hgdb",
+        "sqlite",
+    }
+)
+SUPPORTED_UPSERT_TARGETS = SUPPORTED_UPSERT_SOURCES
+
 
 def _sha256(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -51,6 +78,25 @@ class UpsertTranspiler:
                 "status": "BLOCKED",
                 "reasonCode": "SQL_INPUT_REQUIRED",
                 "reason": "UPSERT statement must not be empty.",
+                "emitted": None,
+            }
+
+        if src_norm not in SUPPORTED_UPSERT_SOURCES:
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-upsert-translation",
+                "status": "BLOCKED",
+                "reasonCode": "SOURCE_DIALECT_UNSUPPORTED",
+                "reason": f"Unsupported source UPSERT dialect: {src_norm}",
+                "emitted": None,
+            }
+        if tgt_norm not in SUPPORTED_UPSERT_TARGETS:
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-upsert-translation",
+                "status": "BLOCKED",
+                "reasonCode": "TARGET_DIALECT_UNSUPPORTED",
+                "reason": f"Unsupported target UPSERT dialect: {tgt_norm}",
                 "emitted": None,
             }
 
@@ -226,11 +272,33 @@ class UpsertTranspiler:
             return self._emit_merge(c, tgt)
 
         # Dialect targets that use ON DUPLICATE KEY UPDATE (MySQL, TiDB, openGauss, GoldenDB)
-        if tgt in ("mysql", "tidb", "goldendb", "oceanbase-mysql", "oceanbase_mysql", "gbase-8a", "gbase8a", "opengauss"):
+        if tgt in (
+            "mysql",
+            "tidb",
+            "goldendb",
+            "oceanbase-mysql",
+            "oceanbase_mysql",
+            "gbase-8a",
+            "gbase8a",
+            "opengauss",
+        ):
             return self._emit_on_duplicate_key(c, tgt)
 
         # Dialect targets that use ON CONFLICT (PostgreSQL, KingbaseES, HighGo, GBase 8c, SQLite)
-        return self._emit_on_conflict(c, tgt)
+        if tgt in (
+            "postgres",
+            "postgresql",
+            "kingbase",
+            "kingbasees",
+            "highgo",
+            "highgo-hgdb",
+            "gbase-8c",
+            "gbase8c",
+            "sqlite",
+        ):
+            return self._emit_on_conflict(c, tgt)
+
+        raise ValueError(f"Unsupported target UPSERT dialect: {tgt}")
 
     def _emit_on_conflict(self, c: CanonicalUpsert, tgt: str) -> str:
         cols_str = ", ".join(c.columns)
@@ -241,7 +309,10 @@ class UpsertTranspiler:
             return f"INSERT INTO {c.table} ({cols_str}) VALUES {rows_str} ON CONFLICT ({keys_str}) DO NOTHING;"
 
         updates_str = ", ".join(f"{col} = EXCLUDED.{val}" for col, val in c.update_pairs)
-        return f"INSERT INTO {c.table} ({cols_str}) VALUES {rows_str} ON CONFLICT ({keys_str}) DO UPDATE SET {updates_str};"
+        return (
+            f"INSERT INTO {c.table} ({cols_str}) VALUES {rows_str} "
+            f"ON CONFLICT ({keys_str}) DO UPDATE SET {updates_str};"
+        )
 
     def _emit_on_duplicate_key(self, c: CanonicalUpsert, tgt: str) -> str:
         cols_str = ", ".join(c.columns)
@@ -249,7 +320,10 @@ class UpsertTranspiler:
 
         if c.do_nothing:
             first_key = c.conflict_keys[0] if c.conflict_keys else (c.columns[0] if c.columns else "id")
-            return f"INSERT INTO {c.table} ({cols_str}) VALUES {rows_str} ON DUPLICATE KEY UPDATE {first_key} = {first_key};"
+            return (
+                f"INSERT INTO {c.table} ({cols_str}) VALUES {rows_str} "
+                f"ON DUPLICATE KEY UPDATE {first_key} = {first_key};"
+            )
 
         updates_str = ", ".join(f"{col} = VALUES({val})" for col, val in c.update_pairs)
         return f"INSERT INTO {c.table} ({cols_str}) VALUES {rows_str} ON DUPLICATE KEY UPDATE {updates_str};"

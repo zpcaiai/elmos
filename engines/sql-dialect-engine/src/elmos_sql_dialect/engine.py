@@ -436,7 +436,22 @@ def translate_sql(
         elif upper.startswith("REVOKE"):
             kind = "REVOKE"
         else:
-            kind = "TABLE"
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-dialect-translation",
+                "status": "BLOCKED",
+                "reasonCode": "STATEMENT_KIND_UNSUPPORTED",
+                "reason": "AUTO could not identify a supported SQL statement kind.",
+                "sourceDialect": source_dialect,
+                "targetDialect": target_dialect,
+                "emitted": None,
+                "validation": {
+                    "syntaxStatus": "NOT_RUN",
+                    "syntaxDiagnostics": [],
+                    "executionStatus": "NOT_RUN",
+                    "executionDiagnostics": [],
+                },
+            }
 
     if kind in ("QUERY", "SELECT"):
         return translate_query(sql, source_dialect=source_dialect, target_dialect=target_dialect, dsn=dsn, **kwargs)

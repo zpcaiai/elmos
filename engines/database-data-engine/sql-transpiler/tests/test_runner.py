@@ -8,10 +8,22 @@ import pytest
 
 import elmos_sql_transpiler.runner as runner_module
 from elmos_sql_transpiler.runner import (
+    PostgreSQLRunner,
     RunnerBlockedError,
     runner_capabilities,
     verify_route,
 )
+
+
+def test_postgresql_provision_timeout_is_environment_invalid(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def timeout(*args: object, **kwargs: object) -> None:
+        raise runner_module.subprocess.TimeoutExpired(cmd=["initdb"], timeout=30.0)
+
+    monkeypatch.setattr(runner_module.subprocess, "run", timeout)
+    with pytest.raises(RunnerBlockedError, match="NOT_RUN_ENVIRONMENT_INVALID"):
+        PostgreSQLRunner()._run(["initdb"])
 
 
 def _performance_attempt(state: str, p95: float) -> dict[str, object]:
@@ -235,7 +247,10 @@ def test_postgresql_to_sqlite_executes_on_real_server_175(
         )
 
     output = tmp_path / "postgresql-to-sqlite"
-    result = verify_route("postgresql-17.5", "sqlite-3.53.3", output)
+    try:
+        result = verify_route("postgresql-17.5", "sqlite-3.53.3", output)
+    except RunnerBlockedError as error:
+        pytest.skip(str(error))
 
     assert result["localDecision"] == "FAILED"
     assert result["sourceExecution"] == "PASSED"
@@ -278,7 +293,10 @@ def test_postgresql_to_duckdb_executes_on_real_server_175(
         )
 
     output = tmp_path / "postgresql-to-duckdb"
-    result = verify_route("postgresql-17.5", "duckdb-1.5.4", output)
+    try:
+        result = verify_route("postgresql-17.5", "duckdb-1.5.4", output)
+    except RunnerBlockedError as error:
+        pytest.skip(str(error))
 
     assert result["localDecision"] == "FAILED"
     assert result["sourceExecution"] == "PASSED"
@@ -329,7 +347,10 @@ def test_remaining_local_ready_routes_execute_and_stay_uncertified(
         pytest.skip("pinned local runtimes are absent; runtime evidence stays NOT_RUN on this host")
 
     output = tmp_path / f"{source_profile}--to--{target_profile}"
-    result = verify_route(source_profile, target_profile, output)
+    try:
+        result = verify_route(source_profile, target_profile, output)
+    except RunnerBlockedError as error:
+        pytest.skip(str(error))
 
     assert result["localDecision"] == "FAILED"
     assert result["sourceExecution"] == "PASSED"

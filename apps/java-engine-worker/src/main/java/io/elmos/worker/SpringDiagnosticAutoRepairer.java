@@ -40,10 +40,15 @@ public final class SpringDiagnosticAutoRepairer {
             boolean repaired,
             int changesCount,
             Set<String> modifiedFiles,
-            List<String> rulesApplied
+            List<String> rulesApplied,
+            List<String> blockingObligations
     ) {
+        public RepairResult(boolean repaired, int changesCount, Set<String> modifiedFiles, List<String> rulesApplied) {
+            this(repaired, changesCount, modifiedFiles, rulesApplied, List.of());
+        }
+
         public static RepairResult empty() {
-            return new RepairResult(false, 0, Collections.emptySet(), Collections.emptyList());
+            return new RepairResult(false, 0, Collections.emptySet(), Collections.emptyList(), Collections.emptyList());
         }
     }
 
@@ -64,6 +69,7 @@ public final class SpringDiagnosticAutoRepairer {
 
         Set<String> modifiedFiles = new LinkedHashSet<>();
         List<String> rulesApplied = new ArrayList<>();
+        List<String> blockingObligations = new ArrayList<>();
         int changesCount = 0;
 
         // 1. Discover all reactor modules
@@ -115,6 +121,23 @@ public final class SpringDiagnosticAutoRepairer {
             rulesApplied.addAll(jpaRes.rulesApplied());
         }
 
+        var hbmRes = io.elmos.worker.jpa.HibernateHbmXmlToJpaConverter.convert(
+                projectRoot, projectRoot.resolve("src/main/java"));
+        if (hbmRes.modified()) {
+            changesCount += hbmRes.generatedFiles().size();
+            hbmRes.generatedFiles().forEach(path -> modifiedFiles.add("src/main/java/" + path));
+            rulesApplied.add("CONVERT_HIBERNATE_HBM_TO_JAKARTA_JPA");
+        }
+        blockingObligations.addAll(hbmRes.blockingObligations());
+
+        var batchRes = io.elmos.worker.batch.SpringBatch4To5AstRewriter.modernize(projectRoot);
+        if (batchRes.modified()) {
+            changesCount += batchRes.modifiedFiles().size();
+            modifiedFiles.addAll(batchRes.modifiedFiles());
+            rulesApplied.addAll(batchRes.rulesApplied());
+        }
+        blockingObligations.addAll(batchRes.blockingObligations());
+
         // 6. Spring Cloud Microservices Modernizer
         var cloudRes = io.elmos.worker.cloud.SpringCloudMicroservicesModernizer.modernize(projectRoot);
         if (cloudRes.modified()) {
@@ -122,6 +145,7 @@ public final class SpringDiagnosticAutoRepairer {
             modifiedFiles.addAll(cloudRes.modifiedFiles());
             rulesApplied.addAll(cloudRes.rulesApplied());
         }
+        blockingObligations.addAll(cloudRes.blockingObligations());
 
         // 7. XML Hybrid Configuration Converter
         var xmlRes = io.elmos.worker.xml.SpringXmlToJavaConfigConverter.convertProject(projectRoot, "io.elmos.config");
@@ -138,6 +162,15 @@ public final class SpringDiagnosticAutoRepairer {
             modifiedFiles.addAll(ecoRes.modifiedFiles());
             rulesApplied.addAll(ecoRes.rulesApplied());
         }
+        blockingObligations.addAll(ecoRes.blockingObligations());
+
+        var messagingRes = io.elmos.worker.messaging.SpringActiveMqToArtemisModernizer.modernize(projectRoot);
+        if (messagingRes.modified()) {
+            changesCount += messagingRes.modifiedFiles().size();
+            modifiedFiles.addAll(messagingRes.modifiedFiles());
+            rulesApplied.addAll(messagingRes.rulesApplied());
+        }
+        blockingObligations.addAll(messagingRes.blockingObligations());
 
         // 9. Spring MVC Web Routing Modernizer (Trailing-slash matching, jakarta exception handling)
         var webRes = io.elmos.worker.web.SpringMvcWebRoutingModernizer.modernize(projectRoot, "io.elmos.benchmark.config");
@@ -165,7 +198,8 @@ public final class SpringDiagnosticAutoRepairer {
             rulesApplied.add("GENERATE_PRIVATE_ARTIFACT_SHIMS: " + shimRes.shimCount() + " mock shims created");
         }
 
-        return new RepairResult(changesCount > 0, changesCount, Collections.unmodifiableSet(modifiedFiles), Collections.unmodifiableList(rulesApplied));
+        return new RepairResult(changesCount > 0, changesCount, Collections.unmodifiableSet(modifiedFiles),
+                Collections.unmodifiableList(rulesApplied), Collections.unmodifiableList(blockingObligations));
     }
 
     /**

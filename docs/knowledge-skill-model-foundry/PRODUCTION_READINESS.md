@@ -20,6 +20,14 @@ local control-plane behavior. The package as a whole remains `NOT_CERTIFIED`.
   explicitly inherited environment variables, bounds time/output, kills timed
   out process groups, and treats every drift, malformed response, nonzero exit
   or unreconciled outcome as failure with unknown effects;
+- a strict host Provider-manifest compiler that binds executable identity,
+  version and digest to the compiled catalog, adapter, route, operation and
+  native semantic-program digest; complete mode requires all 1,244 Skill routes
+  and 14 pipeline routes and rejects partial inventories before any command is
+  started;
+- a verify-only signed-permit authority that covers every invocation claim,
+  enforces issuer/key allowlists and trust epochs, rejects self-authorization,
+  and applies issuer, key, authorization and permit revocations;
 - typed training and deployment requests that bind provider/version,
   environment, configuration and exact input/output artifact digests, plus
   external receipt verification that requires a distinct executor, reconciled
@@ -67,6 +75,12 @@ provider execution or production persistence qualification.
 The 66 local handlers and 1,244 native program/host route bindings do not clear any item in
 this external-gate list. Their
 receipts are bounded, self-attested engineering evidence only.
+
+The removed local “industrial Broker” was not a valid implementation of the
+1,244 Skills: it mapped unrelated identities into 18 generic algorithms, ran
+default example payloads, and generated confirmed tool/gate/Provider receipts
+without executing their declared tools or an externally verified Provider.
+Those outputs are no longer accepted or published as certification evidence.
 
 The repository now implements the reusable external execution and evidence
 verification boundary in `elmos_foundry.external_assurance` and the complete

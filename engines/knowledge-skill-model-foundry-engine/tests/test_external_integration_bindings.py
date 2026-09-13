@@ -11,6 +11,7 @@ from typing import ClassVar
 from elmos_foundry.adapters import ExternalExecutionBroker, InvocationPermit
 from elmos_foundry.canonical import canonical_digest
 from elmos_foundry.domain import TenantScope
+from elmos_foundry.external_bindings import exact_external_binding
 from elmos_foundry.kernel import ExecutionKernel
 from elmos_foundry.local_semantics import LOCAL_SEMANTIC_SKILLS
 from elmos_foundry.pipelines import PIPELINE_PROFILE_REGISTRY
@@ -91,6 +92,19 @@ class ExternalIntegrationBindingTests(unittest.TestCase):
         self.assertFalse(result.external_effects_performed)
         self.assertIn("host-owned broker", str(result.error))
         self.assertEqual(result.outputs["certification_status"], "NOT_CERTIFIED")
+
+    def test_immutable_exact_binding_is_reused_but_mutable_drift_is_revalidated(self) -> None:
+        name = "a2a-agent-discovery-messaging"
+        record = self.service.skills.snapshot.atomic_skills[name]
+        first = exact_external_binding(name, record)
+        second = exact_external_binding(name, record)
+        self.assertIs(first[0], second[0])
+        self.assertIs(first[1], second[1])
+
+        mutable_record = dict(record)
+        mutable_record["description"] = "caller-controlled drift"
+        with self.assertRaisesRegex(ValueError, "native semantic program drift"):
+            exact_external_binding(name, mutable_record)
 
     def test_all_pipeline_routes_are_exact_and_prepare_exposes_binding(self) -> None:
         rows = self.service.pipelines.adapters.describe()

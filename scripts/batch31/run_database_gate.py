@@ -45,7 +45,6 @@ LOCAL_CORE = (
     "security",
 )
 PASS_STATUSES = {"PASSED_LOCAL", "PASSED_EXTERNAL", "PASSED_INDEPENDENT"}
-EXTERNAL_STATUSES = {"PASSED_EXTERNAL", "PASSED_INDEPENDENT"}
 STATUS_RANK = {
     "blocked": -1,
     "research": 0,
@@ -100,25 +99,8 @@ def _production_evidence_failures(pack: Path, evidence: dict[str, Any]) -> list[
     return failures
 
 
-def _roles_are_independent(evidence: dict[str, Any]) -> bool:
-    roles = evidence.get("evidence_roles")
-    if not isinstance(roles, dict):
-        return False
-    values = [
-        roles.get("executor"),
-        roles.get("independent_verifier"),
-        roles.get("certification_authority"),
-    ]
-    return (
-        all(isinstance(value, str) and value.strip() for value in values)
-        and len(set(values)) == 3
-    )
-
-
 def _derive_status(
     pack: Path,
-    manifest: dict[str, Any],
-    support: dict[str, Any],
     evidence: dict[str, Any],
     certification: dict[str, Any],
 ) -> tuple[str, list[str]]:
@@ -135,53 +117,22 @@ def _derive_status(
     )
     derived = "experimental" if has_local_evidence else "research"
 
-    external_core = all(states.get(field) in EXTERNAL_STATUSES for field in LOCAL_CORE)
-    independently_verified = (
-        states.get("independent_verification") == "PASSED_INDEPENDENT"
-    )
-    restrictions = certification.get("restrictions")
+    external_claims = {
+        field: value
+        for field, value in states.items()
+        if value in {"PASSED_EXTERNAL", "PASSED_INDEPENDENT"}
+    }
     if (
-        not blockers
-        and external_core
-        and independently_verified
-        and _roles_are_independent(evidence)
+        external_claims
+        or certification.get("external_certification") == "PASSED_INDEPENDENT"
     ):
-        if isinstance(restrictions, list) and restrictions:
-            derived = "limited"
-
-        migration_mode = manifest.get("mode") == "migration"
-        lifecycle_ok = states.get("rollback") in EXTERNAL_STATUSES
-        if migration_mode:
-            lifecycle_ok = (
-                lifecycle_ok
-                and states.get("cdc") in EXTERNAL_STATUSES
-                and states.get("cutover") in EXTERNAL_STATUSES
-            )
-        else:
-            lifecycle_ok = lifecycle_ok and states.get("cdc") in EXTERNAL_STATUSES | {
-                "NOT_APPLICABLE"
-            }
-            lifecycle_ok = lifecycle_ok and states.get(
-                "cutover"
-            ) in EXTERNAL_STATUSES | {"NOT_APPLICABLE"}
-        capabilities = support.get("capabilities", [])
-        no_noncertified_capabilities = bool(capabilities) and all(
-            item.get("status") == "certified" for item in capabilities
+        blockers.append(
+            "checked-in status fields are self-attested and cannot prove external execution or independent certification"
         )
-        approvals = certification.get("approved_by")
-        certified = (
-            lifecycle_ok
-            and no_noncertified_capabilities
-            and states.get("external_certification") == "PASSED_INDEPENDENT"
-            and certification.get("external_certification") == "PASSED_INDEPENDENT"
-            and isinstance(approvals, list)
-            and len(
-                {item for item in approvals if isinstance(item, str) and item.strip()}
-            )
-            >= 2
-        )
-        if certified:
-            derived = "certified"
+    # This repository-owned gate has no private trust authority and therefore
+    # deliberately caps its result at bounded local engineering evidence. The
+    # external gate separately validates original signed receipt chains from an
+    # operator-mounted request and trust store.
     return derived, blockers
 
 
@@ -207,13 +158,12 @@ def main() -> int:
 
     try:
         manifest = load_json(pack / "pack.json")
-        support = load_json(pack / "support-matrix.json")
         route = load_json(pack / "route-matrix.json")
         evidence = load_json(pack / "certification" / "evidence.json")
         certification = load_json(pack / "certification" / "certification.json")
     except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
         validation_failures.append(str(exc))
-        manifest, support, route, evidence, certification = {}, {}, {}, {}, {}
+        manifest, route, evidence, certification = {}, {}, {}, {}
 
     ir_result = subprocess.run(
         [
@@ -230,9 +180,7 @@ def main() -> int:
             f"canonical IR validation failed: {ir_result.stderr.strip() or ir_result.stdout.strip()}"
         )
 
-    derived_status, blockers = _derive_status(
-        pack, manifest, support, evidence, certification
-    )
+    derived_status, blockers = _derive_status(pack, evidence, certification)
     claims = [manifest.get("status"), certification.get("status")]
     tuples = route.get("tuples")
     if isinstance(tuples, list) and len(tuples) == 1 and isinstance(tuples[0], dict):

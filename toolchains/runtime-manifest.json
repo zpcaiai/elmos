@@ -72,6 +72,26 @@
       ],
       "optional": []
     },
+    "routes-windows-vb6": {
+      "description": "Governed external Visual Basic 6.0 SP6 compiler/runtime profile for the 28 VB6 route directions. The central doctor records the boundary; the digest-bound Windows cross-host campaign supplies executable evidence.",
+      "platforms": [
+        "windows-x86_64"
+      ],
+      "required": [],
+      "optional": [
+        "vb6-route-sp6"
+      ]
+    },
+    "routes-windows-vcpp6": {
+      "description": "Governed external Microsoft Visual C++ 6.0 SP6 compiler/linker/runtime profile for the 28 VC++6 route directions. The central doctor records the boundary; the digest-bound Windows cross-host campaign supplies executable evidence.",
+      "platforms": [
+        "windows-x86_64"
+      ],
+      "required": [],
+      "optional": [
+        "vcpp6-route-sp6"
+      ]
+    },
     "b66-80": {
       "description": "Governed polyglot capability catalog. Tools are optional until an exact Batch Skill and target profile are selected.",
       "required": [],
@@ -173,6 +193,8 @@
         "maven-3.9.11",
         "android-sdk",
         "harmonyos-sdk",
+        "vb6-route-sp6",
+        "vcpp6-route-sp6",
         "mainframe-runtime",
         "sap-abap-runtime",
         "database-procedural-runtimes",
@@ -580,6 +602,26 @@
       "platforms": ["darwin-arm64", "windows-x86_64"],
       "required_by": ["frontend-native"],
       "notes": "The SDK, emulator/device, signing, and hdc evidence remain NOT_RUN until an authorized exact profile is supplied."
+    },
+    {
+      "id": "vb6-route-sp6",
+      "display_name": "Microsoft Visual Basic 6.0 SP6 route toolchain",
+      "languages": ["vb6"],
+      "version": "Microsoft Visual Basic 6.0 SP6 / x86 compiler and runtime / external manifest digest pinned",
+      "install_policy": "vendor-external",
+      "platforms": ["windows-x86_64"],
+      "required_by": ["polyglot-routes-windows-vb6"],
+      "notes": "Requires licensed VB6.EXE and MSVBVM60.DLL bound by schemas/batch29/vb6-toolchain-binding.schema.json. Availability is NOT_RUN until the governed Windows cross-host campaign verifies the exact files; it never implies independent verification or certification."
+    },
+    {
+      "id": "vcpp6-route-sp6",
+      "display_name": "Microsoft Visual C++ 6.0 SP6 route toolchain",
+      "languages": ["vcpp6"],
+      "version": "Microsoft Visual C++ 6.0 SP6 / x86 compiler, linker, and runtime / external manifest digest pinned",
+      "install_policy": "vendor-external",
+      "platforms": ["windows-x86_64"],
+      "required_by": ["polyglot-routes-windows-vcpp6"],
+      "notes": "Requires licensed CL.EXE, LINK.EXE, and MSVCP60.DLL bound by schemas/batch29/vcpp6-toolchain-binding.schema.json. Availability is NOT_RUN until the governed Windows cross-host campaign verifies the exact files; it never implies independent verification or certification."
     },
     {
       "id": "mainframe-runtime",

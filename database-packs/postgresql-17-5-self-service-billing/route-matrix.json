@@ -33,11 +33,13 @@
           "postgresql-jdbc-42.7.7"
         ]
       },
-      "status": "certified",
+      "status": "experimental",
       "evidence_refs": [
         "certification/local-billing-evidence.json"
       ],
-      "restrictions": []
+      "restrictions": [
+        "External execution and independent certification are NOT_RUN."
+      ]
     }
   ],
   "recertification_triggers": [

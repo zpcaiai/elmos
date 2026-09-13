@@ -12,7 +12,9 @@
       "evidence_refs": [
         "certification/local-postgresql-opengauss-query-evidence.json"
       ],
-      "restrictions": [],
+      "restrictions": [
+        "Exact PostgreSQL 17.5 to openGauss 5.0.0 vendor execution and independent evidence are NOT_RUN."
+      ],
       "source": {
         "charset": "UTF8",
         "collation": "C",
@@ -28,7 +30,7 @@
           "17.5"
         ]
       },
-      "status": "certified",
+      "status": "research",
       "target": {
         "charset": "UTF-8",
         "collation": "en_US.UTF-8",

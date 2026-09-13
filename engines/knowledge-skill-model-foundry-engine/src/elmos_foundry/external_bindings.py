@@ -9,6 +9,7 @@ exact permit and trusted permit/result verifiers.
 
 from __future__ import annotations
 
+from threading import RLock
 from types import MappingProxyType
 from typing import Any, Mapping, Protocol
 
@@ -24,6 +25,15 @@ from .native_semantics import native_program_for
 
 EXTERNAL_BINDING_VERSION = "1.0.0"
 EXTERNAL_INTEGRATION_STATUS = "NATIVE_IMPLEMENTED_HOST_RUNTIME_REQUIRED"
+_EXACT_BINDING_CACHE_LOCK = RLock()
+_EXACT_BINDING_CACHE: dict[
+    int,
+    tuple[
+        Mapping[str, Any],
+        str,
+        tuple[AdapterBinding, ExternalAdapterRoute],
+    ],
+] = {}
 
 
 class ExternalBindingCatalog(Protocol):
@@ -64,6 +74,18 @@ def exact_external_binding(
 ) -> tuple[AdapterBinding, ExternalAdapterRoute]:
     """Compile one catalog row into a unique adapter and broker route."""
 
+    # Compiled catalog rows are immutable mapping proxies. Retaining the row in
+    # this cache makes identity reuse impossible and lets additional service
+    # instances reuse the already validated binding without weakening checks
+    # for caller-owned mutable mappings.
+    cacheable = isinstance(record, MappingProxyType)
+    cache_key = id(record)
+    if cacheable:
+        with _EXACT_BINDING_CACHE_LOCK:
+            cached = _EXACT_BINDING_CACHE.get(cache_key)
+            if cached is not None and cached[0] is record and cached[1] == name:
+                return cached[2]
+
     program = native_program_for(name, record)
     document = dict(_binding_document(name, record))
     document["semantic_program_digest"] = "sha256:" + program.digest
@@ -102,7 +124,11 @@ def exact_external_binding(
         operation=str(document["operation"]),
         semantic_program=program,
     )
-    return binding, route
+    result = (binding, route)
+    if cacheable:
+        with _EXACT_BINDING_CACHE_LOCK:
+            _EXACT_BINDING_CACHE[cache_key] = (record, name, result)
+    return result
 
 
 def register_external_bindings(

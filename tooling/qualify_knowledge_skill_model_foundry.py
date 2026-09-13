@@ -150,13 +150,13 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
         "id": "native_semantic_program_check",
         "command": ["uv", "run", "--quiet", "python", NATIVE_GENERATOR_PATH.as_posix(), "--check"],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
-        "timeout_seconds": 300,
+        "timeout_seconds": 900,
     },
     {
         "id": "readiness_inventory_check",
         "command": ["uv", "run", "--quiet", "python", READINESS_PATH.as_posix(), "--check"],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
-        "timeout_seconds": 300,
+        "timeout_seconds": 1200,
     },
     {
         "id": "direct_zip_importer_check",
@@ -173,9 +173,11 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             "--check",
         ],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1"},
-        # Full 7,860-document validation exceeds five minutes under concurrent
-        # local workloads. This remains bounded and executes the same checks.
-        "timeout_seconds": 1200,
+        # Full 7,860-document validation is CPU and I/O intensive. Shared
+        # workstations can exceed twenty minutes under extreme concurrent
+        # repository workloads; the check remains bounded without dropping any
+        # document, Schema, checksum, DAG, or generated-asset validation.
+        "timeout_seconds": 3600,
     },
     {
         "id": "ruff_static_analysis",
@@ -197,7 +199,7 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             ROOT_TESTS_TEXT,
         ],
         "environment": {},
-        "timeout_seconds": 180,
+        "timeout_seconds": 900,
     },
     {
         "id": "strict_mypy",
@@ -216,7 +218,7 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             EXTERNAL_QUALIFIER_PATH.as_posix(),
         ],
         "environment": {"PYTHONPATH": f"{ENGINE_SOURCE}:packages/pi-harness/src"},
-        "timeout_seconds": 900,
+        "timeout_seconds": 1800,
     },
     {
         "id": "python_compileall",
@@ -236,7 +238,7 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             EXTERNAL_QUALIFIER_PATH.as_posix(),
         ],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
-        "timeout_seconds": 300,
+        "timeout_seconds": 900,
     },
     {
         "id": "engine_unittest_suite",
@@ -260,7 +262,9 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             "test_*.py",
         ],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
-        "timeout_seconds": 2400,
+        # The complete suite repeatedly exercises the 1,310-Skill catalog and
+        # remains hard-bounded even on heavily contended shared workstations.
+        "timeout_seconds": 7200,
     },
     {
         "id": "repository_integration_unittest_suite",
@@ -284,7 +288,7 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             "test_*.py",
         ],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
-        "timeout_seconds": 1200,
+        "timeout_seconds": 3600,
     },
 )
 

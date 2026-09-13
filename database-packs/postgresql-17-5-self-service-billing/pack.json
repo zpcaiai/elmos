@@ -3,7 +3,7 @@
   "pack_key": "postgresql-17-5-self-service-billing",
   "version": "1.0.0",
   "mode": "modernization",
-  "status": "certified",
+  "status": "experimental",
   "owner": "elmos-commercial-billing",
   "maintenance_owner": "elmos-database-platform",
   "data_owner": "elmos-commercial-billing",
@@ -69,10 +69,10 @@
     "target_profile": "target-profile/profile.json"
   },
   "gates": {
-    "typed_schema": 1.0,
-    "p0_correctness": 1.0,
-    "tenant_isolation": 1.0,
-    "local_reconciliation": 1.0,
-    "neon_execution": 1.0
+    "typed_schema": 1,
+    "p0_correctness": 1,
+    "tenant_isolation": 1,
+    "local_reconciliation": 1,
+    "neon_execution": 1
   }
 }

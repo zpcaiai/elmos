@@ -1,8 +1,7 @@
-"""Industrial DDL Migration Executor and Schema Introspection for ChinaDB.
+"""Bounded local DDL executor and schema introspection for ChinaDB-shaped SQL.
 
-Executes schema DDL, constraints, partitioned tables, indexes, lowered procedural
-routines and triggers across all 13 domestic database targets, and verifies structural
-fidelity via reverse catalog introspection.
+The default orchestrator is a SQLite-backed protocol lab, not a vendor runtime.
+Its receipts are local engineering evidence only.
 """
 
 from __future__ import annotations
@@ -91,12 +90,25 @@ class ChinaDbDdlExecutor:
         db = self.orchestrator.get_database(target_id)
         verified_tables = sorted(list(db.tables.keys()))
         schema_snapshot = {
-            tname: {
-                "cols": {cname: c.data_type for cname, c in tbl.columns.items()},
-                "pks": tbl.primary_key_cols,
-                "indexes": list(tbl.indexes.keys()),
-            }
-            for tname, tbl in db.tables.items()
+            "tables": {
+                tname: {
+                    "cols": {cname: c.data_type for cname, c in tbl.columns.items()},
+                    "pks": tbl.primary_key_cols,
+                    "indexes": list(tbl.indexes.keys()),
+                }
+                for tname, tbl in db.tables.items()
+            },
+            "routines": db.routines,
+            "triggers": db.triggers,
+            "sequences": {
+                name: {
+                    "start_with": sequence.start_with,
+                    "increment_by": sequence.increment_by,
+                    "current_value": sequence.current_value,
+                    "source_ddl": sequence.source_ddl,
+                }
+                for name, sequence in db.sequences.items()
+            },
         }
         schema_digest = hashlib.sha256(
             json.dumps(schema_snapshot, sort_keys=True).encode("utf-8")
