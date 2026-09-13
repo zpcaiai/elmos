@@ -83,6 +83,7 @@ TYPESCRIPT_COMPILER_CLOSURE_SHA256 = (
 )
 TYPESCRIPT_COMPILER_FILE_COUNT = 108
 TYPESCRIPT_COMPILER_BYTES = 19_067_381
+SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES = 400_000_000
 SWIFT_BUILD_CLOSURE_TREE_MAXIMUM_BYTES = 1_000_000_000
 
 SPECIALIZED_NEGATIVE_CASES = {
@@ -2493,7 +2494,7 @@ def _stable_read_swift_closure_file(file_path: Path) -> tuple[bytes, os.stat_res
     if (
         not stat.S_ISREG(before.st_mode)
         or before.st_size < 0
-        or before.st_size > 250_000_000
+        or before.st_size > SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES
     ):
         raise ValueError("Swift closure component exceeds maximum size")
     descriptor = os.open(
@@ -2509,14 +2510,14 @@ def _stable_read_swift_closure_file(file_path: Path) -> tuple[bytes, os.stat_res
             not stat.S_ISREG(opened_before.st_mode)
             or opened_before.st_size < 0
             or opened_before.st_size
-            > 250_000_000
+            > SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES
         ):
             raise ValueError("Swift closure component exceeds maximum size")
         chunks: list[bytes] = []
         total = 0
         while chunk := os.read(descriptor, 1024 * 1024):
             total += len(chunk)
-            if total > 250_000_000:
+            if total > SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES:
                 raise ValueError("Swift closure component exceeds maximum size")
             chunks.append(chunk)
         opened_after = os.fstat(descriptor)

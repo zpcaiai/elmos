@@ -447,7 +447,7 @@
       "bytes": 271520,
       "path": "certification/formal-artifacts/engine-source-manifest.json",
       "role": "engine-source-manifest",
-      "sha256": "sha256:3bb9023c2240a3b61f7050c4072556e5200f774023cd6bb03db751e56fc0ee3c"
+      "sha256": "sha256:cbf8fe0eea947e565faa4c16fdba83ca9ae6083055b64c2b267a59935652faec"
     },
     {
       "artifact_id": "artifact-1a941701c1f394b121c4d8f6f6f18fa9519cd4ad57b6ebfc985bea651c6cc7f3",
@@ -4791,10 +4791,10 @@
     },
     {
       "artifact_id": "artifact-f43d107e4f666c6dc2f8c1526eb993e502881dcb05e8c2ecac6bbf025f6e8cf6",
-      "bytes": 535576,
+      "bytes": 535730,
       "path": "certification/formal-artifacts/engine-sources/scripts/batch29/validate_route.py",
       "role": "engine-source",
-      "sha256": "sha256:c9de011a77ba905b211104a90d6bf113c534ba18a9662ec9c6084dfda5e97a91"
+      "sha256": "sha256:148d93016d59b955db824282260726e04ce20d989c9db7ee0940eb0be72f42cf"
     },
     {
       "artifact_id": "artifact-87818eea13b1223e5c8520a16b1741701fce9248e285442d2f792f6d49b34df3",
@@ -4808,7 +4808,7 @@
       "bytes": 953,
       "path": "certification/formal-artifacts/environment.json",
       "role": "environment",
-      "sha256": "sha256:382d3cf29a7d4c7671c1275eaa63620ae4c47f8e00070f70d99c929aca7eab6f"
+      "sha256": "sha256:6a75716dbc6438febe9fca39c536398f991123900fb5764a11d738783e45c0e2"
     },
     {
       "artifact_id": "artifact-08f4978be25e5101ad0ce7efcd62d4a0d291aef06d76791ff70790953ea4a207",
@@ -4865,7 +4865,7 @@
     "total_cases": 12
   },
   "environment_artifact_id": "artifact-f69ab2d60e99a857ecfa95fbe2f760645c3ae30ebdcd90cb5063c943c0ac07e3",
-  "environment_sha256": "sha256:382d3cf29a7d4c7671c1275eaa63620ae4c47f8e00070f70d99c929aca7eab6f",
+  "environment_sha256": "sha256:6a75716dbc6438febe9fca39c536398f991123900fb5764a11d738783e45c0e2",
   "formal_proof": {
     "assumptions": [
       "canonical-finite-input-domain:source:value",

@@ -246,6 +246,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertIn("packages.arm64_sequoia.jws.json", frontend_job)
         for pinned_value in (
             "20260829.0321.1",
+            "20260907.0337.1",
             "15.7.9",
             "24G830",
             "fac6e4f037e8e9c184485de80f23df3816c0c6d8428b20a7703b6f339a72a83c",
@@ -404,6 +405,17 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             mock.patch.object(verifier, "_run", side_effect=(product, build)) as run_mock,
         ):
             verifier._verify_host("macos15", "20260829.0321.1")
+
+        with (
+            mock.patch.object(verifier.sys, "platform", "darwin"),
+            mock.patch.object(
+                verifier.os,
+                "uname",
+                return_value=mock.Mock(machine="arm64"),
+            ),
+            mock.patch.object(verifier, "_run", side_effect=(product, build)),
+        ):
+            verifier._verify_host("macos15", "20260907.0337.1")
 
         self.assertEqual(run_mock.call_count, 2)
         with (
