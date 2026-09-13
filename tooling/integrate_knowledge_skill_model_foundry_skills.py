@@ -685,11 +685,12 @@ def _relative_file_index(infos: Sequence[zipfile.ZipInfo]) -> dict[str, zipfile.
 
 def verify_controlled_files(
     zf: zipfile.ZipFile, files: Mapping[str, zipfile.ZipInfo]
-) -> dict[str, str]:
+) -> tuple[dict[str, str], dict[str, bytes]]:
     checksum_info = files.get("SHA256SUMS")
     _require(checksum_info is not None, "missing SHA256SUMS")
     try:
-        text = _read_member(zf, checksum_info).decode("utf-8")
+        checksum_bytes = _read_member(zf, checksum_info)
+        text = checksum_bytes.decode("utf-8")
     except UnicodeDecodeError as exc:
         fail(f"SHA256SUMS is not UTF-8: {exc}")
     _require(text.endswith("\n"), "SHA256SUMS must end with a newline")
@@ -717,10 +718,16 @@ def verify_controlled_files(
         f"missing={sorted(expected_paths - set(declared))[:10]}, "
         f"extra={sorted(set(declared) - expected_paths)[:10]}",
     )
-    for relative in sorted(declared):
-        actual = digest_bytes(_read_member(zf, files[relative]))
+    # Read once in physical ZIP order. ZipExtFile verifies CRC at EOF; the
+    # declared SHA-256 then binds the exact same bytes used by all parsers.
+    # This avoids a redundant testzip pass and a validation-time reopen race.
+    verified_bytes = {"SHA256SUMS": checksum_bytes}
+    for relative in sorted(declared, key=lambda path: files[path].header_offset):
+        member_bytes = _read_member(zf, files[relative])
+        actual = digest_bytes(member_bytes)
         _require(actual == declared[relative], f"SHA256SUMS mismatch for {relative}")
-    return declared
+        verified_bytes[relative] = member_bytes
+    return declared, verified_bytes
 
 
 def _parse_frontmatter(data: bytes, label: str) -> dict[str, Any]:
@@ -1426,8 +1433,8 @@ def _validate_conformance_contract(value: Any, *, label: str, name: str) -> dict
 
 
 def _validate_atomic_skills(
-    zf: zipfile.ZipFile,
     files: Mapping[str, zipfile.ZipInfo],
+    verified_bytes: Mapping[str, bytes],
     controlled_hashes: Mapping[str, str],
     catalog_items: Sequence[Any],
     schema: Mapping[str, Any],
@@ -1460,7 +1467,7 @@ def _validate_atomic_skills(
         )
         all_expected_skill_files.update(prefix + relative for relative in ATOMIC_SKILL_FILES)
         skill_path = prefix + "skill.yaml"
-        skill_contract = _mapping(load_yaml(_read_member(zf, files[skill_path]), skill_path), skill_path)
+        skill_contract = _mapping(load_yaml(verified_bytes[skill_path], skill_path), skill_path)
         schema_errors = sorted(validator.iter_errors(skill_contract), key=lambda error: list(error.path))
         _require(
             not schema_errors,
@@ -1509,7 +1516,7 @@ def _validate_atomic_skills(
             )
         _require(version == PACKAGE_VERSION, f"{name}: package version mismatch")
         _require(maturity_status == "specification-ready", f"{name}: maturity overclaim")
-        frontmatter = _parse_frontmatter(_read_member(zf, files[source_path]), source_path)
+        frontmatter = _parse_frontmatter(verified_bytes[source_path], source_path)
         _require(frontmatter.get("name") == name, f"{name}: SKILL.md name mismatch")
         fm_metadata = _mapping(frontmatter.get("metadata"), f"{source_path}.metadata")
         _require(fm_metadata.get("version") == version, f"{name}: frontmatter version mismatch")
@@ -1517,31 +1524,31 @@ def _validate_atomic_skills(
         _require(fm_metadata.get("priority") == priority, f"{name}: frontmatter priority mismatch")
         eval_contract_path = prefix + "evals/contract.yaml"
         eval_contract = _validate_eval_contract(
-            load_yaml(_read_member(zf, files[eval_contract_path]), eval_contract_path),
+            load_yaml(verified_bytes[eval_contract_path], eval_contract_path),
             enhanced=pack in ENHANCED_PACKS,
             gates=gates,
             label=eval_contract_path,
         )
         cases_path = prefix + "evals/cases.yaml"
         _validate_eval_cases(
-            load_yaml(_read_member(zf, files[cases_path]), cases_path),
+            load_yaml(verified_bytes[cases_path], cases_path),
             label=cases_path,
             name=name,
         )
         policy_path = prefix + "policies/execution.yaml"
         policy = _validate_policy_contract(
-            load_yaml(_read_member(zf, files[policy_path]), policy_path),
+            load_yaml(verified_bytes[policy_path], policy_path),
             enhanced=pack in ENHANCED_PACKS,
             label=policy_path,
         )
         conformance_path = prefix + "tests/conformance.yaml"
         conformance = _validate_conformance_contract(
-            load_yaml(_read_member(zf, files[conformance_path]), conformance_path),
+            load_yaml(verified_bytes[conformance_path], conformance_path),
             label=conformance_path,
             name=name,
         )
         notes_path = prefix + "references/implementation-notes.md"
-        _require(bool(_read_member(zf, files[notes_path]).strip()), f"{name}: implementation notes empty")
+        _require(bool(verified_bytes[notes_path].strip()), f"{name}: implementation notes empty")
         dependencies[name] = deps
         pack_counts[pack] += 1
         priority_counts[priority] += 1
@@ -1624,8 +1631,8 @@ def _validate_atomic_skills(
 
 
 def _validate_meta_skills(
-    zf: zipfile.ZipFile,
     files: Mapping[str, zipfile.ZipInfo],
+    verified_bytes: Mapping[str, bytes],
     controlled_hashes: Mapping[str, str],
     packs: Sequence[str],
     candidates_by_pack: Mapping[str, Sequence[str]],
@@ -1640,7 +1647,7 @@ def _validate_meta_skills(
         _require(inventory == META_SKILL_FILES, f"meta Skill {pack}: file inventory mismatch: {sorted(inventory)}")
         expected_meta_files.update(prefix + relative for relative in META_SKILL_FILES)
         source_path = prefix + "SKILL.md"
-        frontmatter = _parse_frontmatter(_read_member(zf, files[source_path]), source_path)
+        frontmatter = _parse_frontmatter(verified_bytes[source_path], source_path)
         name = f"elmos-{pack}"
         _require(frontmatter.get("name") == name, f"meta Skill name mismatch for {pack}")
         metadata = _mapping(frontmatter.get("metadata"), f"{source_path}.metadata")
@@ -1651,7 +1658,7 @@ def _validate_meta_skills(
         _require(version == expected_version, f"meta Skill source-version drift for {pack}")
         version_counts[version] += 1
         activation_path = prefix + "evals/activation.json"
-        rows = _list(load_json(_read_member(zf, files[activation_path]), activation_path), activation_path)
+        rows = _list(load_json(verified_bytes[activation_path], activation_path), activation_path)
         expected_count = 4 if int(pack[:2]) <= 16 else 5
         _require(len(rows) == expected_count, f"meta activation count mismatch for {pack}")
         actual_true = 0
@@ -1683,8 +1690,8 @@ def _validate_meta_skills(
 
 
 def _validate_supporting_surfaces(
-    zf: zipfile.ZipFile,
     files: Mapping[str, zipfile.ZipInfo],
+    verified_bytes: Mapping[str, bytes],
     controlled_hashes: Mapping[str, str],
     catalog_items: Sequence[Mapping[str, Any]],
     packs: Sequence[str],
@@ -1694,14 +1701,14 @@ def _validate_supporting_surfaces(
     schema_paths = frozenset(path for path in files if path.startswith("schemas/") and path.endswith(".json"))
     _require(schema_paths == EXPECTED_SCHEMA_PATHS, "Schema inventory mismatch")
     for path in sorted(schema_paths):
-        schema = _mapping(load_json(_read_member(zf, files[path]), path), path)
+        schema = _mapping(load_json(verified_bytes[path], path), path)
         _require(schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema", f"{path}: draft mismatch")
         Draft202012Validator.check_schema(schema)
     policy_paths = frozenset(path for path in files if path.startswith("policies/") and path.endswith(".rego"))
     _require(policy_paths == EXPECTED_POLICY_PATHS, "policy inventory mismatch")
     for path in sorted(policy_paths):
         try:
-            text = _read_member(zf, files[path]).decode("utf-8")
+            text = verified_bytes[path].decode("utf-8")
         except UnicodeDecodeError as exc:
             fail(f"{path}: invalid UTF-8: {exc}")
         _require(re.search(r"(?m)^package\s+elmos\.", text) is not None, f"{path}: package declaration missing")
@@ -1713,7 +1720,7 @@ def _validate_supporting_surfaces(
     pipeline_step_count = 0
     pipeline_kind_counts: Counter[str] = Counter()
     for path in sorted(pipeline_paths):
-        pipeline = _mapping(load_yaml(_read_member(zf, files[path]), path), path)
+        pipeline = _mapping(load_yaml(verified_bytes[path], path), path)
         _require(pipeline.get("apiVersion") == "elmos.ai/v1", f"{path}: apiVersion mismatch")
         kind = _string(pipeline.get("kind"), f"{path}.kind")
         _require(kind in {"Pipeline", "DurablePipeline"}, f"{path}: unsupported kind")
@@ -1740,7 +1747,7 @@ def _validate_supporting_surfaces(
         pipeline_kind_counts == Counter({"DurablePipeline": 10, "Pipeline": 4}),
         f"pipeline kind distribution mismatch: {dict(pipeline_kind_counts)}",
     )
-    technology = _mapping(load_yaml(_read_member(zf, files[technology_path]), technology_path), technology_path)
+    technology = _mapping(load_yaml(verified_bytes[technology_path], technology_path), technology_path)
     technology_spec = _mapping(technology.get("spec"), f"{technology_path}.spec")
     profile_counts = {
         "languages_and_builds": len(_list(technology_spec.get("languagesAndBuilds"), "technology.languagesAndBuilds")),
@@ -1762,7 +1769,7 @@ def _validate_supporting_surfaces(
         set(support_levels) == {"specification-ready", "implemented", "production-certified"},
         "technology support levels drift",
     )
-    business = _mapping(load_yaml(_read_member(zf, files[business_path]), business_path), business_path)
+    business = _mapping(load_yaml(verified_bytes[business_path], business_path), business_path)
     business_lines = _list(
         _mapping(business.get("spec"), f"{business_path}.spec").get("businessLines"),
         f"{business_path}.spec.businessLines",
@@ -1784,7 +1791,7 @@ def _validate_supporting_surfaces(
     _require(observed_business_packs == list(packs)[17:], "business-line pack identity mismatch")
     _require(golden_route_null == 7, "business-line null Golden Route count mismatch")
     graph_path = "registry/pack-dependency-graph.yaml"
-    graph = _mapping(load_yaml(_read_member(zf, files[graph_path]), graph_path), graph_path)
+    graph = _mapping(load_yaml(verified_bytes[graph_path], graph_path), graph_path)
     graph_spec = _mapping(graph.get("spec"), f"{graph_path}.spec")
     common_dependencies = _string_list(graph_spec.get("commonDependencies"), f"{graph_path}.commonDependencies")
     _require(len(common_dependencies) == 5, "pack graph common dependency count mismatch")
@@ -1801,7 +1808,7 @@ def _validate_supporting_surfaces(
     _require(set(graph_references) <= atomic_ids, "pack dependency graph has unresolved references")
     sql_path = "database/postgresql-schema.sql"
     try:
-        sql = _read_member(zf, files[sql_path]).decode("utf-8")
+        sql = verified_bytes[sql_path].decode("utf-8")
     except UnicodeDecodeError as exc:
         fail(f"{sql_path}: invalid UTF-8: {exc}")
     table_count = len(re.findall(r"(?mi)^CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+", sql))
@@ -1809,7 +1816,7 @@ def _validate_supporting_surfaces(
     rls_enabled = re.search(r"(?i)ENABLE\s+ROW\s+LEVEL\s+SECURITY", sql) is not None
     rls_policies = len(re.findall(r"(?mi)^CREATE\s+POLICY\s+", sql))
     _require(not rls_enabled and rls_policies == 0, "pinned RLS gap unexpectedly changed")
-    license_text = _read_member(zf, files["LICENSE"]).decode("utf-8")
+    license_text = verified_bytes["LICENSE"].decode("utf-8")
     license_placeholder = "Replace with company-approved legal text before distribution." in license_text
     _require(license_placeholder, "pinned placeholder license gap unexpectedly changed")
     return compiled_pipelines, {
@@ -1830,12 +1837,11 @@ def _validate_supporting_surfaces(
 
 
 def _validate_auxiliary_json_catalog(
-    zf: zipfile.ZipFile,
-    files: Mapping[str, zipfile.ZipInfo],
+    verified_bytes: Mapping[str, bytes],
     authoritative_ids: Sequence[str],
 ) -> dict[str, Any]:
     path = "registry/skill-catalog.json"
-    auxiliary = _mapping(load_json(_read_member(zf, files[path]), path), path)
+    auxiliary = _mapping(load_json(verified_bytes[path], path), path)
     metadata = _mapping(auxiliary.get("metadata"), f"{path}.metadata")
     items = _list(_mapping(auxiliary.get("spec"), f"{path}.spec").get("skills"), f"{path}.spec.skills")
     ids = [
@@ -1870,9 +1876,8 @@ def audit_archive(
         _require(zf.comment == b"", "archive comment is not allowed")
         infos = zf.infolist()
         archive_metrics = inspect_archive_structure(infos, identity)
-        _require(zf.testzip() is None, "archive CRC failure")
         files = _relative_file_index(infos)
-        controlled_hashes = verify_controlled_files(zf, files)
+        controlled_hashes, verified_bytes = verify_controlled_files(zf, files)
         archive_metrics = ArchiveMetrics(
             entries=archive_metrics.entries,
             files=archive_metrics.files,
@@ -1884,10 +1889,10 @@ def audit_archive(
             executable_files=archive_metrics.executable_files,
         )
         manifest_path = "manifest.yaml"
-        manifest = _mapping(load_yaml(_read_member(zf, files[manifest_path]), manifest_path), manifest_path)
+        manifest = _mapping(load_yaml(verified_bytes[manifest_path], manifest_path), manifest_path)
         packs, catalog_path, business_path, technology_path = _validate_manifest(manifest)
         _require(catalog_path in controlled_hashes, "manifest catalog is not checksum-controlled")
-        catalog = _mapping(load_yaml(_read_member(zf, files[catalog_path]), catalog_path), catalog_path)
+        catalog = _mapping(load_yaml(verified_bytes[catalog_path], catalog_path), catalog_path)
         _require(catalog.get("apiVersion") == "elmos.ai/v1", "catalog apiVersion mismatch")
         _require(catalog.get("kind") == "SkillCatalog", "catalog kind mismatch")
         catalog_metadata = _mapping(catalog.get("metadata"), f"{catalog_path}.metadata")
@@ -1907,7 +1912,7 @@ def audit_archive(
         )
         discovery_policy_path = "registry/discovery-policy.yaml"
         discovery_policy = _mapping(
-            load_yaml(_read_member(zf, files[discovery_policy_path]), discovery_policy_path),
+            load_yaml(verified_bytes[discovery_policy_path], discovery_policy_path),
             discovery_policy_path,
         )
         discovery_policy_spec = _mapping(discovery_policy.get("spec"), f"{discovery_policy_path}.spec")
@@ -1921,10 +1926,10 @@ def audit_archive(
         _require(len(catalog_items) == EXPECTED_ATOMIC_SKILLS, "authoritative catalog count mismatch")
         skill_schema_path = "schemas/skill-contract-v3.schema.json"
         skill_schema = _mapping(
-            load_json(_read_member(zf, files[skill_schema_path]), skill_schema_path), skill_schema_path
+            load_json(verified_bytes[skill_schema_path], skill_schema_path), skill_schema_path
         )
         atomic_skills, dependency_graph, pack_counts, priority_counts, risk_counts = _validate_atomic_skills(
-            zf, files, controlled_hashes, catalog_items, skill_schema
+            files, verified_bytes, controlled_hashes, catalog_items, skill_schema
         )
         _require(len(atomic_skills) == EXPECTED_ATOMIC_SKILLS, "atomic Skill count mismatch")
         _validate_native_program_manifest(atomic_skills)
@@ -1938,12 +1943,12 @@ def audit_archive(
         for skill in atomic_skills:
             candidates_by_pack[str(skill["pack"])].append(str(skill["name"]))
         meta_skills, meta_version_counts, meta_activation_cases = _validate_meta_skills(
-            zf, files, controlled_hashes, packs, candidates_by_pack
+            files, verified_bytes, controlled_hashes, packs, candidates_by_pack
         )
         _require(len(meta_skills) == EXPECTED_META_SKILLS, "meta Skill count mismatch")
         compiled_pipelines, supporting = _validate_supporting_surfaces(
-            zf,
             files,
+            verified_bytes,
             controlled_hashes,
             catalog_items,
             packs,
@@ -1951,7 +1956,7 @@ def audit_archive(
             technology_path,
         )
         auxiliary = _validate_auxiliary_json_catalog(
-            zf, files, [str(skill["name"]) for skill in atomic_skills]
+            verified_bytes, [str(skill["name"]) for skill in atomic_skills]
         )
         duplicate_schema = (
             controlled_hashes["schemas/skill-contract.schema.json"]

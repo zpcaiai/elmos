@@ -173,7 +173,9 @@ class ProviderCommandRoute:
             raise ValueError("inherited_environment must be unique and sorted")
         for name in environment:
             require_identifier(name, "environment_name")
-        if not isinstance(self.timeout_seconds, (int, float)) or not (
+        if isinstance(self.timeout_seconds, bool) or not isinstance(
+            self.timeout_seconds, (int, float)
+        ) or not (
             0 < self.timeout_seconds <= 3600
         ):
             raise ValueError("timeout_seconds must be in (0, 3600]")
@@ -366,6 +368,10 @@ def build_subprocess_broker(
             "outcome": "CONFIRMED",
             "outputs_digest": canonical_digest(result.get("outputs")),
         }
+        if route.semantic_program is not None:
+            expected["semantic_execution_digest"] = canonical_digest(
+                result.get("semantic_execution")
+            )
         if any(receipt.get(key) != value for key, value in expected.items()):
             return False
         try:

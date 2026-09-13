@@ -22,9 +22,15 @@ catalog in the same archive is retained only as a diagnosed source defect.
   Python callback; route operation/effect, permit, request, provider receipt and
   declared outputs must match exactly;
 - production hosts can bind those routes to exact digest-pinned executables via
-  `build_subprocess_broker`; command execution is shell-free, environment/time/
-  output bounded, drift checked, and provider receipts require an injected
-  trusted signature verifier;
+  `load_provider_runtime_manifest`; complete mode rejects anything short of all
+  1,244 Skill routes and 14 pipeline routes before building the shell-free
+  subprocess Broker. Command
+  execution is environment/time/output bounded, drift checked, and Provider
+  receipts require an injected trusted signature verifier;
+- effectful permits can be verified with `build_signed_permit_verifier`; its
+  signature covers every tenant, project, actor, environment, revision,
+  Provider route, tool, gate, policy, expiry and capability claim, and explicit
+  trust-epoch/key/authorization revocations fail closed;
 - `ExternalRunRequest`, `IndependentAcceptanceRequest`, and
   `CertificationRequest` bind training, deployment, independent holdout and
   authority decisions to exact artifacts, roles and external signatures;
@@ -61,6 +67,10 @@ Local qualification may report only `LOCAL_EXECUTED_SELF_ATTESTED` and
 `READY_FOR_EXTERNAL_GATE`. External evidence remains `NOT_RUN`; certification
 remains `NOT_CERTIFIED`.
 
+Generic name-to-algorithm classification, generated output dictionaries and a
+caller-set `authorized=True` flag are not Skill execution evidence. They are
+not wired into this runtime and cannot produce a verified Provider receipt.
+
 The external assurance API validates evidence supplied by real providers,
 independent verifiers and certification authorities. It intentionally contains
 no local issuer, signing key, synthetic success path or default trust decision.
@@ -86,13 +96,14 @@ is the pure Python Esprima 4.0.1 package (BSD license); its source archive diges
 is pinned in that lock. It parses ECMAScript 2017 without running input programs
 and does not provide TypeScript or modern JavaScript runtime support.
 
-After installation, the four read-only/preparation CLI forms are:
+After installation, the five read-only/preparation CLI forms are:
 
 ```bash
 elmos-foundry validate
 elmos-foundry route elmos-00-foundation-contracts --query "typed contract"
 elmos-foundry pipeline --help
 elmos-foundry skill --help
+elmos-foundry provider-runtime --help
 ```
 
 The pipeline and Skill forms require explicit tenant, project, actor,

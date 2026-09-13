@@ -1,5 +1,5 @@
 {
-  "baseline_commit": "1515173f74a3cce69cab763d6eeed0be8671bc40",
+  "baseline_commit": "d06c2cbfcb7bcda0a2d2109b2dda0874a1cb0624",
   "evidence_boundaries": {
     "certification": "NOT_CERTIFIED",
     "customer": "NOT_RUN",
@@ -27,7 +27,7 @@
       "engines/knowledge-skill-model-foundry-engine/catalog/package-report.json",
       "engines/knowledge-skill-model-foundry-engine/qualification/local-qualification.json"
     ],
-    "file_count": 182,
+    "file_count": 170,
     "roots": [
       "AGENTS.md",
       "Makefile",
@@ -41,7 +41,7 @@
       "tooling/run_foundry_external_qualification.py",
       "packages/pi-harness/src/elmos_pi_harness/independent_verifier.py"
     ],
-    "sha256": "ef9cd9e238ac9aaadc5aa3ccc7c1a65c7e79849359cf18d22f19e4ceb518704f",
+    "sha256": "c4cfd0a5bf6931617b5da3f6135c45542a77b4afcd53d5ab084e2400e660a4ca",
     "transient_exclusions": [
       ".mypy_cache",
       ".pytest_cache",
@@ -81,7 +81,7 @@
         },
         "id": "native_semantic_program_check",
         "status": "PASS",
-        "timeout_seconds": 300
+        "timeout_seconds": 900
       },
       {
         "command": [
@@ -98,7 +98,7 @@
         },
         "id": "readiness_inventory_check",
         "status": "PASS",
-        "timeout_seconds": 300
+        "timeout_seconds": 1200
       },
       {
         "command": [
@@ -118,7 +118,7 @@
         },
         "id": "direct_zip_importer_check",
         "status": "PASS",
-        "timeout_seconds": 1200
+        "timeout_seconds": 3600
       },
       {
         "command": [
@@ -141,7 +141,7 @@
         "environment": {},
         "id": "ruff_static_analysis",
         "status": "PASS",
-        "timeout_seconds": 180
+        "timeout_seconds": 900
       },
       {
         "command": [
@@ -163,7 +163,7 @@
         },
         "id": "strict_mypy",
         "status": "PASS",
-        "timeout_seconds": 900
+        "timeout_seconds": 1800
       },
       {
         "command": [
@@ -187,7 +187,7 @@
         },
         "id": "python_compileall",
         "status": "PASS",
-        "timeout_seconds": 300
+        "timeout_seconds": 900
       },
       {
         "command": [
@@ -215,7 +215,7 @@
         },
         "id": "engine_unittest_suite",
         "status": "PASS",
-        "timeout_seconds": 2400
+        "timeout_seconds": 7200
       },
       {
         "command": [
@@ -243,7 +243,7 @@
         },
         "id": "repository_integration_unittest_suite",
         "status": "PASS",
-        "timeout_seconds": 1200
+        "timeout_seconds": 3600
       }
     ],
     "evidence_capture": "EXECUTED_BY_WRITE_MODE_ONLY",

@@ -136,6 +136,11 @@ class InvocationPermit:
     critical_approval_digest: str | None = None
     semantic_program_digest: str | None = None
     authorized: bool = False
+    issuer_id: str | None = None
+    key_id: str | None = None
+    trust_epoch: int | None = None
+    permit_digest: str | None = None
+    signature: str | None = None
 
     def __post_init__(self) -> None:
         for field_name in (
@@ -202,6 +207,82 @@ class InvocationPermit:
             raise TypeError("permit effect_class must be an EffectClass")
         if not isinstance(self.authorized, bool):
             raise TypeError("permit authorized must be a boolean")
+
+        signed_fields = (
+            self.issuer_id,
+            self.key_id,
+            self.trust_epoch,
+            self.permit_digest,
+            self.signature,
+        )
+        if any(value is not None for value in signed_fields) and not all(
+            value is not None for value in signed_fields
+        ):
+            raise ValueError("signed permit fields must be supplied together")
+        if self.issuer_id is not None:
+            require_identifier(self.issuer_id, "permit issuer_id")
+            require_identifier(self.key_id, "permit key_id")
+            if (
+                isinstance(self.trust_epoch, bool)
+                or not isinstance(self.trust_epoch, int)
+                or self.trust_epoch <= 0
+            ):
+                raise ValueError("permit trust_epoch must be a positive integer")
+            validate_digest(self.permit_digest, "permit_digest")
+            if (
+                not isinstance(self.signature, str)
+                or not self.signature
+                or len(self.signature.encode("utf-8")) > 16_384
+            ):
+                raise ValueError("permit signature must be non-empty and bounded")
+
+    def signing_document(self) -> Mapping[str, Any]:
+        """Return every authority claim covered by an external signature."""
+
+        return {
+            "schema_version": "elmos.foundry.signed-invocation-permit.v1",
+            "permit_id": self.permit_id,
+            "authorization_id": self.authorization_id,
+            "invocation_id": self.invocation_id,
+            "adapter_id": self.adapter_id,
+            "adapter_version": self.adapter_version,
+            "adapter_digest": self.adapter_digest,
+            "broker_id": self.broker_id,
+            "broker_version": self.broker_version,
+            "broker_digest": self.broker_digest,
+            "route_id": self.route_id,
+            "route_digest": self.route_digest,
+            "skill_name": self.skill_name,
+            "tenant_id": self.tenant_id,
+            "project_id": self.project_id,
+            "actor_id": self.actor_id,
+            "effect_class": self.effect_class.value,
+            "operation": self.operation,
+            "payload_digest": self.payload_digest,
+            "purpose": self.purpose,
+            "environment_id": self.environment_id,
+            "workspace_digest": self.workspace_digest,
+            "revision_set_id": self.revision_set_id,
+            "issued_at": self.issued_at,
+            "expires_at": self.expires_at,
+            "nonce": self.nonce,
+            "policy_decision_id": self.policy_decision_id,
+            "policy_decision_digest": self.policy_decision_digest,
+            "authorized_tools": list(self.authorized_tools),
+            "authorized_gates": list(self.authorized_gates),
+            "gate_evidence_digest": self.gate_evidence_digest,
+            "critical_approval_id": self.critical_approval_id,
+            "critical_approval_digest": self.critical_approval_digest,
+            "semantic_program_digest": self.semantic_program_digest,
+            "authorized": self.authorized,
+            "issuer_id": self.issuer_id,
+            "key_id": self.key_id,
+            "trust_epoch": self.trust_epoch,
+        }
+
+    @property
+    def signing_digest(self) -> str:
+        return canonical_digest(self.signing_document())
 
 
 @dataclass(frozen=True, slots=True)
@@ -1171,6 +1252,10 @@ class AdapterRegistry:
             "critical_approval_digest": permit.critical_approval_digest,
             "permit_issued_at": permit.issued_at,
             "permit_expires_at": permit.expires_at,
+            "permit_issuer_id": permit.issuer_id,
+            "permit_key_id": permit.key_id,
+            "permit_trust_epoch": permit.trust_epoch,
+            "permit_digest": permit.permit_digest,
         }
         claim_specs = (
             ("external-adapter-permit", permit.permit_id),
