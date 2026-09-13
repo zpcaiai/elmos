@@ -1,11 +1,14 @@
 # php-to-go route gate
 
-- Local bounded profile: `PASSED`
+- Local bounded profile: `NOT_RUN`
 - Route status: `limited`
-- Native source analyzer: `PASSED`
-- Native target compiler/runtime: `PASSED`
-- Development, holdout, and representative behavior: `PASSED`
-- Independent verifier: `NOT_RUN`
-- External/customer certification: `NOT_RUN`
+- Native source analyzer: `NOT_RUN`
+- Native target compiler/runtime: `NOT_RUN`
+- Separate holdout: `NOT_RUN`
+- Representative repository: `NOT_RUN`
+- Independent verification: `NOT_RUN`
+- External certification: `NOT_RUN`
 
-The route is supported only for `typed-pure-function-v1`. Repository orchestration may process many eligible work units, but unsupported units keep the repository result `PARTIAL`; unsupported semantics and undeclared directed routes fail closed.
+This direction is declared, not demonstrated. Nothing in this pack is
+evidence of an execution; the certification directory is where a run
+would write what it actually proved.

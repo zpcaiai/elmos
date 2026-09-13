@@ -1,6 +1,5 @@
 {
   "allowed_suffixes": [
-    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -13,7 +12,6 @@
     ".m",
     ".md",
     ".mjs",
-    ".php",
     ".py",
     ".rs",
     ".smt2",

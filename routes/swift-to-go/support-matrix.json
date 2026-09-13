@@ -1,0 +1,49 @@
+{
+  "capabilities": [
+    {
+      "evidence_refs": [
+        "certification/local-development-evidence.json",
+        "certification/local-holdout-evidence.json",
+        "certification/local-representative-evidence.json"
+      ],
+      "id": "typed-pure-function-v1",
+      "reason": "Supported only inside typed-pure-function-v1 after native analysis, target compilation, separate holdout, and representative behavior replay. Independent and external certification remain NOT_RUN.",
+      "status": "supported",
+      "strategy": "compiler-backed-semantic-ir"
+    },
+    {
+      "evidence_refs": [
+        "mappings/types.json"
+      ],
+      "id": "primitive-types",
+      "reason": "Integer, number, boolean, and string are mapped explicitly in the bounded profile.",
+      "status": "supported",
+      "strategy": "exact-type-mapping"
+    },
+    {
+      "evidence_refs": [
+        "lowering/profile.json"
+      ],
+      "id": "if-return-control-flow",
+      "reason": "If and return statements are lowered from compiler-backed syntax trees.",
+      "status": "supported",
+      "strategy": "typed-structured-lowering"
+    },
+    {
+      "evidence_refs": [],
+      "id": "framework-database-async-concurrency",
+      "reason": "Requires exact Batch 30/31 packs and independent runtime evidence; it is not hidden in this route.",
+      "status": "blocked",
+      "strategy": "separate-exact-pack"
+    },
+    {
+      "evidence_refs": [],
+      "id": "typed-pure-module-v1",
+      "reason": "This legacy route has not requested the separate module profile.",
+      "status": "blocked",
+      "strategy": "per-function-proof-plus-module-composition"
+    }
+  ],
+  "route_key": "swift-to-go",
+  "schema_version": 1
+}

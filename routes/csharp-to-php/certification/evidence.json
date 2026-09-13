@@ -1,0 +1,71 @@
+{
+  "artifact_manifests": {
+    "development": {
+      "bytes": 6141,
+      "path": "certification/artifacts/development/artifact-manifest.json",
+      "sha256": "sha256:dc60b2dff38ac5b62ed4a37b268dca6729dc92f3062157a3031d7202b2ee0e55"
+    },
+    "holdout": {
+      "bytes": 6129,
+      "path": "certification/artifacts/holdout/artifact-manifest.json",
+      "sha256": "sha256:7eae8a0c98b9bfc5e3d4b7b6d935d3c10fc26c3874b166793d7832f1b36373b1"
+    },
+    "real-repository": {
+      "bytes": 6155,
+      "path": "certification/artifacts/real-repository/artifact-manifest.json",
+      "sha256": "sha256:c13ab66307f59049e7b5fc1b997b3790dd7b18306e2c763dc068e4f8a302d4b8"
+    }
+  },
+  "artifact_refs": [
+    {
+      "bytes": 6141,
+      "path": "certification/artifacts/development/artifact-manifest.json",
+      "sha256": "sha256:dc60b2dff38ac5b62ed4a37b268dca6729dc92f3062157a3031d7202b2ee0e55"
+    },
+    {
+      "bytes": 6129,
+      "path": "certification/artifacts/holdout/artifact-manifest.json",
+      "sha256": "sha256:7eae8a0c98b9bfc5e3d4b7b6d935d3c10fc26c3874b166793d7832f1b36373b1"
+    },
+    {
+      "bytes": 6155,
+      "path": "certification/artifacts/real-repository/artifact-manifest.json",
+      "sha256": "sha256:c13ab66307f59049e7b5fc1b997b3790dd7b18306e2c763dc068e4f8a302d4b8"
+    }
+  ],
+  "critical_behavior_regressions": 0,
+  "critical_unknown_semantics": 0,
+  "execution_status": "PASSED_LOCAL",
+  "formal_equivalence": {
+    "bytes": 304878,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:bb5c46493feeab0c758ed1a07baac010e864b4d8e32f8f481c29fa17aa925465"
+  },
+  "metrics": {
+    "build_green_rate": 1.0,
+    "cost_per_verified_workload": 0,
+    "first_build_pass_rate": 1.0,
+    "manual_hours": 0,
+    "p0_behavior_pass_rate": 1.0,
+    "source_map_coverage": 1.0
+  },
+  "negative_runs": [
+    "certification/local-negative-evidence.json"
+  ],
+  "notes": [
+    "The exact typed-pure-function-v1 profile passed native source analysis, native target compilation, and behavior replay.",
+    "Each corpus output directory is persisted under certification/artifacts and bound by a path, SHA-256, and byte-count manifest.",
+    "The physically separate holdout and representative bounded fixture were not used to author route rules.",
+    "Independent verifier, customer repository, framework, database, production, and external certification evidence remain NOT_RUN."
+  ],
+  "route_key": "csharp-to-php",
+  "route_maturity": "LIMITED",
+  "route_version": "1.0.0",
+  "runs": [
+    "certification/local-development-evidence.json",
+    "certification/local-holdout-evidence.json",
+    "certification/local-representative-evidence.json"
+  ],
+  "schema_version": 1,
+  "test_integrity_violations": 0
+}
