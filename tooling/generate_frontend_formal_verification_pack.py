@@ -1345,22 +1345,31 @@ def capture_solver_binary(
     for route_id in sorted(route_entries):
         raw = load_json(engine_root / "routes" / route_id / "solver-result.json")
         realpath_value = raw.get("solver_binary_realpath")
-        if (
-            set(raw) != ENGINE_SOLVER_RESULT_KEYS
-            or raw.get("schema_version") != "1.0"
-            or raw.get("route_id") != route_id
-            or raw.get("identity_status") != "VERIFIED"
-            or not isinstance(realpath_value, str)
-            or not Path(realpath_value).is_absolute()
-            or Path(realpath_value).name != "z3"
-            or raw.get("solver") != realpath_value
-            or raw.get("solver_binary_sha256") != LOCKED_Z3_BINARY_SHA256
-            or raw.get("solver_version") != LOCKED_Z3_VERSION
-            or raw.get("invocation") != [realpath_value, "-in"]
-            or raw.get("options") != LOCKED_Z3_OPTIONS
-            or raw.get("environment") != LOCKED_Z3_ENVIRONMENT
-        ):
-            raise RuntimeError(f"ENGINE_SOLVER_IDENTITY_DRIFT:{route_id}")
+        identity_checks = {
+            "keys": set(raw) == ENGINE_SOLVER_RESULT_KEYS,
+            "schema_version": raw.get("schema_version") == "1.0",
+            "route_id": raw.get("route_id") == route_id,
+            "identity_status": raw.get("identity_status") == "VERIFIED",
+            "realpath_type": isinstance(realpath_value, str),
+            "realpath_absolute": isinstance(realpath_value, str)
+            and Path(realpath_value).is_absolute(),
+            "realpath_basename": isinstance(realpath_value, str)
+            and Path(realpath_value).name == "z3",
+            "solver": raw.get("solver") == realpath_value,
+            "solver_binary_sha256": raw.get("solver_binary_sha256")
+            == LOCKED_Z3_BINARY_SHA256,
+            "solver_version": raw.get("solver_version") == LOCKED_Z3_VERSION,
+            "invocation": raw.get("invocation") == [realpath_value, "-in"],
+            "options": raw.get("options") == LOCKED_Z3_OPTIONS,
+            "environment": raw.get("environment") == LOCKED_Z3_ENVIRONMENT,
+        }
+        drift_fields = sorted(
+            field for field, accepted in identity_checks.items() if not accepted
+        )
+        if drift_fields:
+            raise RuntimeError(
+                f"ENGINE_SOLVER_IDENTITY_DRIFT:{route_id}:{','.join(drift_fields)}"
+            )
         try:
             current = Path(realpath_value).resolve(strict=True)
         except (FileNotFoundError, OSError) as exc:
