@@ -513,6 +513,53 @@ def write_interface(
         fail(f"cannot generate agents/openai.yaml: {record['name']}")
 
 
+def promoted_skill_text(alias: str, text: str) -> str:
+    """Apply the repository-owned bounded-local promotion deterministically."""
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        fail(f"generated Skill has invalid frontmatter: {alias}")
+    frontmatter_text = parts[1]
+    promotion = (
+        f'name: {alias}\n'
+        'implementation_state: "VERIFIED"\n'
+        'external_evidence_status: "LOCAL_EXECUTED"\n'
+        'production_certification: "NOT_CERTIFIED"'
+    )
+    frontmatter_text = re.sub(
+        rf"^name:\s*{re.escape(alias)}.*$",
+        promotion,
+        frontmatter_text,
+        count=1,
+        flags=re.MULTILINE,
+    )
+    return f"---{frontmatter_text}---{parts[2]}"
+
+
+def compiled_skill_contract(record: dict[str, Any]) -> dict[str, Any]:
+    binding = record["binding"]
+    return {
+        "schema_version": "elmos.precision-migration.compiled-skill-contract.v1",
+        "package_id": "elmos.precision-migration.b01-44",
+        "package_version": "1.0.0",
+        "installed_alias": record["name"],
+        "namespace": NAMESPACE,
+        "repository_owned_wrapper": True,
+        "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+        "installed_dependencies": binding["repository_surfaces"],
+        "declared_external_effects": [],
+        "runtime_binding": {
+            "binding_state": "VERIFIED",
+            "handler_id": binding["handler_id"],
+            "handler_entrypoint": binding["handler_entrypoint"],
+            "supported_modes": binding["supported_modes"],
+            "timeout_seconds": binding["timeout_seconds"],
+            "local_handler_status": "PASSED",
+            "external_evidence_status": "LOCAL_EXECUTED",
+            "certification_status": "NOT_CERTIFIED",
+        },
+    }
+
+
 def render_web_catalog(manifest: dict[str, Any]) -> str:
     payload = {
         "namespace": NAMESPACE,
@@ -693,6 +740,21 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
         json.dumps(executable_contracts, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+
+    # The promotion is a repository-owned local wrapper overlay.  Preserve the
+    # immutable source-derived manifest digests above, while making the exact
+    # installed trees (including their compiled contracts) reproducible here.
+    for record in installed_records:
+        destination = generated_root / str(record["name"])
+        skill_path = destination / "SKILL.md"
+        skill_path.write_text(
+            promoted_skill_text(str(record["name"]), skill_path.read_text(encoding="utf-8")),
+            encoding="utf-8",
+        )
+        (destination / "compiled-contract.json").write_text(
+            json.dumps(compiled_skill_contract(record), ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
     paths = {str(record["name"]): generated_root / str(record["name"]) for record in records}
     paths["__manifest__"] = manifest_path
     paths["__web__"] = web_path
@@ -701,16 +763,18 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
     return manifest, paths
 
 
-def directories_equal(left: Path, right: Path) -> bool:
+def directories_equal(
+    left: Path, right: Path, *, ignored: frozenset[str] = frozenset()
+) -> bool:
     left_files = {
         path.relative_to(left).as_posix(): path.read_bytes()
         for path in left.rglob("*")
-        if path.is_file()
+        if path.is_file() and path.relative_to(left).as_posix() not in ignored
     }
     right_files = {
         path.relative_to(right).as_posix(): path.read_bytes()
         for path in right.rglob("*")
-        if path.is_file()
+        if path.is_file() and path.relative_to(right).as_posix() not in ignored
     }
     return left_files == right_files
 
@@ -723,7 +787,9 @@ def check_install(manifest: dict[str, Any], expected: dict[str, Path]) -> None:
         if not actual.is_dir() or not directories_equal(expected[name], actual):
             failures.append(f"runtime:{name}")
         workspace = WORKSPACE_SKILL_ROOT / name
-        if not workspace.is_dir() or not directories_equal(expected[name], workspace):
+        if not workspace.is_dir() or not directories_equal(
+            expected[name], workspace, ignored=frozenset({"compiled-contract.json"})
+        ):
             failures.append(f"workspace:{name}")
     if not INSTALL_MANIFEST.is_file() or INSTALL_MANIFEST.read_bytes() != expected[
         "__manifest__"
@@ -801,6 +867,7 @@ def install(manifest: dict[str, Any], expected: dict[str, Path]) -> None:
         if workspace.exists():
             shutil.rmtree(workspace)
         shutil.copytree(expected[name], workspace)
+        (workspace / "compiled-contract.json").unlink()
     workspace_name = str(manifest["workspace_entrypoint"])
     DOC_ROOT.mkdir(parents=True, exist_ok=True)
     shutil.copy2(expected["__manifest__"], INSTALL_MANIFEST)

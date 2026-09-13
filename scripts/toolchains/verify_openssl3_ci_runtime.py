@@ -178,6 +178,107 @@ DYLIB_IDS: Final = {
 }
 
 
+def _diagnostic_path_receipt(path: Path) -> dict[str, object]:
+    """Capture non-authoritative drift data without following symlinks."""
+    observed = path.lstat()
+    receipt: dict[str, object] = {
+        "path": str(path),
+        "mode": f"{stat.S_IMODE(observed.st_mode):04o}",
+        "uid": observed.st_uid,
+        "gid": observed.st_gid,
+        "nlink": observed.st_nlink,
+    }
+    if stat.S_ISLNK(observed.st_mode):
+        receipt["target"] = os.readlink(path)
+        return receipt
+    if stat.S_ISREG(observed.st_mode):
+        descriptor = os.open(
+            path,
+            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | os.O_NOFOLLOW,
+        )
+        try:
+            digest = hashlib.sha256()
+            total = 0
+            while chunk := os.read(descriptor, 1024 * 1024):
+                total += len(chunk)
+                if total > 8 * 1024 * 1024:
+                    raise RuntimeError(f"diagnostic component exceeds safe read limit: {path}")
+                digest.update(chunk)
+        finally:
+            os.close(descriptor)
+        receipt.update({"bytes": total, "sha256": digest.hexdigest()})
+    return receipt
+
+
+def _runtime_drift_diagnostic() -> dict[str, object]:
+    """Describe the replacement keg; this output never authorizes execution."""
+    formula_root = Path("/opt/homebrew/Cellar/openssl@3")
+    candidates = []
+    if formula_root.is_dir() and not formula_root.is_symlink():
+        candidates = sorted(
+            path
+            for path in formula_root.iterdir()
+            if path.is_dir() and not path.is_symlink()
+        )
+    candidate_receipts: list[dict[str, object]] = []
+    for candidate in candidates:
+        component_paths = (
+            candidate / "bin" / "openssl",
+            candidate / "lib" / "libssl.3.dylib",
+            candidate / "lib" / "libcrypto.3.dylib",
+        )
+        components = [
+            _diagnostic_path_receipt(path)
+            for path in component_paths
+            if path.exists() and not path.is_symlink()
+        ]
+        version = None
+        openssl_path = component_paths[0]
+        if openssl_path.is_file():
+            completed = subprocess.run(
+                [str(openssl_path), "version"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
+                env={"PATH": "/usr/bin:/bin"},
+            )
+            version = {
+                "returncode": completed.returncode,
+                "stdout": completed.stdout.strip(),
+                "stderr": completed.stderr.strip(),
+            }
+        candidate_receipts.append(
+            {
+                "keg": str(candidate),
+                "directories": [
+                    _diagnostic_path_receipt(path)
+                    for path in (candidate, candidate / "bin", candidate / "lib")
+                    if path.exists()
+                ],
+                "components": components,
+                "version": version,
+            }
+        )
+    directory_paths = (
+        Path("/opt"),
+        Path("/opt/homebrew"),
+        Path("/opt/homebrew/Cellar"),
+        formula_root,
+        Path("/opt/homebrew/opt"),
+    )
+    return {
+        "authority": "DIAGNOSTIC_ONLY_NOT_ACCEPTED_EVIDENCE",
+        "directories": [
+            _diagnostic_path_receipt(path) for path in directory_paths if path.exists()
+        ],
+        "opt_link": (
+            _diagnostic_path_receipt(OPT_LINK) if os.path.lexists(OPT_LINK) else None
+        ),
+        "candidates": candidate_receipts,
+    }
+
+
 def _run(command: list[str], *, environment: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
     completed = subprocess.run(
         command,
@@ -625,6 +726,11 @@ def _sealed_authority_receipt() -> dict[str, object]:
 def _seal_runtime(image: tuple[str, str] = EXPECTED_IMAGE) -> dict[str, object]:
     if os.geteuid() != 0:
         raise RuntimeError("OpenSSL runtime root sealing requires effective uid 0")
+    if not OPENSSL.is_file():
+        raise RuntimeError(
+            "pinned OpenSSL runtime is absent; discovery remains non-authoritative: "
+            + json.dumps(_runtime_drift_diagnostic(), sort_keys=True, separators=(",", ":"))
+        )
     directories_before = _directory_receipts(UNSEALED_DIRECTORY_PROFILES)
     opt_link_before = _opt_link_receipt(UNSEALED_OPT_LINK_PROFILE)
     file_receipts: list[dict[str, object]] = []
@@ -904,7 +1010,10 @@ def _verify_host(image_os: str | None, image_version: str | None) -> None:
     if sys.platform != "darwin" or os.uname().machine != "arm64":
         raise RuntimeError("OpenSSL runtime verifier requires Darwin arm64")
     if (image_os, image_version) not in EXPECTED_IMAGES:
-        raise RuntimeError("GitHub hosted image identity mismatch")
+        raise RuntimeError(
+            "GitHub hosted image identity mismatch: "
+            f"got image_os={image_os!r} image_version={image_version!r}"
+        )
     if (
         _run(["/usr/bin/sw_vers", "-productVersion"]).stdout.strip()
         != EXPECTED_MACOS_PRODUCT_VERSION
