@@ -545,8 +545,15 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         "60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f"
     )
     assert current_hosted.php_tree_bytes == 129_937_220
+    assert latest_hosted.php_tree_bytes == 129_938_026
+    assert latest_hosted.php_tree_sha256 == (
+        "ca33ea07e927e25416bc906af465ba6713824e3e5af66fb974f319e92c43d6d9"
+    )
+    assert latest_hosted.php_tree_record_count == 644
+    assert latest_hosted.php_tree_file_count == 533
+    assert latest_hosted.php_tree_directory_count == 109
     assert latest_hosted.profile_id == "github-macos26-20260907.0351.1"
-    assert latest_hosted.php_tree_sha256 == current_hosted.php_tree_sha256
+    assert latest_hosted.php_tree_sha256 != current_hosted.php_tree_sha256
     assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
     assert legacy_hosted.php_tree_sha256 == local.php_tree_sha256
     assert current_hosted.php_tree_bytes == local.php_tree_bytes
