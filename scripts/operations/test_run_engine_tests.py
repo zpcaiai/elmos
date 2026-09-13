@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 SUBJECT_PATH = Path(__file__).with_name("run_engine_tests.py")
 SPEC = importlib.util.spec_from_file_location("run_engine_tests_subject", SUBJECT_PATH)
@@ -170,6 +172,83 @@ class EngineTestResultClassificationTests(unittest.TestCase):
             subject.classify_pytest(None, "", timed_out=True),
         )
         self.assertEqual("ENVIRONMENT", subject.classify_command(None, "cannot start"))
+
+    def test_repository_state_comparison_detects_already_dirty_file_rewrite(
+        self,
+    ) -> None:
+        before = subject.RepositoryState(
+            dirty_paths=(("existing.py", "file:before"),),
+        )
+        after = subject.RepositoryState(
+            dirty_paths=(("existing.py", "file:after"),),
+        )
+
+        summary = subject.repository_state_change_summary(before, after)
+
+        self.assertEqual("dirty path content changed: existing.py", summary)
+
+    def test_run_step_fails_closed_when_test_mutates_source_tree(self) -> None:
+        before = subject.RepositoryState(dirty_paths=())
+        after = subject.RepositoryState(
+            dirty_paths=(("source.py", "missing"),),
+        )
+        step = {
+            "name": "source mutation guard",
+            "kind": "command",
+            "timeout_seconds": 10,
+            "argv": ["true"],
+            "environment": {},
+            "pythonpath": [],
+        }
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            mock.patch.object(
+                subject,
+                "capture_repository_state",
+                side_effect=[before, after],
+            ),
+            mock.patch.object(
+                subject,
+                "_stream_process",
+                return_value=(0, "", False),
+            ),
+        ):
+            result = subject.run_step(
+                "functional-assurance-engine",
+                step,
+                Path(temporary),
+                uv="uv",
+                maven="mvn",
+                dotnet="dotnet",
+                java_home=None,
+            )
+
+        self.assertEqual("SOURCE_MUTATION", result.verdict)
+        self.assertFalse(result.passed)
+
+    def test_interrupted_step_terminates_its_entire_process_group(self) -> None:
+        process = mock.Mock()
+        process.pid = 4242
+        process.stdout = []
+        process.wait.side_effect = [KeyboardInterrupt(), 0]
+
+        with (
+            mock.patch.object(
+                subject.subprocess,
+                "Popen",
+                return_value=process,
+            ),
+            mock.patch.object(subject.os, "killpg") as killpg,
+        ):
+            with self.assertRaises(KeyboardInterrupt):
+                subject._stream_process(
+                    ["test-command"],
+                    environment={},
+                    timeout_seconds=10,
+                    log=io.StringIO(),
+                )
+
+        killpg.assert_called_once_with(4242, subject.signal.SIGTERM)
 
 
 if __name__ == "__main__":
