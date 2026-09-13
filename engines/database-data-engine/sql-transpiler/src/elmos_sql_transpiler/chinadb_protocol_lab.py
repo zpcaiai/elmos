@@ -58,6 +58,24 @@ class TableDef:
         self._rows = val
 
 
+@dataclass
+class SequenceDef:
+    """Bounded sequence state used by the local protocol lab."""
+
+    name: str
+    start_with: int = 1
+    increment_by: int = 1
+    current_value: int | None = None
+    source_ddl: str = ""
+
+    def next_value(self) -> int:
+        if self.current_value is None:
+            self.current_value = self.start_with
+        else:
+            self.current_value += self.increment_by
+        return self.current_value
+
+
 class ProtocolLabDatabase:
     """Thread-safe multi-tenant in-memory relational database backed by SQLite ACID engine."""
 
@@ -66,6 +84,7 @@ class ProtocolLabDatabase:
         self.tables: dict[str, TableDef] = {}
         self.routines: dict[str, str] = {}
         self.triggers: dict[str, str] = {}
+        self.sequences: dict[str, SequenceDef] = {}
         self._lock = threading.RLock()
         self.transaction_logs: list[dict[str, Any]] = []
         # True relational ACID storage engine
@@ -88,6 +107,12 @@ class ProtocolLabDatabase:
         upper = clean.upper()
 
         with self._lock:
+            # A TiDB procedure lowering may only be executed locally when the
+            # lowered body is the explicit NULL no-op used by the bounded
+            # fixture. Arbitrary procedural SQL remains unsupported.
+            if upper.startswith("/* TIDB LOWERED AUTONOMOUS PROCEDURE BLOCK */"):
+                return self._handle_tidb_noop_procedure_block(clean)
+
             # 1. CREATE PROCEDURE / FUNCTION / PACKAGE
             if upper.startswith("CREATE") and any(
                 k in upper for k in ("PROCEDURE", "FUNCTION", "PACKAGE")
@@ -110,19 +135,29 @@ class ProtocolLabDatabase:
                 self.triggers[name] = clean
                 return [], [], 0
 
-            # 3. CREATE TABLE
+            # 3. CREATE / DROP SEQUENCE
+            if upper.startswith("CREATE SEQUENCE"):
+                return self._handle_create_sequence(clean)
+
+            if upper.startswith("DROP SEQUENCE"):
+                return self._handle_drop_sequence(clean)
+
+            if self._is_sequence_nextval_query(clean):
+                return self._handle_sequence_nextval(clean)
+
+            # 4. CREATE TABLE
             if upper.startswith("CREATE TABLE"):
                 return self._handle_create_table(clean)
 
-            # 4. DROP TABLE
+            # 5. DROP TABLE
             if upper.startswith("DROP TABLE"):
                 return self._handle_drop_table(clean)
 
-            # 5. CREATE INDEX
+            # 6. CREATE INDEX
             if upper.startswith("CREATE INDEX") or upper.startswith("CREATE UNIQUE INDEX"):
                 return self._handle_create_index(clean)
 
-            # 6. TRANSACTION CONTROLS: BEGIN / COMMIT / ROLLBACK / SAVEPOINT
+            # 7. TRANSACTION CONTROLS: BEGIN / COMMIT / ROLLBACK / SAVEPOINT
             if upper in ("BEGIN", "START TRANSACTION", "BEGIN TRANSACTION"):
                 with contextlib.suppress(sqlite3.OperationalError):
                     self._sqlite.execute("BEGIN TRANSACTION")
@@ -150,19 +185,19 @@ class ProtocolLabDatabase:
             if upper.startswith("SET "):
                 return [], [], 0
 
-            # 7. INSERT INTO
+            # 8. INSERT INTO
             if upper.startswith("INSERT INTO") or upper.startswith("INSERT OR REPLACE"):
                 return self._handle_insert(clean)
 
-            # 8. UPDATE
+            # 9. UPDATE
             if upper.startswith("UPDATE"):
                 return self._handle_update(clean)
 
-            # 9. DELETE FROM
+            # 10. DELETE FROM
             if upper.startswith("DELETE FROM") or upper.startswith("DELETE"):
                 return self._handle_delete(clean)
 
-            # 10. SELECT
+            # 11. SELECT
             if upper.startswith("SELECT") or upper.startswith("WITH "):
                 return self._handle_select(clean)
 
@@ -176,6 +211,105 @@ class ProtocolLabDatabase:
                 raise ValueError(
                     f"PROTOCOL_LAB_UNSUPPORTED_SQL: {exc}"
                 ) from exc
+
+    def _handle_tidb_noop_procedure_block(
+        self, sql: str
+    ) -> tuple[list[str], list[tuple[Any, ...]], int]:
+        pattern = re.compile(
+            r"/\*\s*TiDB\s+Lowered\s+Autonomous\s+Procedure\s+Block\s*\*/"
+            r"\s*START\s+TRANSACTION\s*;\s*NULL\s*;\s*COMMIT\s*;?\s*$",
+            re.I | re.S,
+        )
+        if not pattern.fullmatch(sql):
+            raise ValueError("PROTOCOL_LAB_UNSUPPORTED_TIDB_PROCEDURE_BLOCK")
+        self.transaction_logs.extend(
+            [
+                {"action": "BEGIN", "timestamp": time.time()},
+                {"action": "COMMIT", "timestamp": time.time()},
+            ]
+        )
+        return [], [], 0
+
+    def _handle_create_sequence(
+        self, sql: str
+    ) -> tuple[list[str], list[tuple[Any, ...]], int]:
+        match = re.fullmatch(
+            r"CREATE\s+SEQUENCE\s+(?:[A-Za-z0-9_]+\.)?([A-Za-z0-9_]+)"
+            r"(?P<options>(?:\s+(?:START\s+WITH\s+[+-]?\d+|"
+            r"INCREMENT\s+BY\s+[+-]?\d+|MINVALUE\s+[+-]?\d+|NOMINVALUE|"
+            r"MAXVALUE\s+[+-]?\d+|NOMAXVALUE|CACHE\s+\d+|NOCACHE|"
+            r"CYCLE|NOCYCLE|ORDER|NOORDER))*)\s*",
+            sql,
+            re.I,
+        )
+        if match is None:
+            raise ValueError("PROTOCOL_LAB_UNSUPPORTED_SEQUENCE_DDL")
+
+        options = match.group("options")
+        start_match = re.search(r"\bSTART\s+WITH\s+([+-]?\d+)", options, re.I)
+        increment_match = re.search(r"\bINCREMENT\s+BY\s+([+-]?\d+)", options, re.I)
+        start_with = int(start_match.group(1)) if start_match else 1
+        increment_by = int(increment_match.group(1)) if increment_match else 1
+        if increment_by == 0:
+            raise ValueError("PROTOCOL_LAB_INVALID_SEQUENCE_INCREMENT")
+
+        name = match.group(1).lower()
+        self.sequences[name] = SequenceDef(
+            name=name,
+            start_with=start_with,
+            increment_by=increment_by,
+            source_ddl=sql,
+        )
+        return [], [], 0
+
+    def _handle_drop_sequence(
+        self, sql: str
+    ) -> tuple[list[str], list[tuple[Any, ...]], int]:
+        match = re.fullmatch(
+            r"DROP\s+SEQUENCE\s+(?:IF\s+EXISTS\s+)?"
+            r"(?:[A-Za-z0-9_]+\.)?([A-Za-z0-9_]+)\s*",
+            sql,
+            re.I,
+        )
+        if match is None:
+            raise ValueError("PROTOCOL_LAB_UNSUPPORTED_SEQUENCE_DDL")
+        self.sequences.pop(match.group(1).lower(), None)
+        return [], [], 0
+
+    @staticmethod
+    def _is_sequence_nextval_query(sql: str) -> bool:
+        return bool(
+            re.fullmatch(
+                r"SELECT\s+(?:[A-Za-z0-9_]+\.)?[A-Za-z0-9_]+\.NEXTVAL"
+                r"(?:\s+FROM\s+DUAL)?\s*",
+                sql,
+                re.I,
+            )
+            or re.fullmatch(
+                r"SELECT\s+NEXTVAL\s*\(\s*'"
+                r"(?:[A-Za-z0-9_]+\.)?[A-Za-z0-9_]+'\s*\)\s*",
+                sql,
+                re.I,
+            )
+        )
+
+    def _handle_sequence_nextval(
+        self, sql: str
+    ) -> tuple[list[str], list[tuple[Any, ...]], int]:
+        match = re.fullmatch(
+            r"SELECT\s+(?:(?:[A-Za-z0-9_]+\.)?([A-Za-z0-9_]+)\.NEXTVAL"
+            r"(?:\s+FROM\s+DUAL)?|NEXTVAL\s*\(\s*'"
+            r"(?:[A-Za-z0-9_]+\.)?([A-Za-z0-9_]+)'\s*\))\s*",
+            sql,
+            re.I,
+        )
+        if match is None:
+            raise ValueError("PROTOCOL_LAB_UNSUPPORTED_SEQUENCE_QUERY")
+        name = (match.group(1) or match.group(2)).lower()
+        sequence = self.sequences.get(name)
+        if sequence is None:
+            raise ValueError(f"PROTOCOL_LAB_SEQUENCE_NOT_FOUND: {name}")
+        return ["nextval"], [(sequence.next_value(),)], 1
 
     def _normalize_ddl_for_sqlite(self, sql: str) -> str:
         """Translate domestic ChinaDB types and DDL quirks to SQLite compatible DDL."""
