@@ -58,6 +58,14 @@ class TableDef:
         self._rows = val
 
 
+@dataclass(frozen=True)
+class SequenceDef:
+    name: str
+    start_with: int
+    increment_by: int
+    definition: str
+
+
 class ProtocolLabDatabase:
     """Thread-safe multi-tenant in-memory relational database backed by SQLite ACID engine."""
 
@@ -66,6 +74,7 @@ class ProtocolLabDatabase:
         self.tables: dict[str, TableDef] = {}
         self.routines: dict[str, str] = {}
         self.triggers: dict[str, str] = {}
+        self.sequences: dict[str, SequenceDef] = {}
         self._lock = threading.RLock()
         self.transaction_logs: list[dict[str, Any]] = []
         # True relational ACID storage engine
@@ -88,6 +97,29 @@ class ProtocolLabDatabase:
         upper = clean.upper()
 
         with self._lock:
+            # The TiDB lowerer has one deliberately bounded executable form for
+            # a source procedure whose body is exactly NULL. Accept only that
+            # no-op transaction wrapper; every other client-side procedure
+            # script continues to fail closed in the protocol lab.
+            if upper.startswith("/* TIDB LOWERED AUTONOMOUS PROCEDURE BLOCK */"):
+                if re.fullmatch(
+                    r"/\*\s*TIDB LOWERED AUTONOMOUS PROCEDURE BLOCK\s*\*/\s*"
+                    r"START\s+TRANSACTION\s*;\s*NULL\s*;\s*COMMIT",
+                    clean,
+                    re.I,
+                ) is None:
+                    raise ValueError(
+                        "PROTOCOL_LAB_UNSUPPORTED_SQL: unsupported TiDB procedure block"
+                    )
+                self.transaction_logs.extend(
+                    (
+                        {"action": "BEGIN", "timestamp": time.time()},
+                        {"action": "TIDB_BOUNDED_NOOP_PROCEDURE", "timestamp": time.time()},
+                        {"action": "COMMIT", "timestamp": time.time()},
+                    )
+                )
+                return [], [], 0
+
             # 1. CREATE PROCEDURE / FUNCTION / PACKAGE
             if upper.startswith("CREATE") and any(
                 k in upper for k in ("PROCEDURE", "FUNCTION", "PACKAGE")
@@ -110,19 +142,49 @@ class ProtocolLabDatabase:
                 self.triggers[name] = clean
                 return [], [], 0
 
-            # 3. CREATE TABLE
+            # 3. CREATE SEQUENCE. The protocol lab records the bounded catalog
+            # identity; it does not claim vendor sequence runtime equivalence.
+            if upper.startswith("CREATE SEQUENCE"):
+                match = re.fullmatch(
+                    r"CREATE\s+SEQUENCE\s+([A-Za-z_][A-Za-z0-9_$#]*)"
+                    r"(?:\s+START\s+WITH\s+(-?\d+))?"
+                    r"(?:\s+INCREMENT\s+BY\s+(-?\d+))?",
+                    clean,
+                    re.I,
+                )
+                if match is None:
+                    raise ValueError(
+                        "PROTOCOL_LAB_UNSUPPORTED_SQL: unsupported CREATE SEQUENCE shape"
+                    )
+                name = match.group(1).lower()
+                if name in self.sequences:
+                    raise ValueError(
+                        f"PROTOCOL_LAB_SEQUENCE_ALREADY_EXISTS: {name}"
+                    )
+                increment_by = int(match.group(3) or "1")
+                if increment_by == 0:
+                    raise ValueError("PROTOCOL_LAB_SEQUENCE_INCREMENT_ZERO")
+                self.sequences[name] = SequenceDef(
+                    name=name,
+                    start_with=int(match.group(2) or "1"),
+                    increment_by=increment_by,
+                    definition=clean,
+                )
+                return [], [], 0
+
+            # 4. CREATE TABLE
             if upper.startswith("CREATE TABLE"):
                 return self._handle_create_table(clean)
 
-            # 4. DROP TABLE
+            # 5. DROP TABLE
             if upper.startswith("DROP TABLE"):
                 return self._handle_drop_table(clean)
 
-            # 5. CREATE INDEX
+            # 6. CREATE INDEX
             if upper.startswith("CREATE INDEX") or upper.startswith("CREATE UNIQUE INDEX"):
                 return self._handle_create_index(clean)
 
-            # 6. TRANSACTION CONTROLS: BEGIN / COMMIT / ROLLBACK / SAVEPOINT
+            # 7. TRANSACTION CONTROLS: BEGIN / COMMIT / ROLLBACK / SAVEPOINT
             if upper in ("BEGIN", "START TRANSACTION", "BEGIN TRANSACTION"):
                 with contextlib.suppress(sqlite3.OperationalError):
                     self._sqlite.execute("BEGIN TRANSACTION")
@@ -150,19 +212,19 @@ class ProtocolLabDatabase:
             if upper.startswith("SET "):
                 return [], [], 0
 
-            # 7. INSERT INTO
+            # 8. INSERT INTO
             if upper.startswith("INSERT INTO") or upper.startswith("INSERT OR REPLACE"):
                 return self._handle_insert(clean)
 
-            # 8. UPDATE
+            # 9. UPDATE
             if upper.startswith("UPDATE"):
                 return self._handle_update(clean)
 
-            # 9. DELETE FROM
+            # 10. DELETE FROM
             if upper.startswith("DELETE FROM") or upper.startswith("DELETE"):
                 return self._handle_delete(clean)
 
-            # 10. SELECT
+            # 11. SELECT
             if upper.startswith("SELECT") or upper.startswith("WITH "):
                 return self._handle_select(clean)
 

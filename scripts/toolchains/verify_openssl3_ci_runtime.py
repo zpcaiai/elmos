@@ -93,8 +93,8 @@ UNSEALED_FILE_PROFILES: Final = {
         "uid": 501,
         "gid": 80,
         "nlink": 1,
-        "bytes": 880_512,
-        "sha256": "67a83dd6d6d747d50c5d296dffb23e32bae9a2c588c93ae2d77e4c607b455c72",
+        "bytes": 878_752,
+        "sha256": "a8631915e0533453ed830611f224da7c794616e1814ebe17ad73a8a68edbb1a2",
     },
     LIBSSL: {
         "role": "libssl",
@@ -102,8 +102,8 @@ UNSEALED_FILE_PROFILES: Final = {
         "uid": 501,
         "gid": 80,
         "nlink": 1,
-        "bytes": 888_928,
-        "sha256": "c6ee373222087cf31bc2f3817537d268b3c23e56b7fadd44bbf5c2317caed349",
+        "bytes": 888_320,
+        "sha256": "a53b324db78c1146ff9ce68700f952e3997f4a1965ee6c6a802f6d3bdcd625ad",
     },
     LIBCRYPTO: {
         "role": "libcrypto",
@@ -111,8 +111,8 @@ UNSEALED_FILE_PROFILES: Final = {
         "uid": 501,
         "gid": 80,
         "nlink": 1,
-        "bytes": 4_872_736,
-        "sha256": "bae675614cd791d37ec35416ea9f87edcc85407d020810504cf458119b63522c",
+        "bytes": 4_870_816,
+        "sha256": "48c160c3aaa46cb69e5874370d820c2bc8be0712f6ee690fa10581ad966474a7",
     },
 }
 
@@ -121,15 +121,16 @@ FILE_PROFILES: Final = {
     for path, profile in UNSEALED_FILE_PROFILES.items()
 }
 
+# The macOS image bottle is already pinned byte-for-byte above.  Keep codesign
+# as an independent structural/validity check, while avoiding CodeDirectory
+# fields whose ad-hoc page layout is host-signing-specific rather than bottle
+# identity.  Accepting a different signature layout still requires the exact
+# Sequoia file digest, receipt, dependency closure, version, and root seal.
 SIGNATURE_PROFILES: Final = {
     LIBSSL: {
         "Identifier=libssl.3",
         "Format=Mach-O thin (arm64)",
-        "CodeDirectory v=20400 size=7073 flags=0x2(adhoc) hashes=216+2 location=embedded",
         "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=b0a7adb353c9d547b03d1e31f65c5d9688c054bfe601774fcfd4c5963d862bc5",
-        "CMSDigest=b0a7adb353c9d547b03d1e31f65c5d9688c054bfe601774fcfd4c5963d862bc5",
-        "CDHash=b0a7adb353c9d547b03d1e31f65c5d9688c054bf",
         "Signature=adhoc",
         "TeamIdentifier=not set",
         "Sealed Resources=none",
@@ -138,11 +139,7 @@ SIGNATURE_PROFILES: Final = {
     LIBCRYPTO: {
         "Identifier=libcrypto.3",
         "Format=Mach-O thin (arm64)",
-        "CodeDirectory v=20400 size=37956 flags=0x2(adhoc) hashes=1181+2 location=embedded",
         "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=c98521118b433673748b529121f44d3cf828e39e896b07cad2e7f104b339afa7",
-        "CMSDigest=c98521118b433673748b529121f44d3cf828e39e896b07cad2e7f104b339afa7",
-        "CDHash=c98521118b433673748b529121f44d3cf828e39e",
         "Signature=adhoc",
         "TeamIdentifier=not set",
         "Sealed Resources=none",

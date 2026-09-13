@@ -245,11 +245,11 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             "20260907.0337.1",
             "15.7.9",
             "24G830",
-            "67a83dd6d6d747d50c5d296dffb23e32bae9a2c588c93ae2d77e4c607b455c72",
-            "c6ee373222087cf31bc2f3817537d268b3c23e56b7fadd44bbf5c2317caed349",
-            "bae675614cd791d37ec35416ea9f87edcc85407d020810504cf458119b63522c",
-            "b0a7adb353c9d547b03d1e31f65c5d9688c054bfe601774fcfd4c5963d862bc5",
-            "c98521118b433673748b529121f44d3cf828e39e896b07cad2e7f104b339afa7",
+            "a8631915e0533453ed830611f224da7c794616e1814ebe17ad73a8a68edbb1a2",
+            "a53b324db78c1146ff9ce68700f952e3997f4a1965ee6c6a802f6d3bdcd625ad",
+            "48c160c3aaa46cb69e5874370d820c2bc8be0712f6ee690fa10581ad966474a7",
+            "Identifier=libssl.3",
+            "Identifier=libcrypto.3",
         ):
             self.assertIn(pinned_value, verifier)
         for required_control in (

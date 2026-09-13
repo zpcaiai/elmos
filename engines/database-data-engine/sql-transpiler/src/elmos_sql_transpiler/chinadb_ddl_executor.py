@@ -97,6 +97,13 @@ class ChinaDbDdlExecutor:
             }
             for tname, tbl in db.tables.items()
         }
+        schema_snapshot["$sequences"] = {
+            name: {
+                "start_with": sequence.start_with,
+                "increment_by": sequence.increment_by,
+            }
+            for name, sequence in sorted(db.sequences.items())
+        }
         schema_digest = hashlib.sha256(
             json.dumps(schema_snapshot, sort_keys=True).encode("utf-8")
         ).hexdigest()

@@ -135,3 +135,30 @@ def test_ddl_executor_and_reverse_introspection(orchestrator):
 def test_protocol_lab_unknown_sql_fails_closed(lab):
     with pytest.raises(ValueError, match="PROTOCOL_LAB_UNSUPPORTED_SQL"):
         lab.execute("dm8", "VACUUM definitely_missing_table")
+
+
+def test_protocol_lab_records_bounded_sequence_catalog(lab):
+    lab.execute("dm8", "CREATE SEQUENCE order_seq START WITH 7 INCREMENT BY 3")
+    sequence = lab.get_database("dm8").sequences["order_seq"]
+    assert sequence.start_with == 7
+    assert sequence.increment_by == 3
+
+    with pytest.raises(ValueError, match="PROTOCOL_LAB_SEQUENCE_INCREMENT_ZERO"):
+        lab.execute("dm8", "CREATE SEQUENCE invalid_seq INCREMENT BY 0")
+
+
+def test_protocol_lab_accepts_only_bounded_tidb_noop_procedure_block(lab):
+    lab.execute(
+        "tidb",
+        "/* TiDB Lowered Autonomous Procedure Block */\n"
+        "START TRANSACTION;\nNULL;\nCOMMIT;",
+    )
+    actions = [row["action"] for row in lab.get_database("tidb").transaction_logs]
+    assert actions[-3:] == ["BEGIN", "TIDB_BOUNDED_NOOP_PROCEDURE", "COMMIT"]
+
+    with pytest.raises(ValueError, match="unsupported TiDB procedure block"):
+        lab.execute(
+            "tidb",
+            "/* TiDB Lowered Autonomous Procedure Block */\n"
+            "START TRANSACTION;\nDELETE FROM accounts;\nCOMMIT;",
+        )
