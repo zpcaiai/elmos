@@ -17,13 +17,13 @@ import tempfile
 from typing import Final
 
 
-OPENSSL: Final = Path("/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl")
-LIBSSL: Final = Path("/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libssl.3.dylib")
+OPENSSL: Final = Path("/opt/homebrew/Cellar/openssl@3/3.6.4/bin/openssl")
+LIBSSL: Final = Path("/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libssl.3.dylib")
 LIBCRYPTO: Final = Path(
-    "/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libcrypto.3.dylib"
+    "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libcrypto.3.dylib"
 )
 EXPECTED_VERSION: Final = (
-    "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
+    "OpenSSL 3.6.4 25 Aug 2026 (Library: OpenSSL 3.6.4 25 Aug 2026)"
 )
 EXPECTED_IMAGE: Final = ("macos15", "20260829.0321.1")
 EXPECTED_IMAGES: Final = frozenset(
@@ -38,7 +38,7 @@ EXPECTED_IMAGES: Final = frozenset(
 EXPECTED_MACOS_PRODUCT_VERSION: Final = "15.7.9"
 EXPECTED_MACOS_BUILD_VERSION: Final = "24G830"
 OPT_LINK: Final = Path("/opt/homebrew/opt/openssl@3")
-OPT_LINK_TARGET: Final = "../Cellar/openssl@3/3.6.3"
+OPT_LINK_TARGET: Final = "../Cellar/openssl@3/3.6.4"
 
 UNSEALED_DIRECTORY_PROFILES: Final = {
     Path("/opt"): {"mode": "0755", "uid": 0, "gid": 0},
@@ -52,17 +52,17 @@ UNSEALED_DIRECTORY_PROFILES: Final = {
         "uid": 501,
         "gid": 80,
     },
-    Path("/opt/homebrew/Cellar/openssl@3/3.6.3"): {
+    Path("/opt/homebrew/Cellar/openssl@3/3.6.4"): {
         "mode": "0755",
         "uid": 501,
         "gid": 80,
     },
-    Path("/opt/homebrew/Cellar/openssl@3/3.6.3/bin"): {
+    Path("/opt/homebrew/Cellar/openssl@3/3.6.4/bin"): {
         "mode": "0755",
         "uid": 501,
         "gid": 80,
     },
-    Path("/opt/homebrew/Cellar/openssl@3/3.6.3/lib"): {
+    Path("/opt/homebrew/Cellar/openssl@3/3.6.4/lib"): {
         "mode": "0755",
         "uid": 501,
         "gid": 80,
@@ -99,7 +99,7 @@ UNSEALED_FILE_PROFILES: Final = {
         "gid": 80,
         "nlink": 1,
         "bytes": 878_752,
-        "sha256": "fac6e4f037e8e9c184485de80f23df3816c0c6d8428b20a7703b6f339a72a83c",
+        "sha256": "a8631915e0533453ed830611f224da7c794616e1814ebe17ad73a8a68edbb1a2",
     },
     LIBSSL: {
         "role": "libssl",
@@ -107,8 +107,8 @@ UNSEALED_FILE_PROFILES: Final = {
         "uid": 501,
         "gid": 80,
         "nlink": 1,
-        "bytes": 887_984,
-        "sha256": "5f15ad8c8519304aad18b06105f367e21d75e0812eb300e904bb3b9271ce0d0d",
+        "bytes": 888_320,
+        "sha256": "a53b324db78c1146ff9ce68700f952e3997f4a1965ee6c6a802f6d3bdcd625ad",
     },
     LIBCRYPTO: {
         "role": "libcrypto",
@@ -116,8 +116,8 @@ UNSEALED_FILE_PROFILES: Final = {
         "uid": 501,
         "gid": 80,
         "nlink": 1,
-        "bytes": 4_870_832,
-        "sha256": "256172ed0500c7af6f9d633b317fffe6efae0cae456eacc283a87cb2474317fb",
+        "bytes": 4_870_816,
+        "sha256": "48c160c3aaa46cb69e5874370d820c2bc8be0712f6ee690fa10581ad966474a7",
     },
 }
 
@@ -396,7 +396,7 @@ def _opt_link_receipt(expected: Mapping[str, object]) -> dict[str, object]:
     if (
         not stat.S_ISLNK(after.st_mode)
         or OPT_LINK.resolve(strict=True)
-        != Path("/opt/homebrew/Cellar/openssl@3/3.6.3")
+        != Path("/opt/homebrew/Cellar/openssl@3/3.6.4")
     ):
         raise RuntimeError("OpenSSL opt link does not resolve to the pinned keg")
     receipt: dict[str, object] = {
