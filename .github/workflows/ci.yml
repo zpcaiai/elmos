@@ -1398,3 +1398,56 @@ jobs:
           make batch45-check product-closure-convergence-skills
           uv run --with pyyaml python tooling/validate_runtime_operability.py
           uv run --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
+
+  release-control:
+    name: Release control and evidence governance
+    if: ${{ always() }}
+    needs:
+      - java
+      - commercial-billing-integration
+      - live-workbench-postgres
+      - dotnet-engine
+      - python-engine
+      - spring-golden-route-engine
+      - external-gate-intake
+      - frontend-client-engine
+      - polyglot-route-pack-contracts
+      - polyglot-route-engine-core
+      - polyglot-route-engine-matrix
+      - polyglot-route-engine
+      - polyglot-routes
+      - sql-dialect-engine
+      - typed-sql-transpiler
+      - batch31-database-gates
+      - project-synthesis
+      - project-synthesis-acceptance
+      - web-console
+      - precision-migration-b01-44
+      - web-console-generation
+      - web-console-runner-e2e
+      - commercial-gates
+      - payment-database-gates
+      - makefile-portability
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every declared CI dependency to close safely
+        env:
+          ELMOS_CI_NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import sys
+
+          needs = json.loads(os.environ["ELMOS_CI_NEEDS_JSON"])
+          invalid = {
+              name: value.get("result")
+              for name, value in needs.items()
+              if value.get("result") not in {"success", "skipped"}
+          }
+          if invalid:
+              print("unsafe CI dependency results: " + json.dumps(invalid, sort_keys=True))
+              sys.exit(1)
+          print(f"release governance accepted {len(needs)} closed CI dependencies")
+          PY
