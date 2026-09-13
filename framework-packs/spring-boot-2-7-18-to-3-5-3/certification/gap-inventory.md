@@ -75,8 +75,9 @@ identity, role separation, or observed runtime evidence. The existing
 all three CLI inputs. Live re-verification failed because its evidence URIs are
 inside the framework pack while the current gate requires an evidence root
 physically disjoint from the pack. Therefore the checked-in historical
-`CERTIFIED` receipt is not a
-successful live re-verification result.
+`CERTIFIED` receipt is not a successful live re-verification result. The
+working trust store also marks the old keys revoked, so those identities cannot
+be reused for a new decision.
 
 To close this gap legitimately, an authorized external executor must place the
 artifact, execution profile, all 13 evidence classes, raw logs, customer and

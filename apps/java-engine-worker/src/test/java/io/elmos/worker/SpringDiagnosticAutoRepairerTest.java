@@ -184,7 +184,6 @@ class SpringDiagnosticAutoRepairerTest {
         assertTrue(Files.readString(source).contains("AuthorizationServerSettings"));
         assertTrue(Files.readString(dwr).contains("@PostMapping(\"/read\")"));
     }
-
     @Test
     void repairSpringDataJpaGetOneToGetReferenceById() throws IOException {
         Path srcDir = tempDir.resolve("src/main/java/com/example");
