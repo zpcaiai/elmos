@@ -165,17 +165,12 @@ PY
     fi
     ;;
   frontend-formal)
-    FRONTEND_HOST_PROFILE="${ImageOS:-}:${ImageVersion:-}:$(sw_vers -productVersion):$(sw_vers -buildVersion)"
-    readonly FRONTEND_HOST_PROFILE
-    case "${FRONTEND_HOST_PROFILE}" in
-      "macos15:20260829.0321.1:15.7.9:24G830"|\
-      "macos15:20260907.0337.1:15.7.9:24G830") ;;
-      *)
-      printf 'The frontend formal Node closure rejects hosted image profile %s.\n' \
-        "${FRONTEND_HOST_PROFILE}" >&2
+    if [[ "${ImageOS:-}" != "macos15" \
+      || "${ImageVersion:-}" != "20260907.0337.1" \
+      || "$(sw_vers -productVersion)" != 15.* ]]; then
+      printf 'The frontend formal Node closure requires an exact allowlisted GitHub macos15 image.\n' >&2
       exit 2
-      ;;
-    esac
+    fi
     ;;
 esac
 

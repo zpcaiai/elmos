@@ -248,8 +248,8 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             "a8631915e0533453ed830611f224da7c794616e1814ebe17ad73a8a68edbb1a2",
             "a53b324db78c1146ff9ce68700f952e3997f4a1965ee6c6a802f6d3bdcd625ad",
             "48c160c3aaa46cb69e5874370d820c2bc8be0712f6ee690fa10581ad966474a7",
-            "Identifier=libssl.3",
-            "Identifier=libcrypto.3",
+            "e9a6a82cd020a4d83a4c9f04e4721f9e9ba74ba53688d24378b9925a7152d1cd",
+            "62a898da6d899ade18542bdba30ed3eb44a351472a792e531d9b9b7b2becc51e",
         ):
             self.assertIn(pinned_value, verifier)
         for required_control in (

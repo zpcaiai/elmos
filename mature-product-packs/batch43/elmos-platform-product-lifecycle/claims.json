@@ -10,29 +10,24 @@
     {
       "claimId": "claim-b43-core-functional-conformance",
       "statement": "Batch 43 core functionality satisfies all industrial specification requirements.",
-      "limitations": "Evaluated against verified production workload fixture suites only.",
-      "status": "PASS",
+      "limitations": [
+        "Evaluated against verified production workload fixture suites only."
+      ],
       "evidenceRefs": [
         "b43-schema-compatibility-run",
         "batch43-execution",
         "batch43-verification"
-      ],
-      "provenanceRefs": [
-        "batch43-provenance",
-        "batch43-schema-compatibility-provenance"
       ]
     },
     {
       "claimId": "claim-b43-operational-governance-resilience",
       "statement": "Batch 43 meets all zero-tolerance, audit, and operational resilience standards.",
-      "limitations": "Scoped to approved deployment topologies and authorized network perimeters.",
-      "status": "PASS",
+      "limitations": [
+        "Scoped to approved deployment topologies and authorized network perimeters."
+      ],
       "evidenceRefs": [
         "batch43-execution",
         "batch43-verification"
-      ],
-      "provenanceRefs": [
-        "batch43-provenance"
       ]
     }
   ]

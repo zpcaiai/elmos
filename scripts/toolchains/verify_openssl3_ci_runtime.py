@@ -25,11 +25,7 @@ LIBCRYPTO: Final = Path(
 EXPECTED_VERSION: Final = (
     "OpenSSL 3.6.4 25 Aug 2026 (Library: OpenSSL 3.6.4 25 Aug 2026)"
 )
-EXPECTED_IMAGES: Final = frozenset(
-    {
-        ("macos15", "20260907.0337.1"),
-    }
-)
+EXPECTED_IMAGE: Final = ("macos15", "20260907.0337.1")
 EXPECTED_MACOS_PRODUCT_VERSION: Final = "15.7.9"
 EXPECTED_MACOS_BUILD_VERSION: Final = "24G830"
 OPT_LINK: Final = Path("/opt/homebrew/opt/openssl@3")
@@ -37,7 +33,7 @@ OPT_LINK_TARGET: Final = "../Cellar/openssl@3/3.6.4"
 
 UNSEALED_DIRECTORY_PROFILES: Final = {
     Path("/opt"): {"mode": "0755", "uid": 0, "gid": 0},
-    # The qualified github-actions macos-15 images expose the Homebrew
+    # github-actions macos-15 image 20260907.0337.1 exposes the Homebrew
     # prefix itself as runner-owned but already non-group-writable.  Keep this
     # exact pre-seal identity separate from the root-owned post-seal profile.
     Path("/opt/homebrew"): {"mode": "0755", "uid": 501, "gid": 80},
@@ -131,6 +127,9 @@ SIGNATURE_PROFILES: Final = {
         "Identifier=libssl.3",
         "Format=Mach-O thin (arm64)",
         "Hash type=sha256 size=32",
+        "CandidateCDHashFull sha256=e9a6a82cd020a4d83a4c9f04e4721f9e9ba74ba53688d24378b9925a7152d1cd",
+        "CMSDigest=e9a6a82cd020a4d83a4c9f04e4721f9e9ba74ba53688d24378b9925a7152d1cd",
+        "CDHash=e9a6a82cd020a4d83a4c9f04e4721f9e9ba74ba5",
         "Signature=adhoc",
         "TeamIdentifier=not set",
         "Sealed Resources=none",
@@ -140,6 +139,9 @@ SIGNATURE_PROFILES: Final = {
         "Identifier=libcrypto.3",
         "Format=Mach-O thin (arm64)",
         "Hash type=sha256 size=32",
+        "CandidateCDHashFull sha256=62a898da6d899ade18542bdba30ed3eb44a351472a792e531d9b9b7b2becc51e",
+        "CMSDigest=62a898da6d899ade18542bdba30ed3eb44a351472a792e531d9b9b7b2becc51e",
+        "CDHash=62a898da6d899ade18542bdba30ed3eb44a35147",
         "Signature=adhoc",
         "TeamIdentifier=not set",
         "Sealed Resources=none",
@@ -897,7 +899,7 @@ def _forbidden_environment_names(environment: Mapping[str, str]) -> set[str]:
 def _verify_host(image_os: str | None, image_version: str | None) -> None:
     if sys.platform != "darwin" or os.uname().machine != "arm64":
         raise RuntimeError("OpenSSL runtime verifier requires Darwin arm64")
-    if (image_os, image_version) not in EXPECTED_IMAGES:
+    if (image_os, image_version) != EXPECTED_IMAGE:
         raise RuntimeError("GitHub hosted image identity mismatch")
     if (
         _run(["/usr/bin/sw_vers", "-productVersion"]).stdout.strip()
