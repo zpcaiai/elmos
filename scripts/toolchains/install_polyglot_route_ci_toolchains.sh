@@ -14,7 +14,7 @@ if [[ "${GITHUB_ACTIONS:-}" != "true" || "${RUNNER_ENVIRONMENT:-}" != "github-ho
   printf 'Refusing to provision the CI closure outside a GitHub-hosted runner.\n' >&2
   exit 2
 fi
-for command_name in brew chmod codesign curl find git install mv python3 realpath shasum stat sudo sw_vers tar; do
+for command_name in brew cc chmod codesign curl find git install make mv python3 realpath shasum stat sudo sw_vers tar; do
   if ! command -v "${command_name}" >/dev/null 2>&1; then
     printf 'Required host command is unavailable: %s\n' "${command_name}" >&2
     exit 2
