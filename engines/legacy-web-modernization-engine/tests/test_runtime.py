@@ -214,6 +214,42 @@ class RuntimeTests(unittest.TestCase):
         finally:
             holder.cleanup()
 
+    def test_struts_business_body_supported_subset_generates_executable_adapter(self) -> None:
+        holder, root = fixture_root()
+        try:
+            (root / "src/main/java/com/acme/CreateOrderAction.java").write_text(
+                """package com.acme;
+                class CreateOrderAction {
+                  Object execute(Object mapping, Object form, javax.servlet.http.HttpServletRequest request) {
+                    String customerId = request.getParameter("customerId");
+                    return mapping.findForward("success");
+                  }
+                }""",
+                encoding="utf-8",
+            )
+            generated = dispatch(request(root, "51-struts1-to-springmvc-generator"))
+            payload = generated["artifacts"][0]["payload"]
+            adapter = next(value for path, value in payload["files"].items() if path.endswith("UseCaseAdapter.java"))
+            self.assertIn("String customerId = input.customerId();", adapter)
+            self.assertIn('return new CreateOrderActionUseCase.Outcome("success");', adapter)
+            obligation = payload["semanticObligations"][0]
+            self.assertEqual(obligation["translation"], "deterministic-supported-subset")
+            self.assertEqual(obligation["severity"], "medium")
+        finally:
+            holder.cleanup()
+
+    def test_struts_complex_business_body_remains_explicitly_blocked(self) -> None:
+        holder, root = fixture_root()
+        try:
+            generated = dispatch(request(root, "51-struts1-to-springmvc-generator"))
+            payload = generated["artifacts"][0]["payload"]
+            self.assertFalse(any(path.endswith("UseCaseAdapter.java") for path in payload["files"]))
+            obligation = payload["semanticObligations"][0]
+            self.assertEqual(obligation["severity"], "high")
+            self.assertTrue(obligation["unsupportedStatements"])
+        finally:
+            holder.cleanup()
+
     def test_jsp_supported_subset_generates_thymeleaf_and_blocks_scriptlets(self) -> None:
         holder, root = fixture_root()
         try:
