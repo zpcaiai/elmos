@@ -139,6 +139,8 @@ const lockedZ3BinaryDigests = new Set<string>([
   lockedZ3BinaryDigest,
   "sha256:edae32f9e37ea4b5bb35310d72f0e352d0dc07626cac4e9e30bc1ea9a5bc8efb",
 ]);
+const lockedZ3IdentityProbeTimeoutMs = 120_000;
+const lockedZ3VersionByIdentity = new Map<string, string>();
 
 const codePointCompare = (left: string, right: string): number => left < right ? -1 : left > right ? 1 : 0;
 
@@ -1113,8 +1115,16 @@ export function runFrontendSolver(smt2: string, options: FrontendSolverOptions =
   const binaryDigest = bytesDigest(readFileSync(binaryPath));
   if (basename(binaryPath) !== "z3") return rejected("ERROR", "solver executable identity is not Z3", binaryPath, binaryDigest);
   if (!lockedZ3BinaryDigests.has(binaryDigest)) return rejected("ERROR", "solver binary digest is not the locked Z3 4.16.0 artifact", binaryPath, binaryDigest);
-  const versionResult = spawnSync(binaryPath, ["-version"], { encoding: "utf8", timeout: Math.min(timeout, 5_000) });
-  const solverVersion = versionResult.status === 0 ? (versionResult.stdout ?? "").trim() : "UNKNOWN";
+  const identityKey = `${binaryPath}\0${binaryDigest}`;
+  let solverVersion = lockedZ3VersionByIdentity.get(identityKey);
+  if (solverVersion === undefined) {
+    const versionResult = spawnSync(binaryPath, ["-version"], {
+      encoding: "utf8",
+      timeout: lockedZ3IdentityProbeTimeoutMs,
+    });
+    solverVersion = versionResult.status === 0 ? (versionResult.stdout ?? "").trim() : "UNKNOWN";
+    if (solverVersion === lockedZ3Version) lockedZ3VersionByIdentity.set(identityKey, solverVersion);
+  }
   if (solverVersion !== lockedZ3Version) {
     return rejected("ERROR", "solver version is not the locked Z3 4.16.0 tuple", binaryPath, binaryDigest, solverVersion);
   }

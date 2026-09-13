@@ -24,6 +24,7 @@ from scripts.precision_migration.generated_orchestrators import ORCHESTRATOR_HAN
 from scripts.precision_migration.jobs import JobError, JobStore
 from scripts.precision_migration.native import EXTERNAL_NATIVE_ADAPTERS, NATIVE_ADAPTERS
 from scripts.precision_migration.orchestration import OrchestratorRegistry
+from scripts.precision_migration.promotion import promoted_skill_source_digest
 from scripts.precision_migration.run_gate import (
     EXTERNAL_CHECKS,
     LOCAL_CHECKS,
@@ -330,7 +331,10 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
             self.assertEqual(record, self.registry.resolve(record["source_name"]))
             workspace_skill = ROOT / record["workspace_path"]
             self.assertTrue(workspace_skill.is_file())
-            self.assertEqual(record["workspace_sha256"], hashlib.sha256(workspace_skill.read_bytes()).hexdigest())
+            self.assertEqual(
+                record["workspace_sha256"],
+                promoted_skill_source_digest(workspace_skill.read_bytes(), runtime_name),
+            )
 
     def test_plan_enforces_assessment_validation_and_release_stages(self) -> None:
         record = self.registry.resolve("java-to-python-direction-pack")

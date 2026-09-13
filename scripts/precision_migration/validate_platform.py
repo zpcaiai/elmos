@@ -7,8 +7,10 @@ import hashlib
 import importlib.util
 import json
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from collections import Counter
 from collections.abc import Callable
 from pathlib import Path
@@ -19,6 +21,12 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+from scripts.precision_migration.promotion import (  # noqa: E402
+    normalized_promoted_skill,
+    promoted_skill_source_digest,
+)
+
 SOURCE = ROOT / "skills" / "precision-migration-skills-batch-01-44"
 MANIFEST_PATH = ROOT / "docs" / "precision-migration-b01-44" / "installed-manifest.json"
 RUNTIME_ROOT = ROOT / "agent-skills" / "runtime"
@@ -60,6 +68,26 @@ def fail(message: str) -> None:
 
 def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def validate_promoted_skill(
+    validate_skill: Callable[[Path], tuple[bool, str]],
+    skill_dir: Path,
+    name: str,
+) -> tuple[bool, str]:
+    """Run the upstream validator against the source contract, not its overlay."""
+
+    with tempfile.TemporaryDirectory(prefix="elmos-precision-skill-") as directory:
+        normalized_dir = Path(directory) / name
+        shutil.copytree(skill_dir, normalized_dir)
+        try:
+            normalized = normalized_promoted_skill(
+                (skill_dir / "SKILL.md").read_bytes(), name
+            )
+        except ValueError as error:
+            fail(str(error))
+        (normalized_dir / "SKILL.md").write_bytes(normalized)
+        return validate_skill(normalized_dir)
 
 
 def load_validator() -> Callable[[Path], tuple[bool, str]]:
@@ -162,11 +190,17 @@ def main() -> int:
         source_path = SOURCE / record["source_path"]
         if not skill_path.is_file() or not source_path.is_file():
             fail(f"installed or source Skill is missing: {name}")
-        if digest(skill_path) != record["installed_sha256"]:
+        try:
+            installed_digest = promoted_skill_source_digest(
+                skill_path.read_bytes(), name
+            )
+        except ValueError as error:
+            fail(str(error))
+        if installed_digest != record["installed_sha256"]:
             fail(f"installed Skill digest mismatch: {name}")
         if digest(source_path) != record["source_sha256"]:
             fail(f"source Skill digest mismatch: {name}")
-        valid, message = validate_skill(skill_dir)
+        valid, message = validate_promoted_skill(validate_skill, skill_dir, name)
         if not valid:
             fail(f"skill-creator validation failed for {name}: {message}")
         text = skill_path.read_text(encoding="utf-8")
@@ -181,7 +215,16 @@ def main() -> int:
         workspace_interface = workspace_dir / "agents" / "openai.yaml"
         if not workspace_skill.is_file() or not workspace_interface.is_file():
             fail(f"workspace-discoverable Skill is missing: {name}")
-        if digest(workspace_skill) != record["workspace_sha256"] or workspace_skill.read_bytes() != skill_path.read_bytes():
+        try:
+            workspace_digest = promoted_skill_source_digest(
+                workspace_skill.read_bytes(), name
+            )
+        except ValueError as error:
+            fail(str(error))
+        if (
+            workspace_digest != record["workspace_sha256"]
+            or workspace_skill.read_bytes() != skill_path.read_bytes()
+        ):
             fail(f"workspace Skill digest mismatch: {name}")
         if workspace_interface.read_bytes() != (skill_dir / "agents" / "openai.yaml").read_bytes():
             fail(f"workspace Skill interface mismatch: {name}")

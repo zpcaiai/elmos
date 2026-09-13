@@ -31,6 +31,9 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.precision_migration.contracts import compile_contract
+from scripts.precision_migration.promotion import (
+    PROMOTION_METADATA as PROMOTION_METADATA_BYTES,
+)
 
 SOURCE = ROOT / "skills" / "precision-migration-skills-batch-01-44"
 RUNTIME_ROOT = ROOT / "agent-skills" / "runtime"
@@ -722,11 +725,7 @@ def directories_equal(left: Path, right: Path) -> bool:
     return left_files == right_files
 
 
-PROMOTION_METADATA = (
-    'implementation_state: "VERIFIED"\n'
-    'external_evidence_status: "LOCAL_EXECUTED"\n'
-    'production_certification: "NOT_CERTIFIED"\n'
-)
+PROMOTION_METADATA = PROMOTION_METADATA_BYTES.decode("utf-8")
 
 
 def normalize_promotion_metadata(content: bytes) -> bytes:
