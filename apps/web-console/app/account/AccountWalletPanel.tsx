@@ -2,6 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { useAccountSession } from "../components/AccountSessionProvider";
+import { renderQrSvg } from "../lib/qrCode";
+import {
+  describeCheckoutHandoffProblem,
+  trustedCheckoutUrl,
+  type CheckoutProvider,
+  type CheckoutSurface,
+} from "../lib/checkoutHandoffPolicy";
 import styles from "./AccountOrganizationStudio.module.css";
 
 /**
@@ -47,7 +54,8 @@ type TopupHandoff = {
   amountMinor: Amount;
   status: string;
   expiresAt: string | null;
-  paymentProvider: string;
+  paymentProvider: CheckoutProvider;
+  checkoutSurface: CheckoutSurface | null;
   checkoutUrl: string | null;
   qrCodeUrl: string | null;
 };
@@ -138,11 +146,20 @@ export function AccountWalletPanel() {
    * <p>刻意不在「已付款」时就把余额加上去：那样界面会短暂显示一个数据库里
    * 还不存在的余额，而如果回调最终没到（这正是需要对账的那种情况），
    * 用户看到的是钱到了、下一次刷新又没了。宁可慢一点也别说谎。
-   */
+  */
   useEffect(() => {
-    if (!handoff || handoff.status === "CREDITED" || handoff.status === "EXPIRED") return;
+    if (!handoff || ["CREDITED", "EXPIRED", "FAILED", "REFUNDED"].includes(handoff.status)) return;
     let cancelled = false;
-    const timer = setInterval(async () => {
+    const check = async () => {
+      const expiresAt = handoff.expiresAt ? Date.parse(handoff.expiresAt) : Number.NaN;
+      if ((handoff.status === "CREATED" || handoff.status === "PENDING_PAYMENT")
+          && Number.isFinite(expiresAt) && expiresAt <= Date.now()) {
+        idempotencyKey.current = "";
+        keyAmount.current = -1;
+        setHandoff((current) => current && { ...current, status: "EXPIRED" });
+        setFailure("充值订单已过期，请重新发起。");
+        return;
+      }
       try {
         const response = await fetch(
           `/api/wallet/topup/${encodeURIComponent(handoff.topupOrderId)}`,
@@ -158,12 +175,27 @@ export function AccountWalletPanel() {
           keyAmount.current = -1;
           setFeedback("充值已入账。");
           await load();
+        } else if (order.status === "EXPIRED") {
+          idempotencyKey.current = "";
+          keyAmount.current = -1;
+          setFailure("充值订单已过期，请重新发起。");
+        } else if (order.status === "FAILED") {
+          idempotencyKey.current = "";
+          keyAmount.current = -1;
+          setFailure("充值订单失败，请重新发起。");
+        } else if (order.status === "REFUNDED") {
+          idempotencyKey.current = "";
+          keyAmount.current = -1;
+          setFeedback("这笔充值已退款。");
+          await load();
         }
       } catch {
         // 轮询失败不打扰用户：下一轮会再试，真到不了会停在「已付款待入账」，
         // 那本身就是给运营看的信号。
       }
-    }, 4000);
+    };
+    void check();
+    const timer = setInterval(() => void check(), 4000);
     return () => { cancelled = true; clearInterval(timer); };
   }, [handoff, load]);
 
@@ -200,7 +232,34 @@ export function AccountWalletPanel() {
         (TopupHandoff & ErrorPayload) | null;
       if (!response.ok) {
         // 键不作废：这一笔可能已经在服务端建好了，换键重试会开出第二笔可付款的单。
+        if (payload?.code === "TOPUP_ORDER_EXPIRED") {
+          idempotencyKey.current = "";
+          keyAmount.current = -1;
+        }
         setFailure(payload?.message ?? payload?.code ?? `充值未能发起（HTTP ${response.status}）。`);
+        return;
+      }
+      if (payload?.status === "CREDITED") {
+        idempotencyKey.current = "";
+        keyAmount.current = -1;
+        setHandoff(null);
+        setFeedback("这笔充值已经入账，无需再次付款。");
+        await load();
+        return;
+      }
+      if (payload?.status === "PAID") {
+        setHandoff(payload);
+        setFeedback("付款已经确认，正在等待余额入账。");
+        return;
+      }
+      const handoffProblem = describeCheckoutHandoffProblem(payload, false);
+      if (handoffProblem) {
+        setFailure(`支付渠道返回了无法使用的充值信息：${handoffProblem}。`);
+        return;
+      }
+      if (payload?.checkoutUrl && (!payload.checkoutSurface || !trustedCheckoutUrl(
+        payload.paymentProvider, payload.checkoutSurface, payload.checkoutUrl))) {
+        setFailure("支付渠道返回了不受信任的充值地址。");
         return;
       }
       setHandoff(payload);
@@ -295,10 +354,12 @@ export function AccountWalletPanel() {
                 </a>
               )}
               {handoff.qrCodeUrl && (
-                <>
-                  <small>微信扫码付款（二维码内容）：</small>
-                  <code>{handoff.qrCodeUrl}</code>
-                </>
+                <img
+                  src={`data:image/svg+xml;utf8,${encodeURIComponent(renderQrSvg(handoff.qrCodeUrl))}`}
+                  alt="微信充值二维码"
+                  width={220}
+                  height={220}
+                />
               )}
               <small>
                 {handoff.status === "PAID"

@@ -12,14 +12,16 @@
 | Credit 用户可见闭环 | 订单详情路径保护、付款前不入账、后端履约后余额/流水同步、桌面与移动端 | `PASS`（BFF 4/4；旅程 2/2） |
 | Chromium + mobile Chromium 定价旅程 | 精确商品/金额/目录版本、DRAFT 付费禁用 | `PASS`（4/4） |
 | 项目任务 Markdown 文档包 | 架构、数据库、迁移、历史、追踪、归档 | `PASS`（3/3） |
-| PostgreSQL 17.5 空库 V1–V87 | 87 个迁移、DDL、函数、触发器、RLS、角色与延迟约束 | `PASS`（最终版 V87） |
-| V87 JDBC live integration | Credit/权益、双分录、1000 并发、outbox 尝试历史、投影重建、actor/tenant、Token 历史与回调 | `PASS`（11/11；0 skipped） |
+| PostgreSQL 17.5 空库 V1–V88 | 88 个迁移、DDL、函数、触发器、RLS、角色与延迟约束 | `PASS`（最终版 V88） |
+| V88 JDBC live integration | Credit/权益、双分录、1000 并发、订单并发幂等、充值日限额、outbox、投影重建、actor/tenant、Token 历史与回调 | `PASS`（12/12；0 skipped） |
+| ELMPay 托管收银台契约 | 公共基址/session/token/有效期绑定、checkoutSurface、query/host/重复片段、微信 URI 与终态重放负向用例 | `PASS`（API 34/34；Web policy 57/57；ELMPay checkout web 37/37） |
 | 支付密码学/路由自检 | 12 组：真实密钥、签名、金额、重放、Spring、安全与目录 | `PASS`（全部零失败） |
 | 定价 JSON Schema | `jsonschema 4.25.1` 校验目录 | `PASS` |
 | 目录发布门禁 | DRAFT 结构验证；缺少真实外部证据时拒绝发布 | `PASS`（预期 `PUBLICATION_BLOCKED`） |
 | 最小权限运行角色 | `NOSUPERUSER`、`NOBYPASSRLS`、函数白名单、跨租户失败关闭 | `PASS` |
 | 负向数据库验证 | 跨租户、缺租户、重复试用、追加事实修改、超额并发 | `PASS` |
 | Neon production Environment 迁移 | `commercial-production` 严格目标校验；PostgreSQL 17.11；V86→V87；迁移前后 88 项 Flyway 记录验证；运行角色授权 | `PASS_EXTERNAL`（GitHub Actions run `34713508064`） |
+| Neon production Environment V88 迁移 | 尚未执行受保护目标迁移 | `NOT_RUN` |
 | 支付宝/微信生产商户真实付款与退款 | 商户、证书与回调域名未注入 | `NOT_RUN` |
 | 生产 OIDC、邮件与真实资金客户旅程 | 外部系统未配置 | `NOT_RUN` |
 
@@ -61,7 +63,7 @@
 - `uv run --quiet --with jsonschema==4.25.1 python ...`（目录 Schema）
 - `python3 scripts/commercial/validate_pricing_catalog_publication.py --check-publishable`
 - `uv run --project engines/project-synthesis-engine pytest -q engines/project-synthesis-engine/tests/test_project_documentation.py`
-- Flyway `validate → migrate`，从空库应用 V1–V87（Flyway 校验 87 个迁移，PostgreSQL 17.5）
+- Flyway `validate → migrate`，从空库应用 V1–V88（Flyway 校验 88 个迁移，PostgreSQL 17.5）
 
 ## 证据边界
 
@@ -69,7 +71,8 @@
 主线合并后，[GitHub Actions run 34713508064](https://github.com/zpcaiai/elmos/actions/runs/34713508064)
 通过受保护的 `commercial-production` Environment 在批准的 Neon PostgreSQL 17.11 目标执行
 V86→V87，并在迁移前后验证完整 88 项 Flyway 记录和应用最小权限运行角色授权。日志对连接目标
-做了脱敏；该证据证明受保护目标迁移成功，但不证明应用已部署、live billing 已开启或真实资金流通过。
+做了脱敏；该证据只证明受保护目标已到 V87。V88 仍为 `NOT_RUN`，也不证明应用已部署、
+live billing 已开启或真实资金流通过。
 1000 并发测试证明本机同组织账户行锁、守恒约束和不超支行为；不替代生产拓扑的负载、故障、
 消息传输或跨区域验证。outbox 本地测试证明数据库领取/失败重试/同 ID 发布完成和追加式尝试历史，
 不证明任何生产消息 Broker、下游消费者或告警已配置。

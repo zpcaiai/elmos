@@ -49,14 +49,43 @@ public final class PaymentProviderRouter {
         boolean contactsProviderDuringPrepare();
     }
 
+    /**
+     * 支付入口由谁托管。底层收单通道和浏览器最终访问的收银台不是同一个概念：
+     * ELMPay 仍会把资金路由到支付宝/微信，但浏览器访问的是 ELMPay 的托管页面。
+     */
+    public enum CheckoutSurface {
+        DIRECT_PROVIDER,
+        ELMPAY_HOSTED
+    }
+
     /** 前端支付入口。两种形态互斥，二者必有其一。 */
-    public record CheckoutHandoff(PaymentProvider provider, String redirectUrl, String qrCodeUrl) {
+    public record CheckoutHandoff(
+            PaymentProvider provider,
+            String redirectUrl,
+            String qrCodeUrl,
+            CheckoutSurface checkoutSurface
+    ) {
+        public CheckoutHandoff(PaymentProvider provider, String redirectUrl, String qrCodeUrl) {
+            this(provider, redirectUrl, qrCodeUrl, CheckoutSurface.DIRECT_PROVIDER);
+        }
+
         public CheckoutHandoff {
+            if (provider == null || checkoutSurface == null) {
+                throw new IllegalArgumentException("支付入口缺少通道或托管面");
+            }
             boolean hasRedirect = redirectUrl != null && !redirectUrl.isEmpty();
             boolean hasQr = qrCodeUrl != null && !qrCodeUrl.isEmpty();
             if (hasRedirect == hasQr) {
                 throw new IllegalArgumentException(
                         "支付入口必须且只能是跳转 URL 或二维码之一");
+            }
+            if (checkoutSurface == CheckoutSurface.ELMPAY_HOSTED
+                    && (provider == PaymentProvider.STRIPE_CHECKOUT || !hasRedirect)) {
+                throw new IllegalArgumentException("ELMPay 托管收银台必须使用大陆支付通道和跳转地址");
+            }
+            if (checkoutSurface == CheckoutSurface.DIRECT_PROVIDER
+                    && ((provider == PaymentProvider.WECHAT_PAY_NATIVE) != hasQr)) {
+                throw new IllegalArgumentException("直连支付入口与通道形态不匹配");
             }
         }
     }

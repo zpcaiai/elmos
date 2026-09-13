@@ -83,7 +83,8 @@ public class WalletTopupController {
             Instant expiresAt,
             String paymentProvider,
             String checkoutUrl,
-            String qrCodeUrl
+            String qrCodeUrl,
+            String checkoutSurface
     ) {}
 
     public record WalletView(
@@ -175,12 +176,15 @@ public class WalletTopupController {
             return new TopupHandoffResponse(
                     order.topupOrderId(), order.outTradeNo(), order.currency(),
                     order.amountMinor(), order.status(), order.expiresAt(),
-                    orderProvider.name(), null, null);
+                    orderProvider.name(), null, null, null);
         }
         if (!"CREATED".equals(order.status()) && !"PENDING_PAYMENT".equals(order.status())) {
             throw new BillingApiException(409, "TOPUP_ORDER_NOT_PAYABLE",
                     "The existing top-up order cannot open another checkout.", false);
         }
+        CommercialOrderController.requirePayableBefore(
+                order.expiresAt(), Instant.now(), "TOPUP_ORDER_EXPIRED",
+                "The existing top-up order has expired.");
         PaymentProviderRouter.CheckoutGateway gateway;
         try {
             gateway = paymentRouter.checkoutGateway(orderProvider);
@@ -218,7 +222,8 @@ public class WalletTopupController {
         return new TopupHandoffResponse(
                 ready.topupOrderId(), ready.outTradeNo(), ready.currency(),
                 ready.amountMinor(), ready.status(), ready.expiresAt(),
-                handoff.provider().name(), handoff.redirectUrl(), handoff.qrCodeUrl());
+                handoff.provider().name(), handoff.redirectUrl(), handoff.qrCodeUrl(),
+                handoff.checkoutSurface().name());
     }
 
     /** 供前端轮询：付款完成后由回调把状态推到 CREDITED。 */

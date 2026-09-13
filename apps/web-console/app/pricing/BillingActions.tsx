@@ -5,6 +5,12 @@ import type { MutableRefObject } from "react";
 import type { CreditPack, OneTimeProduct, PricingPlan } from "../lib/pricingCatalog";
 import { renderQrSvg } from "../lib/qrCode";
 import { Icon } from "../components/Icon";
+import {
+  describeCheckoutHandoffProblem,
+  trustedCheckoutUrl,
+  type CheckoutProvider as PaymentProvider,
+  type CheckoutSurface,
+} from "../lib/checkoutHandoffPolicy";
 import styles from "./BillingActions.module.css";
 
 type BillingError = {
@@ -18,7 +24,6 @@ type TrialGrant = {
   status: string;
 };
 
-type PaymentProvider = "STRIPE_CHECKOUT" | "ALIPAY_CHECKOUT" | "WECHAT_PAY_NATIVE";
 type CommercialOrderStatus = "CREATED" | "PENDING_PAYMENT" | "PAID" | "FULFILLED"
   | "EXPIRED" | "FAILED" | "RECONCILIATION_REQUIRED";
 
@@ -31,6 +36,7 @@ type Checkout = {
   planId: string;
   status: string;
   paymentProvider: PaymentProvider;
+  checkoutSurface: CheckoutSurface;
   checkoutUrl?: string;
   qrCodeUrl?: string;
 };
@@ -60,27 +66,6 @@ function errorMessage(payload: BillingError, fallback: string): string {
   if (payload.code === "TRIAL_ALREADY_USED") return "该组织或已验证身份已使用过免费体验。";
   if (payload.code === "ACCOUNT_SESSION_REQUIRED") return "请先登录后再管理套餐。";
   return payload.message || fallback;
-}
-
-/**
- * 结账跳转地址的可信域。
- *
- * 逐通道白名单，不做"只要是 https 就行"：结账地址来自上游响应，
- * 而上游响应可能因为配置错误、代理被劫持或供应链问题指向别处。
- * 一旦跳错，用户是把钱付给别人。
- */
-function isTrustedCheckoutHost(provider: PaymentProvider, hostname: string): boolean {
-  if (provider === "STRIPE_CHECKOUT") {
-    return hostname === "stripe.com" || hostname.endsWith(".stripe.com");
-  }
-  if (provider === "ALIPAY_CHECKOUT") {
-    // openapi.alipay.com 是生产网关，openapi.alipaydev.com 是沙箱。
-    // 沙箱域名保留是为了让联调走同一条代码路径——联调绕过校验，
-    // 等于上线前从没验过这段校验。
-    return hostname === "openapi.alipay.com" || hostname === "openapi.alipaydev.com";
-  }
-  // 微信 Native 不走跳转，走到这里说明上游给错了形态
-  return false;
 }
 
 function planName(planId: string): string {
@@ -135,7 +120,13 @@ export function PlanBillingAction({
         return;
       }
 
-      if (payload.paymentProvider === "WECHAT_PAY_NATIVE") {
+      const handoffProblem = describeCheckoutHandoffProblem(payload);
+      if (handoffProblem) {
+        throw new Error(`支付服务返回了无法使用的结账信息：${handoffProblem}。`);
+      }
+
+      if (payload.checkoutSurface === "DIRECT_PROVIDER"
+          && payload.paymentProvider === "WECHAT_PAY_NATIVE") {
         // 微信 Native：code_url 形如 weixin://wxpay/bizpayurl?pr=...
         // **绝对不能 window.location.assign 过去**——在桌面浏览器上它什么也不会发生，
         // 用户只会看到页面卡住。正确做法是本地渲染成二维码让用户用微信扫。
@@ -154,17 +145,12 @@ export function PlanBillingAction({
         return;
       }
 
-      let destination: URL;
-      try {
-        destination = new URL(payload.checkoutUrl ?? "");
-      } catch {
-        throw new Error("支付服务返回了无效的结账地址。");
-      }
-      if (destination.protocol !== "https:"
-          || !isTrustedCheckoutHost(payload.paymentProvider, destination.hostname)) {
+      const destination = trustedCheckoutUrl(
+        payload.paymentProvider, payload.checkoutSurface, payload.checkoutUrl ?? "");
+      if (!destination) {
         throw new Error("支付服务返回了不受信任的结账地址。");
       }
-      window.location.assign(destination.toString());
+      window.location.assign(destination);
     } catch (error) {
       setFailed(true);
       setMessage(error instanceof Error ? error.message : "套餐操作暂时无法完成。");
@@ -221,12 +207,24 @@ export function ProductBillingAction({
   const [failed, setFailed] = useState(false);
   const [qrSvg, setQrSvg] = useState<string | null>(null);
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
+  const [activeOrderExpiresAt, setActiveOrderExpiresAt] = useState<string | null>(null);
   const oneTime = "operationKey" in product;
 
   useEffect(() => {
     if (!activeOrderId) return;
     let stopped = false;
     const check = async () => {
+      const expiresAt = activeOrderExpiresAt ? Date.parse(activeOrderExpiresAt) : Number.NaN;
+      if (Number.isFinite(expiresAt) && expiresAt <= Date.now()) {
+        key.current = null;
+        setActiveOrderId(null);
+        setActiveOrderExpiresAt(null);
+        setQrSvg(null);
+        setFailed(true);
+        setMessage("订单已过期，请重新发起购买。");
+        window.dispatchEvent(new Event("elmos:billing-changed"));
+        return;
+      }
       try {
         const response = await fetch(
           `/api/billing/orders/${encodeURIComponent(activeOrderId)}`,
@@ -238,6 +236,7 @@ export function ProductBillingAction({
         if (order.status === "FULFILLED") {
           key.current = null;
           setActiveOrderId(null);
+          setActiveOrderExpiresAt(null);
           setQrSvg(null);
           setFailed(false);
           setMessage(oneTime ? "付款已确认，项目生成权益已到账。" : "付款已确认，Credit 已到账。");
@@ -245,6 +244,7 @@ export function ProductBillingAction({
         } else if (["FAILED", "EXPIRED", "RECONCILIATION_REQUIRED"].includes(order.status)) {
           if (order.status !== "RECONCILIATION_REQUIRED") key.current = null;
           setActiveOrderId(null);
+          setActiveOrderExpiresAt(null);
           setQrSvg(null);
           setFailed(true);
           setMessage(order.status === "RECONCILIATION_REQUIRED"
@@ -264,7 +264,7 @@ export function ProductBillingAction({
       stopped = true;
       window.clearInterval(timer);
     };
-  }, [activeOrderId, oneTime]);
+  }, [activeOrderExpiresAt, activeOrderId, oneTime]);
 
   const purchase = async () => {
     setPending(true);
@@ -293,16 +293,35 @@ export function ProductBillingAction({
         },
       );
       const payload = await json<{
-        order: { orderId: string };
+        order: { orderId: string; status: CommercialOrderStatus; expiresAt: string | null };
         paymentProvider: PaymentProvider;
+        checkoutSurface: CheckoutSurface | null;
         checkoutUrl?: string;
         qrCodeUrl?: string;
       }>(response);
-      if (!response.ok) throw new Error(errorMessage(payload, "订单暂时无法创建。"));
+      if (!response.ok) {
+        if (payload.code === "COMMERCIAL_ORDER_EXPIRED") key.current = null;
+        throw new Error(errorMessage(payload, "订单暂时无法创建。"));
+      }
       if (!payload.order?.orderId) throw new Error("订单服务未返回可追踪的订单号。");
+      if (payload.order.status === "FULFILLED") {
+        key.current = null;
+        setActiveOrderId(null);
+        setActiveOrderExpiresAt(null);
+        setFailed(false);
+        setMessage(oneTime ? "这笔订单已经完成，项目生成权益已到账。" : "这笔订单已经完成，Credit 已到账。");
+        window.dispatchEvent(new Event("elmos:billing-changed"));
+        return;
+      }
+      const handoffProblem = describeCheckoutHandoffProblem(payload, false);
+      if (handoffProblem) {
+        throw new Error(`订单服务返回了无法使用的付款信息：${handoffProblem}。`);
+      }
       setActiveOrderId(payload.order.orderId);
+      setActiveOrderExpiresAt(payload.order.expiresAt);
       window.dispatchEvent(new Event("elmos:billing-changed"));
-      if (payload.paymentProvider === "WECHAT_PAY_NATIVE") {
+      if (payload.checkoutSurface === "DIRECT_PROVIDER"
+          && payload.paymentProvider === "WECHAT_PAY_NATIVE") {
         const code = payload.qrCodeUrl ?? "";
         if (!code.startsWith("weixin://wxpay/bizpayurl?")) {
           throw new Error("支付服务返回了无法识别的微信支付二维码内容。");
@@ -311,12 +330,12 @@ export function ProductBillingAction({
         setMessage(`请用微信扫码完成支付；订单 ${payload.order.orderId} 将自动等待回调入账。`);
         return;
       }
-      const destination = new URL(payload.checkoutUrl ?? "");
-      if (destination.protocol !== "https:"
-        || !isTrustedCheckoutHost(payload.paymentProvider, destination.hostname)) {
+      const destination = trustedCheckoutUrl(
+        payload.paymentProvider, payload.checkoutSurface!, payload.checkoutUrl ?? "");
+      if (!destination) {
         throw new Error("支付服务返回了不受信任的结账地址。");
       }
-      window.location.assign(destination.toString());
+      window.location.assign(destination);
     } catch (error) {
       setFailed(true);
       setMessage(error instanceof Error ? error.message : "订单暂时无法创建。");

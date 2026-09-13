@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.time.Instant;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class CommercialOrderController {
             @NotBlank @Pattern(regexp = ID_PATTERN) String projectId) {}
     public record OrderHandoff(
             CommercialOrderPort.Order order, String paymentProvider,
-            String checkoutUrl, String qrCodeUrl) {}
+            String checkoutUrl, String qrCodeUrl, String checkoutSurface) {}
     public record GenerationReserveRequest(
             @Pattern(regexp = ID_PATTERN) String actorId,
             @NotBlank @Pattern(regexp = ID_PATTERN) String projectId,
@@ -216,12 +217,14 @@ public class CommercialOrderController {
                         "COMMERCIAL_ORDER_MISSING_AFTER_CREATE", "Order readback failed.", true));
         PaymentProvider orderProvider = PaymentProvider.parse(order.provider());
         if ("FULFILLED".equals(order.status())) {
-            return new OrderHandoff(order, orderProvider.name(), null, null);
+            return new OrderHandoff(order, orderProvider.name(), null, null, null);
         }
         if (!"CREATED".equals(order.status()) && !"PENDING_PAYMENT".equals(order.status())) {
             throw new BillingApiException(409, "COMMERCIAL_ORDER_NOT_PAYABLE",
                     "The existing order cannot open another checkout.", false);
         }
+        requirePayableBefore(order.expiresAt(), Instant.now(),
+                "COMMERCIAL_ORDER_EXPIRED", "The existing order has expired.");
         PaymentProviderRouter.CheckoutGateway gateway;
         try {
             gateway = router.checkoutGateway(orderProvider);
@@ -236,7 +239,8 @@ public class CommercialOrderController {
                     principal.organizationId(), principal.actorId(), order.orderId());
             var ready = orders.findOrder(principal.organizationId(), order.orderId()).orElseThrow();
             return new OrderHandoff(
-                    ready, orderProvider.name(), handoff.redirectUrl(), handoff.qrCodeUrl());
+                    ready, orderProvider.name(), handoff.redirectUrl(), handoff.qrCodeUrl(),
+                    handoff.checkoutSurface().name());
         } catch (RuntimeException failure) {
             boolean unknown = gateway.contactsProviderDuringPrepare();
             try {
@@ -250,6 +254,13 @@ public class CommercialOrderController {
                     "COMMERCIAL_ORDER_PROVIDER_UNAVAILABLE",
                     "The payment channel could not open this order.",
                     gateway.contactsProviderDuringPrepare(), failure);
+        }
+    }
+
+    static void requirePayableBefore(
+            Instant expiresAt, Instant now, String code, String message) {
+        if (expiresAt == null || !expiresAt.isAfter(now)) {
+            throw new BillingApiException(409, code, message, false);
         }
     }
 

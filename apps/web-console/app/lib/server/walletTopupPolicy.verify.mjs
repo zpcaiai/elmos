@@ -91,31 +91,101 @@ problem(null, "不是对象");
 problem("ALIPAY_CHECKOUT", "不是对象");
 problem([], "不是对象");
 problem({}, "paymentProvider");
-problem({ paymentProvider: "STRIPE_CHECKOUT", checkoutUrl: "https://stripe.example/pay" },
+problem({ paymentProvider: "STRIPE_CHECKOUT", checkoutSurface: "DIRECT_PROVIDER",
+  checkoutUrl: "https://checkout.stripe.com/pay" },
   "paymentProvider");   // 充值不收 Stripe，即使形态完整也要挡
-problem({ paymentProvider: "ALIPAY_CHECKOUT" }, "既没有跳转地址也没有二维码");
-problem({ paymentProvider: "ALIPAY_CHECKOUT", checkoutUrl: "" },
-  "既没有跳转地址也没有二维码");
+problem({ paymentProvider: "ALIPAY_CHECKOUT" }, "checkoutSurface");
+problem({ paymentProvider: "ALIPAY_CHECKOUT", checkoutSurface: "DIRECT_PROVIDER" },
+  "没有付款入口");
+problem({ paymentProvider: "ALIPAY_CHECKOUT", checkoutSurface: "DIRECT_PROVIDER",
+  checkoutUrl: "" }, "没有付款入口");
 problem({
   paymentProvider: "ALIPAY_CHECKOUT",
-  checkoutUrl: "https://alipay.example/pay",
+  checkoutSurface: "DIRECT_PROVIDER",
+  checkoutUrl: "https://openapi.alipay.com/gateway.do",
   qrCodeUrl: "weixin://wxpay/bizpayurl?pr=abc",
 }, "同时给了跳转地址与二维码");
-problem({ paymentProvider: "WECHAT_PAY_NATIVE", checkoutUrl: "https://wx.example/pay" },
+problem({ paymentProvider: "WECHAT_PAY_NATIVE", checkoutSurface: "DIRECT_PROVIDER",
+  checkoutUrl: "https://wx.example/pay" },
   "必须返回二维码内容");
-problem({ paymentProvider: "ALIPAY_CHECKOUT", qrCodeUrl: "weixin://wxpay/bizpayurl?pr=abc" },
+problem({ paymentProvider: "WECHAT_PAY_NATIVE", checkoutSurface: "DIRECT_PROVIDER",
+  qrCodeUrl: "https://attacker.example/fake-qr" },
+  "二维码内容非法");
+problem({ paymentProvider: "ALIPAY_CHECKOUT", checkoutSurface: "DIRECT_PROVIDER",
+  qrCodeUrl: "weixin://wxpay/bizpayurl?pr=abc" },
   "必须返回跳转地址");
 // 非字符串的 URL 与缺失等价：一个 { checkoutUrl: 42 } 同样点不动
-problem({ paymentProvider: "ALIPAY_CHECKOUT", checkoutUrl: 42 },
-  "既没有跳转地址也没有二维码");
+problem({ paymentProvider: "ALIPAY_CHECKOUT", checkoutSurface: "DIRECT_PROVIDER",
+  checkoutUrl: 42 }, "没有付款入口");
 
-clean({ paymentProvider: "ALIPAY_CHECKOUT", checkoutUrl: "https://alipay.example/pay" });
-clean({ paymentProvider: "WECHAT_PAY_NATIVE", qrCodeUrl: "weixin://wxpay/bizpayurl?pr=abc" });
+clean({ paymentProvider: "ALIPAY_CHECKOUT", checkoutSurface: "DIRECT_PROVIDER",
+  checkoutUrl: "https://openapi.alipay.com/gateway.do" });
+clean({ paymentProvider: "WECHAT_PAY_NATIVE", checkoutSurface: "DIRECT_PROVIDER",
+  qrCodeUrl: "weixin://wxpay/bizpayurl?pr=abc" });
 clean({
   paymentProvider: "WECHAT_PAY_NATIVE",
+  checkoutSurface: "DIRECT_PROVIDER",
   qrCodeUrl: "weixin://wxpay/bizpayurl?pr=abc",
   checkoutUrl: null,
 });
+clean({
+  paymentProvider: "ALIPAY_CHECKOUT",
+  checkoutSurface: "ELMPAY_HOSTED",
+  checkoutUrl: "https://checkout.example/#session=session-1&token=opaque",
+});
+clean({
+  paymentProvider: "WECHAT_PAY_NATIVE",
+  checkoutSurface: "ELMPAY_HOSTED",
+  checkoutUrl: "https://checkout.example/#session=session-1&token=opaque",
+});
+clean({
+  status: "PAID",
+  topupOrderId: "topup-paid-1",
+  paymentProvider: "ALIPAY_CHECKOUT",
+  checkoutSurface: null,
+  checkoutUrl: null,
+  qrCodeUrl: null,
+});
+clean({
+  status: "CREDITED",
+  topupOrderId: "topup-credited-1",
+  paymentProvider: "WECHAT_PAY_NATIVE",
+  checkoutSurface: null,
+  checkoutUrl: null,
+  qrCodeUrl: null,
+});
+problem({
+  status: "CREDITED",
+  paymentProvider: "WECHAT_PAY_NATIVE",
+  checkoutSurface: null,
+  checkoutUrl: null,
+  qrCodeUrl: null,
+}, "topupOrderId");
+problem({
+  status: "CREDITED",
+  topupOrderId: "topup-credited-1",
+  paymentProvider: "WECHAT_PAY_NATIVE",
+  checkoutSurface: "ELMPAY_HOSTED",
+  checkoutUrl: "https://checkout.example/#session=session-1&token=opaque",
+  qrCodeUrl: null,
+}, "不得再次返回付款入口");
+problem({
+  status: "CREATED",
+  paymentProvider: "ALIPAY_CHECKOUT",
+  checkoutSurface: null,
+  checkoutUrl: null,
+  qrCodeUrl: null,
+}, "checkoutSurface");
+problem({
+  paymentProvider: "ALIPAY_CHECKOUT",
+  checkoutSurface: "ELMPAY_HOSTED",
+  checkoutUrl: "https://checkout.example/?token=leaked#session=session-1&token=opaque",
+}, "地址非法");
+problem({
+  paymentProvider: "ALIPAY_CHECKOUT",
+  checkoutSurface: "ELMPAY_HOSTED",
+  checkoutUrl: "https://checkout.example/#session=session-1&session=session-2&token=opaque",
+}, "地址非法");
 
 // ---------------------------------------------------------------------------
 // 流水分页夹逼。空、负、小数、超大都回落或截断，不抛错——分页参数不值得
