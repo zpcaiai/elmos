@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "catalog_id": "ELMOS-RELEASE-EVIDENCE-v1",
+  "roots": [
+    {
+      "path": "certification",
+      "authority": "repository-record-only",
+      "default_evidence_class": "SELF_ATTESTED_OR_UNTRUSTED_UNLESS_EXTERNALLY_VERIFIED"
+    },
+    {
+      "path": "docs",
+      "authority": "documentation-only",
+      "default_evidence_class": "NON_EXECUTION_EVIDENCE"
+    },
+    {
+      "path": "test-suites",
+      "authority": "repository-test-record",
+      "default_evidence_class": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "path": ".release-control-artifacts",
+      "authority": "ci-generated-candidate-evidence",
+      "default_evidence_class": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "committed": false
+    }
+  ],
+  "external_evidence_requirements": {
+    "provider_or_real_environment": "NOT_RUN_UNLESS_RECEIPT_BOUND_TO_EXACT_SHA",
+    "independent_verification": "NOT_RUN_UNLESS_AUTHENTICATED_EXTERNAL_RECEIPT",
+    "production_certification": "NOT_CERTIFIED_UNLESS_CONSERVATIVE_DOMAIN_GATE_ACCEPTS_EXTERNAL_EVIDENCE"
+  }
+}

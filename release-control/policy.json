@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "policy_id": "ELMOS-RELEASE-CONTROL-A-v1",
+  "integration_authority": {
+    "group": "A",
+    "github_logins": ["zpcaiai"],
+    "provider_enforcement": "NOT_VERIFIED",
+    "required_provider_setting": "protected main requires CODEOWNERS approval and the release-control check"
+  },
+  "candidate": {
+    "require_exact_head_sha": true,
+    "require_clean_tracked_worktree": true,
+    "release_decision_without_external_evidence": "NOT_CERTIFIED"
+  },
+  "evidence": {
+    "catalog": "release-control/evidence-catalog.json",
+    "revocation_ledger": "certification/revoked-keys.json",
+    "untrusted_report_ledger": "release-control/untrusted-certification-reports.json",
+    "generated_directory": ".release-control-artifacts",
+    "retention_days": 30
+  },
+  "dependencies": {
+    "inventory_command": "python3 scripts/batch40_dependency_inventory.py",
+    "format": "CycloneDX-1.5",
+    "claim": "PARTIAL_LOCAL_INVENTORY_ONLY"
+  },
+  "daily_full_regression": {
+    "workflow": ".github/workflows/ci.yml",
+    "cron_utc": "17 18 * * *",
+    "timezone_display": "Asia/Shanghai",
+    "local_time": "02:17"
+  }
+}

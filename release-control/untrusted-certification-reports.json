@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "incident_id": "ELMOS-CERT-KEY-2026-09-13-01",
+  "required_decision": "NOT_CERTIFIED",
+  "reports": [
+    "certification/reports/batch38-45-strict-certification-report.json",
+    "certification/reports/business-line-2-polyglot-210-l5-certification.json",
+    "certification/reports/business-line-4-frontend-miniapp-l5-certification.json",
+    "certification/reports/frontend-client-industrial-evaluation-receipt.json",
+    "certification/reports/frontend-client-m32-certification-report.json",
+    "certification/reports/frontend-client-production-nfr-audit.json",
+    "certification/reports/frontend-client-runtime-differential-audit.json",
+    "certification/reports/generation-production-nfr-audit.json",
+    "certification/reports/generation-v1-certification-report.json",
+    "certification/reports/polyglot-210-industrial-evaluation-receipt.json",
+    "certification/reports/polyglot-210-route-matrix-audit.json",
+    "certification/reports/polyglot-enterprise-nfr-audit.json",
+    "certification/reports/polyglot-routes-certification-report.json",
+    "certification/reports/spring-boot-4-modernization-v1-certification-report.json",
+    "certification/reports/spring-modernization-v1-certification-report.json"
+  ]
+}
