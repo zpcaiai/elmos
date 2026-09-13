@@ -821,6 +821,35 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
         with self.assertRaisesRegex(ExternalIntakeError, "content .* mismatch"):
             self.evaluate()
 
+    def test_local_evidence_uri_rejects_query_and_fragment_aliases(self) -> None:
+        for suffix in ("?ignored=true", "#ignored"):
+            with self.subTest(suffix=suffix):
+                aliased = copy.deepcopy(self.intake)
+                aliased["artifact"]["uri"] += suffix
+                with self.assertRaisesRegex(
+                    ExternalIntakeError, "must be a local file URI"
+                ):
+                    self.evaluate(aliased)
+
+    def test_external_evidence_cannot_be_satisfied_from_the_pack_tree(self) -> None:
+        forged = self.pack / "repository-authored-source-build.json"
+        forged.write_bytes(b"repository-authored evidence\n")
+        escaped = copy.deepcopy(self.intake)
+        escaped["evidence"]["source_build"]["content"] = self.content_ref(
+            forged, "application/json"
+        )
+
+        with self.assertRaisesRegex(
+            ExternalIntakeError, "escapes approved evidence roots"
+        ):
+            evaluate_external_intake(
+                escaped,
+                pack_dir=self.pack,
+                trust_store=self.trust_path,
+                evidence_roots=[self.pack, self.evidence_root],
+                now=NOW,
+            )
+
     def test_exact_pack_tuple_artifact_profile_binding_is_required(self) -> None:
         drifted = copy.deepcopy(self.intake)
         drifted["binding"]["target_tuple"]["framework_version"] = "3.5.4"
