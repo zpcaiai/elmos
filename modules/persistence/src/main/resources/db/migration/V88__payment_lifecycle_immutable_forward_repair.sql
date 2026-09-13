@@ -233,4 +233,3 @@ END;
 $$;
 
 REVOKE ALL ON FUNCTION elmos_commercial_expire_generation_reservations(integer) FROM PUBLIC;
-
