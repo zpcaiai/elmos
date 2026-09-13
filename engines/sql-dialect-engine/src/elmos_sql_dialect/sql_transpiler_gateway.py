@@ -495,7 +495,7 @@ class SqlTranspilerGateway:
         transformed = list(dict.fromkeys(transformed))
         target_sql = str(typed_result.target_sql)
         verification["gatewaySemanticGuard"] = "PASSED"
-        receipt_payload = {
+        typed_receipt_payload: dict[str, Any] = {
             "sourceProfile": source_profile,
             "targetProfile": target_profile,
             "sourceDigest": getattr(typed_result, "source_digest", None),
@@ -521,7 +521,7 @@ class SqlTranspilerGateway:
                 "result and error equivalence, performance, security, and certification remain NOT_RUN."
             ),
             verification=verification,
-            merkle_receipt=_receipt(receipt_payload),
+            merkle_receipt=_receipt(typed_receipt_payload),
         )
 
     def diff_schemas(self, source_ddl: str, target_ddl: str) -> dict[str, Any]:

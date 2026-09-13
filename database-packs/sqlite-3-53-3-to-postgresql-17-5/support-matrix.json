@@ -7,9 +7,11 @@
       ],
       "id": "schema-type-constraint",
       "owner": "ELMOS Database Migration",
-      "reason": "Deterministic typed DDL and constraint mapping verified and certified.",
-      "restrictions": [],
-      "status": "certified",
+      "reason": "Repository-owned bounded engineering evidence only; external execution and independent certification are NOT_RUN.",
+      "restrictions": [
+        "Exact external source/target execution and independently verified evidence are required."
+      ],
+      "status": "experimental",
       "strategy": "typed-ir-lowering"
     },
     {
@@ -19,9 +21,11 @@
       ],
       "id": "query-semantics",
       "owner": "ELMOS Database Migration",
-      "reason": "Tenant-scoped query results verified and certified.",
-      "restrictions": [],
-      "status": "certified",
+      "reason": "Repository-owned bounded engineering evidence only; external execution and independent certification are NOT_RUN.",
+      "restrictions": [
+        "Exact external source/target execution and independently verified evidence are required."
+      ],
+      "status": "experimental",
       "strategy": "parameterized-differential-execution"
     },
     {
@@ -31,9 +35,11 @@
       ],
       "id": "transaction-rollback",
       "owner": "ELMOS Database Migration",
-      "reason": "Source and target rollback behavior verified and certified.",
-      "restrictions": [],
-      "status": "certified",
+      "reason": "Repository-owned bounded engineering evidence only; external execution and independent certification are NOT_RUN.",
+      "restrictions": [
+        "Exact external source/target execution and independently verified evidence are required."
+      ],
+      "status": "experimental",
       "strategy": "dual-engine-rollback-replay"
     },
     {
@@ -43,9 +49,11 @@
       ],
       "id": "backup-restore",
       "owner": "ELMOS Database Migration",
-      "reason": "Target backup and restore verified and certified.",
-      "restrictions": [],
-      "status": "certified",
+      "reason": "Repository-owned bounded engineering evidence only; external execution and independent certification are NOT_RUN.",
+      "restrictions": [
+        "Exact external source/target execution and independently verified evidence are required."
+      ],
+      "status": "experimental",
       "strategy": "disposable-target-backup-restore"
     },
     {
@@ -55,9 +63,11 @@
       ],
       "id": "cdc-production-cutover",
       "owner": "ELMOS Database Migration",
-      "reason": "Replication and production cutover verified and certified.",
-      "restrictions": [],
-      "status": "certified",
+      "reason": "Repository-owned bounded engineering evidence only; external execution and independent certification are NOT_RUN.",
+      "restrictions": [
+        "Exact external source/target execution and independently verified evidence are required."
+      ],
+      "status": "experimental",
       "strategy": "cdc-streaming-cutover"
     }
   ],

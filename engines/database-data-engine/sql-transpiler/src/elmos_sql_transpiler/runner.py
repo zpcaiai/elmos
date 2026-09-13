@@ -580,13 +580,19 @@ class PostgreSQLRunner(EngineRunner):
         raise RunnerBlockedError(f"required PostgreSQL executable is unavailable: {name}")
 
     def _run(self, arguments: list[str], *, timeout: float = 30.0) -> str:
-        completed = subprocess.run(
-            arguments,
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-        )
+        try:
+            completed = subprocess.run(
+                arguments,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+            )
+        except subprocess.TimeoutExpired as error:
+            raise RunnerBlockedError(
+                "PostgreSQL Runner provisioning timed out; runtime evidence remains "
+                "NOT_RUN_ENVIRONMENT_INVALID"
+            ) from error
         if completed.returncode != 0:
             detail = " ".join((completed.stderr or completed.stdout).split())[-1000:]
             raise RunnerBlockedError(

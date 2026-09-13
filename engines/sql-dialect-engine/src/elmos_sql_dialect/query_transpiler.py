@@ -17,9 +17,8 @@ Key AST Transformations:
 from __future__ import annotations
 
 import hashlib
-import json
 import re
-from typing import Any
+from typing import Any, cast
 
 from sqlglot import exp, parse_one
 from sqlglot.optimizer.simplify import simplify
@@ -93,8 +92,27 @@ class QueryTranspiler:
                 "emitted": None,
             }
 
-        read_dialect = DIALECT_MAP.get(src_norm, "postgres")
-        write_dialect = DIALECT_MAP.get(tgt_norm, "postgres")
+        if src_norm not in DIALECT_MAP:
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-query-translation",
+                "status": "BLOCKED",
+                "reasonCode": "SOURCE_DIALECT_UNSUPPORTED",
+                "reason": f"Unsupported source query dialect: {src_norm}",
+                "emitted": None,
+            }
+        if tgt_norm not in DIALECT_MAP:
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-query-translation",
+                "status": "BLOCKED",
+                "reasonCode": "TARGET_DIALECT_UNSUPPORTED",
+                "reason": f"Unsupported target query dialect: {tgt_norm}",
+                "emitted": None,
+            }
+
+        read_dialect = DIALECT_MAP[src_norm]
+        write_dialect = DIALECT_MAP[tgt_norm]
 
         try:
             ast = parse_one(normalized_sql, read=read_dialect)
@@ -110,6 +128,8 @@ class QueryTranspiler:
                     "reason": f"Could not parse query for source dialect {src_norm}: {exc}",
                     "emitted": None,
                 }
+
+        ast = cast(exp.Expression, ast)
 
         # Step 1: Transform Oracle (+) outer joins into ANSI LEFT JOIN
         ast = self._transform_oracle_outer_joins(ast)
@@ -146,7 +166,7 @@ class QueryTranspiler:
         # Clean residual whitespace or formatting anomalies
         emitted = self._post_process_sql(emitted, tgt_norm)
 
-        # Step 8: If target is a specialized ChinaDB dialect, pass through lower_chinadb_sql for target-specific refinements
+        # Step 8: Apply the exact ChinaDB target lowerer.
         if tgt_norm in _CHINADB_LOWERER_MAP:
             target_key = _CHINADB_LOWERER_MAP.get(tgt_norm, tgt_norm)
             try:
@@ -157,8 +177,15 @@ class QueryTranspiler:
                     kind="query",
                     mode=mode or "PG",
                 )
-            except Exception:
-                pass  # Fallback to emitted standard SQL
+            except Exception as exc:  # noqa: BLE001
+                return {
+                    "schemaVersion": "1.0",
+                    "kind": "elmos.sql-query-translation",
+                    "status": "BLOCKED",
+                    "reasonCode": "CHINADB_TARGET_LOWERING_FAILED",
+                    "reason": f"ChinaDB target lowering failed for {tgt_norm}: {exc}",
+                    "emitted": None,
+                }
 
         receipt = _sha256(f"{src_norm}:{tgt_norm}:{normalized_sql}:{emitted}")
         return {
@@ -207,7 +234,11 @@ class QueryTranspiler:
             for j in transformed.args.get("joins", []):
                 tbl_name = j.this.name if isinstance(j.this, exp.Table) else ""
                 alias_name = j.this.alias if isinstance(j.this, exp.Table) else ""
-                matched_key = tbl_name if tbl_name in outer_join_tables else (alias_name if alias_name in outer_join_tables else None)
+                matched_key = (
+                    tbl_name
+                    if tbl_name in outer_join_tables
+                    else alias_name if alias_name in outer_join_tables else None
+                )
                 if matched_key and matched_key in join_conditions:
                     cond = join_conditions[matched_key]
                     new_join = exp.Join(this=j.this, kind="LEFT", on=cond)
@@ -226,7 +257,7 @@ class QueryTranspiler:
 
         def _check_rownum(node: exp.Expression) -> exp.Expression:
             nonlocal extracted_limit
-            if isinstance(node, (exp.LTE, exp.LT)):
+            if isinstance(node, exp.LTE | exp.LT):
                 left = node.this
                 right = node.expression
                 if isinstance(left, exp.Column) and left.name.upper() == "ROWNUM":
@@ -251,7 +282,7 @@ class QueryTranspiler:
 
         def _xform(node: exp.Expression) -> exp.Expression:
             # 1. Null handling (NVL, IFNULL, ISNULL)
-            if isinstance(node, (exp.Anonymous, exp.Func)):
+            if isinstance(node, exp.Anonymous | exp.Func):
                 name = node.name.upper()
                 if name in ("NVL", "IFNULL", "ISNULL"):
                     args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
@@ -263,11 +294,13 @@ class QueryTranspiler:
                         return exp.Anonymous(this="ISNULL", expressions=args)
                     return exp.Anonymous(this="COALESCE", expressions=args)
 
-                # 2. NVL2(expr, not_null_val, null_val) -> CASE WHEN expr IS NOT NULL THEN not_null_val ELSE null_val END
+                # 2. NVL2(expr, not-null, null) -> CASE expression.
                 if name == "NVL2":
                     args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
                     if len(args) == 3:
-                        cond = exp.Is(this=args[0].copy(), expression=exp.var("NOT NULL"))
+                        cond: exp.Expression = exp.Is(
+                            this=args[0].copy(), expression=exp.var("NOT NULL")
+                        )
                         return exp.Case(ifs=[exp.If(this=cond, true=args[1].copy())], default=args[2].copy())
 
                 # 3. DECODE(col, v1, r1, v2, r2, ... def) -> CASE WHEN col = v1 THEN r1 ... ELSE def END
@@ -336,8 +369,8 @@ class QueryTranspiler:
         """Removes residual TRUE predicates from WHERE clause resulting from extracted conditions."""
         try:
             ast = simplify(ast)
-        except Exception:
-            pass
+        except Exception:  # noqa: BLE001
+            return ast
 
         where = ast.args.get("where")
         if where:

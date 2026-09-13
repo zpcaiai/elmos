@@ -19,7 +19,7 @@
 | 目录发布门禁 | DRAFT 结构验证；缺少真实外部证据时拒绝发布 | `PASS`（预期 `PUBLICATION_BLOCKED`） |
 | 最小权限运行角色 | `NOSUPERUSER`、`NOBYPASSRLS`、函数白名单、跨租户失败关闭 | `PASS` |
 | 负向数据库验证 | 跨租户、缺租户、重复试用、追加事实修改、超额并发 | `PASS` |
-| Neon 生产迁移 | 精确项目/分支/数据库未知 | `NOT_RUN` |
+| Neon production Environment 迁移 | `commercial-production` 严格目标校验；PostgreSQL 17.11；V86→V87；迁移前后 88 项 Flyway 记录验证；运行角色授权 | `PASS_EXTERNAL`（GitHub Actions run `34713508064`） |
 | 支付宝/微信生产商户真实付款与退款 | 商户、证书与回调域名未注入 | `NOT_RUN` |
 | 生产 OIDC、邮件与真实资金客户旅程 | 外部系统未配置 | `NOT_RUN` |
 
@@ -66,6 +66,10 @@
 ## 证据边界
 
 本地空库重放证明迁移在本机 PostgreSQL 17.5 上可执行，不证明某个 Neon 分支已经应用。
+主线合并后，[GitHub Actions run 34713508064](https://github.com/zpcaiai/elmos/actions/runs/34713508064)
+通过受保护的 `commercial-production` Environment 在批准的 Neon PostgreSQL 17.11 目标执行
+V86→V87，并在迁移前后验证完整 88 项 Flyway 记录和应用最小权限运行角色授权。日志对连接目标
+做了脱敏；该证据证明受保护目标迁移成功，但不证明应用已部署、live billing 已开启或真实资金流通过。
 1000 并发测试证明本机同组织账户行锁、守恒约束和不超支行为；不替代生产拓扑的负载、故障、
 消息传输或跨区域验证。outbox 本地测试证明数据库领取/失败重试/同 ID 发布完成和追加式尝试历史，
 不证明任何生产消息 Broker、下游消费者或告警已配置。

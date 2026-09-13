@@ -99,5 +99,7 @@ WITH CHECK (organization_id = current_setting('app.organization_id', true))
 - 空数据库 V1–V87 重放、RLS、并发硬停止、幂等、试用防滥用、阈值告警、
   Credit/一次性权益、双分录守恒、outbox 重试和投影重建：
   由本地 PostgreSQL 17 集成测试验证。
-- 生产项目/分支/数据库上的表、策略与 Flyway 历史：`NOT_RUN`。
+- `commercial-production` GitHub Environment 已通过 run `34713508064` 在批准的 Neon
+  PostgreSQL 17.11 把 schema 从 V86 升到 V87，并执行迁移前后 Flyway 验证和运行角色授权；
+  日志中的精确连接目标已脱敏，应用部署与生产业务读回仍为 `NOT_RUN`。
 - 生产回填：本版本没有旧的权威自助计费事实可安全推断，因此不生成虚构回填。

@@ -12,8 +12,7 @@ Strictly adheres to the Execution Integrity Contract:
 
 from __future__ import annotations
 
-import decimal
-from typing import Any
+from contextlib import suppress
 
 import pytest
 
@@ -32,7 +31,7 @@ except ImportError:
     pymysql = None
     _HAS_PYMYSQL = False
 
-from elmos_sql_dialect.engine import translate_query, translate_sql, translate_upsert
+from elmos_sql_dialect.engine import translate_query, translate_upsert
 
 
 def is_postgres_live() -> bool:
@@ -106,51 +105,63 @@ class TestPhysicalSqlExecutionRoundtrip:
             cur.execute("DROP TABLE IF EXISTS test_roundtrip_orders CASCADE;")
             cur.execute("DROP TABLE IF EXISTS test_roundtrip_customers CASCADE;")
             cur.execute("CREATE TABLE test_roundtrip_customers (id INT PRIMARY KEY, name VARCHAR(50), status INT);")
-            cur.execute("CREATE TABLE test_roundtrip_orders (order_id INT PRIMARY KEY, cust_id INT, amount NUMERIC(10,2));")
-            cur.execute("INSERT INTO test_roundtrip_customers VALUES (1, 'Alice', 1), (2, 'Bob', 2), (3, 'Charlie', 0);")
+            cur.execute(
+                "CREATE TABLE test_roundtrip_orders "
+                "(order_id INT PRIMARY KEY, cust_id INT, amount NUMERIC(10,2));"
+            )
+            cur.execute(
+                "INSERT INTO test_roundtrip_customers VALUES "
+                "(1, 'Alice', 1), (2, 'Bob', 2), (3, 'Charlie', 0);"
+            )
             cur.execute("INSERT INTO test_roundtrip_orders VALUES (101, 1, 150.00), (102, 1, 250.50), (103, 2, 80.00);")
 
         with cls.og_conn.cursor() as cur:
             cur.execute("DROP TABLE IF EXISTS test_roundtrip_orders CASCADE;")
             cur.execute("DROP TABLE IF EXISTS test_roundtrip_customers CASCADE;")
             cur.execute("CREATE TABLE test_roundtrip_customers (id INT PRIMARY KEY, name VARCHAR(50), status INT);")
-            cur.execute("CREATE TABLE test_roundtrip_orders (order_id INT PRIMARY KEY, cust_id INT, amount NUMERIC(10,2));")
-            cur.execute("INSERT INTO test_roundtrip_customers VALUES (1, 'Alice', 1), (2, 'Bob', 2), (3, 'Charlie', 0);")
+            cur.execute(
+                "CREATE TABLE test_roundtrip_orders "
+                "(order_id INT PRIMARY KEY, cust_id INT, amount NUMERIC(10,2));"
+            )
+            cur.execute(
+                "INSERT INTO test_roundtrip_customers VALUES "
+                "(1, 'Alice', 1), (2, 'Bob', 2), (3, 'Charlie', 0);"
+            )
             cur.execute("INSERT INTO test_roundtrip_orders VALUES (101, 1, 150.00), (102, 1, 250.50), (103, 2, 80.00);")
 
         with cls.my_conn.cursor() as cur:
             cur.execute("DROP TABLE IF EXISTS test_roundtrip_orders;")
             cur.execute("DROP TABLE IF EXISTS test_roundtrip_customers;")
             cur.execute("CREATE TABLE test_roundtrip_customers (id INT PRIMARY KEY, name VARCHAR(50), status INT);")
-            cur.execute("CREATE TABLE test_roundtrip_orders (order_id INT PRIMARY KEY, cust_id INT, amount DECIMAL(10,2));")
-            cur.execute("INSERT INTO test_roundtrip_customers VALUES (1, 'Alice', 1), (2, 'Bob', 2), (3, 'Charlie', 0);")
+            cur.execute(
+                "CREATE TABLE test_roundtrip_orders "
+                "(order_id INT PRIMARY KEY, cust_id INT, amount DECIMAL(10,2));"
+            )
+            cur.execute(
+                "INSERT INTO test_roundtrip_customers VALUES "
+                "(1, 'Alice', 1), (2, 'Bob', 2), (3, 'Charlie', 0);"
+            )
             cur.execute("INSERT INTO test_roundtrip_orders VALUES (101, 1, 150.00), (102, 1, 250.50), (103, 2, 80.00);")
 
     @classmethod
     def teardown_class(cls) -> None:
-        try:
+        with suppress(Exception):
             with cls.pg_conn.cursor() as cur:
                 cur.execute("DROP TABLE IF EXISTS test_roundtrip_orders CASCADE;")
                 cur.execute("DROP TABLE IF EXISTS test_roundtrip_customers CASCADE;")
             cls.pg_conn.close()
-        except Exception:
-            pass
 
-        try:
+        with suppress(Exception):
             with cls.og_conn.cursor() as cur:
                 cur.execute("DROP TABLE IF EXISTS test_roundtrip_orders CASCADE;")
                 cur.execute("DROP TABLE IF EXISTS test_roundtrip_customers CASCADE;")
             cls.og_conn.close()
-        except Exception:
-            pass
 
-        try:
+        with suppress(Exception):
             with cls.my_conn.cursor() as cur:
                 cur.execute("DROP TABLE IF EXISTS test_roundtrip_orders;")
                 cur.execute("DROP TABLE IF EXISTS test_roundtrip_customers;")
             cls.my_conn.close()
-        except Exception:
-            pass
 
     def test_cross_db_query_execution_and_result_equivalence(self) -> None:
         """Translates Oracle query with (+) outer join, NVL, DECODE, and ROWNUM pagination

@@ -289,7 +289,11 @@ class OpenGaussASTTransformer:
             for j in ast.args.get("joins", []):
                 tbl_name = j.this.name if isinstance(j.this, exp.Table) else ""
                 alias_name = j.this.alias if isinstance(j.this, exp.Table) else ""
-                matched_key = tbl_name if tbl_name in outer_join_tables else (alias_name if alias_name in outer_join_tables else None)
+                matched_key = (
+                    tbl_name
+                    if tbl_name in outer_join_tables
+                    else alias_name if alias_name in outer_join_tables else None
+                )
                 if matched_key and matched_key in join_conditions:
                     cond = join_conditions[matched_key]
                     new_join = exp.Join(this=j.this, kind="LEFT", on=cond)
@@ -303,7 +307,7 @@ class OpenGaussASTTransformer:
 
         def _check_rownum(node: exp.Expression) -> exp.Expression:
             nonlocal extracted_limit
-            if isinstance(node, (exp.LTE, exp.LT)):
+            if isinstance(node, exp.LTE | exp.LT):
                 left = node.this
                 right = node.expression
                 if isinstance(left, exp.Column) and left.name.upper() == "ROWNUM":
@@ -330,7 +334,7 @@ class OpenGaussASTTransformer:
                 if isinstance(node, exp.Table) and node.name.upper() == "DUAL":
                     return exp.var("")
 
-                if isinstance(node, (exp.Anonymous, exp.Func)):
+                if isinstance(node, exp.Anonymous | exp.Func):
                     name = node.name.upper()
                     if name in ("NVL", "IFNULL", "ISNULL"):
                         args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
@@ -338,7 +342,9 @@ class OpenGaussASTTransformer:
                     if name == "NVL2":
                         args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
                         if len(args) == 3:
-                            cond = exp.Is(this=args[0].copy(), expression=exp.var("NOT NULL"))
+                            cond: exp.Expression = exp.Is(
+                                this=args[0].copy(), expression=exp.var("NOT NULL")
+                            )
                             return exp.Case(ifs=[exp.If(this=cond, true=args[1].copy())], default=args[2].copy())
                     if name == "DECODE":
                         args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
@@ -361,7 +367,12 @@ class OpenGaussASTTransformer:
                         if len(args) >= 2:
                             return exp.Anonymous(
                                 this="POSITION",
-                                expressions=[exp.var(f"{args[1].sql(dialect='postgres')} IN {args[0].sql(dialect='postgres')}")],
+                                expressions=[
+                                    exp.var(
+                                        f"{args[1].sql(dialect='postgres')} IN "
+                                        f"{args[0].sql(dialect='postgres')}"
+                                    )
+                                ],
                             )
                     if name == "SUBSTR":
                         args = [node.this] + list(node.expressions) if hasattr(node, "expressions") else [node.this]
@@ -427,7 +438,7 @@ class OpenGaussASTTransformer:
             except Exception:
                 ast = None
 
-        if ast and isinstance(ast, (exp.Create, exp.Block)):
+        if ast and isinstance(ast, exp.Create | exp.Block):
             create_node = ast if isinstance(ast, exp.Create) else ast.find(exp.Create)
             if create_node:
                 fn_node = create_node.find(exp.UserDefinedFunction)

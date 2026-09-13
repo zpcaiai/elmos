@@ -2,13 +2,21 @@
 
 from __future__ import annotations
 
+import pytest
+
 from elmos_sql_transpiler.chinadb_cdc_engine import CdcOpType, ChangeEvent, ChinaDbCdcEngine
 from elmos_sql_transpiler.chinadb_container_orchestrator import ChinaDbContainerOrchestrator
 from elmos_sql_transpiler.chinadb_stress_engine import ChinaDbStressEngine
 
 
-def test_cdc_event_application_and_row_hash_reconciliation():
-    orchestrator = ChinaDbContainerOrchestrator()
+@pytest.fixture
+def orchestrator():
+    value = ChinaDbContainerOrchestrator()
+    yield value
+    value.stop_all()
+
+
+def test_cdc_event_application_and_row_hash_reconciliation(orchestrator):
     cdc = ChinaDbCdcEngine(orchestrator)
     target = "tidb"
 
@@ -88,8 +96,7 @@ def test_cdc_event_application_and_row_hash_reconciliation():
     assert receipt2.target_row_count == 2
 
 
-def test_high_concurrency_stress_engine_slo_and_conservation():
-    orchestrator = ChinaDbContainerOrchestrator()
+def test_high_concurrency_stress_engine_slo_and_conservation(orchestrator):
     stress = ChinaDbStressEngine(orchestrator)
     target = "goldendb"
 
@@ -112,8 +119,7 @@ def test_high_concurrency_stress_engine_slo_and_conservation():
     assert receipt.slo_passed is True
 
 
-def test_stress_engine_across_multiple_domestic_targets():
-    orchestrator = ChinaDbContainerOrchestrator()
+def test_stress_engine_across_multiple_domestic_targets(orchestrator):
     stress = ChinaDbStressEngine(orchestrator)
 
     for target in ("dm8", "opengauss", "kingbasees"):
