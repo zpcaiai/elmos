@@ -87,6 +87,7 @@ from .native import (
     _canonical_digest,
     _canonical_swift_analyzer_receipt,
     _canonical_swift_toolchain_identity,
+    _scan_preprocessor_directives,
     _swift_toolchain_receipt,
 )
 from .repository import javascript_esm_descriptor
@@ -1906,6 +1907,37 @@ def _verify_language_prelude(
     }
 
 
+def _preflight_clang_language_prelude(
+    source: Path,
+    *,
+    role: str,
+    language: Language,
+    artifact_bytes: bytes,
+) -> None:
+    """Reject an open Clang prelude before requesting a potentially huge AST.
+
+    This is a bounded resource-safety preflight, not a substitute for the
+    compiler inventory or the byte-bound whole-file closure.  The latter calls
+    ``_verify_language_prelude`` again using the compiler-backed inventory.
+    """
+
+    if language not in ("cpp", "objc"):
+        return
+    _verify_language_prelude(
+        {
+            "source_file": source.name,
+            "directives": _scan_preprocessor_directives(
+                source,
+                language,
+                artifact_bytes,
+            ),
+        },
+        role=role,
+        language=language,
+        artifact_bytes=artifact_bytes,
+    )
+
+
 def _separate_verified_language_wrapper(
     inventory: dict[str, Any],
     *,
@@ -3098,6 +3130,12 @@ def _migrate_module_snapshot(
     # Whole-file closure is a precondition, not evidence appended after the
     # conversion has already emitted output. The real compiler inventory runs
     # before any caller-owned output directory is created.
+    _preflight_clang_language_prelude(
+        source,
+        role="source",
+        language=source_language,
+        artifact_bytes=source_bytes,
+    )
     source_inventory = inventory_module(source, source_language)
     source_analyses = [analyze(source, source_language, symbol) for symbol in symbols]
     source_ir = _bind_function_spans_from_inventory(
@@ -3142,6 +3180,12 @@ def _migrate_module_snapshot(
     with tempfile.TemporaryDirectory(prefix="elmos-module-closure-") as temporary:
         target_path = Path(temporary) / emitted.relative_path
         target_path.write_text(emitted.content, encoding="utf-8")
+        _preflight_clang_language_prelude(
+            target_path,
+            role="target",
+            language=target_language,
+            artifact_bytes=emitted.content.encode("utf-8"),
+        )
         target_inventory = inventory_module(
             target_path,
             target_language,

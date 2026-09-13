@@ -512,6 +512,52 @@ def test_pch_consume_failure_is_infrastructure_and_has_stable_paths(
     assert "elmos-clang-env-" not in message
 
 
+def test_clang_record_discovery_uses_only_selected_source_function(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import elmos_polyglot_route.clang_analyzer as clang_analyzer
+
+    source = tmp_path / "module.m"
+    source.write_text("void value(void) {}\n", encoding="utf-8")
+    selected = {
+        "kind": "FunctionDecl",
+        "name": "value",
+        "range": {
+            "begin": {"offset": 0, "tokLen": 4},
+            "end": {"offset": 18, "tokLen": 1},
+        },
+        "inner": [{"kind": "CompoundStmt"}],
+    }
+    unrelated_sdk_declaration = {
+        "kind": "FunctionDecl",
+        "name": "valueForKey",
+        "type": {"qualType": "UnrelatedSdkRecord"},
+    }
+    complete_tree = {
+        "kind": "TranslationUnitDecl",
+        "inner": [selected, unrelated_sdk_declaration],
+    }
+
+    monkeypatch.setattr(clang_analyzer, "_run_clang", lambda *_args, **_kwargs: complete_tree)
+
+    def assert_selected_only(tree, *_args, **_kwargs):
+        assert tree is selected
+        raise RouteError("SELECTED_SOURCE_FUNCTION_CONFIRMED")
+
+    monkeypatch.setattr(clang_analyzer, "_load_referenced_records", assert_selected_only)
+
+    with pytest.raises(RouteError, match="^SELECTED_SOURCE_FUNCTION_CONFIRMED$"):
+        clang_analyzer.analyze_clang(
+            source,
+            "objc",
+            "value",
+            "/clang",
+            "clang-test",
+            sdk_path="/sdk",
+        )
+
+
 @requires_clang
 def test_cpp_ast_filter_preserves_the_missing_symbol_contract(tmp_path: Path) -> None:
     with pytest.raises(RouteError, match="^FUNCTION_NOT_FOUND:missing$"):

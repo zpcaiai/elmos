@@ -1395,7 +1395,7 @@ def analyze_clang(
             + ",".join(unsupported_markers)
         )
     record_candidates = _load_referenced_records(
-        tree,
+        candidates[0],
         source,
         language,
         executable,
