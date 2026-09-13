@@ -1,6 +1,9 @@
 ---
 name: b32-mobile-crossplatform
-description: "Migrate native or legacy mobile applications into native or cross-platform targets with navigation lifecycle background offline secure storage permissions deep links push device APIs accessibility store and rollout contracts."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Migrate native or legacy mobile applications into native or cross-platform targets with navigation lifecycle background offline secure storage permissions deep links push device APIs accessibility store and rollout contracts.
 ---
 
 ## Operating mode

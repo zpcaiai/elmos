@@ -1,0 +1,489 @@
+"""Elmos Mature Platform Foundation Package (Batches 38-45).
+
+56 industrial-grade engines covering deployment, SRE, supply chain,
+knowledge, agents, product lifecycle, economics, security, and certification.
+"""
+
+from elmos_mature_platform.agent_budget_limits_engine import AgentBudgetLimitsEngine
+from elmos_mature_platform.agent_redteam_engine import AgentRedTeamEngine
+from elmos_mature_platform.agent_shadow_canary_engine import AgentShadowCanaryEngine
+from elmos_mature_platform.airgap_bundle_engine import AirgapBundleEngine
+from elmos_mature_platform.api_compatibility_gate_engine import ApiCompatibilityGateEngine
+from elmos_mature_platform.artifact_container_signing_engine import ArtifactContainerSigningEngine
+from elmos_mature_platform.compatibility_test_matrix_engine import CompatibilityTestMatrixEngine
+from elmos_mature_platform.dependency_sca_governance_engine import DependencyScaGovernanceEngine
+from elmos_mature_platform.operations_evidence_reporting_engine import OperationsEvidenceReportingEngine
+from elmos_mature_platform.platform_cost_anomaly_monitoring_engine import PlatformCostAnomalyMonitoringEngine
+from elmos_mature_platform.public_api_compatibility_engine import PublicApiCompatibilityEngine
+from elmos_mature_platform.route_breadth_certification_engine import RouteBreadthCertificationEngine
+from elmos_mature_platform.runner_version_compatibility_engine import RunnerVersionCompatibilityEngine
+from elmos_mature_platform.similar_project_retrieval_engine import SimilarProjectRetrievalEngine
+from elmos_mature_platform.usage_billing_reconciliation_engine import UsageBillingReconciliationEngine
+from elmos_mature_platform.autoscaling_capacity_engine import AutoscalingCapacityEngine
+from elmos_mature_platform.backup_restore_engine import BackupRestoreEngine
+from elmos_mature_platform.change_management_engine import ChangeManagementEngine
+from elmos_mature_platform.chaos_fault_engine import EnterpriseChaosEngine
+from elmos_mature_platform.compliance_audit_engine import ComplianceAuditEngine
+from elmos_mature_platform.container_scanning_engine import ContainerScanningEngine
+from elmos_mature_platform.cost_economics_engine import CostEconomicsEngine
+from elmos_mature_platform.credential_triage_engine import CredentialTriageEngine
+from elmos_mature_platform.cross_region_simulation import CrossRegionSimulationEnvironment
+from elmos_mature_platform.customer_roi_tco_engine import CustomerRoiTcoEngine
+from elmos_mature_platform.dast_iast_security_engine import DastIastSecurityEngine
+from elmos_mature_platform.database_expand_contract_engine import DatabaseExpandContractEngine
+from elmos_mature_platform.deployment_matrix_certification_engine import DeploymentMatrixCertificationEngine
+from elmos_mature_platform.deprecation_removal_engine import DeprecationRemovalEngine
+from elmos_mature_platform.design_partner_validation_engine import DesignPartnerValidationEngine
+from elmos_mature_platform.deterministic_execution_engine import DeterministicExecutionEngine
+from elmos_mature_platform.disaster_recovery_runner import DisasterRecoveryRunner
+from elmos_mature_platform.edition_deployment_engine import EditionDeploymentEngine
+from elmos_mature_platform.error_budget_governance_engine import ErrorBudgetGovernanceEngine
+from elmos_mature_platform.feature_flag_governance_engine import FeatureFlagGovernanceEngine
+from elmos_mature_platform.finops_economics_engine import FinOpsEconomicsEngine
+from elmos_mature_platform.governed_agent_factory import GovernedAgentFactory
+from elmos_mature_platform.incident_command_engine import IncidentCommandEngine
+from elmos_mature_platform.isolated_trusted_builder_engine import IsolatedTrustedBuilderEngine
+from elmos_mature_platform.kms_service import EnterpriseKmsService
+from elmos_mature_platform.knowledge_flywheel_engine import KnowledgeFlywheelEngine
+from elmos_mature_platform.knowledge_marketplace_engine import KnowledgeMarketplaceEngine
+from elmos_mature_platform.maturity_certification_engine import MaturityCertificationEngine
+from elmos_mature_platform.migration_risk_prediction_engine import MigrationRiskPredictionEngine
+from elmos_mature_platform.model_agent_economics_engine import ModelAgentEconomicsEngine
+from elmos_mature_platform.multiagent_consensus_engine import MultiagentConsensusEngine
+from elmos_mature_platform.multiregion_failover_engine import MultiregionFailoverEngine
+from elmos_mature_platform.oidc_service import EnterpriseOidcProvider
+from elmos_mature_platform.oncall_rotation_engine import OncallRotationEngine
+from elmos_mature_platform.pattern_antipattern_engine import PatternAntipatternEngine
+from elmos_mature_platform.portable_control_plane_engine import PortableControlPlaneEngine
+from elmos_mature_platform.problem_root_cause_engine import ProblemRootCauseEngine
+from elmos_mature_platform.product_lifecycle_engine import ProductLifecycleEngine
+from elmos_mature_platform.release_channel_governance_engine import ReleaseChannelGovernanceEngine
+from elmos_mature_platform.residual_risk_register_engine import ResidualRiskRegisterEngine
+from elmos_mature_platform.rolling_upgrade_orchestrator import RollingUpgradeOrchestrator
+from elmos_mature_platform.sbom_vulnerability_engine import SbomVulnerabilityEngine
+from elmos_mature_platform.scenario_runner import PlatformScenarioRunner
+from elmos_mature_platform.service_catalog_slo_engine import ServiceCatalogSloEngine
+from elmos_mature_platform.slo_telemetry_pipeline import EnterpriseSloCollector
+from elmos_mature_platform.supply_chain_security_engine import SupplyChainSecurityEngine
+from elmos_mature_platform.tenant_edition_migration_engine import TenantEditionMigrationEngine
+from elmos_mature_platform.tenant_isolation_engine import TenantIsolationEngine
+from elmos_mature_platform.version_compatibility_engine import VersionCompatibilityEngine
+from elmos_mature_platform.workflow_version_recovery_engine import WorkflowVersionRecoveryEngine
+from elmos_mature_platform.zero_downtime_upgrade_engine import ZeroDowntimeUpgradeEngine
+from elmos_mature_platform.artifact_container_signing_engine import ArtifactContainerSigningEngine
+from elmos_mature_platform.compatibility_test_matrix_engine import CompatibilityTestMatrixEngine
+from elmos_mature_platform.platform_cost_anomaly_monitoring_engine import PlatformCostAnomalyMonitoringEngine
+from elmos_mature_platform.runner_version_compatibility_engine import RunnerVersionCompatibilityEngine
+from elmos_mature_platform.usage_billing_reconciliation_engine import UsageBillingReconciliationEngine
+from elmos_mature_platform.dependency_sca_governance_engine import DependencyScaGovernanceEngine
+from elmos_mature_platform.operations_evidence_reporting_engine import OperationsEvidenceReportingEngine
+from elmos_mature_platform.public_api_compatibility_engine import PublicApiCompatibilityEngine
+from elmos_mature_platform.route_breadth_certification_engine import RouteBreadthCertificationEngine
+from elmos_mature_platform.similar_project_retrieval_engine import SimilarProjectRetrievalEngine
+from elmos_mature_platform.multiregion_active_active_edition_engine import MultiregionActiveActiveEditionEngine
+from elmos_mature_platform.global_operations_gate_engine import GlobalOperationsGateEngine
+from elmos_mature_platform.supply_chain_compliance_factory_engine import SupplyChainComplianceFactoryEngine
+from elmos_mature_platform.target_stack_recommendation_engine import TargetStackRecommendationEngine
+from elmos_mature_platform.customer_value_certification_engine import CustomerValueCertificationEngine
+from elmos_mature_platform.private_sovereign_cloud_edition_engine import PrivateSovereignCloudEditionEngine
+from elmos_mature_platform.customer_status_communication_engine import CustomerStatusCommunicationEngine
+from elmos_mature_platform.compliance_control_crosswalk_engine import ComplianceControlCrosswalkEngine
+from elmos_mature_platform.effort_duration_cost_prediction_engine import EffortDurationCostPredictionEngine
+from elmos_mature_platform.mature_product_evidence_pack_engine import MatureProductEvidencePackEngine
+from elmos_mature_platform.recipe_pack_extension_upgrade_engine import RecipePackExtensionUpgradeEngine
+from elmos_mature_platform.enterprise_support_sla_engine import EnterpriseSupportSlaEngine
+from elmos_mature_platform.independent_security_assessment_engine import IndependentSecurityAssessmentEngine
+from elmos_mature_platform.migration_run_ingestion_engine import MigrationRunIngestionEngine
+from elmos_mature_platform.mature_release_readiness_engine import MatureReleaseReadinessEngine
+from elmos_mature_platform.edition_responsibility_matrix_engine import EditionResponsibilityMatrixEngine
+from elmos_mature_platform.production_readiness_review_engine import ProductionReadinessReviewEngine
+from elmos_mature_platform.customer_audit_evidence_engine import CustomerAuditEvidenceEngine
+from elmos_mature_platform.knowledge_confidence_provenance_engine import KnowledgeConfidenceProvenanceEngine
+from elmos_mature_platform.design_partner_reference_validation_engine import DesignPartnerReferenceValidationEngine
+from elmos_mature_platform.multitenant_saas_edition_engine import MultitenantSaasEditionEngine
+from elmos_mature_platform.oncall_follow_the_sun_engine import OncallFollowTheSunEngine
+from elmos_mature_platform.runner_update_supply_chain_engine import RunnerUpdateSupplyChainEngine
+from elmos_mature_platform.automation_buildgreen_prediction_engine import AutomationBuildgreenPredictionEngine
+from elmos_mature_platform.ecosystem_certification_engine import EcosystemCertificationEngine
+from elmos_mature_platform.customer_vpc_edition_engine import CustomerVpcEditionEngine
+from elmos_mature_platform.tenant_project_migration_health_engine import TenantProjectMigrationHealthEngine
+from elmos_mature_platform.license_ip_provenance_engine import LicenseIpProvenanceEngine
+from elmos_mature_platform.diagnostic_root_cause_recommendation_engine import DiagnosticRootCauseRecommendationEngine
+from elmos_mature_platform.functional_depth_certification_engine import FunctionalDepthCertificationEngine
+from elmos_mature_platform.self_hosted_edition_engine import SelfHostedEditionEngine
+from elmos_mature_platform.sla_service_credit_governance_engine import SlaServiceCreditGovernanceEngine
+from elmos_mature_platform.secure_code_review_approval_engine import SecureCodeReviewApprovalEngine
+from elmos_mature_platform.recipe_mapping_recommendation_engine import RecipeMappingRecommendationEngine
+from elmos_mature_platform.semantic_behavior_certification_engine import SemanticBehaviorCertificationEngine
+from elmos_mature_platform.upgrade_rollback_disaster_recovery_engine import UpgradeRollbackDisasterRecoveryEngine
+from elmos_mature_platform.secure_sdlc_ssdf_engine import SecureSdlcSsdfEngine
+from elmos_mature_platform.migration_entity_relations_engine import MigrationEntityRelationsEngine
+from elmos_mature_platform.agent_factory_gate_engine import AgentFactoryGateEngine
+from elmos_mature_platform.target_maintainability_certification_engine import TargetMaintainabilityCertificationEngine
+from elmos_mature_platform.dedicated_saas_edition_engine import DedicatedSaasEditionEngine
+from elmos_mature_platform.deployment_upgrade_gate_engine import DeploymentUpgradeGateEngine
+from elmos_mature_platform.edge_plant_restricted_edition_engine import EdgePlantRestrictedEditionEngine
+from elmos_mature_platform.global_sre_operations_factory_engine import GlobalSreOperationsFactoryEngine
+from elmos_mature_platform.security_architecture_review_engine import SecurityArchitectureReviewEngine
+from elmos_mature_platform.agent_incident_killswitch_engine import AgentIncidentKillswitchEngine
+from elmos_mature_platform.security_fix_backport_engine import SecurityFixBackportEngine
+from elmos_mature_platform.artifact_retention_economics_engine import ArtifactRetentionEconomicsEngine
+from elmos_mature_platform.scheduled_restore_dr_exercise_engine import ScheduledRestoreDrExerciseEngine
+from elmos_mature_platform.vulnerability_patch_sla_engine import VulnerabilityPatchSlaEngine
+from elmos_mature_platform.mature_product_final_gate_engine import MatureProductFinalGateEngine
+from elmos_mature_platform.sre_reliability_dr_certification_engine import SreReliabilityDrCertificationEngine
+from elmos_mature_platform.cost_scenario_forecast_engine import CostScenarioForecastEngine
+from elmos_mature_platform.agent_tool_permissions_engine import AgentToolPermissionsEngine
+from elmos_mature_platform.customer_upgrade_readiness_engine import CustomerUpgradeReadinessEngine
+from elmos_mature_platform.enterprise_deployment_upgrade_factory_engine import EnterpriseDeploymentUpgradeFactoryEngine
+from elmos_mature_platform.global_observability_telemetry_engine import GlobalObservabilityTelemetryEngine
+from elmos_mature_platform.slsa_provenance_engine import SlsaProvenanceEngine
+from elmos_mature_platform.knowledge_graph_ontology_engine import KnowledgeGraphOntologyEngine
+from elmos_mature_platform.agent_autonomy_levels_engine import AgentAutonomyLevelsEngine
+from elmos_mature_platform.security_supply_chain_gate_engine import SecuritySupplyChainGateEngine
+from elmos_mature_platform.vex_applicability_engine import VexApplicabilityEngine
+from elmos_mature_platform.holdout_feedback_calibration_engine import HoldoutFeedbackCalibrationEngine
+from elmos_mature_platform.migration_knowledge_factory_engine import MigrationKnowledgeFactoryEngine
+from elmos_mature_platform.agent_memory_state_governance_engine import AgentMemoryStateGovernanceEngine
+from elmos_mature_platform.air_gapped_edition_engine import AirGappedEditionEngine
+from elmos_mature_platform.sbom_component_identity_engine import SbomComponentIdentityEngine
+from elmos_mature_platform.agent_red_team_engine import AgentRedTeamEngine
+from elmos_mature_platform.agent_migration_factory_engine import AgentMigrationFactoryEngine
+from elmos_mature_platform.language_framework_specialist_agent_engine import LanguageFrameworkSpecialistAgentEngine
+from elmos_mature_platform.model_routing_provider_failover_engine import ModelRoutingProviderFailoverEngine
+from elmos_mature_platform.policy_enforcement_agent_engine import PolicyEnforcementAgentEngine
+from elmos_mature_platform.recipe_candidate_agent_engine import RecipeCandidateAgentEngine
+from elmos_mature_platform.supervisor_coordination_agent_engine import SupervisorCoordinationAgentEngine
+from elmos_mature_platform.version_specification_engine import VersionSpecificationEngine
+from elmos_mature_platform.release_documentation_engine import ReleaseDocumentationEngine
+from elmos_mature_platform.sdk_compatibility_engine import SdkCompatibilityEngine
+from elmos_mature_platform.support_eol_policy_engine import SupportEolPolicyEngine
+from elmos_mature_platform.assessment_poc_project_quote_engine import AssessmentPocProjectQuoteEngine
+from elmos_mature_platform.cache_incremental_cost_optimization_engine import CacheIncrementalCostOptimizationEngine
+from elmos_mature_platform.cost_taxonomy_economic_model_engine import CostTaxonomyEconomicModelEngine
+from elmos_mature_platform.customer_route_edition_margin_engine import CustomerRouteEditionMarginEngine
+from elmos_mature_platform.economics_maturity_gate_engine import EconomicsMaturityGateEngine
+from elmos_mature_platform.human_expert_cost_engine import HumanExpertCostEngine
+from elmos_mature_platform.provider_resource_routing_engine import ProviderResourceRoutingEngine
+from elmos_mature_platform.resource_metering_engine import ResourceMeteringEngine
+from elmos_mature_platform.runner_fleet_economics_engine import RunnerFleetEconomicsEngine
+from elmos_mature_platform.showback_chargeback_engine import ShowbackChargebackEngine
+from elmos_mature_platform.support_hypercare_operations_cost_engine import SupportHypercareOperationsCostEngine
+from elmos_mature_platform.edition_route_vertical_certification_engine import EditionRouteVerticalCertificationEngine
+from elmos_mature_platform.maturity_model_editions_engine import MaturityModelEditionsEngine
+from elmos_mature_platform.product_governance_accountability_engine import ProductGovernanceAccountabilityEngine
+
+
+from elmos_mature_platform.physical import (
+    CloudVendorControlPlaneDriver,
+    IndustrialLoopback,
+    KubernetesControlPlaneDriver,
+    PhysicalBundle,
+    PhysicalCallResult,
+    SigstoreCosignDriver,
+    ToxiproxyDriver,
+    VaultTransitDriver,
+)
+from elmos_mature_platform.types import (
+    AgentAutonomyLevel,
+    AgentDeploymentMode,
+    AgentTestCategory,
+    ApiCompatChangeType,
+    AssetQualityTier,
+    AutoscalingCapacityPlan,
+    BudgetAction,
+    BuildIsolationLevel,
+    BundleStatus,
+    CertificationStatus,
+    ChangeRiskLevel,
+    ChangeStatus,
+    ChannelStability,
+    ChaosExperimentConfig,
+    CheckpointType,
+    CompatibilityVerdict,
+    ConsensusStrategy,
+    ContainerFindingType,
+    ContainerScanStatus,
+    CostCategory,
+    CostDriver,
+    DbMigrationPhase,
+    DeploymentEnvironment,
+    DeploymentTopology,
+    DeprecationPhase,
+    DrPlan,
+    EditionType,
+    ErrorBudgetSlo,
+    ExecutionMode,
+    FailoverMode,
+    FaultDescriptor,
+    FaultType,
+    FindingSeverity,
+    FindingStatus,
+    FlagState,
+    FreezeScope,
+    IncidentSeverity,
+    KnowledgeAssetType,
+    MaturityDimension,
+    MigrationRiskCategory,
+    MigrationRiskLevel,
+    ModelProvider,
+    NodeRole,
+    NodeStatus,
+    OncallShiftType,
+    PartnerEngagementStatus,
+    PatternType,
+    PromotionVerdict,
+    RegionId,
+    RiskSeverity,
+    RiskStatus,
+    ScenarioExecutionReport,
+    SecurityScanType,
+    SemVer,
+    ServiceTier,
+    SharingScope,
+    SliType,
+    SlsaLevel,
+    StepOutcome,
+    TenantIsolationLevel,
+    TenantMigrationStatus,
+    ValueDriver,
+    VoteValue,
+    WorkflowState,
+    ZeroToleranceCategory,
+)
+
+__all__ = [
+    # Engines
+    "AgentBudgetLimitsEngine",
+    "AgentRedTeamEngine",
+    "AgentShadowCanaryEngine",
+    "AirgapBundleEngine",
+    "ApiCompatibilityGateEngine",
+    "ArtifactContainerSigningEngine",
+    "CompatibilityTestMatrixEngine",
+    "DependencyScaGovernanceEngine",
+    "OperationsEvidenceReportingEngine",
+    "PlatformCostAnomalyMonitoringEngine",
+    "PublicApiCompatibilityEngine",
+    "RouteBreadthCertificationEngine",
+    "RunnerVersionCompatibilityEngine",
+    "SimilarProjectRetrievalEngine",
+    "UsageBillingReconciliationEngine",
+    "CustomerValueCertificationEngine",
+    "GlobalOperationsGateEngine",
+    "MultiregionActiveActiveEditionEngine",
+    "SupplyChainComplianceFactoryEngine",
+    "TargetStackRecommendationEngine",
+    "PrivateSovereignCloudEditionEngine",
+    "CustomerStatusCommunicationEngine",
+    "ComplianceControlCrosswalkEngine",
+    "EffortDurationCostPredictionEngine",
+    "MatureProductEvidencePackEngine",
+    "RecipePackExtensionUpgradeEngine",
+    "EnterpriseSupportSlaEngine",
+    "IndependentSecurityAssessmentEngine",
+    "MigrationRunIngestionEngine",
+    "MatureReleaseReadinessEngine",
+    "EditionResponsibilityMatrixEngine",
+    "ProductionReadinessReviewEngine",
+    "CustomerAuditEvidenceEngine",
+    "KnowledgeConfidenceProvenanceEngine",
+    "DesignPartnerReferenceValidationEngine",
+    "MultitenantSaasEditionEngine",
+    "OncallFollowTheSunEngine",
+    "RunnerUpdateSupplyChainEngine",
+    "AutomationBuildgreenPredictionEngine",
+    "EcosystemCertificationEngine",
+    "CustomerVpcEditionEngine",
+    "TenantProjectMigrationHealthEngine",
+    "LicenseIpProvenanceEngine",
+    "DiagnosticRootCauseRecommendationEngine",
+    "FunctionalDepthCertificationEngine",
+    "SelfHostedEditionEngine",
+    "SlaServiceCreditGovernanceEngine",
+    "SecureCodeReviewApprovalEngine",
+    "RecipeMappingRecommendationEngine",
+    "SemanticBehaviorCertificationEngine",
+    "UpgradeRollbackDisasterRecoveryEngine",
+    "SecureSdlcSsdfEngine",
+    "MigrationEntityRelationsEngine",
+    "AgentFactoryGateEngine",
+    "TargetMaintainabilityCertificationEngine",
+    "DedicatedSaasEditionEngine",
+    "DeploymentUpgradeGateEngine",
+    "EdgePlantRestrictedEditionEngine",
+    "GlobalSreOperationsFactoryEngine",
+    "SecurityArchitectureReviewEngine",
+    "AgentIncidentKillswitchEngine",
+    "SecurityFixBackportEngine",
+    "ArtifactRetentionEconomicsEngine",
+    "ScheduledRestoreDrExerciseEngine",
+    "VulnerabilityPatchSlaEngine",
+    "MatureProductFinalGateEngine",
+    "SreReliabilityDrCertificationEngine",
+    "CostScenarioForecastEngine",
+    "AgentToolPermissionsEngine",
+    "CustomerUpgradeReadinessEngine",
+    "EnterpriseDeploymentUpgradeFactoryEngine",
+    "GlobalObservabilityTelemetryEngine",
+    "SlsaProvenanceEngine",
+    "KnowledgeGraphOntologyEngine",
+    "AgentAutonomyLevelsEngine",
+    "AgentMemoryStateGovernanceEngine",
+    "HoldoutFeedbackCalibrationEngine",
+    "MigrationKnowledgeFactoryEngine",
+    "SecuritySupplyChainGateEngine",
+    "VexApplicabilityEngine",
+    "AirGappedEditionEngine",
+    "SbomComponentIdentityEngine",
+    "AgentRedTeamEngine",
+    "AgentMigrationFactoryEngine",
+    "LanguageFrameworkSpecialistAgentEngine",
+    "ModelRoutingProviderFailoverEngine",
+    "PolicyEnforcementAgentEngine",
+    "RecipeCandidateAgentEngine",
+    "SupervisorCoordinationAgentEngine",
+    "VersionSpecificationEngine",
+    "ReleaseDocumentationEngine",
+    "SdkCompatibilityEngine",
+    "SupportEolPolicyEngine",
+    "AssessmentPocProjectQuoteEngine",
+    "CacheIncrementalCostOptimizationEngine",
+    "CostTaxonomyEconomicModelEngine",
+    "CustomerRouteEditionMarginEngine",
+    "EconomicsMaturityGateEngine",
+    "HumanExpertCostEngine",
+    "ProviderResourceRoutingEngine",
+    "ResourceMeteringEngine",
+    "RunnerFleetEconomicsEngine",
+    "ShowbackChargebackEngine",
+    "SupportHypercareOperationsCostEngine",
+    "EditionRouteVerticalCertificationEngine",
+    "MaturityModelEditionsEngine",
+    "ProductGovernanceAccountabilityEngine",
+    "AutoscalingCapacityEngine",
+    "BackupRestoreEngine",
+    "ChangeManagementEngine",
+    "EnterpriseChaosEngine",
+    "ComplianceAuditEngine",
+    "ContainerScanningEngine",
+    "CostEconomicsEngine",
+    "CredentialTriageEngine",
+    "CrossRegionSimulationEnvironment",
+    "CustomerRoiTcoEngine",
+    "DastIastSecurityEngine",
+    "DatabaseExpandContractEngine",
+    "DeploymentMatrixCertificationEngine",
+    "DeprecationRemovalEngine",
+    "DesignPartnerValidationEngine",
+    "DeterministicExecutionEngine",
+    "DisasterRecoveryRunner",
+    "EditionDeploymentEngine",
+    "ErrorBudgetGovernanceEngine",
+    "FeatureFlagGovernanceEngine",
+    "FinOpsEconomicsEngine",
+    "GovernedAgentFactory",
+    "IncidentCommandEngine",
+    "IsolatedTrustedBuilderEngine",
+    "EnterpriseKmsService",
+    "KnowledgeFlywheelEngine",
+    "KnowledgeMarketplaceEngine",
+    "MaturityCertificationEngine",
+    "MigrationRiskPredictionEngine",
+    "ModelAgentEconomicsEngine",
+    "MultiagentConsensusEngine",
+    "MultiregionFailoverEngine",
+    "EnterpriseOidcProvider",
+    "OncallRotationEngine",
+    "PatternAntipatternEngine",
+    "PortableControlPlaneEngine",
+    "ProblemRootCauseEngine",
+    "ProductLifecycleEngine",
+    "ReleaseChannelGovernanceEngine",
+    "ResidualRiskRegisterEngine",
+    "RollingUpgradeOrchestrator",
+    "SbomVulnerabilityEngine",
+    "PlatformScenarioRunner",
+    "ServiceCatalogSloEngine",
+    "EnterpriseSloCollector",
+    "SupplyChainSecurityEngine",
+    "TenantEditionMigrationEngine",
+    "TenantIsolationEngine",
+    "VersionCompatibilityEngine",
+    "WorkflowVersionRecoveryEngine",
+    "ZeroDowntimeUpgradeEngine",
+    "CloudVendorControlPlaneDriver",
+    "IndustrialLoopback",
+    "KubernetesControlPlaneDriver",
+    "PhysicalBundle",
+    "PhysicalCallResult",
+    "SigstoreCosignDriver",
+    "ToxiproxyDriver",
+    "VaultTransitDriver",
+    # Key Types (68)
+    "AgentAutonomyLevel",
+    "AgentDeploymentMode",
+    "AgentTestCategory",
+    "ApiCompatChangeType",
+    "AssetQualityTier",
+    "AutoscalingCapacityPlan",
+    "BudgetAction",
+    "BuildIsolationLevel",
+    "BundleStatus",
+    "CertificationStatus",
+    "ChangeRiskLevel",
+    "ChangeStatus",
+    "ChannelStability",
+    "ChaosExperimentConfig",
+    "CheckpointType",
+    "CompatibilityVerdict",
+    "ConsensusStrategy",
+    "ContainerFindingType",
+    "ContainerScanStatus",
+    "CostCategory",
+    "CostDriver",
+    "DbMigrationPhase",
+    "DeploymentEnvironment",
+    "DeploymentTopology",
+    "DeprecationPhase",
+    "DrPlan",
+    "EditionType",
+    "ErrorBudgetSlo",
+    "ExecutionMode",
+    "FailoverMode",
+    "FaultDescriptor",
+    "FaultType",
+    "FindingSeverity",
+    "FindingStatus",
+    "FlagState",
+    "FreezeScope",
+    "IncidentSeverity",
+    "KnowledgeAssetType",
+    "MaturityDimension",
+    "MigrationRiskCategory",
+    "MigrationRiskLevel",
+    "ModelProvider",
+    "NodeRole",
+    "NodeStatus",
+    "OncallShiftType",
+    "PartnerEngagementStatus",
+    "PatternType",
+    "PromotionVerdict",
+    "RegionId",
+    "RiskSeverity",
+    "RiskStatus",
+    "ScenarioExecutionReport",
+    "SecurityScanType",
+    "SemVer",
+    "ServiceTier",
+    "SharingScope",
+    "SliType",
+    "SlsaLevel",
+    "StepOutcome",
+    "TenantIsolationLevel",
+    "TenantMigrationStatus",
+    "ValueDriver",
+    "VoteValue",
+    "WorkflowState",
+    "ZeroToleranceCategory",
+]

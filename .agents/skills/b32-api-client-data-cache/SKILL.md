@@ -1,5 +1,8 @@
 ---
 name: b32-api-client-data-cache
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Migrate client API contracts transport authentication retries cancellation pagination streaming server-state caching invalidation optimistic updates offline behavior and generated clients.
 ---
 

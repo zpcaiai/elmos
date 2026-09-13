@@ -177,6 +177,46 @@
       "id": "DEV-DU-005",
       "sourceProfile": "duckdb-1.5.4",
       "sql": "SELECT id, total FROM orders WHERE customer_id = $1 AND status = $2 ORDER BY id"
+    },
+    {
+      "id": "DEV-PG17-FN-001",
+      "sourceProfile": "postgresql-17.5",
+      "targets": [
+        "mysql-8.4.10-lts",
+        "sqlserver-2022-cu26",
+        "oracle-26ai-ee",
+        "postgresql-18.4",
+        "duckdb-1.5.4"
+      ],
+      "sql": "CREATE FUNCTION add_one(x INTEGER) RETURNS INTEGER LANGUAGE SQL AS $$ SELECT x + 1 $$"
+    },
+    {
+      "id": "DEV-PG17-PR-001",
+      "sourceProfile": "postgresql-17.5",
+      "targets": [
+        "mysql-8.4.10-lts",
+        "sqlserver-2022-cu26",
+        "oracle-26ai-ee",
+        "postgresql-18.4"
+      ],
+      "sql": "CREATE PROCEDURE bump_status() LANGUAGE SQL AS $$ UPDATE orders SET status = 'CLOSED' $$"
+    },
+    {
+      "id": "DEV-PG17-TR-001",
+      "sourceProfile": "postgresql-17.5",
+      "targets": [
+        "mysql-8.4.10-lts",
+        "sqlserver-2022-cu26",
+        "oracle-26ai-ee",
+        "postgresql-18.4",
+        "sqlite-3.53.3"
+      ],
+      "sql": "CREATE TRIGGER audit_trg AFTER INSERT ON audits FOR EACH ROW EXECUTE FUNCTION log_action()"
+    },
+    {
+      "id": "DEV-MY-HINT-001",
+      "sourceProfile": "mysql-8.4.10-lts",
+      "sql": "SELECT /*+ INDEX(orders idx_tenant) */ id FROM orders ORDER BY id"
     }
   ]
 }

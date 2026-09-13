@@ -1,0 +1,12 @@
+[2026-09-10T08:26:30.701044Z][X-U026-003] Starting execution of X-U026-003 (跨Batch成熟产品集成 / negative / 场景3) [Category=negative, Priority=P1]
+[2026-09-10T08:26:30.701048Z][X-U026-003] Bound Skill: tst-cross-batch-maturity-integration | Product Skill IDs: []
+[2026-09-10T08:26:30.701052Z][X-U026-003] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:30.721650Z][X-U026-003] Security: Minted RS256 token (JTI=077218a8..., Exp=1789032390)
+[2026-09-10T08:26:30.768322Z][X-U026-003] KMS: Envelope encrypted 37 bytes under key key-x-u026-003 v1 (DEK wrapped)
+[2026-09-10T08:26:30.797712Z][X-U026-003] [CROSS-DELIVERY] Initializing X-U026-003 (U026) Category=negative
+[2026-09-10T08:26:30.797720Z][X-U026-003] Cross-Batch Maturity Integration: End-to-end pipeline execution across Batches 38 through 45
+[2026-09-10T08:26:30.797726Z][X-U026-003] Injecting contract violation at B40 -> B41 interface (missing provenance)...
+[2026-09-10T08:26:30.797728Z][X-U026-003] Integration Barrier: Pipeline halted cleanly at B40 gate; downstream B41 not invoked
+[2026-09-10T08:26:30.797744Z][X-U026-003] Completed execution of X-U026-003 in 96.7ms: Status=PASSED
+[2026-09-10T08:26:30.797747Z][X-U026-003] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:30.797761Z][X-U026-003] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

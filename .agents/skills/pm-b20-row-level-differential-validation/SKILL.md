@@ -1,5 +1,8 @@
 ---
 name: pm-b20-row-level-differential-validation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "对关键表执行行级规范化 Diff，并分类差异. Precision Migration B20 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

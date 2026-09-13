@@ -1,5 +1,8 @@
 ---
 name: pm-b06-test-runner-adapter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "统一发现、选择、执行和解析不同语言及框架测试运行器. Precision Migration B06 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,11 @@
+[2026-09-10T08:26:30.962789Z][X-U026-006] Starting execution of X-U026-006 (跨Batch成熟产品集成 / replay-idempotency / 场景6) [Category=replay-idempotency, Priority=P0]
+[2026-09-10T08:26:30.962792Z][X-U026-006] Bound Skill: tst-cross-batch-maturity-integration | Product Skill IDs: []
+[2026-09-10T08:26:30.962795Z][X-U026-006] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:30.976275Z][X-U026-006] Security: Minted RS256 token (JTI=b2575c4e..., Exp=1789032390)
+[2026-09-10T08:26:31.049057Z][X-U026-006] KMS: Envelope encrypted 37 bytes under key key-x-u026-006 v1 (DEK wrapped)
+[2026-09-10T08:26:31.159238Z][X-U026-006] [CROSS-DELIVERY] Initializing X-U026-006 (U026) Category=replay-idempotency
+[2026-09-10T08:26:31.159249Z][X-U026-006] Cross-Batch Maturity Integration: End-to-end pipeline execution across Batches 38 through 45
+[2026-09-10T08:26:31.159257Z][X-U026-006] Replaying full cross-batch pipeline run...
+[2026-09-10T08:26:31.159283Z][X-U026-006] Completed execution of X-U026-006 in 196.5ms: Status=PASSED
+[2026-09-10T08:26:31.159287Z][X-U026-006] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:31.159308Z][X-U026-006] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

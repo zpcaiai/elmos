@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "skill_name": "b40-container-kubernetes-iac-scanning",
+  "batch": 40,
+  "batch_title": "Security, Supply Chain & Compliance",
+  "implementation_state": "VERIFIED",
+  "external_evidence_status": "LOCAL_EXECUTED",
+  "production_certification": "NOT_CERTIFIED",
+  "runtime_handler": "scripts.batch40.b40_skill_runtime.B40SkillRuntime._handle_container_kubernetes_iac_scanning",
+  "fail_closed_policy": "FAIL_CLOSED_ON_UNKNOWN_STATUS",
+  "metrics_thresholds": {
+    "supplyChainCoverageRate": 0.95,
+    "signaturePassRate": 1.0,
+    "criticalVulnerabilityCount": 0.0
+  }
+}

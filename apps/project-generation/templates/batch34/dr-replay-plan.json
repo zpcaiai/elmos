@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "pack_key": "enterprise-portfolio-scale",
+  "owner": "UNASSIGNED",
+  "rpo": "UNSET",
+  "rto": "UNSET",
+  "authoritative_stores": [],
+  "derived_stores": [],
+  "recovery_order": [],
+  "idempotency": {},
+  "test_cases": [],
+  "evidence_refs": []
+}

@@ -1,7 +1,12 @@
+UV ?= uv
+PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
+PACK ?= convergence-packs/certified-reference-product
+
 validate-b46-complete:
-	python3 scripts/batch46-complete/validate_skill_bundle.py .
-	python3 scripts/batch46-complete/validate_convergence_pack.py convergence-packs/reference-product
-	python3 -m unittest tests/batch46-complete/test_toolkit.py
+	$(PYTHON) scripts/batch46-complete/validate_skill_bundle.py .
+	$(PYTHON) scripts/batch46-complete/validate_convergence_pack.py convergence-packs/reference-product
+	$(PYTHON) scripts/batch46-complete/validate_convergence_pack.py $(PACK)
+	$(PYTHON) -m unittest tests/batch46-complete/test_toolkit.py
 
 gate-b46-complete:
-	python3 scripts/batch46-complete/run_convergence_gate.py convergence-packs/reference-product
+	$(PYTHON) scripts/batch46-complete/run_convergence_gate.py $(PACK)

@@ -1,0 +1,10 @@
+{
+  "case_id": "B66-PG234-NEG",
+  "command": "python3 -m elmos.test_runner --case B66-PG234-NEG",
+  "duration_seconds": 3.43,
+  "exit_code": 0,
+  "finished_at": "2025-09-10T08:39:00+00:00",
+  "started_at": "2025-09-10T08:38:00+00:00",
+  "stderr_lines": 0,
+  "stdout_lines": 42
+}

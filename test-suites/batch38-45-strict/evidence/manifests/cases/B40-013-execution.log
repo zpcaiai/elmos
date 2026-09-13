@@ -1,0 +1,13 @@
+[2026-09-10T08:25:43.322188Z][B40-013] Starting execution of B40-013 (Batch 40供应链与合规 / success / 场景13) [Category=success, Priority=P0]
+[2026-09-10T08:25:43.322191Z][B40-013] Bound Skill: tst-b40-supply-chain-compliance | Product Skill IDs: [1373, 1381]
+[2026-09-10T08:25:43.322193Z][B40-013] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:25:43.346481Z][B40-013] Security: Minted RS256 token (JTI=229df4e3..., Exp=1789032343)
+[2026-09-10T08:25:43.488804Z][B40-013] KMS: Envelope encrypted 34 bytes under key key-b40-013 v1 (DEK wrapped)
+[2026-09-10T08:25:43.546330Z][B40-013] [B40-SUPPLY-CHAIN] Initializing security & compliance assessment for B40-013
+[2026-09-10T08:25:43.546339Z][B40-013] Executing KMS Envelope Key Rotation & Tamper-Evident Audit Check...
+[2026-09-10T08:25:43.546383Z][B40-013] KMS: Created key cmk-b40-013 v1
+[2026-09-10T08:25:43.546397Z][B40-013] KMS: Rotated key cmk-b40-013 to active version 2
+[2026-09-10T08:25:43.546792Z][B40-013] KMS Audit Chain: Audit chain valid across 205 entries
+[2026-09-10T08:25:43.546831Z][B40-013] Completed execution of B40-013 in 224.6ms: Status=PASSED
+[2026-09-10T08:25:43.546835Z][B40-013] Assertion Summary: 5/5 assertions passed
+[2026-09-10T08:25:43.546845Z][B40-013] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

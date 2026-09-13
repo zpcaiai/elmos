@@ -1,5 +1,8 @@
 ---
 name: pm-b19-procedure-control-flow-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达存储过程、函数、游标、异常、动态 SQL、临时对象和事务控制流. Precision Migration B19 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

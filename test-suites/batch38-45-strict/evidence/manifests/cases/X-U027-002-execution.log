@@ -1,0 +1,11 @@
+[2026-09-10T08:26:31.740498Z][X-U027-002] Starting execution of X-U027-002 (隐私、驻留、保留与删除 / boundary / 场景2) [Category=boundary, Priority=P0]
+[2026-09-10T08:26:31.740501Z][X-U027-002] Bound Skill: tst-privacy-residency-retention-deletion | Product Skill IDs: []
+[2026-09-10T08:26:31.740505Z][X-U027-002] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:31.751383Z][X-U027-002] Security: Minted RS256 token (JTI=66e5a507..., Exp=1789032391)
+[2026-09-10T08:26:31.782357Z][X-U027-002] KMS: Envelope encrypted 37 bytes under key key-x-u027-002 v1 (DEK wrapped)
+[2026-09-10T08:26:31.855912Z][X-U027-002] [CROSS-DELIVERY] Initializing X-U027-002 (U027) Category=boundary
+[2026-09-10T08:26:31.855926Z][X-U027-002] Privacy, Data Residency & Erasure: Enforcing GDPR Right-to-be-Forgotten and data boundaries
+[2026-09-10T08:26:31.855933Z][X-U027-002] Testing batch crypto-shredding of 100 tenant records simultaneously...
+[2026-09-10T08:26:31.855954Z][X-U027-002] Completed execution of X-U027-002 in 115.5ms: Status=PASSED
+[2026-09-10T08:26:31.855957Z][X-U027-002] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:31.855970Z][X-U027-002] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

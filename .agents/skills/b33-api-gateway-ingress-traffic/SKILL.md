@@ -1,5 +1,8 @@
 ---
 name: b33-api-gateway-ingress-traffic
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Migrate and certify API gateways ingress load balancers routes domains certificates authentication authorization rate limits transformations canary traffic health and rollback behavior.
 ---
 

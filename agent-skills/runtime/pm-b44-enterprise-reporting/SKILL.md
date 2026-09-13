@@ -1,5 +1,8 @@
 ---
 name: pm-b44-enterprise-reporting
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成技术、管理、审计、合规、成本、SLA 和项目组合报告. Precision Migration B44 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

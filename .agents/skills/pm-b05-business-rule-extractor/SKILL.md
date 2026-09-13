@@ -1,5 +1,8 @@
 ---
 name: pm-b05-business-rule-extractor
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从代码、测试、文档、数据约束和 Trace 中提取业务规则、不变量和例外. Precision Migration B05 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

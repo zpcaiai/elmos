@@ -1,0 +1,11 @@
+[2026-09-10T08:26:17.659214Z][X-U015-008] Starting execution of X-U015-008 (Air-gap离线更新撤销 / evidence-tamper / 场景8) [Category=evidence-tamper, Priority=P2]
+[2026-09-10T08:26:17.659217Z][X-U015-008] Bound Skill: tst-airgap-offline-update-revocation | Product Skill IDs: []
+[2026-09-10T08:26:17.659220Z][X-U015-008] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:17.674691Z][X-U015-008] Security: Minted RS256 token (JTI=85886b79..., Exp=1789032377)
+[2026-09-10T08:26:17.720506Z][X-U015-008] KMS: Envelope encrypted 37 bytes under key key-x-u015-008 v1 (DEK wrapped)
+[2026-09-10T08:26:17.741745Z][X-U015-008] [CROSS-RESILIENCE] Starting X-U015-008 (U015) Category=evidence-tamper
+[2026-09-10T08:26:17.741751Z][X-U015-008] Air-Gap Offline Updates: Verifying offline signed bundles and CRL certificate revocation
+[2026-09-10T08:26:17.741758Z][X-U015-008] Modifying 1 byte in offline tarball archive...
+[2026-09-10T08:26:17.741782Z][X-U015-008] Completed execution of X-U015-008 in 82.6ms: Status=PASSED
+[2026-09-10T08:26:17.741785Z][X-U015-008] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:17.741801Z][X-U015-008] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

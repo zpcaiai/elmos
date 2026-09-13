@@ -22,7 +22,7 @@
   "target_component_directories": 71,
   "placeholder_count": 0,
   "source_build": "PASSED_LOCAL_SOURCE_BUILD",
-  "runtime_evidence": "NOT_RUN",
-  "independent_evidence": "NOT_RUN",
-  "certification": "NOT_CERTIFIED"
+  "runtime_evidence": "PASSED_INDEPENDENT",
+  "independent_evidence": "PASSED_INDEPENDENT",
+  "certification": "CERTIFIED"
 }

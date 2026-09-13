@@ -1,0 +1,47 @@
+skill: elmos-assurance-router-budget
+tasks:
+- id: elmos-assurance-router-budget-T01
+  action: 所有test/proof/audit模型调用复用Elmos语义路由，不将provider endpoint交给caller。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-router-budget-T02
+  action: 使用purpose隔离的ModelExecutionPlan、安全上下文、数据策略、fallback与deadline。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-router-budget-T03
+  action: 预留并发/费用，默认每账号3个top-level run；子任务不可绕过。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-router-budget-T04
+  action: 估算与实际分离，重复回执幂等，未知usage对账；预算不足不缩小必需测试集合。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+global_contracts:
+- contracts/schemas/run-request.schema.json
+- contracts/schemas/evidence-payload.schema.json
+constraints:
+- reuse-existing-architecture
+- fail-closed
+- no-hidden-test-leak
+- no-unapproved-side-effects
+- no-fabricated-runtime-evidence

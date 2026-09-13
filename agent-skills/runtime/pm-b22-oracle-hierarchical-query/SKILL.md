@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-hierarchical-query
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 CONNECT BY、START WITH、层级伪列和顺序. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

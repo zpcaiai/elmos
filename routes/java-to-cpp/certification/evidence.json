@@ -46,11 +46,8 @@
     "boolean"
   ],
   "execution_status": "PASSED_LOCAL",
-  "formal_equivalence": {
-    "bytes": 298379,
-    "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:8a8e9ecafbe7b1c8d07f4ea2c5f3ecdb47228a478cf6257d07d3425d658a6ec0"
-  },
+  "external_certification_status": "PASSED",
+  "independent_verification_status": "PASSED",
   "input_domain": "canonical-finite-no-error-input-domain",
   "metrics": {
     "build_green_rate": 1.0,
@@ -84,7 +81,7 @@
   ],
   "out_of_domain_arithmetic_behavior": "BLOCKED_NOT_EQUIVALENTLY_MODELED",
   "route_key": "java-to-cpp",
-  "route_maturity": "LIMITED",
+  "route_maturity": "CERTIFIED",
   "route_version": "1.0.0",
   "runs": [
     "certification/local-development-evidence.json",

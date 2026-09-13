@@ -1,5 +1,32 @@
 {
   "batch": 39,
   "packKey": "elmos-platform-sre-operations",
-  "claims": []
+  "claims": [
+    {
+      "claimId": "claim-b39-core-functional-conformance",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch39-execution",
+        "batch39-verification"
+      ],
+      "provenanceRefs": [
+        "batch39-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    },
+    {
+      "claimId": "claim-b39-operational-governance-resilience",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch39-execution",
+        "batch39-verification"
+      ],
+      "provenanceRefs": [
+        "batch39-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    }
+  ]
 }

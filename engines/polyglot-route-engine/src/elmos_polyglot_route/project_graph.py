@@ -684,7 +684,6 @@ def _walk_repository(
                 continue
             content: bytes | None
             try:
-                content: bytes | None
                 if retain_content:
                     content = _stable_read(os.path.join(current, name))
                     digest, byte_count = _sha256_bytes(content), len(content)

@@ -1,5 +1,8 @@
 ---
 name: pm-b33-effect-preservation-obligation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成必需 Effect 不缺失、危险新增 Effect 为空的证明义务. Precision Migration B33 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

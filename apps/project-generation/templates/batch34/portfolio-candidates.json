@@ -1,0 +1,28 @@
+{
+  "weights": {
+    "customer_demand": 2.0,
+    "repository_scale": 1.5,
+    "loc_scale": 1.0,
+    "language_diversity": 1.0,
+    "engineering_reuse": 1.0,
+    "dependency_complexity": -0.5,
+    "security_risk": -1.0,
+    "data_boundary_risk": -1.0
+  },
+  "candidates": [
+    {
+      "pack_key": "enterprise-core-portfolio",
+      "customer_demand": 4,
+      "repository_scale": 5,
+      "loc_scale": 5,
+      "language_diversity": 4,
+      "engineering_reuse": 4,
+      "dependency_complexity": 3,
+      "security_risk": 2,
+      "data_boundary_risk": 2,
+      "evidence_notes": [
+        "Design partner portfolio inventory available."
+      ]
+    }
+  ]
+}

@@ -1,5 +1,8 @@
 ---
 name: pm-b15-reflection-elimination
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "通过代码生成、注册表、显式映射或兼容层消除无法迁移的反射和动态加载. Precision Migration B15 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

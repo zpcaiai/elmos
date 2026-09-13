@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/assurance/v4/native-runner-plan.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "4.0"
+    },
+    "plan_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "tenant_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "adapter_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "action": {
+      "enum": [
+        "build",
+        "smoke",
+        "regression",
+        "differential",
+        "mutation",
+        "proof"
+      ]
+    },
+    "approved_request_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "case_manifest_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "assertion_program_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "image_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "toolchain_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verified_security_context_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "capability_lease_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "fencing_epoch": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "deadline_unix_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "network_policy": {
+      "enum": [
+        "deny",
+        "approved-destinations-only"
+      ]
+    },
+    "secret_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4096
+      },
+      "minItems": 0
+    },
+    "output_prefix": {
+      "type": "string",
+      "pattern": "^evidence/[A-Za-z0-9_/-]+$"
+    },
+    "max_output_bytes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "requires_human_approval": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "plan_id",
+    "tenant_id",
+    "run_id",
+    "adapter_id",
+    "action",
+    "approved_request_digest",
+    "case_manifest_digest",
+    "assertion_program_digest",
+    "image_digest",
+    "toolchain_digest",
+    "verified_security_context_ref",
+    "capability_lease_ref",
+    "fencing_epoch",
+    "deadline_unix_seconds",
+    "network_policy",
+    "secret_refs",
+    "output_prefix",
+    "max_output_bytes",
+    "requires_human_approval"
+  ]
+}

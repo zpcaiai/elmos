@@ -1,0 +1,22 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-generation-domain
+title: 项目生成业务线集成
+priority: P0
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-contract-ir
+- elmos-assurance-test-generation
+inputs:
+- Domain spec
+- 目标语言support matrix
+- 现有生成入口
+outputs:
+- SpecFirstGenerationAdapter
+- NativeGenerationRoute
+- DomainAcceptanceEvidence
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

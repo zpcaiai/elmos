@@ -439,6 +439,39 @@ def _parser() -> argparse.ArgumentParser:
     signature.add_argument("--sbom", type=Path, required=True)
     signature.add_argument("--verification", type=Path, required=True)
     signature.add_argument("--source-repository", type=Path, required=True)
+
+    sandbox_cmd = subparsers.add_parser(
+        "sandbox-run",
+        help="Execute command in rootless container or hermetic path sandbox",
+    )
+    sandbox_cmd.add_argument("--workspace", type=Path, required=True)
+    sandbox_cmd.add_argument("--cmd", required=True, help="Command string to execute")
+    sandbox_cmd.add_argument("--network", choices=["isolated", "host", "bridge"], default="isolated")
+    sandbox_cmd.add_argument("--read-only-root", action="store_true")
+    sandbox_cmd.add_argument("--cap-drop-all", action="store_true")
+    sandbox_cmd.add_argument("--output", type=Path)
+
+    k8s_deploy_cmd = subparsers.add_parser(
+        "k8s-deploy",
+        help="Dry-run or deploy production manifests to local Kubernetes cluster",
+    )
+    k8s_deploy_cmd.add_argument("--app-name", required=True)
+    k8s_deploy_cmd.add_argument("--namespace", default="default")
+    k8s_deploy_cmd.add_argument("--port", type=int, default=8080)
+    k8s_deploy_cmd.add_argument("--replicas", type=int, default=2)
+    k8s_deploy_cmd.add_argument("--image", default="app:latest")
+    k8s_deploy_cmd.add_argument("--dry-run", action="store_true")
+    k8s_deploy_cmd.add_argument("--output", type=Path)
+
+    k8s_probe_cmd = subparsers.add_parser(
+        "k8s-probe",
+        help="Execute 3-tier health probe pipeline against Kubernetes service",
+    )
+    k8s_probe_cmd.add_argument("--app-name", required=True)
+    k8s_probe_cmd.add_argument("--namespace", default="default")
+    k8s_probe_cmd.add_argument("--port", type=int, default=8080)
+    k8s_probe_cmd.add_argument("--timeout", type=int, default=30)
+    k8s_probe_cmd.add_argument("--output", type=Path)
     return parser
 
 
@@ -497,6 +530,91 @@ def main(argv: list[str] | None = None) -> int:
                 "workspace": str(args.workspace.resolve(strict=True)),
                 "runtime_plan": runtime_commands(args.workspace),
             }
+        elif args.command == "sandbox-run":
+            from .rootless_container_sandbox import LinuxRootlessSandboxRunner, SandboxSecurityConfig
+
+            config = SandboxSecurityConfig(
+                read_only_root=bool(args.read_only_root),
+                drop_capabilities=("ALL",) if args.cap_drop_all else (),
+                network_isolated=args.network == "isolated",
+            )
+            runner = LinuxRootlessSandboxRunner(config=config)
+            cmd_args = args.cmd.split() if isinstance(args.cmd, str) else list(args.cmd)
+            exec_res = runner.run(cmd_args, host_workspace_path=args.workspace)
+            violations = [key for key, value in exec_res.security_verifications.items() if not value]
+            result = {
+                "status": "PASSED" if exec_res.exit_code == 0 else "FAILED",
+                "backend": exec_res.backend_used,
+                "exit_code": exec_res.exit_code,
+                "duration_ms": exec_res.duration_ms,
+                "stdout": exec_res.stdout,
+                "stderr": exec_res.stderr,
+                "security_violations": violations,
+            }
+            if args.output:
+                _write_json(args.output, result)
+        elif args.command == "k8s-deploy":
+            from .k8s_deployment_controller import K8sDeploymentController, generate_enterprise_k8s_manifests
+
+            manifests = generate_enterprise_k8s_manifests(
+                app_name=args.app_name,
+                namespace=args.namespace,
+                port=args.port,
+                replicas=args.replicas,
+                image_name=args.image,
+            )
+            controller = K8sDeploymentController()
+            valid, message = controller.dry_run_validate(manifests)
+            if not valid:
+                result = {"status": "FAILED", "stage": "dry-run", "error": message}
+            elif args.dry_run:
+                result = {
+                    "status": "PASSED",
+                    "stage": "dry-run",
+                    "valid": True,
+                    "manifests_bytes": len(manifests),
+                }
+            else:
+                deployment = controller.run_deployment_and_probes(
+                    app_name=args.app_name,
+                    namespace=args.namespace,
+                    port=args.port,
+                )
+                result = {
+                    "status": "PASSED" if deployment.rollout_status in ("SUCCESS", "SIMULATED") else "FAILED",
+                    "app_name": deployment.app_name,
+                    "namespace": deployment.namespace,
+                    "cluster_context": deployment.cluster_context,
+                    "rollout_status": deployment.rollout_status,
+                    "duration_ms": deployment.duration_ms,
+                }
+            if args.output:
+                _write_json(args.output, result)
+        elif args.command == "k8s-probe":
+            from .k8s_deployment_controller import K8sDeploymentController
+
+            controller = K8sDeploymentController()
+            probes = controller.probe_service_http(
+                base_url=f"http://127.0.0.1:{args.port}",
+                app_name=args.app_name,
+            )
+            result = {
+                "status": "PASSED" if all(probe.passed for probe in probes) else "FAILED",
+                "app_name": args.app_name,
+                "probes": [
+                    {
+                        "probe_type": probe.probe_type,
+                        "endpoint": probe.endpoint_path,
+                        "status_code": probe.status_code,
+                        "latency_ms": probe.latency_ms,
+                        "passed": probe.passed,
+                        "error": probe.error,
+                    }
+                    for probe in probes
+                ],
+            }
+            if args.output:
+                _write_json(args.output, result)
         elif args.command == "extract-publish-archive":
             result = _extract_publish_archive(
                 args.archive,

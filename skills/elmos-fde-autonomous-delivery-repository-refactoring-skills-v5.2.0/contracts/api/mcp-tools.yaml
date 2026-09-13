@@ -1,0 +1,35 @@
+apiVersion: elmos.ai/v1
+kind: MCPToolCatalog
+metadata:
+  version: 5.2.0
+spec:
+  tools:
+  - name: elmos_fde_search_catalog
+    readOnly: true
+    purpose: Search Skills, requirements, scenarios, findings and implementation tasks.
+  - name: elmos_fde_get_case
+    readOnly: true
+    purpose: Read an engagement/repository case under tenant policy.
+  - name: elmos_fde_start_assessment
+    readOnly: false
+    sideEffect: durable job
+    approval: task contract and capability lease
+  - name: elmos_fde_propose_plan
+    readOnly: false
+    sideEffect: artifact creation
+    approval: approved scope
+  - name: elmos_fde_execute_step
+    readOnly: false
+    sideEffect: workspace change only
+    approval: approved plan step; production prohibited
+  - name: elmos_fde_verify
+    readOnly: false
+    sideEffect: test execution and evidence
+    approval: independent verifier context
+  security:
+  - OAuth/OIDC
+  - verified security context
+  - capability lease
+  - tenant policy
+  - version negotiation
+  - result interception

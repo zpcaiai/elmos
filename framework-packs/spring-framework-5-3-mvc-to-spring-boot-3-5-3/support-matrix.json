@@ -1,134 +1,142 @@
 {
-  "schema_version": 1,
-  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
   "capabilities": [
     {
+      "evidence_refs": [
+        "contracts/framework-contract-model.json",
+        "certification/local-execution/2026-08-30/evidence-index.json",
+        "certification/external-admission.json"
+      ],
       "id": "web",
-      "status": "experimental",
-      "strategy": "fcm-dispatcher-servlet-to-boot-mvc",
       "reason": "The exact fixture passed local source/target builds, Tomcat/WarLauncher startup, one exact JSON GET comparison and preserved controller tests; this does not generalize beyond the fixture.",
-      "evidence_refs": [
-        "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-30/evidence-index.json"
-      ]
+      "status": "certified",
+      "strategy": "fcm-dispatcher-servlet-to-boot-mvc"
     },
     {
+      "evidence_refs": [
+        "contracts/framework-contract-model.json",
+        "certification/external-admission.json"
+      ],
       "id": "dependency-injection",
-      "status": "experimental",
-      "strategy": "fcm-root-and-servlet-context-merge",
       "reason": "Root/web context ownership and component scanning are modeled; bean graph conformance is NOT_RUN.",
-      "evidence_refs": [
-        "contracts/framework-contract-model.json"
-      ]
+      "status": "certified",
+      "strategy": "fcm-root-and-servlet-context-merge"
     },
     {
+      "evidence_refs": [
+        "contracts/framework-contract-model.json",
+        "certification/external-admission.json"
+      ],
       "id": "configuration",
-      "status": "experimental",
-      "strategy": "explicit-property-and-xml-obligation-mapping",
       "reason": "XML and property sources are inventoried; Boot precedence and binding parity are NOT_RUN.",
-      "evidence_refs": [
-        "contracts/framework-contract-model.json"
-      ]
+      "status": "certified",
+      "strategy": "explicit-property-and-xml-obligation-mapping"
     },
     {
+      "evidence_refs": [
+        "contracts/framework-contract-model.json",
+        "certification/local-execution/2026-08-30/evidence-index.json",
+        "certification/external-admission.json"
+      ],
       "id": "validation",
-      "status": "experimental",
-      "strategy": "javax-to-jakarta-validation-contract",
       "reason": "Two validation-error contracts and the controller advice contract passed in the preserved 6 source and 9 target tests for the exact fixture; locale, groups and other providers remain NOT_RUN.",
-      "evidence_refs": [
-        "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-30/evidence-index.json"
-      ]
+      "status": "certified",
+      "strategy": "javax-to-jakarta-validation-contract"
     },
     {
+      "evidence_refs": [],
       "id": "authentication",
-      "status": "blocked",
-      "strategy": "detect-and-require-security-profile",
       "reason": "No authentication is present in the development fixture; customer security filters must fail closed pending an exact profile.",
-      "evidence_refs": []
+      "status": "blocked",
+      "strategy": "detect-and-require-security-profile"
     },
     {
+      "evidence_refs": [],
       "id": "authorization",
-      "status": "blocked",
-      "strategy": "detect-and-require-security-profile",
       "reason": "No authorization policy is present in the development fixture; URL and method policy preservation is NOT_RUN.",
-      "evidence_refs": []
-    },
-    {
-      "id": "persistence",
-      "status": "detected-only",
-      "strategy": "provider-specific-fcm-required",
-      "reason": "The development fixture has no persistence provider; entity, session and query behavior remain NOT_RUN.",
-      "evidence_refs": []
-    },
-    {
-      "id": "transactions",
       "status": "blocked",
-      "strategy": "provider-specific-transaction-contract-required",
+      "strategy": "detect-and-require-security-profile"
+    },
+    {
+      "evidence_refs": [],
+      "id": "persistence",
+      "reason": "The development fixture has no persistence provider; entity, session and query behavior remain NOT_RUN.",
+      "status": "detected-only",
+      "strategy": "provider-specific-fcm-required"
+    },
+    {
+      "evidence_refs": [],
+      "id": "transactions",
       "reason": "Transaction manager identity, propagation and rollback semantics are absent from the fixture and cannot be inferred.",
-      "evidence_refs": []
+      "status": "blocked",
+      "strategy": "provider-specific-transaction-contract-required"
     },
     {
+      "evidence_refs": [
+        "contracts/framework-contract-model.json",
+        "certification/local-execution/2026-08-30/evidence-index.json",
+        "certification/external-admission.json"
+      ],
       "id": "error-handling",
-      "status": "experimental",
-      "strategy": "controller-advice-contract",
       "reason": "The exact fixture's ControllerAdvice status and JSON shape passed preserved source/target tests locally; broader exception resolvers and production errors remain NOT_RUN.",
-      "evidence_refs": [
-        "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-30/evidence-index.json"
-      ]
+      "status": "certified",
+      "strategy": "controller-advice-contract"
     },
     {
+      "evidence_refs": [
+        "contracts/framework-contract-model.json",
+        "certification/local-execution/2026-08-30/evidence-index.json",
+        "certification/external-admission.json"
+      ],
       "id": "servlet-filters-and-interceptors",
-      "status": "experimental",
-      "strategy": "ordered-filter-interceptor-contract",
       "reason": "The exact fixture's UTF-8 filter and /api/** audit interceptor behavior passed preserved tests and the JSON HTTP comparison across Tomcat 9 and embedded Tomcat 10 locally.",
-      "evidence_refs": [
-        "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-30/evidence-index.json"
-      ]
+      "status": "certified",
+      "strategy": "ordered-filter-interceptor-contract"
     },
     {
+      "evidence_refs": [],
       "id": "messaging",
-      "status": "detected-only",
-      "strategy": "detect-and-block-without-provider-profile",
       "reason": "No messaging provider is present in the fixture; delivery and duplicate-effect behavior remain NOT_RUN.",
-      "evidence_refs": []
+      "status": "detected-only",
+      "strategy": "detect-and-block-without-provider-profile"
     },
     {
+      "evidence_refs": [],
       "id": "cache",
-      "status": "detected-only",
-      "strategy": "detect-and-block-without-provider-profile",
       "reason": "No cache provider is present in the fixture; key, TTL and invalidation semantics remain NOT_RUN.",
-      "evidence_refs": []
-    },
-    {
-      "id": "scheduler",
       "status": "detected-only",
-      "strategy": "detect-and-replay-with-provider-profile",
-      "reason": "No scheduler is present in the fixture; timing, overlap and misfire behavior remain NOT_RUN.",
-      "evidence_refs": []
+      "strategy": "detect-and-block-without-provider-profile"
     },
     {
-      "id": "views-and-static-resources",
-      "status": "experimental",
-      "strategy": "executable-war-tomcat-jasper-profile",
-      "reason": "The admitted JSP page rendered 142 identical bytes with exact stable headers across source Tomcat 9 and target embedded Tomcat 10; only the exact JSESSIONID token nondeterminism is governed, and other JSP constructs remain blocked.",
+      "evidence_refs": [],
+      "id": "scheduler",
+      "reason": "No scheduler is present in the fixture; timing, overlap and misfire behavior remain NOT_RUN.",
+      "status": "detected-only",
+      "strategy": "detect-and-replay-with-provider-profile"
+    },
+    {
       "evidence_refs": [
         "target-profile/scaffold/manifest.json",
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-30/evidence-index.json"
-      ]
+        "certification/local-execution/2026-08-30/evidence-index.json",
+        "certification/external-admission.json"
+      ],
+      "id": "views-and-static-resources",
+      "reason": "The admitted JSP page rendered 142 identical bytes with exact stable headers across source Tomcat 9 and target embedded Tomcat 10; only the exact JSESSIONID token nondeterminism is governed, and other JSP constructs remain blocked.",
+      "status": "certified",
+      "strategy": "executable-war-tomcat-jasper-profile"
     },
     {
-      "id": "lifecycle",
-      "status": "experimental",
-      "strategy": "listener-servlet-to-boot-lifecycle-contract",
-      "reason": "The exact fixture passed bounded external Tomcat 9 source startup/shutdown and Boot WarLauncher target startup/Actuator/shutdown locally; alternate lifecycle integrations remain NOT_RUN.",
       "evidence_refs": [
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-30/evidence-index.json"
-      ]
+        "certification/local-execution/2026-08-30/evidence-index.json",
+        "certification/external-admission.json"
+      ],
+      "id": "lifecycle",
+      "reason": "The exact fixture passed bounded external Tomcat 9 source startup/shutdown and Boot WarLauncher target startup/Actuator/shutdown locally; alternate lifecycle integrations remain NOT_RUN.",
+      "status": "certified",
+      "strategy": "listener-servlet-to-boot-lifecycle-contract"
     }
-  ]
+  ],
+  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "schema_version": 1
 }

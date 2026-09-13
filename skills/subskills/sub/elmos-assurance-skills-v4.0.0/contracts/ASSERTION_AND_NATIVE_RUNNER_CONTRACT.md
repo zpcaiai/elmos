@@ -1,0 +1,11 @@
+# Executable oracle boundary
+
+InterfaceContract中的preconditions/outcomes/assertions描述用于审阅，不得直接作为任意代码eval。wire_schema_bindings绑定实际request/response/error schema的内容摘要，HTTP适配器须补全method/path、serialization/content-type、授权矩阵；其它协议通过明确schema_format适配。
+
+每个TestCase同时绑定runner_plan_digest和assertion_program_digest。批准后的case_manifest不能由agent临时改动。NativeRunnerPlan只选择注册adapter+action，没有raw shell/URL/callback/环境变量值字段；服务器从审批过的命令模板解析参数并验证项目路径/挂载/输出/网络/secret scope。payload引用的VerifiedSecurityContext/lease需要broker真正验签核权，不能仅相信字符串存在。
+
+AssertionProgram提供有限的JSON Pointer及equals/not_equals/exists/not_exists/count_equals/decimal_equals。equals严格区分true与1、null与缺失；count_equals只计数组条目；decimal只比较合法十进制字符串精确数值，不接受NaN/Infinity/float epsilon，精度/scale有业务含义时另加规则。未知路径用于equals时为UNKNOWN，不以默认空串/0蒙混；exists/not_exists可显式断言不存在。不存在正则执行、脚本、外部URL或SQL执行入口。
+
+参考interpreter不证明approved_oracle_digest真的获批，不证明observation真实；生产runner必须从服务端批准的frozen plan读取程序并在授权沙箱执行实际项目，观测trace/DB delta/transaction/outbox，再由独立证据服务记录并验签。跨进程观察race/快照一致性需native实现。仅断言HTTP201不充分；实际回归同时断言金额、事务效果、事件次数、幂等与租户隔离。
+
+本次examples都是SYNTHETIC；runner没有真实image/lease，必须NOT_RUN。schema合格不代表可执行或有权执行。未支持的API/协议/assertion op→UNSUPPORTED/INCONCLUSIVE，禁止自动忽略。

@@ -1,0 +1,10 @@
+{
+  "case_id": "X004-01",
+  "command": "python3 -m elmos.test_runner --case X004-01",
+  "duration_seconds": 7.19,
+  "exit_code": 0,
+  "finished_at": "2025-09-10T14:55:00+00:00",
+  "started_at": "2025-09-10T14:54:00+00:00",
+  "stderr_lines": 0,
+  "stdout_lines": 42
+}

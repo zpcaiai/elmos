@@ -483,11 +483,11 @@ def benchmark(
         for name in results
         if name != baseline and not verdicts[name]["failures"]
     ]
-    # Deterministic tie-break: highest value, then the cheaper decision, then
-    # the name. A benchmark that picks a different winner on a coin flip is not
+    # Deterministic tie-break: highest value, then policy name. A benchmark
+    # that picks a different winner due to CPU measurement jitter is not
     # reproducible, and reproducibility is the point of this module.
     selected = (
-        min(eligible, key=lambda name: (-scores[name], results[name].p95_decision_micros, name))
+        min(eligible, key=lambda name: (-scores[name], name))
         if eligible
         else None
     )

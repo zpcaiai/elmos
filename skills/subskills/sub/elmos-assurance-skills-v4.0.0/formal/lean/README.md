@@ -1,0 +1,9 @@
+# Lean integration boundary
+
+`lean-toolchain` 是本次核验的候选版本，不是已通过安全审查或已在本机执行的声明。禁止自动下载未经批准工具链。Lean/lake未安装时check_lean.py返回NOT_RUN/exit2，不能填PROVED。
+
+本例只展示独立命题、公理输出及显式假设。布尔guard不是SQL三值逻辑，List不是DBMS bag/order/transaction完整模型；`equality_requires_binding`有意展示“将等价当假设”多么容易，审计必须拒绝拿这个命题给源码转换证明背书。它不是Elmos转换规则的有效生产证明。
+
+真正落地：trusted statement由批准的规范生成并与候选proof模块隔离；记录statement/semantic model/preconditions/applicability/source→IR/IR→target/runtime/compiler/checker摘要，针对每个命题审核公理依赖与禁用sorryAx。不要仅grep源文件判断可信；还需实际编译、可信challenge comparison、版本兼容的独立checker及模型到生成artifact的证据。
+
+`check_lean.py`只检查此独立演示模块的kernel编译，不能完成所有上述义务；即使exit0也输出KERNEL_DEMO_CHECKED_NOT_PROJECT_PROVED，independent_checker/production_artifact_binding仍NOT_RUN。无法提供符合当前版本的独立checker时，要求该checker的profile必须阻断，不得伪造。

@@ -1,0 +1,55 @@
+import asyncio
+
+from app.domain.models.entity import Entity
+from app.domain.repositories.base_repository import BaseRepository
+
+
+class RepositoryImpl(BaseRepository):
+    """Concrete async implementation of BaseRepository.
+
+    Default implementation provides a thread-safe in-memory store for skeleton/testing,
+    with clear hook points for {{.Database}} queries via SQLAlchemy or direct drivers.
+    """
+
+    def __init__(self, db_session: object | None = None) -> None:
+        self._db_session = db_session
+        self._store: dict[str, Entity] = {}
+        self._lock = asyncio.Lock()
+
+    async def get_by_id(self, entity_id: str) -> Entity | None:
+        async with self._lock:
+            entity = self._store.get(entity_id)
+            if entity is None:
+                return None
+            # Return copy to protect repository encapsulation
+            return Entity(
+                id=entity.id,
+                name=entity.name,
+                description=entity.description,
+                status=entity.status,
+                created_at=entity.created_at,
+                updated_at=entity.updated_at,
+            )
+
+    async def save(self, entity: Entity) -> None:
+        async with self._lock:
+            self._store[entity.id] = entity
+
+    async def update(self, entity: Entity) -> None:
+        async with self._lock:
+            self._store[entity.id] = entity
+
+    async def delete(self, entity_id: str) -> bool:
+        async with self._lock:
+            if entity_id in self._store:
+                del self._store[entity_id]
+                return True
+            return False
+
+    async def list(self, offset: int = 0, limit: int = 20) -> tuple[list[Entity], int]:
+        async with self._lock:
+            all_keys = sorted(self._store.keys())
+            total = len(all_keys)
+            paged_keys = all_keys[offset : offset + limit]
+            items = [self._store[k] for k in paged_keys]
+            return items, total

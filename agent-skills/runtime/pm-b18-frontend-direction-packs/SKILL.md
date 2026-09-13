@@ -1,5 +1,8 @@
 ---
 name: pm-b18-frontend-direction-packs
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "为 Vue 2、Vue 3、React、微信小程序、ArkUI、Flutter 的 30 条有方向路径及两类现代化路径维护专用规则与验证. Precision Migration B18 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

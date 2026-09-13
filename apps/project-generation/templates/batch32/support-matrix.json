@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "pack_key": "client-source-to-target",
+  "capabilities": [
+    {
+      "id": "route-and-navigation",
+      "domain": "navigation",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [],
+      "reason": "Initial scaffold; evidence required."
+    },
+    {
+      "id": "component-and-view",
+      "domain": "component",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [],
+      "reason": "Initial scaffold; evidence required."
+    },
+    {
+      "id": "state-and-effects",
+      "domain": "state",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [],
+      "reason": "Initial scaffold; evidence required."
+    },
+    {
+      "id": "forms-and-validation",
+      "domain": "forms",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [],
+      "reason": "Initial scaffold; evidence required."
+    },
+    {
+      "id": "identity-and-permission",
+      "domain": "security",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [],
+      "reason": "Initial scaffold; evidence required."
+    },
+    {
+      "id": "accessibility-i18n-visual",
+      "domain": "quality",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [],
+      "reason": "Initial scaffold; evidence required."
+    }
+  ]
+}

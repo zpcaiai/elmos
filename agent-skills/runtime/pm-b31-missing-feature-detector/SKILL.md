@@ -1,5 +1,8 @@
 ---
 name: pm-b31-missing-feature-detector
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "识别源有目标无、目标仅占位、部分实现和未接线功能. Precision Migration B31 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

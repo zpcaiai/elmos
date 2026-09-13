@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: support-profile-and-unknown-register
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Unsupported niche language
+  - Dynamic reflection prevents complete call resolution
+  - Production configuration is inaccessible
+  negativeControls:
+  - claim all issues found
+  - hide unsupported assets
+  - convert uncertainty into low-severity finding
+  checks:
+  - id: support-profile-and-unknown-register-AC-01
+    requirement: Score every relevant language, framework, database, protocol, and runtime from S0 to S5.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: support-profile-and-unknown-register-AC-02
+    requirement: Track analysis coverage by file, module, behavior, environment, issue domain, and evidence source.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: support-profile-and-unknown-register-AC-03
+    requirement: Register UNKNOWN, UNSUPPORTED, inaccessible, ambiguous, and stale-evidence states separately.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: support-profile-and-unknown-register-AC-04
+    requirement: Block completion claims when critical unknowns or unsupported paths affect acceptance criteria.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: support-profile-and-unknown-register-AC-05
+    requirement: Publish an honest completeness statement with assumptions and blind spots.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

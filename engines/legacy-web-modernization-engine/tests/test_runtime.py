@@ -6,8 +6,13 @@ import json
 from pathlib import Path
 import subprocess
 import sqlite3
+import sys
 import tempfile
 import unittest
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 from datetime import datetime, timezone
 
 from elmos_legacy_web_modernization import (

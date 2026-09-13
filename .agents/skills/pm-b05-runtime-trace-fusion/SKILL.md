@@ -1,5 +1,8 @@
 ---
 name: pm-b05-runtime-trace-fusion
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将生产或测试 Trace 与静态图融合，恢复真实路径、动态类型、调用频率和反射行为. Precision Migration B05 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

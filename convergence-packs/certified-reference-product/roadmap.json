@@ -1,0 +1,66 @@
+{
+  "phases": [
+    {
+      "id": "P0",
+      "entry": [],
+      "deliverables": [
+        "unified-kernel"
+      ],
+      "exit": [
+        "kernel-gate"
+      ],
+      "owner": "platform-product",
+      "budget": {},
+      "risks": [],
+      "evidence": []
+    },
+    {
+      "id": "P1",
+      "entry": [
+        "P0"
+      ],
+      "deliverables": [
+        "reference-product"
+      ],
+      "exit": [
+        "two-design-partners"
+      ],
+      "owner": "reference-product",
+      "budget": {},
+      "risks": [],
+      "evidence": []
+    },
+    {
+      "id": "P2",
+      "entry": [
+        "P1"
+      ],
+      "deliverables": [
+        "production-handoff"
+      ],
+      "exit": [
+        "sla-proof"
+      ],
+      "owner": "customer-success",
+      "budget": {},
+      "risks": [],
+      "evidence": []
+    },
+    {
+      "id": "P3",
+      "entry": [
+        "P2"
+      ],
+      "deliverables": [
+        "scale-ecosystem"
+      ],
+      "exit": [
+        "mature-certification"
+      ],
+      "owner": "platform-product",
+      "budget": {},
+      "risks": [],
+      "evidence": []
+    }
+  ]
+}

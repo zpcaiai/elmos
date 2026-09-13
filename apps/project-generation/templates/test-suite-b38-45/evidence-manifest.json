@@ -1,0 +1,32 @@
+{
+  "manifest_version": 2,
+  "manifest_id": "replace-with-immutable-manifest-id",
+  "case_id": "CASE-ID",
+  "case_digest": "sha256:REPLACE",
+  "catalog_digest": "sha256:REPLACE",
+  "artifact_digest": "sha256:REPLACE",
+  "environment_digest": "sha256:REPLACE",
+  "execution_kind": "real",
+  "started_at": "1970-01-01T00:00:00Z",
+  "finished_at": "1970-01-01T00:00:01Z",
+  "executor": {"id": "executor-id", "role": "executor"},
+  "verifier": {"id": "independent-verifier-id", "role": "independent-verifier", "independent": true},
+  "authorization_refs": ["authorization-reference"],
+  "replay_command": "replace-with-bounded-replay-command",
+  "files": [
+    {"role": "artifact-binding", "path": "artifact.json", "sha256": "sha256:REPLACE", "bytes": 0},
+    {"role": "environment-binding", "path": "environment.json", "sha256": "sha256:REPLACE", "bytes": 0},
+    {"role": "execution-log", "path": "execution.log", "sha256": "sha256:REPLACE", "bytes": 0},
+    {"role": "execution-result", "path": "execution-result.json", "sha256": "sha256:REPLACE", "bytes": 0},
+    {"role": "provenance", "path": "provenance.json", "sha256": "sha256:REPLACE", "bytes": 0},
+    {"role": "verification", "path": "verification.json", "sha256": "sha256:REPLACE", "bytes": 0},
+    {"role": "replay-script", "path": "replay.sh", "sha256": "sha256:REPLACE", "bytes": 0},
+    {"role": "holdout-attestation", "path": "holdout-attestation.json", "sha256": "sha256:REPLACE", "bytes": 0},
+    {"role": "representative-attestation", "path": "representative-attestation.json", "sha256": "sha256:REPLACE", "bytes": 0}
+  ],
+  "corpora": [
+    {"kind": "development", "digest": "sha256:REPLACE", "manifest_path": "development-corpus.json", "authoring_access": true, "attestation_ref": "verification.json", "verifier_id": "independent-verifier-id"},
+    {"kind": "holdout", "digest": "sha256:REPLACE", "manifest_path": "holdout-corpus.json", "authoring_access": false, "attestation_ref": "holdout-attestation.json", "verifier_id": "independent-verifier-id"},
+    {"kind": "representative", "digest": "sha256:REPLACE", "manifest_path": "representative-corpus.json", "authoring_access": false, "attestation_ref": "representative-attestation.json", "verifier_id": "independent-verifier-id"}
+  ]
+}

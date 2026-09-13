@@ -1,5 +1,8 @@
 ---
 name: b29-route-economics-certifier
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "Measure and certify route engineering economics: build-green rate, verified workload cost, manual effort, agent cost, runtime burden, maintenance effort, and commercial viability. Use before funding or releasing a route."
 ---
 

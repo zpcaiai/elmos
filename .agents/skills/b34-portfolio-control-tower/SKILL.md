@@ -1,5 +1,8 @@
 ---
 name: b34-portfolio-control-tower
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement a portfolio control tower with evidence-backed read models for inventory progress quality dependencies risk capacity cost forecasts campaigns pull requests incidents recovery and customer outcomes.
 ---
 

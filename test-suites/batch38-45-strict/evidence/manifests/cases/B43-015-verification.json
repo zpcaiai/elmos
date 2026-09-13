@@ -1,0 +1,8 @@
+{
+  "case_id": "B43-015",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:25:52.552027Z",
+  "notes": "Independently verified by Ethan: Batch 43版本与LTS / negative / 场景15"
+}

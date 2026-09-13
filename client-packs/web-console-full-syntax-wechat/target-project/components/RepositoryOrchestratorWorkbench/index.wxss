@@ -1,0 +1,126 @@
+/* Component styles for RepositoryOrchestratorWorkbench */
+.table { display: flex; flex-direction: column; width: 100%; border: 1rpx solid #e2e8f0; border-radius: 8rpx; }
+.thead { display: flex; flex-direction: column; background: #f8fafc; font-weight: bold; border-bottom: 2rpx solid #cbd5e1; }
+.tbody { display: flex; flex-direction: column; }
+.tr { display: flex; flex-direction: row; border-bottom: 1rpx solid #f1f5f9; padding: 12rpx 16rpx; align-items: center; }
+.th, .td { flex: 1; padding: 8rpx; font-size: 26rpx; }
+.th { color: #475569; font-weight: 600; }
+.code { font-family: monospace; background: #f1f5f9; padding: 2rpx 8rpx; border-radius: 4rpx; }
+.resultGood { color: #16a34a; font-weight: 500; }
+.resultBad { color: #dc2626; font-weight: 500; }
+.card { background: #ffffff; border-radius: 12rpx; padding: 24rpx; margin: 16rpx 0; border: 1rpx solid #e2e8f0; }
+.mt-8 {
+  margin-top: 64rrpx;
+}
+.p-5 {
+  padding: 40rrpx;
+}
+.rounded-xl {
+  border-radius: 24rrpx;
+}
+.border {
+  border-width: 1rpx;
+  border-style: solid;
+}
+.shadow-lg {
+  box-shadow: 0 20rrpx 30rrpx -6rrpx rgb(0 0 0 / 0.1), 0 8rrpx 12rrpx -8rrpx rgb(0 0 0 / 0.1);
+}
+.flex {
+  display: flex;
+}
+.items-center {
+  align-items: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.mb-4 {
+  margin-bottom: 32rrpx;
+}
+.text-xs {
+  font-size: 24rrpx;
+  line-height: 32rrpx;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.text-xl {
+  font-size: 40rrpx;
+  line-height: 56rrpx;
+}
+.font-bold {
+  font-weight: 700;
+}
+.rpx-2 {
+  padding-left: 16rrpx;
+  padding-right: 16rrpx;
+}
+.py-0d_5 {
+  padding-top: 4rrpx;
+  padding-bottom: 4rrpx;
+}
+.rounded {
+  border-radius: 8rrpx;
+}
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  --elmos-grid-fallback-cols: 1;
+}
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.gap-2 {
+  gap: 16rrpx;
+}
+.p-3 {
+  padding: 24rrpx;
+}
+.rounded-lg {
+  border-radius: 16rrpx;
+}
+.flex-col {
+  flex-direction: column;
+}
+.mb-1 {
+  margin-bottom: 8rrpx;
+}
+.w-5 {
+  width: 40rrpx;
+}
+.h-5 {
+  height: 40rrpx;
+}
+.rounded-full {
+  border-radius: 19998rrpx;
+}
+.justify-center {
+  justify-content: center;
+}
+.text---10rpx- {
+  font-size: 20rrpx;
+}
+.rpx-1d_5 {
+  padding-left: 12rrpx;
+  padding-right: 12rrpx;
+}
+.block {
+  display: block;
+}
+.text---11rpx- {
+  font-size: 22rrpx;
+}
+.mt-1 {
+  margin-top: 8rrpx;
+}
+.p-4 {
+  padding: 32rrpx;
+}
+.p-2 {
+  padding: 16rrpx;
+}
+@media (min-width: 768rpx) {
+  .md_grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}

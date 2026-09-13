@@ -1,0 +1,130 @@
+{
+  "skills": [
+    {
+      "description": "Master industrial model intelligence and routing subsystem for Elmos.",
+      "phase": "orchestration",
+      "runtime_handler": "execute_elmos_router_industrial",
+      "skill_name": "elmos-router-industrial",
+      "source_path": "SKILL.md",
+      "source_sha256": "bc675a48000d7d2b499036842e38488a28d30dedf9e3322aad8b4eefb9561444",
+      "status": "INSTALLED"
+    },
+    {
+      "description": "Coordinate end-to-end routing plane execution, migration, and feature-flagged coexistence.",
+      "phase": "orchestration",
+      "runtime_handler": "execute_00_master_orchestrator",
+      "skill_name": "router-industrial-00-master-orchestrator",
+      "source_path": "skills/00-master-orchestrator/SKILL.md",
+      "source_sha256": "e3748be778adfe7ea465f7169400ed5c56d2a5019d1656048c734f56b791f7f3",
+      "status": "INSTALLED"
+    },
+    {
+      "description": "Enforce provider-neutral typed domain contracts, execution plans, and schema validation.",
+      "phase": "contracts",
+      "runtime_handler": "execute_01_domain_contracts",
+      "skill_name": "router-industrial-01-domain-contracts",
+      "source_path": "skills/01-domain-contracts/SKILL.md",
+      "source_sha256": "6f11fe43158886b46528c6f2ceff30c098ff19cfc2f1da42a35cf07172fb175e",
+      "status": "INSTALLED"
+    },
+    {
+      "description": "Manage versioned Model, Provider, and Deployment registries and dynamic health snapshots.",
+      "phase": "registry",
+      "runtime_handler": "execute_02_model_provider_registry",
+      "skill_name": "router-industrial-02-model-provider-registry",
+      "source_path": "skills/02-model-provider-registry/SKILL.md",
+      "source_sha256": "7e6b91382b37123a07bef83071d072e612118b5bcd88f085f9107fad396481d6",
+      "status": "INSTALLED"
+    },
+    {
+      "description": "Enforce 15 hard policy filters, fail-closed data residency, security context, and secret redaction.",
+      "phase": "policy",
+      "runtime_handler": "execute_03_policy_and_security",
+      "skill_name": "router-industrial-03-policy-and-security",
+      "source_path": "skills/03-policy-and-security/SKILL.md",
+      "source_sha256": "945026b4d6ae2cbfae31f58d33b22c6f50c8ed45bb91b520459e81b7ad0d6649",
+      "status": "INSTALLED"
+    },
+    {
+      "description": "Compute 4-phase deterministic route decisions, multi-factor scoring, and fallback sequences.",
+      "phase": "routing",
+      "runtime_handler": "execute_04_routing_engine",
+      "skill_name": "router-industrial-04-routing-engine",
+      "source_path": "skills/04-routing-engine/SKILL.md",
+      "source_sha256": "c1bf1b183b17ef91efe6f67577a0dfa9bdad62236837016d7c3576c06c2c0ecc",
+      "status": "INSTALLED"
+    },
+    {
+      "description": "Interface with LiteLLM proxy as a replaceable gateway while maintaining architectural authority.",
+      "phase": "adapters",
+      "runtime_handler": "execute_05_litellm_gateway",
+      "skill_name": "router-industrial-05-litellm-gateway",
+      "source_path": "skills/05-litellm-gateway/SKILL.md",
+      "source_sha256": "6cc1bb13942d630e65b6f67e0b2a2e9c5f5122e7dea15d5086bc51178b549c99",
+      "status": "INSTALLED"
+    },
+    {
+      "description": "Execute high-throughput native provider adapters for OpenAI, Anthropic, and self-hosted engines.",
+      "phase": "adapters",
+      "runtime_handler": "execute_06_native_provider_adapters",
+      "skill_name": "router-industrial-06-native-provider-adapters",
+      "source_path": "skills/06-native-provider-adapters/SKILL.md",
+      "source_sha256": "4ce6c9d52aa7c0e004fc7b75386d59a38c30085a28a285e8355f35f33cca0cb3",
+      "status": "INSTALLED"
+    },
+    {
+      "description": "Route long-tail, dynamic, and specialized open models through zero-data-retention OpenRouter.",
+      "phase": "adapters",
+      "runtime_handler": "execute_07_openrouter_adapter",
+      "skill_name": "router-industrial-07-openrouter-adapter",
+      "source_path": "skills/07-openrouter-adapter/SKILL.md",
+      "source_sha256": "ad4f2985f9cef23ca69e8704abf1713817d45419a2db91e1ca77e3de47c51ace",
+      "status": "INSTALLED"
+    },
+    {
+      "description": "Enforce circuit breakers, jittered retries, CAS idempotency commit, and deterministic replay.",
+      "phase": "resilience",
+      "runtime_handler": "execute_08_resilience_and_replay",
+      "skill_name": "router-industrial-08-resilience-and-replay",
+      "source_path": "skills/08-resilience-and-replay/SKILL.md",
+      "source_sha256": "5f55f97517689b2a2e6dfd71f2254124c65717cede06102657827535a3367961",
+      "status": "INSTALLED"
+    },
+    {
+      "description": "Manage hierarchical budgets, rate limiters, token buckets, and append-only cost ledgers.",
+      "phase": "accounting",
+      "runtime_handler": "execute_09_cost_rate_limit_accounting",
+      "skill_name": "router-industrial-09-cost-rate-limit-accounting",
+      "source_path": "skills/09-cost-rate-limit-accounting/SKILL.md",
+      "source_sha256": "e31cb0a5443259fd9e470d5570c4831497a76910b87cc576a0985d052a2a9682",
+      "status": "INSTALLED"
+    },
+    {
+      "description": "Collect latency percentiles, telemetry spans with prompt redaction, and task benchmark evals.",
+      "phase": "observability",
+      "runtime_handler": "execute_10_observability_and_evals",
+      "skill_name": "router-industrial-10-observability-and-evals",
+      "source_path": "skills/10-observability-and-evals/SKILL.md",
+      "source_sha256": "297a52d8b5e73fb26b438cdbce9c407c1f35206dbc81d6d5e1519b81b2a10ea1",
+      "status": "INSTALLED"
+    },
+    {
+      "description": "Validate deployment readiness, health probes, zero-downtime reconfiguration, and graceful drain.",
+      "phase": "operations",
+      "runtime_handler": "execute_11_deployment_and_operations",
+      "skill_name": "router-industrial-11-deployment-and-operations",
+      "source_path": "skills/11-deployment-and-operations/SKILL.md",
+      "source_sha256": "42fa50bfc03d0599db838cd1d1ff0907a12015184c2e8a4fdccbd34b043b9adb",
+      "status": "INSTALLED"
+    },
+    {
+      "description": "Execute phased traffic ramping (1%->5%->25%->100%), anti-regression gates, and E0-E5 readiness.",
+      "phase": "certification",
+      "runtime_handler": "execute_12_certification_and_rollout",
+      "skill_name": "router-industrial-12-certification-and-rollout",
+      "source_path": "skills/12-certification-and-rollout/SKILL.md",
+      "source_sha256": "c3b44afda428c7c505b35d9d42a5c710c787e2e910c07f9c27fd11a2efdbb660",
+      "status": "INSTALLED"
+    }
+  ]
+}

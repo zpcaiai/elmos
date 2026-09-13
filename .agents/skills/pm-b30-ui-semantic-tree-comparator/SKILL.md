@@ -1,5 +1,8 @@
 ---
 name: pm-b30-ui-semantic-tree-comparator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "比较 Role、Name、State、Value、可见、可用、焦点和组件层级. Precision Migration B30 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

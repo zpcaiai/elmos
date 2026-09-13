@@ -1,5 +1,8 @@
 ---
 name: pm-b39-project-completeness-score
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "按必需构件、测试、门禁、未解决项和证据计算项目完整度. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

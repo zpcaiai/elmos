@@ -1,5 +1,8 @@
 ---
 name: pm-b11-organization-private-transformation-pack
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "封装客户私有框架、内部 API、命名规范和受限知识的专属转换包. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

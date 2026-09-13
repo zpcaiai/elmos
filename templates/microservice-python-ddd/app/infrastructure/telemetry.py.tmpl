@@ -1,0 +1,123 @@
+"""OpenTelemetry distributed tracing and metrics instrumentation."""
+
+import logging
+import re
+import uuid
+from typing import Any
+
+from fastapi import FastAPI, Request, Response
+
+logger = logging.getLogger(__name__)
+
+# Try importing official OpenTelemetry SDK components if installed
+try:
+    from opentelemetry import trace
+    from opentelemetry.sdk.resources import Resource
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+
+    HAS_OTEL_SDK = True
+except ImportError:
+    HAS_OTEL_SDK = False
+
+try:
+    from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+    HAS_OTEL_FASTAPI = True
+except ImportError:
+    HAS_OTEL_FASTAPI = False
+
+
+class FallbackSpan:
+    """Fallback span for environments where opentelemetry-sdk is not installed."""
+
+    def __init__(self, name: str, trace_id: str, span_id: str) -> None:
+        self.name = name
+        self.trace_id = trace_id
+        self.span_id = span_id
+        self.attributes: dict[str, Any] = {}
+
+    def set_attribute(self, key: str, value: Any) -> None:
+        self.attributes[key] = value
+
+    def __enter__(self) -> "FallbackSpan":
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        pass
+
+
+class FallbackTracer:
+    """Lightweight tracer fallback adhering to tracer interface."""
+
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+    def start_as_current_span(self, name: str) -> FallbackSpan:
+        return FallbackSpan(name, uuid.uuid4().hex, uuid.uuid4().hex[:16])
+
+
+def setup_telemetry(service_name: str, environment: str = "development") -> Any:
+    """Initialize OpenTelemetry TracerProvider and global tracer."""
+    if HAS_OTEL_SDK:
+        resource = Resource.create(
+            attributes={
+                "service.name": service_name,
+                "deployment.environment": environment,
+            }
+        )
+        provider = TracerProvider(resource=resource)
+        processor = BatchSpanProcessor(ConsoleSpanExporter())
+        provider.add_span_processor(processor)
+        trace.set_tracer_provider(provider)
+        logger.info(f"OpenTelemetry SDK initialized for service '{service_name}'")
+        return provider
+
+    logger.info("OpenTelemetry SDK not installed; running in lightweight fallback mode")
+    return None
+
+
+def get_tracer(name: str = "{{.ServiceName}}") -> Any:
+    """Retrieve the configured tracer instance."""
+    if HAS_OTEL_SDK:
+        return trace.get_tracer(name)
+    return FallbackTracer(name)
+
+
+def instrument_app(app: FastAPI, service_name: str = "{{.ServiceName}}") -> None:
+    """Auto-instrument FastAPI application with W3C traceparent context propagation."""
+    if HAS_OTEL_FASTAPI:
+        FastAPIInstrumentor.instrument_app(app)
+        logger.info("FastAPI auto-instrumented with OpenTelemetry")
+        return
+
+    # Native W3C Traceparent fallback middleware
+    @app.middleware("http")
+    async def w3c_traceparent_middleware(request: Request, call_next: Any) -> Response:
+        traceparent = request.headers.get("traceparent")
+        trace_id = None
+        parent_id = None
+
+        if traceparent:
+            # W3C format: version-trace_id-parent_id-trace_flags
+            pattern = r"^00-([0-9a-fA-F]{32})-([0-9a-fA-F]{16})-[0-9a-fA-F]{2}$"
+            match = re.match(pattern, traceparent)
+            if match:
+                trace_id = match.group(1).lower()
+                parent_id = match.group(2).lower()
+
+        if not trace_id:
+            trace_id = uuid.uuid4().hex
+            parent_id = uuid.uuid4().hex[:16]
+
+        span_id = uuid.uuid4().hex[:16]
+        request.state.trace_id = trace_id
+        request.state.span_id = span_id
+        if parent_id:
+            request.state.parent_span_id = parent_id
+
+        response: Response = await call_next(request)
+        response.headers["traceparent"] = f"00-{trace_id}-{span_id}-01"
+        return response
+
+    logger.info("W3C traceparent propagation middleware attached to FastAPI")

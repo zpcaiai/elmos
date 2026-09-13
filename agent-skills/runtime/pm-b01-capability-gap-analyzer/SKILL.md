@@ -1,5 +1,8 @@
 ---
 name: pm-b01-capability-gap-analyzer
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将本系统能力与选定竞争者进行结构化对比，找出缺口、重叠、领先点与优先补齐项. Precision Migration B01 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

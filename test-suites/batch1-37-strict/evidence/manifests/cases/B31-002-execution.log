@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B31-002 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [31]
+Title: Batch 31 Canonical DB IR：使用极限规模、空值、最大长度、时间边界、数值边界或版本边界
+Capability: Canonical DB IR
+Test Type: boundary
+Skill: tst-b31-database-data-platform
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

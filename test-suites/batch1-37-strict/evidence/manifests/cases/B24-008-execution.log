@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B24-008 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [24]
+Title: Batch 24 分层回归：篡改结果、Digest、Golden、审批、时间戳或删除失败记录
+Capability: 分层回归
+Test Type: evidence_tamper
+Skill: tst-b24-build-test-repair
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

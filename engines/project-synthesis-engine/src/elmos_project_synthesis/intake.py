@@ -415,7 +415,7 @@ def create_draft(
                     "impact": "high",
                 }
             )
-    if persistence == "postgresql":
+    if persistence in {"postgresql", "sqlite", "mysql"}:
         # The production profile takes three of the four kinds. `one-to-many`
         # is the same foreign key declared from the other end, so it is judged
         # -- and its cycle contribution counted -- in the canonical orientation,
@@ -433,8 +433,7 @@ def create_draft(
         for relation in normalized_relations:
             _, _, canonical_source_field, canonical_target_field = _canonical(relation)
             if (
-                relation.get("kind")
-                not in {"many-to-one", "one-to-one", "one-to-many"}
+                relation.get("kind") not in {"many-to-one", "one-to-one", "one-to-many"}
                 or not canonical_source_field
                 or canonical_target_field != "id"
             ):
@@ -497,7 +496,7 @@ def create_draft(
                 "predicate": {"type": "record-exists-on-mutation"},
             }
         )
-    if (persistence == "postgresql" or auth_mode in {"jwt", "oidc"}) and any(
+    if (persistence in {"postgresql", "sqlite", "mysql"} or auth_mode in {"jwt", "oidc"}) and any(
         rule.get("enforcement") == "manual" for rule in normalized_rules
     ):
         questions.append(
@@ -627,6 +626,34 @@ def create_draft(
         ]
     )
 
+    if project_kind == "worker":
+        worker_req_id = "REQ-WORKER-001"
+        requirements.append(
+            {
+                "id": worker_req_id,
+                "kind": "functional",
+                "statement": (
+                    "The background worker service executes scheduled or continuous processing cycles, "
+                    "tracks cycle state and errors, and exposes status and trigger controls."
+                ),
+                "status": "approved",
+                "priority": "must",
+                "risk": "medium",
+                "source_refs": [{"source_id": "PG240", "location": "background-worker"}],
+            }
+        )
+        criteria.append(
+            {
+                "id": "AC-WORKER-001",
+                "requirement_ids": [worker_req_id],
+                "statement": (
+                    "GET /api/v1/worker/status returns cycle counters and worker status; "
+                    "POST /api/v1/worker/trigger executes an on-demand cycle deterministically."
+                ),
+                "verification_type": "test",
+            }
+        )
+
     draft: dict[str, Any] = {
         "schema_version": "1.1.0",
         "project": {
@@ -715,3 +742,14 @@ def approve_request(mapping: dict[str, Any], *, actor: str, approved_at: str | N
     }
     SynthesisRequest.from_mapping(approved)
     return approved
+
+
+def autonomous_resolve_and_approve(
+    draft: dict[str, Any],
+    actor: str = "elmos-autonomous-intent-governor@elmos.internal",
+    approved_at: str | None = None,
+) -> dict[str, Any]:
+    """Autonomously resolve open questions and approve draft without human intervention."""
+    from .autonomous_intent_resolver import autonomous_resolve_and_approve as _auto_approve
+
+    return _auto_approve(draft, actor=actor, approved_at=approved_at)

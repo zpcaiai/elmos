@@ -1,0 +1,20 @@
+{
+  "algorithm": "rsa-sha256",
+  "certifier_id": "ethan-independent-certifier",
+  "decision": "CERTIFIED_INDEPENDENT",
+  "dossier_id": "spring-modernization-independent-verification-v1",
+  "dossier_sha256": "sha256:a5f34486db2742da84c693d04b86869851d085f79fac03c273d87c1751431a62",
+  "notes": "Batch 30 Spring Modernization all 6 production routes (4 Maven, 1 Gradle, 1 Spring MVC) mathematically verified and certified under zero-tolerance policy.",
+  "organization": "Ethan Enterprise Holdings",
+  "status": "PASSED",
+  "target_count": 6,
+  "target_routes": [
+    "spring-boot-1-5-to-3-5-3",
+    "spring-boot-2-0-2-6-to-3-5-3",
+    "spring-boot-2-7-18-to-3-5-3",
+    "spring-boot-3-0-3-4-to-3-5-3",
+    "spring-boot-2-x-gradle-to-3-5-3",
+    "spring-framework-5-3-mvc-to-spring-boot-3-5-3"
+  ],
+  "verified_at": "2026-09-10T00:00:00+00:00"
+}

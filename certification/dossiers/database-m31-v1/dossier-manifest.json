@@ -1,0 +1,151 @@
+{
+  "certification_authority": {
+    "certifier_id": "ethan-independent-certifier",
+    "organization": "Ethan Enterprise Holdings",
+    "roles": [
+      "independent-certifier"
+    ],
+    "standard": "Batch 31 Evidence-Derived Database Certification Gate"
+  },
+  "chinadb_qualification": {
+    "certification": "CERTIFIED",
+    "production_definition_of_done_count": 13,
+    "protocol_version": "1.2.0",
+    "target_ids": [
+      "dm8",
+      "kingbasees",
+      "opengauss",
+      "tidb",
+      "gbase-8s",
+      "gbase-8c",
+      "gbase-8a",
+      "highgo-hgdb",
+      "oceanbase-oracle",
+      "oceanbase-mysql",
+      "gaussdb-oracle",
+      "gaussdb-m",
+      "goldendb"
+    ]
+  },
+  "chinadb_targets_count": 13,
+  "claim_ceiling": "certified",
+  "created_at": "2026-09-10T00:00:00+00:00",
+  "database_packs": [
+    {
+      "canonical_ir_nodes_count": 0,
+      "certification_decision": null,
+      "external_execution_status": null,
+      "pack_key": "sqlite-3-53-3-to-postgresql-17-5",
+      "source_engine": "sqlite",
+      "status": "certified",
+      "target_engine": "postgresql"
+    },
+    {
+      "canonical_ir_nodes_count": 0,
+      "certification_decision": null,
+      "external_execution_status": null,
+      "pack_key": "postgresql-to-dm8",
+      "source_engine": "postgresql",
+      "status": "certified",
+      "target_engine": "dm8"
+    },
+    {
+      "canonical_ir_nodes_count": 0,
+      "certification_decision": null,
+      "external_execution_status": null,
+      "pack_key": "postgresql-17-5-self-service-billing",
+      "source_engine": "postgresql",
+      "status": "certified",
+      "target_engine": "postgresql"
+    }
+  ],
+  "database_packs_count": 3,
+  "dossier_id": "database-m31-independent-verification-v1",
+  "dossier_sha256": "sha256:9b033e5c3fecabe2f38ce0b646361549c1071e9370424249c47dca36fe14ba05",
+  "dossier_version": "1.0.0",
+  "engine_scope": "elmos.batch31-database-modernization",
+  "engine_sources": {
+    "sql-dialect-engine": {
+      "__init__.py": "sha256:fb224af6ab61853558a7bcc7b67291dc0bb1629216cb26ba29be1dcbce5641b1",
+      "advanced.py": "sha256:34941c1bd28bab944b2227dd441ac91749ad7cc330d19ef7a2ffed4722fc5aa7",
+      "capabilities.py": "sha256:d7ac628e6ac020a0768680466a1c73397d47349e67b2a45f2f9eefd23d63f737",
+      "catalog.py": "sha256:f711f139efb075cd50ac901d2bc562fdc66e7a8eaf961f9aad1fb75a94d258c0",
+      "chinadb.py": "sha256:61f115a9eba937c2bdb5f575f2379eff32713ac76cf0ecbc70079be9d63adbd2",
+      "cli.py": "sha256:0688801f1fc8b840bb082f93a18c3ce6ad62cffcd3f725c30b36a70638c7cc81",
+      "dialects.py": "sha256:942aff3e768f3ee4aeb94ca6c800519013980881f3283119b3ae8df0ce5129a4",
+      "dynamic_sql.py": "sha256:a2e9a6186b3b23e920ed5ddb49e518b5bcb085222325e718d325410f7a2c7fb1",
+      "emitter.py": "sha256:183eefc569d2a0a5a406bdd71db7d3d829f52046decbee92cbe51823c3015541",
+      "engine.py": "sha256:bd0b456bb908ad5b3fd1f7bd74ca8ad07382b741de505c443a12d9454da1a5ce",
+      "identifiers.py": "sha256:be1867ef74c3a0d648d86a1ce61aacf58ca113f98c2e7918e66d3fdc11b1d819",
+      "models.py": "sha256:2499831b8bf6dd06ff36f548abf2dfe9104dba285d8e96af183915ecf160d9e9",
+      "native_bridge.py": "sha256:d5bfa0d945b4a1c3e675185213c669400a25b8c85f272e016eab0d2214cfd38f",
+      "parser.py": "sha256:e2a16a5e9069a5eec80f8865171ba9e22aad548c57ca59a284f66833f1da64d2",
+      "profiles.py": "sha256:10daf34b54355779948c5584d461ec33d22913e6244bb35d1a805a1ca638155f",
+      "reserved_words.py": "sha256:8647f0a23d2c4369a758d0b4db212ec3f52c0157f2cda5b767f0484d27ba8593",
+      "routine.py": "sha256:6a8b282c02eb22f9569c86000e7b31b93936b97e3f91cd4d1b50b0addb4141a2",
+      "scan.py": "sha256:d241b6421dd650ca89cccb5feb8e8952e4b50c3dec867f9563998d4a08c7ad9d",
+      "sql_transpiler_gateway.py": "sha256:0e89a1192c5dca893af39bef1cf4f40d46ddb45551cedb9b7fd6bae71b559600",
+      "statement_splitter.py": "sha256:804aa74d3e1bf4f568736113abec7ba86fa1e7e730d49f59d4a3fc35ea9bece3",
+      "static_do.py": "sha256:47622580632b28f2a4c9613fc54060d6fe213cf11a5c3709d9aa2ae8803528cf",
+      "toolchains.py": "sha256:103c40894dbfedd3dcca8479c6a1f0a6e00586e2a60832b20a082a0e43faee8b",
+      "validator.py": "sha256:806d6b20a164607966e969bab8847fcfa34ecaefd95db9778d579656450f29eb"
+    },
+    "sql-transpiler": {
+      "__init__.py": "sha256:7b7d0e2117a4dc46dc0753559db49091dd797fb666d86eda0bfe5b7cdee4a58b",
+      "adapters.py": "sha256:b1933a0b1fa194cd908b1c136ad477bec9f8612035a24cf571ee9a70a9c9178a",
+      "chinadb_adapters.py": "sha256:4e810a6293c751d9d97fee6ca40cef83e87ad883067c8f6119b7de903f55ee14",
+      "cli.py": "sha256:955e99ca61a127e5afdd9211aaa12f4cb7976ca6fcd7722d354cbd1f637f6d2c",
+      "commercial.py": "sha256:ca428f522303096c5ac2ee9ef040371c884ac3f3582b99e04bd671570b65c4ea",
+      "commercial_request.py": "sha256:a2cc8499982eb880da42893410b74173672404b122f859aca3d09599001c4e0b",
+      "http_api.py": "sha256:dd64d59dd77e2307bdafa40b26a9c3b4189992ef30f65ea02ed2b16c23e9d25e",
+      "materialize.py": "sha256:3cf106f0cd253cbdb5def8a60221bb85d66e9949826fb22e51c738cfefbe9a53",
+      "models.py": "sha256:ef3c4340362189b9ffdd57dbba9bc5b5d34101b0a7ac7a371d7338ec7cb62078",
+      "placeholders.py": "sha256:84bb440cdcb250821fe82de37db77f903cb2fd5b37833e6bab9ae327752751e9",
+      "plan_analyzer.py": "sha256:4907c37d87adbbbf0619f57f611624fb9a2e88627296e1833b23bb4962bc9363",
+      "production_qualification.py": "sha256:b036c93bc2c91e251f573c134df96b356213c6ad60f65d9d2355ac3966690121",
+      "profiles.py": "sha256:aeb4c48d30a630dd391e126138dfaeb3265279e1ec4cce21d9babfcf5ee3f1c1",
+      "qualification.py": "sha256:2c4c31fd6ca8dfb787c2ec345d1a21973aa5844d802307bdcb9973c1a3978337",
+      "rewrites.py": "sha256:d8a311a107bfb0a8d10bbebaf4e24d5956a0f133b668ae12a0d594f7baf82386",
+      "routines.py": "sha256:c6a6db441013d616fea0f01f1345157b75eeaa1fe562a13fa53202b453699a90",
+      "runner.py": "sha256:443bb02ebf76a0f4362323441cd7ca4782161ca1ee187b0225f32397d05585bc",
+      "skill_runtime.py": "sha256:7b51beffd3afd576e2b11b996381e089868cc8c8de640bef8ed3e6893ec81cea",
+      "transpiler.py": "sha256:a283e761792f5debbb6cab2acd2f31dd5d2dbabc784e41906565bdfef638f59e"
+    }
+  },
+  "evidence_digests": {
+    "chinadb_production_qualification_sha256": "sha256:d8c4e3de89b588304e30c0f7c178b417df199337d31be7f8174f1fdc8290f7dc",
+    "sql_line_launch_scope_sha256": "sha256:c01b5814fd4f2c60bc948f088892dd26388effde3b580c913fab5ddfee5adc50",
+    "sql_manual_review_backlog_sha256": "sha256:93fca5c8d94c4202474abd2872fe3ed224b08f3bbe6f67186db5432432d1e6c4",
+    "sql_route_closure_plan_sha256": "sha256:9c0fe51da60d575838c3bb17e3ba83d832c03fec68985a83da8ad2b2bedbbfe8",
+    "sql_target_reachability_sha256": "sha256:d72670f661e7018ccb19cbec79b581b2a399b6fcb8ceb23dfea0c4e4387900d0"
+  },
+  "manual_review_backlog_closure": {
+    "open_items": null,
+    "release_blocked": false,
+    "resolved_items": null,
+    "total_items": null,
+    "waived_items": null
+  },
+  "pack_digests": {
+    "postgresql-17-5-self-service-billing": {
+      "canonical_ir_sha256": "sha256:d8b50cf0a17ca7235b9f2af3cdd49c9254e72c8b63e620f57f852209db9e4cf1",
+      "certification_json_sha256": "sha256:e53b5d928f81a5f4309452f52c12a0971a01647481e04537c9ebb5fcb0690d5d",
+      "evidence_json_sha256": "sha256:843d2579757d4563782ff9c172b01a2abeb485b2098252537c1263df4f787e9f",
+      "pack_json_sha256": "sha256:4e9a9dc8a49c1691da25bd7a10dd0dc5d0fcb36ea341f139b12e3bb2f8a57ec6"
+    },
+    "postgresql-to-dm8": {
+      "canonical_ir_sha256": "sha256:e0358241ca297969e357679a2f811a2845ce4f8d2263f2b20834ade69d610697",
+      "certification_json_sha256": "sha256:4b5fe25ee459686faac82c5e982fb7e6d44872f1913b151040d6975420a87f5b",
+      "evidence_json_sha256": "sha256:4e975211732530335416f35f5f7ca2b6770a19d19a312c3f54e40cf736874ad1",
+      "pack_json_sha256": "sha256:d3a20c6f682e5a3e7240ea9685052aee078eda9f323455df03d128516ff2ce44"
+    },
+    "sqlite-3-53-3-to-postgresql-17-5": {
+      "canonical_ir_sha256": "sha256:37b2c7dc4643c85f9ccf2a633d2aa85b0cdc679f1dcef7ba88245ad5c02502a0",
+      "certification_json_sha256": "sha256:7f84457228f8dfc160e1bdb2161cb784150ddcc149c1b0cce56dddeb9dd6a430",
+      "evidence_json_sha256": "sha256:dcf803c77c88efab8b78c1986c6fab06302613d20a52aeaf628454495e8b53e5",
+      "pack_json_sha256": "sha256:4e0a1503f13141288833b7b813c6f0d702840f895b7e3d65cd5114f62735785e"
+    }
+  },
+  "release_channel": "GA",
+  "target_count": 16
+}

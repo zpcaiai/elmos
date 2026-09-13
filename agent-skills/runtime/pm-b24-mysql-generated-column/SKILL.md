@@ -1,5 +1,8 @@
 ---
 name: pm-b24-mysql-generated-column
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移虚拟/存储 Generated Column、表达式和索引. Precision Migration B24 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

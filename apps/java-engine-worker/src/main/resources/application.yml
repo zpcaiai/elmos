@@ -8,6 +8,13 @@ server:
 spring:
   application:
     name: elmos-java-engine-worker
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+  cloud:
+    compatibility-verifier:
+      enabled: false
   lifecycle:
     timeout-per-shutdown-phase: ${ELMOS_SHUTDOWN_TIMEOUT:30s}
   mvc:

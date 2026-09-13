@@ -1,0 +1,727 @@
+{
+  "batch": {
+    "id": "B09",
+    "title": "Invariant recovery and target-state planning",
+    "dependsOn": [
+      "B07",
+      "B08"
+    ],
+    "skills": [
+      "business-invariant-recovery",
+      "target-architecture-alternatives-and-adr",
+      "transformation-dag-estimation"
+    ],
+    "tasks": [
+      "B09-T001",
+      "B09-T002",
+      "B09-T003",
+      "B09-T004",
+      "B09-T005",
+      "B09-T006",
+      "B09-T007",
+      "B09-T008",
+      "B09-T009",
+      "B09-T010",
+      "B09-T011",
+      "B09-T012",
+      "B09-T013",
+      "B09-T014",
+      "B09-T015",
+      "B09-T016",
+      "B09-T017",
+      "B09-T018",
+      "B09-T019",
+      "B09-T020",
+      "B09-T021",
+      "B09-T022",
+      "B09-T023",
+      "B09-T024",
+      "B09-T025",
+      "B09-T026",
+      "B09-T027",
+      "B09-T028",
+      "B09-T029",
+      "B09-T030"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B09-T001",
+      "batch": "B09",
+      "title": "business-invariant-recovery: Bind canonical ownership and model domain contracts",
+      "skillId": "business-invariant-recovery",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B05-T020",
+        "B06-T020"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for business-invariant-recovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T002",
+      "batch": "B09",
+      "title": "business-invariant-recovery: Implement persistence projections and append-only ledger events",
+      "skillId": "business-invariant-recovery",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T001"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for business-invariant-recovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T003",
+      "batch": "B09",
+      "title": "business-invariant-recovery: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "business-invariant-recovery",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T002"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for business-invariant-recovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T004",
+      "batch": "B09",
+      "title": "business-invariant-recovery: Implement service and durable workflow",
+      "skillId": "business-invariant-recovery",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T003"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for business-invariant-recovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T005",
+      "batch": "B09",
+      "title": "business-invariant-recovery: Implement replaceable ports and first reference Adapter",
+      "skillId": "business-invariant-recovery",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T004"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for business-invariant-recovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T006",
+      "batch": "B09",
+      "title": "business-invariant-recovery: Implement APIs, events and query projections",
+      "skillId": "business-invariant-recovery",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T005"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for business-invariant-recovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T007",
+      "batch": "B09",
+      "title": "business-invariant-recovery: Implement product UI or operator surface",
+      "skillId": "business-invariant-recovery",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T006"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for business-invariant-recovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T008",
+      "batch": "B09",
+      "title": "business-invariant-recovery: Add deterministic tests, negative controls and failure injection",
+      "skillId": "business-invariant-recovery",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T007"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for business-invariant-recovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T009",
+      "batch": "B09",
+      "title": "business-invariant-recovery: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "business-invariant-recovery",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T008"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for business-invariant-recovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T010",
+      "batch": "B09",
+      "title": "business-invariant-recovery: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "business-invariant-recovery",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T009"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for business-invariant-recovery are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T011",
+      "batch": "B09",
+      "title": "target-architecture-alternatives-and-adr: Bind canonical ownership and model domain contracts",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B06-T020",
+        "B09-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for target-architecture-alternatives-and-adr are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T012",
+      "batch": "B09",
+      "title": "target-architecture-alternatives-and-adr: Implement persistence projections and append-only ledger events",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B09-T011"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for target-architecture-alternatives-and-adr are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T013",
+      "batch": "B09",
+      "title": "target-architecture-alternatives-and-adr: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B09-T012"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for target-architecture-alternatives-and-adr are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T014",
+      "batch": "B09",
+      "title": "target-architecture-alternatives-and-adr: Implement service and durable workflow",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B09-T013"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for target-architecture-alternatives-and-adr are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T015",
+      "batch": "B09",
+      "title": "target-architecture-alternatives-and-adr: Implement replaceable ports and first reference Adapter",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B09-T014"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for target-architecture-alternatives-and-adr are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T016",
+      "batch": "B09",
+      "title": "target-architecture-alternatives-and-adr: Implement APIs, events and query projections",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B09-T015"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for target-architecture-alternatives-and-adr are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T017",
+      "batch": "B09",
+      "title": "target-architecture-alternatives-and-adr: Implement product UI or operator surface",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B09-T016"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for target-architecture-alternatives-and-adr are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T018",
+      "batch": "B09",
+      "title": "target-architecture-alternatives-and-adr: Add deterministic tests, negative controls and failure injection",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B09-T017"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for target-architecture-alternatives-and-adr are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T019",
+      "batch": "B09",
+      "title": "target-architecture-alternatives-and-adr: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B09-T018"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for target-architecture-alternatives-and-adr are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T020",
+      "batch": "B09",
+      "title": "target-architecture-alternatives-and-adr: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "target-architecture-alternatives-and-adr",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B09-T019"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for target-architecture-alternatives-and-adr are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T021",
+      "batch": "B09",
+      "title": "transformation-dag-estimation: Bind canonical ownership and model domain contracts",
+      "skillId": "transformation-dag-estimation",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B09-T020"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for transformation-dag-estimation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T022",
+      "batch": "B09",
+      "title": "transformation-dag-estimation: Implement persistence projections and append-only ledger events",
+      "skillId": "transformation-dag-estimation",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T021"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for transformation-dag-estimation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T023",
+      "batch": "B09",
+      "title": "transformation-dag-estimation: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "transformation-dag-estimation",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T022"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for transformation-dag-estimation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T024",
+      "batch": "B09",
+      "title": "transformation-dag-estimation: Implement service and durable workflow",
+      "skillId": "transformation-dag-estimation",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T023"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for transformation-dag-estimation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T025",
+      "batch": "B09",
+      "title": "transformation-dag-estimation: Implement replaceable ports and first reference Adapter",
+      "skillId": "transformation-dag-estimation",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T024"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for transformation-dag-estimation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T026",
+      "batch": "B09",
+      "title": "transformation-dag-estimation: Implement APIs, events and query projections",
+      "skillId": "transformation-dag-estimation",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T025"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for transformation-dag-estimation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T027",
+      "batch": "B09",
+      "title": "transformation-dag-estimation: Implement product UI or operator surface",
+      "skillId": "transformation-dag-estimation",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T026"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for transformation-dag-estimation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T028",
+      "batch": "B09",
+      "title": "transformation-dag-estimation: Add deterministic tests, negative controls and failure injection",
+      "skillId": "transformation-dag-estimation",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T027"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for transformation-dag-estimation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T029",
+      "batch": "B09",
+      "title": "transformation-dag-estimation: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "transformation-dag-estimation",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T028"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for transformation-dag-estimation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B09-T030",
+      "batch": "B09",
+      "title": "transformation-dag-estimation: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "transformation-dag-estimation",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B09-T029"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for transformation-dag-estimation are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

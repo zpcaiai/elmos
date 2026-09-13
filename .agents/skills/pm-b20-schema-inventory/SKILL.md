@@ -1,5 +1,8 @@
 ---
 name: pm-b20-schema-inventory
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "盘点数据库对象、依赖、大小、变更频率、权限、过程代码和专有能力. Precision Migration B20 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

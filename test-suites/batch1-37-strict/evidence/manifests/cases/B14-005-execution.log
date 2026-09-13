@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B14-005 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [14]
+Title: Batch 14 Recipe生态：使用越权身份、跨租户引用、恶意内容、秘密探测或出口绕过
+Capability: Recipe生态
+Test Type: security
+Skill: tst-b14-plg-community-localization
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

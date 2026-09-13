@@ -1,5 +1,8 @@
 ---
 name: pm-b30-database-state-comparator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "比较相关表、事务、约束、序列、触发器和最终数据库状态. Precision Migration B30 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

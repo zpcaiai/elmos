@@ -1,5 +1,8 @@
 ---
 name: pm-b04-architecture-migration-strategy
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "选择 Strangler、Rewrite、Wrap、Retain、Replatform、模块重建或服务拆分策略. Precision Migration B04 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

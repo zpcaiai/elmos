@@ -1,0 +1,47 @@
+skill: elmos-assurance-commercial-control
+tasks:
+- id: elmos-assurance-commercial-control-T01
+  action: 构建scope→estimate→approve→run→audit→deliver生命周期，商业状态与技术verdict分离。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-commercial-control-T02
+  action: 支持项目/组织权限、审计授权、retention、导出、申诉和证书查询。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-commercial-control-T03
+  action: 计费按真实execution/审计服务，充值不能购买PASS或豁免critical。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-commercial-control-T04
+  action: 报告可机读与人读，支持矩阵/assumptions/exclusions/current status一目了然。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+global_contracts:
+- contracts/schemas/run-request.schema.json
+- contracts/schemas/evidence-payload.schema.json
+constraints:
+- reuse-existing-architecture
+- fail-closed
+- no-hidden-test-leak
+- no-unapproved-side-effects
+- no-fabricated-runtime-evidence

@@ -1,5 +1,8 @@
 ---
 name: pm-b38-skill-composition-planner
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成满足依赖、顺序、隔离和共享能力的 Skill 组合执行计划. Precision Migration B38 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

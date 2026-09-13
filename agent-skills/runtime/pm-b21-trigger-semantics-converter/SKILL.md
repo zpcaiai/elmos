@@ -1,5 +1,8 @@
 ---
 name: pm-b21-trigger-semantics-converter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "转换触发器时机、粒度、顺序、递归、OLD/NEW 和副作用. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

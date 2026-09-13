@@ -1,0 +1,11 @@
+{
+  "case": "missing-function-fails-closed",
+  "expected_result": "BLOCKED",
+  "external_certification": "PASSED",
+  "independent_verifier": "PASSED",
+  "observed_reason": "NO_SUPPORTED_FUNCTIONS",
+  "route": "php-to-java",
+  "schema_version": 1,
+  "status": "PASSED",
+  "test_integrity": "PRESERVED"
+}

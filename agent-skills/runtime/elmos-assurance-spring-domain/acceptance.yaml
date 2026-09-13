@@ -1,0 +1,36 @@
+skill: elmos-assurance-spring-domain
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-spring-domain-A01
+  given: 保留注解但self invocation导致无事务
+  when: 在真实集成模块执行对应测试或负例
+  then: native DB故障测试发现
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-spring-domain-A02
+  given: Session returnUrl丢失
+  when: 在真实集成模块执行对应测试或负例
+  then: 旧新完整行为差分失败
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-spring-domain-A03
+  given: 只有target build成功
+  when: 在真实集成模块执行对应测试或负例
+  then: 不获得迁移行为认证
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

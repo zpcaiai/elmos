@@ -1,0 +1,122 @@
+{
+  "route_id": "java-spring-to-csharp-aspnet",
+  "source": {
+    "language_versions": [
+      "17",
+      "21"
+    ],
+    "framework_versions": [
+      "spring-boot-3.x"
+    ]
+  },
+  "target": {
+    "language_versions": [
+      "csharp-12"
+    ],
+    "framework_versions": [
+      "aspnet-core-8",
+      "ef-core-8"
+    ]
+  },
+  "required_stages": [
+    "repository-intake",
+    "semantic-model",
+    "psp-uir",
+    "framework-contract",
+    "code-generation",
+    "build",
+    "test-migration",
+    "repair",
+    "behavior-verification",
+    "database-migration",
+    "pull-request",
+    "private-runner",
+    "canary",
+    "cutover",
+    "hypercare",
+    "customer-handoff"
+  ],
+  "stage_results": [
+    {
+      "stage": "repository-intake",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "semantic-model",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "psp-uir",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "framework-contract",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "code-generation",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "build",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "test-migration",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "repair",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "behavior-verification",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "database-migration",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "pull-request",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "private-runner",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "canary",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "cutover",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "hypercare",
+      "status": "not-run",
+      "evidence": []
+    },
+    {
+      "stage": "customer-handoff",
+      "status": "not-run",
+      "evidence": []
+    }
+  ],
+  "status": "draft"
+}

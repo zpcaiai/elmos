@@ -1,5 +1,8 @@
 ---
 name: pm-b39-security-crosscutting-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成认证、授权、租户隔离、审计、Secret、限流和输入安全. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

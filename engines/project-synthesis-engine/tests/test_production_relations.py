@@ -56,16 +56,22 @@ _PERMISSIONS = tuple(
 )
 
 MANY_TO_ONE = {
-    "source": "order", "target": "customer",
-    "source_field": "customer_id", "target_field": "id",
-    "kind": "many-to-one", "required": True,
+    "source": "order",
+    "target": "customer",
+    "source_field": "customer_id",
+    "target_field": "id",
+    "kind": "many-to-one",
+    "required": True,
 }
 ONE_TO_ONE = {**MANY_TO_ONE, "kind": "one-to-one"}
 # Declared from the other end: the foreign key lives on the many side.
 ONE_TO_MANY = {
-    "source": "customer", "target": "order",
-    "source_field": "id", "target_field": "customer_id",
-    "kind": "one-to-many", "required": True,
+    "source": "customer",
+    "target": "order",
+    "source_field": "id",
+    "target_field": "customer_id",
+    "kind": "one-to-many",
+    "required": True,
 }
 MANY_TO_MANY = {**MANY_TO_ONE, "kind": "many-to-many"}
 
@@ -95,9 +101,7 @@ def _constraints(request: SynthesisRequest) -> list[str]:
     ("label", "relation"),
     [("many-to-one", MANY_TO_ONE), ("one-to-one", ONE_TO_ONE), ("one-to-many", ONE_TO_MANY)],
 )
-def test_all_three_accepted_kinds_produce_the_same_foreign_key(
-    label: str, relation: dict[str, Any]
-) -> None:
+def test_all_three_accepted_kinds_produce_the_same_foreign_key(label: str, relation: dict[str, Any]) -> None:
     """The key is on `orders` and points at `customers.id` in every case --
     including the one declared from the customer end."""
 
@@ -155,9 +159,12 @@ def test_a_cycle_written_partly_as_one_to_many_is_still_caught() -> None:
         relations=(
             MANY_TO_ONE,
             {
-                "source": "order", "target": "customer",
-                "source_field": "id", "target_field": "name",
-                "kind": "one-to-many", "required": True,
+                "source": "order",
+                "target": "customer",
+                "source_field": "id",
+                "target_field": "name",
+                "kind": "one-to-many",
+                "required": True,
             },
         ),
         languages=("java",),

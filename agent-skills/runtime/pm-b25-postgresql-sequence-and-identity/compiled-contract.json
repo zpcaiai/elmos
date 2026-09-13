@@ -1,0 +1,34 @@
+{
+  "schema_version": "elmos.precision-migration.compiled-skill-contract.v1",
+  "package_id": "elmos.precision-migration.b01-44",
+  "package_version": "1.0.0",
+  "installed_alias": "pm-b25-postgresql-sequence-and-identity",
+  "namespace": "precision-migration-b01-44",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [
+    "engines/database-data-engine",
+    "engines/sql-dialect-engine",
+    "scripts/batch31",
+    "scripts/precision_migration/contracts.py",
+    "scripts/precision_migration/exact.py",
+    "scripts/precision_migration/native.py",
+    "scripts/precision_migration/generated_handlers.py",
+    "docs/precision-migration-b01-44/handler-implementations.json"
+  ],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "handler_id": "exact-skill-v4:postgresql-sequence-and-identity",
+    "handler_entrypoint": "scripts.precision_migration.generated_handlers:execute_pm_b25_postgresql_sequence_and_identity",
+    "supported_modes": [
+      "transform",
+      "validate",
+      "repair"
+    ],
+    "timeout_seconds": 120,
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

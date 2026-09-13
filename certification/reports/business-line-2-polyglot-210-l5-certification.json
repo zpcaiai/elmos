@@ -1,0 +1,95 @@
+{
+  "autonomy_level": "L5_AUTONOMOUS_ZERO_HUMAN",
+  "business_line": 2,
+  "corpus_count": 5,
+  "decision": "CERTIFIED_L5_AUTONOMOUS",
+  "host_python_runs": 140,
+  "human_review_backlog_count": 0,
+  "industrial_quality_percent": 100.0,
+  "issued_at": "2026-09-11T17:16:05.320202+00:00",
+  "merkle_root": "fcafb05ad6dc5daa04a27822c1d9c5faed48b2a6c121d613ae99583c8464df58",
+  "pairs_passed": 1050,
+  "pairs_total": 1050,
+  "phases": [
+    {
+      "details": {
+        "files": 17
+      },
+      "duration_ms": 12.511290988186374,
+      "errors": [],
+      "name": "Anti-template and anti-string-audit",
+      "passed": true,
+      "phase_number": 1
+    },
+    {
+      "details": {
+        "required": 12
+      },
+      "duration_ms": 10.658708022674546,
+      "errors": [],
+      "name": "Industrial architecture",
+      "passed": true,
+      "phase_number": 2
+    },
+    {
+      "details": {
+        "corpora": 5
+      },
+      "duration_ms": 19.07091701286845,
+      "errors": [],
+      "name": "Five-corpus IR oracle",
+      "passed": true,
+      "phase_number": 3
+    },
+    {
+      "details": {
+        "corpus_count": 5,
+        "failures": [],
+        "host_python_runs": 140,
+        "pairs_failed": 0,
+        "pairs_passed": 1050,
+        "pairs_total": 1050,
+        "route_count": 210
+      },
+      "duration_ms": 18903.429250000045,
+      "errors": [],
+      "name": "210-route industrial campaign",
+      "passed": true,
+      "phase_number": 4
+    },
+    {
+      "details": {
+        "runs": 15
+      },
+      "duration_ms": 30.47862500534393,
+      "errors": [],
+      "name": "Python host compile-run",
+      "passed": true,
+      "phase_number": 5
+    },
+    {
+      "details": {
+        "industrial_quality_percent": 100.0
+      },
+      "duration_ms": 0.02837498323060572,
+      "errors": [],
+      "name": "Honest industrial quality metric",
+      "passed": true,
+      "phase_number": 6
+    },
+    {
+      "details": {
+        "leaf_count": 29,
+        "merkle_root": "fcafb05ad6dc5daa04a27822c1d9c5faed48b2a6c121d613ae99583c8464df58"
+      },
+      "duration_ms": 0.06458300049416721,
+      "errors": [],
+      "name": "Merkle seal",
+      "passed": true,
+      "phase_number": 7
+    }
+  ],
+  "route_count": 210,
+  "schema_version": 1,
+  "title": "Cross-language 210-route industrial L5 certification"
+}

@@ -1,0 +1,69 @@
+package dto
+
+import (
+	"time"
+
+	"{{.ModuleName}}/internal/domain/model"
+)
+
+// CreateEntityRequest DTO carries input for entity creation.
+type CreateEntityRequest struct {
+	Name        string `json:"name" binding:"required"`
+	Description string `json:"description"`
+}
+
+// UpdateEntityRequest DTO carries input for updating entity details.
+type UpdateEntityRequest struct {
+	Name        string `json:"name" binding:"required"`
+	Description string `json:"description"`
+}
+
+// EntityResponse DTO represents the entity view model returned to clients.
+type EntityResponse struct {
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Status      string    `json:"status"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+// ListEntityResponse DTO encapsulates paginated results.
+type ListEntityResponse struct {
+	Items      []EntityResponse `json:"items"`
+	TotalCount int64            `json:"total_count"`
+	Offset     int              `json:"offset"`
+	Limit      int              `json:"limit"`
+}
+
+// PaginationParam carries offset/limit pagination parameters.
+type PaginationParam struct {
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
+}
+
+// FromDomain converts a domain Entity model to an EntityResponse DTO.
+func FromDomain(e *model.Entity) EntityResponse {
+	if e == nil {
+		return EntityResponse{}
+	}
+	return EntityResponse{
+		ID:          e.ID(),
+		Name:        e.Name(),
+		Description: e.Description(),
+		Status:      string(e.Status()),
+		CreatedAt:   e.CreatedAt(),
+		UpdatedAt:   e.UpdatedAt(),
+	}
+}
+
+// FromDomainList converts a slice of domain Entities to a slice of EntityResponse DTOs.
+func FromDomainList(entities []*model.Entity) []EntityResponse {
+	result := make([]EntityResponse, 0, len(entities))
+	for _, e := range entities {
+		if e != nil {
+			result = append(result, FromDomain(e))
+		}
+	}
+	return result
+}

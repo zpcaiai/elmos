@@ -1,5 +1,14 @@
 ---
 name: b31-query-plan-performance
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: Compare source and target query plans, cardinality, statistics, indexes, latency, throughput, resource usage, and plan stability for representative workloads. Use after query correctness and before production certification.
 ---
 

@@ -1,0 +1,39 @@
+{
+  "schema_version": "elmos.spring-golden-route.compiled-skill-contract.v2",
+  "package_id": "elmos-spring-golden-route-commercial-skills",
+  "package_version": "2.0.0",
+  "installed_alias": "spring-test-corpus",
+  "namespace": "spring-golden-route-commercial-v2",
+  "source_id": "ELMOS-GR-040",
+  "batch": "15",
+  "dependencies": [
+    "spring-bean-flow",
+    "spring-data-graph",
+    "spring-security-graph",
+    "spring-async-graph"
+  ],
+  "effective_dependencies": [
+    "spring-bean-flow",
+    "spring-data-graph",
+    "spring-security-graph",
+    "spring-async-graph"
+  ],
+  "critical_dependencies": [],
+  "required_outputs": [
+    "test-map.json",
+    "behavior-corpus",
+    "holdout-set.json",
+    "test-integrity.json"
+  ],
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "handler_id": "handle_spring_test_corpus",
+    "dispatcher": "dispatch_skill",
+    "module_path": "engines/spring-golden-route-engine/src/elmos_spring_golden_route/runtime.py",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

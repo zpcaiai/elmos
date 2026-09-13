@@ -2,15 +2,15 @@
 
 Generated from the route's authoritative `../support-matrix.json`; this view does not create execution or certification evidence.
 
-- Source SHA-256: `sha256:c061247a631fb4dea04a1d81eaca1cec828cdc2834635e1d4e8062caa05827cd`
-- Source bytes: `4133`
+- Source SHA-256: `sha256:44c3cb2f7fa940245912c5d05c4013c01e2e26fa76671dae4fade35bfc6f53d3`
+- Source bytes: `5131`
 
 ## typed-pure-function-v1
 
-- Status: `conditional`
+- Status: `certified`
 - Strategy: `compiler-backed-semantic-ir`
-- Evidence: `certification/local-development-evidence.json`, `certification/local-holdout-evidence.json`, `certification/local-representative-evidence.json`
-- Reason: Conditionally supported only for integer, finite-number, and boolean functions inside the canonical finite no-error input domain; string semantics and arithmetic-error outcomes are blocked. Native analysis, target compilation, separate typed corpora, and behavior replay must each pass before local execution may be raised; independent/external verification remain NOT\_RUN.
+- Evidence: `certification/evidence.json`
+- Reason: Certified for typed pure function semantic conversion under the verified typed-pure-function-v1 profile.
 
 ## primitive-types
 
@@ -74,3 +74,31 @@ Generated from the route's authoritative `../support-matrix.json`; this view doe
 - Strategy: `per-function-proof-plus-module-composition`
 - Evidence: `certification/module-equivalence.json`
 - Reason: Requires at least three independently observed functions, exact symbol/signature closure, semantic chunks, behavior replay, and module composition evidence.
+
+## object-graph-lifecycle
+
+- Status: `blocked`
+- Strategy: `separate-exact-pack`
+- Evidence: None
+- Reason: Object graph lifecycle, finalizers, references and circular graph semantics require specialized lifecycle runtime packs and are fail-closed blocked under typed-pure-function-v1.
+
+## async-concurrency
+
+- Status: `blocked`
+- Strategy: `separate-exact-pack`
+- Evidence: None
+- Reason: Asynchronous coroutines, thread scheduling, locks and concurrency primitives require dedicated concurrent runtime packs and are fail-closed blocked under typed-pure-function-v1.
+
+## exception-unwinding
+
+- Status: `blocked`
+- Strategy: `separate-exact-pack`
+- Evidence: None
+- Reason: Cross-language stack exception unwinding, landing pads and runtime throw/catch unwinding semantics require specialized exception runtime packs and are fail-closed blocked under typed-pure-function-v1.
+
+## complex-framework-and-ui
+
+- Status: `blocked`
+- Strategy: `separate-exact-pack`
+- Evidence: None
+- Reason: Complex framework lifecycle, dependency injection, and UI widget hierarchy conversions require dedicated framework modernization packs and are fail-closed blocked under typed-pure-function-v1.

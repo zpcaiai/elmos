@@ -1,5 +1,8 @@
 ---
 name: pm-b03-conversion-cost-estimator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "估算模型、计算、工具链、测试环境、人工、私有部署和持续维护成本. Precision Migration B03 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

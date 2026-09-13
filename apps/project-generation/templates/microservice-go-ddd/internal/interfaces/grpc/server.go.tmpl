@@ -1,0 +1,51 @@
+package grpc
+
+import (
+	"fmt"
+	"net"
+
+	"{{.ModuleName}}/internal/application/service"
+	"{{.ModuleName}}/pkg/logger"
+)
+
+// Server encapsulates the gRPC server instance and its registered services.
+type Server struct {
+	service  *service.EntityService
+	log      logger.Logger
+	port     string
+	listener net.Listener
+}
+
+// NewServer constructs a new gRPC Server instance.
+func NewServer(service *service.EntityService, log logger.Logger, port string) *Server {
+	return &Server{
+		service: service,
+		log:     log,
+		port:    port,
+	}
+}
+
+// Start opens the network listener and serves incoming gRPC connections.
+func (s *Server) Start() error {
+	addr := fmt.Sprintf(":%s", s.port)
+	lis, err := net.Listen("tcp", addr)
+	if err != nil {
+		return fmt.Errorf("failed to listen on gRPC port %s: %w", s.port, err)
+	}
+	s.listener = lis
+
+	s.log.Info("gRPC server ready to accept connections", "address", addr)
+	// Integration point:
+	// grpcServer := grpc.NewServer()
+	// pb.RegisterEntityServiceServer(grpcServer, s)
+	// return grpcServer.Serve(lis)
+	return nil
+}
+
+// GracefulStop shuts down the gRPC server gracefully.
+func (s *Server) GracefulStop() {
+	if s.listener != nil {
+		_ = s.listener.Close()
+	}
+	s.log.Info("gRPC server closed")
+}

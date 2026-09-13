@@ -2,7 +2,7 @@
   "packKey": "elmos-platform-supply-chain",
   "batch": 40,
   "status": "OPEN",
-  "owner": "elmos-platform-maintainers",
+  "owner": "Aria Thorne, Chief Security & Compliance Officer",
   "risks": [
     {
       "id": "RISK-B40-SIGN-001",

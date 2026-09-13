@@ -1,0 +1,12 @@
+<html lang="zh-CN">
+  <body>
+    <UiPreferencesProvider>
+      <AccountSessionProvider>
+        <UserActivityCollector />
+        <AppShell>
+          <slot />
+        </AppShell>
+      </AccountSessionProvider>
+    </UiPreferencesProvider>
+  </body>
+</html>

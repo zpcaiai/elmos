@@ -1,5 +1,8 @@
 ---
 name: pm-b25-postgresql-on-conflict
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 ON CONFLICT 的冲突目标、排除表和并发语义. Precision Migration B25 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

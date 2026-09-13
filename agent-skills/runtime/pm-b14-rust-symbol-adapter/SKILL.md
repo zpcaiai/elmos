@@ -1,5 +1,8 @@
 ---
 name: pm-b14-rust-symbol-adapter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "解析 Rust 符号、作用域、绑定、重载与跨文件引用，输出统一符号模型. Precision Migration B14 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

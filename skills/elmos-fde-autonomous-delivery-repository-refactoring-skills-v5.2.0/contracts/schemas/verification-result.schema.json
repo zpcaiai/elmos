@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/fde/5.2.0/VerificationResult.schema.json",
+  "title": "VerificationResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "verificationId",
+    "subjectRef",
+    "revisionSetId",
+    "checks",
+    "blockers",
+    "recommendation"
+  ],
+  "properties": {
+    "verificationId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subjectRef": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revisionSetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "evidenceRefs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "pass",
+              "fail",
+              "unknown",
+              "unsupported",
+              "waived"
+            ]
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 0
+          },
+          "notes": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "recommendation": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "reject",
+        "rework",
+        "E0",
+        "E1",
+        "E2",
+        "E3"
+      ]
+    }
+  }
+}

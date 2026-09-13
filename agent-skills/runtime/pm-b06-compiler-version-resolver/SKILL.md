@@ -1,5 +1,8 @@
 ---
 name: pm-b06-compiler-version-resolver
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "解析源与目标编译器版本，并处理兼容范围、废弃特性和交叉编译约束. Precision Migration B06 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

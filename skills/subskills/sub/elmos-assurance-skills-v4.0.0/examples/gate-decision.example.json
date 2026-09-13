@@ -1,0 +1,20 @@
+{
+  "schema_version": "4.0",
+  "kind": "DEMO_ONLY_NOT_A_CERTIFICATE",
+  "verdict": "PASS",
+  "request_digest": "701ed3870c855252f1ef1f5e152cd0b399d9c2f3123ddb220d0666dc2a54c19c",
+  "reasons": [
+    "REFERENCE_PROFILE_REQUIREMENTS_SATISFIED"
+  ],
+  "verified_evidence_ids": [
+    "e-audit",
+    "e-build",
+    "e-contract",
+    "e-differential",
+    "e-mutation",
+    "e-proof",
+    "e-regression",
+    "e-smoke"
+  ],
+  "production_signing_allowed": false
+}

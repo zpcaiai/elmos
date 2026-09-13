@@ -1,5 +1,8 @@
 ---
 name: pm-b12-type-attributed-tree
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "为无损源码树附加符号、类型、调用和语义归因. Precision Migration B12 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

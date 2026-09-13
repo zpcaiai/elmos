@@ -1,5 +1,8 @@
 ---
 name: pm-b24-mysql-json
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 JSON 类型、路径、函数、索引和比较语义. Precision Migration B24 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

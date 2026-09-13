@@ -1,5 +1,14 @@
 ---
 name: b31-warehouse-lakehouse-analytics
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: Migrate warehouses, lakehouses, dimensional models, SCD logic, aggregates, semantic metrics, BI models, row security, file/table formats, and incremental analytics workloads. Use for analytical platform modernization.
 ---
 

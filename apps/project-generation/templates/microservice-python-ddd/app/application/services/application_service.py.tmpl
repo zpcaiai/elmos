@@ -1,0 +1,75 @@
+import logging
+
+from app.application.dtos.request_dto import (
+    EntityCreateRequest,
+    EntityListResponse,
+    EntityResponse,
+    EntityUpdateRequest,
+    PaginationParams,
+)
+from app.domain.exceptions.domain_exceptions import EntityNotFoundException
+from app.domain.models.entity import Entity
+from app.domain.repositories.base_repository import BaseRepository
+
+logger = logging.getLogger(__name__)
+
+
+class ApplicationService:
+    """Use case orchestrator coordinating domain entities and repositories."""
+
+    def __init__(self, repository: BaseRepository) -> None:
+        self._repo = repository
+
+    async def create_entity(self, request: EntityCreateRequest) -> EntityResponse:
+        """Create a new domain entity and persist it."""
+        entity = Entity.create(name=request.name, description=request.description or "")
+        await self._repo.save(entity)
+        logger.info(f"Created entity with id: {entity.id}")
+        return EntityResponse.from_domain(entity)
+
+    async def get_entity(self, entity_id: str) -> EntityResponse:
+        """Retrieve an entity by identifier."""
+        entity = await self._repo.get_by_id(entity_id)
+        if not entity:
+            raise EntityNotFoundException(entity_id)
+        return EntityResponse.from_domain(entity)
+
+    async def update_entity(self, entity_id: str, request: EntityUpdateRequest) -> EntityResponse:
+        """Update mutable fields of an existing entity."""
+        entity = await self._repo.get_by_id(entity_id)
+        if not entity:
+            raise EntityNotFoundException(entity_id)
+
+        entity.update_details(name=request.name, description=request.description or "")
+        await self._repo.update(entity)
+        logger.info(f"Updated entity with id: {entity_id}")
+        return EntityResponse.from_domain(entity)
+
+    async def delete_entity(self, entity_id: str) -> None:
+        """Remove an entity aggregate."""
+        entity = await self._repo.get_by_id(entity_id)
+        if not entity:
+            raise EntityNotFoundException(entity_id)
+
+        await self._repo.delete(entity_id)
+        logger.info(f"Deleted entity with id: {entity_id}")
+
+    async def list_entities(self, pagination: PaginationParams) -> EntityListResponse:
+        """Retrieve paginated entities."""
+        items, total = await self._repo.list(offset=pagination.offset, limit=pagination.limit)
+        return EntityListResponse(
+            items=[EntityResponse.from_domain(e) for e in items],
+            total_count=total,
+            offset=pagination.offset,
+            limit=pagination.limit,
+        )
+
+    async def activate_entity(self, entity_id: str) -> EntityResponse:
+        """Activate an existing entity."""
+        entity = await self._repo.get_by_id(entity_id)
+        if not entity:
+            raise EntityNotFoundException(entity_id)
+
+        entity.activate()
+        await self._repo.update(entity)
+        return EntityResponse.from_domain(entity)

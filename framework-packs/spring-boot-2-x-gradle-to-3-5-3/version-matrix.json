@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-boot-2-x-gradle-to-3-5-3",
+  "tuples": [
+    {
+      "id": "source",
+      "framework": "spring-boot",
+      "spring_boot": "2.7.18",
+      "java": "17",
+      "build": "gradle-8.14.3",
+      "status": "supported-input-only"
+    },
+    {
+      "id": "target",
+      "framework": "spring-boot",
+      "spring_boot": "3.5.3",
+      "java": "21",
+      "build": "gradle-8.14.3",
+      "status": "limited-output"
+    }
+  ],
+  "upgrade_edges": [
+    {
+      "directional": true,
+      "from": "source",
+      "to": "target",
+      "recipes": [
+        "io.elmos.gradle.SpringBoot2To3GradleMigration"
+      ]
+    }
+  ]
+}

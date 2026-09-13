@@ -1,5 +1,8 @@
 ---
 name: pm-b03-conversion-success-range-estimator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "估算自动覆盖率、首轮构建率、功能等价率、行为等价率和生产就绪概率区间. Precision Migration B03 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

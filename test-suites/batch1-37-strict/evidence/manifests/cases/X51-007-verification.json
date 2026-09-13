@@ -1,0 +1,8 @@
+{
+  "case_id": "X51-007",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:55:52Z",
+  "notes": "Independently verified by Ethan: 测试选择、Flaky与完整性测试：Tolerance变化—改变工具链、Schema、Provider、配置或依赖版本并重放"
+}

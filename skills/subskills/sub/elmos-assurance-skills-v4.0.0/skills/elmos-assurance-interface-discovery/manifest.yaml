@@ -1,0 +1,22 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-interface-discovery
+title: 多协议接口独立发现
+priority: P0
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-bootstrap
+- elmos-assurance-scope
+inputs:
+- 源码/配置/接口文档
+- 受控运行时观测
+- 插件和编译条件
+outputs:
+- InterfaceInventory
+- DiscoveryEvidence
+- DiscoveryBlindSpots
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

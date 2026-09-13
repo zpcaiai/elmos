@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-to-opengauss",
+  "runs": [
+    {
+      "id": "local-commercial-assess-postgresql-opengauss-query",
+      "status": "LOCAL_EMITTED",
+      "source_execution": "NOT_RUN",
+      "target_execution": "NOT_RUN",
+      "result_equivalence": "NOT_RUN",
+      "evidence_ref": "certification/local-postgresql-opengauss-query-evidence.json"
+    }
+  ],
+  "coverage": 1.0,
+  "coverage_scope": "one declared synthetic query contract only",
+  "evidence_refs": [
+    "certification/local-postgresql-opengauss-query-evidence.json"
+  ]
+}

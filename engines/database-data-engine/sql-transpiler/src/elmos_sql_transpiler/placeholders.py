@@ -25,6 +25,7 @@ This module rewrites every placeholder into the target's real syntax, keeps
 one source parameter mapped to exactly one target parameter, and fails closed
 when the target's placeholder style cannot preserve the binding arity.
 """
+
 from __future__ import annotations
 
 import re
@@ -177,9 +178,7 @@ def rewrite(
             )
             target_token = replacement.sql(dialect=target_dialect)
             tokens[identity] = target_token
-        replacement = _target_node(
-            target_dialect, ordinal, _derived_name(source_token, ordinal)
-        )
+        replacement = _target_node(target_dialect, ordinal, _derived_name(source_token, ordinal))
         node.replace(replacement)
         mapping.append(
             PlaceholderRewrite(
@@ -196,9 +195,7 @@ def verify_tokens(statement: exp.Expression, target_dialect: str) -> None:
     pattern = _TOKEN_PATTERN.get(target_dialect)
     if pattern is None:
         if placeholder_nodes(statement):
-            raise UnsupportedError(
-                f"no placeholder syntax is registered for {target_dialect!r}"
-            )
+            raise UnsupportedError(f"no placeholder syntax is registered for {target_dialect!r}")
         return
     for node in placeholder_nodes(statement):
         token = node.sql(dialect=target_dialect)

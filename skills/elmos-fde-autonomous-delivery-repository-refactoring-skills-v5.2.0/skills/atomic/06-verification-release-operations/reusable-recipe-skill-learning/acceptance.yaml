@@ -1,0 +1,81 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: reusable-recipe-skill-learning
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Same migration fix recurs across customers
+  - Skill triggers too broadly
+  - Tenant trace is useful but not consented for global learning
+  negativeControls:
+  - train globally without consent
+  - create duplicate skill
+  - generalize from one weak example
+  checks:
+  - id: reusable-recipe-skill-learning-AC-01
+    requirement: Require evidence of recurrence, bounded responsibility, independent validation, and clear ownership before
+      creating a new Skill.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: reusable-recipe-skill-learning-AC-02
+    requirement: Prefer updating existing instructions, references, scripts, adapters, tests, or policies over adding overlapping
+      capabilities.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: reusable-recipe-skill-learning-AC-03
+    requirement: Separate tenant-local learning from globally eligible artifacts under explicit consent.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: reusable-recipe-skill-learning-AC-04
+    requirement: Sanitize examples, remove secrets and identifiers, and preserve provenance and license constraints.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: reusable-recipe-skill-learning-AC-05
+    requirement: Evaluate trigger precision, workflow correctness, approval boundaries, and regression behavior before release.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

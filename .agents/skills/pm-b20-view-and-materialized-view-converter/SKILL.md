@@ -1,5 +1,8 @@
 ---
 name: pm-b20-view-and-materialized-view-converter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "转换普通视图、物化视图、刷新策略、权限和依赖. Precision Migration B20 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

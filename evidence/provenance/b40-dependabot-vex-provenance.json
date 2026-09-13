@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "batch40-dependabot-vex-provenance",
+  "batch": 40,
+  "packKey": "elmos-platform-supply-chain",
+  "evidenceId": "b40-dependabot-vex",
+  "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "owner": "elmos-security-owner",
+  "source": {
+    "repository": "zpcaiai/elmos",
+    "generatedAt": "2026-09-12T19:00:34.516253Z",
+    "alertSnapshotDigest": "sha256:f41a5b2d4a6e501e728db3da1c42371a4d76abecfbd47d96ba0d91f2360d8cf8",
+    "registry": {
+      "path": "evidence/execution/b40-dependabot-exception-registry.json",
+      "sha256": "sha256:78417442c8100f549b210eacda46cc5b255a1262524bbe4ebe65f4a5d74805a1",
+      "bytes": 14706
+    }
+  },
+  "analyzer": {
+    "path": "scripts/dependabot_governance.py",
+    "sha256": "sha256:73d30db35530f77d83f688164ea39f726e356a069933848dee396418a2ba4922"
+  },
+  "externalOperationExecuted": true,
+  "independentVerification": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

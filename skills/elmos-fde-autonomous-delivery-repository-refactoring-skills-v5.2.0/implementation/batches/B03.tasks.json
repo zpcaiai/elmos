@@ -1,0 +1,724 @@
+{
+  "batch": {
+    "id": "B03",
+    "title": "Repository custody, inventory and support profile",
+    "dependsOn": [
+      "B00",
+      "B01"
+    ],
+    "skills": [
+      "repository-custody-and-revisionset",
+      "asset-inventory-and-classification",
+      "support-profile-and-unknown-register"
+    ],
+    "tasks": [
+      "B03-T001",
+      "B03-T002",
+      "B03-T003",
+      "B03-T004",
+      "B03-T005",
+      "B03-T006",
+      "B03-T007",
+      "B03-T008",
+      "B03-T009",
+      "B03-T010",
+      "B03-T011",
+      "B03-T012",
+      "B03-T013",
+      "B03-T014",
+      "B03-T015",
+      "B03-T016",
+      "B03-T017",
+      "B03-T018",
+      "B03-T019",
+      "B03-T020",
+      "B03-T021",
+      "B03-T022",
+      "B03-T023",
+      "B03-T024",
+      "B03-T025",
+      "B03-T026",
+      "B03-T027",
+      "B03-T028",
+      "B03-T029",
+      "B03-T030"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B03-T001",
+      "batch": "B03",
+      "title": "repository-custody-and-revisionset: Bind canonical ownership and model domain contracts",
+      "skillId": "repository-custody-and-revisionset",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for repository-custody-and-revisionset are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T002",
+      "batch": "B03",
+      "title": "repository-custody-and-revisionset: Implement persistence projections and append-only ledger events",
+      "skillId": "repository-custody-and-revisionset",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T001"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for repository-custody-and-revisionset are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T003",
+      "batch": "B03",
+      "title": "repository-custody-and-revisionset: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "repository-custody-and-revisionset",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T002"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for repository-custody-and-revisionset are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T004",
+      "batch": "B03",
+      "title": "repository-custody-and-revisionset: Implement service and durable workflow",
+      "skillId": "repository-custody-and-revisionset",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T003"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for repository-custody-and-revisionset are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T005",
+      "batch": "B03",
+      "title": "repository-custody-and-revisionset: Implement replaceable ports and first reference Adapter",
+      "skillId": "repository-custody-and-revisionset",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T004"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for repository-custody-and-revisionset are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T006",
+      "batch": "B03",
+      "title": "repository-custody-and-revisionset: Implement APIs, events and query projections",
+      "skillId": "repository-custody-and-revisionset",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T005"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for repository-custody-and-revisionset are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T007",
+      "batch": "B03",
+      "title": "repository-custody-and-revisionset: Implement product UI or operator surface",
+      "skillId": "repository-custody-and-revisionset",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T006"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for repository-custody-and-revisionset are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T008",
+      "batch": "B03",
+      "title": "repository-custody-and-revisionset: Add deterministic tests, negative controls and failure injection",
+      "skillId": "repository-custody-and-revisionset",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T007"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for repository-custody-and-revisionset are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T009",
+      "batch": "B03",
+      "title": "repository-custody-and-revisionset: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "repository-custody-and-revisionset",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T008"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for repository-custody-and-revisionset are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T010",
+      "batch": "B03",
+      "title": "repository-custody-and-revisionset: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "repository-custody-and-revisionset",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T009"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for repository-custody-and-revisionset are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T011",
+      "batch": "B03",
+      "title": "asset-inventory-and-classification: Bind canonical ownership and model domain contracts",
+      "skillId": "asset-inventory-and-classification",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B03-T010"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for asset-inventory-and-classification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T012",
+      "batch": "B03",
+      "title": "asset-inventory-and-classification: Implement persistence projections and append-only ledger events",
+      "skillId": "asset-inventory-and-classification",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B03-T011"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for asset-inventory-and-classification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T013",
+      "batch": "B03",
+      "title": "asset-inventory-and-classification: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "asset-inventory-and-classification",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B03-T012"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for asset-inventory-and-classification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T014",
+      "batch": "B03",
+      "title": "asset-inventory-and-classification: Implement service and durable workflow",
+      "skillId": "asset-inventory-and-classification",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B03-T013"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for asset-inventory-and-classification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T015",
+      "batch": "B03",
+      "title": "asset-inventory-and-classification: Implement replaceable ports and first reference Adapter",
+      "skillId": "asset-inventory-and-classification",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B03-T014"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for asset-inventory-and-classification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T016",
+      "batch": "B03",
+      "title": "asset-inventory-and-classification: Implement APIs, events and query projections",
+      "skillId": "asset-inventory-and-classification",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B03-T015"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for asset-inventory-and-classification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T017",
+      "batch": "B03",
+      "title": "asset-inventory-and-classification: Implement product UI or operator surface",
+      "skillId": "asset-inventory-and-classification",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B03-T016"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for asset-inventory-and-classification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T018",
+      "batch": "B03",
+      "title": "asset-inventory-and-classification: Add deterministic tests, negative controls and failure injection",
+      "skillId": "asset-inventory-and-classification",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B03-T017"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for asset-inventory-and-classification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T019",
+      "batch": "B03",
+      "title": "asset-inventory-and-classification: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "asset-inventory-and-classification",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B03-T018"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for asset-inventory-and-classification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T020",
+      "batch": "B03",
+      "title": "asset-inventory-and-classification: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "asset-inventory-and-classification",
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B03-T019"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for asset-inventory-and-classification are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T021",
+      "batch": "B03",
+      "title": "support-profile-and-unknown-register: Bind canonical ownership and model domain contracts",
+      "skillId": "support-profile-and-unknown-register",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001",
+        "B01-T001",
+        "B01-T002",
+        "B03-T020"
+      ],
+      "outputs": [
+        "domain model",
+        "ownership decision record"
+      ],
+      "acceptance": [
+        "Requirements for support-profile-and-unknown-register are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T022",
+      "batch": "B03",
+      "title": "support-profile-and-unknown-register: Implement persistence projections and append-only ledger events",
+      "skillId": "support-profile-and-unknown-register",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T021"
+      ],
+      "outputs": [
+        "migrations",
+        "repositories",
+        "ledger events"
+      ],
+      "acceptance": [
+        "Requirements for support-profile-and-unknown-register are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T023",
+      "batch": "B03",
+      "title": "support-profile-and-unknown-register: Implement policy, authority, idempotency and checkpoint middleware",
+      "skillId": "support-profile-and-unknown-register",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T022"
+      ],
+      "outputs": [
+        "policy gates",
+        "idempotency",
+        "resume/cancel"
+      ],
+      "acceptance": [
+        "Requirements for support-profile-and-unknown-register are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T024",
+      "batch": "B03",
+      "title": "support-profile-and-unknown-register: Implement service and durable workflow",
+      "skillId": "support-profile-and-unknown-register",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T023"
+      ],
+      "outputs": [
+        "domain service",
+        "durable workflow",
+        "failure semantics"
+      ],
+      "acceptance": [
+        "Requirements for support-profile-and-unknown-register are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T025",
+      "batch": "B03",
+      "title": "support-profile-and-unknown-register: Implement replaceable ports and first reference Adapter",
+      "skillId": "support-profile-and-unknown-register",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T024"
+      ],
+      "outputs": [
+        "ports",
+        "reference adapter",
+        "contract tests"
+      ],
+      "acceptance": [
+        "Requirements for support-profile-and-unknown-register are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T026",
+      "batch": "B03",
+      "title": "support-profile-and-unknown-register: Implement APIs, events and query projections",
+      "skillId": "support-profile-and-unknown-register",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T025"
+      ],
+      "outputs": [
+        "REST/API",
+        "events",
+        "read model"
+      ],
+      "acceptance": [
+        "Requirements for support-profile-and-unknown-register are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T027",
+      "batch": "B03",
+      "title": "support-profile-and-unknown-register: Implement product UI or operator surface",
+      "skillId": "support-profile-and-unknown-register",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T026"
+      ],
+      "outputs": [
+        "UI flow",
+        "permissions",
+        "empty/error/unknown states"
+      ],
+      "acceptance": [
+        "Requirements for support-profile-and-unknown-register are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T028",
+      "batch": "B03",
+      "title": "support-profile-and-unknown-register: Add deterministic tests, negative controls and failure injection",
+      "skillId": "support-profile-and-unknown-register",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T027"
+      ],
+      "outputs": [
+        "unit tests",
+        "integration tests",
+        "failure tests"
+      ],
+      "acceptance": [
+        "Requirements for support-profile-and-unknown-register are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T029",
+      "batch": "B03",
+      "title": "support-profile-and-unknown-register: Add Codex eval cases, fixtures and independent verification",
+      "skillId": "support-profile-and-unknown-register",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T028"
+      ],
+      "outputs": [
+        "eval dataset",
+        "graders",
+        "verification evidence"
+      ],
+      "acceptance": [
+        "Requirements for support-profile-and-unknown-register are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B03-T030",
+      "batch": "B03",
+      "title": "support-profile-and-unknown-register: Complete runbook, migration, telemetry and acceptance traceability",
+      "skillId": "support-profile-and-unknown-register",
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B03-T029"
+      ],
+      "outputs": [
+        "runbook",
+        "telemetry",
+        "traceability",
+        "acceptance report"
+      ],
+      "acceptance": [
+        "Requirements for support-profile-and-unknown-register are traceable",
+        "All required negative controls are executable",
+        "E3 boundary is preserved"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "batch": 45,
+  "packKey": "elmos-platform-production-readiness",
+  "corpusKind": "representative",
+  "description": "Representative production multi-tenant workload dataset for Batch 45",
+  "independence": "independently-verified",
+  "authoringAccess": false,
+  "workloads": [
+    {
+      "workloadId": "wl-rep-45-01",
+      "scenario": "standard-operations",
+      "status": "PASSED"
+    },
+    {
+      "workloadId": "wl-rep-45-02",
+      "scenario": "peak-load-surge",
+      "status": "PASSED"
+    },
+    {
+      "workloadId": "wl-rep-45-03",
+      "scenario": "mixed-tenancy-isolation",
+      "status": "PASSED"
+    }
+  ]
+}

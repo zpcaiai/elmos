@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "pack_key": "unset-to-unset",
+  "owner": "UNASSIGNED",
+  "status": "draft",
+  "strategy": "backfill-plus-cdc",
+  "source": {},
+  "target": {},
+  "backfill": {
+    "partitions": [],
+    "checkpoint": "durable",
+    "idempotent": true
+  },
+  "cdc": {
+    "enabled": false,
+    "position_store": "durable",
+    "delete_propagation": true
+  },
+  "authority": {
+    "initial_writer": "source",
+    "final_writer": "target"
+  },
+  "reconciliation": [],
+  "rollback": {
+    "strategy": "UNSET"
+  },
+  "privacy": {
+    "classification": "confidential",
+    "residency": [],
+    "retention": "UNSET"
+  }
+}

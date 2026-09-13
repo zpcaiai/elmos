@@ -1,5 +1,8 @@
 ---
 name: pm-b32-differential-fuzzing
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "向源目标输入同一随机或变异数据并比较输出、状态和副作用. Precision Migration B32 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

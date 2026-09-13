@@ -1,0 +1,18 @@
+{
+  "invariantId": "INV-001",
+  "statement": "A retry cannot create a second order for the same idempotency key",
+  "scope": [
+    "orders.create"
+  ],
+  "riskClass": "critical",
+  "oracle": {
+    "type": "property",
+    "description": "At most one committed order per tenant and key"
+  },
+  "evidenceObligations": [
+    "property test",
+    "database reconciliation",
+    "fault injection"
+  ],
+  "approvedBehaviorChanges": []
+}

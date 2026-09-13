@@ -1,5 +1,8 @@
 ---
 name: b32-accessibility-i18n-seo-visual-e2e
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement and certify accessibility localization internationalization SEO visual regression cross-browser responsive performance and end-to-end user-journey validation for client modernization packs.
 ---
 

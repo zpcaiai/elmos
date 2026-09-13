@@ -564,6 +564,9 @@ project-synthesis-p0-production-gate:
 	python3 scripts/operations/run_project_synthesis_p0_launch_gate.py \
 		--repository . --evidence-directory "$(PROJECT_SYNTHESIS_P0_EVIDENCE_DIR)" \
 		--output "$(PROJECT_SYNTHESIS_P0_GATE_OUTPUT)"
+.PHONY: project-generation assurance-v4-skills fde-autonomous-delivery-skills proof-driven-harness-skills proof-driven-harness-intelligence-skills
+project-generation:
+	$(MAKE) -C apps/project-generation test
 toolchains-validate:
 	python3 scripts/toolchains/runtime_environment.py validate
 toolchains-doctor: toolchains-validate

@@ -1,5 +1,8 @@
 ---
 name: pm-b25-postgresql-extension
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "盘点并迁移 Extension、版本、对象、权限、二进制依赖和替代方案. Precision Migration B25 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

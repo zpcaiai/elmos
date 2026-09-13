@@ -1,0 +1,47 @@
+skill: elmos-assurance-calibration-holdout
+tasks:
+- id: elmos-assurance-calibration-holdout-T01
+  action: 按项目/语言/DB/缺陷族分层，去重/授权/时间分割，hidden与公开训练修复隔离。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-calibration-holdout-T02
+  action: 分别计算P(PASS|defect)与P(defect|PASS)，列明分母和抽样方案。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-calibration-holdout-T03
+  action: 零失败报告置信上界及独立同分布假设；同repo相关变异不能充当独立项目数。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-calibration-holdout-T04
+  action: 阈值由baseline与风险批准，追踪实际escaped critical bugs，不以百万无效case营销。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+global_contracts:
+- contracts/schemas/run-request.schema.json
+- contracts/schemas/evidence-payload.schema.json
+constraints:
+- reuse-existing-architecture
+- fail-closed
+- no-hidden-test-leak
+- no-unapproved-side-effects
+- no-fabricated-runtime-evidence

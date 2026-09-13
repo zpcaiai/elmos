@@ -1,5 +1,8 @@
 ---
 name: pm-b44-private-model-gateway
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "接入客户自有、开源或国产模型，支持审计、限流、路由和版本锁定. Precision Migration B44 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,29 @@
+id: elmos.assurance/v4
+status: DRAFT_REQUIRES_APPROVAL
+gate_mapping:
+  E0:
+  - inventory
+  - build
+  - environment-integrity
+  E1:
+  - approved-scope
+  - approved-contract
+  - nonempty-obligations
+  E2:
+  - critical-smoke
+  E3:
+  - full-approved-functional-regression
+  E4:
+  - domain-applicable-differential
+  - property-fuzz
+  - mutation
+  - nonfunctional-risk
+  E5:
+  - risk-mandated-formal
+  - ethen-independent-review
+  - k8-authorized-signature
+critical_unknown_action: INCONCLUSIVE
+scope_change_requires_reapproval: true
+mutation_threshold: MUST_BE_CALIBRATED_PER_DOMAIN
+account_top_level_concurrency: 3
+commercial_payment_cannot_override_gate: true

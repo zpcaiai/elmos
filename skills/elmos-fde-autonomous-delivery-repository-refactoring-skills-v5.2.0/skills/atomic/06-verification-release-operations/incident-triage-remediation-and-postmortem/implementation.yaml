@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: incident-triage-remediation-and-postmortem
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: IncidentTriageRemediationAndPostmortemService
+    workflow: IncidentTriageRemediationAndPostmortemWorkflow
+    policyGate: IncidentTriageRemediationAndPostmortemPolicyGate
+    evidenceProducer: IncidentTriageRemediationAndPostmortemEvidenceProducer
+    repositoryPort: IncidentTriageRemediationAndPostmortemRepositoryPort
+  requiredPorts:
+  - id: telemetry.query
+    direction: outbound
+  - id: incident.timeline
+    direction: inbound
+  - id: authority.request
+    direction: inbound
+  - id: rollback.execute
+    direction: outbound
+  - id: patch.execute
+    direction: outbound
+  - id: postmortem.write
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/incident-triage-remediation-and-postmortem/runs
+  - GET /api/v1/skills/incident-triage-remediation-and-postmortem/runs/{runId}
+  - POST /api/v1/skills/incident-triage-remediation-and-postmortem/runs/{runId}/cancel
+  - POST /api/v1/skills/incident-triage-remediation-and-postmortem/runs/{runId}/resume
+  events:
+  - elmos.skill.incident-triage-remediation-and-postmortem.requested.v1
+  - elmos.skill.incident-triage-remediation-and-postmortem.checkpointed.v1
+  - elmos.skill.incident-triage-remediation-and-postmortem.completed.v1
+  - elmos.skill.incident-triage-remediation-and-postmortem.failed.v1
+  workflowSteps:
+  - Confirm incident scope, authority, severity, owners, and communication cadence.
+  - Contain unsafe effects and preserve forensic evidence.
+  - Restore service through the lowest-risk reversible action.
+  - Reconstruct timeline and test root-cause hypotheses.
+  - Implement and independently verify bounded remediation.
+  - Publish a blameless postmortem, CAPA, and reusable learning updates.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

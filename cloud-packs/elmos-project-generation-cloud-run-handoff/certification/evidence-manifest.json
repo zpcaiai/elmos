@@ -4,8 +4,8 @@
   "entries": [
     {
       "path": "certification/external-tooling-status.json",
-      "byte_size": 842,
-      "sha256": "5f7987a678ed9346e2d8915ef5945b4093c667ff3c2b5fe06ffb00fa00105ec3"
+      "byte_size": 861,
+      "sha256": "474b5de9d44ba6f518aac87c03176c8e023e6f06b3b29222629e2e73ba9fceae"
     },
     {
       "path": "certification/local-container-evidence.json",
@@ -14,8 +14,8 @@
     },
     {
       "path": "certification/local-control-evidence.json",
-      "byte_size": 3363,
-      "sha256": "2ff1812802bf4e7d564b186ebac3ae63c4ec5336c26a4ce6a1b04f5c69503cfc"
+      "byte_size": 3389,
+      "sha256": "e5d95de090db9d1fbacdec0999bb1987b4b56ce33f642de8903b82ed13f5d675"
     },
     {
       "path": "corpus/development/cases.json",
@@ -74,8 +74,8 @@
     },
     {
       "path": "target-profile/profile.json",
-      "byte_size": 2981,
-      "sha256": "21dfad031ed073c2423a5fc419d1ede79396eff886c7f0e38142b88b30ac03ac"
+      "byte_size": 3000,
+      "sha256": "c8fd818284407e3547cd71c5818423ebf0d059936e1b55eec150d15e647ce815"
     },
     {
       "path": "validation/validation-profile.json",

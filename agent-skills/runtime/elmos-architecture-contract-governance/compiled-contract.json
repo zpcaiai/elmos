@@ -1,0 +1,22 @@
+{
+  "schema_version": "elmos.core.compiled-skill-contract.v1",
+  "package_id": "elmos.core-infrastructure-foundation-skills",
+  "package_version": "1.0.0",
+  "installed_alias": "elmos-architecture-contract-governance",
+  "namespace": "elmos-core",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "execute",
+    "skill_name": "elmos-architecture-contract-governance",
+    "description": "Architecture contract governance, state boundary freeze, and schema validation",
+    "module_path": "scripts/elmos-core/elmos_core_runtime.py",
+    "runtime_class": "ElmosCoreRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

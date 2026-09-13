@@ -1,0 +1,6 @@
+{
+  "projectId": "project-123",
+  "sourceRef": "workspace://project-123",
+  "caseSet": "spring-boot4-e3",
+  "requestedLevel": "E3"
+}

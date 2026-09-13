@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/assurance/v4/typed-observation.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "4.0"
+    },
+    "observation_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "request_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "runtime_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "correlation_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "completion": {
+      "enum": [
+        "COMPLETED",
+        "UNKNOWN",
+        "TIMED_OUT"
+      ]
+    },
+    "data": {
+      "type": "object"
+    },
+    "side_effects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "db",
+              "mq",
+              "cache",
+              "file",
+              "network",
+              "device"
+            ]
+          },
+          "resource_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "operation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "transaction_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        "required": [
+          "kind",
+          "resource_ref",
+          "operation",
+          "count",
+          "transaction_ref"
+        ]
+      },
+      "minItems": 0
+    },
+    "clock_policy_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "schema_version",
+    "observation_id",
+    "request_digest",
+    "runtime_digest",
+    "correlation_id",
+    "completion",
+    "data",
+    "side_effects",
+    "clock_policy_digest"
+  ]
+}

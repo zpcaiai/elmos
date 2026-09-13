@@ -1,0 +1,70 @@
+{
+  "batch": {
+    "id": "B01",
+    "title": "Authority, identity and append-only ledgers",
+    "dependsOn": [
+      "B00"
+    ],
+    "skills": [
+      "changeset-commit-and-provenance-governance",
+      "e0-e3-readiness-and-evidence-bundle"
+    ],
+    "tasks": [
+      "B01-T001",
+      "B01-T002"
+    ],
+    "exitCriteria": [
+      "All blocking tasks complete",
+      "Batch tests pass",
+      "No unresolved critical unknown",
+      "No duplicate canonical owner",
+      "Evidence bundle sealed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "B01-T001",
+      "batch": "B01",
+      "title": "Integrate append-only Evidence, Claim, Change, Effect and Decision Ledgers",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "high",
+      "dependsOn": [
+        "B00-T001"
+      ],
+      "outputs": [
+        "ledger services",
+        "hash-chain verification",
+        "RLS/tenant tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    },
+    {
+      "id": "B01-T002",
+      "batch": "B01",
+      "title": "Bind execution to environment-owned authority, capability leases and executor fencing",
+      "skillId": null,
+      "priority": "P0",
+      "riskClass": "critical",
+      "dependsOn": [
+        "B00-T001"
+      ],
+      "outputs": [
+        "authority middleware",
+        "fencing tests",
+        "resume authority replay tests"
+      ],
+      "acceptance": [
+        "package validation passes",
+        "no canonical ownership duplication",
+        "independent checks pass"
+      ],
+      "codexGuidance": "Implement one reviewable vertical increment; update PLANS.md; run the smallest authoritative tests first; retain unknowns and blockers."
+    }
+  ]
+}

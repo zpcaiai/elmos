@@ -1,5 +1,8 @@
 ---
 name: pm-b20-cutover-and-rollback-plan
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "设计停机、低停机、双写、切流、回滚和数据收敛方案. Precision Migration B20 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

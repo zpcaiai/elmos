@@ -1,5 +1,8 @@
 ---
 name: pm-b05-dependency-and-plugin-discovery
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "解析直接与传递依赖、插件、许可证、原生扩展和运行时加载依赖. Precision Migration B05 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

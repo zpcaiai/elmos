@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "skill_name": "b45-residual-risk-register",
+  "batch": 45,
+  "batch_title": "Mature Product Certification & Final Delivery",
+  "implementation_state": "VERIFIED",
+  "external_evidence_status": "LOCAL_EXECUTED",
+  "production_certification": "NOT_CERTIFIED",
+  "runtime_handler": "scripts.batch45.b45_skill_runtime.B45SkillRuntime._handle_residual_risk_register",
+  "fail_closed_policy": "FAIL_CLOSED_ON_UNKNOWN_STATUS",
+  "metrics_thresholds": {
+    "maturityDimensionPassRate": 1.0,
+    "independentReviewPassRate": 1.0,
+    "unresolvedCriticalRiskCount": 0.0
+  }
+}

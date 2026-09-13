@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: formal-assurance-routing
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Verify no cross-tenant read path
+  - Check saga compensation liveness
+  - Prove data migration mapping preserves monetary totals
+  negativeControls:
+  - formalize the entire repository by default
+  - claim proof without checking tool output
+  - hide modeling assumptions
+  checks:
+  - id: formal-assurance-routing-AC-01
+    requirement: Select formal methods only where risk, tractability, and property shape justify them.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: formal-assurance-routing-AC-02
+    requirement: Represent modeling assumptions, abstractions, environment constraints, and trusted components explicitly.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: formal-assurance-routing-AC-03
+    requirement: Check state safety, liveness, concurrency, permissions, conservation, migration mapping, or protocol behavior
+      as applicable.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: formal-assurance-routing-AC-04
+    requirement: Store proof artifacts, checker versions, commands, results, counterexamples, and translation links.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: formal-assurance-routing-AC-05
+    requirement: Use proof results as evidence inputs, never as blanket system certification.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

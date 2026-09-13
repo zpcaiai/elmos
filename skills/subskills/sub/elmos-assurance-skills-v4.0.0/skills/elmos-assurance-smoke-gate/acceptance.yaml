@@ -1,0 +1,36 @@
+skill: elmos-assurance-smoke-gate
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-smoke-gate-A01
+  given: health=200但下单持久化坏
+  when: 在真实集成模块执行对应测试或负例
+  then: smoke失败
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-smoke-gate-A02
+  given: 预算不足覆盖关键义务
+  when: 在真实集成模块执行对应测试或负例
+  then: 报告uncovered而不是小suite PASS
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-smoke-gate-A03
+  given: smoke失败
+  when: 在真实集成模块执行对应测试或负例
+  then: 不派发依赖它的完整runtime回归
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

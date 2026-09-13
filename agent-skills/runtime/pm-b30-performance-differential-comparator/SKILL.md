@@ -1,5 +1,8 @@
 ---
 name: pm-b30-performance-differential-comparator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "比较延迟、吞吐、CPU、内存、GC、帧率、启动和资源泄漏. Precision Migration B30 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

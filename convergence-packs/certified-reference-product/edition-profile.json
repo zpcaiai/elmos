@@ -1,0 +1,11 @@
+{
+  "editions": [
+    "SaaS",
+    "Enterprise Private Runner",
+    "Self-hosted/Air-gap"
+  ],
+  "expansion_policy": {
+    "requires_customer_order": true,
+    "requires_test_matrix_capacity": true
+  }
+}

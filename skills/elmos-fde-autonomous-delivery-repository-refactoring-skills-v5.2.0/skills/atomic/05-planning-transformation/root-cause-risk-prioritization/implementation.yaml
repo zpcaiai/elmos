@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: root-cause-risk-prioritization
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: RootCauseRiskPrioritizationService
+    workflow: RootCauseRiskPrioritizationWorkflow
+    policyGate: RootCauseRiskPrioritizationPolicyGate
+    evidenceProducer: RootCauseRiskPrioritizationEvidenceProducer
+    repositoryPort: RootCauseRiskPrioritizationRepositoryPort
+  requiredPorts:
+  - id: graph.cluster
+    direction: inbound
+  - id: risk.score
+    direction: outbound
+  - id: dependency.solve
+    direction: inbound
+  - id: scenario.simulate
+    direction: inbound
+  - id: backlog.write
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/root-cause-risk-prioritization/runs
+  - GET /api/v1/skills/root-cause-risk-prioritization/runs/{runId}
+  - POST /api/v1/skills/root-cause-risk-prioritization/runs/{runId}/cancel
+  - POST /api/v1/skills/root-cause-risk-prioritization/runs/{runId}/resume
+  events:
+  - elmos.skill.root-cause-risk-prioritization.requested.v1
+  - elmos.skill.root-cause-risk-prioritization.checkpointed.v1
+  - elmos.skill.root-cause-risk-prioritization.completed.v1
+  - elmos.skill.root-cause-risk-prioritization.failed.v1
+  workflowSteps:
+  - Load normalized findings, business criticality, ownership, and acceptance criteria.
+  - Construct causal and dependency relationships using evidence.
+  - Identify minimum root-cause sets that explain material symptoms.
+  - Score remediation options across risk, value, cost, machine wall-clock, and reversibility.
+  - Test ranking sensitivity to uncertain assumptions.
+  - Publish a prioritized risk-reduction backlog with rationale.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

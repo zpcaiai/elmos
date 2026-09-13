@@ -32,8 +32,8 @@
         "name": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,62}[a-z0-9]$"},
         "description": {"type": "string", "minLength": 1, "maxLength": 4000},
         "namespace": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"},
-        "kind": {"const": "api"},
-        "persistence": {"enum": ["in-memory", "postgresql"]},
+        "kind": {"enum": ["api", "worker"]},
+        "persistence": {"enum": ["in-memory", "postgresql", "sqlite", "mysql"]},
         "auth_mode": {"enum": ["none", "jwt", "oidc"]}
       }
     },

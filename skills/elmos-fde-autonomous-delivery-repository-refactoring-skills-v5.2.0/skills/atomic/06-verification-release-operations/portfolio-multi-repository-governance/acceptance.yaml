@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: portfolio-multi-repository-governance
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Hundreds of Spring services share vulnerable library
+  - Two repositories require coordinated API migration
+  - Portfolio dashboard hides one unsupported critical system
+  negativeControls:
+  - compare teams by raw finding count
+  - apply one migration recipe to unsupported repos
+  checks:
+  - id: portfolio-multi-repository-governance-AC-01
+    requirement: Build a portfolio graph of repositories, shared libraries, APIs, data, events, teams, environments, and release
+      dependencies.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: portfolio-multi-repository-governance-AC-02
+    requirement: Normalize risk and readiness by size, criticality, support depth, evidence coverage, and unknowns.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: portfolio-multi-repository-governance-AC-03
+    requirement: Identify common root causes, reusable migration waves, shared blockers, and systemic dependencies.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: portfolio-multi-repository-governance-AC-04
+    requirement: Plan capacity, machine wall-clock, cost, change windows, and rollback domains across programs.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: portfolio-multi-repository-governance-AC-05
+    requirement: Prevent portfolio rollups from masking repository-specific unsupported or critical conditions.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

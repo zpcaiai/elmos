@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: git-history-ownership-change-coupling
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Critical module has one historical maintainer
+  - Files in different services always change together
+  - Large formatter commit distorts churn
+  negativeControls:
+  - rank individual performance
+  - infer blame or intent without evidence
+  checks:
+  - id: git-history-ownership-change-coupling-AC-01
+    requirement: Analyze co-change, churn, defect linkage, reverts, release branches, and migration sequences.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: git-history-ownership-change-coupling-AC-02
+    requirement: Distinguish generated mass changes from meaningful coupling.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: git-history-ownership-change-coupling-AC-03
+    requirement: Identify ownership concentration and orphaned critical modules without employee scoring.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: git-history-ownership-change-coupling-AC-04
+    requirement: Link historical incidents and decisions to current code when evidence exists.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: git-history-ownership-change-coupling-AC-05
+    requirement: Respect privacy, labor, and retention policies for contributor data.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

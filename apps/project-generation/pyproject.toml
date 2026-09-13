@@ -1,0 +1,21 @@
+[project]
+name = "project-generation"
+version = "0.1.0"
+description = "Multi-language microservice project generator and DDD architectural validator"
+authors = [{ name = "Elmos Platform Team" }]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[project.scripts]
+project-gen = "project_generation.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

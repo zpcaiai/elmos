@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-object-type
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 Oracle Object Type、继承、方法和表对象. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

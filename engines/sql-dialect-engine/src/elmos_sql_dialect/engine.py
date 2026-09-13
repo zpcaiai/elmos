@@ -301,3 +301,183 @@ def translate_ddl(
             "executionDiagnostics": list(report.execution_diagnostics),
         },
     }
+
+
+def translate_query(
+    sql: str,
+    source_dialect: str,
+    target_dialect: str,
+    *,
+    mode: str | None = None,
+    dsn: str | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Translate SELECT / WITH queries cross-dialect using AST transformations."""
+    from .query_transpiler import translate_query as _transpile_query
+
+    rep = _transpile_query(
+        sql,
+        source_dialect=source_dialect,
+        target_dialect=target_dialect,
+        mode=mode,
+    )
+    if dsn and rep.get("status") == "PASSED" and rep.get("emitted"):
+        try:
+            target_enum = _resolve_dialect(target_dialect)
+        except RouteError as exc:
+            rep["status"] = "BLOCKED"
+            rep["reasonCode"] = "TARGET_EXECUTION_DIALECT_UNSUPPORTED"
+            rep["reason"] = str(exc)
+            rep.setdefault("validation", {})["executionStatus"] = "NOT_RUN"
+            rep["validation"]["executionDiagnostics"] = [str(exc)]
+            return rep
+        if target_enum:
+            exec_rep = validate(rep["emitted"], target_enum, dsn=dsn, routine=False)
+            if "validation" not in rep:
+                rep["validation"] = {}
+            rep["validation"]["executionStatus"] = exec_rep.execution_status
+            rep["validation"]["executionDiagnostics"] = list(exec_rep.execution_diagnostics)
+            if not exec_rep.passed():
+                rep["status"] = "FAILED"
+    return rep
+
+
+def translate_upsert(
+    sql: str,
+    source_dialect: str,
+    target_dialect: str,
+    *,
+    dsn: str | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Translate UPSERT / MERGE statements across dialects."""
+    from .upsert_transpiler import translate_upsert as _transpile_upsert
+
+    rep = _transpile_upsert(
+        sql,
+        source_dialect=source_dialect,
+        target_dialect=target_dialect,
+    )
+    if dsn and rep.get("status") == "PASSED" and rep.get("emitted"):
+        try:
+            target_enum = _resolve_dialect(target_dialect)
+        except RouteError as exc:
+            rep["status"] = "BLOCKED"
+            rep["reasonCode"] = "TARGET_EXECUTION_DIALECT_UNSUPPORTED"
+            rep["reason"] = str(exc)
+            rep.setdefault("validation", {})["executionStatus"] = "NOT_RUN"
+            rep["validation"]["executionDiagnostics"] = [str(exc)]
+            return rep
+        if target_enum:
+            exec_rep = validate(rep["emitted"], target_enum, dsn=dsn, routine=False)
+            if "validation" not in rep:
+                rep["validation"] = {}
+            rep["validation"]["executionStatus"] = exec_rep.execution_status
+            rep["validation"]["executionDiagnostics"] = list(exec_rep.execution_diagnostics)
+            if not exec_rep.passed():
+                rep["status"] = "FAILED"
+    return rep
+
+
+def translate_sql(
+    sql: str,
+    source_dialect: str,
+    target_dialect: str,
+    *,
+    statement_kind: str = "AUTO",
+    dsn: str | None = None,
+    namespace_map: Mapping[str, str] | None = None,
+    namespace_profile: NamespaceProfile | None = None,
+    catalog: emitter.ColumnCatalogLike | None = None,
+    comment_catalog: emitter.CommentColumnCatalogLike | None = None,
+    routine_catalog: RoutineIdentityCatalogLike | None = None,
+    allow_routine_shim: bool = False,
+    allow_rls_shim: bool = False,
+    type_policy: TypeMigrationPolicy | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Unified entrypoint to translate ANY SQL statement across dialects and ChinaDB targets."""
+    kind = statement_kind.upper().strip()
+    upper = sql.strip().upper()
+
+    if kind == "AUTO":
+        if upper.startswith("SELECT") or upper.startswith("WITH"):
+            kind = "QUERY"
+        elif upper.startswith("MERGE") or (
+            "INSERT" in upper and ("ON CONFLICT" in upper or "ON DUPLICATE KEY" in upper)
+        ):
+            kind = "UPSERT"
+        elif "PROCEDURE" in upper or "FUNCTION" in upper or "TRIGGER" in upper:
+            kind = "ROUTINE"
+        elif upper.startswith("INSERT"):
+            kind = "INSERT"
+        elif upper.startswith("UPDATE"):
+            kind = "UPDATE"
+        elif upper.startswith("DELETE"):
+            kind = "DELETE"
+        elif upper.startswith("TRUNCATE"):
+            kind = "TRUNCATE"
+        elif upper.startswith("CREATE TABLE"):
+            kind = "TABLE"
+        elif upper.startswith("CREATE INDEX") or upper.startswith("CREATE UNIQUE INDEX"):
+            kind = "INDEX"
+        elif upper.startswith("ALTER TABLE"):
+            kind = "ALTER"
+        elif upper.startswith("DROP TABLE"):
+            kind = "DROP"
+        elif upper.startswith("CREATE SCHEMA"):
+            kind = "SCHEMA"
+        elif upper.startswith("CREATE VIEW") or upper.startswith("CREATE OR REPLACE VIEW"):
+            kind = "VIEW"
+        elif upper.startswith("COMMENT ON"):
+            kind = "COMMENT"
+        elif upper.startswith("GRANT"):
+            kind = "GRANT"
+        elif upper.startswith("REVOKE"):
+            kind = "REVOKE"
+        else:
+            kind = "TABLE"
+
+    if kind in ("QUERY", "SELECT"):
+        return translate_query(sql, source_dialect=source_dialect, target_dialect=target_dialect, dsn=dsn, **kwargs)
+
+    if kind in ("UPSERT", "MERGE"):
+        return translate_upsert(sql, source_dialect=source_dialect, target_dialect=target_dialect, dsn=dsn, **kwargs)
+
+    from .chinadb import _CHINADB_LOWERER_MAP, translate_chinadb_sql
+
+    tgt_norm = target_dialect.lower().strip()
+    if tgt_norm in _CHINADB_LOWERER_MAP:
+        return translate_chinadb_sql(
+            sql,
+            source_dialect=source_dialect,
+            target_id=tgt_norm,
+            statement_kind=kind,
+            dsn=dsn,
+            **kwargs,
+        )
+
+    # Standard certified DDL / Routine profiles
+    return translate_ddl(
+        sql,
+        source_dialect=source_dialect,
+        target_dialect=target_dialect,
+        statement_kind=kind,
+        dsn=dsn,
+        namespace_map=namespace_map,
+        namespace_profile=namespace_profile,
+        catalog=catalog,
+        comment_catalog=comment_catalog,
+        routine_catalog=routine_catalog,
+        allow_routine_shim=allow_routine_shim,
+        allow_rls_shim=allow_rls_shim,
+        type_policy=type_policy,
+    )
+
+
+__all__ = [
+    "translate_ddl",
+    "translate_query",
+    "translate_sql",
+    "translate_upsert",
+]

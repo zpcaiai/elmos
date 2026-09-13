@@ -242,7 +242,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertIn('source.get("spec") == "stable"', frontend_job)
         self.assertIn("packages.arm64_sequoia.jws.json", frontend_job)
         for pinned_value in (
-            "20260829.0321.1",
+            "20260907.0337.1",
             "15.7.9",
             "24G830",
             "fac6e4f037e8e9c184485de80f23df3816c0c6d8428b20a7703b6f339a72a83c",
@@ -362,12 +362,12 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
                 "--image-os",
                 "macos15",
                 "--image-version",
-                "20260829.0321.1",
+                "20260907.0337.1",
             ]
         )
         self.assertTrue(arguments.seal)
         self.assertEqual(arguments.image_os, "macos15")
-        self.assertEqual(arguments.image_version, "20260829.0321.1")
+        self.assertEqual(arguments.image_version, "20260907.0337.1")
 
     def test_openssl_host_contract_pins_product_and_build(self) -> None:
         verifier_path = ROOT / "scripts/toolchains/verify_openssl3_ci_runtime.py"
@@ -400,7 +400,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             ),
             mock.patch.object(verifier, "_run", side_effect=(product, build)) as run_mock,
         ):
-            verifier._verify_host("macos15", "20260829.0321.1")
+            verifier._verify_host("macos15", "20260907.0337.1")
 
         self.assertEqual(run_mock.call_count, 2)
         with (

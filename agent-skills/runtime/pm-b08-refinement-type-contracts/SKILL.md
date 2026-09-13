@@ -1,5 +1,8 @@
 ---
 name: pm-b08-refinement-type-contracts
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "为范围、非空、唯一、排序、守恒和权限等性质生成精化类型契约. Precision Migration B08 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

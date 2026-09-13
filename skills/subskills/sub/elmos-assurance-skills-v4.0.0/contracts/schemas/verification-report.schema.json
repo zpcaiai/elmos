@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/assurance/v4/verification-report.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "4.0"
+    },
+    "kind": {
+      "enum": [
+        "build",
+        "contract",
+        "smoke",
+        "regression",
+        "differential",
+        "mutation",
+        "proof",
+        "audit"
+      ]
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "obligation_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+          },
+          "case_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "INCONCLUSIVE"
+            ]
+          },
+          "assertions": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "obligation_id",
+          "case_id",
+          "status",
+          "assertions"
+        ]
+      },
+      "minItems": 1
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$"
+          },
+          "severity": {
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "state": {
+            "enum": [
+              "OPEN",
+              "RESOLVED"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        "required": [
+          "id",
+          "severity",
+          "state",
+          "message"
+        ]
+      },
+      "minItems": 0
+    },
+    "proof_checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "statement_matches": {
+          "type": "boolean"
+        },
+        "axioms_approved": {
+          "type": "boolean"
+        },
+        "artifact_binding_verified": {
+          "type": "boolean"
+        },
+        "preconditions_verified": {
+          "type": "boolean"
+        },
+        "independent_checker_verified": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "statement_matches",
+        "axioms_approved",
+        "artifact_binding_verified",
+        "preconditions_verified",
+        "independent_checker_verified"
+      ]
+    },
+    "audit_checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "basis_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "independence_reviewed": {
+          "type": "boolean"
+        },
+        "discovery_diff_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "challenge_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "challenge_passed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "basis_digest",
+        "independence_reviewed",
+        "discovery_diff_count",
+        "challenge_count",
+        "challenge_passed"
+      ]
+    },
+    "mutation_checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "killed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "survived": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unknown": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "invalid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "equivalent": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "must_kill_survived": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exclusions_reviewed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "killed",
+        "survived",
+        "unknown",
+        "invalid",
+        "equivalent",
+        "must_kill_survived",
+        "exclusions_reviewed"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "kind",
+    "results",
+    "findings"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "proof"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "proof_checks"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "audit"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "audit_checks"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "mutation"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "mutation_checks"
+        ]
+      }
+    }
+  ]
+}

@@ -1,5 +1,8 @@
 ---
 name: pm-b44-rbac-and-sso
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "实现组织、角色、项目、审批、SSO、SCIM 和最小权限. Precision Migration B44 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

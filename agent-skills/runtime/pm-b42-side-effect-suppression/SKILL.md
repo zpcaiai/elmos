@@ -1,5 +1,8 @@
 ---
 name: pm-b42-side-effect-suppression
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将支付、消息、邮件、写库和不可逆调用转换为安全意图记录或影子目标. Precision Migration B42 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

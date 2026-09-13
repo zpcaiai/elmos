@@ -1,0 +1,4 @@
+interface:
+  display_name: "B87 Vba to Office Scripts Python Powerautomate Generator"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b87-vba-to-office-scripts-python-powerautomate-generator to execute this ELMOS Language Pack Skill with fail-closed evidence."

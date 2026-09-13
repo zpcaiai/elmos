@@ -1,0 +1,23 @@
+{
+  "bundle_id": "reference-product-policy",
+  "version": "1.0.0",
+  "default_effect": "deny",
+  "rules": [
+    {
+      "id": "allow-private-runner-build",
+      "effect": "allow",
+      "conditions": {
+        "runner_attested": true,
+        "source_egress": "none"
+      },
+      "reasons": [
+        "approved private execution"
+      ],
+      "obligations": [
+        "ephemeral-workspace",
+        "audit"
+      ],
+      "owner": "product-security"
+    }
+  ]
+}

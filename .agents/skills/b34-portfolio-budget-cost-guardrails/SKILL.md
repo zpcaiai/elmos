@@ -1,5 +1,8 @@
 ---
 name: b34-portfolio-budget-cost-guardrails
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement hierarchical portfolio campaign repository work-unit runner model storage transfer and human-review budgets with estimates reservations actuals forecasts hard stops approvals and cost-per-verified-workload.
 ---
 

@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B17-006 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [17]
+Title: Batch 17 商业Pack：重复提交、消息重放、Lease过期、任务恢复或并发执行
+Capability: 商业Pack
+Test Type: replay_idempotency
+Skill: tst-b17-vertical-solution-factory
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

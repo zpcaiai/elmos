@@ -1,0 +1,10 @@
+{
+  "artifact_sha256": "24ab9f37fba73e58f5d92ada6aeb5b0a8d28ab743793671bcfa14e785b31c28e",
+  "environment_sha256": "febcd0fb76caff289699b359869de386238e75221cfa0adb500b0cb3790e1cda",
+  "files": [
+    {
+      "path": "evidence/database-migration.log",
+      "sha256": "c65c9d68982d4f6fad7224814cfc2a575d59c03b6ac6c05bb69697247ef5d987"
+    }
+  ]
+}

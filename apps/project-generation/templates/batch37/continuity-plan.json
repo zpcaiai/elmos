@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "revoked_extension": "sample.publisher.extension",
+  "release_digest": "sha256:sample-release",
+  "severity": "critical",
+  "owner": "continuity-team",
+  "affected_tenants_known": true,
+  "execution_blocked": true,
+  "replacement_or_exit": {
+    "available": true,
+    "config_export": true,
+    "data_export": true
+  },
+  "notifications_complete": true,
+  "tested": true,
+  "evidence_refs": [
+    "continuity/evidence.txt"
+  ]
+}

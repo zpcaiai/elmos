@@ -1,0 +1,13 @@
+{
+  "algorithm": "rsa-sha256",
+  "certifier_id": "ethan-independent-certifier",
+  "chinadb_targets_count": 13,
+  "database_packs_count": 3,
+  "decision": "CERTIFIED_INDEPENDENT",
+  "dossier_id": "database-m31-independent-verification-v1",
+  "dossier_sha256": "sha256:9b033e5c3fecabe2f38ce0b646361549c1071e9370424249c47dca36fe14ba05",
+  "notes": "Signature mathematically verified against registered independent trust anchor.",
+  "status": "PASSED",
+  "target_count": 16,
+  "verified_at": "2026-09-10T00:00:00+00:00"
+}

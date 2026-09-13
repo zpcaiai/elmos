@@ -1,5 +1,8 @@
 ---
 name: pm-b08-ownership-and-lifetime-model
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "统一所有权、借用、别名、可变性、资源生命周期和线程安全语义. Precision Migration B08 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

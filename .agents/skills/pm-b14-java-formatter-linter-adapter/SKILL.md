@@ -1,5 +1,8 @@
 ---
 name: pm-b14-java-formatter-linter-adapter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "接入 Java 格式化、Lint 和静态分析工具，并规范化诊断结果. Precision Migration B14 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

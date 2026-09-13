@@ -1,5 +1,8 @@
 ---
 name: pm-b36-task-risk-scoring
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "根据动态语义、并发、事务、平台、测试缺口和影响面计算任务风险. Precision Migration B36 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

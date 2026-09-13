@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
   "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "angular--to--harmony-arkui",
-  "formal_input_digest": "sha256:93d39131b40b4b97d2961692d30eb3c042ac2a09fbd9a214385021e00e5843a8",
-  "solver_input_digest": "sha256:e5190612229daa32cda7d93c388b9b200b81635c84b568baa39f3373ef504d9d",
-  "smt2_digest": "sha256:e5190612229daa32cda7d93c388b9b200b81635c84b568baa39f3373ef504d9d"
+  "formal_input_digest": "sha256:3968df4348664c93555b46fbe2f90c9b4bdca1412ee276d4d81c995847b2d7db",
+  "solver_input_digest": "sha256:c9f7c8599a85c8ad461110fdfede1d463a0221570c304b229e85f9dee45d4acf",
+  "smt2_digest": "sha256:c9f7c8599a85c8ad461110fdfede1d463a0221570c304b229e85f9dee45d4acf"
 }

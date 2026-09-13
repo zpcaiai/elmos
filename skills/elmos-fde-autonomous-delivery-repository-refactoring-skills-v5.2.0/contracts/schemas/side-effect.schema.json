@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/fde/5.2.0/SideEffectRecord.schema.json",
+  "title": "SideEffectRecord",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "effectId",
+    "invocationId",
+    "kind",
+    "target",
+    "idempotencyKey",
+    "status",
+    "authorityRef",
+    "resultHash"
+  ],
+  "properties": {
+    "effectId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "invocationId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "planned",
+        "authorized",
+        "executing",
+        "committed",
+        "failed",
+        "compensating",
+        "compensated",
+        "unknown"
+      ]
+    },
+    "authorityRef": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resultHash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "compensationRef": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

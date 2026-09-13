@@ -1,0 +1,30 @@
+schema_version: '4.0'
+id: repository-conversion
+maturity: SPECIFIED
+route_owner: existing-domain-pack
+routable_entry_delta: 0
+oracle: Module refinement + boundary observations + repo-level workflows
+proposed_first_route: Java→C#等一个明确语言对，先纯领域模块和HTTP/DB边界，再扩展并发/反射
+supported_features_candidate:
+- public module API
+- numeric/null semantics
+- exceptions/resources
+- serialization
+- async/concurrency
+- build/dependency graph
+risk_families:
+- integer overflow
+- decimal→float
+- UTF-16/codepoint
+- equals/hash与ordering
+- async取消/异常
+- 资源生命周期/反射/FFI
+formal_obligations_candidate:
+- 纯子语言的语义保持
+- rule preconditions与组合义务
+- 类型/数值compat shim性质
+native_verification: NOT_RUN
+unsupported:
+- 未验证的反射/FFI/动态加载
+- 未知第三方库语义
+- 未固定并发和平台假设

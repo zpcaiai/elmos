@@ -40,12 +40,14 @@
     },
     "profiles": {
       "type": "object",
-      "required": ["core", "synthesis", "routes-macos", "b66-80", "spring-legacy", "frontend-native", "language-packs", "all"],
+      "required": ["core", "synthesis", "routes-macos", "routes-windows-vb6", "routes-windows-vcpp6", "b66-80", "spring-legacy", "frontend-native", "language-packs", "all"],
       "additionalProperties": false,
       "properties": {
         "core": {"$ref": "#/$defs/profile"},
         "synthesis": {"$ref": "#/$defs/profile"},
         "routes-macos": {"$ref": "#/$defs/profile"},
+        "routes-windows-vb6": {"$ref": "#/$defs/profile"},
+        "routes-windows-vcpp6": {"$ref": "#/$defs/profile"},
         "b66-80": {"$ref": "#/$defs/profile"},
         "spring-legacy": {"$ref": "#/$defs/profile"},
         "frontend-native": {"$ref": "#/$defs/profile"},

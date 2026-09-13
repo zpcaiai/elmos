@@ -1,0 +1,47 @@
+skill: elmos-assurance-property-fuzz
+tasks:
+- id: elmos-assurance-property-fuzz-T01
+  action: 为每性质定义域和前提，覆盖无效输入与状态序列，不由LLM臆造普适关系。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-property-fuzz-T02
+  action: 按业务risk分层seed语料，配置确定性seed/deadline/资源限制。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-property-fuzz-T03
+  action: 区分crash、assert failure、timeout/infra，保留原始输入与最小反例。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-property-fuzz-T04
+  action: 安全存储fuzz corpus，反例提升为固定regression，追踪污染与覆盖增益。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+global_contracts:
+- contracts/schemas/run-request.schema.json
+- contracts/schemas/evidence-payload.schema.json
+constraints:
+- reuse-existing-architecture
+- fail-closed
+- no-hidden-test-leak
+- no-unapproved-side-effects
+- no-fabricated-runtime-evidence

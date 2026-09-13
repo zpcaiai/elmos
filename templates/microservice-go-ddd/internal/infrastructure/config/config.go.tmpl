@@ -1,0 +1,58 @@
+package config
+
+import (
+	"os"
+	"strconv"
+	"time"
+)
+
+// Config aggregates all runtime configuration for the service.
+type Config struct {
+	Environment  string
+	HTTPPort     string
+	GRPCPort     string
+	DatabaseURL  string
+	LogLevel     string
+	LogFormat    string
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
+	IdleTimeout  time.Duration
+}
+
+// Load reads configuration from environment variables with fallback defaults.
+func Load() *Config {
+	return &Config{
+		Environment:  getEnv("APP_ENV", "development"),
+		HTTPPort:     getEnv("HTTP_PORT", "{{.Port}}"),
+		GRPCPort:     getEnv("GRPC_PORT", "{{.GRPCPort}}"),
+		DatabaseURL:  getEnv("DATABASE_URL", "{{.Database}}://user:pass@localhost:5432/{{.ServiceName}}?sslmode=disable"),
+		LogLevel:     getEnv("LOG_LEVEL", "info"),
+		LogFormat:    getEnv("LOG_FORMAT", "json"),
+		ReadTimeout:  getDurationEnv("HTTP_READ_TIMEOUT", 10*time.Second),
+		WriteTimeout: getDurationEnv("HTTP_WRITE_TIMEOUT", 10*time.Second),
+		IdleTimeout:  getDurationEnv("HTTP_IDLE_TIMEOUT", 60*time.Second),
+	}
+}
+
+func getEnv(key, defaultVal string) string {
+	if val, ok := os.LookupEnv(key); ok && val != "" {
+		return val
+	}
+	return defaultVal
+}
+
+func getDurationEnv(key string, defaultVal time.Duration) time.Duration {
+	valStr := os.Getenv(key)
+	if valStr == "" {
+		return defaultVal
+	}
+	sec, err := strconv.Atoi(valStr)
+	if err != nil {
+		d, parseErr := time.ParseDuration(valStr)
+		if parseErr == nil {
+			return d
+		}
+		return defaultVal
+	}
+	return time.Duration(sec) * time.Second
+}

@@ -1,5 +1,8 @@
 ---
 name: pm-b29-controller-route-test-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从 Controller、Route、Middleware 和校验注解生成接口测试. Precision Migration B29 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

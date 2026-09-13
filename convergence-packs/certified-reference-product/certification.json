@@ -1,0 +1,58 @@
+{
+  "status": "passed",
+  "owners": {
+    "product": "Stephen (Principal Product Lead)",
+    "engineering": "Elmos Core Engineering Lead",
+    "security": "Chief Information Security Officer",
+    "operations": "Principal SRE Operations Lead",
+    "commercial": "VP Commercial Operations",
+    "customer_success": "VP Customer Success"
+  },
+  "kernel": {
+    "single_workflow_runtime": true,
+    "single_policy_engine": true,
+    "single_evidence_graph": true,
+    "capability_registry": true
+  },
+  "reference_route": {
+    "certified": true
+  },
+  "private_runner": {
+    "certified": true
+  },
+  "design_partners": {
+    "accepted_count": 2
+  },
+  "handoff": {
+    "passed": true
+  },
+  "verified_workloads": [
+    "vmw-enterprise-01",
+    "vmw-enterprise-02"
+  ],
+  "delivery_model": {
+    "passed": true
+  },
+  "sla_proof": {
+    "passed": true
+  },
+  "evidence_manifests": [
+    "evidence/man-0.json",
+    "evidence/man-1.json",
+    "evidence/man-2.json",
+    "evidence/man-3.json",
+    "evidence/man-4.json",
+    "evidence/man-5.json",
+    "evidence/man-6.json",
+    "evidence/man-7.json",
+    "evidence/man-8.json",
+    "evidence/man-9.json",
+    "evidence/man-10.json",
+    "evidence/man-11.json",
+    "evidence/man-12.json",
+    "evidence/man-13.json",
+    "evidence/man-14.json",
+    "evidence/man-15.json"
+  ],
+  "zero_tolerance_findings": []
+}

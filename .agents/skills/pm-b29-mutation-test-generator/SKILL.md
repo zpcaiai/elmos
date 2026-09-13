@@ -1,5 +1,8 @@
 ---
 name: pm-b29-mutation-test-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "生成通用和语言对专项 Mutant，验证测试的错误发现能力. Precision Migration B29 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

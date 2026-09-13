@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "example-agent-factory",
+  "batch": 42,
+  "packKey": "example-agent-factory",
+  "packType": "agent-factory",
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "experimental",
+  "artifactDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "environmentDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "requiredBatches": [
+    16,
+    24,
+    26,
+    35,
+    37,
+    39,
+    40,
+    41
+  ],
+  "supportMatrix": "support-matrix.json",
+  "profile": "profile.json",
+  "certification": "certification.json",
+  "evidenceRefs": [],
+  "metadata": {}
+}

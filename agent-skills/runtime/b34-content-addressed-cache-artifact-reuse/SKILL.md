@@ -1,6 +1,9 @@
 ---
 name: b34-content-addressed-cache-artifact-reuse
-description: "Implement tenant-aware content-addressed caches and immutable artifact reuse keyed by complete inputs toolchains policies environments and permissions with poisoning defense eviction garbage collection and correctness proofs."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Implement tenant-aware content-addressed caches and immutable artifact reuse keyed by complete inputs toolchains policies environments and permissions with poisoning defense eviction garbage collection and correctness proofs.
 ---
 
 ## Operating mode

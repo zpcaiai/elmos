@@ -25,7 +25,7 @@ LIBCRYPTO: Final = Path(
 EXPECTED_VERSION: Final = (
     "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
 )
-EXPECTED_IMAGE: Final = ("macos15", "20260829.0321.1")
+EXPECTED_IMAGE: Final = ("macos15", "20260907.0337.1")
 EXPECTED_MACOS_PRODUCT_VERSION: Final = "15.7.9"
 EXPECTED_MACOS_BUILD_VERSION: Final = "24G830"
 OPT_LINK: Final = Path("/opt/homebrew/opt/openssl@3")
@@ -33,7 +33,7 @@ OPT_LINK_TARGET: Final = "../Cellar/openssl@3/3.6.3"
 
 UNSEALED_DIRECTORY_PROFILES: Final = {
     Path("/opt"): {"mode": "0755", "uid": 0, "gid": 0},
-    # github-actions macos-15 image 20260829.0321.1 exposes the Homebrew
+    # github-actions macos-15 image 20260907.0337.1 exposes the Homebrew
     # prefix itself as runner-owned but already non-group-writable.  Keep this
     # exact pre-seal identity separate from the root-owned post-seal profile.
     Path("/opt/homebrew"): {"mode": "0755", "uid": 501, "gid": 80},

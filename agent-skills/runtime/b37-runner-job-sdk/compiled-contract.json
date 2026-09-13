@@ -1,0 +1,21 @@
+{
+  "schema_version": "elmos.batch37.compiled-skill-contract.v1",
+  "package_id": "elmos.batch37.extension-marketplace",
+  "package_version": "1.0.0",
+  "installed_alias": "b37-runner-job-sdk",
+  "namespace": "batch37-extension-marketplace-v1",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "dispatch",
+    "skill_name": "b37-runner-job-sdk",
+    "module_path": "scripts/batch37/b37_skill_runtime.py",
+    "runtime_class": "B37SkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

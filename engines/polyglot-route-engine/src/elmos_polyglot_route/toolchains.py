@@ -502,8 +502,8 @@ _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
     php_tree_bytes=129_937_220,
 )
 _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
-    profile_id="github-macos26-20260831.0337.3",
-    image_version="20260831.0337.3",
+    profile_id="github-macos26-20260907.0351.1",
+    image_version="20260907.0351.1",
     product_version="26.6.2",
     build_version="25G83",
     dotnet_muxer_sha256="09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4",
@@ -2023,10 +2023,10 @@ _EXPECTED_NODE_CLOSURE_PROFILES: tuple[dict[str, str | int], ...] = (
         "process_versions_sha256": _NODE26_PROCESS_VERSIONS_SHA256,
     },
     {
-        "profile": "github-macos26-20260831-node26-b39ba5c76cfa-598704",
+        "profile": "github-macos26-20260907-node26-b39ba5c76cfa-598704",
         "sha256": "8dcb3a6d571df541adccec54feca18ec6a4074d232d68397ffca9bdec0b5ce07",
         "bytes": 119_975_888,
-        "qualification_host": "github-macos-26-arm64@20260831.0337.3",
+        "qualification_host": "github-macos-26-arm64@20260907.0351.1",
         "node_version": "v26.0.0",
         "platform": "darwin",
         "arch": "arm64",
@@ -4201,8 +4201,8 @@ _APPLE_ROUTE_LEGACY_PROFILE = AppleRouteHostProfile(
 )
 
 _APPLE_ROUTE_CURRENT_PROFILE = AppleRouteHostProfile(
-    profile_id="github-macos26-20260831.0337.3",
-    image_version="20260831.0337.3",
+    profile_id="github-macos26-20260907.0351.1",
+    image_version="20260907.0351.1",
     product_version="26.6.2",
     build_version="25G83",
     xcode=_EXPECTED_XCODE,

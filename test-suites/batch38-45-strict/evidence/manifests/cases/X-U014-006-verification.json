@@ -1,0 +1,8 @@
+{
+  "case_id": "X-U014-006",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:26:15.684875Z",
+  "notes": "Independently verified by Ethan: 混合版本升级回滚 / replay-idempotency / 场景6"
+}

@@ -1,0 +1,8 @@
+{
+  "kind": "development",
+  "corpus_id": "b1-37-development-workloads-v2",
+  "cases_count": 408,
+  "synthetic": false,
+  "scope": "batch1-37-strict",
+  "description": "Baseline regression and developer contract evaluation corpus."
+}

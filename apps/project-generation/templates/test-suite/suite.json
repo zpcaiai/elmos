@@ -1,0 +1,20 @@
+{
+  "suite_id": "batch1-37-strict",
+  "version": "2.0.0",
+  "scope": {
+    "batches": {
+      "from": 1,
+      "to": 37
+    },
+    "skills": 52,
+    "seed_cases": 408
+  },
+  "status": "active",
+  "profile": "strict-profile.json",
+  "case_catalog": "cases/catalog.json",
+  "case_manifest": "cases/manifest.json",
+  "coverage_matrix": "coverage-matrix.json",
+  "result_schema": "../../schemas/test-suite/test-result.schema.json",
+  "authoritative_gate": "scripts/test-suite/run_strict_test_gate.py",
+  "certification_default": "BLOCKED"
+}

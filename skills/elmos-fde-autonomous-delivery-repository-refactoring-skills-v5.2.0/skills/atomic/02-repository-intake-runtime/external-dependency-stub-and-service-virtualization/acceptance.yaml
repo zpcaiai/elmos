@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: external-dependency-stub-and-service-virtualization
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Payment API unavailable in test
+  - Industrial OPC UA device requires simulation
+  - Identity provider cannot be reached from sandbox
+  negativeControls:
+  - simulate a service without documenting fidelity limits
+  - use production credentials in tests
+  checks:
+  - id: external-dependency-stub-and-service-virtualization-AC-01
+    requirement: Inventory every external dependency, protocol, authentication method, side effect, and availability assumption.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: external-dependency-stub-and-service-virtualization-AC-02
+    requirement: Choose record-replay, contract stub, emulator, container, simulator, or real test service by risk and fidelity.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: external-dependency-stub-and-service-virtualization-AC-03
+    requirement: Declare unsupported behavior and fidelity gaps.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: external-dependency-stub-and-service-virtualization-AC-04
+    requirement: Prevent test doubles from being mistaken for production evidence.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: external-dependency-stub-and-service-virtualization-AC-05
+    requirement: Redact sensitive captured traffic and bind fixtures to consent and retention rules.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

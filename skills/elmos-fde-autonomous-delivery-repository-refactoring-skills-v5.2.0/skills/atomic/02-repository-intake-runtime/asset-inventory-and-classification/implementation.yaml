@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: asset-inventory-and-classification
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: AssetInventoryAndClassificationService
+    workflow: AssetInventoryAndClassificationWorkflow
+    policyGate: AssetInventoryAndClassificationPolicyGate
+    evidenceProducer: AssetInventoryAndClassificationEvidenceProducer
+    repositoryPort: AssetInventoryAndClassificationRepositoryPort
+  requiredPorts:
+  - id: filesystem.read
+    direction: outbound
+  - id: manifest.parse
+    direction: inbound
+  - id: language.detect
+    direction: inbound
+  - id: artifact.hash
+    direction: inbound
+  - id: evidence.append
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/asset-inventory-and-classification/runs
+  - GET /api/v1/skills/asset-inventory-and-classification/runs/{runId}
+  - POST /api/v1/skills/asset-inventory-and-classification/runs/{runId}/cancel
+  - POST /api/v1/skills/asset-inventory-and-classification/runs/{runId}/resume
+  events:
+  - elmos.skill.asset-inventory-and-classification.requested.v1
+  - elmos.skill.asset-inventory-and-classification.checkpointed.v1
+  - elmos.skill.asset-inventory-and-classification.completed.v1
+  - elmos.skill.asset-inventory-and-classification.failed.v1
+  workflowSteps:
+  - Walk the RevisionSet without following unsafe paths or executing code.
+  - Detect repositories, projects, modules, manifests, build roots, and deployable units.
+  - Classify assets using deterministic detectors before model inference.
+  - Resolve generated and vendored provenance where possible.
+  - Create inventory coverage metrics and an unclassified queue.
+  - Publish the repository topology and asset manifest.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v1
+kind: SkillAcceptance
+metadata:
+  skillId: correctness-concurrency-consistency-audit
+  version: 5.2.0
+spec:
+  positiveScenarios:
+  - Duplicate message charges twice
+  - Clock shift expires session early
+  - Thread pool shutdown leaks resources
+  negativeControls:
+  - prove all behavior from static text
+  - silently change externally visible semantics
+  checks:
+  - id: correctness-concurrency-consistency-audit-AC-01
+    requirement: Analyze nullability, bounds, numeric precision, time, locale, error, resource, and lifecycle behavior.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: correctness-concurrency-consistency-audit-AC-02
+    requirement: Detect races, deadlocks, atomicity violations, lost updates, unsafe publication, and cancellation leaks.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: correctness-concurrency-consistency-audit-AC-03
+    requirement: Trace transaction, retry, timeout, idempotency, ordering, deduplication, compensation, and cache consistency.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: correctness-concurrency-consistency-audit-AC-04
+    requirement: Recover and validate business state machines and conservation invariants.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  - id: correctness-concurrency-consistency-audit-AC-05
+    requirement: Use tests, replay, fuzzing, symbolic reasoning, or formal methods according to risk.
+    method: deterministic-check-or-independent-review
+    requiredEvidence:
+    - exact RevisionSet
+    - execution trace
+    - artifact hash
+    - independent result
+    blocking: true
+  globalGates:
+  - schema-valid
+  - unique-id-and-owner
+  - exact-revision-and-environment
+  - default-deny-authority
+  - idempotency-and-checkpoint
+  - evidence-and-counterexample-retention
+  - rollback-or-compensation-defined
+  - independent-verification
+  - no-E4-E5-or-production-claim
+  blockers:
+  - UNKNOWN material to acceptance
+  - UNSUPPORTED critical path
+  - stale or mismatched evidence
+  - unresolved critical side effect
+  - missing required approval
+  - producer self-approval
+  - release-time pin unresolved for executed claim
+  completion: E3-capability-readiness-at-most

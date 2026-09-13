@@ -65,8 +65,8 @@ case "${CI_PROFILE}" in
         NODE_TAHOE_OPENSSL_CRYPTO_SHA256="43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5"
         NODE_TAHOE_OPENSSL_SSL_SHA256="26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e"
         ;;
-      "20260831.0337.3:26.6.2:25G83")
-        HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260831.0337.3"
+      "20260907.0351.1:26.6.2:25G83")
+        HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260907.0351.1"
         NODE_TAHOE_OPENSSL_CRYPTO_SHA256="43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5"
         NODE_TAHOE_OPENSSL_SSL_SHA256="26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e"
         ;;
@@ -169,9 +169,9 @@ PY
     ;;
   frontend-formal)
     if [[ "${ImageOS:-}" != "macos15" \
-      || "${ImageVersion:-}" != "20260829.0321.1" \
+      || "${ImageVersion:-}" != "20260907.0337.1" \
       || "$(sw_vers -productVersion)" != 15.* ]]; then
-      printf 'The frontend formal Node closure requires GitHub macos15 image 20260829.0321.1.\n' >&2
+      printf 'The frontend formal Node closure requires GitHub macos15 image 20260907.0337.1.\n' >&2
       exit 2
     fi
     ;;
@@ -878,7 +878,8 @@ if [[ "${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python" ]]; then
   # by file digests, version output, bundle signature, team, and CDHash.
   case "${TEMURIN_HOST_BINDING}" in
     "20260728.0273.1:26.5.2:25F84:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"|\
-    "20260831.0337.3:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home") ;;
+    "20260831.0337.3:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home"|\
+    "20260907.0351.1:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home") ;;
     *)
       printf 'setup-java Temurin home is not bound to the exact hosted image: %s\n' \
         "${TEMURIN_HOST_BINDING}" >&2

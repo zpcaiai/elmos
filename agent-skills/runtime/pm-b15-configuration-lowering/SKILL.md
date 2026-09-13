@@ -1,5 +1,8 @@
 ---
 name: pm-b15-configuration-lowering
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移配置源、优先级、环境、Secret、动态刷新和类型绑定. Precision Migration B15 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

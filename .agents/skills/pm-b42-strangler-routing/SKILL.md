@@ -1,5 +1,8 @@
 ---
 name: pm-b42-strangler-routing
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "在网关、服务、消息或前端路由层按能力分流旧实现和新实现. Precision Migration B42 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

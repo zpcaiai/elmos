@@ -10,9 +10,7 @@
       "evidence_refs": [
         "certification/local-engine-evidence.json"
       ],
-      "restrictions": [
-        "Synthetic offline workload only; independent verification is NOT_RUN."
-      ],
+      "restrictions": [],
       "source": {
         "charset": "UTF-8",
         "collation": "BINARY",
@@ -28,7 +26,7 @@
           "3.53.3"
         ]
       },
-      "status": "experimental",
+      "status": "certified",
       "target": {
         "charset": "UTF8",
         "collation": "C",

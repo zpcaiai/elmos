@@ -1,5 +1,8 @@
 ---
 name: pm-b13-neurosymbolic-candidate-generation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "组合确定性规则、LLM、检索、E-Graph、适配器和可验证性排序，生成多个候选并让客观验证器淘汰错误方案. Precision Migration B13 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

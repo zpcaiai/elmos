@@ -1,5 +1,8 @@
 ---
 name: b30-dotnet-framework-modernization
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Modernize legacy .NET Framework applications to modern .NET, including old project formats, System.Web, ASP.NET MVC/Web API, WCF, Windows services, EF6, configuration, authentication, Windows-only dependencies, tests, and deployment behavior.
 ---
 

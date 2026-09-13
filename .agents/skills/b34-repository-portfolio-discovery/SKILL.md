@@ -1,5 +1,8 @@
 ---
 name: b34-repository-portfolio-discovery
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Discover and maintain an evidence-backed enterprise repository portfolio across SCM organizations CMDB CI package registries runtime telemetry ownership permissions size language build criticality region and lifecycle without silently omitting inaccessible or shadow assets.
 ---
 

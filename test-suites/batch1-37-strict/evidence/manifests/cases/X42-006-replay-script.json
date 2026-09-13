@@ -1,0 +1,5 @@
+{
+  "role": "replay-script",
+  "case_id": "X42-006",
+  "ref": "shared/replay.sh"
+}

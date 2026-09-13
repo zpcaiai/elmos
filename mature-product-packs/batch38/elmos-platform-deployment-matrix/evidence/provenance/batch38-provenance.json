@@ -1,0 +1,9 @@
+{
+  "id": "batch38-provenance",
+  "batch": 38,
+  "packKey": "elmos-platform-deployment-matrix",
+  "role": "provenance",
+  "origin": "elmos-reproducible-build-system-b38",
+  "sha256": "sha256:b6438d0cc9ee6f36eb75ba94a1392aa311b9ff72e788ac0904a258934fe57e7d",
+  "recordedAt": "2026-09-09T22:15:47.741264Z"
+}

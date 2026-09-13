@@ -1,6 +1,15 @@
 ---
 name: b31-orm-database-contract
-description: "Coordinate ORM mappings, existing database schema, migration ownership, query generation, converters, transactions, change tracking, and schema evolution across application and database modernization. Use where ORM and database routes intersect."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
+description: Coordinate ORM mappings, existing database schema, migration ownership, query generation, converters, transactions, change tracking, and schema evolution across application and database modernization. Use where ORM and database routes intersect.
 ---
 
 ## Operating mode

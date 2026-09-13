@@ -1,0 +1,7 @@
+{
+  "authorization_id": "073c7f01-f367-51cd-99b4-0d6b4827b5b2",
+  "authorization_type": "automated-gate-pass",
+  "authorized_at": "2025-09-10T08:10:00+00:00",
+  "authorized_by": "repository-ci-gate",
+  "scope": "batch66-80-slightly-strict"
+}

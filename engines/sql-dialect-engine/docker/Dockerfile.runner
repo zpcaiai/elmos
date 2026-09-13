@@ -1,0 +1,4 @@
+FROM python:3.12-alpine
+RUN apk add --no-cache bash curl postgresql-client mariadb-client netcat-openbsd jq
+WORKDIR /workspace
+CMD ["tail", "-f", "/dev/null"]

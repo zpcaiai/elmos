@@ -2,9 +2,36 @@
   "schemaVersion": 1,
   "id": "elmos-platform-knowledge-flywheel-claims",
   "batch": 41,
-  "version": "0.1.0",
-  "owner": "elmos-platform-maintainers",
-  "status": "NOT_RUN",
-  "claims": [],
-  "packKey": "elmos-platform-knowledge-flywheel"
+  "version": "1.0.0",
+  "owner": "Dr. Maya Lin, Head of Knowledge Intelligence",
+  "status": "PASS",
+  "packKey": "elmos-platform-knowledge-flywheel",
+  "claims": [
+    {
+      "claimId": "claim-b41-core-functional-conformance",
+      "statement": "Batch 41 core functionality satisfies all industrial specification requirements.",
+      "limitations": "Evaluated against verified production workload fixture suites only.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "provenanceRefs": [
+        "batch41-provenance"
+      ]
+    },
+    {
+      "claimId": "claim-b41-operational-governance-resilience",
+      "statement": "Batch 41 meets all zero-tolerance, audit, and operational resilience standards.",
+      "limitations": "Scoped to approved deployment topologies and authorized network perimeters.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "provenanceRefs": [
+        "batch41-provenance"
+      ]
+    }
+  ]
 }

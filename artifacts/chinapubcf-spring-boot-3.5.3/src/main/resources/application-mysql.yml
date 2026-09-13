@@ -1,0 +1,12 @@
+spring:
+  config:
+    activate:
+      on-profile: mysql
+  datasource:
+    url: ${CHINAPUBCF_DATABASE_URL}
+    username: ${CHINAPUBCF_DATABASE_USERNAME}
+    password: ${CHINAPUBCF_DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: never

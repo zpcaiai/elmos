@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B01-001 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [1]
+Title: Batch 1 不可变Commit接入：在精确版本、不可变Artifact和批准环境中执行完整成功路径
+Capability: 不可变Commit接入
+Test Type: happy_path
+Skill: tst-b01-secure-repository-intake
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

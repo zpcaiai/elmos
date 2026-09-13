@@ -1,0 +1,79 @@
+{
+  "schema": "elmos.batch46.minimal-data-requirements/1",
+  "generated_at": "<utc-timestamp>",
+  "profile_digest": "sha256:<digest>",
+  "definition": "The smallest environment, dataset and stub set required to reach readiness and serve one functional request. Not a test corpus.",
+  "environment": [
+    {
+      "name": "<VAR>",
+      "required": true,
+      "detected_in": "<path>",
+      "template_value": "<contract default>",
+      "secret": false,
+      "smoke_value_strategy": "synthetic-from-contract|throwaway-secret|derived-from-runtime|contract-default"
+    }
+  ],
+  "datasets": [
+    {
+      "id": "db.<table>",
+      "kind": "table",
+      "table": "<table>",
+      "source_file": "<path>",
+      "load_order": 0,
+      "min_rows": 1,
+      "columns": [
+        {
+          "name": "<column>",
+          "sql_type": "<type>",
+          "logical_type": "int|decimal|bool|uuid|date|time|timestamp|json|string",
+          "nullable": false,
+          "primary_key": false,
+          "unique": false,
+          "has_default": false,
+          "auto_generated": false,
+          "references": {
+            "table": "<parent>",
+            "column": "<column>"
+          }
+        }
+      ],
+      "required_columns": [
+        "<column>"
+      ],
+      "foreign_keys": [
+        {
+          "column": "<column>",
+          "table": "<parent>",
+          "column_ref": "<column>"
+        }
+      ]
+    }
+  ],
+  "stub_upstreams": [
+    {
+      "id": "stub.<name>",
+      "engine": "http-mock|redis|kafka|rabbitmq",
+      "mode": "in-process|container",
+      "required_for_readiness": true
+    }
+  ],
+  "ports": [
+    {
+      "stack": "<stack-id>",
+      "default_port": 0,
+      "bind": "127.0.0.1",
+      "allocation": "dynamic-if-busy"
+    }
+  ],
+  "candidate_smoke_endpoints": [
+    {
+      "path": "<path>",
+      "method": "GET|POST",
+      "operation_id": "<id>",
+      "source": "<contract file>"
+    }
+  ],
+  "unsupported": [],
+  "unknown": [],
+  "requirements_digest": "sha256:<digest>"
+}

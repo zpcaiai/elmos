@@ -1,5 +1,8 @@
 ---
 name: pm-b38-skill-schema-validator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "验证 Skill 元数据、输入输出、前置条件、行为契约、测试和兼容声明. Precision Migration B38 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

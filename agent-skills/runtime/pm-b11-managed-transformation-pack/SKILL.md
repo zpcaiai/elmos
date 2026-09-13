@@ -1,5 +1,8 @@
 ---
 name: pm-b11-managed-transformation-pack
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "封装平台维护、经过验证、可规模复用的托管转换包. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

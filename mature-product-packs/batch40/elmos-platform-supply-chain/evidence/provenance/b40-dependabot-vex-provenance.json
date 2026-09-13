@@ -12,15 +12,15 @@
     "alertSnapshotDigest": "sha256:f3033fd9176e3165d0e4c2ed885b4d79816a381c83b7c4334afa14fcecddb43a",
     "registry": {
       "path": "mature-product-packs/batch40/elmos-platform-supply-chain/evidence/execution/b40-dependabot-vex.json",
-      "sha256": "sha256:060ba74f40f217185788e6418abb362c40e494fb5679b2367a4ce9a759082093",
+      "sha256": "sha256:13fcc614c96039c50a50b27261e88fdbd2da4651b8e024d2b673485c2c71e218",
       "bytes": 70941
     }
   },
   "analyzer": {
     "path": "scripts/dependabot_governance.py",
-    "sha256": "sha256:0b5c6c316c5276bfe6edfec4538f5d0af21d74479093e80b0d4158bb8d0296aa"
+    "sha256": "sha256:32051e24d68cb18d761ff49a985ce5f4f831c74b92b367fa0021a6540c72ffeb"
   },
-  "externalOperationExecuted": false,
+  "externalOperationExecuted": true,
   "independentVerification": "NOT_RUN",
   "certification": "NOT_CERTIFIED"
 }

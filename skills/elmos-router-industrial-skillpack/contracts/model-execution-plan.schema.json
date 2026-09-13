@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/model-execution-plan-v1.json",
+  "title": "ModelExecutionPlan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "planId",
+    "tenantId",
+    "taskId",
+    "stepId",
+    "modelAlias",
+    "deploymentId",
+    "lane",
+    "providerId",
+    "deadlineAt",
+    "policyVersion",
+    "registryVersion",
+    "securityContextHash",
+    "capabilityLeaseHash",
+    "budget",
+    "fallbacks"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1"
+    },
+    "planId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tenantId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stepId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "modelAlias": {
+      "type": "string",
+      "minLength": 1
+    },
+    "deploymentId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lane": {
+      "enum": [
+        "NATIVE_DIRECT",
+        "LITELLM",
+        "OPENROUTER",
+        "SELF_HOSTED"
+      ]
+    },
+    "providerId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "modelRevision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reasoningProfile": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "deadlineAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "policyVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "registryVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "securityContextHash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capabilityLeaseHash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "maxCost"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 3
+        },
+        "maxCost": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "requiredCapabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "fallbacks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "extensions": {
+      "type": "object"
+    }
+  }
+}

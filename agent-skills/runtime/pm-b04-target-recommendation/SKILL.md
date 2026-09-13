@@ -1,5 +1,8 @@
 ---
 name: pm-b04-target-recommendation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "判断用户指定目标是否真正适合实际应用，并比较目标语言、框架、部署形态和迁移策略的长期收益与风险. Precision Migration B04 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

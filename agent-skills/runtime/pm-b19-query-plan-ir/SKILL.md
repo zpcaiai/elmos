@@ -1,5 +1,8 @@
 ---
 name: pm-b19-query-plan-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达访问路径、Join、排序、聚合、并行、统计、代价和运行时指标. Precision Migration B19 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

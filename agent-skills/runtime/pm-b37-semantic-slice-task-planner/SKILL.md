@@ -1,5 +1,8 @@
 ---
 name: pm-b37-semantic-slice-task-planner
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "为每个 Agent 准备最小语义切片、契约、规则、工具和验收条件. Precision Migration B37 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

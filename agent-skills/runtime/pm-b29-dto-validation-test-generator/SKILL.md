@@ -1,5 +1,8 @@
 ---
 name: pm-b29-dto-validation-test-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从 DTO、Schema、精化类型和校验规则生成边界与拒绝测试. Precision Migration B29 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,21 @@
+schema_version: '4.0'
+kind: ImplementationSkill
+id: elmos-assurance-sql-domain
+title: SQL/例程语义转换集成
+priority: P0
+status: SPECIFIED
+routable_entry_delta: 0
+dependencies:
+- elmos-assurance-differential-runtime
+inputs:
+- 源/目标SQL/catalog
+- native DB版本
+- 现有SQL转换入口
+outputs:
+- SqlSemanticAdapter
+- NativeSqlRoute
+- SqlMutationPack
+acceptance_file: acceptance.yaml
+implementation_file: implementation.yaml
+runbook_file: runbook.md
+native_execution_status: NOT_RUN

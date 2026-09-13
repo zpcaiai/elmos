@@ -1,0 +1,17 @@
+{
+  "package": "elmos-fde-autonomous-delivery-repository-refactoring-skills",
+  "version": "5.2.0",
+  "source_id": "proof-guided-atomic-refactor-execution",
+  "alias": "elmos-fde-proof-guided-atomic-refactor-execution",
+  "pack": "05-planning-transformation",
+  "is_workflow": false,
+  "dependencies": [
+    "changeset-commit-and-provenance-governance"
+  ],
+  "effect_boundary": "E3",
+  "routable": false,
+  "implementation_state": "LOCAL_CONTROL_PLANE",
+  "external_evidence": "NOT_RUN",
+  "independent_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

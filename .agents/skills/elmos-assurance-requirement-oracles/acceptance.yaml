@@ -1,0 +1,36 @@
+skill: elmos-assurance-requirement-oracles
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-requirement-oracles-A01
+  given: 接口返回200但数据库写错
+  when: 在真实集成模块执行对应测试或负例
+  then: 业务oracle失败，不只检查状态码
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-requirement-oracles-A02
+  given: 旧系统存在越权漏洞
+  when: 在真实集成模块执行对应测试或负例
+  then: 安全规范优先、兼容变化有授权记录
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-requirement-oracles-A03
+  given: 两个Oracle矛盾
+  when: 在真实集成模块执行对应测试或负例
+  then: INCONCLUSIVE并显示冲突，不投票选通过者
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

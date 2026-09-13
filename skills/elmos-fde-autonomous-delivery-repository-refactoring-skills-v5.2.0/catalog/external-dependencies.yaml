@@ -1,0 +1,25 @@
+apiVersion: elmos.ai/v1
+kind: ExternalSkillDependencies
+metadata:
+  version: 5.2.0
+spec:
+  requiredFoundationSkills:
+  - typed-skill-contract
+  - artifact-identity-and-hashing
+  - evidence-contract
+  - policy-contract
+  - capability-dependency-graph
+  - compatibility-matrix-manager
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  - repository-incremental-ingestion
+  - build-and-dependency-graph
+  - durable-task-checkpoint-memory
+  - environment-owned-tool-authority
+  - invocation-scoped-capability-lease
+  - verified-security-context
+  - result-interception-and-commit
+  - remote-executor-fencing
+  - independent-k8-decision
+  requiredCompanionForE4E5: elmos-functional-assurance-certification-skills
+  bindingPolicy: resolve symbolic routeOwnerRef against target registry; fail if missing or ambiguous

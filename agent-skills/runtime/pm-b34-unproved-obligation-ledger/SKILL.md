@@ -1,5 +1,8 @@
 ---
 name: pm-b34-unproved-obligation-ledger
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "记录 PROVED、DISPROVED、UNKNOWN、TIMEOUT、UNSUPPORTED 和规格冲突. Precision Migration B34 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

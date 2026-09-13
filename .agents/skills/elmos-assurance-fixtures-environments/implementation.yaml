@@ -1,0 +1,47 @@
+skill: elmos-assurance-fixtures-environments
+tasks:
+- id: elmos-assurance-fixtures-environments-T01
+  action: 使用受控原生语言/DB版本启动隔离lane；构建与测试网络权限分离。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-fixtures-environments-T02
+  action: 生成NULL/极值/Unicode/多tenant/时区等语义数据并记录seed/collation/SQL modes。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-fixtures-environments-T03
+  action: 每scenario独立schema/namespace，broker发短期最小权限凭据。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+- id: elmos-assurance-fixtures-environments-T04
+  action: snapshot/restore与清理可重现，污染检查和TTL清理有证据；缺工具不得用mock替代native。
+  implementation_target: 由bootstrap repo-map映射到真实模块；不得假设已有路径
+  required_change_types:
+  - production-code-or-explicit-reuse
+  - tests
+  - observability-and-error-path
+  done_when: 关联验收场景在真实集成范围通过并保存原始证据
+  status: NOT_STARTED
+global_contracts:
+- contracts/schemas/run-request.schema.json
+- contracts/schemas/evidence-payload.schema.json
+constraints:
+- reuse-existing-architecture
+- fail-closed
+- no-hidden-test-leak
+- no-unapproved-side-effects
+- no-fabricated-runtime-evidence

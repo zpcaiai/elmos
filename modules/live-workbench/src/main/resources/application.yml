@@ -36,6 +36,7 @@ elmos:
     oidc-issuer-uri: ${ELMOS_OIDC_ISSUER_URI}
     provider:
       base-uri: ${ELMOS_SANDBOX_PROVIDER_BASE_URI:}
+      signing-key: ${ELMOS_SANDBOX_PROVIDER_SIGNING_KEY:}
       signing-key-file: ${ELMOS_SANDBOX_PROVIDER_SIGNING_KEY_FILE:}
       timeout-seconds: ${ELMOS_SANDBOX_PROVIDER_TIMEOUT_SECONDS:10}
       allow-loopback-http: ${ELMOS_SANDBOX_PROVIDER_ALLOW_LOOPBACK_HTTP:false}

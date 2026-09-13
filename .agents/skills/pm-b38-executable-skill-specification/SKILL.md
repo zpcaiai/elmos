@@ -1,5 +1,8 @@
 ---
 name: pm-b38-executable-skill-specification
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将自然语言 Skill 提升为可版本化、可组合、可验证的执行规格、领域模型、状态机、生成器和验收包. Precision Migration B38 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

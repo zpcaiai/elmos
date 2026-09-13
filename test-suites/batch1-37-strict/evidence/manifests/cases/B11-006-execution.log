@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B11-006 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [11]
+Title: Batch 11 写权限切换：重复提交、消息重放、Lease过期、任务恢复或并发执行
+Capability: 写权限切换
+Test Type: replay_idempotency
+Skill: tst-b11-release-data-cutover-retirement
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

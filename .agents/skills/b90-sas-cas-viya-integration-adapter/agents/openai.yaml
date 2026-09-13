@@ -1,0 +1,4 @@
+interface:
+  display_name: "B90 Sas Cas Viya Integration Adapter"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b90-sas-cas-viya-integration-adapter to execute this ELMOS Language Pack Skill with fail-closed evidence."

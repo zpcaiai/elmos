@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B12-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [12]
+Title: Batch 12 Private Runner：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: Private Runner
+Test Type: dependency_failure
+Skill: tst-b12-enterprise-platformization
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

@@ -1,0 +1,1304 @@
+[
+  {
+    "id": "elmos-assurance-bootstrap",
+    "title": "仓库盘点与增量集成",
+    "priority": "P0",
+    "dependencies": [],
+    "inputs": [
+      "现有Elmos仓库和本包",
+      "AGENTS/CLAUDE约束",
+      "当前K8/Router/测试配置"
+    ],
+    "outputs": [
+      "repo-map.json",
+      "gap-analysis.md",
+      "compatibility-map.json",
+      "native-toolchain-inventory.json"
+    ],
+    "steps": [
+      "只读识别四Domain Pack入口、路由、K8、Task、Artifact、Tenant、Usage和CI实际路径；不要从文档猜源码。",
+      "逐项将本包逻辑模块映射到真实代码，标reuse/extend/absent/conflict；拒绝平行Harness。",
+      "盘点运行时、数据库、编译器、测试runner、Lean及授权；不执行未审批repo hooks。",
+      "冻结集成边界、feature flags、N-1契约fixtures和第一条native Golden Route；输出真实工具缺失项。"
+    ],
+    "checks": [
+      [
+        "发现既有K8签署器",
+        "复用其接口并提交最小扩展，不新建绕过入口"
+      ],
+      [
+        "未读取源码或缺少数据库",
+        "相关实现状态必须unknown/NOT_RUN，不能标completed"
+      ],
+      [
+        "旧E5含义与本包不同",
+        "生成显式profile迁移映射，历史证书不变"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-scope",
+    "title": "范围与风险保证配置",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-bootstrap"
+    ],
+    "inputs": [
+      "客户需求",
+      "support matrix",
+      "风险和数据分级"
+    ],
+    "outputs": [
+      "AssuranceScope",
+      "ApprovedScopeRecord",
+      "ProfileMapping"
+    ],
+    "steps": [
+      "定义source/target/部署/数据/接口/版本/使用边界、风险等级和目标profile。",
+      "按业务线列支持/不支持特性，排除项需要理由、责任人和影响；关键未知不得藏入excluded。",
+      "冻结scope digest与obligation分母审批；变更生成新scope，保留审计链。",
+      "从服务端profile解析必要门禁；caller不能提交任意宽松policy或空范围。"
+    ],
+    "checks": [
+      [
+        "声明支持的订单权限流程",
+        "在scope中形成必测claim"
+      ],
+      [
+        "用空scope或删除关键接口获得PASS",
+        "拒绝或INCONCLUSIVE并保留原分母"
+      ],
+      [
+        "修改已批准scope字段",
+        "旧approval失效且触发受影响证据重跑"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-requirement-oracles",
+    "title": "需求解析与独立判定基准",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-scope"
+    ],
+    "inputs": [
+      "原始需求",
+      "旧文档/旧行为",
+      "安全策略"
+    ],
+    "outputs": [
+      "RequirementSet",
+      "OracleRegistry",
+      "ConflictFindings"
+    ],
+    "steps": [
+      "将需求拆成可证伪claims、状态/前后置条件、错误与effect；保留原文span。",
+      "标记normative/compatibility/invariant/metamorphic/reference/LLM-proposal来源。",
+      "独立批准expected和关系前提，不允许从target返回值反向填expected。",
+      "规范、源行为或安全要求冲突时创建finding；批准行为变更单独建回归。"
+    ],
+    "checks": [
+      [
+        "接口返回200但数据库写错",
+        "业务oracle失败，不只检查状态码"
+      ],
+      [
+        "旧系统存在越权漏洞",
+        "安全规范优先、兼容变化有授权记录"
+      ],
+      [
+        "两个Oracle矛盾",
+        "INCONCLUSIVE并显示冲突，不投票选通过者"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-interface-discovery",
+    "title": "多协议接口独立发现",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-bootstrap",
+      "elmos-assurance-scope"
+    ],
+    "inputs": [
+      "源码/配置/接口文档",
+      "受控运行时观测",
+      "插件和编译条件"
+    ],
+    "outputs": [
+      "InterfaceInventory",
+      "DiscoveryEvidence",
+      "DiscoveryBlindSpots"
+    ],
+    "steps": [
+      "静态扫描HTTP/gRPC/events/CLI/SDK/routines/jobs/UI以及测试与配置声明。",
+      "运行时在隔离环境观测真实注册路由与effect，记录动态/反射盲点。",
+      "按稳定语义ID合并，不将同数量当同集合；记录source location和置信类别。",
+      "将declared/observed/inferred与approved分开，Ethen使用独立实现重新发现。"
+    ],
+    "checks": [
+      [
+        "两个scanner各发现327项但一项不同",
+        "集合差异必须阻断完整性断言"
+      ],
+      [
+        "接口只在feature flag下存在",
+        "清单记录该条件及scope是否覆盖"
+      ],
+      [
+        "外部OpenAPI引用指向metadata endpoint",
+        "resolver拒绝且不发起SSRF请求"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-contract-ir",
+    "title": "可执行接口与语义契约",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-requirement-oracles",
+      "elmos-assurance-interface-discovery"
+    ],
+    "inputs": [
+      "InterfaceInventory",
+      "RequirementSet",
+      "OracleRegistry"
+    ],
+    "outputs": [
+      "ContractSnapshot",
+      "OpenAPI/AsyncAPI/proto projections",
+      "ContractApproval"
+    ],
+    "steps": [
+      "定义版本化统一Contract IR：protocol/auth/schema/outcomes/state/effect/temporal/error/idempotency。",
+      "通过source span与需求ID建立双向映射；不暴露内部函数为生产API。",
+      "先校验无歧义和必需语义，再投影OpenAPI等格式；不支持字段需显式loss report。",
+      "使用Etag/digest批准不可变snapshot；contract drift要求重新审批和影响分析。"
+    ],
+    "checks": [
+      [
+        "只提供OpenAPI无订单状态规则",
+        "标注缺失业务契约，不认为全规范已完成"
+      ],
+      [
+        "有状态接口丢失effect投影",
+        "loss report阻断相应保证"
+      ],
+      [
+        "旧contract批准被用于新schema",
+        "拒绝摘要不匹配"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-state-effects",
+    "title": "状态机、副作用与时序模型",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-contract-ir"
+    ],
+    "inputs": [
+      "ContractSnapshot",
+      "DB/MQ/缓存关系",
+      "并发需求"
+    ],
+    "outputs": [
+      "StateMachineSet",
+      "EffectCatalog",
+      "TemporalProperties"
+    ],
+    "steps": [
+      "定义可达状态、许可/禁止转移、角色/tenant条件和不变量。",
+      "定义每个effect的幂等key、事务边界、可观察点、对账/补偿与超时歧义。",
+      "异步事件用因果关联和deadline描述，不任意排序掩盖顺序错误。",
+      "生成边界、无效转移、重试、取消和故障注入义务；建立test probes不进入生产artifact。"
+    ],
+    "checks": [
+      [
+        "支付超时但结果未知",
+        "先对账，禁止自动再次扣款"
+      ],
+      [
+        "事件晚于规范deadline",
+        "语义deadline FAIL而非无限轮询"
+      ],
+      [
+        "取消后旧worker试图写入",
+        "fencing拒绝且记录审计"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-coverage-planner",
+    "title": "覆盖义务与风险计划编译",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-state-effects"
+    ],
+    "inputs": [
+      "ApprovedScopeRecord",
+      "ContractSnapshot",
+      "StateMachineSet"
+    ],
+    "outputs": [
+      "ObligationSet",
+      "CoverageMatrix",
+      "TestPlan"
+    ],
+    "steps": [
+      "生成Requirement/Interface/Input/State/Permission/Error/Effect/Concurrency/Semantics/Platform覆盖维度。",
+      "关键路径显式组合；其余允许经批准t-wise，记录强度而非虚假穷尽。",
+      "分开planned/executable/executed/asserted/passed，冻结分母与suite版本。",
+      "测算机器预算、不可测义务和缺失oracle，不能为节省成本删除required项。"
+    ],
+    "checks": [
+      [
+        "0条可测试义务",
+        "返回缺口/INCONCLUSIVE，不给100%"
+      ],
+      [
+        "只有测试存在但未执行",
+        "仅planned上升，passed保持0"
+      ],
+      [
+        "关键角色/租户组合缺失",
+        "即使总覆盖很高也阻断"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-test-generation",
+    "title": "独立可执行用例生成",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-coverage-planner"
+    ],
+    "inputs": [
+      "Approved Contract/Oracle/ObligationSet",
+      "语言runner adapter"
+    ],
+    "outputs": [
+      "TestManifest",
+      "NativeTestSources",
+      "AssertionMap"
+    ],
+    "steps": [
+      "按approved spec生成unit/contract/workflow/effect tests，测试工人不读候选expected。",
+      "为每case定义fixture、action、assertion、cleanup、seed、timeout与claims。",
+      "拒绝空assert、assert true、仅snapshot未审核；mock边界与真实effect分别标注。",
+      "编译原生测试并检查manifest恰好对应实际发现的tests；多/少/skip都留事实。"
+    ],
+    "checks": [
+      [
+        "service调用没有assert",
+        "测试有效性检查必须标弱/无效"
+      ],
+      [
+        "target错误但test复制target输出",
+        "独立oracle挑战失败，禁止自洽PASS"
+      ],
+      [
+        "runner发现数小于manifest",
+        "未运行项必须阻断required回归"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-fixtures-environments",
+    "title": "测试数据与原生环境工厂",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-test-generation"
+    ],
+    "inputs": [
+      "TestManifest",
+      "数据授权",
+      "native compatibility matrix"
+    ],
+    "outputs": [
+      "EnvironmentLock",
+      "FixtureSnapshots",
+      "CleanupEvidence"
+    ],
+    "steps": [
+      "使用受控原生语言/DB版本启动隔离lane；构建与测试网络权限分离。",
+      "生成NULL/极值/Unicode/多tenant/时区等语义数据并记录seed/collation/SQL modes。",
+      "每scenario独立schema/namespace，broker发短期最小权限凭据。",
+      "snapshot/restore与清理可重现，污染检查和TTL清理有证据；缺工具不得用mock替代native。"
+    ],
+    "checks": [
+      [
+        "两个scenario同主键数据",
+        "互不污染、独立回放结果一致"
+      ],
+      [
+        "没有目标DB运行时",
+        "native status NOT_RUN，不能标DB回归通过"
+      ],
+      [
+        "测试失败中途退出",
+        "自动清理或隔离留档，无凭据泄漏"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-smoke-gate",
+    "title": "关键路径冒烟门禁",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-fixtures-environments"
+    ],
+    "inputs": [
+      "TestPlan",
+      "关键义务",
+      "运行环境"
+    ],
+    "outputs": [
+      "SmokeManifest",
+      "SmokeExecutionEvidence",
+      "SmokeGateDecision"
+    ],
+    "steps": [
+      "按风险/依赖中心性和估算机器成本选最小覆盖关键义务集合，不随机挑case。",
+      "包含启动、真实依赖、鉴权与至少一条关键业务effect canary。",
+      "在冻结artifact上运行并验证assertions、cleanup、manifest完整性。",
+      "缺失/失败时阻断依赖运行健康的昂贵任务；保留证据，允许独立静态/规则证明继续。"
+    ],
+    "checks": [
+      [
+        "health=200但下单持久化坏",
+        "smoke失败"
+      ],
+      [
+        "预算不足覆盖关键义务",
+        "报告uncovered而不是小suite PASS"
+      ],
+      [
+        "smoke失败",
+        "不派发依赖它的完整runtime回归"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-full-regression",
+    "title": "全功能回归与测试资产管理",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-smoke-gate"
+    ],
+    "inputs": [
+      "冻结TestManifest",
+      "Smoke PASS",
+      "同一artifact/fixtures"
+    ],
+    "outputs": [
+      "RegressionReport",
+      "PerObligationResults",
+      "FlakeReport"
+    ],
+    "steps": [
+      "执行全部required case：功能、状态、权限、错误、事务、effect与工作流。",
+      "对actual discovered/executed/asserted cases与批准manifest作集合核对。",
+      "重试只区分可重试基础设施故障；记录首次失败并处理critical flake，不用多次最终绿掩盖。",
+      "修复反馈可用impact tests；最终release按政策执行完整新候选回归或经批准的严格证据复用。"
+    ],
+    "checks": [
+      [
+        "critical case被skip",
+        "回归INCONCLUSIVE/FAIL，不是100%"
+      ],
+      [
+        "第一次失败随后偶然通过",
+        "保存flake且关键路径阻断"
+      ],
+      [
+        "回归结束后目标artifact变了",
+        "旧回归证据不能签新目标"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-differential-runtime",
+    "title": "类型化差分与行为回放",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-full-regression"
+    ],
+    "inputs": [
+      "源/目标原生runtime",
+      "相同scenario corpus",
+      "ComparatorPolicy"
+    ],
+    "outputs": [
+      "TypedObservations",
+      "DiffFindings",
+      "MinimizedCounterexamples"
+    ],
+    "steps": [
+      "冻结相同逻辑输入/fixtures、时间和外部依赖，分别执行source/target。",
+      "捕获return/error/HTTP/session/DB/MQ/cache/file等scope规定观察。",
+      "依类型和声明语义比较ordered/bag/set、decimal、NULL、时间、编码与event偏序。",
+      "normalization规则带批准前提与测试；差异自动缩减成回归，旧行为不自动等同正确规范。"
+    ],
+    "checks": [
+      [
+        "SQL结果重复行被去重",
+        "bag comparator必须发现"
+      ],
+      [
+        "金额差0.01",
+        "无批准容差时必须失败"
+      ],
+      [
+        "source/target共同有越权",
+        "规范安全oracle仍必须发现"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-property-fuzz",
+    "title": "性质、变形与模糊测试",
+    "priority": "P1",
+    "dependencies": [
+      "elmos-assurance-differential-runtime"
+    ],
+    "inputs": [
+      "状态/语义模型",
+      "approved metamorphic relations",
+      "bounded budget"
+    ],
+    "outputs": [
+      "PropertyResults",
+      "FuzzCorpus",
+      "ReducedReproducers"
+    ],
+    "steps": [
+      "为每性质定义域和前提，覆盖无效输入与状态序列，不由LLM臆造普适关系。",
+      "按业务risk分层seed语料，配置确定性seed/deadline/资源限制。",
+      "区分crash、assert failure、timeout/infra，保留原始输入与最小反例。",
+      "安全存储fuzz corpus，反例提升为固定regression，追踪污染与覆盖增益。"
+    ],
+    "checks": [
+      [
+        "变形前提不满足",
+        "不报伪业务错误，标predicate not applicable"
+      ],
+      [
+        "fuzzer超预算",
+        "INCONCLUSIVE不能当没发现bug=PASS"
+      ],
+      [
+        "发现随机反例",
+        "固定seed/最小输入可原生复现"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-mutation-auditor",
+    "title": "领域变异与测试有效性审计",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-differential-runtime"
+    ],
+    "inputs": [
+      "Domain MutationPack",
+      "原始suite",
+      "独立holdout策略"
+    ],
+    "outputs": [
+      "MutationCampaign",
+      "MutantResults",
+      "EffectivenessReport"
+    ],
+    "steps": [
+      "在隔离克隆artifact上注入auth/transaction/NULL/precision/async等领域变异，保证最终artifact不变。",
+      "识别invalid/equivalent需理由与独立证据；unreached/timeout/unknown不悄悄排除。",
+      "报告保守kill ratio、全部分类分母与关键must-kill结果，不设无依据统一99.9目标。",
+      "Ethen hidden mutations和历史real-bug corpus分开；核查攻击面是suite还是整个certifier。"
+    ],
+    "checks": [
+      [
+        "移除权限检查但suite绿",
+        "critical survivor阻断"
+      ],
+      [
+        "mutant timeout",
+        "不得自动计为killed"
+      ],
+      [
+        "100个mutant中10个unknown",
+        "unknown显式报告并影响门禁"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-lean",
+    "title": "Lean命题、证明与源码绑定",
+    "priority": "P1",
+    "dependencies": [
+      "elmos-assurance-contract-ir"
+    ],
+    "inputs": [
+      "批准critical claims",
+      "支持的Semantic DSL",
+      "trusted challenge"
+    ],
+    "outputs": [
+      "ProofObligation",
+      "ProofVerificationEvidence",
+      "ArtifactRefinementLinks"
+    ],
+    "steps": [
+      "独立定义精确statement/imports/假设，不让proof作者改challenge缩小问题。",
+      "在固定hash工具链和沙箱中构建；做传递axiom审计与版本适用安全检查。",
+      "严格profile用可信comparator与兼容独立checker，校验statement与proof artifact；缺checker明确阻塞。",
+      "验证rule实例preconditions、source→IR→lowering→artifact绑定；仅元数据proof=true无效。",
+      "native case仍需测试，Lean输出不替代DB/框架原生行为证据。"
+    ],
+    "checks": [
+      [
+        "proof依赖sorryAx/自定义未批准公理",
+        "拒绝critical formal PASS"
+      ],
+      [
+        "证明x>0但需求含负数",
+        "statement mismatch阻断"
+      ],
+      [
+        "theorem通过但目标源码变更",
+        "refinement link失效，要求重验"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-model-checking",
+    "title": "SMT与有限状态协议校验",
+    "priority": "P1",
+    "dependencies": [
+      "elmos-assurance-state-effects"
+    ],
+    "inputs": [
+      "状态机/资源约束",
+      "模型边界",
+      "风险claims"
+    ],
+    "outputs": [
+      "ModelCheckObligations",
+      "SolverEvidence",
+      "NativeCounterexampleTests"
+    ],
+    "steps": [
+      "优先建lease/fencing/cancel/commit与预算模型，明确finite bounds和fairness。",
+      "锁定solver/TLC版本、选项、输入模型hash、proof或counterexample。",
+      "将UNKNOWN/timeout与UNSAT/verified区分；对可用证明证书作独立检查。",
+      "模型到实现映射和反例回放原生测试单独验收，不能把bounded性质扩成无限保证。"
+    ],
+    "checks": [
+      [
+        "旧epoch仍可commit的模型",
+        "产出反例并转实现回归"
+      ],
+      [
+        "solver UNKNOWN",
+        "禁止PASS"
+      ],
+      [
+        "仅验证3个worker",
+        "报告bound=3，不能宣称任意规模"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-verified-rules",
+    "title": "带证据变换规则注册中心",
+    "priority": "P1",
+    "dependencies": [
+      "elmos-assurance-lean",
+      "elmos-assurance-differential-runtime"
+    ],
+    "inputs": [
+      "TransformationRule",
+      "formal/native证据",
+      "known counterexamples"
+    ],
+    "outputs": [
+      "VerifiedRuleRecord",
+      "ApplicabilityDecision",
+      "RuleRevocationIndex"
+    ],
+    "steps": [
+      "注册版本化source/target pattern、语义模型、前提、禁用情况、theorem/runtime evidence。",
+      "每次应用验证前提与工具链/encoder/lowering版本，LLM不能直接设置PROVED。",
+      "缓存key包括rule/semantics/工具链与适用实例信息，租户机密不跨域复用。",
+      "新反例或checker问题撤销rule并沿依赖图失效已有claims/attestations。"
+    ],
+    "checks": [
+      [
+        "已证明规则用于不满足NULL前提的SQL",
+        "拒绝适用"
+      ],
+      [
+        "rule换版本缓存仍命中",
+        "证据不得复用"
+      ],
+      [
+        "rule发现反例",
+        "受影响证书进入复审/撤销链"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-evidence-graph",
+    "title": "证据DAG、封存与失效传播",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-contract-ir"
+    ],
+    "inputs": [
+      "runner/proof/audit observations",
+      "RevisionSet",
+      "producer identity"
+    ],
+    "outputs": [
+      "EvidenceEnvelope",
+      "EvidenceGraph",
+      "SealedEvidenceRoot"
+    ],
+    "steps": [
+      "以content hash保存raw artifacts，校验tenant/project/run/claim/tool/版本/环境/时间绑定。",
+      "签名验证以服务端trust store为根，不信repo自带证书；schema严校验不忽略未知字段。",
+      "构建claims-assumptions-defeaters-evidence DAG，封存后append-only，断言必须可追原始报告。",
+      "变更传播按依赖closure重新计算；记录revocation/freshness，与object storage原子publish协调。"
+    ],
+    "checks": [
+      [
+        "修改已签报告一个字段",
+        "签名校验失败"
+      ],
+      [
+        "别的tenant的合法证据",
+        "拒绝复用"
+      ],
+      [
+        "repo自带根公钥",
+        "不得加入服务信任根"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-gate-engine",
+    "title": "确定性三态认证门禁",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-evidence-graph",
+      "elmos-assurance-coverage-planner"
+    ],
+    "inputs": [
+      "服务端ApprovedScope/Policy",
+      "verified evidence facts",
+      "Ethen decision"
+    ],
+    "outputs": [
+      "GateDecision",
+      "BlockingReasons",
+      "BoundedAssuranceClaims"
+    ],
+    "steps": [
+      "构建无LLM判断的纯决策核，所有required证据齐备且匹配才可PASS。",
+      "明确FAIL反例与INCONCLUSIVE证据不足；critical UNKNOWN/SKIP/flake不可绿。",
+      "校验覆盖分母非空、tests实际断言、mutation must-kill、formal义务和审计独立性。",
+      "输出决定及最小阻塞集合，绑定policy/scope/revision/evidence root；不执行签署。"
+    ],
+    "checks": [
+      [
+        "空报告/空suite",
+        "INCONCLUSIVE且不可签"
+      ],
+      [
+        "已知critical反例加其它全绿",
+        "FAIL"
+      ],
+      [
+        "caller提交更宽松policy",
+        "server拒绝未批准digest"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-ethen-audit",
+    "title": "Ethen外部独立审计适配器",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-gate-engine"
+    ],
+    "inputs": [
+      "sealed candidate bundle",
+      "真实auditor identity配置",
+      "hidden challenge策略"
+    ],
+    "outputs": [
+      "AuditSession",
+      "SignedAuditDecision",
+      "IndependenceDisclosure"
+    ],
+    "steps": [
+      "支持human/organization/external_system，显式control domain/利益冲突/权限/有效期，默认未配置阻断。",
+      "独立发现接口、核验规范/分母、选择高risk重跑、hidden challenge和盲mutation。",
+      "审计scope/proof statement/assumptions而非只看汇总绿灯；隐藏集与Builder存储隔离。",
+      "review绑定所有摘要、nonce、audience与期限；输出APPROVE/REJECT/NEEDS_EVIDENCE，不直接改代码。",
+      "修复暴露的challenge退役并进入公开回归；Ethen若参与实现则重新声明冲突。"
+    ],
+    "checks": [
+      [
+        "只把另一个LLM命名Ethen",
+        "不得声称组织独立外审"
+      ],
+      [
+        "Ethen签了旧revision",
+        "approval拒绝"
+      ],
+      [
+        "builder和auditor不同key但同control domain",
+        "strict external profile阻断"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-signed-attestations",
+    "title": "K8签署、发布与撤销",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-ethen-audit"
+    ],
+    "inputs": [
+      "GateDecision",
+      "authorized Ethen review",
+      "K8/IdP/KMS"
+    ],
+    "outputs": [
+      "ScopedAttestation",
+      "RevocationRecord",
+      "VerificationEndpoint"
+    ],
+    "steps": [
+      "复用K8，私钥不进入Agent/runner；正式采用审定的statement/DSSE和KMS接口。",
+      "签署前再次验证当前授权、全部subject/原始证据hash、nonce、policy和撤销状态。",
+      "签名payload明确scope/exclusions/assumptions/有效期/assurance profile与formal范围。",
+      "支持status verify/revoke/suspend/supersede/key rotation，旧决定不可覆盖。",
+      "没有生产签署服务只产unsigned draft，禁止伪造签名或“认证人Ethen”名字当授权。"
+    ],
+    "checks": [
+      [
+        "artifact与certificate subject不匹配",
+        "verification失败"
+      ],
+      [
+        "签署key或rule被撤销",
+        "status不得显示有效"
+      ],
+      [
+        "没有真实Ethen/KMS",
+        "只产draft且明确不可认证"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-bounded-repair",
+    "title": "有界修复与证据重新建立",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-full-regression",
+      "elmos-assurance-gate-engine"
+    ],
+    "inputs": [
+      "最小反例/findings",
+      "原scope和policy",
+      "repair预算"
+    ],
+    "outputs": [
+      "PatchCandidate",
+      "RepairLineage",
+      "ReverificationPlan"
+    ],
+    "steps": [
+      "分类实现缺陷/规范冲突/环境失败，不让所有失败都交给LLM改代码。",
+      "在新worktree生成patch，限制改动目录、迭代/资源，保持原tests与oracle。",
+      "禁止删测试、改门槛、改分母或未经批准更新snapshot；改规范需另行审批新scope。",
+      "先最小反例与impact验证，后最终全部required regression；新RevisionSet重建相关proof/evidence/Ethen批准。"
+    ],
+    "checks": [
+      [
+        "修复Agent删失败测试",
+        "policy拒绝"
+      ],
+      [
+        "修复只通过反例但破坏其它功能",
+        "最终回归阻断"
+      ],
+      [
+        "预算耗尽",
+        "暂停并输出未决，不强制PASS"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-generation-domain",
+    "title": "项目生成业务线集成",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-contract-ir",
+      "elmos-assurance-test-generation"
+    ],
+    "inputs": [
+      "Domain spec",
+      "目标语言support matrix",
+      "现有生成入口"
+    ],
+    "outputs": [
+      "SpecFirstGenerationAdapter",
+      "NativeGenerationRoute",
+      "DomainAcceptanceEvidence"
+    ],
+    "steps": [
+      "将spec/contract/state/oracle审批放在代码生成之前。",
+      "分别生成实现与测试候选，独立规范审核降低共同错误。",
+      "验收真实DB/消息/权限/UI流程；不同生成语言分别对规范测试，不互相作唯一Oracle。",
+      "落实domain-packs/project-generation全部critical cases，再逐个扩展目标语言。"
+    ],
+    "checks": [
+      [
+        "需求遗漏但API全绿",
+        "requirement traceability必须失败"
+      ],
+      [
+        "两种语言共同漏租户隔离",
+        "独立安全规范检测"
+      ],
+      [
+        "只测试Python却宣称所有目标通过",
+        "support matrix拒绝晋级"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-sql-domain",
+    "title": "SQL/例程语义转换集成",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-differential-runtime"
+    ],
+    "inputs": [
+      "源/目标SQL/catalog",
+      "native DB版本",
+      "现有SQL转换入口"
+    ],
+    "outputs": [
+      "SqlSemanticAdapter",
+      "NativeSqlRoute",
+      "SqlMutationPack"
+    ],
+    "steps": [
+      "锁定catalog/collation/timezone/SQL modes/类型与约束，不只parse字符串。",
+      "按feature profile分类query/DML/DDL/routine/transaction，unsupported fail closed。",
+      "原生双DB数据相同语义生成，按typed bag/order/effects和异常比较。",
+      "落实NULL/LEFT JOIN/decimal/order/事务反例；proof规则只在前提和runtime模型成立时使用。"
+    ],
+    "checks": [
+      [
+        "NOT IN改写忽略外层NULL",
+        "原生反例失败"
+      ],
+      [
+        "未支持vendor function被best effort忽略",
+        "阻断转换认证"
+      ],
+      [
+        "查询结果相同但DML影响行数不同",
+        "副作用差分失败"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-spring-domain",
+    "title": "Spring旧项目原生翻新集成",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-differential-runtime"
+    ],
+    "inputs": [
+      "旧仓库/runtime",
+      "批准目标版本",
+      "Framework Semantics Pack"
+    ],
+    "outputs": [
+      "BehaviorRecorder",
+      "SpringMigrationAdapter",
+      "NativeSpringRoute"
+    ],
+    "steps": [
+      "隔离旧runtime，记录HTTP/session/views/DB/MQ/security/transactions/jobs。",
+      "映射路由/binding/validation/filter/interceptor/security/exception/JSP/Quartz与javax/jakarta变化。",
+      "真实代理/DB故障验证transaction/rollback/self invocation，不只grep@Transactional。",
+      "批准旧漏洞修复为行为变更；落实Spring domain critical cases，旧系统跑不起来不得声称行为等价。"
+    ],
+    "checks": [
+      [
+        "保留注解但self invocation导致无事务",
+        "native DB故障测试发现"
+      ],
+      [
+        "Session returnUrl丢失",
+        "旧新完整行为差分失败"
+      ],
+      [
+        "只有target build成功",
+        "不获得迁移行为认证"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-repository-domain",
+    "title": "全仓库语言转换集成",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-differential-runtime"
+    ],
+    "inputs": [
+      "source repo",
+      "language pair profile",
+      "Semantic IR adapters"
+    ],
+    "outputs": [
+      "RepositoryRefinementAdapter",
+      "ModuleObligationGraph",
+      "NativeConversionRoute"
+    ],
+    "steps": [
+      "盘点依赖/公共API/运行时特性，明确数值/异常/资源/反射/并发支持范围。",
+      "构建模块级IR语义与compat shims，生成每个rule前提及组合义务。",
+      "同输入原生source-target运行，验证serialization/DB/effect/workflow，不只比较函数返回值。",
+      "模块proof不能冒充全库proof；按domain反例和native集成晋级语言对。"
+    ],
+    "checks": [
+      [
+        "Java BigDecimal转浮点",
+        "精度义务或差分必须阻断"
+      ],
+      [
+        "模块测试都过但依赖装配失败",
+        "仓库native build/workflow失败"
+      ],
+      [
+        "未支持FFI被静默替换",
+        "UNSUPPORTED_SEMANTICS"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-durable-execution",
+    "title": "恢复、取消、fencing与结果提交",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-bootstrap"
+    ],
+    "inputs": [
+      "现有Workflow/Harness",
+      "TestExecutionPlan",
+      "权限租约"
+    ],
+    "outputs": [
+      "RunnerBrokerIntegration",
+      "DurableEvents",
+      "SideEffectReconciliation"
+    ],
+    "steps": [
+      "复用现有durable workflow，固化step/attempt/lease/epoch/schema版本。",
+      "执行计划绑定VerifiedSecurityContext/CapabilityLease，恢复保留上限并重验当前撤销/期限。",
+      "Result Interception在commit前校验subject/producer/epoch，唯一键幂等，transactional outbox。",
+      "取消提升epoch阻止迟到commit；外部effect未知先对账/补偿，不宣称无条件exactly-once。"
+    ],
+    "checks": [
+      [
+        "worker commit前崩溃后重送",
+        "控制平面只有一个可见结果"
+      ],
+      [
+        "过期lease恢复",
+        "拒绝或受控换发，不能复活"
+      ],
+      [
+        "取消后旧worker回传",
+        "FENCE_REJECTED"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-security-isolation",
+    "title": "租户、供应链与不可信执行隔离",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-durable-execution"
+    ],
+    "inputs": [
+      "威胁模型",
+      "现有身份/网络/存储控制",
+      "代码/数据分类"
+    ],
+    "outputs": [
+      "ThreatModel",
+      "RunnerSecurityPolicy",
+      "IsolationEvidence"
+    ],
+    "steps": [
+      "拒绝repo hooks提升权限，限制归档/引用/解析/执行资源及egress。",
+      "多tenant DB/FK/RLS、对象存储scope和broker权限共同约束；superuser/owner例外需测试。",
+      "builder不能读hidden tests/audit keys，审计runner不共享builder记忆或token。",
+      "SBOM/provenance/dependency scan+运行沙箱+secret redaction，先native演练后上生产。"
+    ],
+    "checks": [
+      [
+        "tenant A引用B evidence blob",
+        "拒绝"
+      ],
+      [
+        "构建脚本读取host key或docker socket",
+        "隔离阻断"
+      ],
+      [
+        "OpenAPI外链/压缩炸弹/恶意proof",
+        "受控拒绝，不执行高权限代码"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-router-budget",
+    "title": "模型路由与验证成本治理",
+    "priority": "P0",
+    "dependencies": [
+      "elmos-assurance-durable-execution"
+    ],
+    "inputs": [
+      "现有Elmos Router",
+      "ModelExecutionPlan",
+      "Usage Ledger/Budget"
+    ],
+    "outputs": [
+      "AssuranceModelPorts",
+      "BudgetReservations",
+      "UsageReconciliation"
+    ],
+    "steps": [
+      "所有test/proof/audit模型调用复用Elmos语义路由，不将provider endpoint交给caller。",
+      "使用purpose隔离的ModelExecutionPlan、安全上下文、数据策略、fallback与deadline。",
+      "预留并发/费用，默认每账号3个top-level run；子任务不可绕过。",
+      "估算与实际分离，重复回执幂等，未知usage对账；预算不足不缩小必需测试集合。"
+    ],
+    "checks": [
+      [
+        "OpenRouter fallback降数据隔离",
+        "policy拒绝"
+      ],
+      [
+        "并行任务争抢预算",
+        "不超预留上限，失败可见"
+      ],
+      [
+        "timeout无usage",
+        "记pending而非0，认证暂停不造PASS"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-commercial-control",
+    "title": "多租户商业控制与交付产品化",
+    "priority": "P1",
+    "dependencies": [
+      "elmos-assurance-signed-attestations",
+      "elmos-assurance-router-budget"
+    ],
+    "inputs": [
+      "产品范围",
+      "现有账号计费/API",
+      "审计服务策略"
+    ],
+    "outputs": [
+      "AssuranceAPI",
+      "EntitlementPolicy",
+      "CustomerDeliveryBundle"
+    ],
+    "steps": [
+      "构建scope→estimate→approve→run→audit→deliver生命周期，商业状态与技术verdict分离。",
+      "支持项目/组织权限、审计授权、retention、导出、申诉和证书查询。",
+      "计费按真实execution/审计服务，充值不能购买PASS或豁免critical。",
+      "报告可机读与人读，支持矩阵/assumptions/exclusions/current status一目了然。"
+    ],
+    "checks": [
+      [
+        "用户付费但测试FAIL",
+        "verdict保持FAIL"
+      ],
+      [
+        "客户验收人未批准",
+        "不伪造customer acceptance"
+      ],
+      [
+        "证书过期",
+        "界面和API都显式expired"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-calibration-holdout",
+    "title": "正确率校准与隐藏基准治理",
+    "priority": "P1",
+    "dependencies": [
+      "elmos-assurance-mutation-auditor",
+      "elmos-assurance-ethen-audit"
+    ],
+    "inputs": [
+      "历史真实bugs",
+      "独立标注样本",
+      "隐藏项目/变异"
+    ],
+    "outputs": [
+      "CalibrationDataset",
+      "RiskCalibrationReport",
+      "ThresholdApproval"
+    ],
+    "steps": [
+      "按项目/语言/DB/缺陷族分层，去重/授权/时间分割，hidden与公开训练修复隔离。",
+      "分别计算P(PASS|defect)与P(defect|PASS)，列明分母和抽样方案。",
+      "零失败报告置信上界及独立同分布假设；同repo相关变异不能充当独立项目数。",
+      "阈值由baseline与风险批准，追踪实际escaped critical bugs，不以百万无效case营销。"
+    ],
+    "checks": [
+      [
+        "100个样本0假通过",
+        "不得宣称风险0或99.999%"
+      ],
+      [
+        "同一bug的1000变体",
+        "按cluster解释样本量"
+      ],
+      [
+        "修复读取hidden全部答案",
+        "污染标记并更换holdout"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-release-recertification",
+    "title": "发布、持续验证与撤销链",
+    "priority": "P1",
+    "dependencies": [
+      "elmos-assurance-commercial-control",
+      "elmos-assurance-calibration-holdout"
+    ],
+    "inputs": [
+      "签署attestation",
+      "部署版本/环境",
+      "运行时反馈"
+    ],
+    "outputs": [
+      "ReleaseGate",
+      "ReverificationTriggers",
+      "RollbackAndRevocationEvidence"
+    ],
+    "steps": [
+      "签署artifact与部署artifact逐字摘要一致；客户scope和运行环境相符才放行。",
+      "新依赖/框架/规则/checker/政策/数据边界变化触发精确失效/复验。",
+      "影子运行不得产生重复真实effect；canary渐进与自动止损需授权配置。",
+      "演练备份恢复、密钥轮换/撤销、关键缺陷回滚；持久记录原决策和更新原因。"
+    ],
+    "checks": [
+      [
+        "部署不同镜像但同commit",
+        "拒绝发布"
+      ],
+      [
+        "checker/rule被撤销",
+        "受影响claims触发重验"
+      ],
+      [
+        "恢复数据库复活旧证书",
+        "校验撤销链防复活"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-workbench-ui",
+    "title": "接口覆盖、审计和证据工作台",
+    "priority": "P1",
+    "dependencies": [
+      "elmos-assurance-commercial-control"
+    ],
+    "inputs": [
+      "Assurance API",
+      "权限矩阵",
+      "设计系统"
+    ],
+    "outputs": [
+      "ContractReviewUI",
+      "CoverageAndRunUI",
+      "EthenAndCertificateUI"
+    ],
+    "steps": [
+      "复用现有前端/设计系统，不另造产品；接口清单显示发现来源与盲点。",
+      "覆盖显示冻结分母与planned/executed/asserted/passed，可钻取raw evidence与反例。",
+      "进度使用真实stage与wall-clock/cost，UNKNOWN/NOT_RUN显眼显示，取消有状态反馈。",
+      "Ethen审核独立入口；证书显示scope/有效期/撤销与formal边界，隐藏集不泄露到普通前端。"
+    ],
+    "checks": [
+      [
+        "回归90%执行但100%已执行case通过",
+        "UI不能显示全功能100%通过"
+      ],
+      [
+        "普通用户访问Ethen hidden routes",
+        "前后端均拒绝"
+      ],
+      [
+        "证书撤销后缓存页面",
+        "显示撤销/查询时间，不能继续绿徽章"
+      ]
+    ]
+  },
+  {
+    "id": "elmos-assurance-orchestrator",
+    "title": "总编排：四业务线验证与Ethen独立审计",
+    "priority": "P0",
+    "dependencies": [],
+    "inputs": [
+      "当前Elmos仓库",
+      "本包",
+      "本轮授权范围"
+    ],
+    "outputs": [
+      "BatchExecutionReport",
+      "EvidenceLinkedDelivery",
+      "UnresolvedBlockers"
+    ],
+    "steps": [
+      "先执行bootstrap并读取CODEX_START_HERE，不要求用户重复已知业务线。",
+      "按roadmap DAG与真实差距选择一个完整纵向切片，四业务线共用契约/证据/安全内核。",
+      "逐skill落实actual code+tests+evidence；按需加载，不一次加载所有长文。",
+      "持续核对不可变RevisionSet、批准scope、独立Oracle和隐藏集界限。",
+      "区分PACKAGE_VALIDATED/REFERENCE_TESTED/PRODUCT_NATIVE_VERIFIED/CUSTOMER_ACCEPTED；未实测绝不升档。",
+      "停在签署/生产/权限边界时完成其它非阻塞工作，输出准确阻塞，不伪造Ethen/Lean/客户认证。"
+    ],
+    "checks": [
+      [
+        "包级pytest全部通过",
+        "只报告参考实现通过，不给产品E5"
+      ],
+      [
+        "有已有功能可复用",
+        "最小适配，不重建Harness"
+      ],
+      [
+        "所有内部测试通过但Ethen未配置",
+        "E5 INCONCLUSIVE，仍交付完整证据草案"
+      ]
+    ]
+  }
+]

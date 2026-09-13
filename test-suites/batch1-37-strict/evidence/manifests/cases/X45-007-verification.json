@@ -1,0 +1,8 @@
+{
+  "case_id": "X45-007",
+  "status": "accepted",
+  "verifier_id": "ethan-independent-certifier",
+  "independent": true,
+  "verified_at": "2026-09-10T08:55:52Z",
+  "notes": "Independently verified by Ethan: 版本、兼容与升级测试：Deprecated行为—改变工具链、Schema、Provider、配置或依赖版本并重放"
+}

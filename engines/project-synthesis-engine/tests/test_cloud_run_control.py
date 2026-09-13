@@ -103,9 +103,7 @@ def test_invalid_or_broad_configuration_is_rejected(field: str, value: object, m
 
 def test_latest_secret_alias_is_rejected() -> None:
     deployment = config()
-    deployment["secrets"] = [
-        {"mount_path": "/run/secrets/database-url", "name": "database-url", "version": "latest"}
-    ]
+    deployment["secrets"] = [{"mount_path": "/run/secrets/database-url", "name": "database-url", "version": "latest"}]
     assert any("immutable numeric version" in error for error in validate_config(deployment))
 
 
@@ -115,11 +113,7 @@ def test_latest_secret_alias_is_rejected() -> None:
         ({"unexpected": True}, "unknown configuration keys"),
         ({"health": {"path": "//metadata", "expected_json": {"status": "UP"}}}, "health.path"),
         (
-            {
-                "secrets": [
-                    {"mount_path": "/run/secrets/../escape", "name": "database-url", "version": "7"}
-                ]
-            },
+            {"secrets": [{"mount_path": "/run/secrets/../escape", "name": "database-url", "version": "7"}]},
             "mount_path",
         ),
         ({"environment": {"API_TOKEN": "secret-value"}}, "environment entry is unsafe"),
@@ -129,9 +123,7 @@ def test_latest_secret_alias_is_rejected() -> None:
         ),
     ],
 )
-def test_unsafe_secret_health_and_unknown_configuration_is_rejected(
-    patch: dict[str, object], message: str
-) -> None:
+def test_unsafe_secret_health_and_unknown_configuration_is_rejected(patch: dict[str, object], message: str) -> None:
     deployment = config()
     deployment.update(patch)
     assert any(message in error for error in validate_config(deployment))
@@ -204,9 +196,7 @@ def test_authorization_cannot_be_reused_for_rollback(tmp_path) -> None:
         ((datetime.now() + timedelta(minutes=10)).isoformat(), "MUST_INCLUDE_TIMEZONE"),
     ],
 )
-def test_authorization_rejects_unbounded_or_naive_expiry(
-    tmp_path: Path, expires_at: str, message: str
-) -> None:
+def test_authorization_rejects_unbounded_or_naive_expiry(tmp_path: Path, expires_at: str, message: str) -> None:
     deployment = config()
     authorization = {
         "schema_version": 1,

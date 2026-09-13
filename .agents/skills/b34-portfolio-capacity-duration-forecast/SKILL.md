@@ -1,5 +1,8 @@
 ---
 name: b34-portfolio-capacity-duration-forecast
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Forecast portfolio migration capacity duration cost and completion risk from actual work-unit features queueing resource profiles historical throughput dependencies and uncertainty with continuous calibration.
 ---
 

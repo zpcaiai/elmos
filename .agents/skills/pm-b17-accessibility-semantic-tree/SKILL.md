@@ -1,5 +1,8 @@
 ---
 name: pm-b17-accessibility-semantic-tree
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "提取并比较 Role、Name、State、Value、Focus 和可操作性语义树. Precision Migration B17 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

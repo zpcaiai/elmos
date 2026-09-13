@@ -1,0 +1,4 @@
+interface:
+  display_name: "B94 Erlang Parser and Otp Model"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b94-erlang-parser-and-otp-model to execute this ELMOS Language Pack Skill with fail-closed evidence."

@@ -1,0 +1,36 @@
+skill: elmos-assurance-state-effects
+product_acceptance_status: NOT_RUN
+cases:
+- id: elmos-assurance-state-effects-A01
+  given: 支付超时但结果未知
+  when: 在真实集成模块执行对应测试或负例
+  then: 先对账，禁止自动再次扣款
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-state-effects-A02
+  given: 事件晚于规范deadline
+  when: 在真实集成模块执行对应测试或负例
+  then: 语义deadline FAIL而非无限轮询
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256
+- id: elmos-assurance-state-effects-A03
+  given: 取消后旧worker试图写入
+  when: 在真实集成模块执行对应测试或负例
+  then: fencing拒绝且记录审计
+  severity: critical
+  status: NOT_RUN
+  evidence_required:
+  - revision-set
+  - native-command-or-approved-equivalent
+  - exit-code
+  - raw-report-sha256

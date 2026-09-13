@@ -1,0 +1,35 @@
+apiVersion: elmos.ai/v1
+kind: DurableWorkflow
+metadata:
+  id: incident
+  version: 5.2.0
+spec:
+  engine: canonical-K7-adapter
+  steps:
+  - id: detect
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: contain
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: preserve-evidence
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: triage
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: repair-plan
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: verified-remediation
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: postmortem
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  - id: durable-improvement
+    checkpoint: true
+    onFailure: fail-closed-and-reconcile
+  authority: environment-owned
+  cancellation: bounded
+  completionAuthority: K8

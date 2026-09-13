@@ -1,5 +1,8 @@
 ---
 name: pm-b02-modernization-readiness-score
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从可转换性、测试、可观测性、依赖、风险和组织准备度计算可解释的现代化就绪评分. Precision Migration B02 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

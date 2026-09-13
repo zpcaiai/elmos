@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "proof_id": "proof.sample",
+  "property_id": "property.sample",
+  "solver": {
+    "name": "z3",
+    "version": "TODO",
+    "options": {},
+    "timeout_ms": 10000
+  },
+  "status": "unknown",
+  "assumptions": [],
+  "input_digest": "sha256:TODO",
+  "evidence_refs": []
+}

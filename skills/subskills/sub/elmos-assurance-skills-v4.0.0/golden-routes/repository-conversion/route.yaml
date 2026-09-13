@@ -1,0 +1,30 @@
+id: golden-repository-conversion
+domain: repository-conversion
+status: SPECIFIED
+native_evidence: NOT_RUN
+source_target: resolve and pin from actual repo and approved support matrix
+acceptance_case_ids:
+- REP-001
+- REP-002
+- REP-003
+- REP-004
+- REP-005
+- REP-006
+required_artifacts:
+- scope
+- contract
+- fixture
+- source-target-build-digests
+- native-test-results
+- typed-observations
+- mutation-report
+- applicable-proof-results
+- ethen-review
+- k8-decision
+release_conditions:
+- all-mandatory-claims-verified
+- no-unresolved-critical
+- exact-subject-binding
+- real-authorized-auditor
+- real-K8-authorization
+benchmark_rule: do not promote unsupported language/database combinations from this route

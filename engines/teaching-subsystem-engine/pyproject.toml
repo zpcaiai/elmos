@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elmos-teaching-subsystem-engine"
+version = "0.1.0"
+description = "Bounded local runtime for ELMOS Teaching Subsystem Skills"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+test = [
+  "jsonschema==4.25.1",
+  "pytest==9.0.3",
+  "pyyaml==6.0.2",
+]
+
+[project.scripts]
+elmos-teaching = "elmos_teaching_subsystem.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/fde/5.2.0/RuntimeCapability.schema.json",
+  "title": "RuntimeCapability",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "capabilityId",
+    "environmentId",
+    "operations",
+    "constraints",
+    "leaseRequired",
+    "expiresAt"
+  ],
+  "properties": {
+    "capabilityId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environmentId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "leaseRequired": {
+      "type": "boolean",
+      "const": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

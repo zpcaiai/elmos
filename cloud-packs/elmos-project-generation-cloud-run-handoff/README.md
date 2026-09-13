@@ -20,8 +20,9 @@ Twenty-two local generation/policy tests pass, including repository-owned
 negative and holdout corpora. This is code-level engineering
 evidence, not Google Cloud execution evidence.
 
-Google Cloud execution remains `NOT_RUN` because `gcloud`, an approved project,
-billing authorization, and short-lived least-privilege credentials are absent.
+Google Cloud execution remains `NOT_RUN`. `gcloud` 584.0.0 is installed, but an
+approved project, billing authorization, and short-lived least-privilege
+credentials are absent.
 Replay the conservative structural gate with:
 
 ```bash

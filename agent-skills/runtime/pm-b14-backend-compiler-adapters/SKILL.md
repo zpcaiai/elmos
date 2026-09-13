@@ -1,5 +1,8 @@
 ---
 name: pm-b14-backend-compiler-adapters
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "为 Java、C#、Go、Rust、Python 和 TypeScript/Node.js 提供原生语义前端、代码生成和测试工具链适配. Precision Migration B14 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

@@ -1,0 +1,19 @@
+{
+  "schema": "elmos.batch46.smoke-gate-result/1",
+  "evaluated_at": "<utc-timestamp>",
+  "project": "<path>",
+  "status": "runnable|limited|blocked",
+  "entry": "<entry>",
+  "required_passed": 0,
+  "required_total": 0,
+  "failures": [
+    "<blocking condition>"
+  ],
+  "limitations": [
+    "<coverage reduction>"
+  ],
+  "result_digest": "sha256:<digest>",
+  "pack_digest": "sha256:<digest>",
+  "lease": {},
+  "gate_version": "1.0.0"
+}

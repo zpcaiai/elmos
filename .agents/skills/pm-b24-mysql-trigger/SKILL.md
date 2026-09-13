@@ -1,5 +1,8 @@
 ---
 name: pm-b24-mysql-trigger
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 MySQL Trigger 的时机、粒度、OLD/NEW、顺序和限制. Precision Migration B24 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

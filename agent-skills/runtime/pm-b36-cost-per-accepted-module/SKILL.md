@@ -1,5 +1,8 @@
 ---
 name: pm-b36-cost-per-accepted-module
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "统计每个通过全部门禁模块的 Token、计算、时间和人工成本. Precision Migration B36 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

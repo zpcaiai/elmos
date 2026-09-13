@@ -1,5 +1,8 @@
 ---
 name: pm-b34-proof-build-runner
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "运行 lake build、目标定理检查、资源限制和结果规范化. Precision Migration B34 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

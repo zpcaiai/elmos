@@ -1,6 +1,15 @@
 ---
 name: b31-schema-table-column-migration
-description: "Implement schema, namespace, table, column, default, comment, ownership, and object-name migration through canonical DDL IR with real target provisioning and schema-diff evidence. Use for relational schema transformation."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
+description: Implement schema, namespace, table, column, default, comment, ownership, and object-name migration through canonical DDL IR with real target provisioning and schema-diff evidence. Use for relational schema transformation.
 ---
 
 ## Operating mode

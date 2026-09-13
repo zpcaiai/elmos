@@ -1,5 +1,8 @@
 ---
 name: pm-b14-go-cfg-ssa-adapter
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "为 Go 构建控制流、数据流与 SSA/近似 SSA 表示，支持切片和验证. Precision Migration B14 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

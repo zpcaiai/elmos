@@ -1,6 +1,9 @@
 ---
 name: b32-rendering-ssr-csr-hydration
-description: "Migrate and verify server rendering client rendering static generation streaming hydration islands caching personalization and rendering boundaries with real browser and server evidence."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Migrate and verify server rendering client rendering static generation streaming hydration islands caching personalization and rendering boundaries with real browser and server evidence.
 ---
 
 ## Operating mode

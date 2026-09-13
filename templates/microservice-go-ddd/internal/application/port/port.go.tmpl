@@ -1,0 +1,29 @@
+package port
+
+import (
+	"context"
+
+	"{{.ModuleName}}/internal/application/dto"
+	"{{.ModuleName}}/internal/domain/event"
+)
+
+// EntityUseCase defines the inbound primary port for entity operations.
+type EntityUseCase interface {
+	CreateEntity(ctx context.Context, req dto.CreateEntityRequest) (*dto.EntityResponse, error)
+	GetEntity(ctx context.Context, id string) (*dto.EntityResponse, error)
+	UpdateEntity(ctx context.Context, id string, req dto.UpdateEntityRequest) (*dto.EntityResponse, error)
+	DeleteEntity(ctx context.Context, id string) error
+	ListEntities(ctx context.Context, param dto.PaginationParam) (*dto.ListEntityResponse, error)
+	ActivateEntity(ctx context.Context, id string) error
+	DeactivateEntity(ctx context.Context, id string) error
+}
+
+// EventPublisherPort defines the secondary/outbound port for publishing domain events.
+type EventPublisherPort interface {
+	Publish(ctx context.Context, events ...event.Event) error
+}
+
+// NotificationPort defines the secondary/outbound port for external notifications.
+type NotificationPort interface {
+	SendAlert(ctx context.Context, recipient, message string) error
+}

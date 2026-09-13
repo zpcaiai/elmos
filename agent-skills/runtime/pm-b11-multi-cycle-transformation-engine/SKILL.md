@@ -1,5 +1,8 @@
 ---
 name: pm-b11-multi-cycle-transformation-engine
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "支持扫描、变换、构建反馈、再扫描和多轮收敛. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

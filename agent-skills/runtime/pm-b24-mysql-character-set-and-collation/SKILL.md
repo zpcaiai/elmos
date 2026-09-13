@@ -1,5 +1,8 @@
 ---
 name: pm-b24-mysql-character-set-and-collation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移字符集、Collation、大小写、重音、尾空格和索引限制. Precision Migration B24 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

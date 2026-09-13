@@ -1,5 +1,8 @@
 ---
 name: pm-b36-stronger-model-escalation
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "当修复轮数、证明失败或风险超阈值时自动升级更强模型或人工. Precision Migration B36 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

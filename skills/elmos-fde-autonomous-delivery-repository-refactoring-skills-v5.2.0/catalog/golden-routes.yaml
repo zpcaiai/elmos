@@ -1,0 +1,115 @@
+apiVersion: elmos.ai/v1
+kind: GoldenRouteCatalog
+metadata:
+  version: 5.2.0
+  count: 10
+spec:
+  routes:
+  - id: gr-fde-discovery-to-pilot
+    name: Customer discovery to approved pilot
+    scope: stakeholders → workflow → baseline → opportunity → SOW → acceptance → access readiness
+    skills:
+    - stakeholder-workflow-discovery
+    - business-baseline-roi
+    - pilot-scope-sow-acceptance
+    - procurement-security-questionnaire
+    target: An approved, bounded, measurable pilot without hidden access or evidence assumptions.
+  - id: gr-repository-xray
+    name: Repository intake to trustworthy X-Ray
+    scope: custody → inventory → build → support profile → runtime evidence → graph
+    skills:
+    - repository-custody-and-revisionset
+    - asset-inventory-and-classification
+    - reproducible-build-environment
+    - support-profile-and-unknown-register
+    - runtime-observation-and-traffic-capture
+    - polyglot-semantic-system-graph
+    target: A complete coverage statement with observed, verified-absent, unknown and unsupported areas.
+  - id: gr-full-repository-assessment
+    name: Evidence-backed whole-repository assessment
+    scope: system graph → multi-domain analysis → normalized findings → root-cause portfolio
+    skills:
+    - static-dynamic-evidence-fusion
+    - issue-ontology-and-finding-normalization
+    - architecture-maintainability-audit
+    - correctness-concurrency-consistency-audit
+    - security-privacy-supply-chain-audit
+    - data-database-migration-audit
+    - performance-reliability-observability-audit
+    - test-ci-cd-developer-experience-audit
+    - ux-accessibility-i18n-audit
+    - ai-agent-system-audit
+    - cost-finops-sustainability-audit
+    - root-cause-risk-prioritization
+    target: A deduplicated, evidence-scored issue and unknown register with business impact and root causes.
+  - id: gr-proof-guided-refactor
+    name: Plan and execute a behavior-preserving refactor
+    scope: invariants → alternatives → DAG → atomic ChangeSets → independent verification
+    skills:
+    - business-invariant-recovery
+    - target-architecture-alternatives-and-adr
+    - transformation-dag-estimation
+    - changeset-commit-and-provenance-governance
+    - proof-guided-atomic-refactor-execution
+    - characterization-differential-mutation-verification
+    - e0-e3-readiness-and-evidence-bundle
+    target: Small reversible changes with linked proof obligations and E3 readiness evidence.
+  - id: gr-spring-legacy-modernization
+    name: Legacy Java/Spring modernization
+    scope: characterize → build → decompose → migrate framework → compare → prepare rollout
+    skills:
+    - reproducible-build-environment
+    - business-invariant-recovery
+    - modernization-strangler-and-rearchitecture
+    - proof-guided-atomic-refactor-execution
+    - characterization-differential-mutation-verification
+    - shadow-dual-run-canary-rollback-preparation
+    target: Spring legacy route including Struts/Servlet migration through canonical Spring Modernization ownership.
+  - id: gr-polyglot-conversion
+    name: Repository-level cross-language/framework conversion
+    scope: source semantics → conversion plan → generated target → native differential verification
+    skills:
+    - polyglot-semantic-system-graph
+    - business-invariant-recovery
+    - cross-language-framework-transformation
+    - characterization-differential-mutation-verification
+    - formal-assurance-routing
+    target: Behaviorally constrained conversion without treating transpilation as completion.
+  - id: gr-database-transformation
+    name: Schema, routine and data transformation
+    scope: inventory → semantic mapping → expand/migrate/contract → reconcile → rollback rehearsal
+    skills:
+    - data-database-migration-audit
+    - business-invariant-recovery
+    - database-schema-routine-data-transformation
+    - characterization-differential-mutation-verification
+    - shadow-dual-run-canary-rollback-preparation
+    target: Permission-, routine-, data- and reconciliation-aware database migration evidence.
+  - id: gr-incident-remediation
+    name: Incident to verified remediation
+    scope: triage → containment → evidence → root cause → repair → regression → postmortem
+    skills:
+    - incident-triage-remediation-and-postmortem
+    - root-cause-risk-prioritization
+    - proof-guided-atomic-refactor-execution
+    - characterization-differential-mutation-verification
+    - reusable-recipe-skill-learning
+    target: A safe incident response with preserved evidence, verified fix and durable prevention.
+  - id: gr-production-handoff
+    name: Readiness to customer handoff
+    scope: E3 evidence → release rehearsal → training → operations handoff → adoption measurement
+    skills:
+    - e0-e3-readiness-and-evidence-bundle
+    - shadow-dual-run-canary-rollback-preparation
+    - final-handoff-training-support
+    - adoption-change-management
+    target: A complete handoff packet while reserving production/E4/E5 authority for external execution and certification.
+  - id: gr-portfolio-governance
+    name: Multi-repository modernization portfolio
+    scope: inventory → health/risk/value → route readiness → wave planning → evidence comparison
+    skills:
+    - portfolio-multi-repository-governance
+    - root-cause-risk-prioritization
+    - transformation-dag-estimation
+    - product-feedback-roadmap-loop
+    target: A capacity-aware, evidence-ranked modernization portfolio rather than an unbounded backlog.

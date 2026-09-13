@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-null-and-date-semantics
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "处理空字符串等于 NULL、DATE/TIMESTAMP、NLS 和时区语义. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

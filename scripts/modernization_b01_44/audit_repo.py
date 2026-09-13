@@ -14,7 +14,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
 from dataclasses import dataclass, field
@@ -46,51 +48,49 @@ SERIES: dict[str, tuple[tuple[str, ...], tuple[str, ...], str | None]] = {
         "engines/uir-java-python/tests",
     ),
     "codex-skills-b1-55": (
-        ("elmos-codex-skills-batch1-55-complete/**/SKILL.md",),
-        (),
-        None,
-    ),
-    "codex-skills-b40-55": (
-        ("elmos-codex-skills-batch40-55-complete/**/SKILL.md",),
-        (),
-        None,
+        (".agents/skills/b*-*/SKILL.md",),
+        ("scripts/modernization_b01_44",),
+        "tests/modernization-b01-44",
     ),
     "codex-skills-b66-80": (
-        ("elmos-codex-skills-batch66-80-complete/**/SKILL.md",),
+        ("skills/elmos-codex-skills-batch66-80-complete/**/SKILL.md",),
         ("scripts/test-suite-b66-80",),
         "tests/test-suite",
     ),
     "language-packs-b81-95": (
-        ("elmos-language-packs-batch81-95-complete/**/SKILL.md",),
-        (),
-        None,
+        ("skills/elmos-language-packs-batch81-95-complete/**/SKILL.md",),
+        ("scripts/language_packs_b81_95",),
+        "tests/language_packs_b81_95",
     ),
     "codex-skills-b97-104": (
-        ("elmos-codex-skills-batch97-104-complete/**/SKILL.md",),
-        (),
-        None,
+        ("agent-skills/runtime/b9[7-9]-*/SKILL.md", "agent-skills/runtime/b10[0-4]-*/SKILL.md"),
+        ("scripts/product_closure_b97_104",),
+        "tests/product_closure_b97_104",
+    ),
+    "knowledge-skill-model-foundry-v3": (
+        ("skills/elmos-knowledge-skill-model-foundry-v3.0.0/**/SKILL.md",),
+        ("engines/knowledge-skill-model-foundry-engine/src",),
+        "tests/knowledge-skill-model-foundry-skills",
     ),
     "product-convergence-b46": (
-        ("batch46-product-convergence-complete-skills/**/SKILL.md", ".agents/skills/conv-*/SKILL.md"),
+        ("skills/batch46-product-convergence-complete-skills/**/SKILL.md", ".agents/skills/conv-*/SKILL.md"),
         ("scripts/product-convergence",),
         "tests/product-convergence",
     ),
     "product-closure-b56": (
-        ("elmos-codex-skills-batch56-product-closure/**/SKILL.md",
-         "elmos-codex-skills-batch56a-product-closure/**/SKILL.md"),
+        ("agent-skills/runtime/b56-*/SKILL.md",),
         ("scripts/product-closure-batch56a", "scripts/product-closure-convergence"),
         "tests/product-closure-batch56",
     ),
-    "project-synthesis-b46-65": (
-        ("elmos-project-synthesis-batch46-60/**/*.md",
-         "elmos-project-synthesis-batch61-65/**/*.md"),
-        ("engines/project-synthesis-engine",),
-        None,
+    "product-closure-b105-108": (
+        ("skills/elmos-batch105-108/**/SKILL.md",),
+        ("skills/elmos-batch105-108/scripts",),
+        "skills/elmos-batch105-108/tests",
     ),
     "runtime-agent-skills": (
         ("agent-skills/**/SKILL.md", ".agents/skills/**/SKILL.md"),
         ("modules", "engines", "apps", "contracts"),
-        None,
+        "tests/modernization-b01-44",
     ),
 }
 
@@ -143,17 +143,69 @@ def count_code(directory: Path) -> tuple[int, int]:
 def run_tests(test_dir: Path) -> int | None:
     if not test_dir.is_dir():
         return None
-    proc = subprocess.run(
-        [sys.executable, "-m", "unittest", "discover", "-s", str(test_dir), "-p", "test_*.py"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        env={"PYTHONDONTWRITEBYTECODE": "1", "PATH": "/usr/bin:/bin", "HOME": "/tmp"},
-    )
-    match = re.search(r"^Ran (\d+) tests?", proc.stderr, re.M)
+    env = os.environ.copy()
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env["ELMOS_PRECISION_NATIVE_RECEIPT_REPLAY"] = "NOT_RUN"
+    extra_paths = [
+        str(ROOT),
+        str(ROOT / "engines" / "uir-java-python"),
+        str(ROOT / "engines" / "knowledge-skill-model-foundry-engine" / "src"),
+        str(ROOT / "packages" / "pi-harness" / "src"),
+    ]
+    existing_pp = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = ":".join(extra_paths + ([existing_pp] if existing_pp else []))
+
+    uv_path = shutil.which("uv") or "/Users/stephen/.local/bin/uv"
+    if Path(uv_path).is_file():
+        cmd = [
+            uv_path,
+            "run",
+            "--quiet",
+            "--with",
+            "pyyaml==6.0.2",
+            "--with",
+            "jsonschema==4.25.1",
+            "--with",
+            "tree-sitter",
+            "--with",
+            "tree-sitter-java",
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            str(test_dir),
+            "-p",
+            "test_*.py",
+        ]
+    else:
+        cmd = [
+            sys.executable,
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            str(test_dir),
+            "-p",
+            "test_*.py",
+        ]
+    try:
+        proc = subprocess.run(
+            cmd,
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            env=env,
+            timeout=300,
+        )
+    except subprocess.TimeoutExpired:
+        return None
+    output = proc.stderr + "\n" + proc.stdout
+    match = re.search(r"Ran (\d+) tests?", output, re.M)
     if not match:
         return None
     return int(match.group(1)) if proc.returncode == 0 else -int(match.group(1))
+
 
 
 def audit(run_suites: bool = True) -> list[SeriesReport]:

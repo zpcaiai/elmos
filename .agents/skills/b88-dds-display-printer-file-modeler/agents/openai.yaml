@@ -1,0 +1,4 @@
+interface:
+  display_name: "B88 Dds Display Printer File Modeler"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b88-dds-display-printer-file-modeler to execute this ELMOS Language Pack Skill with fail-closed evidence."

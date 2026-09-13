@@ -1,0 +1,5 @@
+name = "ElmosProofs"
+version = "0.1.0"
+defaultTargets = ["ElmosProofs"]
+[[lean_lib]]
+name = "ElmosProofs"

@@ -37,7 +37,10 @@ def test_profiles_are_exact_and_capabilities_disclose_boundaries() -> None:
     assert value["silentDropTolerance"] == 0
     assert value["resultEquivalence"] == "NOT_RUN"
     assert value["certification"] == "NOT_CERTIFIED"
-    assert any(item["state"] == "BLOCKED" for item in value["capabilities"])
+    capability_states = {item["id"]: item["state"] for item in value["capabilities"]}
+    assert capability_states["stored-procedure-and-trigger"] == "CONDITIONAL"
+    assert capability_states["optimizer-hints-and-plan-shape"] == "CONDITIONAL"
+    assert capability_states["runtime-result-equivalence"] == "NOT_RUN"
     assert len(value["knownConditionalPairs"]) == 2
     # The two formerly-blocked pairs are typed rewrites now; the catalog must
     # not regress them back to BLOCKED nor launder them into silent aliases.

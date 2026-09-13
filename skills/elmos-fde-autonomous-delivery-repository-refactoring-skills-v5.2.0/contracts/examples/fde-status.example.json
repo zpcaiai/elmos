@@ -1,0 +1,32 @@
+{
+  "engagementId": "eng-demo",
+  "asOf": "2026-08-31T00:00:00Z",
+  "scopeState": "at-risk",
+  "milestones": [
+    {
+      "id": "repository-xray",
+      "status": "done",
+      "evidenceRefs": [
+        "EV-001"
+      ]
+    },
+    {
+      "id": "production-trace",
+      "status": "blocked",
+      "evidenceRefs": []
+    }
+  ],
+  "risks": [
+    "Production traces unavailable"
+  ],
+  "decisions": [
+    "Continue with read-only pilot"
+  ],
+  "cost": {
+    "model": 4.0,
+    "compute": 1.0
+  },
+  "nextGates": [
+    "Customer access review"
+  ]
+}

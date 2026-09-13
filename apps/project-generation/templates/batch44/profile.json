@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "example-finops-economics",
+  "batch": 44,
+  "riskTier": "P0",
+  "requiredHoldout": true,
+  "requiredRepresentativeWorkloads": true,
+  "minimumEvidenceTraceCoverage": 0.99,
+  "metricThresholds": {
+    "meteringCompleteness": 1.0,
+    "costAllocationReconciliationRate": 1.0,
+    "unitCostTraceCoverage": 1.0,
+    "billingReconciliationRate": 1.0,
+    "marginModelAccuracyRate": 0.98,
+    "budgetGuardrailPassRate": 1.0,
+    "forecastIntervalCoverage": 0.9,
+    "customerValueEvidenceCoverage": 0.95,
+    "evidenceTraceCoverage": 0.98
+  },
+  "zeroTolerance": [
+    "duplicateMeterEvents",
+    "unallocatedMaterialCosts",
+    "nonzeroBillingReconciliationDifference",
+    "securityGateBypassesForCost",
+    "unapprovedNegativeMarginDeals",
+    "customerDataLossFromBudgetStops",
+    "unexplainedPriceOverrides",
+    "testIntegrityViolations"
+  ],
+  "metadata": {}
+}

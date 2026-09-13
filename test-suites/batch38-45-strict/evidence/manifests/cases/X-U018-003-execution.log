@@ -1,0 +1,12 @@
+[2026-09-10T08:26:20.661887Z][X-U018-003] Starting execution of X-U018-003 (供应链篡改与Provenance / negative / 场景3) [Category=negative, Priority=P1]
+[2026-09-10T08:26:20.661890Z][X-U018-003] Bound Skill: tst-supply-chain-tamper-provenance-vex | Product Skill IDs: []
+[2026-09-10T08:26:20.661894Z][X-U018-003] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:20.672973Z][X-U018-003] Security: Minted RS256 token (JTI=d89d76c2..., Exp=1789032380)
+[2026-09-10T08:26:20.700986Z][X-U018-003] KMS: Envelope encrypted 37 bytes under key key-x-u018-003 v1 (DEK wrapped)
+[2026-09-10T08:26:20.742968Z][X-U018-003] [CROSS-SEC-GOV] Initializing X-U018-003 (U018) Category=negative
+[2026-09-10T08:26:20.742980Z][X-U018-003] Supply Chain Security: Evaluating SLSA Level 3 provenance, SBOM and VEX declarations
+[2026-09-10T08:26:20.742984Z][X-U018-003] Injecting simulated critical vulnerability CVE-2026-99999 into build manifest...
+[2026-09-10T08:26:20.742986Z][X-U018-003] VEX Security Gate: Blocked deployment of image with Critical unpatched CVE
+[2026-09-10T08:26:20.743009Z][X-U018-003] Completed execution of X-U018-003 in 81.1ms: Status=PASSED
+[2026-09-10T08:26:20.743012Z][X-U018-003] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:20.743026Z][X-U018-003] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

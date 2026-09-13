@@ -1,0 +1,49 @@
+{
+  "planId": "plan-demo",
+  "revisionSetId": "revset-001",
+  "targetArchitectureId": "arch-balanced",
+  "steps": [
+    {
+      "stepId": "S1",
+      "title": "Add characterization tests",
+      "dependsOn": [],
+      "writeScope": [
+        "tests/"
+      ],
+      "obligations": [
+        "current behavior captured"
+      ],
+      "rollback": [
+        "revert commit"
+      ],
+      "riskClass": "medium"
+    },
+    {
+      "stepId": "S2",
+      "title": "Add idempotency boundary",
+      "dependsOn": [
+        "S1"
+      ],
+      "writeScope": [
+        "src/orders/"
+      ],
+      "obligations": [
+        "INV-001"
+      ],
+      "rollback": [
+        "revert commit"
+      ],
+      "riskClass": "high"
+    }
+  ],
+  "estimates": {
+    "machineWallClockSeconds": 1800,
+    "queueSeconds": 120,
+    "cost": {
+      "model": 4.0,
+      "compute": 1.0
+    },
+    "humanReview": "One architecture and one security review"
+  },
+  "approvalStatus": "proposed"
+}

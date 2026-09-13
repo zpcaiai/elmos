@@ -1,5 +1,8 @@
 ---
 name: pm-b21-procedure-side-effect-analyzer
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "总结过程对表、序列、消息、外部调用、事务和权限的副作用. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

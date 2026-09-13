@@ -1,5 +1,8 @@
 ---
 name: pm-b32-deterministic-record-replay
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "记录输入、外部返回、时间、随机、调度和状态并可确定性重放. Precision Migration B32 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

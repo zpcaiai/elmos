@@ -1,5 +1,8 @@
 ---
 name: pm-b19-database-effect-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "表达 SQL 和过程代码对数据、事务、序列、外部系统和审计的副作用. Precision Migration B19 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

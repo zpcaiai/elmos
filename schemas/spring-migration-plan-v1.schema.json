@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Spring Migration Plan",
+  "type": "object",
+  "properties": {
+    "plan_id": { "type": "string" },
+    "source_version": { "type": "string" },
+    "target_version": { "type": "string" },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rule_id": { "type": "string" },
+          "name": { "type": "string" },
+          "category": { "type": "string" },
+          "risk_level": { "type": "string" },
+          "auto_applicable": { "type": "boolean" }
+        },
+        "required": ["rule_id"]
+      }
+    },
+    "estimated_changes": { "type": "integer" },
+    "risk_summary": { "type": "string" },
+    "waves": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "required": ["plan_id"]
+}

@@ -1,0 +1,18 @@
+# API implementation notes
+
+所有endpoint已定义专有Request/Response DTO，而不是复用空泛command。业务实体完整内容通过schemas定义与不可变artifact引用交换；控制API不接收任意callback URL、raw provider endpoint、secret、私钥或自选root keys。
+source/proposal/report artifact在现有Artifact服务经受控上传后按摘要引用。上传须检查租户、授权、大小、MIME/格式、内容hash和恶意引用；server不能据hash直接允许跨租户读取。
+
+Create资源的If-Match对应project/config版本；更新对应resource revision。Idempotency-Key按tenant/project/operation作用域；同key同body返回同资源，同key不同body返回409。所有post返回202为“接受异步命令”，不是测试或审批已经通过。
+
+对approveContract/submitAuditDecision，authenticated identity和权限来自现有IdP；请求body中的approval_challenge/nonce/签名引用还需服务端验证：audience、replay、期限、control domain、scope及摘要。申请人不得决定自己的authorized scope。
+createRun不允许客户自改obligations或policy正文：服务端按已批准plan/profile解析。
+sealEvidence核对服务端append-only evidence inventory，而不是让客户端自由挑选绿报告。
+requestEthenAudit中的auditor config必须预先由授权管理者批准。
+revokeAttestation需真实授权审批；技术verdict不受付款状态影响。
+
+GET服务端每次重新鉴权；跨tenant资源按现有策略返回404/403。权限不足不得泄露resource是否存在。
+执行中verdict可null；NOT_RUN/INCONCLUSIVE在响应和UI显式显示。证书查询返回status_checked_at；离线签名正确不等于未撤销。
+
+正式实现还须完成分页/ETag、request size、rate limits、server deadline、subscription鉴权、审计、错误脱敏、N-1兼容、每endpoint正负契约测试与测试数据隔离。
+本包做结构/引用检查，不假称已经运行实际HTTP API。

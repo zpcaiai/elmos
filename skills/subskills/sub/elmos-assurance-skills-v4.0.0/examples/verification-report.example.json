@@ -1,0 +1,13 @@
+{
+  "findings": [],
+  "kind": "build",
+  "results": [
+    {
+      "assertions": 1,
+      "case_id": "c-build",
+      "obligation_id": "o-build",
+      "status": "PASS"
+    }
+  ],
+  "schema_version": "4.0"
+}

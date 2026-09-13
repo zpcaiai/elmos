@@ -1,0 +1,12 @@
+[2026-09-10T08:26:26.786213Z][X-U022-002] Starting execution of X-U022-002 (模型路由、预算与Kill Switch / boundary / 场景2) [Category=boundary, Priority=P0]
+[2026-09-10T08:26:26.786216Z][X-U022-002] Bound Skill: tst-model-routing-budget-kill-switch | Product Skill IDs: []
+[2026-09-10T08:26:26.786219Z][X-U022-002] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:26.799347Z][X-U022-002] Security: Minted RS256 token (JTI=751a6b58..., Exp=1789032386)
+[2026-09-10T08:26:26.830385Z][X-U022-002] KMS: Envelope encrypted 37 bytes under key key-x-u022-002 v1 (DEK wrapped)
+[2026-09-10T08:26:26.896401Z][X-U022-002] [CROSS-SEC-GOV] Initializing X-U022-002 (U022) Category=boundary
+[2026-09-10T08:26:26.896408Z][X-U022-002] Model Routing & Budget Killswitch: Verifying multi-model router, spend caps, and provider failover
+[2026-09-10T08:26:26.896411Z][X-U022-002] Testing exact 100% budget spend threshold...
+[2026-09-10T08:26:26.896450Z][X-U022-002] Budget Hard Cap: HARD_LIMIT_REACHED: Spend $96.00 >= Budget $50.00
+[2026-09-10T08:26:26.896461Z][X-U022-002] Completed execution of X-U022-002 in 110.2ms: Status=PASSED
+[2026-09-10T08:26:26.896463Z][X-U022-002] Assertion Summary: 4/4 assertions passed
+[2026-09-10T08:26:26.896473Z][X-U022-002] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

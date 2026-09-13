@@ -10,7 +10,7 @@ import sqlglot
 from sqlglot import exp
 from sqlglot.errors import ErrorLevel, ParseError, TokenError, UnsupportedError
 
-from . import placeholders
+from . import placeholders, rewrites, routines
 from .chinadb_adapters import chinadb_adapter_by_id, chinadb_local_adapter_count
 from .models import (
     CommercialAssessmentResult,
@@ -71,9 +71,11 @@ def _digest_text(value: str) -> str:
 
 
 def _catalog_text() -> str:
-    return files("elmos_sql_transpiler").joinpath(
-        "data/chinadb-commercial-v1.json"
-    ).read_text(encoding="utf-8")
+    return (
+        files("elmos_sql_transpiler")
+        .joinpath("data/chinadb-commercial-v1.json")
+        .read_text(encoding="utf-8")
+    )
 
 
 def _object_list(value: object, *, name: str) -> list[dict[str, Any]]:
@@ -220,14 +222,8 @@ def _is_floating(value: str) -> bool:
 
 
 def _require_exact_context(name: str, value: str) -> None:
-    if (
-        _is_floating(value)
-        or len(value) > 128
-        or _EXACT_CONTEXT_PATTERN.fullmatch(value) is None
-    ):
-        raise ValueError(
-            f"{name} must be a concrete non-floating token of at most 128 characters"
-        )
+    if _is_floating(value) or len(value) > 128 or _EXACT_CONTEXT_PATTERN.fullmatch(value) is None:
+        raise ValueError(f"{name} must be a concrete non-floating token of at most 128 characters")
 
 
 def _validate_request(request: CommercialAssessRequest) -> dict[str, Any]:
@@ -471,25 +467,57 @@ def assess_commercial(
             source_parse="FAILED",
         )
 
-    statements: list[CommercialStatement] = []
+    hint_scan = rewrites.inspect_source_hints(request.sql)
     blockers: list[CommercialBlocker] = []
+    if hint_scan.locking:
+        blockers.append(
+            CommercialBlocker(
+                code="LOCKING_HINT_NOT_PORTABLE",
+                severity="ERROR",
+                statement_index=None,
+                message=(
+                    "Locking and isolation hints change concurrency semantics "
+                    "and are not stripped or rewritten."
+                ),
+            )
+        )
+
+    statements: list[CommercialStatement] = []
     observed_parameter_tokens: list[str] = []
     first_opaque_statement: int | None = None
+    skip_following_end = False
     for index, statement in enumerate(source_statements):
+        if skip_following_end and routines.is_end_statement(statement):
+            skip_following_end = False
+            continue
+        skip_following_end = False
         obligations = set(_obligations(statement))
         if not obligations:
             obligations.add("TARGET_SEMANTICS_REVIEW_REQUIRED")
-        if isinstance(statement, exp.Command):
+        routine_command = routines.is_routine_command(statement)
+        opaque_source = not routine_command and (
+            routines.is_end_statement(statement) or isinstance(statement, exp.Command)
+        )
+        if opaque_source:
             obligations.add("OPAQUE_COMMAND_SEMANTICS")
             if first_opaque_statement is None:
                 first_opaque_statement = index
+        create_kind = (
+            str(statement.args.get("kind") or "").upper()
+            if isinstance(statement, exp.Create)
+            else ""
+        )
+        if routine_command or create_kind in {"FUNCTION", "PROCEDURE", "TRIGGER"}:
+            skip_following_end = True
         parameter_tokens = _parameter_nodes(statement, source.dialect)
         observed_parameter_tokens.extend(parameter_tokens)
         if parameter_tokens:
             obligations.add("PARAMETER_BINDING_CONTRACT")
+        if hint_scan.plan_hint:
+            obligations.add(rewrites.OPTIMIZER_HINT_STRIPPED)
         statements.append(
             CommercialStatement(
-                index=index,
+                index=len(statements),
                 kind=statement.key.upper(),
                 source_ast=statement.dump(),
                 obligations=tuple(sorted(obligations)),
@@ -617,12 +645,44 @@ def assess_commercial(
 
     target_sql_parts: list[str] = []
     emit_index: int | None = None
+    skip_following_end = False
     try:
         for emit_index, statement in enumerate(source_statements):  # noqa: B007
-            if isinstance(statement, exp.Command):
+            if skip_following_end and routines.is_end_statement(statement):
+                skip_following_end = False
+                continue
+            skip_following_end = False
+            if isinstance(statement, exp.Command) and not routines.is_routine_command(statement):
+                raise UnsupportedError("opaque command nodes are prohibited")
+            rewritten = statement.copy()
+            rewritten, _aggregate_rules = rewrites.canonicalize_aggregate_order(rewritten)
+            if source.dialect == "oracle":
+                rewritten, _trunc_rules = rewrites.normalize_oracle_date_trunc(rewritten)
+            rewritten, _hint_rules = rewrites.strip_optimizer_hints(rewritten)
+            conversion = routines.convert(rewritten, source.dialect, target_dialect)
+            if conversion is not None:
+                generated = conversion.sql
+                skip_following_end = conversion.skip_following_end
+                parsed_target = sqlglot.parse(
+                    generated,
+                    read=target_dialect,
+                    error_level=ErrorLevel.RAISE,
+                )
+                target_statements = [
+                    item
+                    for item in parsed_target
+                    if isinstance(item, exp.Expression) and not routines.is_end_statement(item)
+                ]
+                if len(target_statements) != 1:
+                    raise UnsupportedError("target re-parse did not yield exactly one statement")
+                if isinstance(target_statements[0], exp.Command) and not conversion.opaque_target:
+                    raise UnsupportedError("target re-parse did not yield exactly one statement")
+                target_sql_parts.append(generated.rstrip(";"))
+                continue
+            if isinstance(rewritten, (exp.Command, exp.EndStatement)):
                 raise UnsupportedError("opaque command nodes are prohibited")
             rewritten, _mapping = placeholders.rewrite(
-                statement,
+                rewritten,
                 source.dialect,
                 target_dialect,
             )
@@ -639,12 +699,29 @@ def assess_commercial(
                 read=target_dialect,
                 error_level=ErrorLevel.RAISE,
             )
-            target_statements = [
-                item for item in parsed_target if isinstance(item, exp.Expression)
-            ]
+            target_statements = [item for item in parsed_target if isinstance(item, exp.Expression)]
             if len(target_statements) != 1:
                 raise UnsupportedError("target re-parse did not yield exactly one statement")
             target_sql_parts.append(generated.rstrip(";"))
+    except rewrites.RewriteBlocked as error:
+        blockers.append(
+            CommercialBlocker(
+                code=error.code,
+                severity="ERROR",
+                statement_index=emit_index,
+                message=error.message,
+            )
+        )
+        return _result(
+            request,
+            target,
+            route_id=route_id,
+            statements=tuple(statements),
+            blockers=tuple(blockers),
+            source_parse="PASSED",
+            target_adapter="PASSED",
+            target_emit="FAILED",
+        )
     except UnsupportedError as error:
         blockers.append(
             CommercialBlocker(

@@ -1,0 +1,11 @@
+[2026-09-10T08:26:20.888506Z][X-U018-006] Starting execution of X-U018-006 (供应链篡改与Provenance / replay-idempotency / 场景6) [Category=replay-idempotency, Priority=P0]
+[2026-09-10T08:26:20.888509Z][X-U018-006] Bound Skill: tst-supply-chain-tamper-provenance-vex | Product Skill IDs: []
+[2026-09-10T08:26:20.888513Z][X-U018-006] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:20.898969Z][X-U018-006] Security: Minted RS256 token (JTI=ab87f661..., Exp=1789032380)
+[2026-09-10T08:26:20.926404Z][X-U018-006] KMS: Envelope encrypted 37 bytes under key key-x-u018-006 v1 (DEK wrapped)
+[2026-09-10T08:26:20.943580Z][X-U018-006] [CROSS-SEC-GOV] Initializing X-U018-006 (U018) Category=replay-idempotency
+[2026-09-10T08:26:20.943591Z][X-U018-006] Supply Chain Security: Evaluating SLSA Level 3 provenance, SBOM and VEX declarations
+[2026-09-10T08:26:20.943596Z][X-U018-006] Re-evaluating identical SBOM against VEX policy...
+[2026-09-10T08:26:20.943613Z][X-U018-006] Completed execution of X-U018-006 in 55.1ms: Status=PASSED
+[2026-09-10T08:26:20.943615Z][X-U018-006] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:20.943627Z][X-U018-006] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

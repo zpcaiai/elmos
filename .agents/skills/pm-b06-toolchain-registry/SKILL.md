@@ -1,5 +1,8 @@
 ---
 name: pm-b06-toolchain-registry
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "为每个支持语言和平台提供版本化、可复现、隔离的编译、运行、测试和诊断适配能力. Precision Migration B06 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

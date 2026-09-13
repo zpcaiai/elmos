@@ -1,5 +1,8 @@
 ---
 name: pm-b07-execution-audit-recorder
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "记录工具调用、命令、文件变化、网络、资源、凭证作用域和决策审计. Precision Migration B07 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

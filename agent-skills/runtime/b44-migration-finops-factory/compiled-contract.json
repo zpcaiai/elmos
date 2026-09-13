@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "skill_name": "b44-migration-finops-factory",
+  "batch": 44,
+  "batch_title": "FinOps & Unit Economics",
+  "implementation_state": "VERIFIED",
+  "external_evidence_status": "LOCAL_EXECUTED",
+  "production_certification": "NOT_CERTIFIED",
+  "runtime_handler": "scripts.batch44.b44_skill_runtime.B44SkillRuntime._handle_migration_finops_factory",
+  "fail_closed_policy": "FAIL_CLOSED_ON_UNKNOWN_STATUS",
+  "metrics_thresholds": {
+    "meteringReconciliationRate": 1.0,
+    "budgetGuardrailPassRate": 1.0,
+    "grossMarginEvidenceCoverageRate": 0.95
+  }
+}

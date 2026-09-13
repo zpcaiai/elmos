@@ -1,6 +1,15 @@
 ---
 name: b31-type-precision-null-collation
-description: "Implement and certify cross-engine data type, precision, scale, null, charset, collation, time-zone, JSON/XML/spatial, enum, and binary mappings with boundary data tests. Use whenever data representation can change."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
+description: Implement and certify cross-engine data type, precision, scale, null, charset, collation, time-zone, JSON/XML/spatial, enum, and binary mappings with boundary data tests. Use whenever data representation can change.
 ---
 
 ## Operating mode

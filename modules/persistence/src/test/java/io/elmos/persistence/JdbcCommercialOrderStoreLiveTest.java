@@ -17,12 +17,14 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,12 +34,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class JdbcCommercialOrderStoreLiveTest {
     @Container
     static final PostgreSQLContainer<?> POSTGRES =
-            new PostgreSQLContainer<>("postgres:17.5-alpine");
+            new PostgreSQLContainer<>("postgres:17.5-alpine")
+                    .withStartupTimeout(Duration.ofMinutes(3));
 
     private static final String RUNTIME_USER = "elmos_commercial_order_live";
     private static final String RUNTIME_PASSWORD = "commercial-order-live-only";
+    private static final String OUTBOX_USER = "elmos_credit_outbox_live";
+    private static final String OUTBOX_PASSWORD = "credit-outbox-live-only";
     private static JdbcClient admin;
     private static JdbcClient runtime;
+    private static JdbcClient publisher;
     private static CommercialOrderPort orders;
     private static DriverManagerDataSource adminDataSource;
     private static DriverManagerDataSource runtimeDataSource;
@@ -61,6 +67,8 @@ class JdbcCommercialOrderStoreLiveTest {
             statement.execute("GRANT SELECT ON commercial_products, commercial_orders, "
                     + "commercial_order_directory, commercial_credit_accounts, "
                     + "commercial_credit_lots, commercial_credit_ledger_entries, "
+                    + "commercial_credit_journal_transactions, commercial_credit_journal_entries, "
+                    + "commercial_credit_projection_rebuilds, "
                     + "project_generation_entitlements, commercial_credit_reservations, "
                     + "commercial_credit_reservation_lots TO " + RUNTIME_USER);
             statement.execute("GRANT SELECT ON usage_events, usage_ledger_entries, "
@@ -92,13 +100,19 @@ class JdbcCommercialOrderStoreLiveTest {
             statement.execute("GRANT EXECUTE ON FUNCTION "
                     + "elmos_commercial_expire_generation_reservations(integer) TO "
                     + RUNTIME_USER);
+            statement.execute("GRANT EXECUTE ON FUNCTION "
+                    + "elmos_commercial_credit_reconcile() TO " + RUNTIME_USER);
             statement.execute("GRANT EXECUTE ON FUNCTION elmos_expire_current_trial() TO "
                     + RUNTIME_USER);
             statement.execute("GRANT EXECUTE ON FUNCTION elmos_current_organization_id() TO "
                     + RUNTIME_USER);
+            statement.execute("CREATE ROLE " + OUTBOX_USER + " LOGIN PASSWORD '"
+                    + OUTBOX_PASSWORD + "' NOSUPERUSER NOBYPASSRLS INHERIT");
+            statement.execute("GRANT elmos_credit_outbox_publisher TO " + OUTBOX_USER);
         }
         runtimeDataSource = dataSource(RUNTIME_USER, RUNTIME_PASSWORD);
         runtime = JdbcClient.create(runtimeDataSource);
+        publisher = JdbcClient.create(dataSource(OUTBOX_USER, OUTBOX_PASSWORD));
         orders = new JdbcCommercialOrderStore(
                 runtime, new TransactionTemplate(new DataSourceTransactionManager(runtimeDataSource)));
     }
@@ -132,6 +146,12 @@ class JdbcCommercialOrderStoreLiveTest {
         fulfill(organization, creditOrder, "provider-credit-" + suffix);
         fulfill(organization, creditOrder, "provider-credit-" + suffix);
         assertBalance(organization, "500", "0", "500");
+        assertEquals(1, count("select count(*) from commercial_credit_journal_transactions "
+                + "where organization_id = ?", organization));
+        assertEquals(1, count("select count(*) from commercial_credit_outbox_events "
+                + "where organization_id = ?", organization));
+        assertJournalBalanced(organization);
+        assertFalse(orders.creditReconciliation(organization).drifted());
         assertEquals(1, orders.creditLedger(organization, "actor-a", 20, 0, false).size());
         assertEquals(1, count("select count(*) from commercial_credit_lots "
                 + "where organization_id = ?", organization));
@@ -148,6 +168,12 @@ class JdbcCommercialOrderStoreLiveTest {
         assertEquals("SETTLED", orders.settleGeneration(
                 organization, "actor-a", hold.reservationId(), new BigDecimal("45")));
         assertBalance(organization, "455", "0", "455");
+        assertEquals(3, count("select count(*) from commercial_credit_journal_transactions "
+                + "where organization_id = ?", organization));
+        assertEquals(3, count("select count(*) from commercial_credit_outbox_events "
+                + "where organization_id = ?", organization));
+        assertJournalBalanced(organization);
+        assertFalse(orders.creditReconciliation(organization).drifted());
         assertEquals(List.of("GENERATION", "PURCHASE"), orders.creditLedger(
                 organization, "actor-a", 20, 0, false).stream()
                 .map(CommercialOrderPort.CreditLedgerEntry::entryType).toList());
@@ -160,6 +186,11 @@ class JdbcCommercialOrderStoreLiveTest {
         assertEquals("RELEASED", orders.releaseGeneration(
                 organization, "actor-a", released.reservationId()));
         assertBalance(organization, "455", "0", "455");
+        assertEquals(5, count("select count(*) from commercial_credit_journal_transactions "
+                + "where organization_id = ?", organization));
+        assertEquals(5, count("select count(*) from commercial_credit_outbox_events "
+                + "where organization_id = ?", organization));
+        assertJournalBalanced(organization);
 
         String oneTimeOrder = createOrder(
                 organization, "actor-a", "one-time-order-" + suffix,
@@ -244,6 +275,150 @@ class JdbcCommercialOrderStoreLiveTest {
                 entitlementHold.reservationId()));
         assertEquals("AVAILABLE", inTenant(organization, "select status "
                 + "from project_generation_entitlements where source_order_id = ?", oneTimeOrder));
+    }
+
+    @Test
+    void projectionRebuildUsesJournalAndIsAuditedIdempotently() {
+        String suffix = UUID.randomUUID().toString();
+        String organization = "commercial-rebuild-" + suffix;
+        insertOrganization(organization);
+        String order = createOrder(organization, "actor-a", "rebuild-order-" + suffix,
+                "elmos-credit-500", null, "rebuild-order-idem-" + suffix);
+        fulfill(organization, order, "rebuild-provider-" + suffix);
+
+        var transaction = new TransactionTemplate(new DataSourceTransactionManager(adminDataSource));
+        transaction.executeWithoutResult(status -> {
+            admin.sql("select set_config('app.organization_id', ?, true)")
+                    .param(organization).query(String.class).single();
+            admin.sql("select set_config('app.commercial_credit_posting', 'on', true)")
+                    .query(String.class).single();
+            admin.sql("select set_config('app.commercial_credit_rebuild', 'on', true)")
+                    .query(String.class).single();
+            admin.sql("update commercial_credit_accounts set balance = 1, "
+                            + "account_version = account_version + 1 where organization_id = ?")
+                    .param(organization).update();
+        });
+        assertTrue(orders.creditReconciliation(organization).drifted());
+
+        String first = rebuildProjection(organization, "rebuild-idem-" + suffix);
+        String replay = rebuildProjection(organization, "rebuild-idem-" + suffix);
+        assertEquals(first, replay);
+        assertBalance(organization, "500", "0", "500");
+        assertFalse(orders.creditReconciliation(organization).drifted());
+        assertEquals(1, count("select count(*) from commercial_credit_projection_rebuilds "
+                + "where organization_id = ?", organization));
+        assertEquals(1, count("select count(*) from commercial_credit_journal_transactions "
+                + "where organization_id = ?", organization));
+    }
+
+    @Test
+    void unbalancedJournalTransactionCannotCommit() {
+        String suffix = UUID.randomUUID().toString();
+        String organization = "commercial-unbalanced-" + suffix;
+        insertOrganization(organization);
+        var transaction = new TransactionTemplate(new DataSourceTransactionManager(adminDataSource));
+
+        assertThrows(RuntimeException.class, () -> transaction.executeWithoutResult(status -> {
+            admin.sql("select set_config('app.organization_id', ?, true)")
+                    .param(organization).query(String.class).single();
+            admin.sql("""
+                    insert into commercial_credit_journal_transactions (
+                        transaction_id, organization_id, projection_version, operation_type,
+                        actor_id, correlation_id, causation_id, idempotency_key,
+                        source_type, source_ref, balance_before, reserved_before,
+                        balance_after, reserved_after)
+                    values (?, ?, 0, 'ADJUSTMENT', 'actor-a', 'correlation-a',
+                            'causation-a', 'unbalanced-idem', 'TEST', 'unbalanced', 0, 0, 1, 0)
+                    """).params("unbalanced-tx-" + suffix, organization).update();
+            admin.sql("""
+                    insert into commercial_credit_journal_entries (
+                        posting_id, transaction_id, organization_id, account_code, side, quantity)
+                    values (?, ?, ?, 'PLATFORM_CLEARING', 'DEBIT', 1)
+                    """).params("unbalanced-posting-" + suffix,
+                            "unbalanced-tx-" + suffix, organization).update();
+        }));
+        assertEquals(0, count("select count(*) from commercial_credit_journal_transactions "
+                + "where organization_id = ?", organization));
+    }
+
+    @Test
+    void outboxFailureRetriesTheSameImmutableEventThenPublishesOnce() {
+        String suffix = UUID.randomUUID().toString();
+        String organization = "commercial-outbox-" + suffix;
+        insertOrganization(organization);
+        String order = createOrder(organization, "actor-a", "outbox-order-" + suffix,
+                "elmos-credit-500", null, "outbox-order-idem-" + suffix);
+        fulfill(organization, order, "outbox-provider-" + suffix);
+
+        String event = publisher.sql("select event_id from "
+                        + "elmos_claim_commercial_credit_outbox(?, ?, ?)")
+                .params("publisher-a", 1000, 60).query(String.class).list().stream()
+                .filter(id -> id.equals("credit-outbox-" + md5(
+                        "credit-journal-" + md5(organization + ":0"))))
+                .findFirst().orElseThrow();
+        assertEquals("RETRY_SCHEDULED", publisher.sql(
+                        "select elmos_complete_commercial_credit_outbox(?, ?, false, ?)")
+                .params(event, "publisher-a", "network-unknown")
+                .query(String.class).single());
+        admin.sql("update commercial_credit_outbox_events set available_at = now() - interval '1 second' "
+                        + "where event_id = ?")
+                .param(event).update();
+        assertEquals(event, publisher.sql("select event_id from "
+                        + "elmos_claim_commercial_credit_outbox(?, ?, ?)")
+                .params("publisher-b", 1000, 60).query(String.class).list().stream()
+                .filter(event::equals).findFirst().orElseThrow());
+        assertEquals("PUBLISHED", publisher.sql(
+                        "select elmos_complete_commercial_credit_outbox(?, ?, true, null)")
+                .params(event, "publisher-b").query(String.class).single());
+        assertEquals("PUBLISHED", publisher.sql(
+                        "select elmos_complete_commercial_credit_outbox(?, ?, true, null)")
+                .params(event, "publisher-b").query(String.class).single());
+        assertEquals(2, admin.sql("select attempt_count from commercial_credit_outbox_events "
+                        + "where event_id = ?")
+                .param(event).query(Integer.class).single());
+        assertEquals(List.of("RETRY_SCHEDULED:network-unknown", "PUBLISHED:"), admin.sql("""
+                        select outcome || ':' || coalesce(error_message, '')
+                          from commercial_credit_outbox_delivery_attempts
+                         where event_id = ? order by attempt_number
+                        """).param(event).query(String.class).list());
+        assertThrows(RuntimeException.class, () -> publisher.sql(
+                        "select * from elmos_claim_commercial_credit_outbox('publisher-null', null, 60)")
+                .query(String.class).list());
+        assertThrows(RuntimeException.class, () -> runtime.sql(
+                        "select * from elmos_claim_commercial_credit_outbox('runtime-user', 1, 60)")
+                .query(String.class).list());
+    }
+
+    @Test
+    void oneThousandConcurrentReservationsCannotOvercommit() throws Exception {
+        String suffix = UUID.randomUUID().toString();
+        String organization = "commercial-race-" + suffix;
+        insertOrganization(organization);
+        String order = createOrder(organization, "actor-a", "race-order-" + suffix,
+                "elmos-credit-500", null, "race-order-idem-" + suffix);
+        fulfill(organization, order, "race-provider-" + suffix);
+
+        try (var executor = Executors.newFixedThreadPool(32)) {
+            List<Callable<String>> calls = java.util.stream.IntStream.range(0, 1000)
+                    .<Callable<String>>mapToObj(index -> () -> orders.reserveGeneration(
+                            "race-1000-res-" + index + "-" + suffix, organization, "actor-a",
+                            "race-project", "race-1000-job-" + index,
+                            BigDecimal.ONE, "race-1000-idem-" + index + "-" + suffix, 600)
+                            .decision())
+                    .toList();
+            long accepted = 0;
+            for (var future : executor.invokeAll(calls)) {
+                if ("RESERVED".equals(future.get())) accepted++;
+            }
+            assertEquals(500, accepted);
+        }
+        assertBalance(organization, "500", "500", "0");
+        assertEquals(501, count("select count(*) from commercial_credit_journal_transactions "
+                + "where organization_id = ?", organization));
+        assertEquals(501, count("select count(*) from commercial_credit_outbox_events "
+                + "where organization_id = ?", organization));
+        assertJournalBalanced(organization);
+        assertFalse(orders.creditReconciliation(organization).drifted());
     }
 
     @Test
@@ -546,6 +721,32 @@ class JdbcCommercialOrderStoreLiveTest {
 
     private static int count(String sql, String organization) {
         return admin.sql(sql).param(organization).query(Integer.class).single();
+    }
+
+    private static void assertJournalBalanced(String organization) {
+        assertEquals(0, count("""
+                select count(*) from (
+                    select transaction_id from commercial_credit_journal_entries
+                     where organization_id = ? group by transaction_id
+                    having sum(quantity) filter (where side = 'DEBIT')
+                        <> sum(quantity) filter (where side = 'CREDIT')
+                ) drift
+                """, organization));
+    }
+
+    private static String rebuildProjection(String organization, String idempotencyKey) {
+        var transaction = new TransactionTemplate(new DataSourceTransactionManager(adminDataSource));
+        return transaction.execute(status -> {
+            admin.sql("select set_config('app.organization_id', ?, true)")
+                    .param(organization).query(String.class).single();
+            return admin.sql("select elmos_commercial_rebuild_credit_projection(?, ?, ?)")
+                    .params("operator-a", "repair projection drift", idempotencyKey)
+                    .query(String.class).single();
+        });
+    }
+
+    private static String md5(String value) {
+        return admin.sql("select md5(?)").param(value).query(String.class).single();
     }
 
     private static String inTenant(String organization, String sql, String argument) {

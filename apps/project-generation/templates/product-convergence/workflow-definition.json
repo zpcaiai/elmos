@@ -1,0 +1,44 @@
+{
+  "workflow_id": "reference-migration",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "step_id": "assess",
+      "kind": "activity",
+      "idempotency": "project+source-commit",
+      "retry": {
+        "max_attempts": 3
+      },
+      "timeout_seconds": 3600,
+      "compensation_step": null
+    },
+    {
+      "step_id": "approve-plan",
+      "kind": "approval",
+      "idempotency": "project+plan-digest",
+      "retry": {},
+      "timeout_seconds": 86400,
+      "compensation_step": null
+    },
+    {
+      "step_id": "migrate",
+      "kind": "child-workflow",
+      "idempotency": "project+route+source-commit",
+      "retry": {
+        "max_attempts": 2
+      },
+      "timeout_seconds": 86400,
+      "compensation_step": "rollback-target-branch"
+    },
+    {
+      "step_id": "rollback-target-branch",
+      "kind": "compensation",
+      "idempotency": "project+target-commit",
+      "retry": {
+        "max_attempts": 3
+      },
+      "timeout_seconds": 3600,
+      "compensation_step": null
+    }
+  ]
+}

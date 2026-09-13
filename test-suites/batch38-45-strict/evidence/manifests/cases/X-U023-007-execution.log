@@ -1,0 +1,11 @@
+[2026-09-10T08:26:28.077288Z][X-U023-007] Starting execution of X-U023-007 (全协议兼容矩阵 / version-drift / 场景7) [Category=version-drift, Priority=P1]
+[2026-09-10T08:26:28.077290Z][X-U023-007] Bound Skill: tst-api-event-sdk-runner-compatibility | Product Skill IDs: []
+[2026-09-10T08:26:28.077293Z][X-U023-007] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:28.087517Z][X-U023-007] Security: Minted RS256 token (JTI=6162240d..., Exp=1789032388)
+[2026-09-10T08:26:28.112303Z][X-U023-007] KMS: Envelope encrypted 37 bytes under key key-x-u023-007 v1 (DEK wrapped)
+[2026-09-10T08:26:28.126889Z][X-U023-007] [CROSS-SEC-GOV] Initializing X-U023-007 (U023) Category=version-drift
+[2026-09-10T08:26:28.126892Z][X-U023-007] API & SDK Compatibility: Verifying public API contracts, event schema evolution, and runner compatibility
+[2026-09-10T08:26:28.126895Z][X-U023-007] Testing backward compatibility of SDK v1.5 with API server v2.1...
+[2026-09-10T08:26:28.126908Z][X-U023-007] Completed execution of X-U023-007 in 49.6ms: Status=PASSED
+[2026-09-10T08:26:28.126911Z][X-U023-007] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:28.126923Z][X-U023-007] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

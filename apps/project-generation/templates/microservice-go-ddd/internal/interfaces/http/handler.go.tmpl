@@ -1,0 +1,170 @@
+package http
+
+import (
+	"encoding/json"
+	"net/http"
+	"strconv"
+	"strings"
+
+	"{{.ModuleName}}/internal/application/dto"
+	"{{.ModuleName}}/internal/application/service"
+	"{{.ModuleName}}/internal/interfaces/http/middleware"
+	appErrors "{{.ModuleName}}/pkg/errors"
+	"{{.ModuleName}}/pkg/logger"
+)
+
+// Handler handles HTTP requests for entity domain resources.
+type Handler struct {
+	service *service.EntityService
+	log     logger.Logger
+}
+
+// NewHandler constructs an HTTP Handler.
+func NewHandler(service *service.EntityService, log logger.Logger) *Handler {
+	return &Handler{
+		service: service,
+		log:     log,
+	}
+}
+
+// CreateEntity handles POST /api/v1/entities
+func (h *Handler) CreateEntity(w http.ResponseWriter, r *http.Request) {
+	var req dto.CreateEntityRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.respondError(w, r, appErrors.NewValidation("invalid request body"))
+		return
+	}
+
+	resp, err := h.service.CreateEntity(r.Context(), req)
+	if err != nil {
+		h.respondError(w, r, err)
+		return
+	}
+
+	h.respondJSON(w, http.StatusCreated, resp)
+}
+
+// GetEntity handles GET /api/v1/entities/{id}
+func (h *Handler) GetEntity(w http.ResponseWriter, r *http.Request) {
+	id := extractID(r.URL.Path)
+	if id == "" {
+		h.respondError(w, r, appErrors.NewValidation("entity id is required"))
+		return
+	}
+
+	resp, err := h.service.GetEntity(r.Context(), id)
+	if err != nil {
+		h.respondError(w, r, err)
+		return
+	}
+
+	h.respondJSON(w, http.StatusOK, resp)
+}
+
+// UpdateEntity handles PUT /api/v1/entities/{id}
+func (h *Handler) UpdateEntity(w http.ResponseWriter, r *http.Request) {
+	id := extractID(r.URL.Path)
+	if id == "" {
+		h.respondError(w, r, appErrors.NewValidation("entity id is required"))
+		return
+	}
+
+	var req dto.UpdateEntityRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.respondError(w, r, appErrors.NewValidation("invalid request body"))
+		return
+	}
+
+	resp, err := h.service.UpdateEntity(r.Context(), id, req)
+	if err != nil {
+		h.respondError(w, r, err)
+		return
+	}
+
+	h.respondJSON(w, http.StatusOK, resp)
+}
+
+// DeleteEntity handles DELETE /api/v1/entities/{id}
+func (h *Handler) DeleteEntity(w http.ResponseWriter, r *http.Request) {
+	id := extractID(r.URL.Path)
+	if id == "" {
+		h.respondError(w, r, appErrors.NewValidation("entity id is required"))
+		return
+	}
+
+	if err := h.service.DeleteEntity(r.Context(), id); err != nil {
+		h.respondError(w, r, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// ListEntities handles GET /api/v1/entities
+func (h *Handler) ListEntities(w http.ResponseWriter, r *http.Request) {
+	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+
+	param := dto.PaginationParam{
+		Offset: offset,
+		Limit:  limit,
+	}
+
+	resp, err := h.service.ListEntities(r.Context(), param)
+	if err != nil {
+		h.respondError(w, r, err)
+		return
+	}
+
+	h.respondJSON(w, http.StatusOK, resp)
+}
+
+// Healthz handles Kubernetes liveness probe /healthz
+func (h *Handler) Healthz(w http.ResponseWriter, r *http.Request) {
+	h.respondJSON(w, http.StatusOK, map[string]string{
+		"status":  "healthy",
+		"service": "{{.ServiceName}}",
+	})
+}
+
+// Livez handles Kubernetes live probe /livez
+func (h *Handler) Livez(w http.ResponseWriter, r *http.Request) {
+	h.respondJSON(w, http.StatusOK, map[string]string{
+		"status": "alive",
+	})
+}
+
+// Readyz handles Kubernetes readiness probe /readyz
+func (h *Handler) Readyz(w http.ResponseWriter, r *http.Request) {
+	h.respondJSON(w, http.StatusOK, map[string]string{
+		"status": "ready",
+	})
+}
+
+// Metrics handles Prometheus metrics endpoint /metrics
+func (h *Handler) Metrics(w http.ResponseWriter, r *http.Request) {
+	middleware.PrometheusHandler(w, r)
+}
+
+func (h *Handler) respondJSON(w http.ResponseWriter, statusCode int, data any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	_ = json.NewEncoder(w).Encode(data)
+}
+
+func (h *Handler) respondError(w http.ResponseWriter, r *http.Request, err error) {
+	problem := appErrors.ToProblemDetails(err, r.URL.Path)
+	h.log.WithContext(r.Context()).Warn("HTTP handler error", "status", problem.Status, "error", err, "type", problem.Type)
+
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(problem.Status)
+	_ = json.NewEncoder(w).Encode(problem)
+}
+
+func extractID(path string) string {
+	parts := strings.Split(strings.Trim(path, "/"), "/")
+	if len(parts) >= 4 && parts[0] == "api" && parts[1] == "v1" && parts[2] == "entities" {
+		return parts[3]
+	}
+	return ""
+}

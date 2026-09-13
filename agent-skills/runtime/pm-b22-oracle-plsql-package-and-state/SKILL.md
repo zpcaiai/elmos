@@ -1,5 +1,8 @@
 ---
 name: pm-b22-oracle-plsql-package-and-state
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "迁移 PL/SQL Package、公开/私有成员、初始化和会话级 Package State. Precision Migration B22 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

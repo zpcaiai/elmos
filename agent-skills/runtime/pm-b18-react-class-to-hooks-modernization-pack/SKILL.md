@@ -1,5 +1,8 @@
 ---
 name: pm-b18-react-class-to-hooks-modernization-pack
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "将 React Class 组件迁移为函数组件与 Hooks，并验证生命周期、闭包、Effect 和取消语义. Precision Migration B18 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

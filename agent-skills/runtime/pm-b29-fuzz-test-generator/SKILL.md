@@ -1,5 +1,8 @@
 ---
 name: pm-b29-fuzz-test-generator
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "为 Parser、协议、接口、序列化和动态输入生成 Fuzz Harness. Precision Migration B29 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

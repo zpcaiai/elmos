@@ -1,0 +1,42 @@
+{
+  "schema": "elmos.batch46.smoke-result/1",
+  "generated_at": "<utc-timestamp>",
+  "lease_id": "<lease id>",
+  "entry": "script",
+  "port": 0,
+  "overall": "PASS|FAIL|NOT_RUN",
+  "required_total": 0,
+  "required_passed": 0,
+  "checks": [
+    {
+      "id": "<check>",
+      "status": "PASS|FAIL|NOT_RUN",
+      "required": true,
+      "detail": "<what was observed>",
+      "observed_at": "<utc-timestamp>"
+    }
+  ],
+  "notes": [],
+  "environment_manifest": {
+    "platform": "<platform>",
+    "python": "<version>",
+    "docker": false,
+    "node": false,
+    "java": false,
+    "dotnet": false,
+    "cwd": "<path>"
+  },
+  "lease": {
+    "free_quota_seconds": 600,
+    "ttl_seconds": 600,
+    "billable_seconds": 0,
+    "end_reason": "expired|completed",
+    "teardown_complete": true
+  },
+  "raw_logs": {
+    "stdout": "smoke/runtime/logs/app.stdout.log",
+    "stderr": "smoke/runtime/logs/app.stderr.log"
+  },
+  "scope_disclaimer": "Functional smoke evidence only. This result never substitutes for route, framework, database, client or certification gates.",
+  "result_digest": "sha256:<digest>"
+}

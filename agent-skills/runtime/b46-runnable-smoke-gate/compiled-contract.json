@@ -1,0 +1,21 @@
+{
+  "schema_version": "elmos.batch46.compiled-skill-contract.v1",
+  "package_id": "elmos.batch46.runnable-smoke-factory",
+  "package_version": "1.0.0",
+  "installed_alias": "b46-runnable-smoke-gate",
+  "namespace": "batch46-runnable-smoke-v1",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "dispatch",
+    "skill_name": "b46-runnable-smoke-gate",
+    "module_path": "scripts/batch46/b46_skill_runtime.py",
+    "runtime_class": "B46SkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

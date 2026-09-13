@@ -1,5 +1,8 @@
 ---
 name: pm-b13-candidate-cost-ranker
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "按生成成本、运行成本、依赖、维护和迁移风险对候选排序. Precision Migration B13 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

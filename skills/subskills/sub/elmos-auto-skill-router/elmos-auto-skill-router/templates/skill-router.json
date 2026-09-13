@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "mode": "routed",
+  "project_skill_roots": [
+    ".agents/skills"
+  ],
+  "global_skill_roots": [
+    "~/.gemini/config/skills",
+    "~/.gemini/antigravity-cli/skills",
+    "~/.agents/skills"
+  ],
+  "precedence": [
+    "security",
+    "trust",
+    "certification",
+    "verification",
+    "architecture",
+    "business-domain",
+    "testing",
+    "framework",
+    "optimization",
+    "documentation"
+  ],
+  "always_use_skills": [],
+  "mandatory_rules": [
+    {
+      "skill": "elmos-proof-driven-certification",
+      "when_any": [
+        "certification",
+        "verification",
+        "evidence",
+        "truth runner",
+        "truth-runner",
+        "opa",
+        "hidden test",
+        "mutation",
+        "sabotage",
+        "attestation",
+        "proof-driven",
+        "pass/fail",
+        "deployment gate",
+        "execution integrity",
+        "认证",
+        "验证",
+        "证据",
+        "隐藏测试",
+        "变异测试",
+        "破坏测试"
+      ]
+    }
+  ],
+  "max_recommended_skills": 8,
+  "include_global": true,
+  "remember_last_route": true,
+  "never_treat_index_as_evidence": true
+}

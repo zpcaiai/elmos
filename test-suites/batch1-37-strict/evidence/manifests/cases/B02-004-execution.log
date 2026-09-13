@@ -1,0 +1,10 @@
+=== EXECUTION LOG FOR B02-004 ===
+Timestamp: 2026-09-10T08:20:52Z
+Batches: [2]
+Title: Batch 2 JavaScript/TypeScript语义适配：在关键依赖超时、拒绝、断网、重启或返回部分结果时执行
+Capability: JavaScript/TypeScript语义适配
+Test Type: dependency_failure
+Skill: tst-b02-semantic-adapters-psp
+Executor: elmos-b1-37-strict-executor
+Execution Kind: real
+Status: PASSED

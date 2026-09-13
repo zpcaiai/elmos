@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "policy_key": "sample-ownership",
+  "default_ownership": "customer-owned",
+  "entries": [
+    {
+      "selector": "src/generated/**",
+      "ownership": "platform-owned",
+      "regeneration_policy": "replace",
+      "owners": [
+        "migration-platform"
+      ],
+      "approval_required": false
+    },
+    {
+      "selector": "src/extensions/**",
+      "ownership": "customer-owned",
+      "regeneration_policy": "preserve",
+      "owners": [
+        "customer-team"
+      ],
+      "approval_required": true
+    }
+  ]
+}

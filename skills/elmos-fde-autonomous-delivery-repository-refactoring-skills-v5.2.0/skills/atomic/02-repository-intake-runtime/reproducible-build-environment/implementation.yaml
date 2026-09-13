@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v1
+kind: SkillImplementation
+metadata:
+  skillId: reproducible-build-environment
+  version: 5.2.0
+spec:
+  architecture:
+    style: ports-and-adapters-with-durable-workflow
+    domainService: ReproducibleBuildEnvironmentService
+    workflow: ReproducibleBuildEnvironmentWorkflow
+    policyGate: ReproducibleBuildEnvironmentPolicyGate
+    evidenceProducer: ReproducibleBuildEnvironmentEvidenceProducer
+    repositoryPort: ReproducibleBuildEnvironmentRepositoryPort
+  requiredPorts:
+  - id: sandbox.create
+    direction: outbound
+  - id: build.execute
+    direction: outbound
+  - id: dependency.resolve
+    direction: inbound
+  - id: artifact.hash
+    direction: inbound
+  - id: log.capture
+    direction: outbound
+  - id: policy.evaluate
+    direction: outbound
+  persistence:
+  - append-only Evidence Ledger event
+  - append-only Claim Ledger event
+  - append-only Change/Effect Ledger event when applicable
+  - versioned skill result projection
+  - idempotency record
+  - checkpoint record
+  apis:
+  - POST /api/v1/skills/reproducible-build-environment/runs
+  - GET /api/v1/skills/reproducible-build-environment/runs/{runId}
+  - POST /api/v1/skills/reproducible-build-environment/runs/{runId}/cancel
+  - POST /api/v1/skills/reproducible-build-environment/runs/{runId}/resume
+  events:
+  - elmos.skill.reproducible-build-environment.requested.v1
+  - elmos.skill.reproducible-build-environment.checkpointed.v1
+  - elmos.skill.reproducible-build-environment.completed.v1
+  - elmos.skill.reproducible-build-environment.failed.v1
+  workflowSteps:
+  - Derive candidate build roots and commands from manifests, CI, docs, and history.
+  - Resolve toolchain and service prerequisites without exposing secrets to model context.
+  - Provision an isolated environment with explicit network and filesystem policy.
+  - Run staged dependency resolution, compilation, tests, and packaging.
+  - Classify failures and iterate only within approved authority.
+  - Seal a reproducible environment fingerprint and build evidence.
+  implementationTasks:
+  - Define domain contracts and JSON Schema examples.
+  - Implement policy, authority, idempotency, checkpoint, and evidence middleware.
+  - Implement ports with replaceable adapters and no adapter-owned completion status.
+  - Implement durable workflow, cancellation, resume, compensation, and telemetry.
+  - Add deterministic unit, integration, negative-control, failure-injection, and contract tests.
+  - Add UI/API projection, runbook, migration, and package traceability.
+  requiredTests:
+  - happy path
+  - negative trigger does not activate
+  - authority denial
+  - idempotent replay
+  - checkpoint and resume
+  - stale RevisionSet rejection
+  - unknown and unsupported blocker
+  - adapter failure
+  - independent verification
+  - rollback or compensation
+  - tenant isolation
+  - telemetry and evidence completeness
+  migration:
+    mode: additive-extension
+    mustNotCreate:
+    - second Goal store
+    - second AI-SIR owner
+    - second runtime authority
+    - second completion authority
+    canonicalBindingsRequired: true

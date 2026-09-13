@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+import unittest
 from collections import Counter
 from copy import deepcopy
 from typing import Any
-
-import pytest
 
 from elmos_semantic_assurance.canonical import digest_value
 from elmos_semantic_assurance.contracts import (
@@ -262,200 +261,180 @@ def _request(
     }
 
 
-@pytest.fixture
-def registry() -> SkillRegistry:
-    return SkillRegistry()
+class TestRegistryRuntime(unittest.TestCase):
+    def setUp(self) -> None:
+        self.registry = SkillRegistry()
+        self.store = SemanticAssuranceStore()
+        self.runtime = SemanticAssuranceRuntime(registry=self.registry, store=self.store)
+        self.addCleanup(self.store.close)
 
-
-@pytest.fixture
-def runtime(registry: SkillRegistry):
-    store = SemanticAssuranceStore()
-    value = SemanticAssuranceRuntime(registry=registry, store=store)
-    try:
-        yield value
-    finally:
-        store.close()
-
-
-def test_compiled_registry_has_132_exact_non_generic_bindings(
-    registry: SkillRegistry,
-    runtime: SemanticAssuranceRuntime,
-) -> None:
-    records = registry.list()
-    assert registry.count == 132
-    assert len(records) == 132
-    assert Counter(record["batch"] for record in records) == EXPECTED_BATCH_COUNTS
-    assert len({record["sourceSkillId"] for record in records}) == 132
-    assert len({record["sourceName"] for record in records}) == 132
-    assert len({record["installedName"] for record in records}) == 132
-    assert len({record["handlerId"] for record in records}) == 132
-    assert {record["operation"] for record in records} == {
-        operation.value for operation in Operation
-    }
-    assert all(record["risk"] == "critical" for record in records)
-    assert all(record["implementationState"] == "RUNTIME_CODE_COMPLETE" for record in records)
-    assert all(record["externalEvidenceStatus"] == "NOT_RUN" for record in records)
-    assert all(record["certificationStatus"] == "NOT_CERTIFIED" for record in records)
-    assert tuple(sorted(record["installedName"] for record in records)) == runtime.handler_names
-    assert len(runtime.handler_names) == 132
-    assert all(record["operation"] != "GENERIC" for record in records)
-
-
-def test_registry_capability_mapping_is_conservative(registry: SkillRegistry) -> None:
-    for record in registry.list():
-        operation = Operation(record["operation"])
-        capability = CapabilityState(record["capabilityState"])
-        if operation in {
-            Operation.NATIVE_EXECUTION,
-            Operation.FORMAL_EXECUTION,
-            Operation.FUZZ_EXECUTION,
-        }:
-            assert capability is CapabilityState.CODE_COMPLETE_ADAPTER_REQUIRED
-        elif operation is Operation.GATE_EVALUATION:
-            assert capability is CapabilityState.CODE_COMPLETE_EXTERNAL_GATE_REQUIRED
-        else:
-            assert capability is CapabilityState.CODE_COMPLETE_LOCAL_BOUNDED
-
-
-def test_unknown_registry_and_runtime_names_fail_without_fallback(
-    registry: SkillRegistry,
-    runtime: SemanticAssuranceRuntime,
-) -> None:
-    with pytest.raises(KeyError, match="unknown semantic-assurance Skill"):
-        registry.get("elmos-does-not-exist")
-    with pytest.raises(KeyError, match="unknown installed semantic-assurance Skill"):
-        runtime.dispatch("elmos-does-not-exist", {}, _identity())
-
-
-def test_collision_aliases_dispatch_incoming_bindings_without_owning_original_names(
-    registry: SkillRegistry,
-    runtime: SemanticAssuranceRuntime,
-) -> None:
-    for source_name, alias in COLLISION_ALIASES.items():
-        binding = registry.get(source_name)
-        assert binding.installed_name == alias
-        assert alias in runtime.handler_names
-        assert source_name not in runtime.handler_names
-
-        response = runtime.dispatch(alias, _request(binding), _identity())
-        assert response["skillName"] == source_name
-        assert response["installedName"] == alias
-        assert response["handlerId"] == binding.handler_id
-        assert response["certificationStatus"] == "NOT_CERTIFIED"
-
-        with pytest.raises(KeyError, match="unknown installed semantic-assurance Skill"):
-            runtime.dispatch(source_name, _request(binding), _identity())
-
-
-def test_all_132_installed_names_dispatch_exact_operation_without_external_runtime(
-    registry: SkillRegistry,
-    runtime: SemanticAssuranceRuntime,
-) -> None:
-    identity = _identity()
-    responses: list[dict[str, Any]] = []
-    for record in registry.list():
-        binding = registry.get(record["sourceName"])
-        response = runtime.dispatch(
-            binding.installed_name,
-            _request(binding),
-            identity,
+    def test_compiled_registry_has_132_exact_non_generic_bindings(self) -> None:
+        records = self.registry.list()
+        self.assertEqual(self.registry.count, 132)
+        self.assertEqual(len(records), 132)
+        self.assertEqual(Counter(record["batch"] for record in records), EXPECTED_BATCH_COUNTS)
+        self.assertEqual(len({record["sourceSkillId"] for record in records}), 132)
+        self.assertEqual(len({record["sourceName"] for record in records}), 132)
+        self.assertEqual(len({record["installedName"] for record in records}), 132)
+        self.assertEqual(len({record["handlerId"] for record in records}), 132)
+        self.assertEqual(
+            {record["operation"] for record in records},
+            {operation.value for operation in Operation},
         )
-        responses.append(response)
-        assert response["sourceSkillId"] == binding.source_skill_id
-        assert response["skillName"] == binding.source_name
-        assert response["installedName"] == binding.installed_name
-        assert response["handlerId"] == binding.handler_id
-        assert response["operation"] == binding.operation.value
-        assert response["trustedActorId"] == identity.actor_id
-        assert response["certificationStatus"] == "NOT_CERTIFIED"
-        assert response["externalEvidenceStatus"] == "NOT_RUN"
-        assert len(response["artifacts"]) == 3
-        if binding.operation in {
-            Operation.NATIVE_EXECUTION,
-            Operation.FORMAL_EXECUTION,
-            Operation.FUZZ_EXECUTION,
-        }:
-            assert response["executionStatus"] == "REQUIRES_ADAPTER"
-            assert response["evidenceStatus"] == "NOT_RUN"
-        if binding.operation is Operation.GATE_EVALUATION:
-            assert response["result"]["readiness"] == "READY_FOR_EXTERNAL_GATE"
-            assert response["result"]["certification"] == "NOT_CERTIFIED"
-
-    assert len(responses) == 132
-    assert len({response["handlerId"] for response in responses}) == 132
-    registry_scope = _assurance_scope()
-    chain = runtime.store.verify_event_chain(registry_scope)
-    assert registry_scope.run_id == "run-registry"
-    assert chain["verified"] is True
-    assert chain["eventCount"] == 132
-def test_runtime_role_scope_actor_and_idempotency_are_bound(
-    registry: SkillRegistry,
-    runtime: SemanticAssuranceRuntime,
-) -> None:
-    binding = next(
-        registry.get(record["sourceName"])
-        for record in registry.list()
-        if record["operation"] == Operation.MODEL_NORMALIZATION.value
-    )
-    document = _request(binding, idempotency_key="idem-runtime-replay")
-    identity = _identity(actor="actor-a")
-
-    first = runtime.dispatch(binding.installed_name, document, identity)
-    replay = runtime.dispatch(binding.installed_name, deepcopy(document), identity)
-    assert replay == first
-    assert first["trustedActorId"] == "actor-a"
-
-    with pytest.raises(AuthorizationError, match="required role"):
-        runtime.dispatch(
-            binding.installed_name,
-            _request(binding, idempotency_key="idem-no-role"),
-            _identity(roles=("viewer",)),
+        self.assertTrue(all(record["risk"] == "critical" for record in records))
+        self.assertTrue(all(record["implementationState"] == "RUNTIME_CODE_COMPLETE" for record in records))
+        self.assertTrue(all(record["externalEvidenceStatus"] == "NOT_RUN" for record in records))
+        self.assertTrue(all(record["certificationStatus"] == "NOT_CERTIFIED" for record in records))
+        self.assertEqual(
+            tuple(sorted(record["installedName"] for record in records)),
+            self.runtime.handler_names,
         )
+        self.assertEqual(len(self.runtime.handler_names), 132)
+        self.assertTrue(all(record["operation"] != "GENERIC" for record in records))
 
-    identity_without_authorization = TrustedIdentity(
-        tenant_id="tenant-a",
-        project_id="project-a",
-        actor_id="actor-a",
-        roles=(EXECUTE_ROLE,),
-        authorization_ref=None,
-    )
-    with pytest.raises(AuthorizationError, match="authorization reference"):
-        runtime.dispatch(
-            binding.installed_name,
-            _request(binding, idempotency_key="idem-no-authorization"),
-            identity_without_authorization,
+    def test_registry_capability_mapping_is_conservative(self) -> None:
+        for record in self.registry.list():
+            operation = Operation(record["operation"])
+            capability = CapabilityState(record["capabilityState"])
+            if operation in {
+                Operation.NATIVE_EXECUTION,
+                Operation.FORMAL_EXECUTION,
+                Operation.FUZZ_EXECUTION,
+            }:
+                self.assertIs(capability, CapabilityState.CODE_COMPLETE_ADAPTER_REQUIRED)
+            elif operation is Operation.GATE_EVALUATION:
+                self.assertIs(capability, CapabilityState.CODE_COMPLETE_EXTERNAL_GATE_REQUIRED)
+            else:
+                self.assertIs(capability, CapabilityState.CODE_COMPLETE_LOCAL_BOUNDED)
+
+    def test_unknown_registry_and_runtime_names_fail_without_fallback(self) -> None:
+        with self.assertRaisesRegex(KeyError, "unknown semantic-assurance Skill"):
+            self.registry.get("elmos-does-not-exist")
+        with self.assertRaisesRegex(KeyError, "unknown installed semantic-assurance Skill"):
+            self.runtime.dispatch("elmos-does-not-exist", {}, _identity())
+
+    def test_collision_aliases_dispatch_incoming_bindings_without_owning_original_names(self) -> None:
+        for source_name, alias in COLLISION_ALIASES.items():
+            with self.subTest(source_name=source_name, alias=alias):
+                binding = self.registry.get(source_name)
+                self.assertEqual(binding.installed_name, alias)
+                self.assertIn(alias, self.runtime.handler_names)
+                self.assertNotIn(source_name, self.runtime.handler_names)
+
+                response = self.runtime.dispatch(alias, _request(binding), _identity())
+                self.assertEqual(response["skillName"], source_name)
+                self.assertEqual(response["installedName"], alias)
+                self.assertEqual(response["handlerId"], binding.handler_id)
+                self.assertEqual(response["certificationStatus"], "NOT_CERTIFIED")
+
+                with self.assertRaisesRegex(KeyError, "unknown installed semantic-assurance Skill"):
+                    self.runtime.dispatch(source_name, _request(binding), _identity())
+
+    def test_all_132_installed_names_dispatch_exact_operation_without_external_runtime(self) -> None:
+        identity = _identity()
+        responses: list[dict[str, Any]] = []
+        for record in self.registry.list():
+            binding = self.registry.get(record["sourceName"])
+            response = self.runtime.dispatch(
+                binding.installed_name,
+                _request(binding),
+                identity,
+            )
+            responses.append(response)
+            self.assertEqual(response["sourceSkillId"], binding.source_skill_id)
+            self.assertEqual(response["skillName"], binding.source_name)
+            self.assertEqual(response["installedName"], binding.installed_name)
+            self.assertEqual(response["handlerId"], binding.handler_id)
+            self.assertEqual(response["operation"], binding.operation.value)
+            self.assertEqual(response["trustedActorId"], identity.actor_id)
+            self.assertEqual(response["certificationStatus"], "NOT_CERTIFIED")
+            self.assertEqual(response["externalEvidenceStatus"], "NOT_RUN")
+            self.assertEqual(len(response["artifacts"]), 3)
+            if binding.operation in {
+                Operation.NATIVE_EXECUTION,
+                Operation.FORMAL_EXECUTION,
+                Operation.FUZZ_EXECUTION,
+            }:
+                self.assertEqual(response["executionStatus"], "REQUIRES_ADAPTER")
+                self.assertEqual(response["evidenceStatus"], "NOT_RUN")
+            if binding.operation is Operation.GATE_EVALUATION:
+                self.assertEqual(response["result"]["readiness"], "READY_FOR_EXTERNAL_GATE")
+                self.assertEqual(response["result"]["certification"], "NOT_CERTIFIED")
+
+        self.assertEqual(len(responses), 132)
+        self.assertEqual(len({response["handlerId"] for response in responses}), 132)
+        registry_scope = _assurance_scope()
+        chain = self.runtime.store.verify_event_chain(registry_scope)
+        self.assertEqual(registry_scope.run_id, "run-registry")
+        self.assertTrue(chain["verified"])
+        self.assertEqual(chain["eventCount"], 132)
+
+    def test_runtime_role_scope_actor_and_idempotency_are_bound(self) -> None:
+        binding = next(
+            self.registry.get(record["sourceName"])
+            for record in self.registry.list()
+            if record["operation"] == Operation.MODEL_NORMALIZATION.value
         )
+        document = _request(binding, idempotency_key="idem-runtime-replay")
+        identity = _identity(actor="actor-a")
 
-    missing_effect = _request(binding, idempotency_key="idem-no-effect")
-    missing_effect["allowedEffects"] = []
-    with pytest.raises(AuthorizationError, match="artifact-write"):
-        runtime.dispatch(binding.installed_name, missing_effect, identity)
+        first = self.runtime.dispatch(binding.installed_name, document, identity)
+        replay = self.runtime.dispatch(binding.installed_name, deepcopy(document), identity)
+        self.assertEqual(replay, first)
+        self.assertEqual(first["trustedActorId"], "actor-a")
 
-    wrong_scope = _request(binding, idempotency_key="idem-wrong-scope")
-    wrong_scope["scope"]["projectId"] = "project-b"
-    with pytest.raises(PermissionError, match="trusted identity"):
-        runtime.dispatch(binding.installed_name, wrong_scope, identity)
+        with self.assertRaisesRegex(AuthorizationError, "required role"):
+            self.runtime.dispatch(
+                binding.installed_name,
+                _request(binding, idempotency_key="idem-no-role"),
+                _identity(roles=("viewer",)),
+            )
 
-    changed_payload = deepcopy(document)
-    changed_payload["payload"]["items"][0]["kind"] = "different-kind"
-    with pytest.raises(IdempotencyConflict):
-        runtime.dispatch(binding.installed_name, changed_payload, identity)
-
-    with pytest.raises(IdempotencyConflict):
-        runtime.dispatch(
-            binding.installed_name,
-            deepcopy(document),
-            _identity(actor="actor-b"),
+        identity_without_authorization = TrustedIdentity(
+            tenant_id="tenant-a",
+            project_id="project-a",
+            actor_id="actor-a",
+            roles=(EXECUTE_ROLE,),
+            authorization_ref=None,
         )
+        with self.assertRaisesRegex(AuthorizationError, "authorization reference"):
+            self.runtime.dispatch(
+                binding.installed_name,
+                _request(binding, idempotency_key="idem-no-authorization"),
+                identity_without_authorization,
+            )
+
+        missing_effect = _request(binding, idempotency_key="idem-no-effect")
+        missing_effect["allowedEffects"] = []
+        with self.assertRaisesRegex(AuthorizationError, "artifact-write"):
+            self.runtime.dispatch(binding.installed_name, missing_effect, identity)
+
+        wrong_scope = _request(binding, idempotency_key="idem-wrong-scope")
+        wrong_scope["scope"]["projectId"] = "project-b"
+        with self.assertRaisesRegex(PermissionError, "trusted identity"):
+            self.runtime.dispatch(binding.installed_name, wrong_scope, identity)
+
+        changed_payload = deepcopy(document)
+        changed_payload["payload"]["items"][0]["kind"] = "different-kind"
+        with self.assertRaises(IdempotencyConflict):
+            self.runtime.dispatch(binding.installed_name, changed_payload, identity)
+
+        with self.assertRaises(IdempotencyConflict):
+            self.runtime.dispatch(
+                binding.installed_name,
+                deepcopy(document),
+                _identity(actor="actor-b"),
+            )
+
+    def test_runtime_status_never_claims_external_evidence_or_certification(self) -> None:
+        status = self.runtime.status().to_dict()
+        self.assertEqual(status["registeredSkills"], 132)
+        self.assertEqual(status["exactHandlers"], 132)
+        self.assertEqual(status["implementationState"], "RUNTIME_CODE_COMPLETE")
+        self.assertEqual(status["externalEvidenceStatus"], "NOT_RUN")
+        self.assertEqual(status["certificationStatus"], "NOT_CERTIFIED")
+        self.assertEqual(status["readiness"], "BLOCKED_EXTERNAL_EVIDENCE_REQUIRED")
 
 
-def test_runtime_status_never_claims_external_evidence_or_certification(
-    runtime: SemanticAssuranceRuntime,
-) -> None:
-    status = runtime.status().to_dict()
-    assert status["registeredSkills"] == 132
-    assert status["exactHandlers"] == 132
-    assert status["implementationState"] == "RUNTIME_CODE_COMPLETE"
-    assert status["externalEvidenceStatus"] == "NOT_RUN"
-    assert status["certificationStatus"] == "NOT_CERTIFIED"
-    assert status["readiness"] == "BLOCKED_EXTERNAL_EVIDENCE_REQUIRED"
+if __name__ == "__main__":
+    unittest.main()

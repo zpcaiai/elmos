@@ -1,5 +1,8 @@
 ---
 name: pm-b06-toolchain-manifest-detector
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "从仓库和锁文件推断语言、版本、框架、构建系统、平台和工具链需求. Precision Migration B06 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

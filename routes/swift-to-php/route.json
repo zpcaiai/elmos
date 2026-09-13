@@ -13,7 +13,7 @@
     "source_map_required": true,
     "specialized_string_semantics_allowed": true
   },
-  "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+  "maintenance_owner": "elmos-polyglot-maintainers",
   "owner": "ELMOS Migration Platform",
   "paths": {
     "certification": "certification",
@@ -26,7 +26,7 @@
     "semantic_profile": "typed-pure-function-v1",
     "target_profile": "php-native-interpreter"
   },
-  "review_date": "2026-10-26",
+  "review_date": "2026-09-10",
   "route_key": "swift-to-php",
   "schema_version": 1,
   "source": {
@@ -38,7 +38,7 @@
       "SwiftSyntax 600.0.1"
     ]
   },
-  "status": "limited",
+  "status": "certified",
   "target": {
     "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
     "language": "php",

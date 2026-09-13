@@ -1,0 +1,18 @@
+{
+  "package": "elmos-fde-autonomous-delivery-repository-refactoring-skills",
+  "version": "5.2.0",
+  "source_id": "business-capability-code-mapping",
+  "alias": "elmos-fde-business-capability-code-mapping",
+  "pack": "03-semantic-intelligence",
+  "is_workflow": false,
+  "dependencies": [
+    "stakeholder-workflow-discovery",
+    "polyglot-semantic-system-graph"
+  ],
+  "effect_boundary": "E3",
+  "routable": false,
+  "implementation_state": "LOCAL_CONTROL_PLANE",
+  "external_evidence": "NOT_RUN",
+  "independent_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

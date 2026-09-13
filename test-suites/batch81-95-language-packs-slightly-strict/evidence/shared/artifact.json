@@ -1,0 +1,7 @@
+{
+  "artifact_id": "d04888c3-d855-5327-9bd1-5fa2243109bd",
+  "build_system": "make",
+  "captured_at": "2025-09-10T08:00:00+00:00",
+  "hermetic": true,
+  "reproducible": true
+}

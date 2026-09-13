@@ -1,0 +1,11 @@
+[2026-09-10T08:26:29.248715Z][X-U024-009] Starting execution of X-U024-009 (计量、账单与毛利对账 / recovery / 场景9) [Category=recovery, Priority=P0]
+[2026-09-10T08:26:29.248718Z][X-U024-009] Bound Skill: tst-metering-billing-margin-reconciliation | Product Skill IDs: []
+[2026-09-10T08:26:29.248721Z][X-U024-009] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:29.259207Z][X-U024-009] Security: Minted RS256 token (JTI=23e05fe1..., Exp=1789032389)
+[2026-09-10T08:26:29.283399Z][X-U024-009] KMS: Envelope encrypted 37 bytes under key key-x-u024-009 v1 (DEK wrapped)
+[2026-09-10T08:26:29.300739Z][X-U024-009] [CROSS-DELIVERY] Initializing X-U024-009 (U024) Category=recovery
+[2026-09-10T08:26:29.300747Z][X-U024-009] FinOps Economics: Reconciling usage metering to customer invoices with gross margin analysis
+[2026-09-10T08:26:29.300751Z][X-U024-009] Processing credit adjustment for disputed metering record...
+[2026-09-10T08:26:29.300768Z][X-U024-009] Completed execution of X-U024-009 in 52.1ms: Status=PASSED
+[2026-09-10T08:26:29.300771Z][X-U024-009] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:29.300785Z][X-U024-009] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

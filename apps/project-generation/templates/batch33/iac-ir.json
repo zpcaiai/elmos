@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "pack_key": "unset-to-unset",
+  "source_snapshot_digest": "UNSET",
+  "resources": [],
+  "modules": [],
+  "variables": [],
+  "outputs": [],
+  "policies": [],
+  "obligations": [],
+  "source_map": []
+}

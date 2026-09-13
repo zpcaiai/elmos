@@ -1,0 +1,11 @@
+[2026-09-10T08:26:18.487958Z][X-U016-005] Starting execution of X-U016-005 (SLO、Chaos与多区域DR / security / 场景5) [Category=security, Priority=P0]
+[2026-09-10T08:26:18.487962Z][X-U016-005] Bound Skill: tst-slo-chaos-multiregion-dr | Product Skill IDs: []
+[2026-09-10T08:26:18.487965Z][X-U016-005] Provisioning isolated multi-region simulation environment and security services...
+[2026-09-10T08:26:18.509882Z][X-U016-005] Security: Minted RS256 token (JTI=d4decfe0..., Exp=1789032378)
+[2026-09-10T08:26:18.544988Z][X-U016-005] KMS: Envelope encrypted 37 bytes under key key-x-u016-005 v1 (DEK wrapped)
+[2026-09-10T08:26:18.568996Z][X-U016-005] [CROSS-RESILIENCE] Starting X-U016-005 (U016) Category=security
+[2026-09-10T08:26:18.569007Z][X-U016-005] Multi-Region Chaos DR: Inducing wide-area network partitions and validating SLO compliance
+[2026-09-10T08:26:18.569012Z][X-U016-005] Verifying fencing token uniqueness to prevent rogue node write intrusion...
+[2026-09-10T08:26:18.569072Z][X-U016-005] Completed execution of X-U016-005 in 81.1ms: Status=PASSED
+[2026-09-10T08:26:18.569074Z][X-U016-005] Assertion Summary: 3/3 assertions passed
+[2026-09-10T08:26:18.569090Z][X-U016-005] Zero-Tolerance Counters: {'cross_tenant_access': 0, 'data_loss': 0, 'unauthorized_public_egress': 0, 'signature_bypass': 0, 'critical_security_finding': 0, 'critical_unknown': 0, 'kill_switch_failure': 0, 'billing_unreconciled': 0, 'test_integrity_violation': 0, 'evidence_tamper': 0, 'stale_mandatory_evidence': 0, 'unreplayed_critical_failure': 0}

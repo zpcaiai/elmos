@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "pack_key": "unset-to-unset",
+  "status": "research",
+  "owner": "UNASSIGNED",
+  "exact_tuple": {
+    "source": {
+      "platform": "UNSET",
+      "provider": "UNSET",
+      "regions": [
+        "UNSET"
+      ],
+      "account_model": "UNSET",
+      "iac_tool": {
+        "name": "UNSET",
+        "version": "UNSET"
+      },
+      "runtime": {
+        "name": "UNSET",
+        "version": "UNSET"
+      },
+      "orchestrator": {
+        "name": "none",
+        "version": "n/a"
+      },
+      "ci_cd": {
+        "name": "UNSET",
+        "version": "UNSET"
+      },
+      "state_backend": {
+        "type": "UNSET",
+        "locking": "UNSET",
+        "encryption": "UNSET"
+      },
+      "services": []
+    },
+    "target": {
+      "platform": "UNSET",
+      "provider": "UNSET",
+      "regions": [
+        "UNSET"
+      ],
+      "account_model": "UNSET",
+      "iac_tool": {
+        "name": "UNSET",
+        "version": "UNSET"
+      },
+      "runtime": {
+        "name": "UNSET",
+        "version": "UNSET"
+      },
+      "orchestrator": {
+        "name": "none",
+        "version": "n/a"
+      },
+      "ci_cd": {
+        "name": "UNSET",
+        "version": "UNSET"
+      },
+      "state_backend": {
+        "type": "UNSET",
+        "locking": "UNSET",
+        "encryption": "UNSET"
+      },
+      "services": []
+    }
+  },
+  "metrics": {},
+  "evidence_refs": [],
+  "blockers": [],
+  "conditions": []
+}

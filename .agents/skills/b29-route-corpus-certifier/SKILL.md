@@ -1,5 +1,8 @@
 ---
 name: b29-route-corpus-certifier
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Build and evaluate route-specific smoke, semantic, negative, holdout, and real-repository corpora; produce reproducible route benchmark evidence. Use when expanding coverage or making certification claims.
 ---
 

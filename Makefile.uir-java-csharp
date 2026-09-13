@@ -1,0 +1,12 @@
+.PHONY: uir-java-csharp-check uir-java-csharp-install uir-java-csharp-clean
+
+uir-java-csharp-check:
+	@echo "--- UIR Java -> C# Route Tests ---"
+	cd engines/uir-java-csharp && \
+		PYTHONPATH=src .venv/bin/python3 -m pytest tests/ -v --tb=short
+
+uir-java-csharp-install:
+	cd engines/uir-java-csharp && uv venv --python 3.12 && uv pip install pytest && uv pip install -e .
+
+uir-java-csharp-clean:
+	rm -rf engines/uir-java-csharp/build engines/uir-java-csharp/src/*.egg-info engines/uir-java-csharp/.pytest_cache

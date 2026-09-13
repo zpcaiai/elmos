@@ -1,6 +1,15 @@
 ---
 name: b31-constraint-index-partition-migration
-description: "Migrate primary, unique, foreign, check, exclusion constraints, indexes, clustering, partitioning, storage, and enforcement timing with correctness and performance evidence. Use for structural integrity and physical design migration."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
+description: Migrate primary, unique, foreign, check, exclusion constraints, indexes, clustering, partitioning, storage, and enforcement timing with correctness and performance evidence. Use for structural integrity and physical design migration.
 ---
 
 ## Operating mode

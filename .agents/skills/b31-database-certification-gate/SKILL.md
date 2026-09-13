@@ -1,5 +1,14 @@
 ---
 name: b31-database-certification-gate
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+metadata:
+  source_package: "batch31-database-skills"
+  source_version: "1.0.0"
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: Run the conservative Batch 31 certification gate for a database or data-platform pack and emit certified, limited, experimental, or blocked status from exact tuples, workload fingerprints, canonical IR, real execution, reconciliation, holdout, performance, security, and cutover evidence.
 ---
 

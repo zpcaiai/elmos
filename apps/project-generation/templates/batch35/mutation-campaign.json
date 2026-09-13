@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "campaign_key": "mutation.sample",
+  "owner": "TODO",
+  "target_scope": [
+    "src/sample"
+  ],
+  "operators": [
+    {
+      "key": "negate-condition",
+      "risk": "P0"
+    }
+  ],
+  "budgets": {
+    "max_mutants": 100,
+    "max_minutes": 30
+  },
+  "required_tests": [
+    "tests/p0"
+  ],
+  "equivalent_mutant_policy": "human-reviewed"
+}

@@ -1,0 +1,130 @@
+{
+  "kind": "DEMO_ONLY_NOT_A_CERTIFICATE",
+  "real_lean_execution": "NOT_RUN",
+  "real_ethen_identity": "UNCONFIGURED",
+  "production_signing_allowed": false,
+  "sqlite_counterexample": {
+    "not_in": [
+      [
+        2
+      ]
+    ],
+    "not_exists": [
+      [
+        null
+      ],
+      [
+        2
+      ]
+    ],
+    "scope": "local SQLite only; no cross-dialect certificate"
+  },
+  "scenarios": [
+    {
+      "scenario": "synthetic-valid",
+      "schema_version": "4.0",
+      "kind": "DEMO_ONLY_NOT_A_CERTIFICATE",
+      "verdict": "PASS",
+      "request_digest": "701ed3870c855252f1ef1f5e152cd0b399d9c2f3123ddb220d0666dc2a54c19c",
+      "reasons": [
+        "REFERENCE_PROFILE_REQUIREMENTS_SATISFIED"
+      ],
+      "verified_evidence_ids": [
+        "e-audit",
+        "e-build",
+        "e-contract",
+        "e-differential",
+        "e-mutation",
+        "e-proof",
+        "e-regression",
+        "e-smoke"
+      ],
+      "production_signing_allowed": false
+    },
+    {
+      "scenario": "tampered-evidence",
+      "schema_version": "4.0",
+      "kind": "DEMO_ONLY_NOT_A_CERTIFICATE",
+      "verdict": "INCONCLUSIVE",
+      "request_digest": "701ed3870c855252f1ef1f5e152cd0b399d9c2f3123ddb220d0666dc2a54c19c",
+      "reasons": [
+        "REQUIRED_CASE_EVIDENCE_MISSING",
+        "e-audit:EVIDENCE_REJECTED:AUDIT_BASIS_MISMATCH",
+        "e-regression:EVIDENCE_REJECTED:InvalidSignature"
+      ],
+      "verified_evidence_ids": [
+        "e-build",
+        "e-contract",
+        "e-differential",
+        "e-mutation",
+        "e-proof",
+        "e-smoke"
+      ],
+      "production_signing_allowed": false
+    },
+    {
+      "scenario": "missing-audit",
+      "schema_version": "4.0",
+      "kind": "DEMO_ONLY_NOT_A_CERTIFICATE",
+      "verdict": "INCONCLUSIVE",
+      "request_digest": "701ed3870c855252f1ef1f5e152cd0b399d9c2f3123ddb220d0666dc2a54c19c",
+      "reasons": [
+        "REQUIRED_CASE_EVIDENCE_MISSING",
+        "SEALED_EVIDENCE_INVENTORY_MISMATCH"
+      ],
+      "verified_evidence_ids": [
+        "e-build",
+        "e-contract",
+        "e-differential",
+        "e-mutation",
+        "e-proof",
+        "e-regression",
+        "e-smoke"
+      ],
+      "production_signing_allowed": false
+    },
+    {
+      "scenario": "mutation-unknown",
+      "schema_version": "4.0",
+      "kind": "DEMO_ONLY_NOT_A_CERTIFICATE",
+      "verdict": "INCONCLUSIVE",
+      "request_digest": "701ed3870c855252f1ef1f5e152cd0b399d9c2f3123ddb220d0666dc2a54c19c",
+      "reasons": [
+        "REQUIRED_CASE_EVIDENCE_MISSING",
+        "e-mutation:EVIDENCE_REJECTED:MUTATION_UNKNOWN"
+      ],
+      "verified_evidence_ids": [
+        "e-audit",
+        "e-build",
+        "e-contract",
+        "e-differential",
+        "e-proof",
+        "e-regression",
+        "e-smoke"
+      ],
+      "production_signing_allowed": false
+    },
+    {
+      "scenario": "failed-regression",
+      "schema_version": "4.0",
+      "kind": "DEMO_ONLY_NOT_A_CERTIFICATE",
+      "verdict": "FAIL",
+      "request_digest": "701ed3870c855252f1ef1f5e152cd0b399d9c2f3123ddb220d0666dc2a54c19c",
+      "reasons": [
+        "REQUIRED_CASE_EVIDENCE_MISSING",
+        "e-regression:CASE_FAILED:c-regression"
+      ],
+      "verified_evidence_ids": [
+        "e-audit",
+        "e-build",
+        "e-contract",
+        "e-differential",
+        "e-mutation",
+        "e-proof",
+        "e-regression",
+        "e-smoke"
+      ],
+      "production_signing_allowed": false
+    }
+  ]
+}

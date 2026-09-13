@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "pack_key": "sample-marketplace",
+  "status": "research",
+  "owner": "TODO",
+  "exact_scope": {
+    "product_version": "TODO",
+    "protocol_version": "1.0.0",
+    "edition": "enterprise",
+    "risk_tier": "P0",
+    "environment_digest": "sha256:TODO"
+  },
+  "metrics": {
+    "abi_conformance_rate": 0,
+    "sdk_conformance_rate": 0,
+    "sandbox_conformance_rate": 0,
+    "extension_build_pass_rate": 0,
+    "negative_security_pass_rate": 0,
+    "signature_verification_rate": 0,
+    "sbom_provenance_coverage": 0,
+    "publisher_verification_rate": 0,
+    "compatibility_matrix_pass_rate": 0,
+    "install_upgrade_rollback_pass_rate": 0,
+    "revocation_enforcement_rate": 0,
+    "entitlement_metering_reconciliation_rate": 0,
+    "holdout_pass_rate": 0,
+    "representative_extension_pass_rate": 0,
+    "evidence_trace_coverage": 0
+  },
+  "zero_tolerance": {
+    "critical_unknowns": 1,
+    "sandbox_escapes": 1,
+    "cross_tenant_access": 1,
+    "undeclared_permission_grants": 1,
+    "unsigned_published_releases": 1,
+    "tampered_artifacts_accepted": 1,
+    "critical_vulnerabilities": 1,
+    "prohibited_license_findings": 1,
+    "unverified_active_publishers": 1,
+    "revoked_release_executions": 1,
+    "orphaned_credentials": 1,
+    "billing_reconciliation_breaks": 1,
+    "self_approved_critical_waivers": 1,
+    "test_integrity_violations": 1,
+    "missing_p0_evidence": 1
+  },
+  "evidence_refs": [],
+  "expires_at": "TODO"
+}

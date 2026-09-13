@@ -1,5 +1,8 @@
 ---
 name: pm-b05-build-system-detector
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: "识别单仓或多仓构建系统、模块关系、版本约束、插件和构建入口. Precision Migration B05 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 
