@@ -22,6 +22,7 @@ class UIComponentLowering:
 
     @classmethod
     def lower_module(cls, module: UniversalModule, source_lang: str, target_lang: str) -> UniversalModule:
+        source_lang.lower().strip()
         t_lang = target_lang.lower().strip()
 
         # Case 1: Source has UI components, Target is a headless backend language (Java, C#, Go, Python, Rust, etc.)

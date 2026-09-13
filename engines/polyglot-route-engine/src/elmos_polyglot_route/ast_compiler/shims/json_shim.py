@@ -26,11 +26,7 @@ def json_serialize(obj_expr: str, lang: str) -> str:
     elif language == "swift":
         return f"String(data: try JSONEncoder().encode({obj_expr}), encoding: .utf8)!"
     elif language in ("objc", "objective-c"):
-        return (
-            "[[NSString alloc] initWithData:[NSJSONSerialization "
-            f"dataWithJSONObject:{obj_expr} options:0 error:nil] "
-            "encoding:NSUTF8StringEncoding]"
-        )
+        return f"[[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:{obj_expr} options:0 error:nil] encoding:NSUTF8StringEncoding]"  # noqa: E501
     return f"json.dumps({obj_expr})"
 
 
@@ -57,8 +53,5 @@ def json_deserialize(json_expr: str, type_name: str, lang: str) -> str:
     elif language == "swift":
         return f"try JSONDecoder().decode({type_name}.self, from: {json_expr}.data(using: .utf8)!)"
     elif language in ("objc", "objective-c"):
-        return (
-            "[NSJSONSerialization JSONObjectWithData:"
-            f"[{json_expr} dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil]"
-        )
+        return f"[NSJSONSerialization JSONObjectWithData:[{json_expr} dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil]"  # noqa: E501
     return f"json.loads({json_expr})"

@@ -97,6 +97,7 @@ class Vb6AstParser(BaseAstParser):
 
             # Map event handlers to UIComponentDecl
             if "_Click" in sub_name or "_Load" in sub_name:
+                sub_name.split("_")[0]
                 evt_name = sub_name.split("_")[1]
                 ui_comp.root_view = ui_comp.root_view or UIViewNode(tag="Form")
                 ui_comp.root_view.events.append(UIEventBinding(event_name=evt_name, handler_method_name=sub_name))

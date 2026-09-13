@@ -30,7 +30,7 @@ from .ast_compiler import (
 from .ast_compiler import (
     UniversalModule as AstModule,
 )
-from .ast_compiler.ir import LiteralExpr
+from .ast_compiler.ir import UniversalExpr
 
 EnterpriseLanguage = Literal[
     "java",
@@ -61,7 +61,7 @@ class EnterpriseField:
     type_name: str
     is_required: bool = True
     is_readonly: bool = False
-    default_value: str | None = None
+    default_value: UniversalExpr | None = None
 
 
 @dataclass
@@ -118,11 +118,7 @@ class EnterpriseSemanticParser:
                         name=af.name,
                         type_name=af.type_info.name,
                         is_required=not getattr(af.type_info, "is_nullable", False),
-                        default_value=(
-                            str(getattr(af.default_value, "value", af.default_value))
-                            if af.default_value is not None
-                            else None
-                        ),
+                        default_value=af.default_value,
                     )
                 )
             for am in ac.methods:
@@ -170,7 +166,7 @@ class EnterpriseEmitter:
                     AstField(
                         name=ef.name,
                         type_info=UniversalType.primitive(ef.type_name),
-                        default_value=LiteralExpr(ef.default_value) if ef.default_value is not None else None,
+                        default_value=ef.default_value,
                     )
                 )
             for em in ec.methods:

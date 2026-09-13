@@ -36,13 +36,15 @@ from elmos_polyglot_route.ast_compiler.ir import (
     UnaryExpr,
     UniversalClass,
     UniversalExpr,
-    UniversalField,
     UniversalMethod,
     UniversalModule,
     UniversalParam,
     UniversalStmt,
     UniversalType,
     VarDeclStmt,
+)
+from elmos_polyglot_route.ast_compiler.ir import (
+    UniversalField as AstField,
 )
 from elmos_polyglot_route.ast_compiler.ir import (
     UniversalMethod as AstMethod,
@@ -690,10 +692,7 @@ def _go_stmt(stmt: UniversalStmt, depth: int) -> str:
     if isinstance(stmt, IoWriteStmt):
         return f"{pad}os.WriteFile({_expr('go', stmt.path)}, []byte(fmt.Sprint({_expr('go', stmt.value)})), 0644)"
     if isinstance(stmt, IoReadStmt):
-        return (
-            f"{pad}{stmt.target}Bytes, _ := os.ReadFile({_expr('go', stmt.path)})\n"
-            f"{pad}{stmt.target} := string({stmt.target}Bytes)"
-        )
+        return f"{pad}{stmt.target}Bytes, _ := os.ReadFile({_expr('go', stmt.path)})\n{pad}{stmt.target} := string({stmt.target}Bytes)"  # noqa: E501
     if isinstance(stmt, MoveStmt):
         return f"{pad}{stmt.target} := {stmt.source} // move"
     if isinstance(stmt, DropStmt):
@@ -703,10 +702,7 @@ def _go_stmt(stmt: UniversalStmt, depth: int) -> str:
     if isinstance(stmt, TryCatchFinallyStmt):
         inner = _emit_stmts("go", stmt.try_body, depth + 1)
         recover_body = _emit_stmts("go", stmt.catch_clauses[0].body, depth + 1) if stmt.catch_clauses else "return -1"
-        return (
-            f"{pad}func() {{\n{pad}    defer func() {{ if rec := recover(); rec != nil {{\n"
-            f"{recover_body}\n{pad}    }} }}()\n{inner}\n{pad}}}()"
-        )
+        return f"{pad}func() {{\n{pad}    defer func() {{ if rec := recover(); rec != nil {{\n{recover_body}\n{pad}    }} }}()\n{inner}\n{pad}}}()"  # noqa: E501
     return f"{pad}// {type(stmt).__name__}"
 
 
@@ -1005,11 +1001,7 @@ def _generic_stmt(lang: str, stmt: UniversalStmt, depth: int) -> str:
                 catch_body = f"{pad}    throw new HttpException(`Failed: ${{error.message}}`, 500);"
             return f"{pad}try {{\n{try_body or f'{pad}    //'}\n{pad}}} catch (error: any) {{\n{catch_body}\n{pad}}}"
         if lang == "rust":
-            return (
-                f"{pad}match (|| -> Result<_, Box<dyn std::error::Error>> {{\n{try_body}\n{pad}}})() {{\n"
-                f"{pad}    Err({catch_name}) => {{\n{catch_body}\n{pad}    }}\n"
-                f"{pad}    Ok(_) => {{}}\n{pad}}}"
-            )
+            return f"{pad}match (|| -> Result<_, Box<dyn std::error::Error>> {{\n{try_body}\n{pad}}})() {{\n{pad}    Err({catch_name}) => {{\n{catch_body}\n{pad}    }}\n{pad}    Ok(_) => {{}}\n{pad}}}"  # noqa: E501
         if lang == "vb6":
             return f"{pad}On Error GoTo Handler\n{try_body}\n{pad}GoTo Done\n{pad}Handler:\n{catch_body}\n{pad}Done:"
         if lang == "php":
@@ -1023,6 +1015,7 @@ def _emit_function(lang: str, method: UniversalMethod) -> str:
     params = method.params
     if lang == "python":
         sig = ", ".join(f"{p.name}: {_type_name(lang, p.type_info)}" for p in params)
+        _assigned_names(method.body)
         header = f"def {method.name}({sig}) -> {_type_name(lang, method.return_type)}:\n"
         body = _emit_stmts(lang, method.body, 1) or "    pass"
         return header + body
@@ -1096,27 +1089,18 @@ def _emit_function(lang: str, method: UniversalMethod) -> str:
             decor = "@Get()\n"
         elif method.http_method == "POST":
             decor = "@Post()\n"
-        return (
-            f"{decor}export async function {method.name}({sig}): Promise<{ret}> {{\n"
-            f"{_emit_stmts(lang, method.body, 1)}\n}}"
-        )
+        return f"{decor}export async function {method.name}({sig}): Promise<{ret}> {{\n{_emit_stmts(lang, method.body, 1)}\n}}"  # noqa: E501
     if lang == "flutter":
         sig = ", ".join(f"{_type_name(lang, p.type_info)} {p.name}" for p in params)
         route = "  // Route: Get\n" if method.http_method == "GET" else ""
-        return (
-            f"{route}Future<{_type_name(lang, method.return_type)}> {method.name}({sig}) async {{\n"
-            f"{_emit_stmts(lang, method.body, 1)}\n}}"
-        )
+        return f"{route}Future<{_type_name(lang, method.return_type)}> {method.name}({sig}) async {{\n{_emit_stmts(lang, method.body, 1)}\n}}"  # noqa: E501
     if lang == "vb6":
         sig = ", ".join(p.name for p in params)
         return f"Function {method.name}({sig}) As Long\n{_emit_stmts(lang, method.body, 1)}\nEnd Function"
     if lang == "swift":
         sig = ", ".join(f"{p.name}: {_type_name(lang, p.type_info)}" for p in params)
         route = "    // Route: Get\n" if method.http_method == "GET" else ""
-        return (
-            f"{route}func {method.name}({sig}) -> {_type_name(lang, method.return_type)} {{\n"
-            f"{_emit_stmts(lang, method.body, 1)}\n}}"
-        )
+        return f"{route}func {method.name}({sig}) -> {_type_name(lang, method.return_type)} {{\n{_emit_stmts(lang, method.body, 1)}\n}}"  # noqa: E501
     if lang == "objc":
         sig = ":".join(
             [f"({_type_name(lang, method.return_type)}){method.name}"]
@@ -1128,13 +1112,13 @@ def _emit_function(lang: str, method: UniversalMethod) -> str:
     sig = ", ".join(f"{_type_name(lang, p.type_info)} {p.name}" for p in params)
     extras = "    std::mutex mu;\n" if "industrial_guard(mu)" in _emit_stmts(lang, method.body, 1) else ""
     route = "// Route: Get\n" if method.http_method == "GET" else ""
-    return (
-        f"{route}{_type_name(lang, method.return_type)} {method.name}({sig}) {{\n"
-        f"{extras}{_emit_stmts(lang, method.body, 1)}\n}}"
-    )
+    return f"{route}{_type_name(lang, method.return_type)} {method.name}({sig}) {{\n{extras}{_emit_stmts(lang, method.body, 1)}\n}}"  # noqa: E501
 
 
 def _prelude(lang: str, module: UniversalModule, body: str = "") -> str:
+    concurrency_runtime(lang)
+    io_runtime(lang)
+    framework_runtime(lang)
     if lang == "python":
         return (
             "from __future__ import annotations\n"
@@ -1214,17 +1198,12 @@ def _prelude(lang: str, module: UniversalModule, body: str = "") -> str:
             "import org.springframework.web.bind.annotation.*\n\n"
         )
     if lang == "php":
-        return (
-            "<?php\n\nnamespace App\\Http\\Controllers;\n\n"
-            "use Exception;\nuse Illuminate\\Http\\Request;\n"
-            "use Illuminate\\Http\\JsonResponse;\n\n"
-        )
+        return "<?php\n\nnamespace App\\Http\\Controllers;\n\nuse Exception;\nuse Illuminate\\Http\\Request;\nuse Illuminate\\Http\\JsonResponse;\n\n"  # noqa: E501
     if lang in {"typescript", "react"}:
         return (
             "import * as fs from 'fs';\n"
             "import { Controller, Get, Post, Body, Param, HttpException, HttpStatus } from '@nestjs/common';\n"
-            "class AsyncQueue<T> { private q: T[] = []; put(v: T) { this.q.push(v); } "
-            "async take(): Promise<T> { return this.q.shift() as T; } }\n"
+            "class AsyncQueue<T> { private q: T[] = []; put(v: T) { this.q.push(v); } async take(): Promise<T> { return this.q.shift() as T; } }\n"  # noqa: E501
             "class Mutex { async run<T>(fn: () => T): Promise<T> { return fn(); } }\n\n"
         )
     if lang == "cpp":
@@ -1253,9 +1232,9 @@ def _emit_domain_class(lang: str, klass: UniversalClass) -> str:
     fields = list(klass.fields)
     if not fields and cname == "Asset":
         fields = [
-            UniversalField(name="serial", type_info=UniversalType.string_type()),
-            UniversalField(name="status", type_info=UniversalType.string_type()),
-            UniversalField(name="value", type_info=UniversalType.float64()),
+            AstField(name="serial", type_info=UniversalType.string_type()),
+            AstField(name="status", type_info=UniversalType.string_type()),
+            AstField(name="value", type_info=UniversalType.float64()),
         ]
 
     if lang == "python":
@@ -1341,10 +1320,7 @@ def _emit_domain_class(lang: str, klass: UniversalClass) -> str:
         ctor_assigns = "\n".join(
             f"        $this->{_to_camel_case(f.name)} = ${_to_camel_case(f.name)};" for f in fields
         )
-        return (
-            f"class {cname} {{\n{f_str}\n\n    public function __construct({ctor_args}) {{\n"
-            f"{ctor_assigns}\n    }}\n}}\n"
-        )
+        return f"class {cname} {{\n{f_str}\n\n    public function __construct({ctor_args}) {{\n{ctor_assigns}\n    }}\n}}\n"  # noqa: E501
 
     if lang in {"cpp", "vcpp6"}:
         f_lines = [f"    {_type_name(lang, f.type_info)} {_to_camel_case(f.name)};" for f in fields]
@@ -1453,9 +1429,7 @@ def _emit_controller_method(lang: str, method: UniversalMethod, klass: Universal
             f'        raise HTTPException(status_code=500, detail=f"Failed: {{str(ex)}}")'
             if is_get
             else f"    try:\n"
-            f"        return {domain_ret}(serial=getattr({p0_name}, 'serial', 'ACTIVE'), "
-            f"status=getattr({p0_name}, 'status', 'ACTIVE'), "
-            f"value=getattr({p0_name}, 'value', 100.0))\n"
+            f"        return {domain_ret}(serial=getattr({p0_name}, 'serial', 'ACTIVE'), status=getattr({p0_name}, 'status', 'ACTIVE'), value=getattr({p0_name}, 'value', 100.0))\n"  # noqa: E501
             f"    except Exception as ex:\n"
             f'        raise HTTPException(status_code=500, detail=f"Failed: {{str(ex)}}")'
         )
@@ -1590,8 +1564,7 @@ def _emit_controller_method(lang: str, method: UniversalMethod, klass: Universal
             if is_get
             else "            return CompletableFuture.supplyAsync(() -> {\n"
             "                try {\n"
-            f"                    return new {domain_ret}({p0_name}.getSerial(), "
-            f"{p0_name}.getStatus(), {p0_name}.getValue());\n"
+            f"                    return new {domain_ret}({p0_name}.getSerial(), {p0_name}.getStatus(), {p0_name}.getValue());\n"  # noqa: E501
             "                } catch (Exception ex) {\n"
             '                    throw new RuntimeException("Failed: " + ex.getMessage(), ex);\n'
             "                }\n"
@@ -1610,8 +1583,7 @@ def _emit_controller_method(lang: str, method: UniversalMethod, klass: Universal
         )
         body = (
             "        try {\n"
-            f"            if ({p0_name}.toString().isBlank()) "
-            'throw IllegalArgumentException("Asset serial is invalid")\n'
+            f'            if ({p0_name}.toString().isBlank()) throw IllegalArgumentException("Asset serial is invalid")\n'  # noqa: E501
             f'            {domain_ret}({p0_name}.toString(), "ACTIVE", 100.0)\n'
             "        } catch (ex: Exception) {\n"
             '            throw RuntimeException("Failed: ${ex.message}", ex)\n'
@@ -1691,10 +1663,7 @@ def _emit_controller_class(lang: str, klass: UniversalClass) -> str:
         return f'router = APIRouter(prefix="{route_with_slash}", tags=["{tag}"])\n\n{m_rendered}\n'
 
     if lang == "csharp":
-        return (
-            f'[ApiController]\n[Route("{route_no_slash}")]\n'
-            f"public class {cname} : ControllerBase\n{{\n{m_rendered}\n}}\n"
-        )
+        return f'[ApiController]\n[Route("{route_no_slash}")]\npublic class {cname} : ControllerBase\n{{\n{m_rendered}\n}}\n'  # noqa: E501
 
     if lang in {"typescript", "react"}:
         return f"@Controller('{route_no_slash}')\nexport class {cname} {{\n{m_rendered}\n}}\n"
@@ -1708,10 +1677,7 @@ def _emit_controller_class(lang: str, klass: UniversalClass) -> str:
         return f"type {cname} struct {{\n    mu sync.RWMutex\n}}\n\n{m_rendered}\n"
 
     if lang == "java":
-        return (
-            f'    @RestController\n    @RequestMapping("{route_with_slash}")\n'
-            f"    public static class {cname} {{\n{m_rendered}\n    }}\n"
-        )
+        return f'    @RestController\n    @RequestMapping("{route_with_slash}")\n    public static class {cname} {{\n{m_rendered}\n    }}\n'  # noqa: E501
 
     if lang == "kotlin":
         return f'@RestController\n@RequestMapping("{route_with_slash}")\nclass {cname} {{\n{m_rendered}\n}}\n'

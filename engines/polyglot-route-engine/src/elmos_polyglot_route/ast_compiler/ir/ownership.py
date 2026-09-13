@@ -140,9 +140,7 @@ class OwnershipAnalyzer:
                 OwnershipViolation(
                     violation_type="USE_AFTER_MOVE",
                     var_name=var_name,
-                    message=(
-                        f"Cannot borrow '{var_name}' as mutable because it was previously moved at {state.moved_at}"
-                    ),
+                    message=f"Cannot borrow '{var_name}' as mutable because it was previously moved at {state.moved_at}",  # noqa: E501
                     location=location,
                 )
             )
@@ -153,10 +151,7 @@ class OwnershipAnalyzer:
                 OwnershipViolation(
                     violation_type="ALIASING_CONFLICT",
                     var_name=var_name,
-                    message=(
-                        f"Cannot borrow '{var_name}' as mutable because it is also borrowed as immutable "
-                        f"({state.active_shared_borrows} active borrows)"
-                    ),
+                    message=f"Cannot borrow '{var_name}' as mutable because it is also borrowed as immutable ({state.active_shared_borrows} active borrows)",  # noqa: E501
                     location=location,
                 )
             )

@@ -160,11 +160,7 @@ def path_combine(p1: str, p2: str, lang: str) -> str:
 def http_get(url_expr: str, lang: str) -> str:
     language = lang.lower().strip()
     if language in ("java", "kotlin"):
-        return (
-            "java.net.http.HttpClient.newHttpClient().send("
-            f"java.net.http.HttpRequest.newBuilder(java.net.URI.create({url_expr})).build(), "
-            "java.net.http.HttpResponse.BodyHandlers.ofString()).body()"
-        )
+        return f"java.net.http.HttpClient.newHttpClient().send(java.net.http.HttpRequest.newBuilder(java.net.URI.create({url_expr})).build(), java.net.http.HttpResponse.BodyHandlers.ofString()).body()"  # noqa: E501
     elif language in ("csharp", "cs"):
         return f"await new System.Net.Http.HttpClient().GetStringAsync({url_expr})"
     elif language in ("python", "py"):

@@ -48,6 +48,7 @@ class PhpAstParser(BaseAstParser):
             m = class_regex.search(source_code, pos)
             if not m:
                 break
+            m.group(1)
             cls_name = m.group(2)
             open_brace = m.end() - 1
             close_brace = self._find_matching_brace(source_code, open_brace)

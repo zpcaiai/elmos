@@ -26,12 +26,12 @@ class KotlinAstParser(BaseAstParser):
         module = UniversalModule(name="KotlinModule", source_language="kotlin")
 
         # Package
-        pkg_m = re.search(r"package\s+([a-zA-Z0-9_.]+)", source_code)
+        pkg_m = re.search(r"\bpackage\s+([a-zA-Z0-9_.]+)", source_code)
         if pkg_m:
             module.package_name = pkg_m.group(1)
 
         # Imports
-        for imp in re.finditer(r"import\s+([a-zA-Z0-9_.*]+)", source_code):
+        for imp in re.finditer(r"\bimport\s+([a-zA-Z0-9_.*]+)", source_code):
             module.imports.append(imp.group(1))
 
         # Data classes: data class Asset(val serial: String, val status: String, val value: Double)

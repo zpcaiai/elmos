@@ -622,8 +622,10 @@ class NativeBridge:
     def parse_java_with_javac(cls, source_code: str) -> UniversalModule | None:
         """Parses Java source using the compiled javac Tree API Analyzer."""
         class_dir = NATIVE_DIR / "java"
-        java_binary = shutil.which("java")
-        if not java_binary or not (class_dir / "Analyzer.class").exists():
+        if not (class_dir / "Analyzer.class").exists():
+            return None
+        java_path = shutil.which("java")
+        if not java_path:
             return None
 
         import re
@@ -638,7 +640,7 @@ class NativeBridge:
 
             try:
                 inv_res = subprocess.run(
-                    [java_binary, "-cp", str(class_dir), "Analyzer", file_path, "--inventory"],
+                    [java_path, "-cp", str(class_dir), "Analyzer", file_path, "--inventory"],
                     capture_output=True,
                     text=True,
                     timeout=DEFAULT_SUBPROCESS_TIMEOUT,
@@ -672,7 +674,7 @@ class NativeBridge:
                         )
                         if subj.get("analyzable"):
                             fn_res = subprocess.run(
-                                [java_binary, "-cp", str(class_dir), "Analyzer", file_path, name],
+                                [java_path, "-cp", str(class_dir), "Analyzer", file_path, name],
                                 capture_output=True,
                                 text=True,
                                 timeout=DEFAULT_SUBPROCESS_TIMEOUT,
@@ -705,8 +707,10 @@ class NativeBridge:
     def parse_csharp_with_roslyn(cls, source_code: str) -> UniversalModule | None:
         """Parses C# source using the compiled Roslyn analyzer DLL."""
         dll_path = NATIVE_DIR / "csharp" / "bin" / "Debug" / "net10.0" / "Elmos.Csharp.EmittedAnalyzer.dll"
-        dotnet_binary = shutil.which("dotnet")
-        if not dotnet_binary or not dll_path.exists():
+        if not dll_path.exists():
+            return None
+        dotnet_path = shutil.which("dotnet")
+        if not dotnet_path:
             return None
 
         import re
@@ -732,7 +736,7 @@ class NativeBridge:
 
             for m_name in m_names:
                 res = subprocess.run(
-                    [dotnet_binary, str(dll_path), temp_path, m_name, "--emitted-target"],
+                    [dotnet_path, str(dll_path), temp_path, m_name, "--emitted-target"],
                     capture_output=True,
                     text=True,
                     timeout=DEFAULT_SUBPROCESS_TIMEOUT,

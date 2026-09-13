@@ -3552,21 +3552,19 @@ def _registered_swift_receipt_contract(receipt: dict[str, Any]) -> dict[str, Any
     network = receipt.get("network_isolation")
     sandbox = network.get("sandbox") if isinstance(network, dict) else None
     verifier = network.get("verifier") if isinstance(network, dict) else None
-    toolchain_profile = (
-        toolchain.get("profile") if isinstance(toolchain, dict) else None
+    declared_profile = toolchain.get("profile") if isinstance(toolchain, dict) else None
+    profile_markers = (
+        [
+            value.removeprefix("apple-host-profile=")
+            for value in declared_profile
+            if isinstance(value, str) and value.startswith("apple-host-profile=")
+        ]
+        if isinstance(declared_profile, list)
+        else []
     )
-    declared_profile_ids = (
-        tuple(
-            item.removeprefix("apple-host-profile=")
-            for item in toolchain_profile
-            if isinstance(item, str) and item.startswith("apple-host-profile=")
-        )
-        if isinstance(toolchain_profile, list)
-        else ()
-    )
-    if len(declared_profile_ids) != 1 or not declared_profile_ids[0]:
-        raise ValueError("receipt does not select one registered Apple host profile")
-    declared_profile_id = declared_profile_ids[0]
+    if len(profile_markers) != 1 or not profile_markers[0]:
+        raise ValueError("receipt does not declare one registered Apple host profile")
+    declared_profile_id = profile_markers[0]
     observed_identity = (
         toolchain.get("swiftc_sha256") if isinstance(toolchain, dict) else None,
         git.get("sha256") if isinstance(git, dict) else None,
@@ -3712,7 +3710,10 @@ def _validate_swift_analyzer_receipt_document(
     try:
         registered_contract = _registered_swift_receipt_contract(receipt)
     except (ImportError, KeyError, TypeError, ValueError) as exc:
-        failures.append(f"{label} Apple host profile is not registered: {exc}")
+        failures.append(
+            f"{label}.toolchain exact identity is invalid; "
+            f"Apple host profile is not registered: {exc}"
+        )
         return None
     expected_toolchain = registered_contract["toolchain"]
     expected_build_closure = registered_contract["closure"]

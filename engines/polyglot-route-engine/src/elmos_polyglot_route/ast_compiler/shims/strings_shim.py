@@ -116,10 +116,7 @@ def string_ends_with(haystack: str, suffix: str, lang: str) -> str:
     elif language == "php":
         return f"str_ends_with({haystack}, {suffix})"
     elif language in ("cpp", "c++"):
-        return (
-            f"({haystack}.length() >= {suffix}.length() && {haystack}.compare("
-            f"{haystack}.length() - {suffix}.length(), {suffix}.length(), {suffix}) == 0)"
-        )
+        return f"({haystack}.length() >= {suffix}.length() && {haystack}.compare({haystack}.length() - {suffix}.length(), {suffix}.length(), {suffix}) == 0)"  # noqa: E501
     elif language == "swift":
         return f"{haystack}.hasSuffix({suffix})"
     elif language in ("objc", "objective-c"):

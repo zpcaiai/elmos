@@ -117,15 +117,9 @@ def uuid_v4(lang: str) -> str:
 def sha256_hex(expr: str, lang: str) -> str:
     language = lang.lower().strip()
     if language in ("java", "kotlin"):
-        return (
-            "java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("
-            f'"SHA-256").digest(({expr}).getBytes(java.nio.charset.StandardCharsets.UTF_8)))'
-        )
+        return f'java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(({expr}).getBytes(java.nio.charset.StandardCharsets.UTF_8)))'  # noqa: E501
     elif language in ("csharp", "cs"):
-        return (
-            "Convert.ToHexString(System.Security.Cryptography.SHA256.HashData("
-            f"System.Text.Encoding.UTF8.GetBytes({expr}))).ToLowerInvariant()"
-        )
+        return f"Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes({expr}))).ToLowerInvariant()"  # noqa: E501
     elif language in ("python", "py"):
         return f"hashlib.sha256(({expr}).encode('utf-8')).hexdigest()"
     elif language in ("typescript", "ts", "javascript", "js"):

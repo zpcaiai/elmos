@@ -23,14 +23,21 @@
   "source": {
     "boot": "2.7.18",
     "build": "PASSED",
-    "build_tail": "          main] io.elmos.reference.OrderControllerTest   : Starting OrderControllerTest using Java 17.0.11 on StephendeMacBook-Air.local with PID 67536 (started by stephen in /private/tmp/elmos-spring-ref.2MB8WZ/source)\n2026-09-10 01:19:20.875  INFO 67536 --- [           main] io.elmos.reference.OrderControllerTest   : No active profile set, falling back to 1 default profile: \"default\"\n2026-09-10 01:19:22.443  INFO 67536 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''\n2026-09-10 01:19:22.443  INFO 67536 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''\n2026-09-10 01:19:22.449  INFO 67536 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'\n2026-09-10 01:19:22.465  INFO 67536 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 22 ms\n2026-09-10 01:19:22.498  INFO 67536 --- [           main] io.elmos.reference.OrderControllerTest   : Started OrderControllerTest in 1.886 seconds (JVM running for 2.697)\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.72 s - in io.elmos.reference.OrderControllerTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jar:3.2.2:jar (default-jar) @ spring-reference-2-7-18 ---\n[INFO] Building jar: /private/tmp/elmos-spring-ref.2MB8WZ/source/target/spring-reference-2-7-18-1.0.0.jar\n[INFO] \n[INFO] --- spring-boot:2.7.18:repackage (repackage) @ spring-reference-2-7-18 ---\n[INFO] Replacing main artifact with repackaged archive\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  6.650 s\n[INFO] Finished at: 2026-09-10T01:19:24+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "build_tail": "reate(io.elmos.reference.OrderController$CreateOrder): [Field error in object 'createOrder' on field 'customerId': rejected value []; codes [NotBlank.createOrder.customerId,NotBlank.customerId,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [createOrder.customerId,customerId]; arguments []; default message [customerId]]; default message [must not be blank]] ]\n[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 83.128 s - in io.elmos.reference.OrderControllerSecurityTest\n2026-09-13 12:45:21.769  INFO 40221 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'\n2026-09-13 12:45:21.770  INFO 40221 --- [ionShutdownHook] .SchemaDropperImpl$DelayedDropActionImpl : HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'\n2026-09-13 12:45:21.965  INFO 40221 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...\n2026-09-13 12:45:21.970  INFO 40221 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jar:3.2.2:jar (default-jar) @ spring-reference-2-7-18 ---\n[INFO] Building jar: /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-spring-ref.hxjx9b7p/source/target/spring-reference-2-7-18-1.0.0.jar\n[INFO] \n[INFO] --- spring-boot:2.7.18:repackage (repackage) @ spring-reference-2-7-18 ---\n[INFO] Replacing main artifact with repackaged archive\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  02:04 min\n[INFO] Finished at: 2026-09-13T12:45:28+08:00\n[INFO] ------------------------------------------------------------------------\n",
     "health_path": "/actuator/health",
     "java": "java version \"17.0.11\" 2024-04-16 LTS",
     "runtime": {
       "health": {
         "status": "UP"
       },
-      "jar_sha256": "237bcd5311ab4f333776c1c6eee1462369ca5231f4cc8c0f5fe20163dd57bc87",
+      "jar_sha256": "952db8f0a7a577498dbdebe3028de642cf70f14133935cce72f4507c89273bf4",
+      "persistence": {
+        "count_response": {
+          "count": 0
+        },
+        "count_status": 200,
+        "rollback_status": 500
+      },
       "responses": {
         "1001": {
           "amountCents": 125125,
@@ -47,20 +54,31 @@
           "id": 7,
           "status": "REVIEW"
         }
+      },
+      "security": {
+        "authenticated_order_status": 200,
+        "unauthenticated_order_status": 401
       }
     }
   },
   "target": {
     "boot": "3.5.3",
     "build": "PASSED",
-    "build_tail": "ollerTest   : No active profile set, falling back to 1 default profile: \"default\"\n2026-09-10T01:19:50.917+08:00  INFO 67598 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''\n2026-09-10T01:19:50.918+08:00  INFO 67598 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''\n2026-09-10T01:19:50.926+08:00  INFO 67598 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'\n2026-09-10T01:19:50.937+08:00  INFO 67598 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 18 ms\n2026-09-10T01:19:51.048+08:00  INFO 67598 --- [           main] io.elmos.reference.OrderControllerTest   : Started OrderControllerTest in 1.897 seconds (process running for 2.63)\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.079 s -- in io.elmos.reference.OrderControllerTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jar:3.4.2:jar (default-jar) @ spring-reference-2-7-18 ---\n[INFO] Building jar: /private/tmp/elmos-spring-ref.2MB8WZ/migrated/target/spring-reference-2-7-18-1.0.0.jar\n[INFO] \n[INFO] --- spring-boot:3.5.3:repackage (repackage) @ spring-reference-2-7-18 ---\n[INFO] Replacing main artifact /private/tmp/elmos-spring-ref.2MB8WZ/migrated/target/spring-reference-2-7-18-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.\n[INFO] The original artifact has been renamed to /private/tmp/elmos-spring-ref.2MB8WZ/migrated/target/spring-reference-2-7-18-1.0.0.jar.original\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  6.405 s\n[INFO] Finished at: 2026-09-10T01:19:52+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "build_tail": " [           main] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in java.util.Map<java.lang.String, java.lang.String> io.elmos.reference.OrderController.create(io.elmos.reference.OrderController$CreateOrder): [Field error in object 'createOrder' on field 'customerId': rejected value []; codes [NotBlank.createOrder.customerId,NotBlank.customerId,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [createOrder.customerId,customerId]; arguments []; default message [customerId]]; default message [must not be blank]] ]\n[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 51.16 s -- in io.elmos.reference.OrderControllerSecurityTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jar:3.4.2:jar (default-jar) @ spring-reference-2-7-18 ---\n[INFO] Building jar: /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-spring-ref.hxjx9b7p/migrated/target/spring-reference-2-7-18-1.0.0.jar\n[INFO] \n[INFO] --- spring-boot:3.5.3:repackage (repackage) @ spring-reference-2-7-18 ---\n[INFO] Replacing main artifact /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-spring-ref.hxjx9b7p/migrated/target/spring-reference-2-7-18-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.\n[INFO] The original artifact has been renamed to /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-spring-ref.hxjx9b7p/migrated/target/spring-reference-2-7-18-1.0.0.jar.original\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  01:16 min\n[INFO] Finished at: 2026-09-13T12:51:13+08:00\n[INFO] ------------------------------------------------------------------------\n",
     "health_path": "/actuator/health",
     "java": "openjdk version \"21.0.11\" 2026-04-21",
     "runtime": {
       "health": {
         "status": "UP"
       },
-      "jar_sha256": "46261df9cddb4d0396d47657713ae144540fea2aa65430d6ec4699dfb4d15746",
+      "jar_sha256": "7a697893a22a13899370b20b879f0ec041e683940c55b4e5e0811319317b17be",
+      "persistence": {
+        "count_response": {
+          "count": 0
+        },
+        "count_status": 200,
+        "rollback_status": 500
+      },
       "responses": {
         "1001": {
           "amountCents": 125125,
@@ -77,13 +95,17 @@
           "id": 7,
           "status": "REVIEW"
         }
+      },
+      "security": {
+        "authenticated_order_status": 200,
+        "unauthenticated_order_status": 401
       }
     }
   },
   "transformation": {
     "engine": "OpenRewrite",
     "maven": "Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)",
-    "output_tail": "rsion\n[WARNING]                 org.openrewrite.maven.ChangeParentPom: {oldGroupId=org.springframework.boot, newGroupId=org.springframework.boot, oldArtifactId=spring-boot-starter-parent, newArtifactId=spring-boot-starter-parent, newVersion=3.5.3, allowVersionDowngrades=true}\n[WARNING] Changes have been made to src/main/java/io/elmos/reference/OrderController.java by:\n[WARNING]     org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5\n[WARNING]         org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4\n[WARNING]             org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3\n[WARNING]                 org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2\n[WARNING]                     org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_1\n[WARNING]                         org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0\n[WARNING]                             org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_0\n[WARNING]                                 org.openrewrite.java.migrate.jakarta.JakartaEE10\n[WARNING]                                     org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta\n[WARNING]                                         org.openrewrite.java.migrate.jakarta.JavaxValidationMigrationToJakartaValidation\n[WARNING]                                             org.openrewrite.java.ChangePackage\n[WARNING]         org.openrewrite.java.migrate.UpgradeToJava21\n[WARNING]             org.openrewrite.java.migrate.UpgradeBuildToJava21\n[WARNING]                 org.openrewrite.java.migrate.UpgradeJavaVersion\n[WARNING] Please review and commit the results.\n[WARNING] Estimate time saved: 25m\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  18.841 s\n[INFO] Finished at: 2026-09-10T01:19:44+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "output_tail": "rg.openrewrite.java.migrate.jakarta.JavaxPersistenceToJakartaPersistence\n[WARNING]                                             org.openrewrite.java.ChangePackage\n[WARNING]         org.openrewrite.java.migrate.UpgradeToJava21\n[WARNING]             org.openrewrite.java.migrate.UpgradeBuildToJava21\n[WARNING]                 org.openrewrite.java.migrate.UpgradeJavaVersion\n[WARNING] Changes have been made to src/main/java/io/elmos/reference/SecurityConfiguration.java by:\n[WARNING]     org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5\n[WARNING]         org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4\n[WARNING]             org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3\n[WARNING]                 org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2\n[WARNING]                     org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_1\n[WARNING]                         org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0\n[WARNING]                             org.openrewrite.java.spring.security6.UpgradeSpringSecurity_6_0\n[WARNING]                                 org.openrewrite.java.spring.security5.UpgradeSpringSecurity_5_8\n[WARNING]                                     org.openrewrite.java.spring.security5.AuthorizeHttpRequests\n[WARNING]                                     org.openrewrite.java.spring.security5.UseNewRequestMatchers\n[WARNING]         org.openrewrite.java.migrate.UpgradeToJava21\n[WARNING]             org.openrewrite.java.migrate.UpgradeBuildToJava21\n[WARNING]                 org.openrewrite.java.migrate.UpgradeJavaVersion\n[WARNING] Please review and commit the results.\n[WARNING] Estimate time saved: 40m\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  04:09 min\n[INFO] Finished at: 2026-09-13T12:49:47+08:00\n[INFO] ------------------------------------------------------------------------\n",
     "recipe_id": "io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21",
     "recipe_path": "apps/java-engine-worker/src/main/resources/rewrite/spring-boot-2.7.18-to-3.5.3.yml",
     "recipe_sha256": "4640b23ffb5fe35801e42b59ee21c0d36a33fcfcfab8b1508be138cec4189d7c",

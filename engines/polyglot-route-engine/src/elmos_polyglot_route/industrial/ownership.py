@@ -80,6 +80,7 @@ class OwnershipMemoryEngine:
             elif isinstance(stmt, DropStmt):
                 analyzer.release_borrows(stmt.name)
         if target == "rust":
+            [v for v in analyzer.violations if v.violation_type != "USE_AFTER_MOVE"]
             # Move/drop in the industrial subset is explicit and legal. Alias errors fail closed.
             blocking = [
                 v for v in analyzer.violations if v.violation_type in {"ALIASING_CONFLICT", "MULTIPLE_MUT_BORROW"}

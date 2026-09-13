@@ -10,6 +10,7 @@ class AppleConcurrencyLowering:
 
     @classmethod
     def lower_module(cls, module: UniversalModule, source_lang: str, target_lang: str) -> UniversalModule:
+        source_lang.lower().strip()
         t_lang = target_lang.lower().strip()
 
         for u_class in module.classes:
@@ -20,8 +21,7 @@ class AppleConcurrencyLowering:
                 # If target is Objective-C and method was async, adapt to completion handler pattern
                 elif t_lang in ("objc", "objective-c") and m.is_async:
                     m.is_async = False
-                    # Retain the adaptation in the typed annotation surface.
-                    if not any(annotation.name == "ObjCAsyncBlock" for annotation in m.annotations):
-                        m.annotations.append(UniversalAnnotation(name="ObjCAsyncBlock"))
+                    # Retain the adaptation in typed IR for the emitter.
+                    m.annotations.append(UniversalAnnotation(name="ObjCAsyncBlock", kwargs={"enabled": "true"}))
 
         return module

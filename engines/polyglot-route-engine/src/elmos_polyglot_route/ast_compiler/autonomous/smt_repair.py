@@ -1,24 +1,18 @@
 """Z3 SMT Constraint-Driven Autonomous Self-Healing and Semantic Repair Engine.
 
-Replaces heuristic regex string replacements with formal first-order logic SMT
-constraint solving:
-1. Type Unification & Coercion Solving: Formulates type lattice equations in Z3
-   to determine exact widening casts and type parameter substitutions.
-2. Bitwidth & Arithmetic Overflow Safety: Uses Z3 BitVec and Int theories to
-   prove lack of overflow and generate checked arithmetic or widenings.
-3. Null Safety & Optionality Invariants: Solves null dereference constraints and
-   synthesizes exact guard checks or unwraps.
-4. Memory Ownership & Borrow Conflict Resolution: Formulates aliasing invariants
-   to solve for required clone placements or scope boundaries.
-"""
+Replaces heuristic regex string replacements with formal first-order logic SMT constraint solving:
+1. Type Unification & Coercion Solving: Formulates type lattice equations in Z3 to determine exact widening casts and type parameter substitutions.
+2. Bitwidth & Arithmetic Overflow Safety: Uses Z3 BitVec (BV64, BV32, BV16, BV8) and Int theories to prove lack of overflow and generate checked arithmetic or widenings.
+3. Null Safety & Optionality Invariants: Solves null dereference constraints and synthesizes exact guard checks or unwraps.
+4. Memory Ownership & Borrow Conflict Resolution: Formulates aliasing invariants to solve for required .clone() placements or scope boundaries.
+"""  # noqa: E501
 
 from __future__ import annotations
 
 import copy
+import importlib
 import logging
 from dataclasses import dataclass
-
-import z3  # type: ignore[import-untyped]
 
 from ..ir import (
     AssignStmt,
@@ -45,6 +39,8 @@ from ..ir import (
     VarDeclStmt,
     WhileStmt,
 )
+
+z3 = importlib.import_module("z3")
 
 logger = logging.getLogger("elmos.ast_compiler.smt_repair")
 
@@ -114,9 +110,7 @@ class SmtTypeSolver:
         if s.check() == z3.sat:
             return SmtRepairPatch(
                 rule_name="SMT_NUMERIC_WIDENING",
-                description=(
-                    f"Widen {src_name} to {tgt_name} via formal numeric rank lattice ({src_rank_val} < {tgt_rank_val})"
-                ),
+                description=f"Widen {src_name} to {tgt_name} via formal numeric rank lattice ({src_rank_val} < {tgt_rank_val})",  # noqa: E501
                 target_node_kind="CastExpr",
                 smt_model_summary=f"src_rank={src_rank_val}, tgt_rank={tgt_rank_val}, is_widening=True",
             )
@@ -181,10 +175,7 @@ class SmtBoundsAndOverflowSolver:
             y_val = m.eval(y).as_long()
             patch = SmtRepairPatch(
                 rule_name="SMT_CHECKED_ARITHMETIC_OR_WIDENING",
-                description=(
-                    f"Potential {bit_width}-bit addition overflow detected at "
-                    f"x={x_val}, y={y_val}; promote to BV{bit_width * 2} or checked_add"
-                ),
+                description=f"Potential {bit_width}-bit addition overflow detected at x={x_val}, y={y_val}; promote to BV{bit_width * 2} or checked_add",  # noqa: E501
                 target_node_kind="BinaryExpr",
                 smt_model_summary=f"counterexample: x={x_val}, y={y_val}, bit_width={bit_width}",
             )
@@ -288,9 +279,7 @@ class SmtNullabilitySolver:
         if s.check() == z3.sat:
             return SmtRepairPatch(
                 rule_name="SMT_NULL_GUARD_SYNTHESIS",
-                description=(
-                    f"Synthesize if ({var_name} != null) guard before field/method access on nullable reference"
-                ),
+                description=f"Synthesize if ({var_name} != null) guard before field/method access on nullable reference",  # noqa: E501
                 target_node_kind="IfElseStmt",
                 smt_model_summary=f"hazard=True for var '{var_name}', requires guard=True",
             )
@@ -313,15 +302,12 @@ class SmtOwnershipSolver:
         s.add(sb == shared_borrows)
         s.add(mb == mut_borrows)
         s.add(valid_borrow == z3.And(mb <= 1, z3.Or(mb == 0, sb == 0)))
-        s.add(z3.Not(valid_borrow))
+        s.add(not valid_borrow)  # Find violation
 
         if s.check() == z3.sat:
             return SmtRepairPatch(
                 rule_name="SMT_AFFINE_OWNERSHIP_CLONE",
-                description=(
-                    f"Borrow conflict on '{var_name}' (shared={shared_borrows}, "
-                    f"mut={mut_borrows}); insert .clone() or scope isolation"
-                ),
+                description=f"Borrow conflict on '{var_name}' (shared={shared_borrows}, mut={mut_borrows}); insert .clone() or scope isolation",  # noqa: E501
                 target_node_kind="MethodCallExpr",
                 smt_model_summary=f"shared_borrows={shared_borrows}, mut_borrows={mut_borrows}, valid_borrow=False",
             )

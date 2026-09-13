@@ -466,12 +466,7 @@ class EnterpriseShimsLowering:
                 k in m_lower for k in ("incrementandget", "decrementandget", "compareandset", "compareexchange")
             ):
                 return cls.lower_atomic_call(expr.target, expr.method_name, expr.args, target)
-            elif expr.target is not None and m_lower in (
-                "putifabsent",
-                "computeifabsent",
-                "getoradd",
-                "loadorstore",
-            ):
+            elif expr.target is not None and m_lower in ("putifabsent", "computeifabsent", "getoradd", "loadorstore"):
                 return cls.lower_concurrent_map_call(expr.target, expr.method_name, expr.args, target)
             elif m_lower in ("allof", "whenall", "try_join"):
                 return cls.lower_async_all_of(expr.args, target)

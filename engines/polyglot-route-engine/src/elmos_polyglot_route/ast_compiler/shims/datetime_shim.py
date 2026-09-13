@@ -45,10 +45,7 @@ def epoch_millis(lang: str) -> str:
     elif language == "php":
         return "round(microtime(true) * 1000)"
     elif language in ("cpp", "c++"):
-        return (
-            "std::chrono::duration_cast<std::chrono::milliseconds>("
-            "std::chrono::system_clock::now().time_since_epoch()).count()"
-        )
+        return "std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()"  # noqa: E501
     elif language == "swift":
         return "Int64(Date().timeIntervalSince1970 * 1000)"
     elif language in ("objc", "objective-c"):

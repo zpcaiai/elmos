@@ -98,10 +98,7 @@ class Vb6StrictSemanticValidator:
                             Vb6Diagnostic(
                                 line=idx,
                                 column=1,
-                                message=(
-                                    f"MS-VBLS Variable Not Defined: '{assign_match.group(1)}' "
-                                    "used under Option Explicit"
-                                ),
+                                message=f"MS-VBLS Variable Not Defined: '{assign_match.group(1)}' used under Option Explicit",  # noqa: E501
                                 category="undefined_symbol",
                             )
                         )

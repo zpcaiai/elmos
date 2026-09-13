@@ -30,8 +30,8 @@ class AstFuzzGenerator:
     CLASS_NAMES = ["Asset", "Customer", "Order", "Device", "Account", "Metric", "Entity"]
 
     def __init__(self, seed: int | None = 42) -> None:
-        # This generator selects deterministic test shapes; it never creates
-        # credentials, tokens, or other security-sensitive values.
+        # Reproducibility is part of the fuzz evidence contract; this generator
+        # never produces credentials, tokens, or other security-sensitive data.
         self.rng = random.Random(seed)  # noqa: S311
 
     def generate_type(self, depth: int = 0) -> UniversalType:

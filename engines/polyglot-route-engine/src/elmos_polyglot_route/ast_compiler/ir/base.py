@@ -6,7 +6,7 @@ This module models arbitrary enterprise software constructs across the four crit
 2. Async & Concurrency: Async/await, Tasks, Promises, CompletableFutures, Coroutines, Goroutines, Channels, Locks.
 3. Exception Unwinding: Try/catch/finally, throw/raise, Result<T,E>, (T, error) tuples, panic/recover.
 4. Complex Framework & Web API: REST controllers, HTTP route annotations, DI/IoC bindings, DTO models.
-"""
+"""  # noqa: E501
 
 from __future__ import annotations
 

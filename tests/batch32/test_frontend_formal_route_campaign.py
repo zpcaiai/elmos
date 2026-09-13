@@ -73,6 +73,10 @@ class FrontendFormalCampaignTests(unittest.TestCase):
         )
         cls.engine_output = cls.root / "engine-output"
         node_env = dict(os.environ)
+        node_executable = shutil.which("node", path=node_env.get("PATH"))
+        if node_executable is None:
+            raise RuntimeError("locked Node.js executable is missing")
+        node_executable = str(Path(node_executable).resolve(strict=True))
         locked_z3 = (
             ROOT
             / "client-packs"
@@ -85,7 +89,7 @@ class FrontendFormalCampaignTests(unittest.TestCase):
             node_env["ELMOS_FRONTEND_Z3"] = str(locked_z3.resolve())
         subprocess.run(
             [
-                "node",
+                node_executable,
                 str(ENGINE / "dist" / "src" / "frontend-formal-cli.js"),
                 "--output",
                 str(cls.engine_output),
@@ -233,6 +237,7 @@ class FrontendFormalCampaignTests(unittest.TestCase):
     def test_v1_toolchain_identity_uses_current_exact_runner_payload(self) -> None:
         expected_solver_digests = frozenset(
             {
+                "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
                 "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
                 "sha256:edae32f9e37ea4b5bb35310d72f0e352d0dc07626cac4e9e30bc1ea9a5bc8efb",
             }

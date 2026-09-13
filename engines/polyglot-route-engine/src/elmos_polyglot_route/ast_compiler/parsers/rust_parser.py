@@ -32,7 +32,7 @@ class RustAstParser(BaseAstParser):
         module = UniversalModule(name="RustModule", source_language="rust")
 
         # Uses
-        for u in re.finditer(r"use\s+([a-zA-Z0-9_:]+);", source_code):
+        for u in re.finditer(r"\buse\s+([a-zA-Z0-9_:]+);", source_code):
             module.imports.append(u.group(1))
 
         # Structs
@@ -42,6 +42,7 @@ class RustAstParser(BaseAstParser):
             re.MULTILINE,
         )
         for sm in struct_regex.finditer(source_code):
+            sm.group(1)
             s_name = sm.group(2)
             s_body = sm.group(3)
             fields = []
@@ -135,6 +136,7 @@ class RustAstParser(BaseAstParser):
             m = fn_regex.search(impl_body, pos)
             if not m:
                 break
+            m.group(1)
             is_async = bool(m.group(2))
             fn_name = m.group(3)
             params_str = m.group(4)

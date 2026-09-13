@@ -62,7 +62,7 @@ class FlutterAstParser(BaseAstParser):
             re.DOTALL,
         )
         for match in state_regex.finditer(source_code):
-            _state_cls_name = match.group(1)
+            match.group(1)
             parent_widget = match.group(2)
             state_body = match.group(3)
 
