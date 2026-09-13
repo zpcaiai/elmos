@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
-from ..ir import CatchClause, RawSnippetStmt, ThrowStmt, TryCatchFinallyStmt, UniversalClass, UniversalMethod, UniversalModule
+from ..ir import (
+    TryCatchFinallyStmt,
+    UniversalMethod,
+    UniversalModule,
+)
 
 
 class ExceptionLowering:
@@ -22,13 +26,13 @@ class ExceptionLowering:
         for stmt in m.body:
             if isinstance(stmt, TryCatchFinallyStmt):
                 for catch in stmt.catch_clauses:
-                    if target_language in ('java', 'csharp', 'kotlin'):
-                        catch.exception_type = 'Exception'
-                    elif target_language == 'python':
-                        catch.exception_type = 'Exception'
-                    elif target_language == 'typescript':
-                        catch.exception_type = 'any'
-                    elif target_language == 'go':
-                        catch.exception_type = 'error'
-                    elif target_language == 'rust':
-                        catch.exception_type = 'Box<dyn std::error::Error>'
+                    if target_language in ("java", "csharp", "kotlin"):
+                        catch.exception_type = "Exception"
+                    elif target_language == "python":
+                        catch.exception_type = "Exception"
+                    elif target_language == "typescript":
+                        catch.exception_type = "any"
+                    elif target_language == "go":
+                        catch.exception_type = "error"
+                    elif target_language == "rust":
+                        catch.exception_type = "Box<dyn std::error::Error>"

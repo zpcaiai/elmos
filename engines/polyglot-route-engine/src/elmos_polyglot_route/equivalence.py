@@ -1220,10 +1220,7 @@ class _Encoder:
 
     def encode(self) -> _FunctionDenotation:
         denotation = self.statements(self.function.body, "/body")
-        if (
-            self.runtime_language in {"typescript", "react", "javascript"}
-            and self.function.return_type == "number"
-        ):
+        if self.runtime_language in {"typescript", "react", "javascript"} and self.function.return_type == "number":
             self._finite_number_assumption(denotation.value, "return")
         return denotation
 

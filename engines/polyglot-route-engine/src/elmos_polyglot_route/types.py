@@ -20,6 +20,7 @@ are integers, floats or strings, which is what `infer` computes. It is a
 closed, total function over the certified subset: anything it cannot type
 exactly raises `RouteError` instead of guessing.
 """
+
 from __future__ import annotations
 
 from .models import Expression, Function, RecordDefinition, RouteError, SemanticIR, Statement
@@ -158,9 +159,7 @@ def infer(
     raise RouteError(f"UNSUPPORTED_EXPRESSION:{expression.kind}")
 
 
-def environment_of(
-    function: Function, records_env: dict[str, RecordDefinition] | None = None
-) -> dict[str, str]:
+def environment_of(function: Function, records_env: dict[str, RecordDefinition] | None = None) -> dict[str, str]:
     environment: dict[str, str] = {}
     for parameter in function.parameters:
         if parameter.name in environment:
@@ -392,7 +391,7 @@ def topological_sort_functions(functions: tuple[Function, ...]) -> tuple[Functio
         call_path.append(name)
         for callee in sorted(callees_map[name]):
             if state[callee] == 1:
-                cycle_slice = call_path[call_path.index(callee):] + [callee]
+                cycle_slice = call_path[call_path.index(callee) :] + [callee]
                 raise RouteError(f"RECURSIVE_CALL_OUTSIDE_CERTIFIED_SUBSET:{'->'.join(cycle_slice)}")
             if state[callee] == 0:
                 dfs(callee)

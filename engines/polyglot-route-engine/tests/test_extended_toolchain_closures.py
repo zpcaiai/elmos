@@ -12,10 +12,7 @@ from elmos_polyglot_route import toolchains
 from elmos_polyglot_route.models import RouteError
 
 PROJECT_TOOLCHAIN_INSTALLER = (
-    toolchains.REPOSITORY_ROOT
-    / "scripts"
-    / "toolchains"
-    / "install_project_synthesis_toolchains.sh"
+    toolchains.REPOSITORY_ROOT / "scripts" / "toolchains" / "install_project_synthesis_toolchains.sh"
 )
 
 
@@ -90,7 +87,7 @@ def test_rust_wrapper_resolves_direct_and_public_symlink_without_realpath(
 def test_rust_installer_refreshes_wrappers_after_cached_payload_reuse() -> None:
     installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
     function_start = installer.index("install_rust() {")
-    function_end = installer.index("\n}\n\nif [[ \",${INSTALL_ONLY},\"", function_start)
+    function_end = installer.index('\n}\n\nif [[ ",${INSTALL_ONLY},"', function_start)
     function = installer[function_start:function_end]
     reuse_branch_end = function.index("\n  fi\n")
 
@@ -149,9 +146,7 @@ def test_real_fixed_user_toolchains_work_without_ambient_path(
 
     selected = toolchains.exact_toolchain(language)  # type: ignore[arg-type]
 
-    assert Path(selected.executable).is_relative_to(
-        toolchains.configured_polyglot_toolchain_root()
-    )
+    assert Path(selected.executable).is_relative_to(toolchains.configured_polyglot_toolchain_root())
     assert selected.executable_sha256
     assert selected.profile
     assert any(item.endswith("=NOT_RUN") for item in selected.profile)
@@ -443,22 +438,13 @@ def test_typescript_closure_is_detached_from_live_frontend_checkout(
 
     assert closure["sha256"] == toolchains._EXPECTED_TYPESCRIPT_CLOSURE_SHA256
     assert str(toolchains.REPOSITORY_ROOT) not in str(closure["manifest"])
-    assert capture["capture_relative_path"] == (
-        toolchains._EXPECTED_TYPESCRIPT_CAPTURE_RELATIVE
-    )
+    assert capture["capture_relative_path"] == (toolchains._EXPECTED_TYPESCRIPT_CAPTURE_RELATIVE)
     assert capture["source_root"] == str(toolchains._EXPECTED_TYPESCRIPT_ROOT)
-    assert capture["source_manifest_sha256"] == (
-        toolchains._EXPECTED_TYPESCRIPT_SOURCE_MANIFEST_SHA256
-    )
-    assert capture["runtime_manifest_sha256"] == (
-        toolchains._EXPECTED_TYPESCRIPT_RUNTIME_MANIFEST_SHA256
-    )
+    assert capture["source_manifest_sha256"] == (toolchains._EXPECTED_TYPESCRIPT_SOURCE_MANIFEST_SHA256)
+    assert capture["runtime_manifest_sha256"] == (toolchains._EXPECTED_TYPESCRIPT_RUNTIME_MANIFEST_SHA256)
     assert capture["file_count"] == 108
     assert len(capture["files"]) == 108
-    assert any(
-        item["path"] == "lib/lib.es2022.full.d.ts"
-        for item in capture["files"]
-    )
+    assert any(item["path"] == "lib/lib.es2022.full.d.ts" for item in capture["files"])
     assert receipt == {
         "schema_version": 1,
         "path": str(toolchains._EXPECTED_TYPESCRIPT_PARSER),

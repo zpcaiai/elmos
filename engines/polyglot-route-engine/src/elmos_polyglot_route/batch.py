@@ -89,10 +89,7 @@ def _rewrite_checkpoint(path: Path, entries: list[dict[str, Any]]) -> None:
     temporary = path.with_suffix(f"{path.suffix}.tmp")
     if temporary.is_symlink() or (temporary.exists() and not temporary.is_file()):
         raise RouteError("BATCH_CHECKPOINT_UNSAFE")
-    clean_entries = [
-        {k: v for k, v in entry.items() if k != "resumed_from_checkpoint"}
-        for entry in entries
-    ]
+    clean_entries = [{k: v for k, v in entry.items() if k != "resumed_from_checkpoint"} for entry in entries]
     payload = "".join(json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n" for entry in clean_entries)
     temporary.write_text(payload, encoding="utf-8")
     temporary.replace(path)
@@ -125,9 +122,7 @@ def _checkpoint_identity(
     unit_namespace_sha256: str | None = None
     if result.get("verdict") == "READY":
         snapshot_sha256 = discovery.get("snapshot_sha256")
-        source_sha256 = result.get("observed_sha256") or result.get(
-            "declared_sha256"
-        )
+        source_sha256 = result.get("observed_sha256") or result.get("declared_sha256")
         unit_id = result.get("id")
         source_path = result.get("source_path")
         if (
@@ -280,10 +275,7 @@ def run_batch(
     if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_LANGUAGE")
     language_lifecycle = repository_language_lifecycle(source_language, target_language)
-    if (
-        language_lifecycle is None
-        or discovery.get("language_lifecycle") != language_lifecycle
-    ):
+    if language_lifecycle is None or discovery.get("language_lifecycle") != language_lifecycle:
         raise RouteError("DISCOVERY_LANGUAGE_LIFECYCLE_INVALID")
     if language_lifecycle == REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY:
         raise RouteError("DEPRECATED_REPLAY_AGGREGATION_FORBIDDEN")
@@ -395,22 +387,16 @@ def run_batch(
                     raise RouteError(f"WORK_UNIT_OUTPUT_UNSAFE:{unit_id}")
                 try:
                     identifier_unit_namespace = repository_work_unit_namespace(
-                        repository_snapshot_sha256=(
-                            "sha256:" + str(discovery["snapshot_sha256"])
-                        ),
+                        repository_snapshot_sha256=("sha256:" + str(discovery["snapshot_sha256"])),
                         work_unit_id=unit_id,
                         source_logical_path=str(result["source_path"]),
                         source_sha256="sha256:" + observed_source_sha256,
                     )
                     if (
-                        identity.get("identifier_unit_namespace")
-                        != identifier_unit_namespace.to_mapping()
-                        or identity.get("identifier_unit_namespace_sha256")
-                        != identifier_unit_namespace.digest
+                        identity.get("identifier_unit_namespace") != identifier_unit_namespace.to_mapping()
+                        or identity.get("identifier_unit_namespace_sha256") != identifier_unit_namespace.digest
                     ):
-                        raise RouteError(
-                            f"BATCH_IDENTIFIER_UNIT_NAMESPACE_DRIFT:{unit_id}"
-                        )
+                        raise RouteError(f"BATCH_IDENTIFIER_UNIT_NAMESPACE_DRIFT:{unit_id}")
                     report = migrate(
                         source,
                         source_language,
@@ -430,14 +416,10 @@ def run_batch(
                     identifier_hygiene = report.get("identifier_hygiene")
                     if (
                         not isinstance(identifier_hygiene, dict)
-                        or identifier_hygiene.get("unit_namespace")
-                        != identifier_unit_namespace.to_mapping()
-                        or identifier_hygiene.get("unit_namespace_sha256")
-                        != identifier_unit_namespace.digest
+                        or identifier_hygiene.get("unit_namespace") != identifier_unit_namespace.to_mapping()
+                        or identifier_hygiene.get("unit_namespace_sha256") != identifier_unit_namespace.digest
                     ):
-                        raise RouteError(
-                            f"BATCH_IDENTIFIER_UNIT_NAMESPACE_EVIDENCE_MISMATCH:{unit_id}"
-                        )
+                        raise RouteError(f"BATCH_IDENTIFIER_UNIT_NAMESPACE_EVIDENCE_MISMATCH:{unit_id}")
                     entry = {
                         "id": unit_id,
                         "source_path": result.get("source_path"),
@@ -513,10 +495,7 @@ def run_batch(
         ],
     }
     report_path = output / REPORT_NAME
-    if (
-        declared_react_descriptor is not None
-        and react_project_descriptor(root) != declared_react_descriptor
-    ):
+    if declared_react_descriptor is not None and react_project_descriptor(root) != declared_react_descriptor:
         raise RouteError("REACT_PROJECT_DESCRIPTOR_CHANGED")
     if report_path.is_symlink() or (report_path.exists() and not report_path.is_file()):
         raise RouteError("BATCH_REPORT_OUTPUT_UNSAFE")

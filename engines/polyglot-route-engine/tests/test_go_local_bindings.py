@@ -27,10 +27,7 @@ def _source(tmp_path: Path, body: str) -> Path:
 def test_go_annotated_local_lifts_to_let(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "func total(price int64, tax int64) int64 {\n"
-        "    var subtotal int64 = price + tax\n"
-        "    return subtotal\n"
-        "}",
+        "func total(price int64, tax int64) int64 {\n    var subtotal int64 = price + tax\n    return subtotal\n}",
     )
     semantic = analyze(source, "go", "total")
     statements = semantic.functions[0].body
@@ -45,10 +42,7 @@ def test_go_annotated_local_lifts_to_let(tmp_path: Path) -> None:
 def test_go_lifted_let_emits_to_all_targets(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "func total(price int64, tax int64) int64 {\n"
-        "    var subtotal int64 = price + tax\n"
-        "    return subtotal\n"
-        "}",
+        "func total(price int64, tax int64) int64 {\n    var subtotal int64 = price + tax\n    return subtotal\n}",
     )
     semantic = analyze(source, "go", "total")
     assert "final long subtotal = Math.addExact(price, tax);" in emit(semantic, "java").content
@@ -61,10 +55,7 @@ def test_go_lifted_let_emits_to_all_targets(tmp_path: Path) -> None:
 def test_go_unannotated_define_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "func total(price int64) int64 {\n"
-        "    subtotal := price\n"
-        "    return subtotal\n"
-        "}",
+        "func total(price int64) int64 {\n    subtotal := price\n    return subtotal\n}",
     )
     with pytest.raises(RouteError, match="GO_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET"):
         analyze(source, "go", "total")
@@ -73,10 +64,7 @@ def test_go_unannotated_define_rejected(tmp_path: Path) -> None:
 def test_go_parameter_reassignment_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "func total(price int64) int64 {\n"
-        "    price = price + 1\n"
-        "    return price\n"
-        "}",
+        "func total(price int64) int64 {\n    price = price + 1\n    return price\n}",
     )
     with pytest.raises(RouteError, match="GO_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:price"):
         analyze(source, "go", "total")
@@ -107,10 +95,7 @@ def test_go_mutable_local_reassignment_accepted(tmp_path: Path) -> None:
 def test_go_declaration_without_value_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "func total(price int64) int64 {\n"
-        "    var subtotal int64\n"
-        "    return price\n"
-        "}",
+        "func total(price int64) int64 {\n    var subtotal int64\n    return price\n}",
     )
     with pytest.raises(RouteError, match="GO_ANNOTATED_DECLARATION_WITHOUT_VALUE"):
         analyze(source, "go", "total")
@@ -119,10 +104,7 @@ def test_go_declaration_without_value_rejected(tmp_path: Path) -> None:
 def test_go_multiple_declarations_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "func total(price int64) int64 {\n"
-        "    var a, b int64 = 1, 2\n"
-        "    return price\n"
-        "}",
+        "func total(price int64) int64 {\n    var a, b int64 = 1, 2\n    return price\n}",
     )
     with pytest.raises(RouteError, match="GO_MULTIPLE_DECLARATIONS_OUTSIDE_CERTIFIED_SUBSET"):
         analyze(source, "go", "total")
@@ -131,10 +113,7 @@ def test_go_multiple_declarations_rejected(tmp_path: Path) -> None:
 def test_go_unsupported_int_type_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "func total(price int64) int64 {\n"
-        "    var subtotal int = 1\n"
-        "    return price\n"
-        "}",
+        "func total(price int64) int64 {\n    var subtotal int = 1\n    return price\n}",
     )
     with pytest.raises(RouteError, match="GO_UNSUPPORTED_TYPE:int"):
         analyze(source, "go", "total")
@@ -162,10 +141,7 @@ def test_go_multiple_sequential_bindings(tmp_path: Path) -> None:
 def test_go_shadowing_parameter_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "func total(price int64) int64 {\n"
-        "    var price int64 = 10\n"
-        "    return price\n"
-        "}",
+        "func total(price int64) int64 {\n    var price int64 = 10\n    return price\n}",
     )
     semantic = analyze(source, "go", "total")
     with pytest.raises(RouteError, match="LET_NAME_ALREADY_BOUND:price"):

@@ -24,9 +24,7 @@ def test_development_fixture_uses_real_node_typescript_and_react_closures() -> N
 
     assert semantic.source_language == "react"
     assert semantic.analyzer == "ELMOS React/TSX typed-pure source analyzer"
-    assert semantic.analyzer_version.startswith(
-        "TypeScript 5.9.2 / Node 26.0.0 / React 19.2.7 / React DOM 19.2.7;"
-    )
+    assert semantic.analyzer_version.startswith("TypeScript 5.9.2 / Node 26.0.0 / React 19.2.7 / React DOM 19.2.7;")
     assert "analyzer-sha256=" in semantic.analyzer_version
     assert "dependency-profile-sha256=" in semantic.analyzer_version
     function = semantic.functions[0]
@@ -36,9 +34,7 @@ def test_development_fixture_uses_real_node_typescript_and_react_closures() -> N
     assert function.source_span is not None
     assert function.source_span.file == "clamp.tsx"
     assert function.source_span.start_byte == 0
-    assert function.source_span.end_byte == len(
-        (FIXTURES / "development" / "clamp.tsx").read_bytes()
-    ) - 1
+    assert function.source_span.end_byte == len((FIXTURES / "development" / "clamp.tsx").read_bytes()) - 1
     assert semantic.diagnostics == ()
 
 

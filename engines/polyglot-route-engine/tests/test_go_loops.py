@@ -4,6 +4,7 @@ Verifies that Go while loops (`for cond { ... }`) and monotonic 3-clause for loo
 (`for i := int64(0); i < n; i++ { ... }`) correctly lift into canonical IR loop statements,
 reject non-monotonic or non-standard forms, and emit cleanly into target languages.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -25,10 +26,7 @@ def _source(tmp_path: Path, body: str) -> Path:
 def test_go_while_loop_lifts(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    for n > 0 {\n"
-        "        break\n"
-        "    }\n"
-        "    return n",
+        "    for n > 0 {\n        break\n    }\n    return n",
     )
     semantic = analyze(source, "go", "subject")
     statements = semantic.functions[0].body
@@ -43,11 +41,7 @@ def test_go_while_loop_lifts(tmp_path: Path) -> None:
 def test_go_for_loop_lifts_default_step(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var total int64 = 0\n"
-        "    for i := int64(0); i < n; i++ {\n"
-        "        continue\n"
-        "    }\n"
-        "    return total",
+        "    var total int64 = 0\n    for i := int64(0); i < n; i++ {\n        continue\n    }\n    return total",
     )
     semantic = analyze(source, "go", "subject")
     statements = semantic.functions[0].body
@@ -66,11 +60,7 @@ def test_go_for_loop_lifts_default_step(tmp_path: Path) -> None:
 def test_go_for_loop_lifts_custom_step(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var total int64 = 0\n"
-        "    for i := int64(1); i < n; i += 2 {\n"
-        "        continue\n"
-        "    }\n"
-        "    return total",
+        "    var total int64 = 0\n    for i := int64(1); i < n; i += 2 {\n        continue\n    }\n    return total",
     )
     semantic = analyze(source, "go", "subject")
     loop = semantic.functions[0].body[1]
@@ -83,10 +73,7 @@ def test_go_for_loop_lifts_custom_step(tmp_path: Path) -> None:
 def test_go_rejects_infinite_loop(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    for {\n"
-        "        break\n"
-        "    }\n"
-        "    return n",
+        "    for {\n        break\n    }\n    return n",
     )
     with pytest.raises(RouteError, match="GO_INFINITE_LOOP_OUTSIDE_CERTIFIED_SUBSET"):
         analyze(source, "go", "subject")
@@ -95,11 +82,7 @@ def test_go_rejects_infinite_loop(tmp_path: Path) -> None:
 def test_go_rejects_non_monotonic_cond(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var total int64 = 0\n"
-        "    for i := int64(0); i != n; i++ {\n"
-        "        continue\n"
-        "    }\n"
-        "    return total",
+        "    var total int64 = 0\n    for i := int64(0); i != n; i++ {\n        continue\n    }\n    return total",
     )
     with pytest.raises(RouteError, match="GO_FOR_CONDITION_NON_MONOTONIC"):
         analyze(source, "go", "subject")

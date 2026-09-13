@@ -64,15 +64,6 @@ from .base import (
     WhileStmt,
 )
 
-# Export Type Lattice & Algebraic Type System
-from .types import (
-    ExtendedTypeKind,
-    FunctionSignature,
-    GenericParam,
-    TypeLattice,
-    Variance,
-)
-
 # Export Control Flow Graph & Dominator Analysis
 from .cfg import (
     BasicBlock,
@@ -98,6 +89,15 @@ from .ownership import (
     OwnershipAnalyzer,
     OwnershipKind,
     OwnershipViolation,
+)
+
+# Export Type Lattice & Algebraic Type System
+from .types import (
+    ExtendedTypeKind,
+    FunctionSignature,
+    GenericParam,
+    TypeLattice,
+    Variance,
 )
 
 __all__ = [

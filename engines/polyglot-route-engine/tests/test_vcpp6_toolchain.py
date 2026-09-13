@@ -70,9 +70,7 @@ def _binding(tmp_path: Path) -> tuple[Path, dict[str, str]]:
 
 def test_governed_binding_verifies_all_vendor_files_and_pe_architecture(tmp_path: Path) -> None:
     repository, environment = _binding(tmp_path)
-    binding = resolve_vcpp6_toolchain(
-        repository, environ=environment, host_system="Windows", host_machine="AMD64"
-    )
+    binding = resolve_vcpp6_toolchain(repository, environ=environment, host_system="Windows", host_machine="AMD64")
     assert binding.compiler.name == "CL.EXE"
     assert binding.linker.name == "LINK.EXE"
     assert binding.runtime.name == "MSVCP60.DLL"
@@ -82,9 +80,7 @@ def test_governed_binding_verifies_all_vendor_files_and_pe_architecture(tmp_path
 def test_binding_rejects_non_windows_hosts(tmp_path: Path) -> None:
     repository, environment = _binding(tmp_path)
     with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_PLATFORM_MISMATCH:vcpp6"):
-        resolve_vcpp6_toolchain(
-            repository, environ=environment, host_system="Darwin", host_machine="arm64"
-        )
+        resolve_vcpp6_toolchain(repository, environ=environment, host_system="Darwin", host_machine="arm64")
 
 
 def test_binding_rejects_changed_vendor_bytes(tmp_path: Path) -> None:
@@ -92,9 +88,7 @@ def test_binding_rejects_changed_vendor_bytes(tmp_path: Path) -> None:
     manifest = json.loads(Path(environment["ELMOS_VCPP6_TOOLCHAIN_MANIFEST"]).read_text())
     Path(manifest["linker_path"]).write_bytes(b"changed")
     with pytest.raises(RouteError, match="VCPP6_LINKER_DIGEST_MISMATCH"):
-        resolve_vcpp6_toolchain(
-            repository, environ=environment, host_system="Windows", host_machine="AMD64"
-        )
+        resolve_vcpp6_toolchain(repository, environ=environment, host_system="Windows", host_machine="AMD64")
 
 
 def test_binding_manifest_cannot_be_repository_controlled(tmp_path: Path) -> None:
@@ -105,19 +99,14 @@ def test_binding_manifest_cannot_be_repository_controlled(tmp_path: Path) -> Non
     environment["ELMOS_VCPP6_TOOLCHAIN_MANIFEST"] = str(inside)
     environment["ELMOS_VCPP6_TOOLCHAIN_MANIFEST_SHA256"] = hashlib.sha256(inside.read_bytes()).hexdigest()
     with pytest.raises(RouteError, match="VCPP6_TOOLCHAIN_MANIFEST_MUST_BE_EXTERNAL"):
-        resolve_vcpp6_toolchain(
-            repository, environ=environment, host_system="Windows", host_machine="AMD64"
-        )
+        resolve_vcpp6_toolchain(repository, environ=environment, host_system="Windows", host_machine="AMD64")
 
 
 def test_vcpp6_binding_schema_accepts_the_exact_runtime_contract(tmp_path: Path) -> None:
     _, environment = _binding(tmp_path)
     schema = json.loads(
-        (REPOSITORY_ROOT / "schemas" / "batch29" / "vcpp6-toolchain-binding.schema.json")
-        .read_text(encoding="utf-8")
+        (REPOSITORY_ROOT / "schemas" / "batch29" / "vcpp6-toolchain-binding.schema.json").read_text(encoding="utf-8")
     )
     Draft202012Validator.check_schema(schema)
-    manifest = json.loads(
-        Path(environment["ELMOS_VCPP6_TOOLCHAIN_MANIFEST"]).read_text(encoding="utf-8")
-    )
+    manifest = json.loads(Path(environment["ELMOS_VCPP6_TOOLCHAIN_MANIFEST"]).read_text(encoding="utf-8"))
     Draft202012Validator(schema).validate(manifest)

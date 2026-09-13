@@ -192,6 +192,7 @@ def _stable_bytes(path: Path, failure: str, maximum: int) -> bytes:
         after = path.lstat()
     except OSError as error:
         raise RouteError(failure) from error
+
     def identity(value: stat_result) -> tuple[int, ...]:
         return (
             value.st_dev,
@@ -204,6 +205,7 @@ def _stable_bytes(path: Path, failure: str, maximum: int) -> bytes:
             value.st_mtime_ns,
             value.st_ctime_ns,
         )
+
     if identity(before) != identity(after) or len(content) != before.st_size:
         raise RouteError(failure)
     return content
@@ -285,11 +287,7 @@ def _package_closure(flutter_root: Path) -> tuple[dict[str, Any], dict[str, tupl
     identities: dict[str, tuple[int, int, str]] = {}
     for name, (directory, language_version, records, byte_count, digest) in _PACKAGE_CLOSURE.items():
         raw = by_name.get(name)
-        if (
-            raw is None
-            or raw.get("packageUri") != "lib/"
-            or raw.get("languageVersion") != language_version
-        ):
+        if raw is None or raw.get("packageUri") != "lib/" or raw.get("languageVersion") != language_version:
             raise RouteError(f"DART_ANALYZER_PACKAGE_CONFIG_MISMATCH:{name}")
         root = _file_uri_path(raw.get("rootUri"))
         if root.name != directory:
@@ -319,11 +317,7 @@ def _flutter_identity(toolchain: ExactToolchain) -> tuple[Path, Path]:
     except OSError as error:
         raise RouteError("EXACT_TOOLCHAIN_FLUTTER_DART_REQUIRED") from error
     expected_dart = flutter_root / "bin" / "cache" / "dart-sdk" / "bin" / "dart"
-    if (
-        flutter != flutter_root / "bin" / "flutter"
-        or dart != expected_dart
-        or Path(toolchain.auxiliary) != dart
-    ):
+    if flutter != flutter_root / "bin" / "flutter" or dart != expected_dart or Path(toolchain.auxiliary) != dart:
         raise RouteError("EXACT_TOOLCHAIN_FLUTTER_DART_PATH_MISMATCH")
     _exact_file(dart, _DART_EXECUTABLE_BYTES, _DART_EXECUTABLE_SHA256, "EXACT_TOOLCHAIN_DART_CHANGED")
     version_path = flutter_root / "bin" / "cache" / "flutter.version.json"
@@ -395,11 +389,7 @@ def _promote_failure(completed: subprocess.CompletedProcess[str]) -> None:
         and "\n" not in detail
         and "\r" not in detail
         and len(detail) <= 500
-        and (
-            detail.startswith("DART_")
-            or detail.startswith("FLUTTER_")
-            or detail.startswith("FUNCTION_NOT_FOUND:")
-        )
+        and (detail.startswith("DART_") or detail.startswith("FLUTTER_") or detail.startswith("FUNCTION_NOT_FOUND:"))
         and not detail.startswith("DART_ANALYZER_INTERNAL_FAILURE:")
     ):
         raise RouteError(detail)

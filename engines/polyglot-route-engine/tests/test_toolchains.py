@@ -85,13 +85,9 @@ def test_legacy_apple_profile_replaces_one_complete_closure(
     legacy = toolchains._APPLE_ROUTE_LEGACY_PROFILE
     monkeypatch.setattr(native, "_apple_native_profile", lambda: legacy)
 
-    components = {
-        str(spec[0]): (str(spec[4]), int(spec[5]))
-        for spec in native._profiled_swift_build_component_specs()
-    }
+    components = {str(spec[0]): (str(spec[4]), int(spec[5])) for spec in native._profiled_swift_build_component_specs()}
     trees = {
-        str(spec[0]): (str(spec[3]), int(spec[4]), int(spec[5]))
-        for spec in native._profiled_swift_build_tree_specs()
+        str(spec[0]): (str(spec[3]), int(spec[4]), int(spec[5])) for spec in native._profiled_swift_build_tree_specs()
     }
 
     assert components["swift-dispatcher"] == (
@@ -120,10 +116,7 @@ def test_output_prefers_successful_stdout_over_diagnostic_stderr(
         ),
     )
 
-    assert (
-        toolchains._output(["/usr/bin/env"], include_stderr=False)
-        == "Xcode 26.6\nBuild version 17F113"
-    )
+    assert toolchains._output(["/usr/bin/env"], include_stderr=False) == "Xcode 26.6\nBuild version 17F113"
 
 
 def test_output_keeps_successful_stderr_only_version_surfaces(
@@ -256,8 +249,7 @@ def test_repeated_go_probes_leave_no_toolchain_environment_roots(
     assert toolchains._output([str(toolchains._EXPECTED_GO_EXECUTABLE), "env", "GOTELEMETRY"]) == "off"
     for _ in range(3):
         assert (
-            toolchains._output([str(toolchains._EXPECTED_GO_EXECUTABLE), "version"])
-            == toolchains._EXPECTED_GO_VERSION
+            toolchains._output([str(toolchains._EXPECTED_GO_EXECUTABLE), "version"]) == toolchains._EXPECTED_GO_VERSION
         )
 
     deadline = time.monotonic() + 1.0

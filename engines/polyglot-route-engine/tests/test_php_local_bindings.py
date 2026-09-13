@@ -5,6 +5,7 @@ correctly lift into canonical `let` statements, assignments (`$x = expr`, `$x +=
 lift into `assign`, parameter reassignment is rejected, constant reassignment is rejected,
 undeclared assignments are rejected, and lifted structures emit cleanly across targets.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -18,26 +19,14 @@ from elmos_polyglot_route.native import analyze
 
 def _source(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.php"
-    content = (
-        "<?php\n\n"
-        "declare(strict_types=1);\n\n"
-        "function total(int $price, int $tax): int {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"<?php\n\ndeclare(strict_types=1);\n\nfunction total(int $price, int $tax): int {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
 
 def _source_unary(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.php"
-    content = (
-        "<?php\n\n"
-        "declare(strict_types=1);\n\n"
-        "function total(int $price): int {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"<?php\n\ndeclare(strict_types=1);\n\nfunction total(int $price): int {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -45,8 +34,7 @@ def _source_unary(tmp_path: Path, body: str) -> Path:
 def test_php_local_binding_lifts_to_let(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    $subtotal = $price + $tax;\n"
-        "    return $subtotal;",
+        "    $subtotal = $price + $tax;\n    return $subtotal;",
     )
     semantic = analyze(source, "php", "total")
     statements = semantic.functions[0].body
@@ -61,9 +49,7 @@ def test_php_local_binding_lifts_to_let(tmp_path: Path) -> None:
 def test_php_mutable_local_assignment_lifts(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    $subtotal = $price;\n"
-        "    $subtotal = $price + $tax;\n"
-        "    return $subtotal;",
+        "    $subtotal = $price;\n    $subtotal = $price + $tax;\n    return $subtotal;",
     )
     semantic = analyze(source, "php", "total")
     statements = semantic.functions[0].body
@@ -101,12 +87,7 @@ def test_php_compound_assignment_lifts(tmp_path: Path) -> None:
 def test_php_increment_decrement_lifts(tmp_path: Path) -> None:
     source = _source_unary(
         tmp_path,
-        "    $count = $price;\n"
-        "    $count++;\n"
-        "    ++$count;\n"
-        "    $count--;\n"
-        "    --$count;\n"
-        "    return $count;",
+        "    $count = $price;\n    $count++;\n    ++$count;\n    $count--;\n    --$count;\n    return $count;",
     )
     semantic = analyze(source, "php", "total")
     statements = semantic.functions[0].body
@@ -125,8 +106,7 @@ def test_php_increment_decrement_lifts(tmp_path: Path) -> None:
 def test_php_parameter_reassignment_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    $price = $price + 1;\n"
-        "    return $price;",
+        "    $price = $price + 1;\n    return $price;",
     )
     with pytest.raises(
         RouteError,
@@ -138,8 +118,7 @@ def test_php_parameter_reassignment_rejected(tmp_path: Path) -> None:
 def test_php_undeclared_assignment_target_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    $unknown += 42;\n"
-        "    return $price;",
+        "    $unknown += 42;\n    return $price;",
     )
     with pytest.raises(
         RouteError,
@@ -151,10 +130,7 @@ def test_php_undeclared_assignment_target_rejected(tmp_path: Path) -> None:
 def test_php_local_scope_leak_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    if ($price > 0) {\n"
-        "        $local = 1;\n"
-        "    }\n"
-        "    return $local;",
+        "    if ($price > 0) {\n        $local = 1;\n    }\n    return $local;",
     )
     with pytest.raises(
         RouteError,
@@ -166,8 +142,7 @@ def test_php_local_scope_leak_rejected(tmp_path: Path) -> None:
 def test_php_self_referencing_initializer_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    $x = $x + 1;\n"
-        "    return $x;",
+        "    $x = $x + 1;\n    return $x;",
     )
     with pytest.raises(
         RouteError,
@@ -179,9 +154,7 @@ def test_php_self_referencing_initializer_rejected(tmp_path: Path) -> None:
 def test_php_local_bindings_emit_across_targets_and_relift(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    $subtotal = $price;\n"
-        "    $subtotal += $tax;\n"
-        "    return $subtotal;",
+        "    $subtotal = $price;\n    $subtotal += $tax;\n    return $subtotal;",
     )
     semantic = analyze(source, "php", "total")
 

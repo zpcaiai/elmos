@@ -1318,19 +1318,14 @@ def _rename_expression(
     if expression.kind == "call":
         if expression.function_name is None:
             raise RouteError(f"IDENTIFIER_{role}_CALL_TARGET_MISSING")
-        target_fn = (
-            function_names.get(expression.function_name)
-            if function_names is not None
-            else None
-        )
+        target_fn = function_names.get(expression.function_name) if function_names is not None else None
         if target_fn is None:
             raise RouteError(f"IDENTIFIER_{role}_FUNCTION_UNMAPPED:{expression.function_name}")
         return replace(
             expression,
             function_name=target_fn,
             call_arguments=tuple(
-                _rename_expression(arg, names, role, function_names)
-                for arg in expression.call_arguments
+                _rename_expression(arg, names, role, function_names) for arg in expression.call_arguments
             ),
         )
     raise RouteError(f"IDENTIFIER_{role}_EXPRESSION_UNSUPPORTED:{expression.kind}")
@@ -1387,9 +1382,7 @@ def _rename_statements(
             renamed_start = _rename_expression(statement.start, names, role, function_names)
             renamed_end = _rename_expression(statement.end, names, role, function_names)
             renamed_step = (
-                _rename_expression(statement.step, names, role, function_names)
-                if statement.step is not None
-                else None
+                _rename_expression(statement.step, names, role, function_names) if statement.step is not None else None
             )
             target_name = names.get(_LOCAL_BINDER_PREFIX + statement.name)
             if target_name is None:
@@ -1471,11 +1464,7 @@ def _target_function_view_validated(
             for local, binding in zip(_local_bindings_in_order(function.body), local_bindings, strict=True)
         }
     )
-    function_names = {
-        b.source_name: b.target_name
-        for b in plan.bindings
-        if b.role == "function"
-    }
+    function_names = {b.source_name: b.target_name for b in plan.bindings if b.role == "function"}
     target = replace(
         function,
         name=function_binding.target_name,
@@ -1509,8 +1498,7 @@ def target_function_view(
             fn,
             name=fn_binding.target_name,
             parameters=tuple(
-                replace(param, name=b.target_name)
-                for param, b in zip(fn.parameters, p_bindings, strict=True)
+                replace(param, name=b.target_name) for param, b in zip(fn.parameters, p_bindings, strict=True)
             ),
         )
         target_functions_env[fn_binding.target_name] = target_fn
@@ -1530,8 +1518,7 @@ def target_ir_view(source_ir: SemanticIR, plan: IdentifierPlan) -> SemanticIR:
             fn,
             name=fn_binding.target_name,
             parameters=tuple(
-                replace(param, name=b.target_name)
-                for param, b in zip(fn.parameters, p_bindings, strict=True)
+                replace(param, name=b.target_name) for param, b in zip(fn.parameters, p_bindings, strict=True)
             ),
         )
         target_functions_env[fn_binding.target_name] = target_fn
@@ -1565,8 +1552,7 @@ def alpha_normalize_target(
             fn,
             name=fn_binding.target_name,
             parameters=tuple(
-                replace(param, name=b.target_name)
-                for param, b in zip(fn.parameters, p_bindings, strict=True)
+                replace(param, name=b.target_name) for param, b in zip(fn.parameters, p_bindings, strict=True)
             ),
         )
         target_functions_env[fn_binding.target_name] = target_fn
@@ -1584,11 +1570,7 @@ def alpha_normalize_target(
         raise RouteError("IDENTIFIER_RAW_TARGET_FUNCTION_SET_MISMATCH")
 
     source_functions_env = {fn.name: fn for fn in source_ir.functions}
-    reverse_functions = {
-        b.target_name: b.source_name
-        for b in plan.bindings
-        if b.role == "function"
-    }
+    reverse_functions = {b.target_name: b.source_name for b in plan.bindings if b.role == "function"}
     normalized_functions: list[Function] = []
     for source_function, expected_view in zip(source_ir.functions, expected_views, strict=True):
         raw_function = raw_index[expected_view.name]

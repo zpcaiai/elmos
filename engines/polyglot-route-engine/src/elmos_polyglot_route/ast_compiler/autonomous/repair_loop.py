@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import List, Optional, Any
+
 from .compiler_diagnostics import CompilerDiagnosticParser, NativeCompilerDiagnostic
 
 
@@ -65,7 +65,7 @@ class AutonomousRepairLoop:
                     iterations=i - 1,
                     final_code=current_code,
                     fixes=fixes,
-                    remaining_diagnostics=[]
+                    remaining_diagnostics=[],
                 )
 
             # Apply targeted heuristic repair based on target language and diagnostics
@@ -79,19 +79,21 @@ class AutonomousRepairLoop:
 
         # Final check
         ret_code, diags, raw_out = CompilerDiagnosticParser.check_syntax(current_code, lang)
-        final_status = "auto_repaired" if (ret_code == 0 and not any(d.severity == "error" for d in diags)) else "blocked"
+        final_status = (
+            "auto_repaired" if (ret_code == 0 and not any(d.severity == "error" for d in diags)) else "blocked"
+        )
         return RepairResult(
             status=final_status,
             iterations=len(fixes),
             final_code=current_code,
             fixes=fixes,
-            remaining_diagnostics=diags
+            remaining_diagnostics=diags,
         )
 
     @classmethod
     def _apply_repair_heuristics(
         cls, code: str, lang: str, diags: list[NativeCompilerDiagnostic], iteration: int
-    ) -> tuple[str, Optional[RepairFix]]:
+    ) -> tuple[str, RepairFix | None]:
         new_code = code
 
         for d in diags:
@@ -106,15 +108,21 @@ class AutonomousRepairLoop:
                     return "#include <iostream>\n" + new_code, RepairFix(
                         iteration, "cpp_missing_iostream", "Injected <iostream>", "+ #include <iostream>"
                     )
-                if "#include <string>" not in new_code and ("string" in low_msg or "undeclared identifier 'std'" in low_msg):
+                if "#include <string>" not in new_code and (
+                    "string" in low_msg or "undeclared identifier 'std'" in low_msg
+                ):
                     return "#include <string>\n" + new_code, RepairFix(
                         iteration, "cpp_missing_string", "Injected <string>", "+ #include <string>"
                     )
-                if "#include <algorithm>" not in new_code and any(k in low_msg for k in ("min", "max", "sort", "count")):
+                if "#include <algorithm>" not in new_code and any(
+                    k in low_msg for k in ("min", "max", "sort", "count")
+                ):
                     return "#include <algorithm>\n" + new_code, RepairFix(
                         iteration, "cpp_missing_algorithm", "Injected <algorithm>", "+ #include <algorithm>"
                     )
-                if "#include <cmath>" not in new_code and any(k in low_msg for k in ("abs", "sqrt", "pow", "sin", "cos")):
+                if "#include <cmath>" not in new_code and any(
+                    k in low_msg for k in ("abs", "sqrt", "pow", "sin", "cos")
+                ):
                     return "#include <cmath>\n" + new_code, RepairFix(
                         iteration, "cpp_missing_cmath", "Injected <cmath>", "+ #include <cmath>"
                     )
@@ -122,14 +130,21 @@ class AutonomousRepairLoop:
                     return "#include <vector>\n" + new_code, RepairFix(
                         iteration, "cpp_missing_vector", "Injected <vector>", "+ #include <vector>"
                     )
-                if "#include <memory>" not in new_code and any(k in low_msg for k in ("unique_ptr", "shared_ptr", "make_unique", "make_shared")):
+                if "#include <memory>" not in new_code and any(
+                    k in low_msg for k in ("unique_ptr", "shared_ptr", "make_unique", "make_shared")
+                ):
                     return "#include <memory>\n" + new_code, RepairFix(
                         iteration, "cpp_missing_memory", "Injected <memory>", "+ #include <memory>"
                     )
                 if d.category == "type_mismatch" and "return {};" in new_code and "std::future" in low_msg:
-                    fixed = new_code.replace("return {};", "return std::async(std::launch::deferred, [] { return {}; });")
+                    fixed = new_code.replace(
+                        "return {};", "return std::async(std::launch::deferred, [] { return {}; });"
+                    )
                     return fixed, RepairFix(
-                        iteration, "cpp_async_return_wrapping", "Wrapped return in std::async future", "return {} -> std::async"
+                        iteration,
+                        "cpp_async_return_wrapping",
+                        "Wrapped return in std::async future",
+                        "return {} -> std::async",
                     )
 
             # -------------------------------------------------------------
@@ -156,41 +171,64 @@ class AutonomousRepairLoop:
             elif lang in ("objc", "objective-c"):
                 if "#import <Foundation/Foundation.h>" not in new_code:
                     return "#import <Foundation/Foundation.h>\n" + new_code, RepairFix(
-                        iteration, "objc_missing_foundation", "Injected #import <Foundation/Foundation.h>", "+ #import <Foundation/Foundation.h>"
+                        iteration,
+                        "objc_missing_foundation",
+                        "Injected #import <Foundation/Foundation.h>",
+                        "+ #import <Foundation/Foundation.h>",
                     )
 
             # -------------------------------------------------------------
             # 5. Java Heuristics
             # -------------------------------------------------------------
             elif lang == "java":
-                if any(k in msg or k in new_code for k in ("List", "Map", "Set", "ArrayList", "HashMap")) and "import java.util.*;" not in new_code:
+                if (
+                    any(k in msg or k in new_code for k in ("List", "Map", "Set", "ArrayList", "HashMap"))
+                    and "import java.util.*;" not in new_code
+                ):
                     if "package " in new_code:
-                        fixed = re.sub(r'(package\s+[^;]+;\s*)', r'\1\nimport java.util.*;\n', new_code, count=1)
+                        fixed = re.sub(r"(package\s+[^;]+;\s*)", r"\1\nimport java.util.*;\n", new_code, count=1)
                     else:
                         fixed = "import java.util.*;\n" + new_code
                     return fixed, RepairFix(
                         iteration, "java_missing_util", "Injected import java.util.*", "+ import java.util.*;"
                     )
-                if any(k in msg or k in new_code for k in ("CompletableFuture", "ExecutorService", "Callable")) and "import java.util.concurrent.*;" not in new_code:
+                if (
+                    any(k in msg or k in new_code for k in ("CompletableFuture", "ExecutorService", "Callable"))
+                    and "import java.util.concurrent.*;" not in new_code
+                ):
                     if "package " in new_code:
-                        fixed = re.sub(r'(package\s+[^;]+;\s*)', r'\1\nimport java.util.concurrent.*;\n', new_code, count=1)
+                        fixed = re.sub(
+                            r"(package\s+[^;]+;\s*)", r"\1\nimport java.util.concurrent.*;\n", new_code, count=1
+                        )
                     else:
                         fixed = "import java.util.concurrent.*;\n" + new_code
                     return fixed, RepairFix(
-                        iteration, "java_missing_concurrent", "Injected import java.util.concurrent.*", "+ import java.util.concurrent.*;"
+                        iteration,
+                        "java_missing_concurrent",
+                        "Injected import java.util.concurrent.*",
+                        "+ import java.util.concurrent.*;",
                     )
 
             # -------------------------------------------------------------
             # 6. C# Heuristics
             # -------------------------------------------------------------
             elif lang in ("csharp", "cs"):
-                if any(k in msg for k in ("List", "Dictionary", "HashSet", "IEnumerable")) and "using System.Collections.Generic;" not in new_code:
+                if (
+                    any(k in msg for k in ("List", "Dictionary", "HashSet", "IEnumerable"))
+                    and "using System.Collections.Generic;" not in new_code
+                ):
                     return "using System.Collections.Generic;\n" + new_code, RepairFix(
-                        iteration, "csharp_missing_collections", "Injected using System.Collections.Generic;", "+ using System.Collections.Generic;"
+                        iteration,
+                        "csharp_missing_collections",
+                        "Injected using System.Collections.Generic;",
+                        "+ using System.Collections.Generic;",
                     )
                 if "Task" in msg and "using System.Threading.Tasks;" not in new_code:
                     return "using System.Threading.Tasks;\n" + new_code, RepairFix(
-                        iteration, "csharp_missing_tasks", "Injected using System.Threading.Tasks;", "+ using System.Threading.Tasks;"
+                        iteration,
+                        "csharp_missing_tasks",
+                        "Injected using System.Threading.Tasks;",
+                        "+ using System.Threading.Tasks;",
                     )
                 if "using System;" not in new_code:
                     return "using System;\n" + new_code, RepairFix(
@@ -232,16 +270,25 @@ class AutonomousRepairLoop:
                     )
                 if "HashMap" in msg and "use std::collections::HashMap;" not in new_code:
                     return "use std::collections::HashMap;\n" + new_code, RepairFix(
-                        iteration, "rust_missing_hashmap", "Injected use std::collections::HashMap;", "+ use std::collections::HashMap;"
+                        iteration,
+                        "rust_missing_hashmap",
+                        "Injected use std::collections::HashMap;",
+                        "+ use std::collections::HashMap;",
                     )
 
             # -------------------------------------------------------------
             # 9. Python Heuristics
             # -------------------------------------------------------------
             elif lang == "python":
-                if any(k in msg for k in ("List", "Dict", "Optional", "Any", "Tuple")) and "from typing import" not in new_code:
+                if (
+                    any(k in msg for k in ("List", "Dict", "Optional", "Any", "Tuple"))
+                    and "from typing import" not in new_code
+                ):
                     return "from typing import List, Dict, Optional, Any, Tuple\n" + new_code, RepairFix(
-                        iteration, "python_missing_typing", "Injected from typing import ...", "+ from typing import ..."
+                        iteration,
+                        "python_missing_typing",
+                        "Injected from typing import ...",
+                        "+ from typing import ...",
                     )
 
             # -------------------------------------------------------------
@@ -250,16 +297,25 @@ class AutonomousRepairLoop:
             elif lang in ("typescript", "ts", "react"):
                 if "React" in msg and "import React" not in new_code:
                     return "import React from 'react';\n" + new_code, RepairFix(
-                        iteration, "react_missing_import", "Injected import React from 'react';", "+ import React from 'react';"
+                        iteration,
+                        "react_missing_import",
+                        "Injected import React from 'react';",
+                        "+ import React from 'react';",
                     )
 
             # -------------------------------------------------------------
             # 11. Flutter (Dart) Heuristics
             # -------------------------------------------------------------
             elif lang in ("flutter", "dart"):
-                if any(k in msg for k in ("Widget", "StatelessWidget", "StatefulWidget")) and "package:flutter/material.dart" not in new_code:
+                if (
+                    any(k in msg for k in ("Widget", "StatelessWidget", "StatefulWidget"))
+                    and "package:flutter/material.dart" not in new_code
+                ):
                     return "import 'package:flutter/material.dart';\n" + new_code, RepairFix(
-                        iteration, "flutter_missing_material", "Injected flutter material import", "+ import 'package:flutter/material.dart';"
+                        iteration,
+                        "flutter_missing_material",
+                        "Injected flutter material import",
+                        "+ import 'package:flutter/material.dart';",
                     )
 
             # -------------------------------------------------------------
@@ -283,7 +339,10 @@ class AutonomousRepairLoop:
                     else:
                         fixed = f"Dim {var_name} As String\n" + new_code
                     return fixed, RepairFix(
-                        iteration, "vb6_declare_variable", f"Declared variable {var_name} under Option Explicit", f"+ Dim {var_name} As String"
+                        iteration,
+                        "vb6_declare_variable",
+                        f"Declared variable {var_name} under Option Explicit",
+                        f"+ Dim {var_name} As String",
                     )
 
             # -------------------------------------------------------------

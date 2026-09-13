@@ -233,6 +233,7 @@ class FrontendFormalCampaignTests(unittest.TestCase):
     def test_v1_toolchain_identity_uses_current_exact_runner_payload(self) -> None:
         expected_solver_digests = frozenset(
             {
+                "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
                 "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
                 "sha256:edae32f9e37ea4b5bb35310d72f0e352d0dc07626cac4e9e30bc1ea9a5bc8efb",
             }

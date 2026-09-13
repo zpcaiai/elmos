@@ -7,7 +7,6 @@ import subprocess
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
 
 from ..compiler import UniversalAstCompiler
 from .generator import AstFuzzGenerator
@@ -32,7 +31,7 @@ class FuzzClusterReport:
     failed_runs: int = 0
     syntax_validations_passed: int = 0
     sanitizer_checks_passed: int = 0
-    records: List[FuzzRunRecord] = field(default_factory=list)
+    records: list[FuzzRunRecord] = field(default_factory=list)
 
     @property
     def pass_rate(self) -> float:
@@ -61,7 +60,7 @@ class DifferentialFuzzCluster:
             "clang": shutil.which("clang"),
         }
 
-    def validate_syntax(self, code: str, language: str) -> Tuple[bool, str]:
+    def validate_syntax(self, code: str, language: str) -> tuple[bool, str]:
         """Validate target language syntax using installed native compilers."""
         lang = language.lower()
         with tempfile.TemporaryDirectory() as tmpdir:

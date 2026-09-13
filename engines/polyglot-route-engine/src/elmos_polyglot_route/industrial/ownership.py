@@ -14,9 +14,7 @@ from elmos_polyglot_route.ast_compiler.ir import (
 from elmos_polyglot_route.ast_compiler.ir.ownership import OwnershipAnalyzer, OwnershipKind
 from elmos_polyglot_route.industrial.concurrency import normalize_language
 
-GC_LANGUAGES = frozenset(
-    {"java", "csharp", "python", "typescript", "go", "kotlin", "php", "react", "flutter"}
-)
+GC_LANGUAGES = frozenset({"java", "csharp", "python", "typescript", "go", "kotlin", "php", "react", "flutter"})
 RAII_LANGUAGES = frozenset({"cpp", "vcpp6", "rust"})
 ARC_LANGUAGES = frozenset({"objc", "swift"})
 VENDOR_LANGUAGES = frozenset({"vb6"})
@@ -82,13 +80,13 @@ class OwnershipMemoryEngine:
             elif isinstance(stmt, DropStmt):
                 analyzer.release_borrows(stmt.name)
         if target == "rust":
-            violations = [v for v in analyzer.violations if v.violation_type != "USE_AFTER_MOVE"]
+            [v for v in analyzer.violations if v.violation_type != "USE_AFTER_MOVE"]
             # Move/drop in the industrial subset is explicit and legal. Alias errors fail closed.
-            blocking = [v for v in analyzer.violations if v.violation_type in {"ALIASING_CONFLICT", "MULTIPLE_MUT_BORROW"}]
+            blocking = [
+                v for v in analyzer.violations if v.violation_type in {"ALIASING_CONFLICT", "MULTIPLE_MUT_BORROW"}
+            ]
             if blocking:
-                raise ValueError(
-                    f"BLOCKED_OWNERSHIP:{blocking[0].violation_type}:{blocking[0].message}"
-                )
+                raise ValueError(f"BLOCKED_OWNERSHIP:{blocking[0].violation_type}:{blocking[0].message}")
 
     @classmethod
     def lower_type(cls, typ: UniversalType, source: str, target: str) -> UniversalType:
@@ -96,11 +94,15 @@ class OwnershipMemoryEngine:
         tgt_model = memory_model(target)
         if typ.kind != "pointer" and not typ.pointer_kind:
             if tgt_model == "raii-owned" and typ.kind == "custom" and src_model == "tracing-gc":
-                return UniversalType.shared_ptr_of(typ) if target != "rust" else UniversalType(
-                    kind="pointer",
-                    name="Arc",
-                    element_type=typ,
-                    pointer_kind="shared",
+                return (
+                    UniversalType.shared_ptr_of(typ)
+                    if target != "rust"
+                    else UniversalType(
+                        kind="pointer",
+                        name="Arc",
+                        element_type=typ,
+                        pointer_kind="shared",
+                    )
                 )
             return typ
         if tgt_model == "tracing-gc" and typ.element_type is not None:

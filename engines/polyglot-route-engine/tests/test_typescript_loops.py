@@ -4,6 +4,7 @@ Verifies that TypeScript while loops (`while (cond) { ... }`) and monotonic for 
 (`for (let i: number = 0; i < n; i++) { ... }`) correctly lift into canonical IR loop statements,
 reject non-monotonic, do-while, for-of, for-in, or non-let forms, and emit cleanly into target languages.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -17,11 +18,7 @@ from elmos_polyglot_route.native import analyze
 
 def _source(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.ts"
-    content = (
-        "export function subject(n: number): number {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"export function subject(n: number): number {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -29,10 +26,7 @@ def _source(tmp_path: Path, body: str) -> Path:
 def test_typescript_while_loop_lifts(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    while (n > 0) {\n"
-        "        break;\n"
-        "    }\n"
-        "    return n;",
+        "    while (n > 0) {\n        break;\n    }\n    return n;",
     )
     semantic = analyze(source, "typescript", "subject")
     statements = semantic.functions[0].body
@@ -102,10 +96,7 @@ def test_typescript_for_loop_lifts_custom_step(tmp_path: Path) -> None:
 def test_typescript_rejects_do_while(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    do {\n"
-        "        break;\n"
-        "    } while (n > 0);\n"
-        "    return n;",
+        "    do {\n        break;\n    } while (n > 0);\n    return n;",
     )
     with pytest.raises(RouteError, match="TYPESCRIPT_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET"):
         analyze(source, "typescript", "subject")
@@ -114,10 +105,7 @@ def test_typescript_rejects_do_while(tmp_path: Path) -> None:
 def test_typescript_rejects_for_of(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    for (const item of [1, 2, 3]) {\n"
-        "        break;\n"
-        "    }\n"
-        "    return n;",
+        "    for (const item of [1, 2, 3]) {\n        break;\n    }\n    return n;",
     )
     with pytest.raises(RouteError, match="TYPESCRIPT_FOR_OF_OUTSIDE_CERTIFIED_SUBSET"):
         analyze(source, "typescript", "subject")
@@ -126,10 +114,7 @@ def test_typescript_rejects_for_of(tmp_path: Path) -> None:
 def test_typescript_rejects_for_in(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    for (const key in n) {\n"
-        "        break;\n"
-        "    }\n"
-        "    return n;",
+        "    for (const key in n) {\n        break;\n    }\n    return n;",
     )
     with pytest.raises(RouteError, match="TYPESCRIPT_FOR_IN_OUTSIDE_CERTIFIED_SUBSET"):
         analyze(source, "typescript", "subject")
@@ -138,17 +123,11 @@ def test_typescript_rejects_for_in(tmp_path: Path) -> None:
 def test_typescript_rejects_labeled_break(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    outer: while (n > 0) {\n"
-        "        break outer;\n"
-        "    }\n"
-        "    return n;",
+        "    outer: while (n > 0) {\n        break outer;\n    }\n    return n;",
     )
     with pytest.raises(
         RouteError,
-        match=(
-            "TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET|"
-            "TYPESCRIPT_UNSUPPORTED_STATEMENT:LabeledStatement"
-        ),
+        match=("TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET|TYPESCRIPT_UNSUPPORTED_STATEMENT:LabeledStatement"),
     ):
         analyze(source, "typescript", "subject")
 
@@ -194,12 +173,7 @@ def test_typescript_rejects_var_loop_variable(tmp_path: Path) -> None:
 
 def _source_integer(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.ts"
-    content = (
-        "type integer = number;\n"
-        "export function subject(n: integer): integer {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"type integer = number;\nexport function subject(n: integer): integer {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 

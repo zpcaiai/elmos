@@ -823,9 +823,7 @@ def test_trusted_php_analyzer_promotes_only_exact_missing_function(
             function_name,
         ]
         assert cwd == ENGINE_ROOT
-        raise RouteError(
-            f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:PHP_FUNCTION_NOT_FOUND:{function_name}"
-        )
+        raise RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:PHP_FUNCTION_NOT_FOUND:{function_name}")
 
     monkeypatch.setattr(native, "_run", fail)
     with pytest.raises(RouteError) as captured:
@@ -1373,7 +1371,6 @@ def test_expected_error_cases_remain_explicitly_not_run_until_case_isolation_exi
     cases = [{"args": [1.0, 0.0], "expected_error": "ELMOS_DIVIDE_BY_ZERO"}]
     with pytest.raises(RouteError, match="EXPECTED_ERROR_BEHAVIOR_NOT_RUN"):
         harness(function, cases)
-
 
 
 def _stream_writing_script(tmp_path: Path, *, stdout: str, stderr: str, exit_code: int) -> Path:

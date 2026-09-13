@@ -13,6 +13,7 @@ semicolon at the newline after a closing brace, so the emitter's `}` / `else {`
 on separate lines produced a file that does not parse. No fixture had an else
 branch on a Go *target*, so nothing caught it.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -105,12 +106,8 @@ def _simple_else_ir(source_language: Language = "go") -> SemanticIR:
                                 "left": {"kind": "name", "value": "score"},
                                 "right": {"kind": "literal", "value": 1},
                             },
-                            "then": [
-                                {"kind": "return", "expression": {"kind": "literal", "value": 4}}
-                            ],
-                            "else": [
-                                {"kind": "return", "expression": {"kind": "literal", "value": 1}}
-                            ],
+                            "then": [{"kind": "return", "expression": {"kind": "literal", "value": 4}}],
+                            "else": [{"kind": "return", "expression": {"kind": "literal", "value": 1}}],
                         }
                     ],
                 }
@@ -180,9 +177,7 @@ def test_vb6_nested_else_chain_uses_structured_if_blocks() -> None:
 
     for threshold in ("90", "80", "70"):
         assert any(
-            line.casefold().startswith("if ")
-            and threshold in line
-            and line.casefold().endswith(" then")
+            line.casefold().startswith("if ") and threshold in line and line.casefold().endswith(" then")
             for line in lines
         )
     assert sum(line.casefold() == "else" for line in lines) == 3
@@ -196,8 +191,7 @@ def test_the_go_frontend_no_longer_rejects_an_else_if_chain() -> None:
     assert "func ifStatement(" in source
     assert (
         "elseBody = []map[string]any{ifStatement(alternative, emittedTarget, "
-        "records, functionNames, paramNames, scopeVars)}"
-        in source
+        "records, functionNames, paramNames, scopeVars)}" in source
     )
     # The init-statement boundary is unchanged and must stay unchanged: hoisting
     # it needs a local-declaration IR kind that no target emitter has.
@@ -208,10 +202,7 @@ def test_the_rust_frontend_no_longer_rejects_an_else_if_chain() -> None:
     source = (ENGINE_ROOT / "native" / "rust" / "src" / "main.rs").read_text(encoding="utf-8")
 
     assert "fn lift_if(" in source
-    assert (
-        "Expr::If(chained) => vec![lift_if(chained, emitted_target, scope_vars, param_names)]"
-        in source
-    )
+    assert "Expr::If(chained) => vec![lift_if(chained, emitted_target, scope_vars, param_names)]" in source
     # Anything else in the else position is still outside the profile.
     assert "RUST_ELSE_IF_OUTSIDE_CERTIFIED_SUBSET" in source
 
@@ -223,24 +214,22 @@ def test_an_unknown_statement_kind_still_fails_closed() -> None:
     which is the boundary that keeps an unsupported construct from becoming a
     silently-dropped statement in a target file.
     """
-    payload = (
-        {
-            "schema_version": "1.0.0",
-            "source_language": "go",
-            "source_file": "sample.go",
-            "analyzer": "test",
-            "analyzer_version": "0",
-            "diagnostics": [],
-            "functions": [
-                {
-                    "name": "pick",
-                    "return_type": "integer",
-                    "parameters": [{"name": "score", "type": "integer"}],
-                    "body": [{"kind": "unsupported_statement", "condition": None}],
-                }
-            ],
-        }
-    )
+    payload = {
+        "schema_version": "1.0.0",
+        "source_language": "go",
+        "source_file": "sample.go",
+        "analyzer": "test",
+        "analyzer_version": "0",
+        "diagnostics": [],
+        "functions": [
+            {
+                "name": "pick",
+                "return_type": "integer",
+                "parameters": [{"name": "score", "type": "integer"}],
+                "body": [{"kind": "unsupported_statement", "condition": None}],
+            }
+        ],
+    }
     with pytest.raises(RouteError, match="UNSUPPORTED_STATEMENT:unsupported_statement"):
         emit(SemanticIR.from_mapping(payload), "go")
 
@@ -302,9 +291,7 @@ def test_go_still_rejects_an_if_init_statement_at_the_top_level(tmp_path: Path) 
 
     source = tmp_path / "sample.go"
     source.write_text(
-        "package sample\n\n"
-        "func bad(n int64) int64 {\n"
-        "\tif x := n + 1; x > 0 {\n\t\treturn x\n\t}\n\treturn 0\n}\n",
+        "package sample\n\nfunc bad(n int64) int64 {\n\tif x := n + 1; x > 0 {\n\t\treturn x\n\t}\n\treturn 0\n}\n",
         encoding="utf-8",
     )
     with pytest.raises(RouteError, match="GO_IF_INIT_OUTSIDE_CERTIFIED_SUBSET"):

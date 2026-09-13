@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
-  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "harmony-arkui--to--vue3",
-  "formal_input_digest": "sha256:4e43fbec9b50fa94cdb3eaea24e556b7e2b074702bb82e2d53d95eafd995f9ad",
-  "solver_input_digest": "sha256:33214865d62634d9cd562e5637bfcafadf426f11d114f80416614721786ed9d5",
-  "smt2_digest": "sha256:33214865d62634d9cd562e5637bfcafadf426f11d114f80416614721786ed9d5",
+  "formal_input_digest": "sha256:eb4cf5a2b6a43be1c138cbd3574b85bd1002b04430b7340a91df599a02221bd6",
+  "solver_input_digest": "sha256:f0726379b40c4345b92914b9d61df2e3c7eb96d912e206c95c52b427d15bfd0a",
+  "smt2_digest": "sha256:f0726379b40c4345b92914b9d61df2e3c7eb96d912e206c95c52b427d15bfd0a",
   "precheck_status": "PASSED"
 }
