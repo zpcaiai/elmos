@@ -1,9 +1,12 @@
 {
   "batch": 44,
   "packKey": "elmos-platform-finops",
-  "eligible": true,
-  "status": "CERTIFIED",
-  "failures": [],
+  "eligible": false,
+  "status": "BLOCKED",
+  "failures": [
+    "externalOperationExecuted=false",
+    "repository-held certification keys revoked; field evidence and independent certification NOT_RUN"
+  ],
   "evidenceRefs": [
     "batch44-execution",
     "batch44-provenance",

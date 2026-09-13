@@ -1,9 +1,16 @@
 {
-  "campaign": {
-    "pairs_passed": 1050,
-    "pairs_total": 1050
-  },
-  "decision": "CERTIFIED_L5_AUTONOMOUS",
-  "industrial_quality_percent": 100.0,
-  "merkle_root": "fcafb05ad6dc5daa04a27822c1d9c5faed48b2a6c121d613ae99583c8464df58"
+  "status": "BLOCKED",
+  "decision": "NOT_CERTIFIED",
+  "incident_id": "ELMOS-CERT-KEY-2026-09-13-01",
+  "scope": "polyglot-210-industrial-evaluation",
+  "implementation": "90_LIMITED_120_RESEARCH_0_CERTIFIED",
+  "local_execution": "NOT_RUN",
+  "route_inventory": "routes/inventory.json",
+  "local_evidence": "NOT_RUN",
+  "external_execution": "NOT_RUN",
+  "customer_acceptance": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "trust_anchor_status": "REVOKED",
+  "reason": "prior certified claim relied on repository-held signing keys or exceeded the authoritative evidence boundary",
+  "required_action": "re-execute exact-SHA evidence in the named real environment and obtain Ethan's repository-external independent signature under a new authenticated public key"
 }

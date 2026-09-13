@@ -1,11 +1,15 @@
 {
-  "status": "PASSED",
-  "decision": "CERTIFIED_INDEPENDENT",
-  "certifier_id": "ethan-independent-certifier",
-  "dossier_id": "project-synthesis-independent-verification-v1",
-  "dossier_sha256": "sha256:f0951087bdab99d96737b55006911d0798ffc490f065c7745534a9497f8fac2e",
-  "target_count": 8,
-  "algorithm": "rsa-sha256",
-  "verified_at": "2026-09-11T12:40:01.052168+00:00",
-  "notes": "Signature mathematically verified against registered independent trust anchor."
+  "status": "BLOCKED",
+  "decision": "NOT_CERTIFIED",
+  "incident_id": "ELMOS-CERT-KEY-2026-09-13-01",
+  "scope": "project-synthesis-generation-v1",
+  "implementation": "EIGHT_PROFILES_LIMITED",
+  "authoritative_source": "docs/project-synthesis/BUNDLED_EMITTER_SUPPORT.md",
+  "local_evidence": "SELF_ATTESTED_ENGINEERING_ONLY",
+  "external_execution": "NOT_RUN",
+  "customer_acceptance": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "trust_anchor_status": "REVOKED",
+  "reason": "prior certified claim relied on repository-held signing keys or exceeded the authoritative evidence boundary",
+  "required_action": "re-execute exact-SHA evidence in the named real environment and obtain Ethan's repository-external independent signature under a new authenticated public key"
 }

@@ -129,3 +129,14 @@ survey-engines-mac.sh
 
 # Local benchmark and evaluation fixtures
 fixtures/
+
+# Independent certifier/verifier private keys must never enter the repository.
+# Public keys and revocation records belong under certification/; signing keys
+# are held by the external certifier in an HSM/KMS or owner-only external path.
+**/*.private.pem
+**/*-private.pem
+**/certifier-private.pem
+**/*.p12
+**/*.pfx
+**/*.jks
+**/*.keystore
