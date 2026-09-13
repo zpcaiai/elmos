@@ -94,17 +94,17 @@ class JdbcCasCatalogLiveTest {
             statement.execute("GRANT USAGE ON SCHEMA public TO " + APP_USER);
             statement.execute("GRANT SELECT ON TABLE cas_object_catalog, cas_object_placement, "
                     + "cas_resource_bindings, cas_reference_roots, cas_deletion_manifests, "
-                    + "cas_object_deletion_tombstones, cas_tenant_lifecycles, "
+                    + "cas_object_deletion_tombstones, cas_object_publication_pins, cas_tenant_lifecycles, "
                     + "cas_resource_lifecycles, "
                     + "cas_quarantine_events, cas_action_cache_entries, "
                     + "cas_action_cache_invalidations, cas_action_cache_quarantined_nodes TO "
                     + APP_USER);
             statement.execute("GRANT INSERT, UPDATE ON TABLE cas_object_catalog, "
                     + "cas_object_placement, cas_resource_bindings, cas_reference_roots, "
-                    + "cas_object_deletion_tombstones, cas_tenant_lifecycles, "
+                    + "cas_object_deletion_tombstones, cas_object_publication_pins, cas_tenant_lifecycles, "
                     + "cas_resource_lifecycles, "
                     + "cas_action_cache_entries TO " + APP_USER);
-            statement.execute("GRANT DELETE ON TABLE cas_object_deletion_tombstones TO "
+            statement.execute("GRANT DELETE ON TABLE cas_object_deletion_tombstones, cas_object_publication_pins TO "
                     + APP_USER);
             statement.execute("GRANT INSERT ON TABLE cas_deletion_manifests, "
                     + "cas_quarantine_events, cas_action_cache_invalidations, "

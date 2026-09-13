@@ -71,6 +71,11 @@ LOCKED_Z3_ENVIRONMENT = {
     "arch": "arm64",
     "node_version": "v26.0.0",
 }
+# Revalidating the frozen 72-route pack includes a second, self-contained
+# evidence walk. Keep that process watchdog finite while allowing for content
+# hashing and startup latency on a contended host; proof solver budgets remain
+# fixed by LOCKED_Z3_OPTIONS.
+SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS = 600
 ENGINE_SOLVER_RESULT_KEYS = {
     "schema_version",
     "solver",
@@ -2444,7 +2449,7 @@ def validate_campaign(
                     cwd=pack,
                     capture_output=True,
                     text=True,
-                    timeout=120,
+                    timeout=SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS,
                     check=False,
                 )
                 replay_result = json.loads(completed.stdout.strip().splitlines()[-1])

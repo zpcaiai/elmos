@@ -99,6 +99,11 @@ public class ActionCacheExecutionController {
                         "CONTROL_PLANE_AUTH_REQUIRED"));
         ExecutionJobPort.BusinessLine line = parseBusinessLine(request.businessLine());
         principal.require(principal.organizationId(), principal.actorId(), permissionFor(line));
+        if (line == ExecutionJobPort.BusinessLine.TRANSLATION) {
+            // Translation input capture, admission and accounting must pass the
+            // canonical prepared endpoint; a cache miss cannot bypass them.
+            throw invalid("TRANSLATION_PREPARED_EXECUTION_ENDPOINT_REQUIRED");
+        }
 
         ActionKey key = parseActionKey(request.actionKey());
         if (!principal.organizationId().equals(key.tenantId())

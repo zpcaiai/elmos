@@ -4,7 +4,6 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -44,8 +43,9 @@ public final class S3ObjectStoreTest {
             absentObjectIsQuarantined(endpoint);
             unconfiguredBackendRefusesEverything(endpoint);
             encryptionHeadersAreReturned(endpoint);
+            ossUsesItsNativeCreateOnlyHeader(endpoint);
             downloadTtlIsCapped(endpoint);
-            physicalDeleteIsIdempotent(endpoint);
+            reclaimFencePreventsStaleUploadResurrection(endpoint);
             keysAreTenantPrefixed();
             filenameIsSanitised();
         } finally {
@@ -75,8 +75,10 @@ public final class S3ObjectStoreTest {
 
         check("upload key is tenant prefixed", ticket.storageKey().equals("org-a/obj/" + digest));
         check("pending object was registered", metadata.registered == 1);
+        check("S3 upload is create-only",
+                "*".equals(ticket.requiredHeaders().get("if-none-match")));
 
-        put(ticket.uploadUrl(), payload);
+        put(ticket, payload);
 
         boolean verified = store.verifyUpload("org-a", ticket.contentObjectId(), digest, payload.length);
         check("matching upload verifies", verified);
@@ -93,7 +95,7 @@ public final class S3ObjectStoreTest {
 
         S3ObjectStore.UploadTicket ticket = store.presignUpload(
                 "org-a", digest, declared.length, "application/zip", Duration.ofMinutes(10));
-        put(ticket.uploadUrl(), actual);   // the classic truncated upload
+        put(ticket, actual);   // the classic truncated upload
 
         boolean verified = store.verifyUpload("org-a", ticket.contentObjectId(), digest, declared.length);
         check("truncated upload fails verification", !verified);
@@ -111,7 +113,7 @@ public final class S3ObjectStoreTest {
 
         S3ObjectStore.UploadTicket ticket = store.presignUpload(
                 "org-a", digest, good.length, "application/zip", Duration.ofMinutes(10));
-        put(ticket.uploadUrl(), evil);
+        put(ticket, evil);
 
         check("substituted bytes fail verification",
                 !store.verifyUpload("org-a", ticket.contentObjectId(), digest, good.length));
@@ -157,6 +159,21 @@ public final class S3ObjectStoreTest {
                         ticket.requiredHeaders().get("x-amz-server-side-encryption-aws-kms-key-id")));
     }
 
+    static void ossUsesItsNativeCreateOnlyHeader(String endpoint) {
+        String digest = sha256("oss".getBytes(StandardCharsets.UTF_8));
+        S3ObjectStore.UploadTicket ticket = store(
+                endpoint, "ACTIVE", "OSS",
+                S3ObjectStore.WRITE_ONCE_RECLAIM_FENCE_V1,
+                new RecordingMetadata()).presignUpload(
+                        "org-a", digest, 3, "application/octet-stream",
+                        Duration.ofMinutes(5));
+        check("OSS upload uses x-oss-forbid-overwrite",
+                "true".equals(ticket.requiredHeaders().get(
+                        "x-oss-forbid-overwrite")));
+        check("OSS does not receive unsupported If-None-Match PUT",
+                !ticket.requiredHeaders().containsKey("if-none-match"));
+    }
+
     static void downloadTtlIsCapped(String endpoint) {
         String digest = sha256("z".getBytes(StandardCharsets.UTF_8));
         S3ObjectStore store = store(endpoint, "ACTIVE", new RecordingMetadata());
@@ -166,19 +183,29 @@ public final class S3ObjectStoreTest {
                 store.presignDownload("org-a", digest, "a.zip", Duration.ofMinutes(5))));
     }
 
-    static void physicalDeleteIsIdempotent(String endpoint) throws Exception {
+    static void reclaimFencePreventsStaleUploadResurrection(String endpoint)
+            throws Exception {
         byte[] payload = "retained-object".getBytes(StandardCharsets.UTF_8);
         String digest = sha256(payload);
         S3ObjectStore store = store(endpoint, "ACTIVE", new RecordingMetadata());
         S3ObjectStore.UploadTicket ticket = store.presignUpload(
                 "org-gc", digest, payload.length, "application/octet-stream",
                 Duration.ofMinutes(5));
-        put(ticket.uploadUrl(), payload);
-        store.deleteObject("org-gc", digest);
-        check("retention physically deletes the provider object",
-                !OBJECTS.containsKey(ticket.storageKey()));
-        check("deleting an already absent object is idempotent",
-                !throwsStorage(() -> store.deleteObject("org-gc", digest)));
+        put(ticket, payload);
+        S3ObjectStore.ReclaimReceipt first = store.reclaimObject(
+                "org-gc", digest, ticket.storageKey());
+        check("retention replaces payload bytes with a small fence",
+                OBJECTS.get(ticket.storageKey()).length == first.fenceBytes());
+        check("the provider request is retained in the receipt",
+                first.providerRequestId().startsWith("request-"));
+        check("a stale signed upload cannot resurrect reclaimed bytes",
+                putStatus(ticket, payload) == 412);
+        S3ObjectStore.ReclaimReceipt replay = store.reclaimObject(
+                "org-gc", digest, ticket.storageKey());
+        check("reclaim is idempotent", first.fenceSha256().equals(
+                replay.fenceSha256()));
+        check("safe protocol refuses DELETE because it removes the fence",
+                throwsStorage(() -> store.deleteObject("org-gc", digest)));
     }
 
     static void keysAreTenantPrefixed() {
@@ -208,8 +235,18 @@ public final class S3ObjectStoreTest {
             String key = path.substring(path.indexOf('/', 1) + 1);
             switch (exchange.getRequestMethod()) {
                 case "PUT" -> {
-                    OBJECTS.put(key, exchange.getRequestBody().readAllBytes());
-                    exchange.sendResponseHeaders(200, -1);
+                    boolean createOnly = "*".equals(
+                            exchange.getRequestHeaders().getFirst("If-None-Match"))
+                            || "true".equals(exchange.getRequestHeaders()
+                                    .getFirst("x-oss-forbid-overwrite"));
+                    if (createOnly && OBJECTS.containsKey(key)) {
+                        exchange.sendResponseHeaders(412, -1);
+                    } else {
+                        OBJECTS.put(key, exchange.getRequestBody().readAllBytes());
+                        exchange.getResponseHeaders().add(
+                                "x-amz-request-id", "request-fixture");
+                        exchange.sendResponseHeaders(200, -1);
+                    }
                 }
                 case "GET" -> {
                     byte[] body = OBJECTS.get(key);
@@ -235,13 +272,24 @@ public final class S3ObjectStoreTest {
         return server;
     }
 
-    private static void put(URI url, byte[] payload) throws Exception {
-        HttpResponse<Void> response = HttpClient.newHttpClient().send(
-                HttpRequest.newBuilder(url).PUT(HttpRequest.BodyPublishers.ofByteArray(payload)).build(),
-                HttpResponse.BodyHandlers.discarding());
-        if (response.statusCode() / 100 != 2) {
-            throw new IllegalStateException("fake S3 rejected the upload: " + response.statusCode());
+    private static void put(S3ObjectStore.UploadTicket ticket, byte[] payload)
+            throws Exception {
+        int status = putStatus(ticket, payload);
+        if (status / 100 != 2) {
+            throw new IllegalStateException(
+                    "fake S3 rejected the upload: " + status);
         }
+    }
+
+    private static int putStatus(
+            S3ObjectStore.UploadTicket ticket,
+            byte[] payload) throws Exception {
+        HttpRequest.Builder request = HttpRequest.newBuilder(ticket.uploadUrl())
+                .PUT(HttpRequest.BodyPublishers.ofByteArray(payload));
+        ticket.requiredHeaders().forEach(request::header);
+        HttpResponse<Void> response = HttpClient.newHttpClient().send(
+                request.build(), HttpResponse.BodyHandlers.discarding());
+        return response.statusCode();
     }
 
     // ---- helpers -----------------------------------------------------------
@@ -253,7 +301,8 @@ public final class S3ObjectStoreTest {
 
         @Override
         public String registerPendingObject(String organizationId, String contentSha256, long byteSize,
-                                            String mediaType, String backendId, String storageKey) {
+                                            String mediaType, String backendId, String storageKey,
+                                            String uploadProtocol) {
             registered++;
             return "obj-" + contentSha256.substring(0, 12);
         }
@@ -271,9 +320,21 @@ public final class S3ObjectStoreTest {
 
     private static S3ObjectStore store(String endpoint, String state,
                                        S3ObjectStore.ObjectStorageMetadata metadata) {
+        return store(endpoint, state, "S3",
+                S3ObjectStore.WRITE_ONCE_RECLAIM_FENCE_V1, metadata);
+    }
+
+    private static S3ObjectStore store(
+            String endpoint,
+            String state,
+            String backendKind,
+            String fencingProtocol,
+            S3ObjectStore.ObjectStorageMetadata metadata) {
         S3ObjectStore.Backend backend = new S3ObjectStore.Backend(
-                "primary", state, endpoint, "elmos-artifacts", "cn-north-1", true,
+                "primary", backendKind, state, endpoint, "elmos-artifacts",
+                "cn-north-1", true,
                 "SSE_KMS", "kms://cn-north/elmos", 5L * 1024 * 1024 * 1024,
+                fencingProtocol,
                 SigV4Presigner.Credentials.of("AK", "SK"));
         return new S3ObjectStore(backend, metadata,
                 Clock.fixed(Instant.parse("2026-07-28T12:00:00Z"), ZoneOffset.UTC));

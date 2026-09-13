@@ -1,9 +1,13 @@
 package io.elmos.runner;
 
 import java.nio.file.Path;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -28,13 +32,34 @@ public final class ContainerRuntime {
 
     private final AgentConfig config;
     private final ProcessRunner processes;
+    private static final class OwnedContainer {
+        final String leaseIdentity;
+        JobWorkspace.ContainerIntent intent;
+        OwnedContainer(String leaseIdentity, JobWorkspace.ContainerIntent intent) {
+            this.leaseIdentity = leaseIdentity;
+            this.intent = intent;
+        }
+    }
+    private final Map<String, OwnedContainer> ownedContainers = new ConcurrentHashMap<>();
+    private final AtomicBoolean selfFenced = new AtomicBoolean();
+    private final Object admission = new Object();
+    static final String RESOURCE_LABEL = "io.elmos.runner.resource-id";
+    static final String LEASE_LABEL = "io.elmos.runner.lease-sha256";
 
     public ContainerRuntime(AgentConfig config, ProcessRunner processes) {
         this.config = config;
         this.processes = processes;
+        selfFenced.set(JobWorkspace.hasPendingContainerIntents(config.workRoot()));
     }
 
     public record Execution(ProcessRunner.Handle handle, String containerName) {
+    }
+
+    public boolean isFenced() { return selfFenced.get(); }
+
+    public static final class ReconciliationRequiredException extends IllegalStateException {
+        private static final long serialVersionUID = 1L;
+        ReconciliationRequiredException(String message, Throwable cause) { super(message, cause); }
     }
 
     public static void validateImage(String image) {
@@ -49,9 +74,12 @@ public final class ContainerRuntime {
         List<String> command = new ArrayList<>();
         command.add(config.containerEngine());
         command.add("run");
-        command.add("--rm");
+        // Keep the stopped container inspectable until exact-ID cleanup is
+        // confirmed. --rm would erase the identity before we can bind it.
         command.add("--name");
         command.add(containerName);
+        command.add("--label=" + RESOURCE_LABEL + "=" + containerName);
+        command.add("--label=" + LEASE_LABEL + "=" + JobWorkspace.leaseIdentity(lease));
 
         // --- isolation -------------------------------------------------------
         command.add("--network=none");             // no egress from the workload
@@ -94,10 +122,52 @@ public final class ContainerRuntime {
     }
 
     public Execution start(ControlPlaneClient.Lease lease, JobWorkspace workspace, Consumer<String> onLogLine) {
-        String containerName = "elmos-" + lease.jobId();
+        synchronized (admission) {
+            if (selfFenced.get()) throw new ReconciliationRequiredException("RUNNER_CONTAINER_RECONCILIATION_REQUIRED", null);
+            if (ownedContainers.size() >= config.maxConcurrency()) throw new IllegalStateException("RUNNER_CONTAINER_CAPACITY_EXCEEDED");
+            return startAdmitted(lease, workspace, onLogLine);
+        }
+    }
+
+    private Execution startAdmitted(ControlPlaneClient.Lease lease, JobWorkspace workspace, Consumer<String> onLogLine) {
+        String leaseIdentity = JobWorkspace.leaseIdentity(lease);
+        if (lease.jobKind() == null || lease.jobKind().isBlank() || lease.jobKind().length() > 128) {
+            throw new IllegalArgumentException("CONTAINER_PHASE_IDENTITY_INVALID");
+        }
+        // A fresh phase/invocation nonce prevents delayed cleanup from ever
+        // resolving a later retry by the same human-readable job name.
+        String containerName = "elmos-" + JobWorkspace.identityHash(Json.write(List.of(
+                leaseIdentity, lease.jobKind(), UUID.randomUUID().toString()))).substring(0, 48);
         List<String> command = buildCommand(lease, workspace, containerName);
-        ProcessRunner.Handle handle = processes.start(command, workspace.root(), Map.of(), onLogLine);
-        return new Execution(handle, containerName);
+        JobWorkspace.ContainerIntent intent;
+        try {
+            intent = config.allowHostExecution() ? null : workspace.recordContainerIntent(containerName, leaseIdentity);
+        } catch (IOException unknown) {
+            selfFenced.set(true);
+            throw new ReconciliationRequiredException("CONTAINER_INTENT_PUBLICATION_FAILED", unknown);
+        }
+        ownedContainers.put(containerName, new OwnedContainer(leaseIdentity, intent));
+        try {
+            ProcessRunner.Handle handle = processes.start(command, workspace.root(), Map.of(), onLogLine);
+            return new Execution(handle, containerName);
+        } catch (RuntimeException error) {
+            try {
+                forceRemove(containerName);
+            } catch (ReconciliationRequiredException unknown) {
+                unknown.addSuppressed(error);
+                throw unknown;
+            }
+            throw error;
+        }
+    }
+
+    public Execution startTranslationPreflight(ControlPlaneClient.Lease lease, JobWorkspace workspace) {
+        if (!TranslationJobProtocol.applies(lease)) throw new IllegalArgumentException("TRANSLATION_JOB_KIND_INVALID");
+        var preflight = new ControlPlaneClient.Lease(lease.jobId(), lease.leaseId(), lease.leaseToken(),
+                lease.businessLine(), "translate-preflight-v1", lease.runnerImage(), lease.budgetWallSeconds(),
+                lease.budgetCpuMillis(), lease.budgetMemoryMib(), lease.attempt(), lease.checkpointCursor(), lease.requestPayload());
+        // Source/compiler stdout can never authorize the paid pipeline stage.
+        return start(preflight, workspace, ignored -> {});
     }
 
     /**
@@ -123,11 +193,57 @@ public final class ContainerRuntime {
     }
 
     public void forceRemove(String containerName) {
+        OwnedContainer owned = ownedContainers.get(containerName);
+        if (owned == null) return; // Never accepts arbitrary cleanup targets.
+        synchronized (owned) {
+            if (ownedContainers.get(containerName) != owned) return;
+            try {
+                removeOwned(containerName, owned);
+            } catch (IOException | RuntimeException unknown) {
+                selfFenced.set(true);
+                throw new ReconciliationRequiredException("RUNNER_CONTAINER_CLEANUP_UNVERIFIED", unknown);
+            }
+        }
+    }
+
+    private void removeOwned(String containerName, OwnedContainer owned) throws IOException {
         if (config.allowHostExecution()) {
+            ownedContainers.remove(containerName, owned);
             return;
         }
-        processes.run(List.of(config.containerEngine(), "kill", containerName), null, Map.of(), 15);
-        processes.run(List.of(config.containerEngine(), "rm", "-f", containerName), null, Map.of(), 15);
+        ProcessRunner.Result inspected = processes.run(List.of(config.containerEngine(), "inspect", containerName),
+                null, Map.of(), 15);
+        if (!inspected.ok()) {
+            // Missing name/ID is not proof a daemon has finished a pending
+            // create. Retain durable intent and self-fence for reconciliation.
+            throw new IllegalStateException("CONTAINER_CLEANUP_IDENTITY_UNVERIFIED");
+        }
+        Object value = Json.parse(inspected.stdout());
+        if (!(value instanceof List<?> containers) || containers.size() != 1
+                || !(containers.get(0) instanceof Map<?, ?> container)
+                || !(container.get("Id") instanceof String id) || !id.matches("[a-f0-9]{64}")
+                || !(container.get("Name") instanceof String name)
+                || !(name.equals(containerName) || name.equals("/" + containerName))
+                || !(container.get("Config") instanceof Map<?, ?> settings)
+                || !(settings.get("Labels") instanceof Map<?, ?> labels)
+                || !containerName.equals(labels.get(RESOURCE_LABEL))
+                || !owned.leaseIdentity.equals(labels.get(LEASE_LABEL))) {
+            throw new IllegalStateException("CONTAINER_CLEANUP_IDENTITY_MISMATCH");
+        }
+        owned.intent = JobWorkspace.bindContainerId(owned.intent, id);
+        // After verification use the immutable ID, never re-resolve a name for
+        // a destructive command. A name can disappear/rebind between calls.
+        processes.run(List.of(config.containerEngine(), "kill", id), null, Map.of(), 15);
+        processes.run(List.of(config.containerEngine(), "rm", "-f", id), null, Map.of(), 15);
+        if (!absent("id=" + id)) throw new IllegalStateException("CONTAINER_CLEANUP_UNVERIFIED");
+        JobWorkspace.clearContainerIntent(owned.intent);
+        ownedContainers.remove(containerName, owned);
+    }
+
+    private boolean absent(String filter) {
+        ProcessRunner.Result listing = processes.run(List.of(config.containerEngine(), "ps", "--all", "--no-trunc",
+                "--filter", filter, "--format", "{{.ID}}"), null, Map.of(), 15);
+        return listing.ok() && listing.stdout().isBlank();
     }
 
     private static String sanitizeEnv(String value) {

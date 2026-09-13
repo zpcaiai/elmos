@@ -9,6 +9,7 @@ import io.elmos.productionruntime.ProductionRuntimeException;
 import io.elmos.productionruntime.ProductionRuntimeModels.DispatchEnvelope;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -50,13 +52,26 @@ class ProductionWorkerAttemptServiceStabilityTest {
     private final AtomicInteger heartbeats = new AtomicInteger();
     private final CountDownLatch completionReceived = new CountDownLatch(1);
     private final AtomicReference<String> completionBody = new AtomicReference<>();
+    private final CountDownLatch executionStarted = new CountDownLatch(1);
+    private final CountDownLatch releaseExecution = new CountDownLatch(1);
+    private final CountDownLatch checkpointStarted = new CountDownLatch(1);
+    private final CountDownLatch releaseCheckpoint = new CountDownLatch(1);
 
     @AfterEach
-    void stop() {
+    void stop() throws InterruptedException {
         releaseReconciliation.countDown();
-        if (service != null) service.close();
-        if (server != null) server.stop(0);
-        if (serverExecutor != null) serverExecutor.shutdownNow();
+        releaseExecution.countDown();
+        releaseCheckpoint.countDown();
+        try {
+            if (service != null) service.close();
+        } finally {
+            if (server != null) server.stop(0);
+            if (serverExecutor != null) {
+                serverExecutor.shutdownNow();
+                assertTrue(serverExecutor.awaitTermination(5, TimeUnit.SECONDS),
+                        "test HTTP executor did not terminate");
+            }
+        }
     }
 
     @Test
@@ -127,6 +142,187 @@ class ProductionWorkerAttemptServiceStabilityTest {
     }
 
     @Test
+    void checkpointAfterCloseFailsBeforeAttemptLookup() throws Exception {
+        ObjectMapper json = new ObjectMapper();
+        UUID workerId = UUID.randomUUID();
+        URI base = URI.create("http://127.0.0.1:65534");
+        service = service(json, workerId, base, routeCatalog(json, base),
+                Duration.ofSeconds(10), Duration.ofSeconds(10));
+        service.close();
+
+        ProductionRuntimeException failure = assertThrows(
+                ProductionRuntimeException.class,
+                () -> service.checkpoint(
+                        UUID.randomUUID(), workerId, 7, "dispatch:v1:closed",
+                        new ProductionWorkerAttemptService.CheckpointInput(
+                                1, "periodic", "cas://sha256/" + "a".repeat(64),
+                                "a".repeat(64))));
+
+        assertEquals("WORKER_SHUTTING_DOWN", failure.code());
+    }
+
+    @Test
+    @Timeout(value = 55, unit = TimeUnit.SECONDS)
+    void closeDrainsExternalCheckpointIngressBeforeReturning() throws Exception {
+        startCheckpointBarrierServer();
+        ObjectMapper json = new ObjectMapper();
+        UUID workerId = UUID.randomUUID();
+        URI base = URI.create("http://127.0.0.1:" + server.getAddress().getPort());
+        service = service(json, workerId, base, routeCatalog(json, base),
+                Duration.ofSeconds(10), Duration.ofSeconds(10));
+        DispatchEnvelope dispatch = envelope(workerId, base, Map.of(
+                "jobId", UUID.randomUUID().toString(),
+                "jobType", "PROJECT_GENERATION",
+                "workType", "synthesize"));
+        service.accept(dispatch);
+        assertTrue(executionStarted.await(5, TimeUnit.SECONDS));
+        awaitStatus(dispatch.attemptId(),
+                ProductionWorkerAttemptService.LocalStatus.RUNNING,
+                Duration.ofSeconds(2));
+
+        AtomicReference<Boolean> checkpointCommitted = new AtomicReference<>();
+        AtomicReference<Throwable> checkpointFailure = new AtomicReference<>();
+        AtomicReference<Throwable> closeFailure = new AtomicReference<>();
+        CountDownLatch checkpointFinished = new CountDownLatch(1);
+        CountDownLatch closeFinished = new CountDownLatch(1);
+        Thread checkpointThread = Thread.ofPlatform()
+                .daemon(true)
+                .name("production-worker-checkpoint-test")
+                .unstarted(() -> {
+                    try {
+                        checkpointCommitted.set(service.checkpoint(
+                                dispatch.attemptId(), workerId,
+                                dispatch.fencingToken(),
+                                dispatch.dispatchIdempotencyKey(),
+                                new ProductionWorkerAttemptService.CheckpointInput(
+                                        1, "periodic",
+                                        "cas://sha256/" + "b".repeat(64),
+                                        "b".repeat(64))));
+                    } catch (Throwable throwable) {
+                        checkpointFailure.set(throwable);
+                    } finally {
+                        checkpointFinished.countDown();
+                    }
+                });
+        Thread closeThread = Thread.ofPlatform()
+                .daemon(true)
+                .name("production-worker-checkpoint-close-test")
+                .unstarted(() -> {
+                    try {
+                        service.close();
+                    } catch (Throwable throwable) {
+                        closeFailure.set(throwable);
+                    } finally {
+                        closeFinished.countDown();
+                    }
+                });
+
+        try {
+            checkpointThread.start();
+            assertTrue(checkpointStarted.await(5, TimeUnit.SECONDS));
+            assertEquals(1, service.activeIngress(),
+                    "external checkpoint must hold one lifecycle ingress lease");
+
+            closeThread.start();
+            awaitNotAcceptingWork(service, Duration.ofSeconds(2));
+            assertFalse(closeFinished.await(100, TimeUnit.MILLISECONDS),
+                    "close returned before external checkpoint ingress drained");
+
+            releaseCheckpoint.countDown();
+            assertTrue(checkpointFinished.await(5, TimeUnit.SECONDS));
+            assertNull(checkpointFailure.get());
+            assertTrue(Boolean.TRUE.equals(checkpointCommitted.get()));
+            releaseExecution.countDown();
+            assertTrue(closeFinished.await(5, TimeUnit.SECONDS));
+            assertNull(closeFailure.get());
+            assertTrue(service.executorsTerminated());
+        } finally {
+            releaseCheckpoint.countDown();
+            releaseExecution.countDown();
+            checkpointThread.interrupt();
+            closeThread.interrupt();
+            checkpointThread.join(5_000L);
+            closeThread.join(35_000L);
+        }
+    }
+
+    @Test
+    @Timeout(value = 55, unit = TimeUnit.SECONDS)
+    void concurrentCloseStillDrainsIngressAndRestoresInterrupt() throws Exception {
+        ObjectMapper json = new ObjectMapper();
+        UUID workerId = UUID.randomUUID();
+        URI base = URI.create("http://127.0.0.1:65534");
+        service = service(json, workerId, base, routeCatalog(json, base),
+                Duration.ofSeconds(10), Duration.ofSeconds(10));
+        ProductionWorkerLifecycleGate.Ingress ingress = service.enterRegistration();
+        assertTrue(ingress != null);
+
+        AtomicReference<Throwable> firstCloseFailure = new AtomicReference<>();
+        AtomicReference<Throwable> secondCloseFailure = new AtomicReference<>();
+        AtomicBoolean firstInterruptRestored = new AtomicBoolean();
+        AtomicBoolean secondInterruptRestored = new AtomicBoolean();
+        CountDownLatch closeStarted = new CountDownLatch(2);
+        CountDownLatch closeFinished = new CountDownLatch(2);
+        Thread firstCloser = Thread.ofPlatform()
+                .daemon(true)
+                .name("production-worker-first-close-test")
+                .unstarted(() -> {
+                    closeStarted.countDown();
+                    try {
+                        service.close();
+                        firstInterruptRestored.set(Thread.currentThread().isInterrupted());
+                    } catch (Throwable throwable) {
+                        firstCloseFailure.set(throwable);
+                    } finally {
+                        closeFinished.countDown();
+                    }
+                });
+        Thread secondCloser = Thread.ofPlatform()
+                .daemon(true)
+                .name("production-worker-second-close-test")
+                .unstarted(() -> {
+                    closeStarted.countDown();
+                    try {
+                        service.close();
+                        secondInterruptRestored.set(Thread.currentThread().isInterrupted());
+                    } catch (Throwable throwable) {
+                        secondCloseFailure.set(throwable);
+                    } finally {
+                        closeFinished.countDown();
+                    }
+                });
+
+        try {
+            firstCloser.start();
+            secondCloser.start();
+            assertTrue(closeStarted.await(2, TimeUnit.SECONDS));
+            awaitNotAcceptingWork(service, Duration.ofSeconds(2));
+            firstCloser.interrupt();
+            assertFalse(closeFinished.await(100, TimeUnit.MILLISECONDS),
+                    "a concurrent close returned while ingress was still active");
+            assertEquals(2L, closeFinished.getCount(),
+                    "neither concurrent close may bypass active ingress");
+
+            ingress.close();
+            assertTrue(closeFinished.await(5, TimeUnit.SECONDS));
+            firstCloser.join(5_000L);
+            secondCloser.join(5_000L);
+            assertFalse(firstCloser.isAlive());
+            assertFalse(secondCloser.isAlive());
+            assertNull(firstCloseFailure.get());
+            assertNull(secondCloseFailure.get());
+            assertTrue(firstInterruptRestored.get());
+            assertFalse(secondInterruptRestored.get());
+            assertTrue(service.executorsTerminated());
+        } finally {
+            ingress.close();
+            firstCloser.interrupt();
+            secondCloser.interrupt();
+            joinUntil(List.of(firstCloser, secondCloser), Duration.ofSeconds(35));
+        }
+    }
+
+    @Test
     void bareEngineSuccessIsReportedAsFailureWithoutOutputVerification()
             throws Exception {
         startMissingOutputVerificationServer();
@@ -172,6 +368,43 @@ class ProductionWorkerAttemptServiceStabilityTest {
                 reconciliationInterval);
     }
 
+    private static void awaitNotAcceptingWork(
+            ProductionWorkerAttemptService attempts,
+            Duration timeout
+    ) throws InterruptedException {
+        long deadline = System.nanoTime() + timeout.toNanos();
+        while (attempts.acceptingWork() && System.nanoTime() < deadline) {
+            Thread.sleep(5L);
+        }
+        assertFalse(attempts.acceptingWork(), "worker close did not start");
+    }
+
+    private static void joinUntil(List<Thread> threads, Duration timeout)
+            throws InterruptedException {
+        long deadline = System.nanoTime() + timeout.toNanos();
+        for (Thread thread : threads) {
+            if (!thread.isAlive()) continue;
+            long remaining = deadline - System.nanoTime();
+            if (remaining <= 0L) return;
+            thread.join(Math.max(1L, TimeUnit.NANOSECONDS.toMillis(remaining)));
+        }
+    }
+
+    private void awaitStatus(
+            UUID attemptId,
+            ProductionWorkerAttemptService.LocalStatus expected,
+            Duration timeout
+    ) throws InterruptedException {
+        long deadline = System.nanoTime() + timeout.toNanos();
+        while (System.nanoTime() < deadline) {
+            ProductionWorkerAttemptService.AttemptView view = service.find(attemptId);
+            if (view != null && view.status() == expected) return;
+            Thread.sleep(5L);
+        }
+        ProductionWorkerAttemptService.AttemptView actual = service.find(attemptId);
+        assertEquals(expected, actual == null ? null : actual.status());
+    }
+
     private DispatchEnvelope envelope(
             UUID workerId,
             URI endpoint,
@@ -192,7 +425,7 @@ class ProductionWorkerAttemptServiceStabilityTest {
                         "work_type", "synthesize",
                         "endpoint", base.resolve("/v1/execute").toString(),
                         "reconciliation_endpoint", base.resolve("/v1/reconcile").toString(),
-                        "timeout_seconds", 5)))));
+                        "timeout_seconds", 30)))));
         return path;
     }
 
@@ -235,6 +468,42 @@ class ProductionWorkerAttemptServiceStabilityTest {
                     if (reconciliationRunning.get()) {
                         heartbeatDuringReconciliation.countDown();
                     }
+                    respond(exchange, 200, "{\"status\":\"LEASE_EXTENDED\"}");
+                } else {
+                    respond(exchange, 404, "{\"status\":\"NOT_FOUND\"}");
+                }
+            } finally {
+                exchange.close();
+            }
+        });
+        server.start();
+    }
+
+    private void startCheckpointBarrierServer() throws IOException {
+        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        serverExecutor = Executors.newCachedThreadPool();
+        server.setExecutor(serverExecutor);
+        server.createContext("/", exchange -> {
+            try {
+                exchange.getRequestBody().readAllBytes();
+                String path = exchange.getRequestURI().getPath();
+                if ("/v1/execute".equals(path)) {
+                    executionStarted.countDown();
+                    try {
+                        releaseExecution.await(10, TimeUnit.SECONDS);
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                    }
+                    respond(exchange, 500, "{\"status\":\"UNKNOWN\"}");
+                } else if ("/internal/v1/production-runtime/checkpoints".equals(path)) {
+                    checkpointStarted.countDown();
+                    try {
+                        releaseCheckpoint.await(10, TimeUnit.SECONDS);
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                    }
+                    respond(exchange, 200, "{}");
+                } else if (path.endsWith("/heartbeat")) {
                     respond(exchange, 200, "{\"status\":\"LEASE_EXTENDED\"}");
                 } else {
                     respond(exchange, 404, "{\"status\":\"NOT_FOUND\"}");

@@ -92,6 +92,17 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     }
 
     @Override
+    public Optional<Map<String, Object>> requestPayload(String organizationId, String jobId) {
+        requireIdentifier(organizationId, "organizationId");
+        requireIdentifier(jobId, "jobId");
+        return inTenant(organizationId, () -> jdbc.sql("""
+                SELECT request_payload::text FROM execution_jobs
+                 WHERE organization_id = :org AND job_id = :job
+                """).param("org", organizationId).param("job", jobId)
+                .query(String.class).optional().map(this::readJson));
+    }
+
+    @Override
     public Optional<IdempotencyLookup> findByIdempotencyKey(
             String organizationId,
             String idempotencyKey

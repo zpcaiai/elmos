@@ -5,6 +5,7 @@ import { copyFile, mkdtemp, open, readFile, rename, rm, stat, writeFile } from "
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { zipSync } from "fflate";
 
 import { Sha256Accumulator } from "../app/lib/sha256Accumulator.ts";
 import {
@@ -18,6 +19,7 @@ import {
   validateTranslationConversionIndex,
   validateTranslationConversionMarkdown,
   validateTranslationConversionShardDocuments,
+  validateTranslationCodeArtifactArchive,
 } from "../app/lib/server/translationConversionReport.ts";
 
 const digest = (value) => createHash("sha256").update(value, "utf8").digest("hex");
@@ -25,6 +27,47 @@ const snapshot = digest("snapshot");
 const routeId = "python-to-typescript";
 const definitionId = "verified-functional-obligation-success-rate/v1";
 const casesManifestSha256 = digest("cases-manifest");
+
+test("code archives retain exact legacy schema and bind every expanded claim to the verified receipt",async()=>{
+  const root=await mkdtemp(path.join(tmpdir(),"elmos-code-manifest-"));
+  const summary=validateTranslationConversion(fixture().rawSummary,1).summary;
+  const content=Buffer.from("export const value = 1;\n");
+  const legacy={schema_version:"1.0.0",kind:"elmos.repository-migration-artifact-manifest",status:"PARTIAL",
+    repository_ref:"local:pure-python",snapshot_sha256:snapshot,route_id:routeId,profile:"typed-pure-function-v1",
+    external_verification_status:"NOT_RUN",certification_status:"NOT_CERTIFIED",
+    functional_conversion:{definition_id:summary.definitionId,numerator:summary.numerator,denominator:summary.denominator,
+      success_rate_basis_points:summary.successRateBasisPoints,measurement_status:summary.measurementStatus,
+      denominator_complete:summary.denominatorComplete,project_success_rate_display:summary.projectSuccessRateDisplay,
+      code_artifact_ready:true,cases_manifest_sha256:summary.casesManifestSha256},
+    files:[{path:"migrated.ts",bytes:content.length,sha256:digest(content)}]};
+  // These claims stand in for a prior semantic receipt. This test exercises
+  // byte/claim binding only; real graph semantics are tested by the launcher.
+  const additions={source_language:"python",target_language:"typescript",repository_scale:{files:1},repository_limits:{max_files:1000},
+    unit_batch_status:"PARTIAL",project_graph:{graph_sha256:digest("graph")},conversion_coverage:{complete:false},
+    behavior_coverage:{complete:false},repository_complete:false,runtime_verification_status:"NOT_RUN",local_execution_evidence:"LIMITED",
+    repository_execution_status:"LIMITED",independent_verification_status:"NOT_RUN"};
+  const expanded={...legacy,...additions};
+  const expected={pipelineStatus:"PARTIAL",repositoryRef:legacy.repository_ref,snapshotSha256:snapshot,routeId,
+    profile:legacy.profile,summary,manifestSha256:digest(JSON.stringify(expanded)),repositoryClaims:additions};
+  async function validate(manifest,context=expected) {
+    const bytes=zipSync({"artifact-manifest.json":Buffer.from(JSON.stringify(manifest)),"migrated.ts":content});
+    const file=path.join(root,"artifact.zip");await writeFile(file,bytes);const handle=await open(file,"r");
+    try {return await validateTranslationCodeArtifactArchive(handle,{path:"repository-migration-artifact.zip",bytes:bytes.length,sha256:digest(bytes)},context);}
+    finally {await handle.close();}
+  }
+  try {
+    await validate(legacy);await validate(expanded);
+    await assert.rejects(validate(expanded,{...expected,manifestSha256:undefined}));
+    await assert.rejects(validate(expanded,{...expected,manifestSha256:"0".repeat(64)}));
+    for(const key of Object.keys(additions)) {
+      const changed={...expanded,[key]:null};
+      await assert.rejects(validate(changed),undefined,`receipt substitution ${key}`);
+      await assert.rejects(validate(changed,{...expected,manifestSha256:digest(JSON.stringify(changed))}),undefined,`semantic claim substitution ${key}`);
+    }
+    await assert.rejects(validate({...legacy,unexpected_claim:true}));
+    await assert.rejects(validate({...expanded,unexpected_claim:true}));
+  } finally {await rm(root,{recursive:true,force:true});}
+});
 
 test("incremental browser download hashing matches SHA-256 across arbitrary chunk boundaries", () => {
   const content = Buffer.from("abc😀".repeat(20_001), "utf8");

@@ -850,6 +850,7 @@ export type TranslationJob = {
   artifactReady: boolean;
   artifactSha256?: string;
   artifactSize?: number;
+  artifactManifestSha256?: string;
   reportReady: boolean;
   reportJson?: TranslationConversionReportFile;
   reportMarkdown?: TranslationConversionReportFile;

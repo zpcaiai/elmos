@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "vue3--to--react-native",
-  "formal_input_digest": "sha256:87e7f237156a3c0da87a83bfae81d2d932f77f0c710cdfdeb50391dbe957942c",
-  "solver_input_digest": "sha256:bfdc28f7a42a2978d1101765bc0710e1ba0c723ddfdaa2a9ca93040c80bbae93",
-  "smt2_digest": "sha256:bfdc28f7a42a2978d1101765bc0710e1ba0c723ddfdaa2a9ca93040c80bbae93"
+  "formal_input_digest": "sha256:df11ae49784a9297af002eb3e90c1b61f069b120edf7dd87f7b595c46d42322c",
+  "solver_input_digest": "sha256:4638f5823c51c0042e66fb9dfd4320438063b48c60b8fc75799f58bb4c4f3d47",
+  "smt2_digest": "sha256:4638f5823c51c0042e66fb9dfd4320438063b48c60b8fc75799f58bb4c4f3d47"
 }

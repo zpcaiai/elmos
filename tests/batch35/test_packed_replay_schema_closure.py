@@ -442,6 +442,8 @@ def _build_isolated_module_pack(
             )
             for source in (
                 ENGINE_SOURCE_ROOT / "models.py",
+                ENGINE_SOURCE_ROOT / "process_io.py",
+                ENGINE_SOURCE_ROOT / "resource_budget.py",
                 ENGINE_SOURCE_ROOT / "toolchains.py",
             )
         )

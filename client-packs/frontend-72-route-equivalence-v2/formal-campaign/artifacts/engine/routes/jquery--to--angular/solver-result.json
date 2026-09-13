@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "jquery--to--angular",
-  "formal_input_digest": "sha256:2bd97c1629dc3e15a844bf3d9142baf54b3171929e9de9f3ac1b55f70f824810",
-  "solver_input_digest": "sha256:31ab70dcb4c9a5d34bf90e88ec6303b3ce54efa609f0d20f451df94ed0845254",
-  "smt2_digest": "sha256:31ab70dcb4c9a5d34bf90e88ec6303b3ce54efa609f0d20f451df94ed0845254"
+  "formal_input_digest": "sha256:895049c790c348cc73a95e5bc2b8cca94fb8f387a5393cfb041436df76612eba",
+  "solver_input_digest": "sha256:613e0c2029548b5b453b3d3d00c3fc08d0ec86ce370a4e193792ded988dff109",
+  "smt2_digest": "sha256:613e0c2029548b5b453b3d3d00c3fc08d0ec86ce370a4e193792ded988dff109"
 }

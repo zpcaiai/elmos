@@ -2095,3 +2095,39 @@ def test_cpp_prelude_extra_duplicate_conditional_macro_pragma_and_continuation_f
             output,
         )
     assert not output.exists()
+
+
+def test_clang_prelude_preflight_rejects_extra_header_before_inventory(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = tmp_path / "module.cpp"
+    source_bytes = b"#include <cstdint>\n#include <vector>\n"
+    source.write_bytes(source_bytes)
+    manifest = tmp_path / "unused-cases.json"
+    manifest.write_text("{}", encoding="utf-8")
+    inventory_called = False
+
+    def forbidden_inventory(*_args: object, **_kwargs: object) -> dict[str, object]:
+        nonlocal inventory_called
+        inventory_called = True
+        raise AssertionError("compiler inventory must not run for an open prelude")
+
+    monkeypatch.setattr(route_engine, "_load_module_manifest", lambda _path: {})
+    monkeypatch.setattr(route_engine, "_manifest_symbols", lambda _manifest: ["value"])
+    monkeypatch.setattr(route_engine, "inventory_module", forbidden_inventory)
+
+    with pytest.raises(RouteError, match="^PURE_MODULE_LANGUAGE_PRELUDE_MISMATCH:source:cpp$"):
+        route_engine._migrate_module_snapshot(
+            source,
+            "cpp",
+            "java",
+            manifest,
+            tmp_path / "must-not-exist",
+            identifier_unit_namespace=route_engine.standalone_artifact_unit_namespace(
+                source.name,
+                sha256_bytes(source_bytes),
+            ),
+        )
+
+    assert inventory_called is False

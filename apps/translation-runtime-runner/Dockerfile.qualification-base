@@ -1,0 +1,41 @@
+# Local qualification base only. The two defaults are immutable OCI digests;
+# override them only with another independently recorded exact digest.
+ARG ELMOS_QUALIFICATION_NODE_IMAGE=node@sha256:3529ef69feecddd94e9c5ecd3d25a96f2f23ea40661f494f932ae2b12ab1977c
+ARG ELMOS_QUALIFICATION_PYTHON_IMAGE=python@sha256:f3fa41d74a768c2fce8016b98c191ae8c1bacd8f1152870a3f9f87d350920b7c
+
+FROM ${ELMOS_QUALIFICATION_NODE_IMAGE} AS node_runtime
+FROM ${ELMOS_QUALIFICATION_PYTHON_IMAGE} AS python_builder
+
+COPY engines/polyglot-route-engine /tmp/elmos/polyglot-route-engine
+RUN python -m venv /opt/elmos/venv \
+    && /opt/elmos/venv/bin/pip install --no-cache-dir /tmp/elmos/polyglot-route-engine \
+    && /opt/elmos/venv/bin/python --version \
+    && rm -rf /tmp/elmos
+
+FROM ${ELMOS_QUALIFICATION_PYTHON_IMAGE}
+
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends libatomic1 \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=node_runtime /usr/local/bin/node /usr/local/bin/node
+COPY --from=node_runtime /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx \
+    && node --version \
+    && python --version \
+    && npm install --global pnpm@10.12.4 \
+    && pnpm --version
+
+COPY --from=python_builder /opt/elmos/venv /opt/elmos/venv
+
+WORKDIR /opt/elmos/apps/web-console
+COPY apps/web-console/package.json apps/web-console/pnpm-lock.yaml \
+     apps/web-console/pnpm-workspace.yaml apps/web-console/.npmrc ./
+RUN CI=true pnpm install --frozen-lockfile --ignore-scripts \
+    && pnpm store prune
+
+RUN groupadd --gid 10001 elmos \
+    && useradd --uid 10001 --gid 10001 --no-create-home \
+       --shell /usr/sbin/nologin elmos
+WORKDIR /opt/elmos
+USER 10001:10001

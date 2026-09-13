@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GenerationRunnerError } from "../../../../../lib/server/generationRunner";
+import { hostedExecutionEnabled } from "../../../../../lib/server/hostedExecutionClient";
+import { cancelHostedTranslationJob } from "../../../../../lib/server/hostedTranslationClient";
 import {
   authorizeTranslation,
   cancelTranslationJob,
@@ -36,7 +38,8 @@ async function cancel(
   try {
     const authorized = authorizeTranslation(request);
     const { jobId } = await context.params;
-    return NextResponse.json(await cancelTranslationJob(authorized, jobId));
+    return NextResponse.json(await (hostedExecutionEnabled()
+      ? cancelHostedTranslationJob(authorized, jobId) : cancelTranslationJob(authorized, jobId)));
   } catch (error) {
     const status = error instanceof GenerationRunnerError ? error.status : 500;
     const reason = error instanceof GenerationRunnerError

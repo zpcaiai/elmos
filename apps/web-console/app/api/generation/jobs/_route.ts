@@ -10,6 +10,7 @@ import {
   hostedExecutionEnabled,
 } from "../../../lib/server/hostedExecutionClient";
 import { withBusinessAudit } from "../../../lib/server/operationsProxy";
+import { readBoundedRequestBody, RequestBodyError } from "../../../lib/server/boundedRequestBody";
 
 export const dynamic = "force-dynamic";
 
@@ -41,21 +42,16 @@ async function create(request: NextRequest) {
         { status: 415 },
       );
     }
-    const rawBody = await request.text();
-    if (Buffer.byteLength(rawBody, "utf-8") > 96 * 1024) {
-      return NextResponse.json(
-        { status: "BLOCKED", reason: "REQUEST_TOO_LARGE" },
-        { status: 413 },
-      );
-    }
     const context = authorize(request);
+    const rawBody = await readBoundedRequestBody(request, 96 * 1024);
     const body = JSON.parse(rawBody) as GenerationJobCreateRequest;
     const job = hostedExecutionEnabled()
       ? await createHostedGenerationJob(context, body)
       : await createJob(context, body);
     return NextResponse.json(job, { status: 202 });
   } catch (error) {
-    const status = error instanceof GenerationRunnerError ? error.status : 400;
+    const status = error instanceof GenerationRunnerError || error instanceof RequestBodyError
+      ? error.status : 400;
     const reason = error instanceof Error ? error.message : "INVALID_REQUEST";
     return NextResponse.json({ status: "BLOCKED", reason }, { status });
   }

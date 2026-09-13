@@ -93,6 +93,8 @@ def test_capture_binds_repository_identifier_and_node_frontends_exactly(
     required = {
         "engines/polyglot-route-engine/src/elmos_polyglot_route/repository.py",
         "engines/polyglot-route-engine/src/elmos_polyglot_route/identifier_hygiene.py",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/process_io.py",
+        "engines/polyglot-route-engine/src/elmos_polyglot_route/resource_budget.py",
         "schemas/batch29/formal-input.schema.json",
         "schemas/batch29/formal-input-module-function.schema.json",
         "schemas/batch29/identifier-plan.schema.json",

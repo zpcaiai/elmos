@@ -1,0 +1,70 @@
+{
+  "boundaries": [
+    "Data generation, read-fixture publication, and post-operation verification are outside the timed region.",
+    "Bytes inputs are allocated before tracemalloc starts; native allocations are not counted by tracemalloc.",
+    "RSS includes process setup and inputs; shared-host scheduling noise is not production tail latency.",
+    "Three samples do not establish p95/p99 or cross-platform superiority."
+  ],
+  "evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "file_mib": 8,
+  "host": "macOS-26.6.2-arm64-arm-64bit",
+  "independent_verification": "NOT_RUN",
+  "median_seconds": {
+    "native-read": 3.585322291997727,
+    "python-read": 0.4130298340023728
+  },
+  "native_library_sha256": "348936f2751d40066b812473979750bd9ef42583778c8aa4c8804df0547360dd",
+  "production_slo": "NOT_RUN",
+  "python": "3.12.12",
+  "rounds": 3,
+  "samples": [
+    {
+      "mode": "python-read",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 39976960,
+      "python_peak_bytes": 8394673,
+      "seconds": 0.4130298340023728
+    },
+    {
+      "mode": "native-read",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 47218688,
+      "python_peak_bytes": 8390952,
+      "seconds": 3.585322291997727
+    },
+    {
+      "mode": "python-read",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 39206912,
+      "python_peak_bytes": 8394673,
+      "seconds": 0.6104333749972284
+    },
+    {
+      "mode": "native-read",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 47087616,
+      "python_peak_bytes": 8390952,
+      "seconds": 3.807119667006191
+    },
+    {
+      "mode": "python-read",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 37978112,
+      "python_peak_bytes": 8394673,
+      "seconds": 0.03708716698747594
+    },
+    {
+      "mode": "native-read",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 49905664,
+      "python_peak_bytes": 8390952,
+      "seconds": 1.9326150419947226
+    }
+  ],
+  "shared_development_host": true,
+  "source_sha256": {
+    "engines/build-cache-engine/src/elmos_build_cache/cas.py": "4eeee628b779377e788148823d8d529daafeaf486018cf79c76d0c53dcce674d",
+    "engines/build-cache-engine/src/elmos_build_cache/native_cas_bridge.py": "530e5d0857bff17fd408cc40895b36fbb5e570064f6b4c1a12322abafd95fc20",
+    "tools/performance/r2_native_profile.py": "ceda778ccb646e7b2e13081be175bc32e1aa0963ae1adb16008c86fedbc92722"
+  }
+}

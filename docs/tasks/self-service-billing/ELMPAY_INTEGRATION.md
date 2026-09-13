@@ -48,9 +48,11 @@ ELMPay 不向 webhook 暴露原始业务订单号。ELMOS 为订阅、钱包充�
 
 ## 切换、观察与回滚
 
-切换前在隔离环境执行 Flyway 到 V84，并验证三个 `business_order_sha256` 唯一索引。
+切换前在隔离环境执行 Flyway 到 V94，并验证 V84 的三个
+`business_order_sha256` 唯一索引和 V94 的函数 schema 修复。
 用真实小额订单检查：创建收银台、底层支付、captured 事件、首次履约、重复事件幂等、
 金额不符对账和超时未知结果。保存 ELMPay/渠道原始 receipt。
 
 回滚时先关闭 `ELMOS_ELMPAY_ENABLED` 和新的购买入口。原生支付宝/微信回调适配器仍在，
-可处理切换前在途订单；不得删除 V84 摘要列、订单、事件、Credit lot 或对账事实。
+可处理切换前在途订单；不得删除 V84 摘要列、V94 函数修复、订单、事件、Credit lot
+或对账事实。

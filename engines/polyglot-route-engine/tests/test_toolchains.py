@@ -106,8 +106,8 @@ def test_output_prefers_successful_stdout_over_diagnostic_stderr(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        toolchains.subprocess,
-        "run",
+        toolchains,
+        "run_bounded",
         lambda *args, **kwargs: subprocess.CompletedProcess(
             args[0],
             0,
@@ -123,8 +123,8 @@ def test_output_keeps_successful_stderr_only_version_surfaces(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        toolchains.subprocess,
-        "run",
+        toolchains,
+        "run_bounded",
         lambda *args, **kwargs: subprocess.CompletedProcess(
             args[0],
             0,
@@ -142,8 +142,8 @@ def test_output_keeps_split_success_identity_streams_by_default(
     stdout = toolchains._EXPECTED_SWIFT_VERSION + "\n" + toolchains._EXPECTED_SWIFT_TARGET + "\n"
     stderr = toolchains._EXPECTED_SWIFT_DRIVER_VERSION + "\n"
     monkeypatch.setattr(
-        toolchains.subprocess,
-        "run",
+        toolchains,
+        "run_bounded",
         lambda *args, **kwargs: subprocess.CompletedProcess(
             args[0],
             0,
@@ -159,8 +159,8 @@ def test_output_preserves_bounded_sanitized_failure_diagnostic(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        toolchains.subprocess,
-        "run",
+        toolchains,
+        "run_bounded",
         lambda *args, **kwargs: subprocess.CompletedProcess(
             args[0],
             7,

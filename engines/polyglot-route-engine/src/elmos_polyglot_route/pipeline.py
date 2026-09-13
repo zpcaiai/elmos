@@ -18,7 +18,7 @@ import re
 import shutil
 import zipfile
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
 
 from .assembly import (
     _UNIT_ID_PATTERN,
@@ -55,7 +55,8 @@ from .project_graph import (
     verify_project_snapshot,
 )
 from .repository import plan_repository
-from .safe_io import atomic_output_file, atomic_write_bytes, stable_file_digest, stable_read_bytes
+from .resource_budget import ExecutionBudget
+from .safe_io import atomic_output_file, atomic_write_bytes, stable_file_digest, stable_input_file, stable_read_bytes
 
 SCHEMA_VERSION = "1.0.0"
 REPORT_NAME = "repository-pipeline-report.json"
@@ -79,6 +80,11 @@ _MAX_PIPELINE_JSON_BYTES = 64 * 1024 * 1024
 # the published migration artifact.  Other symlinks in the artifact tree
 # remain unsafe and are still rejected below.
 _ARTIFACT_CACHE_DIRECTORIES = frozenset({".build"})
+
+
+class _ExecutionOptions(TypedDict, total=False):
+    execution_budget: ExecutionBudget
+
 
 
 def _validate_handoff_targets(output: Path) -> None:
@@ -327,7 +333,7 @@ def _artifact_inventory(output: Path) -> list[dict[str, Any]]:
     return files
 
 
-def _bound_artifact_bytes(output: Path, entry: dict[str, Any]) -> bytes:
+def _bound_artifact_source(output: Path, entry: dict[str, Any]) -> Path:
     relative = str(entry.get("path", ""))
     if (
         not relative
@@ -358,42 +364,56 @@ def _bound_artifact_bytes(output: Path, entry: dict[str, Any]) -> bytes:
         or any(character not in "0123456789abcdef" for character in expected_sha256)
     ):
         raise RouteError("PIPELINE_ARTIFACT_DESCRIPTOR_MISMATCH")
+    return source
+
+
+def _bound_artifact_bytes(output: Path, entry: dict[str, Any]) -> bytes:
+    source = _bound_artifact_source(output, entry)
     content = stable_read_bytes(
         source,
-        max_bytes=expected_bytes,
+        max_bytes=entry["bytes"],
         unsafe_error="PIPELINE_ARTIFACT_SOURCE_UNSAFE",
         changed_error="PIPELINE_ARTIFACT_SOURCE_CHANGED_DURING_READ",
         limit_error="PIPELINE_ARTIFACT_DESCRIPTOR_MISMATCH",
     )
-    if len(content) != expected_bytes or hashlib.sha256(content).hexdigest() != expected_sha256:
+    if len(content) != entry["bytes"] or hashlib.sha256(content).hexdigest() != entry["sha256"]:
         raise RouteError("PIPELINE_ARTIFACT_DESCRIPTOR_MISMATCH")
     return content
 
 
 def _verify_zip_content(content: bytes, entries: list[dict[str, Any]]) -> None:
-    expected_paths = [str(entry["path"]) for entry in entries]
     try:
         with zipfile.ZipFile(io.BytesIO(content), "r") as bundle:
-            if bundle.namelist() != expected_paths or len(set(bundle.namelist())) != len(expected_paths):
-                raise RouteError("PIPELINE_ARTIFACT_ARCHIVE_MANIFEST_MISMATCH")
-            for entry in entries:
-                archived = bundle.read(str(entry["path"]))
-                if len(archived) != entry["bytes"] or hashlib.sha256(archived).hexdigest() != entry["sha256"]:
-                    raise RouteError("PIPELINE_ARTIFACT_ARCHIVE_MANIFEST_MISMATCH")
+            _verify_zip_bundle(bundle, entries)
     except (KeyError, zipfile.BadZipFile) as error:
         raise RouteError("PIPELINE_ARTIFACT_ARCHIVE_INVALID") from error
 
 
-def _verify_zip_entries(archive: Path, entries: list[dict[str, Any]]) -> bytes:
-    content = stable_read_bytes(
-        archive,
-        max_bytes=MAX_ARTIFACT_COMPRESSED_BYTES,
-        unsafe_error="PIPELINE_ARTIFACT_ARCHIVE_UNSAFE",
-        changed_error="PIPELINE_ARTIFACT_ARCHIVE_CHANGED_DURING_READ",
-        limit_error="PIPELINE_ARTIFACT_COMPRESSED_LIMIT_EXCEEDED",
-    )
-    _verify_zip_content(content, entries)
-    return content
+def _zip_member_identity(bundle: zipfile.ZipFile, path: str) -> tuple[int, str]:
+    digest = hashlib.sha256()
+    size = 0
+    declared = bundle.getinfo(path).file_size
+    if declared > MAX_ARTIFACT_UNCOMPRESSED_BYTES:
+        raise RouteError("PIPELINE_ARTIFACT_UNCOMPRESSED_LIMIT_EXCEEDED")
+    with bundle.open(path) as member:
+        while chunk := member.read(64 * 1024):
+            size += len(chunk)
+            if size > declared:
+                raise RouteError("PIPELINE_ARTIFACT_ARCHIVE_MANIFEST_MISMATCH")
+            digest.update(chunk)
+    return size, digest.hexdigest()
+
+
+def _verify_zip_bundle(bundle: zipfile.ZipFile, entries: list[dict[str, Any]]) -> None:
+    expected_paths = [str(entry["path"]) for entry in entries]
+    if bundle.namelist() != expected_paths or len(set(bundle.namelist())) != len(expected_paths):
+        raise RouteError("PIPELINE_ARTIFACT_ARCHIVE_MANIFEST_MISMATCH")
+    for entry in entries:
+        path = str(entry["path"])
+        if bundle.getinfo(path).file_size != entry["bytes"]:
+            raise RouteError("PIPELINE_ARTIFACT_ARCHIVE_MANIFEST_MISMATCH")
+        if _zip_member_identity(bundle, path) != (entry["bytes"], entry["sha256"]):
+            raise RouteError("PIPELINE_ARTIFACT_ARCHIVE_MANIFEST_MISMATCH")
 
 
 def _write_deterministic_zip(
@@ -420,20 +440,41 @@ def _write_deterministic_zip(
             with zipfile.ZipFile(handle, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as bundle:
                 for entry in ordered:
                     relative = str(entry["path"])
-                    content = _bound_artifact_bytes(output, entry)
+                    source = _bound_artifact_source(output, entry)
                     info = zipfile.ZipInfo(relative, date_time=(1980, 1, 1, 0, 0, 0))
                     info.compress_type = zipfile.ZIP_DEFLATED
                     info.external_attr = 0o100644 << 16
-                    bundle.writestr(info, content)
+                    info.file_size = entry["bytes"]
+                    digest = hashlib.sha256()
+                    size = 0
+                    with stable_input_file(
+                        source, max_bytes=entry["bytes"],
+                        unsafe_error="PIPELINE_ARTIFACT_SOURCE_UNSAFE",
+                        changed_error="PIPELINE_ARTIFACT_SOURCE_CHANGED_DURING_READ",
+                        limit_error="PIPELINE_ARTIFACT_DESCRIPTOR_MISMATCH",
+                    ) as member_source, bundle.open(info, "w") as member:
+                        while chunk := member_source.read(64 * 1024):
+                            size += len(chunk)
+                            if size > entry["bytes"]:
+                                raise RouteError("PIPELINE_ARTIFACT_DESCRIPTOR_MISMATCH")
+                            digest.update(chunk)
+                            member.write(chunk)
+                    if (size, digest.hexdigest()) != (entry["bytes"], entry["sha256"]):
+                        raise RouteError("PIPELINE_ARTIFACT_DESCRIPTOR_MISMATCH")
             handle.flush()
             handle.seek(0)
-            temporary_content = handle.read(MAX_ARTIFACT_COMPRESSED_BYTES + 1)
-            if len(temporary_content) > MAX_ARTIFACT_COMPRESSED_BYTES:
+            if os.fstat(handle.fileno()).st_size > MAX_ARTIFACT_COMPRESSED_BYTES:
                 raise RouteError("PIPELINE_ARTIFACT_COMPRESSED_LIMIT_EXCEEDED")
-            _verify_zip_content(temporary_content, ordered)
+            with zipfile.ZipFile(handle, "r") as bundle:
+                _verify_zip_bundle(bundle, ordered)
         published = True
-        archive_bytes = _verify_zip_entries(archive, ordered)
-        with zipfile.ZipFile(io.BytesIO(archive_bytes), "r") as bundle:
+        with stable_input_file(
+            archive, max_bytes=MAX_ARTIFACT_COMPRESSED_BYTES,
+            unsafe_error="PIPELINE_ARTIFACT_ARCHIVE_UNSAFE",
+            changed_error="PIPELINE_ARTIFACT_ARCHIVE_CHANGED_DURING_READ",
+            limit_error="PIPELINE_ARTIFACT_COMPRESSED_LIMIT_EXCEEDED",
+        ) as archive_handle, zipfile.ZipFile(archive_handle, "r") as bundle:
+            _verify_zip_bundle(bundle, ordered)
             names = bundle.namelist()
             try:
                 assembly_manifest = bundle.read("assembled/assembly-manifest.json")
@@ -444,15 +485,40 @@ def _write_deterministic_zip(
                 target_language,
                 names,
                 bundle.read,
+                stream_identity=lambda path: _zip_member_identity(bundle, path),
             )
+            archive_handle.seek(0)
+            verified_digest = hashlib.sha256()
+            verified_size = 0
+            while chunk := archive_handle.read(64 * 1024):
+                verified_size += len(chunk)
+                if verified_size > MAX_ARTIFACT_COMPRESSED_BYTES:
+                    raise RouteError("PIPELINE_ARTIFACT_COMPRESSED_LIMIT_EXCEEDED")
+                verified_digest.update(chunk)
         current_inventory = _artifact_inventory(output)
         expected_inventory = [entry for entry in ordered if entry["path"] != ARTIFACT_MANIFEST_NAME]
         if current_inventory != expected_inventory:
             raise RouteError("PIPELINE_ARTIFACT_INVENTORY_CHANGED_DURING_ARCHIVE")
         for entry in ordered:
-            _bound_artifact_bytes(output, entry)
+            source = _bound_artifact_source(output, entry)
+            identity = stable_file_digest(
+                source, max_bytes=entry["bytes"],
+                unsafe_error="PIPELINE_ARTIFACT_SOURCE_UNSAFE",
+                changed_error="PIPELINE_ARTIFACT_SOURCE_CHANGED_DURING_READ",
+                limit_error="PIPELINE_ARTIFACT_DESCRIPTOR_MISMATCH",
+            )
+            if identity != (entry["bytes"], entry["sha256"]):
+                raise RouteError("PIPELINE_ARTIFACT_DESCRIPTOR_MISMATCH")
+        archive_size, archive_digest = stable_file_digest(
+            archive, max_bytes=MAX_ARTIFACT_COMPRESSED_BYTES,
+            unsafe_error="PIPELINE_ARTIFACT_ARCHIVE_UNSAFE",
+            changed_error="PIPELINE_ARTIFACT_ARCHIVE_CHANGED_DURING_READ",
+            limit_error="PIPELINE_ARTIFACT_COMPRESSED_LIMIT_EXCEEDED",
+        )
+        if (archive_size, archive_digest) != (verified_size, verified_digest.hexdigest()):
+            raise RouteError("PIPELINE_ARTIFACT_ARCHIVE_CHANGED_DURING_READ")
         completed = True
-        return archive, len(archive_bytes), hashlib.sha256(archive_bytes).hexdigest()
+        return archive, archive_size, archive_digest
     finally:
         if published and not completed and archive.exists():
             if archive.is_symlink() or not archive.is_file():
@@ -557,7 +623,10 @@ def _uniform_discovery_not_run_diagnostic(discovery: dict[str, Any]) -> str | No
         or len(inventories) != len(results)
     ):
         return None
-    if any(not isinstance(result, dict) or result.get("verdict") != "NOT_RUN" for result in results):
+    if any(
+        not isinstance(result, dict) or result.get("verdict") != "NOT_RUN"
+        for result in results
+    ):
         return None
 
     diagnostics: set[str] = set()
@@ -565,7 +634,12 @@ def _uniform_discovery_not_run_diagnostic(discovery: dict[str, Any]) -> str | No
         if not isinstance(inventory, dict) or inventory.get("enumeration_status") != "NOT_RUN":
             return None
         observed = inventory.get("diagnostics")
-        if not isinstance(observed, list) or len(observed) != 1 or not isinstance(observed[0], str) or not observed[0]:
+        if (
+            not isinstance(observed, list)
+            or len(observed) != 1
+            or not isinstance(observed[0], str)
+            or not observed[0]
+        ):
             return None
         diagnostic = observed[0]
         if re.fullmatch(r"[A-Z][A-Z0-9_]*(?::[A-Za-z0-9_.:/<>=+,\-]+)*", diagnostic) is None:
@@ -714,12 +788,16 @@ def _neutral_project_snapshot(graph: dict[str, object]) -> str:
     for entry in excluded:
         if not isinstance(entry, dict):
             raise RouteError("PROJECT_GRAPH_NEUTRAL_SNAPSHOT_INVALID")
-        excluded_identity.append([entry.get("path"), entry.get("reason"), entry.get("verification_status")])
+        excluded_identity.append(
+            [entry.get("path"), entry.get("reason"), entry.get("verification_status")]
+        )
     payload = {
         "files": sorted(files, key=lambda item: str(item[0])),
         "excluded_entries": sorted(excluded_identity, key=lambda item: str(item[0])),
     }
-    return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
 
 
 def _write_and_verify_project_graph(output: Path, graph: dict[str, object]) -> dict[str, Any]:
@@ -949,6 +1027,8 @@ def _run_repository_pipeline_attempt(
     target_language: Language,
     cases_directory: Path,
     output: Path,
+    *,
+    execution_budget: ExecutionBudget | None = None,
 ) -> dict[str, Any]:
     """Run and package a bounded repository translation.
 
@@ -984,6 +1064,9 @@ def _run_repository_pipeline_attempt(
     if cases_directory.is_symlink() or not cases.is_dir():
         raise RouteError("BEHAVIOR_CASES_DIRECTORY_INVALID")
 
+    budget_options: _ExecutionOptions = {}
+    if execution_budget is not None:
+        budget_options["execution_budget"] = execution_budget
     source_snapshot = capture_project_snapshot(root)
     invocation_graph = materialize_project_graph(source_snapshot, repository_ref)
     invocation_snapshot = _neutral_project_snapshot(invocation_graph)
@@ -1000,7 +1083,9 @@ def _run_repository_pipeline_attempt(
         # backed discovery receipt is therefore required before the graph can
         # classify those .ts files as React or close the two descriptors.
         try:
-            discovery = discover_repository(plan, root)
+            discovery = discover_repository(
+                plan, root, **budget_options,
+            )
         except RouteError as error:
             if not _reportable_discovery_incident(error):
                 raise
@@ -1027,7 +1112,9 @@ def _run_repository_pipeline_attempt(
 
     if discovery is None:
         try:
-            discovery = discover_repository(plan, root)
+            discovery = discover_repository(
+                plan, root, **budget_options,
+            )
         except RouteError as error:
             if not _reportable_discovery_incident(error):
                 raise
@@ -1037,7 +1124,10 @@ def _run_repository_pipeline_attempt(
 
     if discovery_incident is None:
         batch_output = _owned_directory(output, "batch")
-        batch = run_batch(discovery, root, cases, batch_output)
+        batch = run_batch(
+            discovery, root, cases, batch_output,
+            **budget_options,
+        )
     else:
         batch_output = _reset_owned_directory(output, "batch")
         batch_output.mkdir(parents=True)
@@ -1086,7 +1176,9 @@ def _run_repository_pipeline_attempt(
                     build_status = "PASSED"
                     runtime_status = _assembly_failure_status(error)
                     try:
-                        assembly = json.loads((assembly_staging / "assembly-manifest.json").read_text(encoding="utf-8"))
+                        assembly = json.loads(
+                            (assembly_staging / "assembly-manifest.json").read_text(encoding="utf-8")
+                        )
                     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as manifest_error:
                         raise RouteError("PIPELINE_ASSEMBLY_MANIFEST_UNREADABLE") from manifest_error
                 else:
@@ -1229,7 +1321,9 @@ def _run_repository_pipeline_attempt(
                     "success_rate_basis_points": functional_conversion["success_rate_basis_points"],
                     "measurement_status": functional_conversion["measurement_status"],
                     "denominator_complete": functional_conversion["denominator_complete"],
-                    "project_success_rate_display": functional_conversion["project_success_rate_display"],
+                    "project_success_rate_display": functional_conversion[
+                        "project_success_rate_display"
+                    ],
                     "code_artifact_ready": True,
                     "cases_manifest_sha256": cases_manifest_sha256,
                 },
@@ -1316,7 +1410,9 @@ def _run_repository_pipeline_attempt(
         ),
         "build_verification": {
             "status": build_status,
-            "commands": (assembly.get("build_verification", {}) or {}).get("commands", []) if assembly else [],
+            "commands": (assembly.get("build_verification", {}) or {}).get("commands", [])
+            if assembly
+            else [],
             "toolchain": {
                 "language": (assembly.get("build_verification", {}) or {}).get("toolchain_language")
                 if assembly
@@ -1329,7 +1425,9 @@ def _run_repository_pipeline_attempt(
         },
         "runtime_verification": {
             "status": runtime_status,
-            "commands": (assembly.get("runtime_verification", {}) or {}).get("commands", []) if assembly else [],
+            "commands": (assembly.get("runtime_verification", {}) or {}).get("commands", [])
+            if assembly
+            else [],
             "toolchain": {
                 "language": (assembly.get("runtime_verification", {}) or {}).get("toolchain_language")
                 if assembly
@@ -1362,6 +1460,8 @@ def _run_repository_pipeline_attempt(
     return report
 
 
+
+
 _BEHAVIOR_COVERAGE_STATUSES = ("FAILED", "NOT_RUN", "PASSED", "UNKNOWN")
 _BATCH_TO_BEHAVIOR_STATUS = {
     "FAILED": "FAILED",
@@ -1369,8 +1469,6 @@ _BATCH_TO_BEHAVIOR_STATUS = {
     "SKIPPED_NO_CASES": "NOT_RUN",
     "SKIPPED_NOT_READY": "NOT_RUN",
 }
-
-
 def _behavior_coverage_summary(
     discovery: dict[str, Any],
     batch: dict[str, Any],
@@ -1554,6 +1652,8 @@ def run_repository_pipeline(
     target_language: Language,
     cases_directory: Path,
     output: Path,
+    *,
+    execution_budget: ExecutionBudget | None = None,
 ) -> dict[str, Any]:
     """Run one attempt while atomically isolating prior final status claims.
 
@@ -1564,7 +1664,10 @@ def run_repository_pipeline(
     therefore be refused before anything is moved, or a typo would destroy a
     perfectly good previous result.
     """
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+    if (
+        source_language not in SUPPORTED_LANGUAGES
+        or target_language not in SUPPORTED_LANGUAGES
+    ):
         raise RouteError("UNSUPPORTED_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
@@ -1581,6 +1684,7 @@ def run_repository_pipeline(
             target_language,
             cases_directory,
             output,
+            **({"execution_budget": execution_budget} if execution_budget else {}),
         )
     except BaseException:
         _invalidate_current_final_claims(output)

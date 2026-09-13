@@ -43,9 +43,15 @@ public final class JobExecutor {
         this.metrics = metrics;
     }
 
-    public enum Outcome { SUCCEEDED, FAILED, CANCELLED, ABANDONED }
+    public enum Outcome { SUCCEEDED, PARTIAL, FAILED, CANCELLED, ABANDONED }
+
+    public boolean canAcceptLease() { return !containers.isFenced(); }
 
     public Outcome execute(ControlPlaneClient.Lease lease) {
+        if (!canAcceptLease()) {
+            metrics.increment(AgentMetrics.JOBS_ABANDONED);
+            return Outcome.ABANDONED;
+        }
         metrics.increment(AgentMetrics.JOBS_CLAIMED);
         metrics.gauge(AgentMetrics.RUNNING_JOBS, metrics.gaugeValue(AgentMetrics.RUNNING_JOBS) + 1);
         try {
@@ -59,16 +65,40 @@ public final class JobExecutor {
         JobWorkspace workspace = null;
         ContainerRuntime.Execution execution = null;
         HeartbeatPump pump = new HeartbeatPump(client, lease, config, metrics);
+        Instant executionDeadline = Instant.now().plusSeconds(lease.budgetWallSeconds());
 
         try {
             ContainerRuntime.validateImage(lease.runnerImage());
 
-            workspace = JobWorkspace.create(config.workRoot(), lease.jobId(),
+            workspace = JobWorkspace.create(config.workRoot(), lease,
                     config.workloadUid(), config.workloadGid());
             workspace.writeInput("request.json", Json.write(lease.requestPayload()));
             workspace.writeInput("checkpoint.json", Json.write(lease.checkpointCursor()));
 
             pump.start();
+
+            if (TranslationJobProtocol.applies(lease)) {
+                PathBundle.materialize(client, lease, workspace);
+                if (Instant.now().isAfter(executionDeadline)) return report(lease, pump, Outcome.FAILED, "WALL_CLOCK_BUDGET_EXCEEDED");
+                if (pump.cancelRequested()) return report(lease, pump, Outcome.CANCELLED, null);
+                if (pump.leaseLost() != null) return Outcome.ABANDONED;
+                execution = containers.startTranslationPreflight(lease, workspace);
+                Outcome preflightSupervision = supervise(lease, pump, execution, executionDeadline);
+                if (preflightSupervision != null) return preflightSupervision;
+                Integer preflightExit = execution.handle().waitFor(5, TimeUnit.SECONDS);
+                containers.stop(execution, config.cancelGraceSeconds());
+                execution = null;
+                if (preflightExit == null || preflightExit != 0) {
+                    return report(lease, pump, Outcome.FAILED, "TRANSLATION_PREFLIGHT_REJECTED");
+                }
+                TranslationJobProtocol.verifyPreflight(workspace.out().resolve("preflight.json"), lease.requestPayload());
+                if (Instant.now().isAfter(executionDeadline)) return report(lease, pump, Outcome.FAILED, "WALL_CLOCK_BUDGET_EXCEEDED");
+                // Synchronous, fenced acknowledgement before executing any paid
+                // phase. Never derive this transition from workload log lines.
+                if (client.heartbeat(lease, "pipeline", 10, lease.checkpointCursor())) {
+                    return report(lease, pump, Outcome.CANCELLED, null);
+                }
+            }
 
             AtomicReference<String> lastStage = new AtomicReference<>("running");
             execution = containers.start(lease, workspace, line -> {
@@ -81,7 +111,7 @@ public final class JobExecutor {
                 }
             });
 
-            Outcome supervision = supervise(lease, pump, execution);
+            Outcome supervision = supervise(lease, pump, execution, executionDeadline);
             if (supervision != null) {
                 return supervision;
             }
@@ -92,9 +122,18 @@ public final class JobExecutor {
                 return report(lease, pump, Outcome.FAILED, "WORKLOAD_DID_NOT_EXIT");
             }
 
+            // Engine-client exit is not proof of daemon termination. Freeze
+            // output/receipt authority only after exact-ID removal is verified.
+            containers.forceRemove(execution.containerName());
+            execution = null;
+
             if (exitCode != 0) {
                 return report(lease, pump, Outcome.FAILED, "WORKLOAD_EXIT_" + exitCode);
             }
+
+            String translationStatus = TranslationJobProtocol.applies(lease)
+                    ? TranslationJobProtocol.result(workspace.out().resolve("gate/translation-job.json"), lease.requestPayload())
+                    : null;
 
             // Publish only while the lease is still ours.
             if (pump.leaseLost() != null) {
@@ -107,8 +146,16 @@ public final class JobExecutor {
                 // a silent failure that would show the user an empty download.
                 return report(lease, pump, Outcome.FAILED, "WORKLOAD_PRODUCED_NO_ARTIFACT");
             }
+            if (TranslationJobProtocol.applies(lease)) {
+                return report(lease, pump,
+                        translationStatus.equals("COMPLETE") ? Outcome.SUCCEEDED : translationStatus.equals("PARTIAL") ? Outcome.PARTIAL : Outcome.FAILED,
+                        translationStatus.equals("BLOCKED") ? "TRANSLATION_PIPELINE_REPORTED_BLOCKED" : null);
+            }
             return report(lease, pump, Outcome.SUCCEEDED, null);
 
+        } catch (ContainerRuntime.ReconciliationRequiredException ex) {
+            metrics.increment(AgentMetrics.JOBS_ABANDONED);
+            return Outcome.ABANDONED;
         } catch (ControlPlaneClient.LeaseLostException ex) {
             metrics.increment(AgentMetrics.JOBS_ABANDONED);
             return Outcome.ABANDONED;
@@ -118,16 +165,27 @@ public final class JobExecutor {
             return report(lease, pump, Outcome.FAILED, ex.getMessage());
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
+            if (execution != null) {
+                try {
+                    containers.stop(execution, config.cancelGraceSeconds());
+                    execution = null;
+                } catch (ContainerRuntime.ReconciliationRequiredException unknown) {
+                    metrics.increment(AgentMetrics.JOBS_ABANDONED);
+                    return Outcome.ABANDONED;
+                }
+            }
             return report(lease, pump, Outcome.FAILED, "AGENT_INTERRUPTED");
         } catch (Exception ex) {
             return report(lease, pump, Outcome.FAILED, "AGENT_INTERNAL_ERROR");
         } finally {
             pump.close();
-            if (execution != null) {
-                containers.forceRemove(execution.containerName());
-            }
-            if (workspace != null) {
-                workspace.close();
+            try {
+                if (execution != null) containers.stop(execution, config.cancelGraceSeconds());
+            } catch (ContainerRuntime.ReconciliationRequiredException unknown) {
+                // Durable intent + node fence retain the unreconciled outcome;
+                // this must not prevent releasing the host workspace lock.
+            } finally {
+                if (workspace != null) workspace.close();
             }
         }
     }
@@ -137,8 +195,7 @@ public final class JobExecutor {
      * stop early, or null when the container exited on its own.
      */
     private Outcome supervise(ControlPlaneClient.Lease lease, HeartbeatPump pump,
-                              ContainerRuntime.Execution execution) throws InterruptedException {
-        Instant deadline = Instant.now().plusSeconds(lease.budgetWallSeconds());
+                              ContainerRuntime.Execution execution, Instant deadline) throws InterruptedException {
 
         while (execution.handle().isAlive()) {
             String lost = pump.leaseLost();
@@ -172,11 +229,13 @@ public final class JobExecutor {
         }
         String status = switch (outcome) {
             case SUCCEEDED -> "SUCCEEDED";
+            case PARTIAL -> "PARTIAL";
             case CANCELLED -> "CANCELLED";
             default -> "FAILED";
         };
         String resultStatus = switch (outcome) {
             case SUCCEEDED -> "PASSED";
+            case PARTIAL -> "PARTIAL";
             case CANCELLED -> "BLOCKED";
             default -> "FAILED";
         };
@@ -194,10 +253,20 @@ public final class JobExecutor {
         }
         switch (outcome) {
             case SUCCEEDED -> metrics.increment(AgentMetrics.JOBS_SUCCEEDED);
+            case PARTIAL -> metrics.increment("jobs_partial");
             case CANCELLED -> metrics.increment(AgentMetrics.JOBS_CANCELLED);
             default -> metrics.increment(AgentMetrics.JOBS_FAILED);
         }
         return outcome;
+    }
+
+    private static final class PathBundle {
+        static void materialize(ControlPlaneClient client, ControlPlaneClient.Lease lease, JobWorkspace workspace) throws Exception {
+            var archive = workspace.tmp().resolve("translation-input.zip");
+            client.downloadTranslationInput(lease, archive);
+            TranslationInputMaterializer.materialize(archive, workspace.in(), lease.requestPayload());
+            java.nio.file.Files.delete(archive);
+        }
     }
 
     /** Exposed for the self-test. */

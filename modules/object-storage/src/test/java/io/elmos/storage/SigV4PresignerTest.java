@@ -26,6 +26,7 @@ public final class SigV4PresignerTest {
         expiryIsBounded();
         pathStyleAndVirtualHostedDiffer();
         keyWithSpacesAndUnicodeIsEncoded();
+        requiredHeadersAreSignatureBound();
 
         System.out.println();
         if (FAILURES.isEmpty()) {
@@ -102,6 +103,22 @@ public final class SigV4PresignerTest {
         URI url = presign("org-a/报告 v2.zip", true);
         check("unicode key is percent-encoded", !url.toString().contains("报告"));
         check("space in key is not a plus", !url.getRawPath().contains("+"));
+    }
+
+    static void requiredHeadersAreSignatureBound() {
+        URI plain = presign("org-a/obj/header", true);
+        URI createOnly = SigV4Presigner.presign(
+                "PUT", "https://oss-cn-beijing.aliyuncs.com",
+                "elmos-artifacts", "org-a/obj/header", "cn-beijing", true,
+                SigV4Presigner.Credentials.of("AK", "SK"),
+                Instant.parse("2026-07-28T12:00:00Z"),
+                Duration.ofMinutes(10), Map.of(), Map.of("If-None-Match", "*"));
+        check("required header is listed in signed headers",
+                queryParam(createOnly.toString(), "X-Amz-SignedHeaders")
+                        .equals("host%3Bif-none-match"));
+        check("required header changes the signature",
+                !queryParam(plain.toString(), "X-Amz-Signature").equals(
+                        queryParam(createOnly.toString(), "X-Amz-Signature")));
     }
 
     // ---- helpers -----------------------------------------------------------

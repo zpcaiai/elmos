@@ -14,6 +14,7 @@ import io.elmos.productionruntime.ProductionRuntimeModels.Checkpoint;
 import io.elmos.productionruntime.ProductionRuntimeModels.TopUpRequest;
 import io.elmos.productionruntime.ProductionRuntimeModels.WorkItemRequest;
 import io.elmos.productionruntime.ProductionRuntimeModels.WorkerRegistration;
+import io.elmos.storage.S3ObjectStore;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,6 +81,21 @@ class ProductionRuntimePostgresTest {
         assertEquals("78", flyway.info().current().getVersion().toString(),
                 "the fixture target must not silently narrow below V78");
         jdbc = JdbcClient.create(dataSource);
+        // This component fixture intentionally baselines at V76 and exercises
+        // only the V77/V78 production-runtime schema. The complete V1..V90
+        // Flyway chain is covered by the persistence live tests; materialize
+        // V90's one production-runtime column here so this bounded fixture can
+        // verify the current metadata contract without pretending it ran the
+        // skipped migrations.
+        jdbc.sql("""
+                alter table artifact.content_objects
+                    add column upload_protocol varchar(48) not null
+                        default 'LEGACY_UNFENCED',
+                    add constraint production_content_objects_upload_protocol
+                        check (upload_protocol in (
+                            'LEGACY_UNFENCED',
+                            'WRITE_ONCE_RECLAIM_FENCE_V1'))
+                """).update();
         transactions = new TransactionTemplate(new DataSourceTransactionManager(dataSource));
         ObjectMapper objectMapper = new ObjectMapper();
         runtime = new JdbcProductionRuntimeStore(jdbc, transactions, objectMapper);
@@ -611,17 +627,20 @@ class ProductionRuntimePostgresTest {
         String firstId = metadata.registerPendingObject(
                 first.tenantId.toString(), digest, 128,
                 "application/json", "qualification-s3",
-                first.tenantId + "/obj/" + digest);
+                first.tenantId + "/obj/" + digest,
+                S3ObjectStore.WRITE_ONCE_RECLAIM_FENCE_V1);
         assertEquals(firstId, metadata.registerPendingObject(
                 first.tenantId.toString(), digest, 128,
                 "application/json", "qualification-s3",
-                first.tenantId + "/obj/" + digest));
+                first.tenantId + "/obj/" + digest,
+                S3ObjectStore.WRITE_ONCE_RECLAIM_FENCE_V1));
         ProductionRuntimeException conflict = assertThrows(
                 ProductionRuntimeException.class,
                 () -> metadata.registerPendingObject(
                         first.tenantId.toString(), digest, 129,
                         "application/json", "qualification-s3",
-                        first.tenantId + "/obj/" + digest));
+                        first.tenantId + "/obj/" + digest,
+                        S3ObjectStore.WRITE_ONCE_RECLAIM_FENCE_V1));
         assertEquals("CONTENT_OBJECT_IDEMPOTENCY_CONFLICT", conflict.code());
 
         metadata.markAvailable(first.tenantId.toString(), firstId);
@@ -633,7 +652,8 @@ class ProductionRuntimePostgresTest {
         String secondId = metadata.registerPendingObject(
                 second.tenantId.toString(), digest, 128,
                 "application/json", "qualification-s3",
-                second.tenantId + "/obj/" + digest);
+                second.tenantId + "/obj/" + digest,
+                S3ObjectStore.WRITE_ONCE_RECLAIM_FENCE_V1);
         assertTrue(!firstId.equals(secondId));
     }
 

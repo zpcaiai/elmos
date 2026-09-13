@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "flutter--to--react-native",
-  "formal_input_digest": "sha256:4d8d3a054156f0101495b388054555c5584d5f94d8d4dd5b58175cac4d035dca",
-  "solver_input_digest": "sha256:1b28c195b83af0d02d5df998d95eee55b5f0a40ae132f437213c77a04a5fd2aa",
-  "smt2_digest": "sha256:1b28c195b83af0d02d5df998d95eee55b5f0a40ae132f437213c77a04a5fd2aa",
+  "formal_input_digest": "sha256:9b87cee15346b2c6bd74a8a1d038ca0dedb1260c53f78ee5ca013c9b194bfe0e",
+  "solver_input_digest": "sha256:3f8a8d92b2ded7b25f7027167ad3e527a3f249d26ee5e556af01d45fab4070ca",
+  "smt2_digest": "sha256:3f8a8d92b2ded7b25f7027167ad3e527a3f249d26ee5e556af01d45fab4070ca",
   "precheck_status": "PASSED"
 }

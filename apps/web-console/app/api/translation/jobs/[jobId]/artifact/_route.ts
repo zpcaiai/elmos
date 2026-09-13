@@ -1,6 +1,8 @@
 import { Readable } from "node:stream";
 import { NextRequest, NextResponse } from "next/server";
 import { GenerationRunnerError } from "../../../../../lib/server/generationRunner";
+import { hostedExecutionEnabled } from "../../../../../lib/server/hostedExecutionClient";
+import { hostedTranslationArtifactTicket } from "../../../../../lib/server/hostedTranslationClient";
 import {
   authorizeTranslation,
   translationArtifact,
@@ -16,6 +18,9 @@ export async function GET(
   try {
     const authorized = authorizeTranslation(request);
     const { jobId } = await context.params;
+    if (hostedExecutionEnabled()) return NextResponse.json(await hostedTranslationArtifactTicket(authorized,jobId,"artifact"), {
+      headers:{"Cache-Control":"private, no-store","X-Elmos-Artifact-Ticket":"1"},
+    });
     const artifact = await translationArtifact(authorized, jobId);
     openArtifact = artifact;
     const stream = Readable.toWeb(

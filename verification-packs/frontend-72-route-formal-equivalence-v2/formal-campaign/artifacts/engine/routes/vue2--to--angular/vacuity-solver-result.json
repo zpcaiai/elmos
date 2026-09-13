@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "vue2--to--angular",
-  "formal_input_digest": "sha256:99a2068ae66bbab86c572bcbfadb7883cb860696561480860720d96b9c2fe888",
-  "solver_input_digest": "sha256:cbf95d149b80b45b6c94fee988dc8a9ebfc2311547564bef18d2bd3a5119067c",
-  "smt2_digest": "sha256:cbf95d149b80b45b6c94fee988dc8a9ebfc2311547564bef18d2bd3a5119067c",
+  "formal_input_digest": "sha256:a7da4cbe60a8475934077ed989a38866f8f03dad124f53c9da15cd9f2a50be9d",
+  "solver_input_digest": "sha256:427b86fd3be06621c561b3f5d258d21c67b087765cfc6b3fca39ec76f1f5817b",
+  "smt2_digest": "sha256:427b86fd3be06621c561b3f5d258d21c67b087765cfc6b3fca39ec76f1f5817b",
   "precheck_status": "PASSED"
 }

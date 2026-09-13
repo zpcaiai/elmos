@@ -61,7 +61,7 @@ Micrometer 指标：
 - `ELMOS_WECHATPAY_NOTIFY_URL`（备案 HTTPS 域名）
 
 ELMPay 聚合出口：见 [ELMPAY_INTEGRATION.md](ELMPAY_INTEGRATION.md)。启用时必须同时
-完成 API 凭据、tenant/project 绑定、mTLS、签名 webhook endpoint 与 V84 迁移；不得把
+完成 API 凭据、tenant/project 绑定、mTLS、签名 webhook endpoint 与 V84/V94 迁移；不得把
 `ELMOS_ELMPAY_ALLOW_HTTP_LOCAL_SANDBOX` 带入生产。
 
 至少一个与目录 `paymentProvider` 完全相同的下单网关和回调验签器必须同时存在。
@@ -111,13 +111,13 @@ ELMPay 聚合出口：见 [ELMPAY_INTEGRATION.md](ELMPAY_INTEGRATION.md)。启�
 
 ## 发布与回滚
 
-1. 先备份并在同版本影子库执行 Flyway `validate → migrate → validate` 到 V87。
+1. 先备份并在同版本影子库执行 Flyway `validate → migrate → validate` 到 V96。
 2. 注入只读目录/白名单函数权限的运行角色和支付 Secret，保持 live billing 关闭。
 3. 执行真实小额付款、回调重发、延迟回调、退款和逐笔对账；保存提供方 receipt。
 4. 外部门禁全部签核后发布新的 `PUBLISHED` 目录版本，再开启 live billing，并采用灰度流量。
 5. 异常回滚先关闭 `ELMOS_BILLING_LIVE_ENABLED` 和新生成入口；保留订单、回调、账本和
-   Token 事实供对账。V83–V87 是前向审计迁移，不做删除式 down migration；回滚应用版本前
-   必须确认旧应用不会绕过 V87 的 posting trigger 和最小权限角色。
+   Token 事实供对账。V83–V96 是前向审计迁移，不做删除式 down migration；回滚应用版本前
+   必须确认旧应用不会绕过 V87 的 posting trigger、V94–V96 的托管计费/回收围栏和最小权限角色。
 
 ## 邮件告警
 

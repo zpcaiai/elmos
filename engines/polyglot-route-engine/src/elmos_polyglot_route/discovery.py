@@ -43,6 +43,7 @@ from .react_repository import (
     verify_react_repository_project,
 )
 from .repository import javascript_esm_descriptor
+from .resource_budget import ExecutionBudget, bounded_map
 from .source_analyzer import analyze_many, inventory_module
 
 SCHEMA_VERSION = "1.0.0"
@@ -1394,6 +1395,7 @@ def discover_repository(
     repository_root: Path,
     *,
     limit: int | None = None,
+    execution_budget: ExecutionBudget | None = None,
 ) -> dict[str, Any]:
     """Classify every work unit in a repository route plan."""
     source_language = plan.get("source_language")
@@ -1434,7 +1436,9 @@ def discover_repository(
             react_project_source_paths,
             react_descriptor,
         )
-    file_results = [discover_unit(root, unit, source_language) for unit in selected]
+    file_results = list(bounded_map(
+        lambda unit: discover_unit(root, unit, source_language), selected, execution_budget or ExecutionBudget(),
+    ))
     results: list[dict[str, Any]] = []
     for result in file_results:
         eligible = result.get("eligible_candidates")

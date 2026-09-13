@@ -1869,14 +1869,18 @@ def _capture_engine_sources(repo: Path, route: Path) -> tuple[Path, list[Path]]:
             "kotlin_repository.py",
             "models.py",
             "native.py",
+            "process_io.py",
             "python_analyzer.py",
             "react_analyzer.py",
             "react_repository.py",
             "repository.py",
+            "resource_budget.py",
             "source_analyzer.py",
             "toolchains.py",
             "types.py",
             "validation.py",
+            "vb6_analyzer.py",
+            "vcpp6_analyzer.py",
         )
     ]
     sources.extend(repo / relative for relative in CSHARP_ANALYZER_CAPTURE_INPUTS)

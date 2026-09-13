@@ -1,4 +1,5 @@
-import { spawn } from "node:child_process";
+import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
+import { LocalProcessCapacityError, multimodalProcessCapacity } from "./localProcessCapacity";
 import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -363,6 +364,22 @@ function executePython(
   if (Buffer.byteLength(payload, "utf8") > MAX_ENGINE_INPUT_BYTES) {
     return Promise.reject(new MultimodalIntakeRunnerError(413, "MULTIMODAL_REQUEST_TOO_LARGE"));
   }
+  let capacity: ReturnType<typeof multimodalProcessCapacity.acquire>;
+  try {
+    capacity = multimodalProcessCapacity.acquire(
+      identity.tenantId,
+      Number(process.env.ELMOS_MULTIMODAL_LOCAL_GLOBAL_CAPACITY ?? "2"),
+      Number(process.env.ELMOS_MULTIMODAL_LOCAL_TENANT_CAPACITY ?? "1"),
+    );
+  } catch (error) {
+    const full = error instanceof LocalProcessCapacityError
+      && error.message === "LOCAL_PROCESS_CAPACITY_REACHED";
+    return Promise.reject(new MultimodalIntakeRunnerError(
+      full ? 429 : 503,
+      full ? "MULTIMODAL_LOCAL_CAPACITY_REACHED" : "MULTIMODAL_LOCAL_CAPACITY_CONFIGURATION_INVALID",
+      full,
+    ));
+  }
   return new Promise((resolve, reject) => {
     let settled = false;
     let discardStdout = false;
@@ -371,7 +388,9 @@ function executePython(
       settled = true;
       reject(error);
     };
-    const child = spawn(
+    let child: ChildProcessWithoutNullStreams;
+    try {
+      child = spawn(
       /* turbopackIgnore: true */ executable,
       [
         "-m",
@@ -392,7 +411,13 @@ function executePython(
         shell: false,
         stdio: ["pipe", "pipe", "pipe"],
       },
-    );
+      );
+    } catch {
+      capacity.release();
+      fail(new MultimodalIntakeRunnerError(503, "MULTIMODAL_ENGINE_UNAVAILABLE", true));
+      return;
+    }
+    capacity.track(child);
     const stdout: Buffer[] = [];
     let outputBytes = 0;
     const timer = setTimeout(() => {
@@ -400,6 +425,8 @@ function executePython(
       // it here would create a crash window before its durable receipt can be
       // completed.  Stop waiting for the HTTP response, but keep draining the
       // supervised child so it can persist a terminal outcome.
+      stdout.length = 0;
+      discardStdout = true;
       fail(new MultimodalIntakeRunnerError(
         504,
         "MULTIMODAL_ENGINE_OUTCOME_RECONCILIATION_REQUIRED",

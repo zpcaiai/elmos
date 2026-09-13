@@ -10,6 +10,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts" / "batch35"
+sys.path.insert(0, str(SCRIPTS))
+import run_verification_gate as gate  # noqa: E402
 
 
 def load(path: Path) -> dict[str, object]:
@@ -23,6 +25,10 @@ def write(path: Path, value: object) -> None:
 
 
 class FrontendFormalRouteGateTests(unittest.TestCase):
+    def test_campaign_validator_watchdogs_are_finite(self) -> None:
+        self.assertEqual(1200, gate.FRONTEND_V1_CAMPAIGN_VALIDATION_TIMEOUT_SECONDS)
+        self.assertEqual(3600, gate.FRONTEND_V2_CAMPAIGN_VALIDATION_TIMEOUT_SECONDS)
+
     def test_certified_pack_without_any_formal_campaign_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             repository = Path(directory)

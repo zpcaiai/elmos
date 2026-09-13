@@ -59,6 +59,11 @@ public final class LocalDiskCasStore implements CasStore {
         return name;
     }
 
+    @Override
+    public CasCatalog.DurableObjectEnsurer publicationEnsurer(java.util.Map<CasDigest, CasContent> staged) {
+        return new LocalCasPublication(this, staged);
+    }
+
     public Path root() {
         return root;
     }

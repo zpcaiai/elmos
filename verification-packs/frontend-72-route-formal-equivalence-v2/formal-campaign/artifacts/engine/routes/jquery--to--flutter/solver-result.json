@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "jquery--to--flutter",
-  "formal_input_digest": "sha256:1877eb63391f9b38ccb774fee92b4b3a5787fd628fc76712991792467ac365ae",
-  "solver_input_digest": "sha256:b9c4655359ad4aa454a38acee5b63a3dc699612c07857a612a3d4f6d2f4efb19",
-  "smt2_digest": "sha256:b9c4655359ad4aa454a38acee5b63a3dc699612c07857a612a3d4f6d2f4efb19"
+  "formal_input_digest": "sha256:ade6e11476f0c42f1b8beaf5ab3cd6323b956c7b635edb2698b2fa4d0c275da4",
+  "solver_input_digest": "sha256:4a498fb843a4887ac83a0c40eb91c3f5e8c3be4944fd015bcf76d048898e6dc9",
+  "smt2_digest": "sha256:4a498fb843a4887ac83a0c40eb91c3f5e8c3be4944fd015bcf76d048898e6dc9"
 }

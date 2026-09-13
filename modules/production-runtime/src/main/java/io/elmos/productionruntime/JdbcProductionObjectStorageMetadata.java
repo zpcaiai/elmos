@@ -33,7 +33,8 @@ public final class JdbcProductionObjectStorageMetadata
             long byteSize,
             String mediaType,
             String backendId,
-            String storageKey
+            String storageKey,
+            String uploadProtocol
     ) {
         UUID tenantId = tenant(organizationId);
         if (contentSha256 == null || !contentSha256.matches("[0-9a-f]{64}")) {
@@ -43,14 +44,21 @@ public final class JdbcProductionObjectStorageMetadata
         ProductionRuntimeModels.requireText(mediaType, "mediaType", 200);
         ProductionRuntimeModels.requireText(backendId, "backendId", 160);
         ProductionRuntimeModels.requireText(storageKey, "storageKey", 2_000);
+        if (!S3ObjectStore.LEGACY_UNFENCED.equals(uploadProtocol)
+                && !S3ObjectStore.WRITE_ONCE_RECLAIM_FENCE_V1.equals(
+                        uploadProtocol)) {
+            throw new IllegalArgumentException(
+                    "uploadProtocol is not supported");
+        }
         return inTenant(tenantId, () -> {
             jdbc.sql("""
                     insert into artifact.content_objects (
                         tenant_id, content_sha256, byte_size, media_type,
-                        backend_id, storage_key, object_state
+                        backend_id, storage_key, upload_protocol, object_state
                     ) values (
                         :tenantId, :sha256, :byteSize, :mediaType,
-                        :backendId, :storageKey, 'PENDING_UPLOAD'
+                        :backendId, :storageKey, :uploadProtocol,
+                        'PENDING_UPLOAD'
                     )
                     on conflict (tenant_id, content_sha256) do nothing
                     """)
@@ -60,9 +68,11 @@ public final class JdbcProductionObjectStorageMetadata
                     .param("mediaType", mediaType)
                     .param("backendId", backendId)
                     .param("storageKey", storageKey)
+                    .param("uploadProtocol", uploadProtocol)
                     .update();
             Stored stored = jdbc.sql("""
-                    select id, byte_size, media_type, backend_id, storage_key, object_state
+                    select id, byte_size, media_type, backend_id, storage_key,
+                           upload_protocol, object_state
                       from artifact.content_objects
                      where tenant_id = :tenantId and content_sha256 = :sha256
                      for update
@@ -75,12 +85,14 @@ public final class JdbcProductionObjectStorageMetadata
                             rs.getString("media_type"),
                             rs.getString("backend_id"),
                             rs.getString("storage_key"),
+                            rs.getString("upload_protocol"),
                             rs.getString("object_state")))
                     .single();
             if (stored.byteSize != byteSize
                     || !stored.mediaType.equals(mediaType)
                     || !stored.backendId.equals(backendId)
-                    || !stored.storageKey.equals(storageKey)) {
+                    || !stored.storageKey.equals(storageKey)
+                    || !stored.uploadProtocol.equals(uploadProtocol)) {
                 throw new ProductionRuntimeException(
                         "CONTENT_OBJECT_IDEMPOTENCY_CONFLICT",
                         "content digest was replayed with different object metadata");
@@ -192,6 +204,7 @@ public final class JdbcProductionObjectStorageMetadata
             String mediaType,
             String backendId,
             String storageKey,
+            String uploadProtocol,
             String state
     ) {}
 }

@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "vue2--to--react",
-  "formal_input_digest": "sha256:ea8696ef38dc37c325c531d02aa1763be726e86c952ff19b23701cbb0a4a190a",
-  "solver_input_digest": "sha256:051da797c599f08f1cdfebca3d53e80add8d8b35d2e1f6fc63e4184032ec0b6b",
-  "smt2_digest": "sha256:051da797c599f08f1cdfebca3d53e80add8d8b35d2e1f6fc63e4184032ec0b6b",
+  "formal_input_digest": "sha256:85ccd3a91720b1d1b0286abf776e1acad33c0336c78a41bbf69e40e0f483f5f0",
+  "solver_input_digest": "sha256:099176e66c2ed43c9e4509d6b5562ae4cd99ee6660d74d638be590d032cffc81",
+  "smt2_digest": "sha256:099176e66c2ed43c9e4509d6b5562ae4cd99ee6660d74d638be590d032cffc81",
   "precheck_status": "PASSED"
 }

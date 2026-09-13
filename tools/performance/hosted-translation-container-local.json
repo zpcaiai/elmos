@@ -1,0 +1,73 @@
+{
+  "certification": "NOT_CERTIFIED",
+  "container_policy": {
+    "capabilities": "ALL_DROPPED",
+    "cpus_per_job": 2,
+    "memory_bytes": 2147483648,
+    "network": "none",
+    "no_new_privileges": true,
+    "pids_limit": 256,
+    "read_only_root": true,
+    "rootless_uid": 10001
+  },
+  "docker_context": "orbstack",
+  "docker_runtime": "29.4.0 linux/arm64",
+  "evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "host": "macOS-26.6.2-arm64-arm-64bit",
+  "image_id": "sha256:9ed8129642d04ecbeaa4781d1b2cb95abb3c633528e6695397d2aa2453ab39df",
+  "image_repo_digests": [],
+  "independent_verification": "NOT_RUN",
+  "jobs": 4,
+  "latency_seconds": {
+    "maximum": 23.81875491700339,
+    "median": 23.47406147899892,
+    "p95_nearest_rank": 23.566058167001756
+  },
+  "observed_maximum_active": 2,
+  "production_slo": "NOT_RUN",
+  "provider_evidence": "NOT_RUN",
+  "representative_production_environment": "NOT_RUN",
+  "requested_concurrency": 2,
+  "samples": [
+    {
+      "artifact_bytes": 37235,
+      "artifact_sha256": "db021e323245f522e1dcb315fc180eccf5b8249c0b63bd6ef0028597063c0e57",
+      "job": 0,
+      "seconds": 23.81875491700339,
+      "status": "COMPLETE"
+    },
+    {
+      "artifact_bytes": 37263,
+      "artifact_sha256": "eb59ce23188a36ce5df0ccc6bbdf6d81d85068d343b4d30d84566567848fd681",
+      "job": 1,
+      "seconds": 23.32722495800408,
+      "status": "COMPLETE"
+    },
+    {
+      "artifact_bytes": 37247,
+      "artifact_sha256": "d22c70fbfb92ddd67a20d0c565eee83774eb76ff9457120e25ff8357c49f9e54",
+      "job": 2,
+      "seconds": 23.566058167001756,
+      "status": "COMPLETE"
+    },
+    {
+      "artifact_bytes": 37265,
+      "artifact_sha256": "2197570d428bc77876a57bc2e5aab50786050b6e5c647f907fb84112fc41013a",
+      "job": 3,
+      "seconds": 23.382064790996083,
+      "status": "COMPLETE"
+    }
+  ],
+  "schema_version": "hosted-translation-container-profile-v1",
+  "source_sha256": {
+    "apps/translation-runtime-runner/Dockerfile": "fabe7c9cad52eac8a824ce64ec094cf80719e1f47bc52beded446152672f7444",
+    "apps/translation-runtime-runner/Dockerfile.qualification-base": "b15f99c2f9d09efce2f7cbf1bbd407ea56a8d25b22c2b69ef69e2ba7bcb85e89",
+    "apps/translation-runtime-runner/entrypoint.mjs": "95b4170d7a080a7c68611e503c2e2bb97514c2af71ad158aa64212d70bf7493f",
+    "apps/web-console/pnpm-lock.yaml": "b2e085f330f40a3fea89fa643a61b3e0432dde883e8ef4e7c031e3ed085ed451",
+    "contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json": "4a5abbe57d42d058cbe10b3ef03d3e74708a4ffbc165e1454c3046dd7a12b2bb",
+    "engines/polyglot-route-engine/uv.lock": "9c061fb975a379ba550b66dc3dba089cf8f7d2fec8acc064f1590e3869cbda8d",
+    "tools/performance/hosted_translation_container_profile.py": "dff10f5ffb706b21707765577371c5f777f7e75ca593f071b30ee6e0f8c814e7"
+  },
+  "throughput_jobs_per_second": 0.08474246846869019,
+  "wall_seconds": 47.20183483300207
+}

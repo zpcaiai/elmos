@@ -3,11 +3,15 @@
 ## 权威版本
 
 - 数据库：PostgreSQL 17.5
-- Flyway：V1–V87；基础计费为 `V49__self_service_billing_and_usage.sql`，
+- Flyway：V1–V96；基础计费为 `V49__self_service_billing_and_usage.sql`，
   Credit/一次性订单与用户维度扩展为 `V83__commercial_credit_and_one_time_orders.sql`，
   支付生命周期加固为 V84–V85，订阅目录快照升级为 V86，Credit 双分录、事务性
-  outbox、投影对账和受控重建为 `V87__commercial_credit_double_entry_and_outbox.sql`
-- 目录版本：`2026-09-08.1`
+  outbox、投影对账和受控重建为 `V87__commercial_credit_double_entry_and_outbox.sql`；
+  V94–V95 前向绑定托管计费/对象回收并修复目录触发器的 digest schema 与 provider
+  不变量，原候选 V87 CAS publication pin 因已发布的 Credit V87 而前向重编号为
+  `V96__cas_publication_pins.sql`
+- 目录版本：`2026-09-08.1`；V86 保存权威三档订阅快照并重绑定试用/账期函数，
+  V49、已发布的 V87 与旧目录版本保持不可变
 - 数量：`numeric(30,0)`，只接受非负整数
 - 金额：人民币分，`numeric(19,0)`；提供方成本使用 `numeric(30,6)` 并带显式币种
 
@@ -96,10 +100,10 @@ WITH CHECK (organization_id = current_setting('app.organization_id', true))
 
 ## 已验证与未验证
 
-- 空数据库 V1–V87 重放、RLS、并发硬停止、幂等、试用防滥用、阈值告警、
-  Credit/一次性权益、双分录守恒、outbox 重试和投影重建：
+- 空数据库 V1–V96 重放、RLS、并发硬停止、幂等、试用防滥用、阈值告警、
+  Credit/一次性权益、双分录守恒、outbox 重试、投影重建、托管计费与对象回收：
   由本地 PostgreSQL 17 集成测试验证。
 - `commercial-production` GitHub Environment 已通过 run `34713508064` 在批准的 Neon
   PostgreSQL 17.11 把 schema 从 V86 升到 V87，并执行迁移前后 Flyway 验证和运行角色授权；
-  日志中的精确连接目标已脱敏，应用部署与生产业务读回仍为 `NOT_RUN`。
+  日志中的精确连接目标已脱敏；V88–V96、应用部署与生产业务读回仍为 `NOT_RUN`。
 - 生产回填：本版本没有旧的权威自助计费事实可安全推断，因此不生成虚构回填。

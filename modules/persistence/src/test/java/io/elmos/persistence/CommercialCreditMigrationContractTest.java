@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CommercialCreditMigrationContractTest {
     private static final Path MIGRATION = Path.of(
             "src/main/resources/db/migration/V83__commercial_credit_and_one_time_orders.sql");
-
     @Test void catalogContainsExactServerOwnedProducts() throws Exception {
         String sql = Files.readString(MIGRATION);
         assertTrue(sql.contains("'elmos-credit-500', 'CREDIT_PACK', '2026-09-08.1'"));

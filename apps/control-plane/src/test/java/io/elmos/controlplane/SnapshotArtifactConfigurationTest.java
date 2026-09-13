@@ -46,6 +46,26 @@ class SnapshotArtifactConfigurationTest {
     }
 
     @Test
+    void encryptionUsesHostArtifactBudgetAndRejectsInvalidLegacyBudget() {
+        var encryption = mock(io.elmos.cas.TenantEncryption.class);
+        org.mockito.Mockito.when(encryption.encryptsAtRest()).thenReturn(true);
+        org.mockito.Mockito.when(encryption.hasKey("fixture")).thenReturn(true);
+        var configuration = new SnapshotArtifactConfiguration();
+        var store = configuration.encryptedSnapshotTenantCasStore(encryption,
+                temporary.resolve("bounded-encrypted").toString(),"bounded", "", "KMS", 8, 0);
+        byte[] tooLarge = new byte[9];
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
+                () -> store.forTenant("fixture").put(io.elmos.cas.CasDigest.of(tooLarge),tooLarge));
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
+                () -> configuration.encryptedSnapshotTenantCasStore(encryption,
+                        temporary.resolve("invalid-encrypted").toString(),"invalid", "", "KMS", 8, -1));
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(
+                () -> configuration.encryptedSnapshotTenantCasStore(encryption,
+                        temporary.resolve("large-encrypted").toString(),"large", "", "KMS",
+                        2L*1024*1024*1024,64L*1024*1024));
+    }
+
+    @Test
     void legacyStoreRemainsTheDefaultAndReportsItsActualBoundary() {
         contextRunner()
                 .withPropertyValues(

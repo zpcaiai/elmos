@@ -23,12 +23,10 @@ Both fail closed exactly like the rest of this engine: unsupported constructs,
 missing/mismatched toolchains, or more than one function in scope raise
 `RouteError` rather than returning a degraded success.
 """
-
 from __future__ import annotations
 
 import json
 import os
-import signal
 import subprocess
 import tempfile
 from pathlib import Path
@@ -37,6 +35,7 @@ from typing import Any
 from .emitter import emit
 from .identifier_hygiene import plan_identifiers, target_ir_view
 from .models import SUPPORTED_LANGUAGES, Language, RouteError
+from .process_io import bounded_communicate, terminate_bounded_process
 from .source_analyzer import analyze
 from .toolchains import (
     ExactToolchain,
@@ -92,7 +91,9 @@ _TARGET_FILE: dict[Language, str] = {
     "vcpp6": "migrated.cpp",
 }
 
-_AUXILIARY_COMPILER_LANGUAGES: frozenset[Language] = frozenset({"java", "typescript", "react", "flutter"})
+_AUXILIARY_COMPILER_LANGUAGES: frozenset[Language] = frozenset(
+    {"java", "typescript", "react", "flutter"}
+)
 
 
 def emit_only(
@@ -109,7 +110,10 @@ def emit_only(
     bridge) that run static validation as a separate step against their own
     already-generated skeleton.
     """
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+    if (
+        source_language not in SUPPORTED_LANGUAGES
+        or target_language not in SUPPORTED_LANGUAGES
+    ):
         raise RouteError("UNSUPPORTED_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
@@ -245,33 +249,13 @@ def _run(
                 env=environment,
             )
             try:
-                stdout, stderr = process.communicate(timeout=timeout)
-            except subprocess.TimeoutExpired as error:
-                if os.name == "posix":
-                    try:
-                        os.killpg(process.pid, signal.SIGTERM)
-                    except ProcessLookupError:
-                        pass
-                else:
-                    process.terminate()
-                try:
-                    process.communicate(timeout=2)
-                except subprocess.TimeoutExpired:
-                    if os.name == "posix":
-                        try:
-                            os.killpg(process.pid, signal.SIGKILL)
-                        except ProcessLookupError:
-                            pass
-                    else:
-                        process.kill()
-                    process.communicate()
-                raise RouteError(f"STATIC_CHECK_PROCESS_FAILED:{Path(command[0]).name}:timeout") from error
+                stdout, stderr = bounded_communicate(process, timeout=timeout)
+            except (OSError, subprocess.TimeoutExpired) as error:
+                raise RouteError(
+                    f"STATIC_CHECK_PROCESS_FAILED:{Path(command[0]).name}:timeout"
+                ) from error
             finally:
-                if os.name == "posix" and process is not None:
-                    try:
-                        os.killpg(process.pid, signal.SIGKILL)
-                    except ProcessLookupError:
-                        pass
+                terminate_bounded_process(process)
             return subprocess.CompletedProcess(
                 command,
                 process.returncode,
@@ -279,7 +263,9 @@ def _run(
                 stderr,
             )
     except OSError as error:
-        raise RouteError(f"STATIC_CHECK_PROCESS_FAILED:{Path(command[0]).name}:process") from error
+        raise RouteError(
+            f"STATIC_CHECK_PROCESS_FAILED:{Path(command[0]).name}:process"
+        ) from error
 
 
 def _write_typescript_static_project(output: Path, *, react: bool) -> None:
@@ -317,7 +303,11 @@ def _write_flutter_static_project(output: Path) -> None:
         encoding="utf-8",
     )
     (output / "analysis_options.yaml").write_text(
-        "analyzer:\n  language:\n    strict-casts: true\n    strict-inference: true\n    strict-raw-types: true\n",
+        "analyzer:\n"
+        "  language:\n"
+        "    strict-casts: true\n"
+        "    strict-inference: true\n"
+        "    strict-raw-types: true\n",
         encoding="utf-8",
     )
     package_directory = output / ".dart_tool"
@@ -347,7 +337,10 @@ def _write_vb6_static_project(output: Path) -> None:
     """Create the smallest executable project that forces VB6 to compile a module."""
 
     (output / "elmos_main.bas").write_text(
-        'Attribute VB_Name = "ElmosMain"\nOption Explicit\n\nPublic Sub Main()\nEnd Sub\n',
+        'Attribute VB_Name = "ElmosMain"\n'
+        "Option Explicit\n\n"
+        "Public Sub Main()\n"
+        "End Sub\n",
         encoding="ascii",
         newline="\r\n",
     )
@@ -402,7 +395,7 @@ def _static_check_command(
             "<ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>"
             "<TreatWarningsAsErrors>true</TreatWarningsAsErrors>"
             "<EnableDefaultCompileItems>false</EnableDefaultCompileItems>"
-            '</PropertyGroup><ItemGroup><Compile Include="Migrated.cs" />'
+            "</PropertyGroup><ItemGroup><Compile Include=\"Migrated.cs\" />"
             "</ItemGroup></Project>\n",
             encoding="utf-8",
         )
@@ -555,7 +548,11 @@ def check_only(target_language: Language, content: str, output: Path) -> dict[st
     output.mkdir(parents=True, exist_ok=True)
     diagnostics: list[str] = []
     command = _static_check_command(target_language, content, output, toolchain)
-    flutter_receipt = verify_flutter_build_toolchain(toolchain) if target_language == "flutter" else None
+    flutter_receipt = (
+        verify_flutter_build_toolchain(toolchain)
+        if target_language == "flutter"
+        else None
+    )
     completed = _run(command, output, toolchain=toolchain)
 
     passed = completed.returncode == 0
@@ -582,7 +579,8 @@ def check_only(target_language: Language, content: str, output: Path) -> dict[st
         if analyzer_diagnostics:
             passed = False
             diagnostics.extend(
-                json.dumps(item, ensure_ascii=True, sort_keys=True)[-1_000:] for item in analyzer_diagnostics[:20]
+                json.dumps(item, ensure_ascii=True, sort_keys=True)[-1_000:]
+                for item in analyzer_diagnostics[:20]
             )
     if not passed:
         diagnostics.extend(

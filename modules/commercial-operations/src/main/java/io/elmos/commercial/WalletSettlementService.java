@@ -19,11 +19,10 @@ import java.util.Objects;
  * <h2>The direction this fails in</h2>
  *
  * <p>Every branch below either charges for measured work or releases. Nothing
- * charges the full hold "to be safe". If this service stops running entirely,
- * holds expire by TTL and the money goes back to the tenant -- we under-collect.
- * That is the deliberate choice: over-collecting from a customer because our
- * settler was down is a refund conversation and a trust problem; under-
- * collecting is a number on a dashboard.
+ * charges the full hold "to be safe". If this service stops running, a
+ * job-backed hold remains unresolved and visible until the durable outbox is
+ * reconciled. Only an orphan reservation that never acquired an execution job
+ * may expire by TTL. This prevents either a guessed charge or silent free work.
  */
 public final class WalletSettlementService {
 
@@ -52,7 +51,8 @@ public final class WalletSettlementService {
             } catch (RuntimeException failure) {
                 // The lease is released and the row stays unresolved, so the next
                 // pass retries it. It is never resolved-with-a-guess: a hold that
-                // nobody could price must stay visible, and the TTL is the backstop.
+                // nobody could price must stay visible. Job-backed holds do not
+                // escape this reconciliation path through the orphan-hold TTL.
                 settlements.fail(claim.outboxId(), errorCode(failure));
                 failed++;
             }

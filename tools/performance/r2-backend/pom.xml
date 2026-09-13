@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent><groupId>io.elmos</groupId><artifactId>elmos-parent</artifactId><version>0.1.0-SNAPSHOT</version><relativePath>../../../pom.xml</relativePath></parent>
+  <artifactId>elmos-concurrency-backend-verification</artifactId>
+  <packaging>pom</packaging>
+  <!-- Exact CP/Runner dependency closure. Reactor APIs, no shared mvn install. -->
+  <modules>
+    <module>../../../modules/domain</module>
+    <module>../../../modules/evidence</module>
+    <module>../../../contracts/engine-api</module>
+    <module>../../../modules/application</module>
+    <module>../../../modules/workflow</module>
+    <module>../../../modules/identity</module>
+    <module>../../../modules/object-storage</module>
+    <module>../../../modules/cas</module>
+    <module>../../../modules/scm</module>
+    <module>../../../modules/enterprise-governance</module>
+    <module>../../../modules/commercial-operations</module>
+    <module>../../../modules/snapshot</module>
+    <module>../../../modules/secret</module>
+    <module>../../../modules/network-policy</module>
+    <module>../../../modules/workspace</module>
+    <module>../../../modules/health-check</module>
+    <module>../../../modules/planning</module>
+    <module>../../../modules/persistence</module>
+    <module>../../../modules/security</module>
+    <module>../../../modules/integrations</module>
+    <module>../../../modules/validation</module>
+    <module>../../../modules/delivery</module>
+    <module>../../../modules/product-roadmap-governance</module>
+    <module>../../../modules/migration-pack-certification</module>
+    <module>../../../modules/composite-modernization</module>
+    <module>../../../modules/source-control-workspace-governance</module>
+    <module>../../../modules/secure-execution-plane</module>
+    <module>../../../modules/evidence-assurance-fabric</module>
+    <module>../../../modules/continuous-authorization</module>
+    <module>../../../modules/modernization-proof-loop</module>
+    <module>../../../apps/control-plane</module>
+    <module>../../../apps/runner-agent</module>
+    <module>../../../apps/workspace-service</module>
+  </modules>
+</project>

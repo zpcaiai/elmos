@@ -322,6 +322,7 @@ jobs:
             pack="${manifest%/pack.json}"
             python3.11 scripts/batch32/run_client_gate.py "$pack"
           done
+          python3.11 scripts/batch32/validate_portable_client_packs.py
           make batch35-check
 
   polyglot-route-pack-contracts:
@@ -374,7 +375,8 @@ jobs:
           # analyzer execution later verifies and restores from this cache offline.
           dotnet restore \
             engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
-            --locked-mode
+            --locked-mode \
+            --disable-parallel
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
@@ -504,7 +506,8 @@ jobs:
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           dotnet restore \
             engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
-            --locked-mode
+            --locked-mode \
+            --disable-parallel
           # The native Rust analyzer executes with --offline --locked so a
           # repository workload cannot cause an undeclared network fetch.
           # Hydrate only the checked-in Cargo.lock graph before that
@@ -638,7 +641,8 @@ jobs:
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           dotnet restore \
             engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
-            --locked-mode
+            --locked-mode \
+            --disable-parallel
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml

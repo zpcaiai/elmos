@@ -39,7 +39,6 @@ import math
 import os
 import re
 import shutil
-import signal
 import stat
 import struct
 import subprocess
@@ -68,6 +67,7 @@ from .models import (
     SemanticIR,
     repository_language_lifecycle,
 )
+from .process_io import bounded_communicate, terminate_bounded_process
 from .react_analyzer import validate_react_runtime_receipt, verify_react_runtime_import
 from .toolchains import (
     exact_toolchain,
@@ -131,18 +131,14 @@ def _exact_toolchain_identity(toolchain: Any) -> dict[str, Any]:
 
 
 def _exact_toolchain_identity_sha256(identity: Mapping[str, Any]) -> str:
-    return (
-        "sha256:"
-        + hashlib.sha256(
-            json.dumps(
-                identity,
-                ensure_ascii=True,
-                separators=(",", ":"),
-                sort_keys=True,
-            ).encode("ascii")
-        ).hexdigest()
-    )
-
+    return "sha256:" + hashlib.sha256(
+        json.dumps(
+            identity,
+            ensure_ascii=True,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("ascii")
+    ).hexdigest()
 
 _EXPECTED_CMAKE_HOMEBREW_PREFIX = Path(
     os.environ.get("ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX", "/opt/homebrew")
@@ -389,7 +385,12 @@ def _read_confined_stable_bytes(
     # O_BINARY is a no-op on POSIX and prevents CRT newline translation on
     # Windows. Without it, byte-count validation falsely reports stable CRLF
     # evidence as changed while reading it through ``os.read``.
-    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
     try:
         descriptor = os.open(path, flags)
     except OSError as error:
@@ -725,12 +726,16 @@ def _validate_behavior_and_descriptor_closure(
             or canonical_value != _canonical_json_bytes(result.get("independent_expected"))
             or canonical_value != _canonical_json_bytes(source_observations[case_id].get("value"))
             or canonical_value != _canonical_json_bytes(target_observations[case_id].get("value"))
-            or _canonical_json_bytes(result.get("source_native")) != _canonical_json_bytes(source_observations[case_id])
-            or _canonical_json_bytes(result.get("target_native")) != _canonical_json_bytes(target_observations[case_id])
+            or _canonical_json_bytes(result.get("source_native"))
+            != _canonical_json_bytes(source_observations[case_id])
+            or _canonical_json_bytes(result.get("target_native"))
+            != _canonical_json_bytes(target_observations[case_id])
         ):
             raise RouteError(error_code)
 
-    descriptor_expected = source_language == "javascript" and PurePosixPath(source_path).suffix.lower() == ".js"
+    descriptor_expected = (
+        source_language == "javascript" and PurePosixPath(source_path).suffix.lower() == ".js"
+    )
     descriptor_keys = {
         "logical_path",
         "snapshot_path",
@@ -767,10 +772,18 @@ def _validate_behavior_and_descriptor_closure(
     if not isinstance(logical_path, str):
         raise RouteError(descriptor_error)
     _logical_descriptor_path(source_path, logical_path, descriptor_error)
-    stable_descriptor = {key: descriptor[key] for key in ("logical_path", "sha256", "bytes", "type")}
-    observed_origin_path = top_observation.get("observed_origin_path") if isinstance(top_observation, Mapping) else None
+    stable_descriptor = {
+        key: descriptor[key] for key in ("logical_path", "sha256", "bytes", "type")
+    }
+    observed_origin_path = (
+        top_observation.get("observed_origin_path")
+        if isinstance(top_observation, Mapping)
+        else None
+    )
     validation_origin_path = (
-        validation_observation.get("observed_origin_path") if isinstance(validation_observation, Mapping) else None
+        validation_observation.get("observed_origin_path")
+        if isinstance(validation_observation, Mapping)
+        else None
     )
     if (
         descriptor.get("snapshot_path") != "source/package.json"
@@ -922,11 +935,21 @@ def _read_verified_unit_evidence(
     kotlin_toolchain_closed = True
     if source_language == "kotlin":
         try:
-            expected_kotlin_toolchain = _exact_toolchain_identity(exact_toolchain("kotlin"))
+            expected_kotlin_toolchain = _exact_toolchain_identity(
+                exact_toolchain("kotlin")
+            )
         except RouteError as error:
-            raise RouteError(f"ASSEMBLY_UNIT_KOTLIN_TOOLCHAIN_UNAVAILABLE:{unit_id}") from error
-        source_toolchain = source_validation.get("toolchain") if isinstance(source_validation, Mapping) else None
-        kotlin_toolchain_closed = source_toolchain == expected_kotlin_toolchain
+            raise RouteError(
+                f"ASSEMBLY_UNIT_KOTLIN_TOOLCHAIN_UNAVAILABLE:{unit_id}"
+            ) from error
+        source_toolchain = (
+            source_validation.get("toolchain")
+            if isinstance(source_validation, Mapping)
+            else None
+        )
+        kotlin_toolchain_closed = (
+            source_toolchain == expected_kotlin_toolchain
+        )
     if (
         evidence.get("status") not in {"PASSED", "PASSED_LOCAL_UNCERTIFIED"}
         or evidence.get("repository_execution_mode") is not True
@@ -974,7 +997,9 @@ def _read_verified_unit_evidence(
         missing_code=f"ASSEMBLY_UNIT_BEHAVIOR_EVIDENCE_MISSING:{unit_id}",
         changed_code=f"ASSEMBLY_UNIT_BEHAVIOR_EVIDENCE_CHANGED_DURING_READ:{unit_id}",
     )
-    descriptor_expected = source_language == "javascript" and PurePosixPath(source_path).suffix.lower() == ".js"
+    descriptor_expected = (
+        source_language == "javascript" and PurePosixPath(source_path).suffix.lower() == ".js"
+    )
     descriptor_candidate = unit_directory / _JAVASCRIPT_ESM_DESCRIPTOR_NAME
     descriptor_bytes: bytes | None = None
     if descriptor_expected:
@@ -1067,7 +1092,10 @@ def _validate_batch_report_closure(
     lifecycle = repository_language_lifecycle(source_language, target_language)
     if lifecycle is None or batch_report.get("language_lifecycle") != lifecycle:
         raise RouteError("ASSEMBLY_BATCH_LANGUAGE_LIFECYCLE_INVALID")
-    if lifecycle == REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY and not allow_deprecated_replay:
+    if (
+        lifecycle == REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
+        and not allow_deprecated_replay
+    ):
         raise RouteError("ASSEMBLY_DEPRECATED_REPLAY_EXPLICIT_AUTHORITY_REQUIRED")
     if lifecycle not in {
         REPOSITORY_LANGUAGE_LIFECYCLE_ACTIVE,
@@ -1241,7 +1269,9 @@ def _place_php(destination: Path, namespace: str, content: str) -> str:
     if declaration not in content:
         raise RouteError("ASSEMBLY_PHP_STRICT_TYPES_DECLARATION_MISSING")
     prefix, _, suffix = content.partition(declaration)
-    namespaced = f"{prefix}{declaration}\nnamespace Elmos\\Generated\\{namespace.capitalize()};\n{suffix}"
+    namespaced = (
+        f"{prefix}{declaration}\nnamespace Elmos\\Generated\\{namespace.capitalize()};\n{suffix}"
+    )
     target.write_text(namespaced, encoding="utf-8")
     return relative
 
@@ -1562,15 +1592,19 @@ def _validate_build_verification(
         raise RouteError("ASSEMBLY_BUILD_TOOLCHAIN_VERSION_DRIFT")
     if target_language == "kotlin":
         expected_identity = _exact_toolchain_identity(current_toolchain)
-        if verification.get("kotlin_exact_toolchain") != expected_identity or verification.get(
-            "kotlin_exact_toolchain_sha256"
-        ) != _exact_toolchain_identity_sha256(expected_identity):
+        if (
+            verification.get("kotlin_exact_toolchain") != expected_identity
+            or verification.get("kotlin_exact_toolchain_sha256")
+            != _exact_toolchain_identity_sha256(expected_identity)
+        ):
             raise RouteError("ASSEMBLY_KOTLIN_BUILD_TOOLCHAIN_IDENTITY_DRIFT")
     if target_language == "vb6":
         expected_identity = _exact_toolchain_identity(current_toolchain)
-        if verification.get("vb6_exact_toolchain") != expected_identity or verification.get(
-            "vb6_exact_toolchain_sha256"
-        ) != _exact_toolchain_identity_sha256(expected_identity):
+        if (
+            verification.get("vb6_exact_toolchain") != expected_identity
+            or verification.get("vb6_exact_toolchain_sha256")
+            != _exact_toolchain_identity_sha256(expected_identity)
+        ):
             raise RouteError("ASSEMBLY_VB6_BUILD_TOOLCHAIN_IDENTITY_DRIFT")
         artifact = verification.get("vb6_compiled_artifact")
         if (
@@ -1579,7 +1613,10 @@ def _validate_build_verification(
             or type(artifact.get("bytes")) is not int
             or int(artifact["bytes"]) <= 0
             or not isinstance(artifact.get("sha256"), str)
-            or _RAW_SHA256_PATTERN.fullmatch(str(artifact["sha256"]).removeprefix("sha256:")) is None
+            or _RAW_SHA256_PATTERN.fullmatch(
+                str(artifact["sha256"]).removeprefix("sha256:")
+            )
+            is None
         ):
             raise RouteError("ASSEMBLY_VB6_COMPILED_ARTIFACT_INVALID")
         if destination is not None:
@@ -1595,9 +1632,11 @@ def _validate_build_verification(
                 raise RouteError("ASSEMBLY_VB6_COMPILED_ARTIFACT_CHANGED")
     if target_language == "vcpp6":
         expected_identity = _exact_toolchain_identity(current_toolchain)
-        if verification.get("vcpp6_exact_toolchain") != expected_identity or verification.get(
-            "vcpp6_exact_toolchain_sha256"
-        ) != _exact_toolchain_identity_sha256(expected_identity):
+        if (
+            verification.get("vcpp6_exact_toolchain") != expected_identity
+            or verification.get("vcpp6_exact_toolchain_sha256")
+            != _exact_toolchain_identity_sha256(expected_identity)
+        ):
             raise RouteError("ASSEMBLY_VCPP6_BUILD_TOOLCHAIN_IDENTITY_DRIFT")
         artifact = verification.get("vcpp6_compiled_artifact")
         if (
@@ -1606,7 +1645,10 @@ def _validate_build_verification(
             or type(artifact.get("bytes")) is not int
             or int(artifact["bytes"]) <= 0
             or not isinstance(artifact.get("sha256"), str)
-            or _RAW_SHA256_PATTERN.fullmatch(str(artifact["sha256"]).removeprefix("sha256:")) is None
+            or _RAW_SHA256_PATTERN.fullmatch(
+                str(artifact["sha256"]).removeprefix("sha256:")
+            )
+            is None
         ):
             raise RouteError("ASSEMBLY_VCPP6_COMPILED_ARTIFACT_INVALID")
         if destination is not None:
@@ -1678,9 +1720,13 @@ def _validate_build_verification(
         if [record["command"] for record in commands] != expected_commands:
             raise RouteError("ASSEMBLY_FLUTTER_BUILD_COMMAND_INVALID")
         try:
-            observed_build_receipt = verify_flutter_build_toolchain(exact_toolchain("flutter"))
+            observed_build_receipt = verify_flutter_build_toolchain(
+                exact_toolchain("flutter")
+            )
         except RouteError as error:
-            raise RouteError("ASSEMBLY_FLUTTER_BUILD_TOOLCHAIN_RECEIPT_INVALID") from error
+            raise RouteError(
+                "ASSEMBLY_FLUTTER_BUILD_TOOLCHAIN_RECEIPT_INVALID"
+            ) from error
         if build_receipt != observed_build_receipt:
             raise RouteError("ASSEMBLY_FLUTTER_BUILD_TOOLCHAIN_RECEIPT_INVALID")
         artifact = verification.get("flutter_compiled_artifact")
@@ -1699,10 +1745,9 @@ def _validate_build_verification(
                 str(artifact["path"]),
                 "ASSEMBLY_FLUTTER_COMPILED_ARTIFACT_INVALID",
             )
-            if _stable_file_binding(compiled, "ASSEMBLY_FLUTTER_COMPILED_ARTIFACT_CHANGED") != (
-                artifact["bytes"],
-                artifact["sha256"],
-            ):
+            if _stable_file_binding(
+                compiled, "ASSEMBLY_FLUTTER_COMPILED_ARTIFACT_CHANGED"
+            ) != (artifact["bytes"], artifact["sha256"]):
                 raise RouteError("ASSEMBLY_FLUTTER_COMPILED_ARTIFACT_CHANGED")
     if target_language in {"cpp", "objc"}:
         if (
@@ -2003,7 +2048,11 @@ def _manifest_owned_bindings(
             raise RouteError("ASSEMBLY_MANIFEST_EVIDENCE_ARTIFACT_INVALID")
         assert isinstance(role, str)
         assert isinstance(unit_id, str)
-        filename = str(included_records[unit_id]["target_path"]) if role == "emitted-target" else filenames[role]
+        filename = (
+            str(included_records[unit_id]["target_path"])
+            if role == "emitted-target"
+            else filenames[role]
+        )
         if (
             role not in expected_role_sets[unit_id]
             or role in observed_roles[unit_id]
@@ -2131,7 +2180,9 @@ def _validate_assembly_manifest(
     assert source_language in _PLACERS
     repository_snapshot_sha256 = manifest.get("snapshot_sha256")
     assert isinstance(repository_snapshot_sha256, str)
-    included_by_id = {str(raw["id"]): raw for raw in manifest["included_units"] if isinstance(raw, Mapping)}
+    included_by_id = {
+        str(raw["id"]): raw for raw in manifest["included_units"] if isinstance(raw, Mapping)
+    }
     for unit_id, contents in evidence_contents.items():
         included_unit = included_by_id[unit_id]
         _validate_bound_evidence_contents(
@@ -2167,6 +2218,7 @@ def verify_archived_assembly_closure(
     read_bytes: Callable[[str], bytes],
     *,
     root_prefix: str = "assembled/",
+    stream_identity: Callable[[str], tuple[int, str]] | None = None,
 ) -> dict[str, Any]:
     """Recompute assembly-owned build inputs exclusively from archive bytes."""
 
@@ -2187,6 +2239,13 @@ def verify_archived_assembly_closure(
         require_build_passed=True,
     )
     names = set(archive_paths)
+    def content_identity(path: str) -> tuple[int, str]:
+        if stream_identity is not None:
+            size, digest = stream_identity(path)
+            return size, "sha256:" + digest
+        content = read_bytes(path)
+        return len(content), "sha256:" + hashlib.sha256(content).hexdigest()
+
     if target_language == "flutter":
         verification = manifest["build_verification"]
         assert isinstance(verification, Mapping)
@@ -2196,9 +2255,7 @@ def verify_archived_assembly_closure(
         archived_path = f"{root_prefix}{relative}"
         if archived_path not in names:
             raise RouteError("ASSEMBLY_ARCHIVE_FLUTTER_COMPILED_ARTIFACT_MISSING")
-        content = read_bytes(archived_path)
-        observed = "sha256:" + hashlib.sha256(content).hexdigest()
-        if len(content) != artifact["bytes"] or observed != artifact["sha256"]:
+        if content_identity(archived_path) != (artifact["bytes"], artifact["sha256"]):
             raise RouteError("ASSEMBLY_ARCHIVE_FLUTTER_COMPILED_ARTIFACT_DRIFTED")
     if _archived_source_paths(names, target_language, root_prefix) != set(included_bindings):
         raise RouteError("ASSEMBLY_ARCHIVE_SOURCE_SET_MISMATCH")
@@ -2206,19 +2263,19 @@ def verify_archived_assembly_closure(
         archived_path = f"{root_prefix}{relative}"
         if archived_path not in names:
             raise RouteError(f"ASSEMBLY_ARCHIVE_BUILD_INPUT_MISSING:{relative}")
-        content = read_bytes(archived_path)
-        observed = "sha256:" + hashlib.sha256(content).hexdigest()
-        if len(content) != expected_bytes or observed != expected_sha256:
+        if content_identity(archived_path) != (expected_bytes, expected_sha256):
             raise RouteError(f"ASSEMBLY_ARCHIVE_BUILD_INPUT_DRIFTED:{relative}")
     source_language = manifest.get("source_language")
     assert source_language in _PLACERS
     repository_snapshot_sha256 = manifest.get("snapshot_sha256")
     assert isinstance(repository_snapshot_sha256, str)
-    included_by_id = {str(raw["id"]): raw for raw in manifest["included_units"] if isinstance(raw, Mapping)}
-    copied_contents: dict[str, dict[str, bytes]] = {}
-    source_contents: dict[str, dict[str, bytes]] = {}
+    included_by_id = {
+        str(raw["id"]): raw for raw in manifest["included_units"] if isinstance(raw, Mapping)
+    }
     expected_assembled_evidence = {f"{root_prefix}{relative}" for relative in evidence_bindings}
-    observed_assembled_evidence = {name for name in names if name.startswith(f"{root_prefix}{_EVIDENCE_ROOT}/")}
+    observed_assembled_evidence = {
+        name for name in names if name.startswith(f"{root_prefix}{_EVIDENCE_ROOT}/")
+    }
     if observed_assembled_evidence != expected_assembled_evidence:
         raise RouteError("ASSEMBLY_ARCHIVE_EVIDENCE_ARTIFACT_SET_MISMATCH")
     evidence_filenames = {
@@ -2243,34 +2300,43 @@ def verify_archived_assembly_closure(
     }
     if observed_source_evidence - expected_source_evidence:
         raise RouteError("ASSEMBLY_ARCHIVE_SOURCE_EVIDENCE_ARTIFACT_SET_MISMATCH")
+    grouped_bindings: dict[str, list[tuple[str, str, str, int, str]]] = {}
     for relative, (unit_id, role, source_relative, expected_bytes, expected_sha256) in evidence_bindings.items():
-        assembled_archive_path = f"{root_prefix}{relative}"
-        source_archive_path = f"batch/{source_relative}"
-        if assembled_archive_path not in names or source_archive_path not in names:
-            raise RouteError(f"ASSEMBLY_ARCHIVE_EVIDENCE_ARTIFACT_MISSING:{unit_id}:{role}")
-        copied = read_bytes(assembled_archive_path)
-        source = read_bytes(source_archive_path)
-        observed_sha256 = "sha256:" + hashlib.sha256(copied).hexdigest()
-        if (
-            len(copied) != expected_bytes
-            or len(source) != expected_bytes
-            or copied != source
-            or observed_sha256 != expected_sha256
-        ):
-            raise RouteError(f"ASSEMBLY_ARCHIVE_EVIDENCE_ARTIFACT_DRIFTED:{unit_id}:{role}")
-        copied_contents.setdefault(unit_id, {})[role] = copied
-        source_contents.setdefault(unit_id, {})[role] = source
-    for unit_id in copied_contents:
+        grouped_bindings.setdefault(unit_id, []).append(
+            (relative, role, source_relative, expected_bytes, expected_sha256)
+        )
+    # Parse one unit's exact evidence pair at a time. Retaining every unit's
+    # source and copied bytes turned the archive verifier into a second archive.
+    for unit_id, bindings in grouped_bindings.items():
+        copied_contents: dict[str, bytes] = {}
+        source_contents: dict[str, bytes] = {}
+        for relative, role, source_relative, expected_bytes, expected_sha256 in bindings:
+            assembled_archive_path = f"{root_prefix}{relative}"
+            source_archive_path = f"batch/{source_relative}"
+            if assembled_archive_path not in names or source_archive_path not in names:
+                raise RouteError(f"ASSEMBLY_ARCHIVE_EVIDENCE_ARTIFACT_MISSING:{unit_id}:{role}")
+            copied = read_bytes(assembled_archive_path)
+            source = read_bytes(source_archive_path)
+            observed_sha256 = "sha256:" + hashlib.sha256(copied).hexdigest()
+            if (
+                len(copied) != expected_bytes
+                or len(source) != expected_bytes
+                or copied != source
+                or observed_sha256 != expected_sha256
+            ):
+                raise RouteError(f"ASSEMBLY_ARCHIVE_EVIDENCE_ARTIFACT_DRIFTED:{unit_id}:{role}")
+            copied_contents[role] = copied
+            source_contents[role] = source
         included_unit = included_by_id[unit_id]
         _validate_bound_evidence_contents(
-            copied_contents[unit_id],
+            copied_contents,
             unit_id=unit_id,
             source_language=source_language,
             repository_snapshot_sha256=repository_snapshot_sha256,
             included_unit=included_unit,
         )
         _validate_bound_evidence_contents(
-            source_contents[unit_id],
+            source_contents,
             unit_id=unit_id,
             source_language=source_language,
             repository_snapshot_sha256=repository_snapshot_sha256,
@@ -2468,7 +2534,8 @@ def _write_build_files(
     elif target_language == "vcpp6":
         source_paths = sorted(str(unit["assembled_path"]) for unit in included_units)
         if not source_paths or any(
-            re.fullmatch(r"src/wu[0-9a-z]+/migrated\.cpp", source) is None for source in source_paths
+            re.fullmatch(r"src/wu[0-9a-z]+/migrated\.cpp", source) is None
+            for source in source_paths
         ):
             raise RouteError("ASSEMBLY_VCPP6_SOURCE_SET_INVALID")
         # A response file is the version-native, dependency-free build
@@ -2505,7 +2572,9 @@ def _write_build_files(
         # PSR-4 only ever autoloads classes. `files` is the one autoload mode
         # that loads function declarations, so every unit is listed explicitly
         # and the order is the manifest order, which is already deterministic.
-        files = ",\n".join(f'            "src/{unit["namespace"]}/migrated.php"' for unit in included_units)
+        files = ",\n".join(
+            f'            "src/{unit["namespace"]}/migrated.php"' for unit in included_units
+        )
         (destination / "composer.json").write_text(
             "{\n"
             '    "name": "elmos/polyglot-migrated-library",\n'
@@ -2533,7 +2602,8 @@ def _write_build_files(
         # network-resolved dependency into a route that does not need either.
         kotlin_source_paths = sorted(str(unit["assembled_path"]) for unit in included_units)
         if not kotlin_source_paths or any(
-            re.fullmatch(r"src/main/kotlin/elmos/generated/wu[0-9a-z]+/migrated\.kt", source) is None
+            re.fullmatch(r"src/main/kotlin/elmos/generated/wu[0-9a-z]+/migrated\.kt", source)
+            is None
             for source in kotlin_source_paths
         ):
             raise RouteError("ASSEMBLY_KOTLIN_SOURCE_SET_INVALID")
@@ -2567,7 +2637,9 @@ def _write_build_files(
                 or re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", function_name) is None
             ):
                 raise RouteError("ASSEMBLY_FLUTTER_SOURCE_SET_INVALID")
-            imports.append(f"import 'generated/{namespace}/migrated.dart' as {namespace};")
+            imports.append(
+                f"import 'generated/{namespace}/migrated.dart' as {namespace};"
+            )
             entrypoints.append(f"  {namespace}.{function_name},")
         if not imports:
             raise RouteError("ASSEMBLY_FLUTTER_SOURCE_SET_INVALID")
@@ -2599,7 +2671,11 @@ def _write_build_files(
             encoding="utf-8",
         )
         (destination / "analysis_options.yaml").write_text(
-            "analyzer:\n  language:\n    strict-casts: true\n    strict-inference: true\n    strict-raw-types: true\n",
+            "analyzer:\n"
+            "  language:\n"
+            "    strict-casts: true\n"
+            "    strict-inference: true\n"
+            "    strict-raw-types: true\n",
             encoding="utf-8",
         )
         package_directory = destination / ".dart_tool"
@@ -2628,13 +2704,19 @@ def _write_build_files(
         for unit in sorted(included_units, key=lambda item: str(item["namespace"])):
             namespace = str(unit.get("namespace", ""))
             relative = str(unit.get("assembled_path", ""))
-            if re.fullmatch(r"wu[0-9a-z]+", namespace) is None or relative != f"src/{namespace}/migrated.bas":
+            if (
+                re.fullmatch(r"wu[0-9a-z]+", namespace) is None
+                or relative != f"src/{namespace}/migrated.bas"
+            ):
                 raise RouteError("ASSEMBLY_VB6_SOURCE_SET_INVALID")
             vb6_modules.append(f"Module={namespace}; {relative}")
         if not vb6_modules:
             raise RouteError("ASSEMBLY_VB6_SOURCE_SET_INVALID")
         (destination / "src" / "ElmosMain.bas").write_text(
-            'Attribute VB_Name = "ElmosMain"\nOption Explicit\n\nPublic Sub Main()\nEnd Sub\n',
+            'Attribute VB_Name = "ElmosMain"\n'
+            "Option Explicit\n\n"
+            "Public Sub Main()\n"
+            "End Sub\n",
             encoding="ascii",
             newline="\r\n",
         )
@@ -2642,11 +2724,11 @@ def _write_build_files(
             "Type=Exe\n"
             + "\n".join(vb6_modules)
             + "\nModule=ElmosMain; src/ElmosMain.bas\n"
-            + 'Name="ElmosMigrated"\n'
-            + 'Startup="Sub Main"\n'
-            + 'ExeName32="elmos-migrated.exe"\n'
-            + 'Path32="."\n'
-            + 'CompatibleMode="0"\n'
+            + "Name=\"ElmosMigrated\"\n"
+            + "Startup=\"Sub Main\"\n"
+            + "ExeName32=\"elmos-migrated.exe\"\n"
+            + "Path32=\".\"\n"
+            + "CompatibleMode=\"0\"\n"
             + "MajorVer=1\nMinorVer=0\nRevisionVer=0\nAutoIncrementVer=0\n",
             encoding="ascii",
             newline="\r\n",
@@ -2684,7 +2766,9 @@ def _persist_verified_evidence_artifacts(
     for artifact in artifacts:
         path = destination / artifact.assembled_path
         if path.exists() or path.is_symlink():
-            raise RouteError(f"ASSEMBLY_EVIDENCE_ARTIFACT_DUPLICATED:{artifact.unit_id}:{artifact.role}")
+            raise RouteError(
+                f"ASSEMBLY_EVIDENCE_ARTIFACT_DUPLICATED:{artifact.unit_id}:{artifact.role}"
+            )
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(artifact.content)
         persisted = _confined_regular_file(
@@ -2844,7 +2928,8 @@ def assemble_project(
             "runtime_verification_status separately records replay of every included unit's "
             "behavior cases against the assembled target artifact or assembled source harness.",
             "build_verification_status is NOT_RUN until verify_assembled_project is executed.",
-            "runtime_verification_status is NOT_RUN until final assembled-project runtime replay is executed.",
+            "runtime_verification_status is NOT_RUN until final assembled-project runtime replay "
+            "is executed.",
             "build_inputs binds every manifest-owned source, auxiliary source, and project build file ",
             "by exact path, byte count, and sha256.",
             "verified_evidence_artifacts binds the independently parsed route, behavior, source "
@@ -2968,27 +3053,16 @@ def _run(
                 ),
             )
             try:
-                stdout, stderr = process.communicate(timeout=timeout)
-            except subprocess.TimeoutExpired as error:
-                if os.name == "posix":
-                    _kill_process_group(process.pid, signal.SIGTERM)
-                else:
-                    process.terminate()
-                try:
-                    process.communicate(timeout=2)
-                except subprocess.TimeoutExpired:
-                    if os.name == "posix":
-                        _kill_process_group(process.pid, signal.SIGKILL)
-                    else:
-                        process.kill()
-                    process.communicate()
-                raise RouteError(f"{failure_prefix}:{Path(command[0]).name}:process") from error
+                stdout, stderr = bounded_communicate(process, timeout=timeout)
+            except (OSError, subprocess.TimeoutExpired) as error:
+                raise RouteError(
+                    f"{failure_prefix}:{Path(command[0]).name}:process"
+                ) from error
             finally:
                 # A compiler/analyzer must not leave a detached helper behind.
                 # Every invocation owns a fresh session, so any surviving member
                 # after the direct command exits is outside the bounded build.
-                if os.name == "posix" and process is not None:
-                    _kill_process_group(process.pid, signal.SIGKILL)
+                terminate_bounded_process(process)
             completed = subprocess.CompletedProcess(
                 command,
                 process.returncode,
@@ -2996,7 +3070,9 @@ def _run(
                 stderr,
             )
     except OSError as error:
-        raise RouteError(f"{failure_prefix}:{Path(command[0]).name}:process") from error
+        raise RouteError(
+            f"{failure_prefix}:{Path(command[0]).name}:process"
+        ) from error
     if completed.returncode != 0:
         stdout = _bounded_process_diagnostic(completed.stdout, cwd=cwd)
         stderr = _bounded_process_diagnostic(completed.stderr, cwd=cwd)
@@ -3007,6 +3083,8 @@ def _run(
             f"stderr={json.dumps(stderr, ensure_ascii=True)}"
         )
     return completed
+
+
 
 
 def _read_assembled_runtime_cases(
@@ -3022,7 +3100,11 @@ def _read_assembled_runtime_cases(
     expected_entries = cases_manifest.get("expected")
     if not isinstance(expected_entries, list):
         raise RouteError("ASSEMBLY_RUNTIME_CASES_MANIFEST_INVALID")
-    matching = [item for item in expected_entries if isinstance(item, Mapping) and item.get("work_unit_id") == unit_id]
+    matching = [
+        item
+        for item in expected_entries
+        if isinstance(item, Mapping) and item.get("work_unit_id") == unit_id
+    ]
     if len(matching) != 1:
         raise RouteError(f"ASSEMBLY_RUNTIME_CASES_ENTRY_INVALID:{unit_id}")
     entry = matching[0]
@@ -3194,7 +3276,8 @@ def verify_assembled_project_runtime(
                 assert toolchain.auxiliary is not None
                 package_name = f"elmos.generated.{namespace}"
                 (runtime_directory / "RouteHarness.java").write_text(
-                    f"package {package_name};\n\n" + _java_harness(function, cases, owner=f"{package_name}.Migrated"),
+                    f"package {package_name};\n\n"
+                    + _java_harness(function, cases, owner=f"{package_name}.Migrated"),
                     encoding="utf-8",
                 )
                 classes = runtime_directory / "classes"
@@ -4098,7 +4181,9 @@ def verify_assembled_project(
         )
     )
     if target_language == "kotlin":
-        toolchain_dirs = tuple(dict.fromkeys((_kotlin_jvm_bin(toolchain.profile), *toolchain_dirs)))
+        toolchain_dirs = tuple(
+            dict.fromkeys((_kotlin_jvm_bin(toolchain.profile), *toolchain_dirs))
+        )
 
     if target_language == "java":
         java_source_paths = sorted(str(path) for path in destination.glob("src/main/java/**/*.java"))
@@ -4123,7 +4208,10 @@ def verify_assembled_project(
             timeout=900,
             executable_dirs=toolchain_dirs,
         )
-        if not any(path.is_file() and not path.is_symlink() for path in build_directory.rglob("*.class")):
+        if not any(
+            path.is_file() and not path.is_symlink()
+            for path in build_directory.rglob("*.class")
+        ):
             raise RouteError("ASSEMBLY_KOTLIN_CLASS_OUTPUT_MISSING")
         commands.append(
             {
@@ -4204,7 +4292,9 @@ def verify_assembled_project(
             "build/elmos_repository.dill",
             "ASSEMBLY_FLUTTER_KERNEL_BUNDLE_MISSING",
         )
-        kernel_bytes, kernel_sha256 = _stable_file_binding(kernel, "ASSEMBLY_FLUTTER_KERNEL_BUNDLE_CHANGED")
+        kernel_bytes, kernel_sha256 = _stable_file_binding(
+            kernel, "ASSEMBLY_FLUTTER_KERNEL_BUNDLE_CHANGED"
+        )
         if kernel_bytes <= 0:
             raise RouteError("ASSEMBLY_FLUTTER_KERNEL_BUNDLE_MISSING")
         flutter_compiled_artifact = {
@@ -4260,7 +4350,10 @@ def verify_assembled_project(
                 raise RouteError("ASSEMBLY_VCPP6_SOURCE_SET_INVALID")
             namespace = str(unit.get("namespace", ""))
             relative = str(unit.get("assembled_path", ""))
-            if re.fullmatch(r"wu[0-9a-z]+", namespace) is None or relative != f"src/{namespace}/migrated.cpp":
+            if (
+                re.fullmatch(r"wu[0-9a-z]+", namespace) is None
+                or relative != f"src/{namespace}/migrated.cpp"
+            ):
                 raise RouteError("ASSEMBLY_VCPP6_SOURCE_SET_INVALID")
             object_path = f"build/{namespace}.obj"
             command = [
@@ -4299,7 +4392,9 @@ def verify_assembled_project(
             timeout=900,
             executable_dirs=toolchain_dirs,
         )
-        commands.append({"command": link_command, "stdout": linked.stdout[-2_000:], "stderr": linked.stderr[-2_000:]})
+        commands.append(
+            {"command": link_command, "stdout": linked.stdout[-2_000:], "stderr": linked.stderr[-2_000:]}
+        )
         compiled = _confined_regular_file(
             destination,
             "build/elmos-migrated.dll",
@@ -4454,7 +4549,9 @@ def verify_assembled_project(
         # offers to "this compilation unit is well formed", and it is run over
         # every assembled unit rather than once over the descriptor, because a
         # composer autoload entry never parses the file it names.
-        php_source_paths = sorted(str(path.relative_to(destination)) for path in destination.glob("src/**/*.php"))
+        php_source_paths = sorted(
+            str(path.relative_to(destination)) for path in destination.glob("src/**/*.php")
+        )
         if not php_source_paths:
             raise RouteError("ASSEMBLY_NO_PHP_SOURCES_FOUND")
         for relative in php_source_paths:
@@ -4498,29 +4595,39 @@ def verify_assembled_project(
     }
     if target_language == "kotlin":
         kotlin_identity = _exact_toolchain_identity(toolchain)
-        manifest["build_verification"]["kotlin_exact_toolchain"] = kotlin_identity
-        manifest["build_verification"]["kotlin_exact_toolchain_sha256"] = _exact_toolchain_identity_sha256(
+        manifest["build_verification"]["kotlin_exact_toolchain"] = (
             kotlin_identity
+        )
+        manifest["build_verification"]["kotlin_exact_toolchain_sha256"] = (
+            _exact_toolchain_identity_sha256(kotlin_identity)
         )
     if target_language == "vb6":
         assert vb6_compiled_artifact is not None
         vb6_identity = _exact_toolchain_identity(toolchain)
         manifest["build_verification"]["vb6_exact_toolchain"] = vb6_identity
-        manifest["build_verification"]["vb6_exact_toolchain_sha256"] = _exact_toolchain_identity_sha256(vb6_identity)
-        manifest["build_verification"]["vb6_compiled_artifact"] = vb6_compiled_artifact
+        manifest["build_verification"]["vb6_exact_toolchain_sha256"] = (
+            _exact_toolchain_identity_sha256(vb6_identity)
+        )
+        manifest["build_verification"]["vb6_compiled_artifact"] = (
+            vb6_compiled_artifact
+        )
     if target_language == "vcpp6":
         assert vcpp6_compiled_artifact is not None
         vcpp6_identity = _exact_toolchain_identity(toolchain)
         manifest["build_verification"]["vcpp6_exact_toolchain"] = vcpp6_identity
-        manifest["build_verification"]["vcpp6_exact_toolchain_sha256"] = _exact_toolchain_identity_sha256(
-            vcpp6_identity
+        manifest["build_verification"]["vcpp6_exact_toolchain_sha256"] = (
+            _exact_toolchain_identity_sha256(vcpp6_identity)
         )
         manifest["build_verification"]["vcpp6_compiled_artifact"] = vcpp6_compiled_artifact
     if target_language == "react":
         manifest["build_verification"]["react_runtime_receipt"] = runtime_receipt
     if target_language == "flutter":
-        manifest["build_verification"]["flutter_build_toolchain_receipt"] = flutter_build_receipt_after
-        manifest["build_verification"]["flutter_compiled_artifact"] = flutter_compiled_artifact
+        manifest["build_verification"][
+            "flutter_build_toolchain_receipt"
+        ] = flutter_build_receipt_after
+        manifest["build_verification"][
+            "flutter_compiled_artifact"
+        ] = flutter_compiled_artifact
     if target_language in {"cpp", "objc"}:
         manifest["build_verification"]["cmake_runtime"] = {
             "kind": "private-content-addressed-cmake-runtime-v1",

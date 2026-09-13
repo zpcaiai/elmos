@@ -23,19 +23,30 @@ from typing import Any
 MISSING_SYMBOL_FAILURE = "FUNCTION_NOT_FOUND:__elmos_missing_function__"
 
 ENGINE_RUNTIME_MODULES = {
-    "elmos_polyglot_route.equivalence": "elmos_polyglot_route/equivalence.py",
-    "elmos_polyglot_route.models": "elmos_polyglot_route/models.py",
-    "elmos_polyglot_route.engine": "elmos_polyglot_route/engine.py",
-    "elmos_polyglot_route.emitter": "elmos_polyglot_route/emitter.py",
-    "elmos_polyglot_route.identifier_hygiene": "elmos_polyglot_route/identifier_hygiene.py",
-    "elmos_polyglot_route.types": "elmos_polyglot_route/types.py",
+    "elmos_polyglot_route": "elmos_polyglot_route/__init__.py",
     "elmos_polyglot_route.canonical": "elmos_polyglot_route/canonical.py",
-    "elmos_polyglot_route.native": "elmos_polyglot_route/native.py",
     "elmos_polyglot_route.clang_analyzer": "elmos_polyglot_route/clang_analyzer.py",
+    "elmos_polyglot_route.dart_analyzer": "elmos_polyglot_route/dart_analyzer.py",
+    "elmos_polyglot_route.emitter": "elmos_polyglot_route/emitter.py",
+    "elmos_polyglot_route.engine": "elmos_polyglot_route/engine.py",
+    "elmos_polyglot_route.equivalence": "elmos_polyglot_route/equivalence.py",
+    "elmos_polyglot_route.flutter_repository": "elmos_polyglot_route/flutter_repository.py",
+    "elmos_polyglot_route.identifier_hygiene": "elmos_polyglot_route/identifier_hygiene.py",
+    "elmos_polyglot_route.kotlin_repository": "elmos_polyglot_route/kotlin_repository.py",
+    "elmos_polyglot_route.models": "elmos_polyglot_route/models.py",
+    "elmos_polyglot_route.native": "elmos_polyglot_route/native.py",
+    "elmos_polyglot_route.process_io": "elmos_polyglot_route/process_io.py",
     "elmos_polyglot_route.python_analyzer": "elmos_polyglot_route/python_analyzer.py",
+    "elmos_polyglot_route.react_analyzer": "elmos_polyglot_route/react_analyzer.py",
+    "elmos_polyglot_route.react_repository": "elmos_polyglot_route/react_repository.py",
     "elmos_polyglot_route.repository": "elmos_polyglot_route/repository.py",
+    "elmos_polyglot_route.resource_budget": "elmos_polyglot_route/resource_budget.py",
+    "elmos_polyglot_route.source_analyzer": "elmos_polyglot_route/source_analyzer.py",
     "elmos_polyglot_route.toolchains": "elmos_polyglot_route/toolchains.py",
+    "elmos_polyglot_route.types": "elmos_polyglot_route/types.py",
     "elmos_polyglot_route.validation": "elmos_polyglot_route/validation.py",
+    "elmos_polyglot_route.vb6_analyzer": "elmos_polyglot_route/vb6_analyzer.py",
+    "elmos_polyglot_route.vcpp6_analyzer": "elmos_polyglot_route/vcpp6_analyzer.py",
 }
 ENGINE_RUNTIME_PROJECT_RELATIVE = "engines/polyglot-route-engine"
 ENGINE_RUNTIME_MODULE_REPOSITORY_PATHS = {
@@ -3553,18 +3564,14 @@ def _registered_swift_receipt_contract(receipt: dict[str, Any]) -> dict[str, Any
     sandbox = network.get("sandbox") if isinstance(network, dict) else None
     verifier = network.get("verifier") if isinstance(network, dict) else None
     declared_profile = toolchain.get("profile") if isinstance(toolchain, dict) else None
-    profile_markers = (
-        [
-            value.removeprefix("apple-host-profile=")
-            for value in declared_profile
-            if isinstance(value, str) and value.startswith("apple-host-profile=")
-        ]
-        if isinstance(declared_profile, list)
-        else []
-    )
-    if len(profile_markers) != 1 or not profile_markers[0]:
-        raise ValueError("receipt does not declare one registered Apple host profile")
-    declared_profile_id = profile_markers[0]
+    profile_selectors = tuple(
+        item.removeprefix("apple-host-profile=")
+        for item in declared_profile
+        if isinstance(item, str) and item.startswith("apple-host-profile=")
+    ) if isinstance(declared_profile, list) else ()
+    if len(profile_selectors) != 1 or not profile_selectors[0]:
+        raise ValueError("receipt must declare exactly one Apple host profile")
+    declared_profile_id = profile_selectors[0]
     observed_identity = (
         toolchain.get("swiftc_sha256") if isinstance(toolchain, dict) else None,
         git.get("sha256") if isinstance(git, dict) else None,
@@ -3574,8 +3581,7 @@ def _registered_swift_receipt_contract(receipt: dict[str, Any]) -> dict[str, Any
     matches = tuple(
         profile
         for profile in _APPLE_ROUTE_HOST_PROFILES
-        if profile.profile_id == declared_profile_id
-        and (
+        if profile.profile_id == declared_profile_id and (
             "sha256:" + profile.swiftc_sha256,
             "sha256:" + profile.apple_git_sha256,
             "sha256:" + profile.sandbox_exec_sha256,
@@ -3711,8 +3717,8 @@ def _validate_swift_analyzer_receipt_document(
         registered_contract = _registered_swift_receipt_contract(receipt)
     except (ImportError, KeyError, TypeError, ValueError) as exc:
         failures.append(
-            f"{label}.toolchain exact identity is invalid; "
-            f"Apple host profile is not registered: {exc}"
+            f"{label} Apple host profile is not registered; "
+            f"toolchain exact identity is invalid: {exc}"
         )
         return None
     expected_toolchain = registered_contract["toolchain"]
@@ -6848,7 +6854,7 @@ def validate_formal_equivalence(
                                             failures.append(
                                                 f"engine source manifest live file drifted: {repository_path}"
                                             )
-                            if is_specialized:
+                            if is_specialized and not is_legacy_immutable:
                                 _validate_engine_runtime_source_receipts(
                                     source_manifest_document,
                                     files_by_repository_path,

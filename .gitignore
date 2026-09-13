@@ -7,8 +7,7 @@
 **/.hvigor/
 target/
 **/target/
-node_modules/
-**/node_modules/
+node_modules
 .next/
 **/.next/
 **/.next-e2e-*/
