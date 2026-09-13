@@ -45,11 +45,20 @@ def test_hosted_homebrew_profiles_bind_the_current_exact_bottle_closure() -> Non
         local.php_tree_sha256,
         local.php_tree_bytes,
     )
-    assert (current.php_tree_sha256, current.php_tree_bytes) == (
-        local.php_tree_sha256,
-        local.php_tree_bytes,
+    assert (
+        current.php_tree_sha256,
+        current.php_tree_bytes,
+        current.php_tree_record_count,
+        current.php_tree_file_count,
+        current.php_tree_directory_count,
+    ) == (
+        "ca33ea07e927e25416bc906af465ba6713824e3e5af66fb974f319e92c43d6d9",
+        129_938_026,
+        644,
+        533,
+        109,
     )
-    assert current.php_tree_sha256 == legacy.php_tree_sha256
+    assert current.php_tree_sha256 != legacy.php_tree_sha256
     assert local.dotnet_muxer_sha256 != legacy.dotnet_muxer_sha256
 
 

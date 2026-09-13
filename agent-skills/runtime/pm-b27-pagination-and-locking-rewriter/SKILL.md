@@ -1,8 +1,9 @@
 ---
 name: pm-b27-pagination-and-locking-rewriter
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "迁移分页、稳定排序、FOR UPDATE、锁提示、Skip locked 和并发行为. Precision Migration B27 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

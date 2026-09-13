@@ -590,9 +590,10 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
         installed["installed_path"] = (
             f"agent-skills/runtime/{record['name']}/SKILL.md"
         )
-        installed["installed_sha256"] = sha256(
-            (destination / "SKILL.md").read_bytes()
+        installed_content = promoted_skill_content(
+            (destination / "SKILL.md").read_bytes(), str(record["name"])
         )
+        installed["installed_sha256"] = sha256(installed_content)
         installed["workspace_path"] = f".agents/skills/{record['name']}/SKILL.md"
         installed["workspace_sha256"] = installed["installed_sha256"]
         installed["interface_sha256"] = sha256(
@@ -723,9 +724,10 @@ def directories_equal(left: Path, right: Path) -> bool:
 
 
 PROMOTION_METADATA = (
-    'implementation_state: "VERIFIED"\n'
-    'external_evidence_status: "LOCAL_EXECUTED"\n'
-    'production_certification: "NOT_CERTIFIED"\n'
+    'metadata:\n'
+    '  implementation_state: "VERIFIED"\n'
+    '  external_evidence_status: "LOCAL_EXECUTED"\n'
+    '  production_certification: "NOT_CERTIFIED"\n'
 )
 
 

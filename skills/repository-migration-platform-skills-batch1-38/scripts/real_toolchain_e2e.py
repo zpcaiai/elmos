@@ -35,7 +35,7 @@ FIXTURES = ROOT / "e2e" / "fixtures"
 REGISTRY = ROOT / "oracle-registry.json"
 RESOURCE_RE = re.compile(r"^rmp-e2e-[0-9a-f]{8}(?:-[a-z]+)?$")
 SOURCE_IMAGE = "pgvector/pgvector@sha256:a132765ec351c65111b5b675928a3a0515a466a40f97277329db8b8209ad8bc9"
-MINIO_IMAGE = "minio/minio@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e"
+MINIO_IMAGE = "quay.io/minio/minio@sha256:d249d1fb6966de4d8ad26c04754b545205ff15a62e4fd19ebd0f26fa5baacbc0"
 MC_IMAGE = "minio/mc@sha256:aead63c77f9db9107f1696fb08ecb0faeda23729cde94b0f663edf4fe09728e3"
 DATA_QUERY = """
 SELECT 'account', account_id::text, tenant_id::text, account_code,

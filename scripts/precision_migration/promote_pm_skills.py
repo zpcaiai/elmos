@@ -36,16 +36,19 @@ for alias, entry in sorted(entries.items()):
     if len(parts) >= 3:
         fm = parts[1]
         if "implementation_state:" not in fm:
-            fm = re.sub(
-                rf"^name:\s*{re.escape(alias)}.*$",
-                f'name: {alias}\nimplementation_state: "VERIFIED"\nexternal_evidence_status: "LOCAL_EXECUTED"\nproduction_certification: "NOT_CERTIFIED"',
-                fm,
-                flags=re.MULTILINE,
-            )
-            if "metadata:" in fm and "implementation_state:" not in fm.split("metadata:")[1]:
+            if "metadata:" in fm:
                 fm = fm.replace(
                     "metadata:\n",
                     'metadata:\n  implementation_state: "VERIFIED"\n  external_evidence_status: "LOCAL_EXECUTED"\n  production_certification: "NOT_CERTIFIED"\n',
+                    1,
+                )
+            else:
+                fm = re.sub(
+                    rf"^name:\s*{re.escape(alias)}.*$",
+                    f'name: {alias}\nmetadata:\n  implementation_state: "VERIFIED"\n  external_evidence_status: "LOCAL_EXECUTED"\n  production_certification: "NOT_CERTIFIED"',
+                    fm,
+                    count=1,
+                    flags=re.MULTILINE,
                 )
             text = f"---{fm}---{parts[2]}"
         else:
