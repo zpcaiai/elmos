@@ -80,7 +80,11 @@ RUNTIME_AUTHORITY_MODULES = (
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/trusted_services.py",
 )
 RUNTIME_DISPATCHER = "dispatch_skill"
-RUNTIME_EVIDENCE_STATUS = "LOCAL_HANDLER_BOUND_NOT_EXECUTED"
+RUNTIME_BINDING_STATE = "LOCAL_HANDLER_BOUND_EXACT"
+RUNTIME_EVIDENCE_STATUS = "LOCAL_EXECUTED_SELF_ATTESTED"
+QUALIFICATION_RECEIPT_RELATIVE = Path(
+    "engines/autonomous-qa-engine/qualification/local-qualification.json"
+)
 EXTERNAL_EVIDENCE_STATUS = "NOT_RUN"
 CERTIFICATION_STATUS = "NOT_CERTIFIED"
 
@@ -1599,10 +1603,74 @@ def _runtime_binding(
         "mutating": expected[2],
         "operation_id": expected[3],
         "handler_id": skill.handler_id,
-        "binding_state": RUNTIME_EVIDENCE_STATUS,
+        "binding_state": RUNTIME_BINDING_STATE,
         "external_evidence_status": EXTERNAL_EVIDENCE_STATUS,
         "certification_status": CERTIFICATION_STATUS,
         "side_effects_authorized": False,
+    }
+
+
+def _load_local_qualification(
+    repository_root: Path, runtime: RuntimeRegistrySnapshot
+) -> Mapping[str, Any]:
+    path = repository_root / QUALIFICATION_RECEIPT_RELATIVE
+    content = _read_regular_file(
+        path,
+        "Autonomous QA local qualification receipt",
+        max_bytes=4 * 1024 * 1024,
+    )
+    try:
+        document = json.loads(content)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise IntegrationError("local qualification receipt is not strict JSON") from exc
+    if not isinstance(document, Mapping):
+        raise IntegrationError("local qualification receipt must be an object")
+    if (
+        document.get("schema_version")
+        != "elmos.autonomous-qa.local-qualification.v1"
+        or document.get("runtime_evidence_status") != RUNTIME_EVIDENCE_STATUS
+        or document.get("skill_count") != EXPECTED_SKILL_COUNT
+        or document.get("runtime_module_sha256") != runtime.module_sha256
+        or document.get("runtime_authority_sha256") != runtime.authority_sha256
+        or document.get("external_evidence_status") != EXTERNAL_EVIDENCE_STATUS
+        or document.get("independent_evidence_status") != EXTERNAL_EVIDENCE_STATUS
+        or document.get("certification_status") != CERTIFICATION_STATUS
+    ):
+        raise IntegrationError("local qualification receipt boundary or runtime drifted")
+    results = document.get("results")
+    if not isinstance(results, list) or len(results) != EXPECTED_SKILL_COUNT:
+        raise IntegrationError("local qualification receipt must contain forty results")
+    observed = []
+    for index, result in enumerate(results):
+        if not isinstance(result, Mapping):
+            raise IntegrationError("local qualification result must be an object")
+        if (
+            result.get("ordinal") != index
+            or result.get("state") not in {"SUCCEEDED", "PARTIAL", "BLOCKED"}
+            or result.get("external_evidence_status") != EXTERNAL_EVIDENCE_STATUS
+            or result.get("certification_status") != CERTIFICATION_STATUS
+            or re.fullmatch(r"sha256:[0-9a-f]{64}", str(result.get("result_digest")))
+            is None
+        ):
+            raise IntegrationError("local qualification result boundary drifted")
+        observed.append(
+            (
+                result.get("source_id"),
+                result.get("operation_id"),
+                result.get("handler_id"),
+            )
+        )
+    expected = [
+        (source_id, operation_id, handler_id)
+        for source_id, _phase, _mutating, operation_id, handler_id in EXPECTED_RUNTIME_BINDINGS
+    ]
+    if observed != expected:
+        raise IntegrationError("local qualification result identity drifted")
+    return {
+        "path": QUALIFICATION_RECEIPT_RELATIVE.as_posix(),
+        "sha256": "sha256:" + _sha256(content),
+        "qualification_digest": document.get("qualification_digest"),
+        "state_counts": document.get("state_counts"),
     }
 
 
@@ -1736,8 +1804,11 @@ def _aggregate_skill_tree_digest(
 
 
 def build_expected(
-    snapshot: PackageSnapshot, runtime: RuntimeRegistrySnapshot
+    snapshot: PackageSnapshot,
+    runtime: RuntimeRegistrySnapshot,
+    repository_root: Path = ROOT,
 ) -> Mapping[str, Any]:
+    qualification = _load_local_qualification(repository_root, runtime)
     expected_source_ids = tuple(skill.source_id for skill in snapshot.skills)
     expected_handler_ids = tuple(skill.handler_id for skill in snapshot.skills)
     runtime_lengths = {
@@ -1824,6 +1895,7 @@ def build_expected(
         "source_policy_status": "KNOWN_MALFORMED_NULL_SECTIONS_PRESERVED",
         "source_policy_findings": list(snapshot.policy_findings),
         "runtime_evidence_status": RUNTIME_EVIDENCE_STATUS,
+        "local_qualification": qualification,
         "external_evidence_status": EXTERNAL_EVIDENCE_STATUS,
         "certification_status": CERTIFICATION_STATUS,
         "skills": skill_records,
@@ -1859,8 +1931,9 @@ def build_expected(
             ],
             "dispatcher": RUNTIME_DISPATCHER,
             "bindings": runtime_binding_records,
-            "binding_state": RUNTIME_EVIDENCE_STATUS,
+            "binding_state": RUNTIME_BINDING_STATE,
         },
+        "local_qualification": qualification,
         "package_content_executed": False,
         "immutable_source_rewritten": False,
         "external_evidence_status": EXTERNAL_EVIDENCE_STATUS,
@@ -1905,8 +1978,9 @@ def build_expected(
             "operation_ids": list(runtime.operation_ids),
             "handler_ids": list(runtime.handler_ids),
             "bindings": runtime_binding_records,
-            "binding_state": RUNTIME_EVIDENCE_STATUS,
+            "binding_state": RUNTIME_BINDING_STATE,
         },
+        "local_qualification": qualification,
         "package_tools_executed": False,
         "source_scripts_executed": False,
         "source_sql_executed": False,
@@ -3806,7 +3880,7 @@ def write_integration(
     archive_path = _canonical_archive(repository_root, archive_path)
     snapshot = validate_archive(archive_path, yaml_loader=yaml_loader)
     runtime = validate_runtime_registry(repository_root, snapshot.skills)
-    expected = build_expected(snapshot, runtime)
+    expected = build_expected(snapshot, runtime, repository_root)
     actions = _managed_actions(repository_root, expected)
     _validate_installed_alias_inventory(
         repository_root,
@@ -4021,7 +4095,7 @@ def check_integration(
     archive_path = _canonical_archive(repository_root, archive_path)
     snapshot = validate_archive(archive_path, yaml_loader=yaml_loader)
     runtime = validate_runtime_registry(repository_root, snapshot.skills)
-    expected = build_expected(snapshot, runtime)
+    expected = build_expected(snapshot, runtime, repository_root)
     _check_expected(repository_root, expected)
     _reject_reserved_transaction_roots(
         repository_root, expected_identity=repository_identity

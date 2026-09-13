@@ -59,6 +59,12 @@ class AutonomousQaIntegrationTest(unittest.TestCase):
             runtime = root / relative
             runtime.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(REPOSITORY_ROOT / relative, runtime)
+        qualification = root / integration.QUALIFICATION_RECEIPT_RELATIVE
+        qualification.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(
+            REPOSITORY_ROOT / integration.QUALIFICATION_RECEIPT_RELATIVE,
+            qualification,
+        )
         return temporary, root, archive
 
     def test_pinned_archive_inventory_contract_and_known_source_defects_are_exact(self) -> None:

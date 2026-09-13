@@ -1,15 +1,15 @@
 {
   "business_line_id": 7,
   "business_line_name": "\u81ea\u4e3b QA\u3001\u60c5\u62a5\u4e0e\u6838\u5fc3\u6280\u80fd (Autonomous QA, Project Intelligence & Core Skills)",
-  "decision": "IMPLEMENTATION_READY_FOR_EXTERNAL_CERTIFICATION",
+  "decision": "READY_FOR_EXTERNAL_GATE",
   "status": "LOCAL_GATE_PASSED",
-  "local_execution_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "local_execution_status": "BOUNDED_LOCAL_EXECUTION",
   "external_evidence_status": "NOT_RUN",
   "certification": "NOT_CERTIFIED",
-  "verified_at": "2026-09-11T17:18:18.826766+00:00",
+  "verified_at": "2026-09-13T21:46:54.448844+00:00",
   "metrics": {
-    "total_bl7_loc": 119230,
-    "total_new_subsystems_loc": 16577,
+    "total_bl7_loc": 117359,
+    "total_new_subsystems_loc": 15460,
     "new_subsystems_breakdown": {
       "go_daemon": 1139,
       "qa_subsystems": 2426,
@@ -18,97 +18,135 @@
       "inference_gateway": 3725,
       "foundry_gateway": 234,
       "foundry_scheduler": 1542,
-      "foundry_automated_handlers": 1294,
-      "pi_task_execution": 727,
-      "TOTAL_NEW_SUBSYSTEMS_LOC": 16577
+      "foundry_automated_handlers": 0,
+      "pi_task_execution": 904,
+      "TOTAL_NEW_SUBSYSTEMS_LOC": 15460
     },
     "suites_executed": 11,
     "suites_passed": 11,
-    "tests_passed": 130,
+    "tests_passed": 131,
     "zero_tolerance_violations": 0
+  },
+  "capability_evidence": {
+    "qa": {
+      "skill_count": 40,
+      "state_counts": {
+        "BLOCKED": 10,
+        "PARTIAL": 24,
+        "SUCCEEDED": 6
+      },
+      "runtime_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "external_evidence_status": "NOT_RUN",
+      "independent_evidence_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED"
+    },
+    "pi": {
+      "skills": 50,
+      "capability_state_counts": {
+        "LOCAL": 19,
+        "PARTIAL": 26,
+        "PLAN": 5
+      },
+      "source_tasks": 500,
+      "source_task_status": "todo",
+      "source_acceptance_scenarios": 248,
+      "source_acceptance_execution_status": "NOT_RUN",
+      "external_evidence_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED"
+    },
+    "foundry": {
+      "atomic_skills": 1310,
+      "local_semantic_handlers": 66,
+      "host_route_bound": 1244,
+      "whole_skills_complete": 0,
+      "prepare_only": 0,
+      "external_evidence_status": "NOT_RUN",
+      "independent_evidence_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED"
+    }
   },
   "loc_by_component": {
     "engines/autonomous-qa-engine": 50318,
-    "engines/project-intelligence-engine": 23659,
-    "engines/knowledge-skill-model-foundry-engine": 35514,
+    "engines/project-intelligence-engine": 24056,
+    "engines/knowledge-skill-model-foundry-engine": 33469,
     "apps/inference-gateway": 3725,
-    "tests/autonomous-qa-self-healing": 2234,
+    "tests/autonomous-qa-self-healing": 2240,
     "tests/project-intelligence-skills": 2322,
-    "tests/knowledge-skill-model-foundry-skills": 1458,
-    "TOTAL_BL7_LOC": 119230
+    "tests/knowledge-skill-model-foundry-skills": 1229,
+    "TOTAL_BL7_LOC": 117359
   },
   "suites": [
     {
       "name": "Pillar 1: PR Self-Healing Closed Loop (GitHub/GitLab/AST/Sandbox)",
       "passed": true,
       "test_count": 19,
-      "duration_seconds": 0.84
+      "duration_seconds": 0.23
     },
     {
       "name": "Pillar 1: Autonomous QA Industrial Subsystems (17 Subsystem Engines)",
       "passed": true,
       "test_count": 20,
-      "duration_seconds": 0.98
+      "duration_seconds": 0.2
     },
     {
       "name": "Pillar 1: Go Daemon Webhook & Sandboxed Runner Verification (go vet)",
       "passed": true,
       "test_count": 1,
-      "duration_seconds": 1.86
+      "duration_seconds": 0.4
     },
     {
       "name": "Pillar 2: Project Intelligence Deep Analysis (Callgraph/Taint/Architecture/Threats)",
       "passed": true,
       "test_count": 4,
-      "duration_seconds": 0.42
+      "duration_seconds": 0.08
     },
     {
       "name": "Pillar 2: Project Intelligence Subsystems (14 Subsystem Engines)",
       "passed": true,
       "test_count": 15,
-      "duration_seconds": 0.49
+      "duration_seconds": 0.1
     },
     {
-      "name": "Pillar 3: Foundry High-Frequency Core Skills & Handlers",
+      "name": "Pillar 3: Foundry Engine Service & Bounded Local Handlers",
       "passed": true,
-      "test_count": 12,
-      "duration_seconds": 18.22
+      "test_count": 3,
+      "duration_seconds": 2.42
     },
     {
       "name": "Pillar 3: Knowledge-Skill-Model Foundry Subsystems (9 Subsystem Engines)",
       "passed": true,
       "test_count": 9,
-      "duration_seconds": 0.35
+      "duration_seconds": 0.09
     },
     {
       "name": "Pillar 3: LLM API Gateway & Multi-Provider Router (Go Unit & E2E Tests)",
       "passed": true,
       "test_count": 22,
-      "duration_seconds": 0.63
+      "duration_seconds": 0.14
     },
     {
       "name": "Pillar 3: Distributed Task Scheduler & Fencing Worker Pool",
       "passed": true,
       "test_count": 12,
-      "duration_seconds": 0.71
+      "duration_seconds": 0.5
     },
     {
-      "name": "Pillar 3: 1,244 Brokered Skills Automated Execution Broker & Handlers",
+      "name": "Pillar 3: 1,244 Host-Route-Bound Skill Contracts & Broker Controls",
       "passed": true,
-      "test_count": 6,
-      "duration_seconds": 3.04
+      "test_count": 13,
+      "duration_seconds": 3.07
     },
     {
-      "name": "Pillar 2: 500 Intelligence Tasks, 248 Acceptance Scenarios & Subsystems Runner",
+      "name": "Pillar 2: 500-Task Inventory, 248-Scenario Evidence Gate & Recovery",
       "passed": true,
-      "test_count": 10,
-      "duration_seconds": 10.61
+      "test_count": 13,
+      "duration_seconds": 0.12
     }
   ],
   "anti_cheating": {
     "status": "PASSED",
     "violations": [],
-    "total_assertions_inspected": 390,
+    "total_assertions_inspected": 386,
     "banned_patterns_checked": [
       "@unittest.skip",
       "@pytest.mark.skip",
@@ -134,9 +172,11 @@
     "Foundry 9 subsystems implement polyglot transpiler, prompt defense, license compliance, metamorphic fuzz, and model routing",
     "Real LLM API Gateway supports multi-provider routing (OpenAI, Anthropic, Gemini, DeepSeek), token-bucket rate limiting, circuit breakers, and streaming SSE",
     "Distributed Task Scheduler enforces Tarjan DAG ordering, worker pool lease fencing, SQLite CAS checkpoints, exponential backoff with full jitter, DLQ, and compensation",
-    "Automated Execution Broker resolves all 1,244 brokered skills with typed stage traces, confirmed tool receipts, and verified provider receipts",
-    "Task Runner and Scenario Verifier execute all 500 project intelligence tasks and verify all 248 acceptance scenarios with cryptographic evidence hashes",
-    "All local semantic workflows execute with zero empty skeletons or idling stubs"
+    "Foundry binds 1,244 exact host routes but requires a trusted broker, permit, durable store, and verified provider receipt before execution evidence exists",
+    "Project Intelligence validates all 500 task contracts while preserving source status todo until exact runtime execution occurs",
+    "Project Intelligence keeps 248 acceptance scenarios NOT_RUN until scope-bound holdout evidence and a distinct trusted verifier receipt are supplied",
+    "Autonomous QA executes all 40 exact local fixtures and records 6 succeeded, 24 partial, and 10 blocked outcomes without certification promotion",
+    "All three domains preserve external and independent evidence as NOT_RUN and certification as NOT_CERTIFIED"
   ],
   "evidence_boundaries": {
     "external_provider": "NOT_RUN",
@@ -145,5 +185,5 @@
     "certification_authority": "NOT_CERTIFIED"
   },
   "blockers": [],
-  "local_report_digest": "sha256:2d9cec39c3f4ec39d83432448b9f27cefd5bd7de8a79ba001cd5b9c8e4f15548"
+  "local_report_digest": "sha256:69722fb44bddcd3a4a8219f6e90e8a30e78523c6f0e0e77d66597c1f6e1f0205"
 }

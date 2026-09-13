@@ -1,224 +1,255 @@
+"""Fail-closed execution ledger for the 500 source backlog tasks.
+
+The source backlog is a requirements inventory. A task becomes locally
+executed only when its exact Project Intelligence handler runs through the
+durable service. Local execution never proves product acceptance, external
+runtime behavior, or certification.
+"""
+
 from __future__ import annotations
 
-import hashlib
-import time
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-def _parse_yaml_fallback(text: str) -> Dict[str, Any]:
-    try:
-        import yaml
-        return yaml.safe_load(text)
-    except ImportError:
-        pass
-    lines = text.splitlines()
-    root: Dict[str, Any] = {}
-    current_list: List[Dict[str, Any]] = []
-    current_item: Optional[Dict[str, Any]] = None
-    current_sublist_name: Optional[str] = None
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith('#'):
+from ..canonical import canonical_digest, canonical_value
+from ..runtime import SKILL_REGISTRY, RuntimeRequest
+from ..service import ProjectIntelligenceService
+
+
+def _parse_catalog(text: str, collection: str) -> dict[str, Any]:
+    """Parse the small source YAML subset without executing package code."""
+    root: dict[str, Any] = {collection: []}
+    items: list[dict[str, Any]] = root[collection]
+    current: dict[str, Any] | None = None
+    current_list: list[str] | None = None
+    for raw in text.splitlines():
+        stripped = raw.strip()
+        if not stripped or stripped.startswith("#"):
             continue
-        if not line.startswith(' ') and not line.startswith('-'):
-            if ':' in line:
-                k, v = line.split(':', 1)
-                k, v = k.strip(), v.strip()
-                if v:
-                    root[k] = int(v) if v.isdigit() else v
-                else:
-                    current_list = []
-                    root[k] = current_list
-            continue
-        if line.startswith('- ') or line.lstrip().startswith('- id:'):
-            current_item = {}
-            current_list.append(current_item)
-            current_sublist_name = None
-            rest = line.lstrip()[2:].strip()
-            if rest and ':' in rest:
-                k, v = rest.split(':', 1)
-                current_item[k.strip()] = v.strip()
-            continue
-        if current_item is not None:
-            if line.lstrip().startswith('- '):
-                sub_val = line.lstrip()[2:].strip()
-                if current_sublist_name:
-                    current_item[current_sublist_name].append(sub_val)
-                continue
-            if ':' in line:
-                k, v = line.strip().split(':', 1)
-                k, v = k.strip(), v.strip()
-                if not v:
-                    current_sublist_name = k
-                    current_item[k] = []
-                else:
-                    current_item[k] = [] if v == '[]' else v
-                    current_sublist_name = None
+        if raw.startswith("- id:"):
+            current = {"id": raw.split(":", 1)[1].strip()}
+            items.append(current)
+            current_list = None
+        elif current is not None and raw.startswith("  - "):
+            if current_list is None:
+                raise ValueError("catalog list item has no list field")
+            current_list.append(stripped[2:].strip())
+        elif current is not None and raw.startswith("  ") and ":" in stripped:
+            key, raw_value = stripped.split(":", 1)
+            value = raw_value.strip()
+            if not value:
+                current_list = []
+                current[key] = current_list
+            elif value == "[]":
+                current[key] = []
+                current_list = None
+            else:
+                current[key] = value
+                current_list = None
+        elif not raw.startswith(" ") and ":" in raw:
+            key, raw_value = raw.split(":", 1)
+            value = raw_value.strip()
+            if key == collection and not value:
+                root[key] = items
+            else:
+                root[key] = int(value) if value.isdigit() else value
     return root
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class TaskExecutionReceipt:
     task_id: str
     skill: str
     batch: str
-    title: str
-    status: str
-    deliverables: Dict[str, Any]
-    acceptance_criteria: str
-    acceptance_verified: bool
-    execution_duration_s: float
-    content_digest: str
+    source_status: str
+    execution_state: str
+    handler_state: str | None
+    handler_code: str | None
+    result_digest: str | None
+    artifact_digest: str | None
+    evidence_state: str
+    acceptance_state: str
+    external_evidence_status: str
+    independent_evidence_status: str
+    certification_status: str
+    blockers: tuple[str, ...]
+    receipt_digest: str
+
 
 class ProjectIntelligenceTaskRunner:
-    """Automated execution engine for the 500 Project Intelligence tasks (ELMOS-PI-00-T01 to ELMOS-PI-49-T10)."""
+    """Bind each source task to its exact handler without manufacturing success."""
 
-    DEFAULT_TASKS_PATH = Path(__file__).resolve().parents[5] / 'skills' / 'elmos-project-intelligence-skills-v1.1.0' / 'backlog' / 'tasks.yaml'
+    DEFAULT_TASKS_PATH = (
+        Path(__file__).resolve().parents[5]
+        / "skills/elmos-project-intelligence-skills-v1.1.0/backlog/tasks.yaml"
+    )
 
-    def __init__(self, tasks_path: Optional[Path | str] = None):
-        path = Path(tasks_path) if tasks_path else self.DEFAULT_TASKS_PATH
-        if not path.is_file():
-            # Search alternative paths
-            candidates = [
-                Path('skills/elmos-project-intelligence-skills-v1.1.0/backlog/tasks.yaml'),
-                Path('../skills/elmos-project-intelligence-skills-v1.1.0/backlog/tasks.yaml'),
-            ]
-            for c in candidates:
-                if c.is_file():
-                    path = c
-                    break
-        self.tasks_path = path
-        self.tasks: Dict[str, Dict[str, Any]] = {}
-        self.skill_tasks: Dict[str, List[Dict[str, Any]]] = {}
-        self.batch_tasks: Dict[str, List[Dict[str, Any]]] = {}
+    def __init__(
+        self,
+        tasks_path: Path | str | None = None,
+        *,
+        service: ProjectIntelligenceService | None = None,
+    ) -> None:
+        self.tasks_path = Path(tasks_path) if tasks_path else self.DEFAULT_TASKS_PATH
+        self.service = service
+        self.tasks: dict[str, dict[str, Any]] = {}
+        self.skill_tasks: dict[str, list[dict[str, Any]]] = {}
+        self.batch_tasks: dict[str, list[dict[str, Any]]] = {}
         self._load_tasks()
 
     def _load_tasks(self) -> None:
-        if not self.tasks_path.is_file():
-            raise FileNotFoundError(f"Tasks file not found at {self.tasks_path}")
-        with open(self.tasks_path, 'r', encoding='utf-8') as f:
-            data = _parse_yaml_fallback(f.read())
-        task_list = data.get('tasks', [])
-        for t in task_list:
-            tid = t['id']
-            self.tasks[tid] = t
-            skill = t.get('skill', 'unknown')
-            batch = t.get('batch', 'unknown')
-            self.skill_tasks.setdefault(skill, []).append(t)
-            self.batch_tasks.setdefault(batch, []).append(t)
+        if not self.tasks_path.is_file() or self.tasks_path.is_symlink():
+            raise FileNotFoundError(f"task catalog is unavailable: {self.tasks_path}")
+        data = _parse_catalog(self.tasks_path.read_text(encoding="utf-8"), "tasks")
+        rows = data.get("tasks")
+        if data.get("task_count") != 500 or not isinstance(rows, list) or len(rows) != 500:
+            raise ValueError("task catalog must contain exactly 500 declared tasks")
+        for row in rows:
+            if not isinstance(row, dict):
+                raise ValueError("task catalog row must be an object")
+            task_id, skill = row.get("id"), row.get("skill")
+            if not isinstance(task_id, str) or task_id in self.tasks:
+                raise ValueError("task identifiers must be unique strings")
+            if not isinstance(skill, str) or skill not in SKILL_REGISTRY:
+                raise ValueError(f"task references an unknown exact Skill: {task_id}")
+            if row.get("status") != "todo":
+                raise ValueError("source task status must remain todo")
+            dependencies = row.get("depends_on", [])
+            if not isinstance(dependencies, list) or any(not isinstance(item, str) for item in dependencies):
+                raise ValueError("task dependencies must be an identifier list")
+            self.tasks[task_id] = row
+            self.skill_tasks.setdefault(skill, []).append(row)
+            self.batch_tasks.setdefault(str(row.get("batch", "")), []).append(row)
+        if set(self.skill_tasks) != set(SKILL_REGISTRY) or any(
+            len(rows) != 10 for rows in self.skill_tasks.values()
+        ):
+            raise ValueError("task catalog must bind ten tasks to every exact Skill")
+        for task_id, row in self.tasks.items():
+            for dependency in row.get("depends_on", []):
+                if (
+                    dependency not in self.tasks
+                    and dependency not in SKILL_REGISTRY
+                ) or dependency == task_id:
+                    raise ValueError(f"task dependency is unresolved: {task_id}")
 
-    def execute_task(self, task_id: str, context: Optional[Dict[str, Any]] = None) -> TaskExecutionReceipt:
-        task = self.tasks.get(task_id)
-        if not task:
-            raise KeyError(f"Task {task_id} not found")
-
-        start_time = time.time()
-        skill = task.get('skill', 'elmos-insight-orchestrator')
-        batch = task.get('batch', '')
-        title = task.get('title', '')
-        deliverable_names = task.get('deliverables', [])
-        acceptance = task.get('acceptance', '')
-
-        # Generate concrete deliverables
-        deliverables: Dict[str, Any] = {}
-        h = hashlib.sha256(f"{task_id}:{skill}:{title}".encode('utf-8')).hexdigest()[:12]
-
-        for d_name in deliverable_names:
-            deliverables[d_name] = self._generate_deliverable(d_name, task_id, skill, h)
-
-        duration = time.time() - start_time
-        content_digest = f"sha256:{hashlib.sha256(str(sorted(deliverables.items())).encode('utf-8')).hexdigest()}"
-
+    @staticmethod
+    def _receipt(
+        row: Mapping[str, Any],
+        *,
+        execution_state: str,
+        handler_state: str | None = None,
+        handler_code: str | None = None,
+        result_digest: str | None = None,
+        artifact_digest: str | None = None,
+        evidence_state: str = "NOT_RUN",
+        blockers: tuple[str, ...] = (),
+    ) -> TaskExecutionReceipt:
+        document = {
+            "task_id": str(row["id"]),
+            "skill": str(row["skill"]),
+            "batch": str(row.get("batch", "")),
+            "source_status": str(row["status"]),
+            "execution_state": execution_state,
+            "handler_state": handler_state,
+            "handler_code": handler_code,
+            "result_digest": result_digest,
+            "artifact_digest": artifact_digest,
+            "evidence_state": evidence_state,
+            "acceptance_state": "NOT_RUN",
+            "external_evidence_status": "NOT_RUN",
+            "independent_evidence_status": "NOT_RUN",
+            "certification_status": "NOT_CERTIFIED",
+            "blockers": list(blockers),
+        }
         return TaskExecutionReceipt(
-            task_id=task_id,
-            skill=skill,
-            batch=batch,
-            title=title,
-            status="COMPLETED",
-            deliverables=deliverables,
-            acceptance_criteria=acceptance,
-            acceptance_verified=True,
-            execution_duration_s=round(duration, 4),
-            content_digest=content_digest,
+            task_id=document["task_id"],
+            skill=document["skill"],
+            batch=document["batch"],
+            source_status=document["source_status"],
+            execution_state=execution_state,
+            handler_state=handler_state,
+            handler_code=handler_code,
+            result_digest=result_digest,
+            artifact_digest=artifact_digest,
+            evidence_state=evidence_state,
+            acceptance_state="NOT_RUN",
+            external_evidence_status="NOT_RUN",
+            independent_evidence_status="NOT_RUN",
+            certification_status="NOT_CERTIFIED",
+            blockers=blockers,
+            receipt_digest=canonical_digest(canonical_value(document)),
         )
 
-    def _generate_deliverable(self, name: str, task_id: str, skill: str, h: str) -> Dict[str, Any]:
-        clean = name.strip()
-        now = time.time()
+    def prepare_task(self, task_id: str) -> TaskExecutionReceipt:
+        row = self.tasks.get(task_id)
+        if row is None:
+            raise KeyError(f"unknown task: {task_id}")
+        return self._receipt(
+            row,
+            execution_state="NOT_RUN",
+            blockers=("EXACT_RUNTIME_REQUEST_REQUIRED", "ACCEPTANCE_EVIDENCE_REQUIRED"),
+        )
 
-        if '执行计划' in clean or '依赖图' in clean:
-            return {
-                'plan_id': f'plan-{task_id}-{h}',
-                'skill': skill,
-                'graph': {
-                    'nodes': [f'{task_id}-init', f'{task_id}-transform', f'{task_id}-verify'],
-                    'edges': [[f'{task_id}-init', f'{task_id}-transform'], [f'{task_id}-transform', f'{task_id}-verify']],
-                },
-                'target_state': 'VERIFIED',
-                'created_at': now,
-            }
+    def execute_task(
+        self,
+        task_id: str,
+        request: Mapping[str, Any] | None = None,
+        *,
+        idempotency_key: str | None = None,
+        dependency_receipts: Mapping[str, TaskExecutionReceipt] | None = None,
+        dependency_skills_executed: tuple[str, ...] = (),
+    ) -> TaskExecutionReceipt:
+        row = self.tasks.get(task_id)
+        if row is None:
+            raise KeyError(f"unknown task: {task_id}")
+        if request is None:
+            return self.prepare_task(task_id)
+        if self.service is None:
+            return self._receipt(row, execution_state="BLOCKED", blockers=("TRUSTED_LOCAL_SERVICE_REQUIRED",))
+        if not idempotency_key:
+            raise ValueError("idempotency_key is required for task execution")
+        RuntimeRequest.parse(request)
+        supplied = dependency_receipts or {}
+        missing = [
+            dependency
+            for dependency in row.get("depends_on", [])
+            if (
+                dependency in self.tasks
+                and (
+                    dependency not in supplied
+                    or supplied[dependency].execution_state != "LOCAL_EXECUTED"
+                )
+            )
+            or (
+                dependency in SKILL_REGISTRY
+                and dependency not in dependency_skills_executed
+            )
+        ]
+        if missing:
+            return self._receipt(
+                row,
+                execution_state="BLOCKED",
+                blockers=tuple(f"DEPENDENCY_NOT_EXECUTED:{item}" for item in missing),
+            )
+        result = self.service.execute(str(row["skill"]), request, idempotency_key=idempotency_key)
+        state = "BLOCKED" if result["state"] == "BLOCKED" else "LOCAL_EXECUTED"
+        blockers = (
+            (f"HANDLER_BLOCKED:{result['code']}",)
+            if state == "BLOCKED"
+            else ("PRODUCT_ACCEPTANCE_NOT_RUN",)
+        )
+        return self._receipt(
+            row,
+            execution_state=state,
+            handler_state=result["state"],
+            handler_code=result["code"],
+            result_digest=result.get("result_digest"),
+            artifact_digest=result.get("artifact_digest"),
+            evidence_state=str(result.get("evidence_state", "NOT_RUN")),
+            blockers=blockers,
+        )
 
-        if '任务' in clean or '批次' in clean:
-            return {
-                'batch_id': f'batch-{task_id}',
-                'subtasks': [
-                    {'id': f'{task_id}-s1', 'name': 'Analyze scope', 'status': 'DONE'},
-                    {'id': f'{task_id}-s2', 'name': 'Execute translation', 'status': 'DONE'},
-                    {'id': f'{task_id}-s3', 'name': 'Verify invariants', 'status': 'DONE'},
-                ],
-                'completed_count': 3,
-            }
-
-        if '实现' in clean or '代码' in clean or '变更' in clean:
-            return {
-                'change_id': f'chg-{h}',
-                'patch_digest': f'sha256:{hashlib.sha256(h.encode("utf-8")).hexdigest()}',
-                'files_affected': [f'src/{skill.replace("-", "_")}/handler.py'],
-                'lines_added': 50,
-                'lines_removed': 2,
-                'verified': True,
-            }
-
-        if '测试' in clean or '证据' in clean or '报告' in clean:
-            return {
-                'evidence_id': f'ev-{h}',
-                'tests_passed': 12,
-                'invariants_held': True,
-                'coverage_pct': 96.5,
-                'evidence_status': 'LOCAL_EXECUTED_SELF_ATTESTED',
-                'certification_status': 'NOT_CERTIFIED',
-            }
-
-        if '模型' in clean or '架构' in clean or '图' in clean:
-            return {
-                'model_id': f'model-{h}',
-                'entities_count': 24,
-                'relations_count': 48,
-                'c4_level': 'Component',
-                'consistent': True,
-            }
-
-        # Generic structured deliverable
-        return {
-            'deliverable_name': name,
-            'task_id': task_id,
-            'skill': skill,
-            'digest': f'sha256:{h}',
-            'status': 'VERIFIED',
-            'timestamp': now,
-        }
-
-    def execute_batch(self, batch_id: str) -> List[TaskExecutionReceipt]:
-        tasks = self.batch_tasks.get(batch_id, [])
-        return [self.execute_task(t['id']) for t in tasks]
-
-    def execute_skill(self, skill_name: str) -> List[TaskExecutionReceipt]:
-        tasks = self.skill_tasks.get(skill_name, [])
-        return [self.execute_task(t['id']) for t in tasks]
-
-    def execute_all_tasks(self) -> Dict[str, TaskExecutionReceipt]:
-        receipts = {}
-        for tid in self.tasks.keys():
-            receipts[tid] = self.execute_task(tid)
-        return receipts
+    def prepare_all_tasks(self) -> dict[str, TaskExecutionReceipt]:
+        return {task_id: self.prepare_task(task_id) for task_id in self.tasks}

@@ -4,8 +4,8 @@ This repository-owned, standard-library Python engine supplies bounded code-leve
 
 The implementation is intentionally narrower than the source package's complete product vision:
 
-- 20 Skills have deterministic local analysis or artifact handlers.
-- 25 Skills have real partial local handlers while named browser, compiler, provider, runtime, or device adapters remain unavailable.
+- 19 Skills have deterministic local analysis or artifact handlers.
+- 26 Skills have real partial local handlers while named browser, compiler, provider, runtime, or device adapters remain unavailable.
 - 5 Skills validate and persist plans only; they do not mutate Git, call connectors, deploy, certify, or start a debug sandbox.
 - Every result keeps external evidence `NOT_RUN` and certification `NOT_CERTIFIED`.
 
@@ -19,6 +19,10 @@ The runtime provides:
 - an exact 50-handler qualification contract that rejects result-schema, digest, unavailable-capability, and authority-field drift;
 - a qualification-time best-effort Python audit guard that blocks selected audited filesystem, process, and network events during handler dispatch;
 - planning-only boundaries for SCM, MCP/connectors, deployment, certification, and sandbox execution.
+- a fail-closed 500-task campaign ledger that invokes only the task's exact Skill handler and keeps product acceptance `NOT_RUN` after bounded local execution;
+- a 248-scenario acceptance gate that requires scope-bound evidence, a holdout artifact, an independent verifier identity, and a verified receipt before a scenario can pass;
+- an exact ten-stage host adapter registry with no default provider and no exception-to-success fallback;
+- tenant/project/campaign-scoped SQLite idempotency, checkpoints, restart replay, uncertain-outcome reconciliation, and explicit unverified cost state.
 
 Use the repository target for integration and local qualification:
 

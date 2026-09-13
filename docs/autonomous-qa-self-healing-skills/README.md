@@ -107,6 +107,11 @@ manifest are importer-owned files under `generated/`. The surrounding Markdown
 documents are reviewer-owned and are intentionally outside the importer's
 replacement boundary.
 
+The digest-bound local qualification receipt executes all 40 exact handlers
+with reviewed bounded fixtures. Its current result classes are 6 `SUCCEEDED`,
+24 `PARTIAL`, and 10 `BLOCKED`; blocked results prove the fail-closed trusted
+binder boundary ran, not that the corresponding external operation completed.
+
 Package integrity, local implementation, external runtime evidence, and
 certification are independent states:
 

@@ -18,7 +18,7 @@ metadata:
   runtime_phase: "publishing"
   runtime_mutating: "true"
   runtime_operation: "external-plan:elmos_autonomous_qa.domain.plan_ci"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_NOT_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED_SELF_ATTESTED"
   external_evidence: "NOT_RUN"
   certification: "NOT_CERTIFIED"
 ---
@@ -41,5 +41,5 @@ This installed Skill is a repository-owned dispatch interface. The immutable sou
 - Exact runtime phase is `publishing`; mutating declaration is `true`.
 - The source package tools, replay scripts, SQL, prompts, and workflows are untrusted input and are never executed by the importer.
 - Two malformed null policy sections are preserved as source findings; the immutable source is not silently repaired.
-- Runtime evidence is `LOCAL_HANDLER_BOUND_NOT_EXECUTED`, external evidence is `NOT_RUN`, and certification is `NOT_CERTIFIED`.
+- Runtime evidence is `LOCAL_EXECUTED_SELF_ATTESTED`, external evidence is `NOT_RUN`, and certification is `NOT_CERTIFIED`.
 - Missing, blocked, partial, skipped, synthetic, or self-verified evidence never establishes success or certification.

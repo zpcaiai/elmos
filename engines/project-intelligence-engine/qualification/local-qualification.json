@@ -10,10 +10,10 @@
   "effect_guard_limitations": "Python audit events are fail-closed when observed but are not an OS sandbox and cannot account for effects through inherited descriptors, native extensions, or events the interpreter does not emit.",
   "engine_files": [
     {
-      "bytes": 2503,
+      "bytes": 3095,
       "mode": "0644",
       "path": "README.md",
-      "sha256": "sha256:4309bf575daad542185d341dcecaa05e358bb3158a8e9048b5b78782eed9500d"
+      "sha256": "sha256:97005f91d2fcbbf5f4eb7780b624eb1f868959dee7d34eebe1a113f8bbd31476"
     },
     {
       "bytes": 638,
@@ -274,34 +274,34 @@
       "sha256": "sha256:a2e143894e9876789bf38126838290a36072b52de16333683c52ffc67bbc5164"
     },
     {
-      "bytes": 444,
+      "bytes": 503,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/task_execution/__init__.py",
-      "sha256": "sha256:21c897a078b19b362e242c5f1d5834a02a77f1f064b6196cb7144662bbc0ad12"
+      "sha256": "sha256:6e981081b96ae933c3b9de0c5c63f24f06daaa45f7947243132fb8da8609eece"
     },
     {
-      "bytes": 6637,
+      "bytes": 8608,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/task_execution/scenario_verifier.py",
-      "sha256": "sha256:f7f645e60e52466cca036d70ed294543da7cc8fe8210e04cd17f4ff8f345d061"
+      "sha256": "sha256:74a56f38b4285af6f15b003884d2e1d9a43c045af6d2eb04d05a6ba1cd9ca333"
     },
     {
-      "bytes": 11656,
+      "bytes": 8014,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/task_execution/subsystem_pipelines.py",
-      "sha256": "sha256:f32ee1ce83f20356060dd6957de93331432ba3de9848ad0daffa93cbb2abb1c2"
+      "sha256": "sha256:e73c9030a2a657feb2f3d8e282b99cde7d6013c9df79cdc619ba455a9fad47f1"
     },
     {
-      "bytes": 2034,
+      "bytes": 9167,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/task_execution/task_resilience.py",
-      "sha256": "sha256:ecf5a27ac3f0768abc0681d6df53d81d629a3c09f562dbd55c4b8f708e4fdf37"
+      "sha256": "sha256:404de5c533f7a8d3ed0b60b2dd01192cedf946506fd7b01d72441e71ecdd376c"
     },
     {
-      "bytes": 8570,
+      "bytes": 10355,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/task_execution/task_runner.py",
-      "sha256": "sha256:97ab25153f0ba9e046f151fd57b29c3347c09371ee53abb3f364a668373f36a9"
+      "sha256": "sha256:e2e497e84836df2af0967dae2e2ec2457673758fc6676c3cefdf6b51a8c29ae5"
     },
     {
       "bytes": 8529,
@@ -310,16 +310,16 @@
       "sha256": "sha256:8fee5a40ce40528eb320906c0d2cffcff5e9517001e8f55d9a0ff2377274b7e7"
     },
     {
-      "bytes": 2326,
+      "bytes": 3889,
       "mode": "0644",
       "path": "tests/test_248_acceptance_scenarios.py",
-      "sha256": "sha256:f36c017f52db80a0332da64d8a6cd0ec7977196daf56c64dbc214bfcf38a6c1c"
+      "sha256": "sha256:e124d0640afb3138fef19f92773b5eebfebc791f050f9fabc5bca3307b963b60"
     },
     {
-      "bytes": 1511,
+      "bytes": 3061,
       "mode": "0644",
       "path": "tests/test_500_tasks_execution.py",
-      "sha256": "sha256:155cc7e9b751370830fbda1677cb3365677732c18141eaed2a11bc46e19b8ecf"
+      "sha256": "sha256:fda8f6786ed3b94fa7d753dcf611a99b947cac6d72a5a62b9a0f0120660f5848"
     },
     {
       "bytes": 12113,
@@ -400,10 +400,16 @@
       "sha256": "sha256:e2ec8f2f1d208ce79935f8435a691b55480aa8708bbe46fc06f983545cd4f221"
     },
     {
-      "bytes": 1291,
+      "bytes": 3157,
       "mode": "0644",
       "path": "tests/test_subsystem_pipelines.py",
-      "sha256": "sha256:adabcb289716784234ae962eb2d2bbce89b62e7581eec37b54e37af2fed808a7"
+      "sha256": "sha256:68f1c3edd8d8c56d13ee1fe282f525ebaabb7aa778ee7e9fe9c83393ac452c17"
+    },
+    {
+      "bytes": 3704,
+      "mode": "0644",
+      "path": "tests/test_task_resilience.py",
+      "sha256": "sha256:e1b86a7a77c6f1d9dd5910fa094a3bc42ab3bce04db48aef7ae930af5a7a3683"
     },
     {
       "bytes": 43701,
@@ -412,7 +418,7 @@
       "sha256": "sha256:aed6f14d43e0bfcb00874300f598dd0bee3767acc8fcd5fcfc60d2b74fb66217"
     }
   ],
-  "engine_tree_sha256": "sha256:2e086cd90886aaf7005897a63fafcbc26d85e3ae6c3a5487ba218be80973443d",
+  "engine_tree_sha256": "sha256:49245ce6e74ecf4921efddd483aae57112215765cd0797d22f2e0b289fcd9d70",
   "executor": "repository-local-self-attested",
   "external_evidence": "NOT_RUN",
   "fixture_path": "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -423,7 +429,7 @@
   "qualification_status": "PASSED",
   "qualifier_path": "tooling/qualify_project_intelligence_runtime.py",
   "qualifier_sha256": "sha256:eaa5c2daa613d48b8a5a213418a6ef8f0843fc27c0d3f9231f3724fec8c2591c",
-  "receipt_digest": "sha256:8e8a1f5f997d7e2a9ad72532c42022191546015246d89cfa6c01dd5cee4cd0cf",
+  "receipt_digest": "sha256:8079f82b9d02ee69d023b401a3073675ddab224c893267a3c36eeef232e82be9",
   "replay_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 tooling/qualify_project_intelligence_runtime.py --check",
   "results": [
     {
@@ -3503,17 +3509,17 @@
   ],
   "runtime_environment": {
     "byteorder": "little",
-    "cache_tag": "cpython-312",
-    "executable": "/Users/stephen/.local/share/uv/python/cpython-3.12.12-macos-aarch64-none/bin/python3.12",
-    "executable_sha256": "sha256:3874a935f7242b660e652d35c25a1b87415fcfea3ee191ff262fcca5c50102c5",
-    "hexversion": 51121392,
+    "cache_tag": "cpython-314",
+    "executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
+    "executable_sha256": "sha256:c015ab131972822e27ed108cf353582af6ca2fd7daf6296789576c7e7d1ad61a",
+    "hexversion": 51250672,
     "implementation": "cpython",
     "machine": "arm64",
     "platform": "darwin",
     "release_level": "final",
-    "resolved_executable": "/Users/stephen/.local/share/uv/python/cpython-3.12.12-macos-aarch64-none/bin/python3.12",
+    "resolved_executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
     "serial": 0,
-    "version": "3.12.12"
+    "version": "3.14.5"
   },
   "schema_version": "elmos.project-intelligence.local-qualification.v2",
   "source_package": "elmos-project-intelligence-skills",

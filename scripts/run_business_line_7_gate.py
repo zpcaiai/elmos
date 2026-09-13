@@ -7,8 +7,9 @@ Strictly verifies:
 2. Project Intelligence Deep Analysis Engines & 14 Subsystem Engines (engines/project-intelligence-engine)
 3. Foundry High-Frequency Core Skills & 9 Subsystem Engines (engines/knowledge-skill-model-foundry-engine)
 4. Anti-cheating invariants: Zero fake assertions (assert True, 1==1), zero test skips, cryptographic Merkle & digest verification
-5. Code volume requirement: Validates >= 85,000 LOC of genuine repository-owned Python and Go implementation
-6. Issues signed certification receipt to certification/reports/business-line-7-autonomous-qa-intelligence-certification.json
+5. Code volume requirement: Validates >= 85,000 LOC of repository-owned Python and Go implementation
+6. Exact bounded-local evidence: QA 6/24/10, PI 19/26/5, Foundry 66/1,244/0
+7. Writes a digest-bound local gate report. It does not sign or certify external evidence.
 """
 
 from __future__ import annotations
@@ -177,6 +178,105 @@ def audit_anti_cheating(test_files: list[str]) -> dict[str, Any]:
     }
 
 
+def load_json(relative_path: str) -> dict[str, Any]:
+    path = ROOT / relative_path
+    if not path.is_file() or path.is_symlink():
+        raise ValueError(f"evidence file is missing or unsafe: {relative_path}")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError(f"evidence file must contain an object: {relative_path}")
+    return data
+
+
+def validate_capability_evidence(blockers: list[str]) -> dict[str, Any]:
+    """Validate exact local coverage without promoting external evidence."""
+
+    try:
+        qa = load_json(
+            "engines/autonomous-qa-engine/qualification/local-qualification.json"
+        )
+        pi = load_json("docs/project-intelligence-skills/implementation-matrix.json")
+        foundry = load_json(
+            "docs/knowledge-skill-model-foundry/IMPLEMENTATION_MATRIX.json"
+        )
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        blockers.append(str(exc))
+        return {}
+
+    expected = {
+        "qa": {
+            "skill_count": 40,
+            "state_counts": {"SUCCEEDED": 6, "PARTIAL": 24, "BLOCKED": 10},
+            "runtime_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+            "external_evidence_status": "NOT_RUN",
+            "independent_evidence_status": "NOT_RUN",
+            "certification_status": "NOT_CERTIFIED",
+        },
+        "pi": {
+            "skills": 50,
+            "capability_state_counts": {"LOCAL": 19, "PARTIAL": 26, "PLAN": 5},
+            "source_tasks": 500,
+            "source_task_status": "todo",
+            "source_acceptance_scenarios": 248,
+            "source_acceptance_execution_status": "NOT_RUN",
+            "external_evidence_status": "NOT_RUN",
+            "certification_status": "NOT_CERTIFIED",
+        },
+        "foundry": {
+            "atomic_skills": 1310,
+            "local_semantic_handlers": 66,
+            "host_route_bound": 1244,
+            "whole_skills_complete": 0,
+            "prepare_only": 0,
+            "external_evidence_status": "NOT_RUN",
+            "independent_evidence_status": "NOT_RUN",
+            "certification_status": "NOT_CERTIFIED",
+        },
+    }
+
+    actual = {
+        "qa": {
+            key: qa.get(key)
+            for key in (
+                "skill_count",
+                "state_counts",
+                "runtime_evidence_status",
+                "external_evidence_status",
+                "independent_evidence_status",
+                "certification_status",
+            )
+        },
+        "pi": {
+            key: pi.get("summary", {}).get(key)
+            for key in expected["pi"]
+        },
+        "foundry": {
+            **{
+                key: foundry.get("summary", {}).get(key)
+                for key in (
+                    "atomic_skills",
+                    "local_semantic_handlers",
+                    "host_route_bound",
+                    "whole_skills_complete",
+                    "prepare_only",
+                )
+            },
+            "external_evidence_status": foundry.get("external_evidence_status"),
+            "independent_evidence_status": foundry.get(
+                "independent_evidence_status"
+            ),
+            "certification_status": foundry.get("certification_status"),
+        },
+    }
+    for domain, expected_values in expected.items():
+        if actual[domain] != expected_values:
+            blockers.append(
+                f"{domain} evidence boundary drift: expected {expected_values!r}, "
+                f"got {actual[domain]!r}"
+            )
+    return actual
+
+
 def main() -> int:
     print("================================================================================")
     print("  ELMOS CONSERVATIVE GATE: BUSINESS LINE 7 (Autonomous QA & Core Skills)")
@@ -184,6 +284,7 @@ def main() -> int:
 
     now = datetime.datetime.now(datetime.timezone.utc).isoformat()
     blockers: list[str] = []
+    capability_evidence = validate_capability_evidence(blockers)
 
     # 1. Measure Code Volume
     bl7_dirs = [
@@ -221,7 +322,8 @@ def main() -> int:
         "tests/autonomous-qa-self-healing/test_autonomous_qa_subsystems.py",
         "tests/project-intelligence-skills/test_project_intelligence_complete.py",
         "tests/project-intelligence-skills/test_project_intelligence_subsystems.py",
-        "tests/knowledge-skill-model-foundry-skills/test_foundry_core_skills_complete.py",
+        "tests/knowledge-skill-model-foundry-skills/test_engine_service.py",
+        "tests/knowledge-skill-model-foundry-skills/test_qualification_receipt.py",
         "tests/knowledge-skill-model-foundry-skills/test_foundry_subsystems.py",
     ]
     anti_cheating = audit_anti_cheating(test_files_to_audit)
@@ -267,8 +369,8 @@ def main() -> int:
             {"PYTHONPATH": "engines/project-intelligence-engine/src"},
         ),
         (
-            "Pillar 3: Foundry High-Frequency Core Skills & Handlers",
-            ["python3", "-m", "unittest", "tests/knowledge-skill-model-foundry-skills/test_foundry_core_skills_complete.py"],
+            "Pillar 3: Foundry Engine Service & Bounded Local Handlers",
+            ["python3", "-m", "unittest", "tests/knowledge-skill-model-foundry-skills/test_engine_service.py"],
             None,
             {"PYTHONPATH": "engines/knowledge-skill-model-foundry-engine/src"},
         ),
@@ -291,14 +393,14 @@ def main() -> int:
             {"PYTHONPATH": "engines/knowledge-skill-model-foundry-engine/src"},
         ),
         (
-            "Pillar 3: 1,244 Brokered Skills Automated Execution Broker & Handlers",
-            ["python3", "-m", "unittest", "discover", "-s", "engines/knowledge-skill-model-foundry-engine/tests", "-p", "test_automated_*.py"],
+            "Pillar 3: 1,244 Host-Route-Bound Skill Contracts & Broker Controls",
+            ["python3", "-m", "unittest", "engines/knowledge-skill-model-foundry-engine/tests/test_native_semantics.py", "engines/knowledge-skill-model-foundry-engine/tests/test_provider_runtime.py", "engines/knowledge-skill-model-foundry-engine/tests/test_external_integration_bindings.py"],
             None,
             {"PYTHONPATH": "engines/knowledge-skill-model-foundry-engine/src"},
         ),
         (
-            "Pillar 2: 500 Intelligence Tasks, 248 Acceptance Scenarios & Subsystems Runner",
-            ["python3", "-m", "unittest", "engines/project-intelligence-engine/tests/test_500_tasks_execution.py", "engines/project-intelligence-engine/tests/test_248_acceptance_scenarios.py", "engines/project-intelligence-engine/tests/test_subsystem_pipelines.py"],
+            "Pillar 2: 500-Task Inventory, 248-Scenario Evidence Gate & Recovery",
+            ["python3", "-m", "unittest", "engines/project-intelligence-engine/tests/test_500_tasks_execution.py", "engines/project-intelligence-engine/tests/test_248_acceptance_scenarios.py", "engines/project-intelligence-engine/tests/test_subsystem_pipelines.py", "engines/project-intelligence-engine/tests/test_task_resilience.py"],
             None,
             {"PYTHONPATH": "engines/project-intelligence-engine/src"},
         ),
@@ -343,21 +445,23 @@ def main() -> int:
         "Foundry 9 subsystems implement polyglot transpiler, prompt defense, license compliance, metamorphic fuzz, and model routing",
         "Real LLM API Gateway supports multi-provider routing (OpenAI, Anthropic, Gemini, DeepSeek), token-bucket rate limiting, circuit breakers, and streaming SSE",
         "Distributed Task Scheduler enforces Tarjan DAG ordering, worker pool lease fencing, SQLite CAS checkpoints, exponential backoff with full jitter, DLQ, and compensation",
-        "Automated Execution Broker resolves all 1,244 brokered skills with typed stage traces, confirmed tool receipts, and verified provider receipts",
-        "Task Runner and Scenario Verifier execute all 500 project intelligence tasks and verify all 248 acceptance scenarios with cryptographic evidence hashes",
-        "All local semantic workflows execute with zero empty skeletons or idling stubs",
+        "Foundry binds 1,244 exact host routes but requires a trusted broker, permit, durable store, and verified provider receipt before execution evidence exists",
+        "Project Intelligence validates all 500 task contracts while preserving source status todo until exact runtime execution occurs",
+        "Project Intelligence keeps 248 acceptance scenarios NOT_RUN until scope-bound holdout evidence and a distinct trusted verifier receipt are supplied",
+        "Autonomous QA executes all 40 exact local fixtures and records 6 succeeded, 24 partial, and 10 blocked outcomes without certification promotion",
+        "All three domains preserve external and independent evidence as NOT_RUN and certification as NOT_CERTIFIED",
     ]
 
     # Final Gate Verdict: Local engineering execution only; non-self-certifying
     status = "LOCAL_GATE_PASSED" if not blockers else "FAILED"
-    decision = "IMPLEMENTATION_READY_FOR_EXTERNAL_CERTIFICATION" if not blockers else "BLOCKED"
+    decision = "READY_FOR_EXTERNAL_GATE" if not blockers else "BLOCKED"
 
     report_payload = {
         "business_line_id": 7,
         "business_line_name": "自主 QA、情报与核心技能 (Autonomous QA, Project Intelligence & Core Skills)",
         "decision": decision,
         "status": status,
-        "local_execution_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+        "local_execution_status": "BOUNDED_LOCAL_EXECUTION",
         "external_evidence_status": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
         "verified_at": now,
@@ -370,6 +474,7 @@ def main() -> int:
             "tests_passed": total_passed_tests,
             "zero_tolerance_violations": len(anti_cheating["violations"]),
         },
+        "capability_evidence": capability_evidence,
         "loc_by_component": loc_metrics,
         "suites": suite_reports,
         "anti_cheating": anti_cheating,
@@ -395,8 +500,8 @@ def main() -> int:
     print(f"  - Report saved to: {REPORT_PATH}")
     print(f"  - Local Report Digest: {digest}")
     print(f"  - Gate Decision: {decision}")
-    print(f"  - External Evidence Status: NOT_RUN")
-    print(f"  - Production Certification: NOT_CERTIFIED")
+    print("  - External Evidence Status: NOT_RUN")
+    print("  - Production Certification: NOT_CERTIFIED")
     print("================================================================================")
 
     if blockers:
@@ -405,8 +510,8 @@ def main() -> int:
             print(f"  [X] {b}")
         return 1
 
-    print("\nSUCCESS: Business Line 7 local engineering implementation and suites verified.")
-    print("STATUS: IMPLEMENTATION READY FOR EXTERNAL CERTIFICATION (external evidence remains NOT_RUN / NOT_CERTIFIED).")
+    print("\nSUCCESS: Business Line 7 bounded local implementation and evidence controls verified.")
+    print("STATUS: READY_FOR_EXTERNAL_GATE (external evidence remains NOT_RUN / NOT_CERTIFIED).")
     return 0
 
 
