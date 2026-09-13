@@ -15,6 +15,7 @@ from .retrieval import RetrievalQuery, SearchDocument
 
 _INDEX_NAME = re.compile(r"^[a-z0-9][a-z0-9._-]{0,254}$")
 _EXACT_VERSION = re.compile(r"^\d+\.\d+\.\d+(?:[-+][A-Za-z0-9.-]+)?$")
+_DIFY_WORKFLOW_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 _SENSITIVE_ATTRIBUTE = re.compile(r"(api.?key|authorization|credential|secret|password|prompt|content|source)", re.I)
 
 
@@ -336,6 +337,8 @@ class DifySettings:
             value = require_string(getattr(self, field_name), f"dify.{field_name}")
             if field_name == "api_key" and value.upper() in {"SET_ME", "CHANGEME", "PLACEHOLDER"}:
                 raise ContractError("dify_not_configured", "Dify API key is not configured")
+        if not _DIFY_WORKFLOW_ID.fullmatch(self.workflow_id):
+            raise ContractError("invalid_dify_workflow_id", "Dify workflow_id must be one URL-safe path segment")
         if not _EXACT_VERSION.fullmatch(self.expected_version):
             raise ContractError("invalid_dify_version", "Dify expected_version must be exact")
         if not 1 <= self.timeout_seconds <= 300:
@@ -412,7 +415,7 @@ class DifyWorkflowClient:
         )
         payload = {"inputs": payload_inputs, "response_mode": "blocking", "user": actor}
         response = self.client.post(
-            "/v1/workflows/run",
+            f"/v1/workflows/{self.settings.workflow_id}/run",
             headers={
                 "Authorization": f"Bearer {self.settings.api_key}",
                 "Content-Type": "application/json",
