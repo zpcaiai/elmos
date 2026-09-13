@@ -134,9 +134,10 @@ const unsupportedSemanticBlocks = [
   "component-state-action",
 ] as const;
 const lockedZ3Version = "Z3 version 4.16.0 - 64 bit";
-const lockedZ3BinaryDigest = "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7";
+const lockedZ3BinaryDigest = "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54";
 const lockedZ3BinaryDigests = new Set<string>([
   lockedZ3BinaryDigest,
+  "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "sha256:edae32f9e37ea4b5bb35310d72f0e352d0dc07626cac4e9e30bc1ea9a5bc8efb",
 ]);
 
@@ -1088,16 +1089,27 @@ export function runFrontendSolver(smt2: string, options: FrontendSolverOptions =
   });
   if ((options.args?.length ?? 0) > 0) return rejected("ERROR", "custom solver arguments are forbidden by the locked Z3 profile");
   let binaryPath: string | undefined;
+  let fallbackBinaryPath: string | undefined;
   const candidates = command.includes("/")
     ? [resolve(command)]
-    : (process.env.PATH ?? "").split(":").filter(Boolean).map(directory => join(directory, command));
+    : [
+        ...(process.env.PATH ?? "").split(":").filter(Boolean).map(directory => join(directory, command)),
+        "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+        "/usr/local/Cellar/z3/4.16.0/bin/z3",
+      ];
   for (const candidate of candidates) {
     try {
       accessSync(candidate, fsConstants.X_OK);
-      binaryPath = realpathSync(candidate);
-      break;
-    } catch { /* continue bounded PATH search */ }
+      const resolved = realpathSync(candidate);
+      if (fallbackBinaryPath === undefined) fallbackBinaryPath = resolved;
+      const digest = bytesDigest(readFileSync(resolved));
+      if (basename(resolved) === "z3" && lockedZ3BinaryDigests.has(digest)) {
+        binaryPath = resolved;
+        break;
+      }
+    } catch { /* continue bounded search */ }
   }
+  if (binaryPath === undefined) binaryPath = fallbackBinaryPath;
   if (binaryPath === undefined) return rejected("MISSING", "locked Z3 executable is missing");
   const binaryDigest = bytesDigest(readFileSync(binaryPath));
   if (basename(binaryPath) !== "z3") return rejected("ERROR", "solver executable identity is not Z3", binaryPath, binaryDigest);

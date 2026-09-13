@@ -291,7 +291,7 @@ def test_harness_emits_the_declared_observation_encoding(value_type: str, encodi
         [{"args": [case_value], "expected": case_value}],
         "migrated.kt",
     )
-    assert f'\\t{encoding}\\t' in harness
+    assert f"\\t{encoding}\\t" in harness
 
 
 def test_harness_compares_float_results_bit_exactly() -> None:
@@ -348,9 +348,7 @@ def test_harness_only_emits_the_helper_its_return_type_reaches() -> None:
         (False, "boolean", "false"),
     ],
 )
-def test_case_literals_are_rendered_by_canonical_type(
-    value: object, value_type: str, expected: str
-) -> None:
+def test_case_literals_are_rendered_by_canonical_type(value: object, value_type: str, expected: str) -> None:
     assert _kotlin_literal(value, value_type) == expected
 
 
@@ -389,9 +387,7 @@ def test_a_kotlin_sourced_semantic_ir_is_admitted() -> None:
                     "name": "identity",
                     "parameters": [{"name": "value", "type": "integer"}],
                     "return_type": "integer",
-                    "body": [
-                        {"kind": "return", "expression": {"kind": "name", "value": "value"}}
-                    ],
+                    "body": [{"kind": "return", "expression": {"kind": "name", "value": "value"}}],
                 }
             ],
             "diagnostics": [],

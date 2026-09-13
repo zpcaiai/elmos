@@ -5,16 +5,14 @@ Replaces heuristic regex string replacements with formal first-order logic SMT c
 2. Bitwidth & Arithmetic Overflow Safety: Uses Z3 BitVec (BV64, BV32, BV16, BV8) and Int theories to prove lack of overflow and generate checked arithmetic or widenings.
 3. Null Safety & Optionality Invariants: Solves null dereference constraints and synthesizes exact guard checks or unwraps.
 4. Memory Ownership & Borrow Conflict Resolution: Formulates aliasing invariants to solve for required .clone() placements or scope boundaries.
-"""
+"""  # noqa: E501
 
 from __future__ import annotations
 
 import copy
+import importlib
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
-
-import z3
+from dataclasses import dataclass
 
 from ..ir import (
     AssignStmt,
@@ -26,7 +24,6 @@ from ..ir import (
     FieldAccessExpr,
     ForEachStmt,
     ForLoopStmt,
-    IdentifierExpr,
     IfElseStmt,
     LiteralExpr,
     LockStmt,
@@ -34,19 +31,16 @@ from ..ir import (
     ReturnStmt,
     TryCatchFinallyStmt,
     UnaryExpr,
-    UnaryOperator,
-    UniversalClass,
     UniversalExpr,
-    UniversalField,
     UniversalMethod,
     UniversalModule,
-    UniversalParam,
     UniversalStmt,
     UniversalType,
     VarDeclStmt,
     WhileStmt,
 )
-from ..ir.types import TypeLattice
+
+z3 = importlib.import_module("z3")
 
 logger = logging.getLogger("elmos.ast_compiler.smt_repair")
 
@@ -54,6 +48,7 @@ logger = logging.getLogger("elmos.ast_compiler.smt_repair")
 @dataclass
 class SmtRepairPatch:
     """Formal AST repair synthesized from an SMT solver model."""
+
     rule_name: str
     description: str
     target_node_kind: str
@@ -69,11 +64,7 @@ class SmtTypeSolver:
     FLOATS = {"f32": 5, "float": 5, "f64": 6, "double": 6}
 
     @classmethod
-    def solve_widening_cast(
-        cls,
-        source_type: UniversalType,
-        target_type: UniversalType
-    ) -> Optional[SmtRepairPatch]:
+    def solve_widening_cast(cls, source_type: UniversalType, target_type: UniversalType) -> SmtRepairPatch | None:
         """Uses Z3 to formally prove if a widening cast is safe and satisfiable."""
         src_name = getattr(source_type, "name", "any")
         tgt_name = getattr(target_type, "name", "any")
@@ -114,23 +105,21 @@ class SmtTypeSolver:
         s.add(src_rank == src_rank_val)
         s.add(tgt_rank == tgt_rank_val)
         s.add(is_widening == (src_rank < tgt_rank))
-        s.add(is_widening == True)
+        s.add(is_widening)
 
         if s.check() == z3.sat:
             return SmtRepairPatch(
                 rule_name="SMT_NUMERIC_WIDENING",
-                description=f"Widen {src_name} to {tgt_name} via formal numeric rank lattice ({src_rank_val} < {tgt_rank_val})",
+                description=f"Widen {src_name} to {tgt_name} via formal numeric rank lattice ({src_rank_val} < {tgt_rank_val})",  # noqa: E501
                 target_node_kind="CastExpr",
-                smt_model_summary=f"src_rank={src_rank_val}, tgt_rank={tgt_rank_val}, is_widening=True"
+                smt_model_summary=f"src_rank={src_rank_val}, tgt_rank={tgt_rank_val}, is_widening=True",
             )
         return None
 
     @classmethod
     def solve_type_compatibility(
-        cls,
-        source_type: UniversalType,
-        target_type: UniversalType
-    ) -> Tuple[bool, Optional[SmtRepairPatch]]:
+        cls, source_type: UniversalType, target_type: UniversalType
+    ) -> tuple[bool, SmtRepairPatch | None]:
         """Solves whether source_type can be assigned or coerced to target_type."""
         if not source_type or not target_type:
             return True, None
@@ -140,7 +129,7 @@ class SmtTypeSolver:
                     rule_name="SMT_NULLABLE_TO_NONNULL_VIOLATION",
                     description=f"Cannot assign nullable {source_type.name}? to non-nullable {target_type.name}",
                     target_node_kind="TypeInfo",
-                    smt_model_summary="source_is_nullable=True, target_is_nullable=False"
+                    smt_model_summary="source_is_nullable=True, target_is_nullable=False",
                 )
             return True, None
 
@@ -153,7 +142,7 @@ class SmtTypeSolver:
             rule_name="SMT_TYPE_INCOMPATIBLE",
             description=f"Incompatible types: {source_type.name} cannot be assigned to {target_type.name}",
             target_node_kind="TypeInfo",
-            smt_model_summary=f"src={source_type.name}, tgt={target_type.name}"
+            smt_model_summary=f"src={source_type.name}, tgt={target_type.name}",
         )
 
 
@@ -162,11 +151,8 @@ class SmtBoundsAndOverflowSolver:
 
     @classmethod
     def check_addition_overflow(
-        cls,
-        bit_width: int,
-        operand_min: int,
-        operand_max: int
-    ) -> Tuple[bool, Optional[SmtRepairPatch]]:
+        cls, bit_width: int, operand_min: int, operand_max: int
+    ) -> tuple[bool, SmtRepairPatch | None]:
         """Proves whether x + y can overflow for a given bitwidth in [operand_min, operand_max]."""
         s = z3.Solver()
         x = z3.BitVec("x", bit_width)
@@ -189,9 +175,9 @@ class SmtBoundsAndOverflowSolver:
             y_val = m.eval(y).as_long()
             patch = SmtRepairPatch(
                 rule_name="SMT_CHECKED_ARITHMETIC_OR_WIDENING",
-                description=f"Potential {bit_width}-bit addition overflow detected at x={x_val}, y={y_val}; promote to BV{bit_width * 2} or checked_add",
+                description=f"Potential {bit_width}-bit addition overflow detected at x={x_val}, y={y_val}; promote to BV{bit_width * 2} or checked_add",  # noqa: E501
                 target_node_kind="BinaryExpr",
-                smt_model_summary=f"counterexample: x={x_val}, y={y_val}, bit_width={bit_width}"
+                smt_model_summary=f"counterexample: x={x_val}, y={y_val}, bit_width={bit_width}",
             )
             return True, patch
         else:
@@ -199,11 +185,8 @@ class SmtBoundsAndOverflowSolver:
 
     @classmethod
     def check_multiplication_overflow(
-        cls,
-        bit_width: int,
-        operand_min: int,
-        operand_max: int
-    ) -> Tuple[bool, Optional[SmtRepairPatch]]:
+        cls, bit_width: int, operand_min: int, operand_max: int
+    ) -> tuple[bool, SmtRepairPatch | None]:
         """Proves whether x * y can overflow for a given bitwidth in [operand_min, operand_max]."""
         s = z3.Solver()
         x = z3.BitVec("x", bit_width)
@@ -230,16 +213,13 @@ class SmtBoundsAndOverflowSolver:
                 rule_name="SMT_MULTIPLICATION_OVERFLOW",
                 description=f"Potential {bit_width}-bit multiplication overflow detected at x={x_val}, y={y_val}",
                 target_node_kind="BinaryExpr",
-                smt_model_summary=f"mult_counterexample: x={x_val}, y={y_val}, bit_width={bit_width}"
+                smt_model_summary=f"mult_counterexample: x={x_val}, y={y_val}, bit_width={bit_width}",
             )
             return True, patch
         return False, None
 
     @classmethod
-    def check_division_by_zero(
-        cls,
-        divisor_val: Optional[int]
-    ) -> Tuple[bool, Optional[SmtRepairPatch]]:
+    def check_division_by_zero(cls, divisor_val: int | None) -> tuple[bool, SmtRepairPatch | None]:
         """Proves whether division divisor can be zero."""
         s = z3.Solver()
         d = z3.Int("divisor")
@@ -252,17 +232,13 @@ class SmtBoundsAndOverflowSolver:
                 rule_name="SMT_DIVISION_BY_ZERO_HAZARD",
                 description="Potential division by zero detected; inject non-zero guard or fallback",
                 target_node_kind="BinaryExpr",
-                smt_model_summary="divisor == 0 is satisfiable"
+                smt_model_summary="divisor == 0 is satisfiable",
             )
             return True, patch
         return False, None
 
     @classmethod
-    def check_array_bounds(
-        cls,
-        index_val: int,
-        length_val: int
-    ) -> Tuple[bool, Optional[SmtRepairPatch]]:
+    def check_array_bounds(cls, index_val: int, length_val: int) -> tuple[bool, SmtRepairPatch | None]:
         """Proves whether index < 0 or index >= length."""
         s = z3.Solver()
         idx = z3.Int("idx")
@@ -277,7 +253,7 @@ class SmtBoundsAndOverflowSolver:
                 rule_name="SMT_OUT_OF_BOUNDS_HAZARD",
                 description=f"Array index out of bounds: index={index_val}, length={length_val}",
                 target_node_kind="IndexExpr",
-                smt_model_summary=f"idx={index_val}, length={length_val}, OOB=True"
+                smt_model_summary=f"idx={index_val}, length={length_val}, OOB=True",
             )
             return True, patch
         return False, None
@@ -287,12 +263,7 @@ class SmtNullabilitySolver:
     """Z3 Boolean and uninterpreted function solver for null dereference prevention."""
 
     @classmethod
-    def solve_null_guard(
-        cls,
-        var_name: str,
-        is_nullable: bool,
-        is_dereferenced: bool
-    ) -> Optional[SmtRepairPatch]:
+    def solve_null_guard(cls, var_name: str, is_nullable: bool, is_dereferenced: bool) -> SmtRepairPatch | None:
         """Synthesizes an explicit null check if a nullable variable is dereferenced without guard."""
         s = z3.Solver()
         nullable = z3.Bool("nullable")
@@ -303,14 +274,14 @@ class SmtNullabilitySolver:
         s.add(nullable == is_nullable)
         s.add(dereferenced == is_dereferenced)
         s.add(hazard == z3.And(nullable, dereferenced, z3.Not(guarded)))
-        s.add(hazard == True)
+        s.add(hazard)
 
         if s.check() == z3.sat:
             return SmtRepairPatch(
                 rule_name="SMT_NULL_GUARD_SYNTHESIS",
-                description=f"Synthesize if ({var_name} != null) guard before field/method access on nullable reference",
+                description=f"Synthesize if ({var_name} != null) guard before field/method access on nullable reference",  # noqa: E501
                 target_node_kind="IfElseStmt",
-                smt_model_summary=f"hazard=True for var '{var_name}', requires guard=True"
+                smt_model_summary=f"hazard=True for var '{var_name}', requires guard=True",
             )
         return None
 
@@ -319,12 +290,7 @@ class SmtOwnershipSolver:
     """Z3 linear integer arithmetic solver for affine ownership and multiple mutable borrow hazards."""
 
     @classmethod
-    def solve_borrow_hazard(
-        cls,
-        var_name: str,
-        shared_borrows: int,
-        mut_borrows: int
-    ) -> Optional[SmtRepairPatch]:
+    def solve_borrow_hazard(cls, var_name: str, shared_borrows: int, mut_borrows: int) -> SmtRepairPatch | None:
         """Formulates the Rust borrow check invariant in Z3:
         (mut_borrows <= 1) AND (mut_borrows == 0 OR shared_borrows == 0)
         """
@@ -336,30 +302,26 @@ class SmtOwnershipSolver:
         s.add(sb == shared_borrows)
         s.add(mb == mut_borrows)
         s.add(valid_borrow == z3.And(mb <= 1, z3.Or(mb == 0, sb == 0)))
-        s.add(valid_borrow == False)  # Find violation
+        s.add(not valid_borrow)  # Find violation
 
         if s.check() == z3.sat:
             return SmtRepairPatch(
                 rule_name="SMT_AFFINE_OWNERSHIP_CLONE",
-                description=f"Borrow conflict on '{var_name}' (shared={shared_borrows}, mut={mut_borrows}); insert .clone() or scope isolation",
+                description=f"Borrow conflict on '{var_name}' (shared={shared_borrows}, mut={mut_borrows}); insert .clone() or scope isolation",  # noqa: E501
                 target_node_kind="MethodCallExpr",
-                smt_model_summary=f"shared_borrows={shared_borrows}, mut_borrows={mut_borrows}, valid_borrow=False"
+                smt_model_summary=f"shared_borrows={shared_borrows}, mut_borrows={mut_borrows}, valid_borrow=False",
             )
         return None
 
     @classmethod
-    def solve_move_after_move_hazard(
-        cls,
-        var_name: str,
-        move_count: int
-    ) -> Optional[SmtRepairPatch]:
+    def solve_move_after_move_hazard(cls, var_name: str, move_count: int) -> SmtRepairPatch | None:
         """Detects if an affine owned value is moved more than once."""
         if move_count > 1:
             return SmtRepairPatch(
                 rule_name="SMT_AFFINE_OWNERSHIP_CLONE",
                 description=f"Affine value '{var_name}' moved {move_count} times; insert .clone() on earlier moves",
                 target_node_kind="IdentifierExpr",
-                smt_model_summary=f"var_name={var_name}, move_count={move_count} > 1"
+                smt_model_summary=f"var_name={var_name}, move_count={move_count} > 1",
             )
         return None
 
@@ -369,13 +331,10 @@ class SmtAutonomousRepairEngine:
 
     @classmethod
     def repair_expr(
-        cls,
-        expr: UniversalExpr,
-        target_lang: str,
-        scope: Dict[str, UniversalType]
-    ) -> Tuple[UniversalExpr, List[SmtRepairPatch]]:
+        cls, expr: UniversalExpr, target_lang: str, scope: dict[str, UniversalType]
+    ) -> tuple[UniversalExpr, list[SmtRepairPatch]]:
         """Deeply inspects and repairs expressions using SMT constraint solvers."""
-        patches: List[SmtRepairPatch] = []
+        patches: list[SmtRepairPatch] = []
         target = target_lang.lower().strip()
 
         if isinstance(expr, BinaryExpr):
@@ -408,7 +367,7 @@ class SmtAutonomousRepairEngine:
             # 2. Division by zero check
             elif expr.op in (BinaryOperator.DIV, BinaryOperator.MOD):
                 div_val = None
-                if isinstance(expr.right, LiteralExpr) and isinstance(expr.right.value, (int, float)):
+                if isinstance(expr.right, LiteralExpr) and isinstance(expr.right.value, int | float):
                     div_val = int(expr.right.value)
                 has_div_zero, patch = SmtBoundsAndOverflowSolver.check_division_by_zero(div_val)
                 if has_div_zero and patch:
@@ -430,9 +389,7 @@ class SmtAutonomousRepairEngine:
                 is_nullable = True
 
             patch = SmtNullabilitySolver.solve_null_guard(
-                var_name=target_name or "obj",
-                is_nullable=is_nullable,
-                is_dereferenced=True
+                var_name=target_name or "obj", is_nullable=is_nullable, is_dereferenced=True
             )
             if patch:
                 patches.append(patch)
@@ -481,13 +438,10 @@ class SmtAutonomousRepairEngine:
 
     @classmethod
     def repair_stmt(
-        cls,
-        stmt: UniversalStmt,
-        target_lang: str,
-        scope: Dict[str, UniversalType]
-    ) -> Tuple[UniversalStmt, List[SmtRepairPatch]]:
+        cls, stmt: UniversalStmt, target_lang: str, scope: dict[str, UniversalType]
+    ) -> tuple[UniversalStmt, list[SmtRepairPatch]]:
         """Recursively repairs statements and blocks using SMT verification."""
-        patches: List[SmtRepairPatch] = []
+        patches: list[SmtRepairPatch] = []
 
         if isinstance(stmt, VarDeclStmt):
             scope[stmt.name] = stmt.type_info
@@ -623,16 +577,14 @@ class SmtAutonomousRepairEngine:
 
     @classmethod
     def repair_method_ast(
-        cls,
-        method: UniversalMethod,
-        target_language: str
-    ) -> Tuple[UniversalMethod, List[SmtRepairPatch]]:
+        cls, method: UniversalMethod, target_language: str
+    ) -> tuple[UniversalMethod, list[SmtRepairPatch]]:
         """Deeply inspects AST statements and expressions, executes SMT verification, and applies formal patches."""
-        patches: List[SmtRepairPatch] = []
+        patches: list[SmtRepairPatch] = []
         new_method = copy.deepcopy(method)
         target = target_language.lower().strip()
 
-        scope: Dict[str, UniversalType] = {}
+        scope: dict[str, UniversalType] = {}
         for p in new_method.params:
             scope[p.name] = p.type_info
 
@@ -655,13 +607,11 @@ class SmtAutonomousRepairEngine:
 
     @classmethod
     def repair_module_ast(
-        cls,
-        module: UniversalModule,
-        target_language: str
-    ) -> Tuple[UniversalModule, List[SmtRepairPatch]]:
+        cls, module: UniversalModule, target_language: str
+    ) -> tuple[UniversalModule, list[SmtRepairPatch]]:
         """Applies formal SMT verification and self-healing across all classes and methods in a UniversalModule."""
         new_module = copy.deepcopy(module)
-        all_patches: List[SmtRepairPatch] = []
+        all_patches: list[SmtRepairPatch] = []
         for c in new_module.classes:
             new_methods = []
             for m in c.methods:

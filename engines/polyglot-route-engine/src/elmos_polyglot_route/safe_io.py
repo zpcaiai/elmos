@@ -131,6 +131,7 @@ def _verify_stable_path(path: Path, before: os.stat_result, descriptor: int, cha
         current = path.stat(follow_symlinks=False)
     except OSError as error:
         raise RouteError(changed_error) from error
+
     def identity(value: os.stat_result) -> tuple[int, int, int, int]:
         return value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns
 

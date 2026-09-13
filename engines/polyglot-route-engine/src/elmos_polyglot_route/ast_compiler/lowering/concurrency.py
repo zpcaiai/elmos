@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from ..ir import UniversalModule
+
+
 class ConcurrencyLowering:
     """Harmonizes async/await, Tasks, Promises, Futures, goroutines and channels."""
 

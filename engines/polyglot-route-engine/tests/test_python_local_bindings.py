@@ -29,9 +29,7 @@ def _source(tmp_path: Path, body: str) -> Path:
 def test_an_annotated_local_lifts_to_a_let(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "def total(price: int, tax: int) -> int:\n"
-        "    subtotal: int = price + tax\n"
-        "    return subtotal\n",
+        "def total(price: int, tax: int) -> int:\n    subtotal: int = price + tax\n    return subtotal\n",
     )
     semantic = analyze_python(source, "total")
     statements = semantic.functions[0].body
@@ -45,9 +43,7 @@ def test_an_annotated_local_lifts_to_a_let(tmp_path: Path) -> None:
 def test_the_lifted_let_reaches_every_target(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "def total(price: int, tax: int) -> int:\n"
-        "    subtotal: int = price + tax\n"
-        "    return subtotal\n",
+        "def total(price: int, tax: int) -> int:\n    subtotal: int = price + tax\n    return subtotal\n",
     )
     semantic = analyze_python(source, "total")
     # One spelling per language family: a declared type where the language
@@ -81,7 +77,7 @@ def test_a_declaration_without_a_value_is_not_a_binding(tmp_path: Path) -> None:
 @pytest.mark.parametrize(
     "statement",
     [
-        "(subtotal): int = price",   # parenthesised: node.simple is 0
+        "(subtotal): int = price",  # parenthesised: node.simple is 0
         "holder.subtotal: int = price",
         "holder[0]: int = price",
     ],
@@ -130,10 +126,7 @@ def test_a_binding_made_inside_a_branch_does_not_escape_it(tmp_path: Path) -> No
     """
     source = _source(
         tmp_path,
-        "def total(price: int) -> int:\n"
-        "    if price > 0:\n"
-        "        bonus: int = 1\n"
-        "    return bonus\n",
+        "def total(price: int) -> int:\n    if price > 0:\n        bonus: int = 1\n    return bonus\n",
     )
     with pytest.raises(RouteError, match="^UNDECLARED_NAME:bonus$"):
         analyze_python(source, "total")
@@ -170,10 +163,7 @@ def test_a_float_local_still_divides(tmp_path: Path) -> None:
     ("source", "diagnostic"),
     [
         (
-            "def choose(value: int) -> int:\n"
-            "    if value:\n"
-            "        return value\n"
-            "    return 0\n",
+            "def choose(value: int) -> int:\n    if value:\n        return value\n    return 0\n",
             "CONDITION_MUST_BE_BOOLEAN",
         ),
         (

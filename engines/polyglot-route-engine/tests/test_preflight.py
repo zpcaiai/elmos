@@ -27,7 +27,6 @@ def _as_analyze_many(single):
     return batched
 
 
-
 SCHEMA = (
     Path(__file__).resolve().parents[3]
     / "contracts"
@@ -97,10 +96,7 @@ def test_repository_preflight_rejects_at_the_bounded_10001_sentinel(
 ) -> None:
     repository = tmp_path / "repository"
     repository.mkdir()
-    source = "\n".join(
-        f"def function_{index}(value: int) -> int:\n    return value"
-        for index in range(10_001)
-    )
+    source = "\n".join(f"def function_{index}(value: int) -> int:\n    return value" for index in range(10_001))
     (repository / "many.py").write_text(source + "\n", encoding="utf-8")
 
     def native_must_not_run(*_args: object, **_kwargs: object) -> object:

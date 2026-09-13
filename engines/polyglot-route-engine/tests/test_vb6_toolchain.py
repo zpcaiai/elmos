@@ -109,9 +109,7 @@ def test_binding_manifest_cannot_be_repository_controlled(tmp_path: Path) -> Non
     inside = repository / "binding.json"
     inside.write_bytes(source.read_bytes())
     environment["ELMOS_VB6_TOOLCHAIN_MANIFEST"] = str(inside)
-    environment["ELMOS_VB6_TOOLCHAIN_MANIFEST_SHA256"] = hashlib.sha256(
-        inside.read_bytes()
-    ).hexdigest()
+    environment["ELMOS_VB6_TOOLCHAIN_MANIFEST_SHA256"] = hashlib.sha256(inside.read_bytes()).hexdigest()
 
     with pytest.raises(RouteError, match="VB6_TOOLCHAIN_MANIFEST_MUST_BE_EXTERNAL"):
         resolve_vb6_toolchain(

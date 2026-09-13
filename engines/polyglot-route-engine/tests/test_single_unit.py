@@ -7,6 +7,7 @@ exact pinned Python and TypeScript toolchains from `toolchains.py`.
 `test_emit_only_rejects_a_same_language_route` needs no toolchain at all: the
 guard runs before analysis.
 """
+
 from __future__ import annotations
 
 import json
@@ -60,10 +61,7 @@ def test_emit_only_names_the_symbol_the_emitted_file_actually_declares(tmp_path:
 def test_emit_only_produces_a_target_file_with_no_compilation_or_execution(tmp_path: Path) -> None:
     source = tmp_path / "calc.py"
     source.write_text(
-        "def calculate(a: int, b: int) -> int:\n"
-        "    if a < b:\n"
-        "        return b\n"
-        "    return a\n",
+        "def calculate(a: int, b: int) -> int:\n    if a < b:\n        return b\n    return a\n",
         encoding="utf-8",
     )
     output = tmp_path / "out"

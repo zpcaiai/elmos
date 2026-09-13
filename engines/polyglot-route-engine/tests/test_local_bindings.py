@@ -24,6 +24,7 @@ than emitted into a target that would not build.
 against its own language. Writing it into the IR is what lets `types.check`
 disagree instead of silently adopting whatever the expression produced.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -221,9 +222,7 @@ def test_a_local_named_like_a_target_keyword_is_alpha_renamed(local: str, target
     ir = _ir(
         [_let(local, "integer", _binary("+", _name("a"), _literal(1))), {"kind": "return", "expression": _name(local)}]
     )
-    binding = next(
-        item for item in plan_identifiers(ir, target).to_mapping()["bindings"] if item["role"] == "local"
-    )
+    binding = next(item for item in plan_identifiers(ir, target).to_mapping()["bindings"] if item["role"] == "local")
 
     assert binding["decision"] != "PRESERVED"
     assert binding["target_name"].startswith("elmos_l")

@@ -205,11 +205,7 @@ def _run_clang(
             )
         except subprocess.TimeoutExpired as error:
             raise RouteError(f"NATIVE_ANALYZER_TIMEOUT:{executable}") from error
-    errors = [
-        line
-        for line in completed.stderr.splitlines()
-        if ": error:" in line or ": fatal error:" in line
-    ]
+    errors = [line for line in completed.stderr.splitlines() if ": error:" in line or ": fatal error:" in line]
     if errors:
         raise RouteError("SOURCE_DIAGNOSTICS_BLOCK_ANALYSIS:" + "; ".join(errors[:5])[:2_000])
     if completed.returncode != 0 or not completed.stdout.strip():
@@ -597,10 +593,7 @@ def _expression(
             )
         if not callee_name:
             raise RouteError(f"{language.upper()}_CALL_WITHOUT_NAME")
-        call_arguments = [
-            _expression(arg, language, source_file, emitted_target)
-            for arg in children[1:]
-        ]
+        call_arguments = [_expression(arg, language, source_file, emitted_target) for arg in children[1:]]
         return _mapped(
             node,
             source_file,
@@ -854,8 +847,7 @@ def _statements(
             cond_lhs = _unwrap(cond_operands[0])
             if (
                 cond_lhs.get("kind") != "DeclRefExpr"
-                or str(cond_lhs.get("referencedDecl", {}).get("name", ""))
-                != var_name
+                or str(cond_lhs.get("referencedDecl", {}).get("name", "")) != var_name
             ):
                 raise RouteError(f"{language.upper()}_FOR_COND_LHS_MUST_BE_LOOP_VAR")
             end_expr = _expression(cond_operands[1], language, source_file, emitted_target, var_type)
@@ -1011,6 +1003,7 @@ def analyze_clang(
     if language not in ("cpp", "objc"):
         raise RouteError(f"UNSUPPORTED_SOURCE_LANGUAGE:{language}")
     tree = _run_clang(executable, source, language, sdk_path)
+
     def _is_in_source_file(node: dict[str, Any]) -> bool:
         loc = node.get("loc")
         if not isinstance(loc, dict):
@@ -1043,8 +1036,7 @@ def analyze_clang(
     semantic_markers = _function_semantic_markers(candidates[0])
     if semantic_markers:
         raise RouteError(
-            f"{language.upper()}_FUNCTION_SEMANTIC_MARKERS_OUTSIDE_CERTIFIED_SUBSET:"
-            + ",".join(semantic_markers)
+            f"{language.upper()}_FUNCTION_SEMANTIC_MARKERS_OUTSIDE_CERTIFIED_SUBSET:" + ",".join(semantic_markers)
         )
     record_candidates = [
         node
@@ -1116,9 +1108,7 @@ def _function_semantic_markers(node: dict[str, Any]) -> list[str]:
     markers: list[str] = []
     for child in _inner(node):
         kind = str(child.get("kind", ""))
-        if kind == "ParmVarDecl" and (
-            child.get("init") is not None or child.get("hasInheritedDefaultArg") is True
-        ):
+        if kind == "ParmVarDecl" and (child.get("init") is not None or child.get("hasInheritedDefaultArg") is True):
             markers.append("default-argument")
         elif kind.endswith("Attr"):
             markers.append(f"attribute:{kind}")
@@ -1143,9 +1133,7 @@ def _inventory_signature(node: dict[str, Any]) -> dict[str, object]:
         parameters.append(
             {
                 "name": str(child.get("name", "")),
-                "source_type": (
-                    str(raw_type.get("qualType", "")) if isinstance(raw_type, dict) else ""
-                ),
+                "source_type": (str(raw_type.get("qualType", "")) if isinstance(raw_type, dict) else ""),
             }
         )
     raw_type = node.get("type")
@@ -1173,10 +1161,7 @@ def _inventory_node_is_external(node: dict[str, Any], source: Path) -> bool:
         explicit_file = location.get("file")
         if isinstance(explicit_file, str) and Path(explicit_file).name != source.name:
             return True
-        return any(
-            external(location.get(key))
-            for key in ("expansionLoc", "spellingLoc", "includedFrom")
-        )
+        return any(external(location.get(key)) for key in ("expansionLoc", "spellingLoc", "includedFrom"))
 
     return any(external(location) for location in locations)
 
@@ -1215,32 +1200,19 @@ def inventory_clang_module(
         kind = str(node.get("kind", ""))
         name = str(node.get("name", "")).strip()
         span = _inventory_span(node, source)
-        explicit_declaration = (
-            kind != "TranslationUnitDecl"
-            and kind.endswith("Decl")
-            and not node.get("isImplicit")
-        )
+        explicit_declaration = kind != "TranslationUnitDecl" and kind.endswith("Decl") and not node.get("isImplicit")
         if span is not None and explicit_declaration:
             if kind == "FunctionDecl" and name:
                 has_body = any(child.get("kind") == "CompoundStmt" for child in _inner(node))
                 semantic_markers = _function_semantic_markers(node)
-                unsupported_markers = [
-                    marker
-                    for marker in semantic_markers
-                    if marker != "storage-class:static"
-                ]
+                unsupported_markers = [marker for marker in semantic_markers if marker != "storage-class:static"]
                 qualified_name = "::".join((*scope, name))
                 subjects.append(
                     {
                         "name": name,
                         "qualified_name": qualified_name,
                         "declaration_kind": kind,
-                        "analyzable": (
-                            kind == "FunctionDecl"
-                            and top_level
-                            and has_body
-                            and not unsupported_markers
-                        ),
+                        "analyzable": (kind == "FunctionDecl" and top_level and has_body and not unsupported_markers),
                         "source_span": span,
                         "signature": _inventory_signature(node),
                     }
@@ -1257,14 +1229,8 @@ def inventory_clang_module(
                         "signature": _inventory_signature(node),
                     }
                 )
-        elif (
-            explicit_declaration
-            and top_level
-            and not _inventory_node_is_external(node, source)
-        ):
-            diagnostics.append(
-                f"MAIN_FILE_DECLARATION_SPAN_INVALID:{kind}:{name or '<unnamed>'}"
-            )
+        elif explicit_declaration and top_level and not _inventory_node_is_external(node, source):
+            diagnostics.append(f"MAIN_FILE_DECLARATION_SPAN_INVALID:{kind}:{name or '<unnamed>'}")
         child_scope = (*scope, name) if name and kind in scope_kinds else scope
         for child in _inner(node):
             if kind == "TranslationUnitDecl":

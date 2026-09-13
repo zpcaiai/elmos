@@ -34,20 +34,14 @@ from elmos_polyglot_route.pipeline import (
     run_repository_pipeline,
 )
 
-EXECUTABLE_REPOSITORY_LANGUAGES: tuple[Language, ...] = (
-    HOSTED_REPOSITORY_MATRIX_LANGUAGES
-)
+EXECUTABLE_REPOSITORY_LANGUAGES: tuple[Language, ...] = HOSTED_REPOSITORY_MATRIX_LANGUAGES
 DIRECTED_LANGUAGE_PAIRS: tuple[tuple[Language, Language], ...] = tuple(
-    (source, target)
-    for source, target in product(EXECUTABLE_REPOSITORY_LANGUAGES, repeat=2)
-    if source != target
+    (source, target) for source, target in product(EXECUTABLE_REPOSITORY_LANGUAGES, repeat=2) if source != target
 )
 MEDIUM_LANGUAGE_RING: tuple[tuple[Language, Language], ...] = tuple(
     (
         source,
-        EXECUTABLE_REPOSITORY_LANGUAGES[
-            (index + 1) % len(EXECUTABLE_REPOSITORY_LANGUAGES)
-        ],
+        EXECUTABLE_REPOSITORY_LANGUAGES[(index + 1) % len(EXECUTABLE_REPOSITORY_LANGUAGES)],
     )
     for index, source in enumerate(EXECUTABLE_REPOSITORY_LANGUAGES)
 )
@@ -105,6 +99,7 @@ def _write_react_project_descriptors(repository: Path) -> None:
         + "\n",
         encoding="utf-8",
     )
+
 
 _BEHAVIOR_CASES: tuple[list[dict[str, object]], ...] = (
     [

@@ -8,13 +8,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 from .base import (
     BreakStmt,
     ContinueStmt,
-    ForEachStmt,
-    ForLoopStmt,
     IfElseStmt,
     ReturnStmt,
     ThrowStmt,
@@ -41,7 +39,7 @@ class CfgEdge:
     src: int
     dst: int
     kind: CfgEdgeKind
-    condition: Optional[UniversalExpr] = None
+    condition: UniversalExpr | None = None
 
 
 @dataclass
@@ -74,7 +72,7 @@ class ControlFlowGraph:
             self.exit_id = b_id
         return blk
 
-    def add_edge(self, src: int, dst: int, kind: CfgEdgeKind, cond: Optional[UniversalExpr] = None) -> None:
+    def add_edge(self, src: int, dst: int, kind: CfgEdgeKind, cond: UniversalExpr | None = None) -> None:
         if dst not in self.blocks[src].successors:
             self.blocks[src].successors.append(dst)
         if src not in self.blocks[dst].predecessors:
@@ -194,12 +192,7 @@ class ControlFlowGraph:
                         if p not in body:
                             body.add(p)
                             stack.append(p)
-                loops.append({
-                    "header": h,
-                    "latch": n,
-                    "body": sorted(list(body)),
-                    "back_edge": edge
-                })
+                loops.append({"header": h, "latch": n, "body": sorted(list(body)), "back_edge": edge})
         return loops
 
 
@@ -213,7 +206,9 @@ class CfgBuilder:
         exit_block = cfg.add_block(label="exit", is_exit=True)
 
         current_block = entry
-        current_block = cls._build_stmt_list(cfg, method.body, current_block, exit_block.block_id, break_dst=None, cont_dst=None)
+        current_block = cls._build_stmt_list(
+            cfg, method.body, current_block, exit_block.block_id, break_dst=None, cont_dst=None
+        )
         if current_block.block_id != exit_block.block_id and (current_block.stmts or current_block.predecessors):
             cfg.add_edge(current_block.block_id, exit_block.block_id, CfgEdgeKind.RETURN)
 
@@ -227,8 +222,8 @@ class CfgBuilder:
         stmts: list[UniversalStmt],
         current: BasicBlock,
         exit_id: int,
-        break_dst: Optional[int],
-        cont_dst: Optional[int]
+        break_dst: int | None,
+        cont_dst: int | None,
     ) -> BasicBlock:
         curr = current
         for stmt in stmts:
@@ -285,7 +280,9 @@ class CfgBuilder:
                 cfg.add_edge(header_block.block_id, body_block.block_id, CfgEdgeKind.TRUE_BRANCH, stmt.condition)
                 cfg.add_edge(header_block.block_id, after_block.block_id, CfgEdgeKind.LOOP_EXIT, stmt.condition)
 
-                body_end = cls._build_stmt_list(cfg, stmt.body, body_block, exit_id, break_dst=after_block.block_id, cont_dst=header_block.block_id)
+                body_end = cls._build_stmt_list(
+                    cfg, stmt.body, body_block, exit_id, break_dst=after_block.block_id, cont_dst=header_block.block_id
+                )
                 cfg.add_edge(body_end.block_id, header_block.block_id, CfgEdgeKind.LOOP_BACK)
 
                 curr = after_block
@@ -308,7 +305,9 @@ class CfgBuilder:
                     cfg.add_edge(catch_end.block_id, target_after_try, CfgEdgeKind.FALLTHROUGH)
 
                 if finally_block:
-                    finally_end = cls._build_stmt_list(cfg, stmt.finally_body, finally_block, exit_id, break_dst, cont_dst)
+                    finally_end = cls._build_stmt_list(
+                        cfg, stmt.finally_body, finally_block, exit_id, break_dst, cont_dst
+                    )
                     cfg.add_edge(finally_end.block_id, join_block.block_id, CfgEdgeKind.FALLTHROUGH)
 
                 curr = join_block

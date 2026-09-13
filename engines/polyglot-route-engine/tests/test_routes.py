@@ -93,12 +93,8 @@ def test_route_fixture_catalog_covers_the_complete_repository_surface() -> None:
     assert set(EXTENSIONS) == set(FILES) == set(REPOSITORY_SURFACE_LANGUAGES)
     for language in REPOSITORY_SURFACE_LANGUAGES:
         assert (ROOT / "fixtures" / language / f"{FILES[language]}.{EXTENSIONS[language]}").is_file()
-        assert (
-            ROOT / "fixtures" / "holdout" / language / f"clamp.{EXTENSIONS[language]}"
-        ).is_file()
-        assert (
-            ROOT / "fixtures" / "representative" / language / f"difference.{EXTENSIONS[language]}"
-        ).is_file()
+        assert (ROOT / "fixtures" / "holdout" / language / f"clamp.{EXTENSIONS[language]}").is_file()
+        assert (ROOT / "fixtures" / "representative" / language / f"difference.{EXTENSIONS[language]}").is_file()
 
 
 @pytest.mark.parametrize("language", REPOSITORY_SURFACE_LANGUAGES)
@@ -114,12 +110,7 @@ def test_source_analyzers_emit_the_same_typed_semantic_slice(language: Language)
 
 @pytest.mark.parametrize(
     ("source_language", "target_language"),
-    [
-        (source, target)
-        for source in SUPPORTED_LANGUAGES
-        for target in SUPPORTED_LANGUAGES
-        if source != target
-    ],
+    [(source, target) for source in SUPPORTED_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target],
 )
 def test_every_repository_direction_compiles_and_matches_behavior(
     route_tmp_path: Path,
@@ -139,9 +130,8 @@ def test_every_repository_direction_compiles_and_matches_behavior(
         output,
         repository_execution_mode=True,
         identifier_unit_namespace=repository_work_unit_namespace(
-            repository_snapshot_sha256="sha256:" + hashlib.sha256(
-                f"fixture:{source_language}:{target_language}".encode()
-            ).hexdigest(),
+            repository_snapshot_sha256="sha256:"
+            + hashlib.sha256(f"fixture:{source_language}:{target_language}".encode()).hexdigest(),
             work_unit_id="WU-00001",
             source_logical_path=source.name,
             source_sha256=source_sha256,
@@ -165,12 +155,7 @@ def test_every_repository_direction_compiles_and_matches_behavior(
 )
 @pytest.mark.parametrize(
     ("source_language", "target_language"),
-    [
-        (source, target)
-        for source in SUPPORTED_LANGUAGES
-        for target in SUPPORTED_LANGUAGES
-        if source != target
-    ],
+    [(source, target) for source in SUPPORTED_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target],
 )
 def test_independent_corpora_compile_and_match_behavior(
     route_tmp_path: Path,
@@ -193,9 +178,8 @@ def test_independent_corpora_compile_and_match_behavior(
         route_tmp_path / corpus / f"{source_language}-to-{target_language}",
         repository_execution_mode=True,
         identifier_unit_namespace=repository_work_unit_namespace(
-            repository_snapshot_sha256="sha256:" + hashlib.sha256(
-                f"{corpus}:{source_language}:{target_language}".encode()
-            ).hexdigest(),
+            repository_snapshot_sha256="sha256:"
+            + hashlib.sha256(f"{corpus}:{source_language}:{target_language}".encode()).hexdigest(),
             work_unit_id="WU-00001",
             source_logical_path=source.name,
             source_sha256=source_sha256,

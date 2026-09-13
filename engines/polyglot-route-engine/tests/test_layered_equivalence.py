@@ -249,9 +249,7 @@ def test_behavior_normalizes_json_integer_expected_to_exact_fp64_evidence() -> N
     assert report["target_runtime_passed"] is True
     result = report["results"][0]
     assert type(result["independent_expected"]) is float
-    assert canonical_json_bytes(result["canonical"]["value"]) == canonical_json_bytes(
-        result["independent_expected"]
-    )
+    assert canonical_json_bytes(result["canonical"]["value"]) == canonical_json_bytes(result["independent_expected"])
 
 
 @pytest.mark.parametrize(

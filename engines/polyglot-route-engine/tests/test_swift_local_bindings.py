@@ -5,6 +5,7 @@ correctly lift into canonical `let` statements, assignments (`x = expr`, `x += e
 lift into `assign`, parameter reassignment is rejected, constant reassignment is rejected,
 undeclared assignments are rejected, and lifted structures emit cleanly across targets.
 """
+
 from __future__ import annotations
 
 import shutil
@@ -23,11 +24,7 @@ pytestmark = pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed"
 
 def _source(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.swift"
-    content = (
-        "func total(_ price: Int64, _ tax: Int64) -> Int64 {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"func total(_ price: Int64, _ tax: Int64) -> Int64 {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -35,8 +32,7 @@ def _source(tmp_path: Path, body: str) -> Path:
 def test_swift_annotated_let_local_lifts_to_let(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    let subtotal: Int64 = price + tax\n"
-        "    return subtotal",
+        "    let subtotal: Int64 = price + tax\n    return subtotal",
     )
     semantic = analyze(source, "swift", "total")
     statements = semantic.functions[0].body
@@ -51,8 +47,7 @@ def test_swift_annotated_let_local_lifts_to_let(tmp_path: Path) -> None:
 def test_swift_annotated_var_local_lifts_to_let(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var subtotal: Int64 = price + tax\n"
-        "    return subtotal",
+        "    var subtotal: Int64 = price + tax\n    return subtotal",
     )
     semantic = analyze(source, "swift", "total")
     statements = semantic.functions[0].body
@@ -67,9 +62,7 @@ def test_swift_annotated_var_local_lifts_to_let(tmp_path: Path) -> None:
 def test_swift_mutable_local_assignment_lifts(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var subtotal: Int64 = price\n"
-        "    subtotal = price + tax\n"
-        "    return subtotal",
+        "    var subtotal: Int64 = price\n    subtotal = price + tax\n    return subtotal",
     )
     semantic = analyze(source, "swift", "total")
     statements = semantic.functions[0].body
@@ -110,8 +103,7 @@ def test_swift_compound_assignment_lifts(tmp_path: Path) -> None:
 def test_swift_parameter_reassignment_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    price = price + 1\n"
-        "    return price",
+        "    price = price + 1\n    return price",
     )
     with pytest.raises(
         RouteError,
@@ -123,9 +115,7 @@ def test_swift_parameter_reassignment_rejected(tmp_path: Path) -> None:
 def test_swift_constant_reassignment_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    let subtotal: Int64 = price\n"
-        "    subtotal = subtotal + 1\n"
-        "    return subtotal",
+        "    let subtotal: Int64 = price\n    subtotal = subtotal + 1\n    return subtotal",
     )
     with pytest.raises(
         RouteError,
@@ -137,8 +127,7 @@ def test_swift_constant_reassignment_rejected(tmp_path: Path) -> None:
 def test_swift_undeclared_assignment_target_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    unknown = 42\n"
-        "    return price",
+        "    unknown = 42\n    return price",
     )
     with pytest.raises(
         RouteError,
@@ -150,8 +139,7 @@ def test_swift_undeclared_assignment_target_rejected(tmp_path: Path) -> None:
 def test_swift_unannotated_let_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    let subtotal = price\n"
-        "    return subtotal",
+        "    let subtotal = price\n    return subtotal",
     )
     with pytest.raises(
         RouteError,
@@ -163,9 +151,7 @@ def test_swift_unannotated_let_rejected(tmp_path: Path) -> None:
 def test_swift_assignment_type_mismatch_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var subtotal: Int64 = price\n"
-        '    subtotal = "hello"\n'
-        "    return subtotal",
+        '    var subtotal: Int64 = price\n    subtotal = "hello"\n    return subtotal',
     )
     with pytest.raises(
         RouteError,
@@ -197,9 +183,7 @@ def test_swift_multiple_sequential_bindings(tmp_path: Path) -> None:
 def test_swift_lifted_let_and_assign_emits_to_all_targets(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var acc: Int64 = price\n"
-        "    acc += tax\n"
-        "    return acc",
+        "    var acc: Int64 = price\n    acc += tax\n    return acc",
     )
     semantic = analyze(source, "swift", "total")
 

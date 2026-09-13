@@ -3,10 +3,16 @@
 from __future__ import annotations
 
 import re
-from typing import Any
+
 from ..ir import (
-    UniversalModule, UniversalClass, UniversalField, UniversalMethod, UniversalParam,
-    UniversalType, UniversalStmt, ReturnStmt, RawSnippetStmt, LiteralExpr
+    LiteralExpr,
+    RawSnippetStmt,
+    ReturnStmt,
+    UniversalClass,
+    UniversalField,
+    UniversalMethod,
+    UniversalModule,
+    UniversalType,
 )
 from .base import BaseAstParser
 
@@ -26,7 +32,7 @@ class Vcpp6AstParser(BaseAstParser):
 
         # 2. MFC Class definition: class CMainDlg : public CDialog { ... };
         class_head_regex = re.compile(
-            r'class\s+([A-Za-z_][A-Za-z0-9_]*)(?:\s*:\s*(?:public|private|protected)?\s*([A-Za-z_][A-Za-z0-9_]*))?\s*\{'
+            r"class\s+([A-Za-z_][A-Za-z0-9_]*)(?:\s*:\s*(?:public|private|protected)?\s*([A-Za-z_][A-Za-z0-9_]*))?\s*\{"
         )
         for match in class_head_regex.finditer(source_code):
             c_name = match.group(1)
@@ -34,12 +40,12 @@ class Vcpp6AstParser(BaseAstParser):
             end_brace = self.find_matching_brace(source_code, match.start())
             if end_brace == -1:
                 continue
-            body = source_code[match.end():end_brace]
+            body = source_code[match.end() : end_brace]
 
             u_class = UniversalClass(name=c_name, super_class=s_name if s_name else "CDialog")
 
             # Parse fields: CString m_strName; int m_nAge;
-            field_regex = re.compile(r'(CString|DWORD|BOOL|int|long|double)\s+([A-Za-z_][A-Za-z0-9_]*)\s*;')
+            field_regex = re.compile(r"(CString|DWORD|BOOL|int|long|double)\s+([A-Za-z_][A-Za-z0-9_]*)\s*;")
             for f_match in field_regex.finditer(body):
                 f_type = self._parse_vcpp6_type(f_match.group(1))
                 f_name = f_match.group(2)
@@ -47,8 +53,8 @@ class Vcpp6AstParser(BaseAstParser):
 
             # Parse methods: afx_msg void OnOK(); or void Calculate();
             method_regex = re.compile(
-                r'(?:afx_msg\s+)?(void|BOOL|int|CString|double)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*(?:\{([^}]+)\}|;)',
-                re.DOTALL
+                r"(?:afx_msg\s+)?(void|BOOL|int|CString|double)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*(?:\{([^}]+)\}|;)",
+                re.DOTALL,
             )
             for m_match in method_regex.finditer(body):
                 ret_type = self._parse_vcpp6_type(m_match.group(1))
@@ -59,9 +65,9 @@ class Vcpp6AstParser(BaseAstParser):
                 if m_body:
                     for line in m_body.splitlines():
                         line = line.strip()
-                        if line.startswith('return ') and line.endswith(';'):
+                        if line.startswith("return ") and line.endswith(";"):
                             u_method.body.append(ReturnStmt(value=LiteralExpr(line[7:-1].strip())))
-                        elif line and not line.startswith('//'):
+                        elif line and not line.startswith("//"):
                             u_method.body.append(RawSnippetStmt(code=line))
                 u_class.methods.append(u_method)
 
@@ -71,16 +77,16 @@ class Vcpp6AstParser(BaseAstParser):
 
     def _parse_vcpp6_type(self, raw: str) -> UniversalType:
         s = raw.strip()
-        if s in ('CString',):
+        if s in ("CString",):
             return UniversalType.string_type()
-        if s in ('BOOL', 'bool'):
+        if s in ("BOOL", "bool"):
             return UniversalType.boolean()
-        if s in ('DWORD', 'long', '__int64'):
+        if s in ("DWORD", "long", "__int64"):
             return UniversalType.int64()
-        if s in ('int',):
-            return UniversalType.primitive('i32')
-        if s in ('double',):
+        if s in ("int",):
+            return UniversalType.primitive("i32")
+        if s in ("double",):
             return UniversalType.float64()
-        if s in ('void',):
+        if s in ("void",):
             return UniversalType.void()
         return UniversalType.custom(s)

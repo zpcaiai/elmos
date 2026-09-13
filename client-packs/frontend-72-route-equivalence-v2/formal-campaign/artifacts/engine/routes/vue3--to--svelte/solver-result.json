@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
-  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "vue3--to--svelte",
-  "formal_input_digest": "sha256:4795f68b01971022e35fb00c4cef126f3b9007d3282cd0e76b2c44fdae7648f7",
-  "solver_input_digest": "sha256:9476530d6890d723a2c5ddd99741ad6eaa1360db9ff297910ca9c8563eea5fde",
-  "smt2_digest": "sha256:9476530d6890d723a2c5ddd99741ad6eaa1360db9ff297910ca9c8563eea5fde"
+  "formal_input_digest": "sha256:e9e7132eb0f9c421756d0a5c6f2883daf21b3d3ca105c58a03facae05fde3cce",
+  "solver_input_digest": "sha256:3d92b384f8b73cb12f4845083cfc01f2f2abb42516d9d4774138576e55e9af04",
+  "smt2_digest": "sha256:3d92b384f8b73cb12f4845083cfc01f2f2abb42516d9d4774138576e55e9af04"
 }

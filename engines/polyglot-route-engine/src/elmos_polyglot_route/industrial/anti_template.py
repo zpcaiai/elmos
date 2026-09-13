@@ -15,7 +15,7 @@ FORBIDDEN_TEMPLATE_SNIPPETS: tuple[str, ...] = (
 )
 
 FORBIDDEN_AUDIT_SNIPPETS: tuple[str, ...] = (
-    'assert len(transpiled) > 100',
+    "assert len(transpiled) > 100",
     'assert "Asset" in transpiled',
     '"bounded_certified_coverage_percent": 100.0',
 )

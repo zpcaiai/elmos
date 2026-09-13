@@ -42,14 +42,8 @@ def _run_partial_pipeline(
         cases,
         output,
     )
-    discovery = json.loads(
-        (output / "repository-discovery-report.json").read_text(encoding="utf-8")
-    )
-    blockers = [
-        result
-        for result in discovery["results"]
-        if result["verdict"] != "READY"
-    ]
+    discovery = json.loads((output / "repository-discovery-report.json").read_text(encoding="utf-8"))
+    blockers = [result for result in discovery["results"] if result["verdict"] != "READY"]
 
     assert report["status"] in ("PARTIAL", "BLOCKED")
     assert report["repository_complete"] is False
@@ -79,18 +73,13 @@ def test_go_build_constraints_and_directives_block_repository_completion(
         "func clean(left int64, right int64) int64 { return left + right }\n",
     )
 
-    blocker_kinds = {
-        blocker["source_symbol"]["declaration_kind"] for blocker in blockers
-    }
+    blocker_kinds = {blocker["source_symbol"]["declaration_kind"] for blocker in blockers}
     assert blocker_kinds == {
         "go-build-constraint",
         "plus-build-constraint",
         "go-directive",
     }
-    directives = {
-        blocker["source_symbol"]["source_signature"]["directive"]
-        for blocker in blockers
-    }
+    directives = {blocker["source_symbol"]["source_signature"]["directive"] for blocker in blockers}
     assert "//go:generate echo generated" in directives
 
 
@@ -98,7 +87,7 @@ def test_go_build_constraints_and_directives_block_repository_completion(
     "declaration",
     [
         (
-            "[System.Diagnostics.DebuggerDisplay(\"Container\")]\n"
+            '[System.Diagnostics.DebuggerDisplay("Container")]\n'
             "public static class Container {\n"
             "  public static long clean(long left, long right) { return left + right; }\n"
             "}\n"
@@ -136,9 +125,7 @@ def test_csharp_non_plain_type_wrappers_are_inventory_obligations(
 
     inventory = inventory_module(source, "csharp")
 
-    container = next(
-        subject for subject in inventory["subjects"] if subject["name"] == "Container"
-    )
+    container = next(subject for subject in inventory["subjects"] if subject["name"] == "Container")
     assert container["declaration_kind"] == "ClassDeclaration"
     assert container["analyzable"] is False
 
@@ -150,7 +137,7 @@ def test_csharp_attributed_wrapper_keeps_local_output_but_blocks_repository(
         tmp_path,
         "csharp",
         "Container.cs",
-        "[System.Diagnostics.DebuggerDisplay(\"Container\")]\n"
+        '[System.Diagnostics.DebuggerDisplay("Container")]\n'
         "public static class Container {\n"
         "  public static long clean(long left, long right) { return left + right; }\n"
         "}\n",
@@ -173,15 +160,9 @@ def test_rust_semantic_attributes_block_repository_completion(tmp_path: Path) ->
         "fn clean(left: i64, right: i64) -> i64 { return left + right; }\n",
     )
 
-    attribute_paths = {
-        blocker["source_symbol"]["source_signature"].get("attribute_path")
-        for blocker in blockers
-    }
+    attribute_paths = {blocker["source_symbol"]["source_signature"].get("attribute_path") for blocker in blockers}
     assert "no_mangle" in attribute_paths
-    assert any(
-        blocker["source_symbol"]["declaration_kind"] == "item-attribute"
-        for blocker in blockers
-    )
+    assert any(blocker["source_symbol"]["declaration_kind"] == "item-attribute" for blocker in blockers)
 
 
 def test_rust_module_and_link_attributes_are_explicit_inventory_subjects(
@@ -190,10 +171,10 @@ def test_rust_module_and_link_attributes_are_explicit_inventory_subjects(
     source = tmp_path / "attributes.rs"
     source.write_text(
         "#![no_std]\n"
-        "#[link(name = \"c\")]\n"
-        "extern \"C\" {}\n"
-        "#[export_name = \"exported_name\"]\n"
-        "pub extern \"C\" fn exported(value: i64) -> i64 { value }\n",
+        '#[link(name = "c")]\n'
+        'extern "C" {}\n'
+        '#[export_name = "exported_name"]\n'
+        'pub extern "C" fn exported(value: i64) -> i64 { value }\n',
         encoding="utf-8",
     )
 
@@ -225,9 +206,7 @@ def test_cpp_default_argument_blocks_repository_completion(tmp_path: Path) -> No
     )
 
     configured = next(
-        blocker["source_symbol"]
-        for blocker in blockers
-        if blocker["source_symbol"]["name"] == "configured"
+        blocker["source_symbol"] for blocker in blockers if blocker["source_symbol"]["name"] == "configured"
     )
     assert "default-argument" in configured["source_signature"]["semantic_markers"]
 
@@ -238,15 +217,11 @@ def test_objc_visibility_attribute_blocks_repository_completion(tmp_path: Path) 
         "objc",
         "sample.m",
         "long long clean(long long left, long long right) { return left + right; }\n"
-        "__attribute__((visibility(\"default\")))\n"
+        '__attribute__((visibility("default")))\n'
         "long long exported(long long value) { return value; }\n",
     )
 
-    exported = next(
-        blocker["source_symbol"]
-        for blocker in blockers
-        if blocker["source_symbol"]["name"] == "exported"
-    )
+    exported = next(blocker["source_symbol"] for blocker in blockers if blocker["source_symbol"]["name"] == "exported")
     assert "attribute:VisibilityAttr" in exported["source_signature"]["semantic_markers"]
 
 
@@ -280,17 +255,12 @@ def test_php_declarations_outside_the_profile_block_repository_completion(
         "function clean(int $left, int $right): int\n{\n    return $left + $right;\n}\n",
     )
 
-    blocker_kinds = {
-        blocker["source_symbol"]["declaration_kind"] for blocker in blockers
-    }
+    blocker_kinds = {blocker["source_symbol"]["declaration_kind"] for blocker in blockers}
     assert "class" in blocker_kinds
     assert "method" in blocker_kinds
     assert "class-constant" in blocker_kinds
     assert "constant" in blocker_kinds
-    assert all(
-        blocker["blocker_code"] == "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED"
-        for blocker in blockers
-    )
+    assert all(blocker["blocker_code"] == "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED" for blocker in blockers)
 
 
 def test_php_strict_types_profile_preamble_is_content_bound_not_a_work_unit(
@@ -359,10 +329,7 @@ def test_a_php_top_level_statement_is_enumerated_as_its_own_obligation(
         encoding="utf-8",
     )
 
-    subjects = {
-        subject["declaration_kind"]: subject
-        for subject in inventory_module(source, "php")["subjects"]
-    }
+    subjects = {subject["declaration_kind"]: subject for subject in inventory_module(source, "php")["subjects"]}
 
     assert subjects["top-level-statement"]["analyzable"] is False
     assert subjects["function"]["analyzable"] is True
@@ -386,9 +353,7 @@ def test_a_php_include_edge_is_enumerated_as_its_own_obligation(tmp_path: Path) 
     )
 
     inventory = inventory_module(source, "php")
-    subjects = {
-        subject["declaration_kind"]: subject for subject in inventory["subjects"]
-    }
+    subjects = {subject["declaration_kind"]: subject for subject in inventory["subjects"]}
 
     assert inventory["enumeration_status"] == "PASSED"
     assert subjects["include-directive"]["analyzable"] is False
@@ -414,17 +379,12 @@ def test_a_php_function_without_strict_types_is_not_offered_for_lifting(
 
     source = tmp_path / "sample.php"
     source.write_text(
-        "<?php\n\nfunction clean(int $left, int $right): int\n{\n"
-        "    return $left + $right;\n}\n",
+        "<?php\n\nfunction clean(int $left, int $right): int\n{\n    return $left + $right;\n}\n",
         encoding="utf-8",
     )
 
     inventory = inventory_module(source, "php")
-    functions = [
-        subject
-        for subject in inventory["subjects"]
-        if subject["declaration_kind"] == "function"
-    ]
+    functions = [subject for subject in inventory["subjects"] if subject["declaration_kind"] == "function"]
 
     assert functions
     assert all(subject["analyzable"] is False for subject in functions)
@@ -453,11 +413,7 @@ def test_php_lifts_a_named_function_out_of_a_file_that_holds_other_declarations(
         encoding="utf-8",
     )
 
-    analyzable = [
-        subject["name"]
-        for subject in inventory_module(source, "php")["subjects"]
-        if subject["analyzable"]
-    ]
+    analyzable = [subject["name"] for subject in inventory_module(source, "php")["subjects"] if subject["analyzable"]]
     assert analyzable == ["clean"]
 
     ir = analyze(source, "php", "clean")
