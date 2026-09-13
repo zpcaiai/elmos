@@ -213,10 +213,12 @@ class EngineTestResultClassificationTests(unittest.TestCase):
                 return_value=(0, "", False),
             ),
         ):
+            engine = "functional-assurance-engine"
+            run_root = Path(temporary) / "runs" / engine / "test-attempt"
             result = subject.run_step(
-                "functional-assurance-engine",
+                engine,
                 step,
-                Path(temporary),
+                run_root,
                 uv="uv",
                 maven="mvn",
                 dotnet="dotnet",
