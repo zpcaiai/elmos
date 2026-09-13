@@ -17,26 +17,23 @@ import tempfile
 from typing import Final
 
 
-OPENSSL: Final = Path("/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl")
-LIBSSL: Final = Path("/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libssl.3.dylib")
+OPENSSL: Final = Path("/opt/homebrew/Cellar/openssl@3/3.6.4/bin/openssl")
+LIBSSL: Final = Path("/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libssl.3.dylib")
 LIBCRYPTO: Final = Path(
-    "/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libcrypto.3.dylib"
+    "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libcrypto.3.dylib"
 )
 EXPECTED_VERSION: Final = (
-    "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
+    "OpenSSL 3.6.4 25 Aug 2026 (Library: OpenSSL 3.6.4 25 Aug 2026)"
 )
-EXPECTED_IMAGE: Final = ("macos15", "20260829.0321.1")
-EXPECTED_IMAGES: Final = frozenset(
-    {EXPECTED_IMAGE, ("macos15", "20260907.0337.1")}
-)
+EXPECTED_IMAGE: Final = ("macos15", "20260907.0337.1")
 EXPECTED_MACOS_PRODUCT_VERSION: Final = "15.7.9"
 EXPECTED_MACOS_BUILD_VERSION: Final = "24G830"
 OPT_LINK: Final = Path("/opt/homebrew/opt/openssl@3")
-OPT_LINK_TARGET: Final = "../Cellar/openssl@3/3.6.3"
+OPT_LINK_TARGET: Final = "../Cellar/openssl@3/3.6.4"
 
 UNSEALED_DIRECTORY_PROFILES: Final = {
     Path("/opt"): {"mode": "0755", "uid": 0, "gid": 0},
-    # github-actions macos-15 image 20260829.0321.1 exposes the Homebrew
+    # github-actions macos-15 image 20260907.0337.1 exposes the Homebrew
     # prefix itself as runner-owned but already non-group-writable.  Keep this
     # exact pre-seal identity separate from the root-owned post-seal profile.
     Path("/opt/homebrew"): {"mode": "0755", "uid": 501, "gid": 80},
@@ -46,17 +43,17 @@ UNSEALED_DIRECTORY_PROFILES: Final = {
         "uid": 501,
         "gid": 80,
     },
-    Path("/opt/homebrew/Cellar/openssl@3/3.6.3"): {
+    Path("/opt/homebrew/Cellar/openssl@3/3.6.4"): {
         "mode": "0755",
         "uid": 501,
         "gid": 80,
     },
-    Path("/opt/homebrew/Cellar/openssl@3/3.6.3/bin"): {
+    Path("/opt/homebrew/Cellar/openssl@3/3.6.4/bin"): {
         "mode": "0755",
         "uid": 501,
         "gid": 80,
     },
-    Path("/opt/homebrew/Cellar/openssl@3/3.6.3/lib"): {
+    Path("/opt/homebrew/Cellar/openssl@3/3.6.4/lib"): {
         "mode": "0755",
         "uid": 501,
         "gid": 80,
@@ -85,7 +82,7 @@ SEALED_OPT_LINK_PROFILE: Final = {
     "gid": 0,
 }
 
-_LEGACY_UNSEALED_FILE_PROFILES: Final = {
+UNSEALED_FILE_PROFILES: Final = {
     OPENSSL: {
         "role": "openssl",
         "mode": "0555",
@@ -93,7 +90,7 @@ _LEGACY_UNSEALED_FILE_PROFILES: Final = {
         "gid": 80,
         "nlink": 1,
         "bytes": 878_752,
-        "sha256": "fac6e4f037e8e9c184485de80f23df3816c0c6d8428b20a7703b6f339a72a83c",
+        "sha256": "a8631915e0533453ed830611f224da7c794616e1814ebe17ad73a8a68edbb1a2",
     },
     LIBSSL: {
         "role": "libssl",
@@ -101,8 +98,8 @@ _LEGACY_UNSEALED_FILE_PROFILES: Final = {
         "uid": 501,
         "gid": 80,
         "nlink": 1,
-        "bytes": 887_984,
-        "sha256": "5f15ad8c8519304aad18b06105f367e21d75e0812eb300e904bb3b9271ce0d0d",
+        "bytes": 888_320,
+        "sha256": "a53b324db78c1146ff9ce68700f952e3997f4a1965ee6c6a802f6d3bdcd625ad",
     },
     LIBCRYPTO: {
         "role": "libcrypto",
@@ -110,56 +107,25 @@ _LEGACY_UNSEALED_FILE_PROFILES: Final = {
         "uid": 501,
         "gid": 80,
         "nlink": 1,
-        "bytes": 4_870_832,
-        "sha256": "256172ed0500c7af6f9d633b317fffe6efae0cae456eacc283a87cb2474317fb",
+        "bytes": 4_870_816,
+        "sha256": "48c160c3aaa46cb69e5874370d820c2bc8be0712f6ee690fa10581ad966474a7",
     },
 }
 
-_REFRESHED_UNSEALED_FILE_PROFILES: Final = {
-    OPENSSL: {
-        "role": "openssl",
-        "mode": "0555",
-        "uid": 501,
-        "gid": 80,
-        "nlink": 1,
-        "bytes": 878_752,
-        "sha256": "fac6e4f037e8e9c184485de80f23df3816c0c6d8428b20a7703b6f339a72a83c",
-    },
-    LIBSSL: {
-        "role": "libssl",
-        "mode": "0444",
-        "uid": 501,
-        "gid": 80,
-        "nlink": 1,
-        "bytes": 887_984,
-        "sha256": "5f15ad8c8519304aad18b06105f367e21d75e0812eb300e904bb3b9271ce0d0d",
-    },
-    LIBCRYPTO: {
-        "role": "libcrypto",
-        "mode": "0444",
-        "uid": 501,
-        "gid": 80,
-        "nlink": 1,
-        "bytes": 4_870_832,
-        "sha256": "256172ed0500c7af6f9d633b317fffe6efae0cae456eacc283a87cb2474317fb",
-    },
-}
-
-UNSEALED_FILE_PROFILES = _REFRESHED_UNSEALED_FILE_PROFILES
-FILE_PROFILES = {
+FILE_PROFILES: Final = {
     path: {**profile, "uid": 0, "gid": 0}
     for path, profile in UNSEALED_FILE_PROFILES.items()
 }
 
-_LEGACY_SIGNATURE_PROFILES: Final = {
+SIGNATURE_PROFILES: Final = {
     LIBSSL: {
         "Identifier=libssl.3",
         "Format=Mach-O thin (arm64)",
         "CodeDirectory v=20400 size=7073 flags=0x2(adhoc) hashes=216+2 location=embedded",
         "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
-        "CMSDigest=b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
-        "CDHash=b2920ada65fae0087ed680e1cfc58c8e21a20a9a",
+        "CandidateCDHashFull sha256=e9a6a82cd020a4d83a4c9f04e4721f9e9ba74ba53688d24378b9925a7152d1cd",
+        "CMSDigest=e9a6a82cd020a4d83a4c9f04e4721f9e9ba74ba53688d24378b9925a7152d1cd",
+        "CDHash=e9a6a82cd020a4d83a4c9f04e4721f9e9ba74ba5",
         "Signature=adhoc",
         "TeamIdentifier=not set",
         "Sealed Resources=none",
@@ -170,89 +136,15 @@ _LEGACY_SIGNATURE_PROFILES: Final = {
         "Format=Mach-O thin (arm64)",
         "CodeDirectory v=20400 size=37924 flags=0x2(adhoc) hashes=1180+2 location=embedded",
         "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
-        "CMSDigest=a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
-        "CDHash=a8f03e63667ae72e9928cafa28a677fe8cafd9c0",
+        "CandidateCDHashFull sha256=62a898da6d899ade18542bdba30ed3eb44a351472a792e531d9b9b7b2becc51e",
+        "CMSDigest=62a898da6d899ade18542bdba30ed3eb44a351472a792e531d9b9b7b2becc51e",
+        "CDHash=62a898da6d899ade18542bdba30ed3eb44a35147",
         "Signature=adhoc",
         "TeamIdentifier=not set",
         "Sealed Resources=none",
         "Internal requirements count=0 size=12",
     },
 }
-
-_REFRESHED_SIGNATURE_PROFILES: Final = {
-    LIBSSL: {
-        "Identifier=libssl.3",
-        "Format=Mach-O thin (arm64)",
-        "CodeDirectory v=20400 size=7073 flags=0x2(adhoc) hashes=216+2 location=embedded",
-        "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
-        "CMSDigest=b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
-        "CDHash=b2920ada65fae0087ed680e1cfc58c8e21a20a9a",
-        "Signature=adhoc",
-        "TeamIdentifier=not set",
-        "Sealed Resources=none",
-        "Internal requirements count=0 size=12",
-    },
-    LIBCRYPTO: {
-        "Identifier=libcrypto.3",
-        "Format=Mach-O thin (arm64)",
-        "CodeDirectory v=20400 size=37924 flags=0x2(adhoc) hashes=1180+2 location=embedded",
-        "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
-        "CMSDigest=a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
-        "CDHash=a8f03e63667ae72e9928cafa28a677fe8cafd9c0",
-        "Signature=adhoc",
-        "TeamIdentifier=not set",
-        "Sealed Resources=none",
-        "Internal requirements count=0 size=12",
-    },
-}
-
-SIGNATURE_PROFILES = _REFRESHED_SIGNATURE_PROFILES
-
-HOST_PROFILES: Final = {
-    ("macos15", "20260727.0256.1"): {
-        "product_version": "15.7.7",
-        "build_version": "24G720",
-        "files": _LEGACY_UNSEALED_FILE_PROFILES,
-        "signatures": _LEGACY_SIGNATURE_PROFILES,
-    },
-    ("macos15", "20260829.0321.1"): {
-        "product_version": "15.7.9",
-        "build_version": "24G830",
-        "files": _REFRESHED_UNSEALED_FILE_PROFILES,
-        "signatures": _REFRESHED_SIGNATURE_PROFILES,
-    },
-    ("macos15", "20260907.0337.1"): {
-        "product_version": "15.7.9",
-        "build_version": "24G830",
-        "files": _REFRESHED_UNSEALED_FILE_PROFILES,
-        "signatures": _REFRESHED_SIGNATURE_PROFILES,
-    },
-}
-
-
-def _activate_host_profile(image_os: str, image_version: str) -> Mapping[str, object]:
-    profile = HOST_PROFILES.get((image_os, image_version))
-    if profile is None:
-        raise RuntimeError("GitHub hosted image identity mismatch")
-    global EXPECTED_IMAGE
-    global EXPECTED_MACOS_PRODUCT_VERSION
-    global EXPECTED_MACOS_BUILD_VERSION
-    global UNSEALED_FILE_PROFILES
-    global FILE_PROFILES
-    global SIGNATURE_PROFILES
-    EXPECTED_IMAGE = (image_os, image_version)
-    EXPECTED_MACOS_PRODUCT_VERSION = str(profile["product_version"])
-    EXPECTED_MACOS_BUILD_VERSION = str(profile["build_version"])
-    UNSEALED_FILE_PROFILES = profile["files"]  # type: ignore[assignment]
-    FILE_PROFILES = {
-        path: {**file_profile, "uid": 0, "gid": 0}
-        for path, file_profile in UNSEALED_FILE_PROFILES.items()
-    }
-    SIGNATURE_PROFILES = profile["signatures"]  # type: ignore[assignment]
-    return profile
 
 DEPENDENCIES: Final = {
     OPENSSL: (
@@ -394,7 +286,7 @@ def _opt_link_receipt(expected: Mapping[str, object]) -> dict[str, object]:
     if (
         not stat.S_ISLNK(after.st_mode)
         or OPT_LINK.resolve(strict=True)
-        != Path("/opt/homebrew/Cellar/openssl@3/3.6.3")
+        != Path("/opt/homebrew/Cellar/openssl@3/3.6.4")
     ):
         raise RuntimeError("OpenSSL opt link does not resolve to the pinned keg")
     receipt: dict[str, object] = {
@@ -1002,9 +894,8 @@ def _forbidden_environment_names(environment: Mapping[str, str]) -> set[str]:
 def _verify_host(image_os: str | None, image_version: str | None) -> None:
     if sys.platform != "darwin" or os.uname().machine != "arm64":
         raise RuntimeError("OpenSSL runtime verifier requires Darwin arm64")
-    if not isinstance(image_os, str) or not isinstance(image_version, str):
+    if (image_os, image_version) != EXPECTED_IMAGE:
         raise RuntimeError("GitHub hosted image identity mismatch")
-    _activate_host_profile(image_os, image_version)
     if (
         _run(["/usr/bin/sw_vers", "-productVersion"]).stdout.strip()
         != EXPECTED_MACOS_PRODUCT_VERSION

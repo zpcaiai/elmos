@@ -10,8 +10,9 @@
     {
       "claimId": "claim-b40-core-functional-conformance",
       "statement": "Batch 40 core functionality satisfies all industrial specification requirements.",
-      "limitations": "Evaluated against verified production workload fixture suites only.",
-      "status": "PASS",
+      "limitations": [
+        "Evaluated against verified production workload fixture suites only."
+      ],
       "evidenceRefs": [
         "b40-dependabot-alerts",
         "b40-dependabot-alerts.raw",
@@ -21,25 +22,17 @@
         "b40-secret-scan",
         "batch40-execution",
         "batch40-verification"
-      ],
-      "provenanceRefs": [
-        "b40-dependabot-alerts-provenance",
-        "b40-dependabot-vex-provenance",
-        "batch40-dependency-inventory-provenance",
-        "batch40-provenance"
       ]
     },
     {
       "claimId": "claim-b40-operational-governance-resilience",
       "statement": "Batch 40 meets all zero-tolerance, audit, and operational resilience standards.",
-      "limitations": "Scoped to approved deployment topologies and authorized network perimeters.",
-      "status": "PASS",
+      "limitations": [
+        "Scoped to approved deployment topologies and authorized network perimeters."
+      ],
       "evidenceRefs": [
         "batch40-execution",
         "batch40-verification"
-      ],
-      "provenanceRefs": [
-        "batch40-provenance"
       ]
     },
     {
