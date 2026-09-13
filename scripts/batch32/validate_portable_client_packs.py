@@ -40,6 +40,9 @@ EXPECTED_PACK_MODES = {
     "frt-g01-g30-platform": "ordinary",
     "web-console-next16-react19-wechat-v1": "ordinary",
 }
+EXPECTED_AUXILIARY_OUTPUTS = {
+    "web-console-full-syntax-wechat": "web-console-next16-react19-wechat-v1",
+}
 
 
 class PortableGateError(RuntimeError):
@@ -189,6 +192,29 @@ def validate_ordinary(pack: Path, manifest: dict[str, Any]) -> PackOutcome:
     )
 
 
+def validate_auxiliary_output(path: Path, owner_pack: str) -> None:
+    if path.is_symlink():
+        raise PortableGateError(f"auxiliary output may not be a symlink: {path}")
+    entries = {item.name for item in path.iterdir()}
+    if entries != {"target-project", "transformations"}:
+        raise PortableGateError(
+            f"{path.name} auxiliary output inventory mismatch: {sorted(entries)}"
+        )
+    files = [item for item in path.rglob("*") if item.is_file()]
+    if not files or any(item.is_symlink() for item in files):
+        raise PortableGateError(f"{path.name} auxiliary output is empty or unsafe")
+    closure = load_object(path / "transformations/component-migration-closure.json")
+    if closure.get("kind") != "elmos.frontend-component-migration-closure":
+        raise PortableGateError(f"{path.name} has an invalid closure kind")
+    if closure.get("pack_key") != owner_pack:
+        raise PortableGateError(f"{path.name} is not bound to {owner_pack}")
+    if closure.get("certification") != "NOT_CERTIFIED":
+        raise PortableGateError(f"{path.name} may not grant certification")
+    for field in ("runtime_evidence", "production_evidence"):
+        if closure.get(field) != "NOT_RUN":
+            raise PortableGateError(f"{path.name} {field} must remain NOT_RUN")
+
+
 def validate_all(pack_root: Path) -> list[PackOutcome]:
     resolved_root = pack_root.resolve(strict=True)
     if not resolved_root.is_dir() or resolved_root.is_symlink():
@@ -196,12 +222,20 @@ def validate_all(pack_root: Path) -> list[PackOutcome]:
     packs = sorted(path for path in resolved_root.iterdir() if path.is_dir())
     actual_names = {pack.name for pack in packs}
     expected_names = set(EXPECTED_PACK_MODES)
-    if actual_names != expected_names:
+    allowed_names = expected_names | set(EXPECTED_AUXILIARY_OUTPUTS)
+    if not expected_names.issubset(actual_names) or not actual_names.issubset(
+        allowed_names
+    ):
         raise PortableGateError(
             "client pack inventory mismatch: "
             f"missing={sorted(expected_names - actual_names)} "
-            f"unexpected={sorted(actual_names - expected_names)}"
+            f"unexpected={sorted(actual_names - allowed_names)}"
         )
+    for name, owner_pack in EXPECTED_AUXILIARY_OUTPUTS.items():
+        output = resolved_root / name
+        if output.exists():
+            validate_auxiliary_output(output, owner_pack)
+    packs = [pack for pack in packs if pack.name in EXPECTED_PACK_MODES]
     prepared: list[tuple[Path, dict[str, Any], bool, bool]] = []
     seen_pack_keys: set[str] = set()
     for pack in packs:

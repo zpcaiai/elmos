@@ -255,6 +255,36 @@ class PortableClientPackGateTest(unittest.TestCase):
             with self.assertRaisesRegex(portable.PortableGateError, "duplicate"):
                 portable.validate_all(root)
 
+    def test_auxiliary_output_is_explicitly_bound_and_non_certifying(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="batch32-portable-test-") as directory:
+            output = Path(directory) / "web-console-full-syntax-wechat"
+            (output / "target-project").mkdir(parents=True)
+            (output / "target-project/app.js").write_text("App({});\n", encoding="utf-8")
+            (output / "transformations").mkdir()
+            closure = {
+                "kind": "elmos.frontend-component-migration-closure",
+                "pack_key": "web-console-next16-react19-wechat-v1",
+                "certification": "NOT_CERTIFIED",
+                "runtime_evidence": "NOT_RUN",
+                "production_evidence": "NOT_RUN",
+            }
+            (output / "transformations/component-migration-closure.json").write_text(
+                json.dumps(closure), encoding="utf-8"
+            )
+            portable.validate_auxiliary_output(
+                output, "web-console-next16-react19-wechat-v1"
+            )
+            closure["certification"] = "CERTIFIED"
+            (output / "transformations/component-migration-closure.json").write_text(
+                json.dumps(closure), encoding="utf-8"
+            )
+            with self.assertRaisesRegex(
+                portable.PortableGateError, "may not grant certification"
+            ):
+                portable.validate_auxiliary_output(
+                    output, "web-console-next16-react19-wechat-v1"
+                )
+
 
 if __name__ == "__main__":
     unittest.main()
