@@ -90,19 +90,17 @@ class SpringExternalCertificationTests(TestCase):
         )
         self.assertEqual(0, res.returncode, f"Signature verification failed: {res.stderr}")
 
-    def test_full_spring_external_gate_script_execution(self) -> None:
+    def test_committed_spring_external_snapshot_fails_closed(self) -> None:
         res = subprocess.run(
             [sys.executable, str(GATE_SCRIPT)],
             capture_output=True,
             text=True,
             check=False,
         )
-        self.assertEqual(
-            0,
-            res.returncode,
-            f"Spring external gate failed:\nStdout:\n{res.stdout}\nStderr:\n{res.stderr}",
-        )
-        self.assertIn("ALL 6 SPRING MODERNIZATION PRODUCTION ROUTES 100% CERTIFIED!", res.stdout)
+        self.assertEqual(1, res.returncode)
+        self.assertIn("[FAIL]", res.stdout)
+        self.assertIn("RESULT: GATE FAILED", res.stderr)
+        self.assertNotIn("100% CERTIFIED", res.stdout)
 
 
 if __name__ == "__main__":

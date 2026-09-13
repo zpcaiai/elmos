@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 import sys
 from typing import Any, Mapping, Sequence
 
 from .canonical import strict_json_loads
 from .domain import TenantScope
 from .kernel import KernelSecurityError
+from .provider_runtime import load_provider_runtime_manifest
 from .service import FoundryService
 from .skills import CatalogValidationError, EXPECTED_PIPELINES
 
@@ -82,8 +84,29 @@ def main(argv: Sequence[str] | None = None) -> int:
     skill_parser.add_argument("--inputs-json", required=True)
     _add_scope(skill_parser)
 
+    provider_parser = subparsers.add_parser(
+        "provider-runtime",
+        help="Validate an exact host Provider manifest and installed executables",
+    )
+    provider_parser.add_argument("--manifest", type=Path, required=True)
+    provider_parser.add_argument(
+        "--allow-partial",
+        action="store_true",
+        help="Validate an explicitly incomplete host runtime without claiming catalog coverage",
+    )
+
     args = parser.parse_args(argv)
     try:
+        # Reject caller-controlled JSON before constructing the 1,310-Skill
+        # runtime. Invalid input must remain side-effect free and should not
+        # trigger catalog, adapter, store, or Provider initialization.
+        parsed_object: Mapping[str, Any] | None = None
+        if args.command == "pipeline":
+            parsed_object = _object(args.params_json, "--params-json")
+        elif args.command == "route":
+            parsed_object = _object(args.filters_json, "--filters-json")
+        elif args.command == "skill":
+            parsed_object = _object(args.inputs_json, "--inputs-json")
         service = FoundryService()
         if args.command == "validate":
             status_out = dict(service.status())
@@ -93,7 +116,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.command == "pipeline":
             pipeline_out = service.run_pipeline(
                 args.name,
-                _object(args.params_json, "--params-json"),
+                parsed_object or {},
                 tenant_scope=_scope(service, args, "foundry.pipeline.prepare"),
             )
             print(json.dumps(_json_ready(pipeline_out), indent=2, sort_keys=True))
@@ -102,13 +125,22 @@ def main(argv: Sequence[str] | None = None) -> int:
             route_out = service.skills.route_meta_skill_plan(
                 args.meta_skill,
                 args.query,
-                filters=_object(args.filters_json, "--filters-json"),
+                filters=parsed_object or {},
                 candidate_limit=args.candidate_limit,
                 activation_limit=args.activation_limit,
             )
             print(json.dumps(_json_ready(route_out), indent=2, sort_keys=True))
             return 0 if route_out["status"] == "ROUTED" else 1
-        inputs = dict(_object(args.inputs_json, "--inputs-json"))
+        if args.command == "provider-runtime":
+            runtime = load_provider_runtime_manifest(
+                args.manifest,
+                catalog=service.skills.snapshot,
+                require_complete=not args.allow_partial,
+            )
+            validation = runtime.validate_installed_executables()
+            print(json.dumps(_json_ready(validation), indent=2, sort_keys=True))
+            return 0
+        inputs = dict(parsed_object or {})
         inputs["operation"] = "prepare"
         result = service.execute_skill(
             args.skill_name,

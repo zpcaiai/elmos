@@ -99,10 +99,13 @@ class LinuxRootlessSandboxRunner:
         host_workspace_path: Path,
         env: dict[str, str] | None = None,
         image_name: str = "alpine:latest",
+        backend: str | None = None,
     ) -> SandboxExecutionResult:
-        """Run command in the highest-fidelity available rootless backend."""
+        """Run in the selected backend, defaulting to the highest-fidelity one."""
         started_at = time.perf_counter()
-        backend = self.available_backends[0]
+        selected_backend = backend or self.available_backends[0]
+        if selected_backend not in self.available_backends:
+            raise ValueError(f"sandbox backend is unavailable: {selected_backend}")
         verifications: dict[str, bool] = {
             "cap_drop_all": True,
             "no_new_privileges": self.config.no_new_privileges,
@@ -111,11 +114,11 @@ class LinuxRootlessSandboxRunner:
             "cgroup_limits_enforced": True,
         }
 
-        if backend == "podman_rootless":
+        if selected_backend == "podman_rootless":
             return self._run_podman(command, host_workspace_path, env, image_name, started_at, verifications)
-        elif backend == "bubblewrap":
+        elif selected_backend == "bubblewrap":
             return self._run_bwrap(command, host_workspace_path, env, started_at, verifications)
-        elif backend == "user_namespace":
+        elif selected_backend == "user_namespace":
             return self._run_unshare(command, host_workspace_path, env, started_at, verifications)
         else:
             return self._run_hermetic_jail(command, host_workspace_path, env, started_at, verifications)

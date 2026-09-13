@@ -181,7 +181,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertNotIn("brew install openssl@3", frontend_job)
         self.assertIn("runs-on: macos-15", frontend_job)
         self.assertGreaterEqual(
-            frontend_job.count("/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl"),
+            frontend_job.count("/opt/homebrew/Cellar/openssl@3/3.6.4/bin/openssl"),
             2,
         )
         self.assertIn(
@@ -227,11 +227,11 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertIn("OPENSSL3_RUNTIME_RECEIPT", verifier)
         self.assertIn("OPENSSL3_ROOT_SEAL_RECEIPT", verifier)
         self.assertIn(
-            "/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libssl.3.dylib",
+            "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libssl.3.dylib",
             verifier,
         )
         self.assertIn(
-            "/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libcrypto.3.dylib",
+            "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libcrypto.3.dylib",
             verifier,
         )
         self.assertNotIn("/usr/bin/realpath", frontend_job)
@@ -245,11 +245,11 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             "20260907.0337.1",
             "15.7.9",
             "24G830",
-            "fac6e4f037e8e9c184485de80f23df3816c0c6d8428b20a7703b6f339a72a83c",
-            "5f15ad8c8519304aad18b06105f367e21d75e0812eb300e904bb3b9271ce0d0d",
-            "256172ed0500c7af6f9d633b317fffe6efae0cae456eacc283a87cb2474317fb",
-            "b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
-            "a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
+            "a8631915e0533453ed830611f224da7c794616e1814ebe17ad73a8a68edbb1a2",
+            "a53b324db78c1146ff9ce68700f952e3997f4a1965ee6c6a802f6d3bdcd625ad",
+            "48c160c3aaa46cb69e5874370d820c2bc8be0712f6ee690fa10581ad966474a7",
+            "e9a6a82cd020a4d83a4c9f04e4721f9e9ba74ba53688d24378b9925a7152d1cd",
+            "62a898da6d899ade18542bdba30ed3eb44a351472a792e531d9b9b7b2becc51e",
         ):
             self.assertIn(pinned_value, verifier)
         for required_control in (
@@ -290,7 +290,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             verifier.index("before = _runtime_receipt()"),
         )
         self.assertIn(
-            "printf '%s\\n' \"/opt/homebrew/Cellar/openssl@3/3.6.3/bin\" "
+            "printf '%s\\n' \"/opt/homebrew/Cellar/openssl@3/3.6.4/bin\" "
             '>>"${GITHUB_PATH}"',
             frontend_job,
         )
@@ -327,7 +327,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertEqual(verifier.SEALED_OPT_LINK_PROFILE["gid"], 0)
         self.assertEqual(
             verifier.SEALED_OPT_LINK_PROFILE["target"],
-            "../Cellar/openssl@3/3.6.3",
+            "../Cellar/openssl@3/3.6.4",
         )
         self.assertTrue(
             all(

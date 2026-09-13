@@ -289,9 +289,9 @@ jobs:
         run: pnpm --dir engines/frontend-client-engine check
       - name: Bind OpenSSL 3 Ed25519 runtime
         run: |
-          openssl_bin="/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl"
+          openssl_bin="/opt/homebrew/Cellar/openssl@3/3.6.4/bin/openssl"
           openssl_opt_bin="/opt/homebrew/opt/openssl@3/bin/openssl"
-          openssl_receipt="/opt/homebrew/Cellar/openssl@3/3.6.3/INSTALL_RECEIPT.json"
+          openssl_receipt="/opt/homebrew/Cellar/openssl@3/3.6.4/INSTALL_RECEIPT.json"
           test "$(/usr/bin/uname -m)" = "arm64"
           test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"
           test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"
@@ -306,13 +306,13 @@ jobs:
             'import os, sys; print(os.path.realpath(sys.argv[1], strict=True))' \
             "${openssl_opt_bin}")" = "${openssl_bin}"
           python3.11 -I -B -c \
-            'import json, pathlib, sys; value=json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")); source=value.get("source"); assert value.get("arch") == "arm64"; assert value.get("built_as_bottle") is True; assert value.get("poured_from_bottle") is True; assert isinstance(source, dict); assert source.get("tap") == "homebrew/core"; assert source.get("spec") == "stable"; assert source.get("versions", {}).get("stable") == "3.6.3"; assert pathlib.Path(str(source.get("path"))).name == "packages.arm64_sequoia.jws.json"' \
+            'import json, pathlib, sys; value=json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")); source=value.get("source"); assert value.get("arch") == "arm64"; assert value.get("built_as_bottle") is True; assert value.get("poured_from_bottle") is True; assert isinstance(source, dict); assert source.get("tap") == "homebrew/core"; assert source.get("spec") == "stable"; assert source.get("versions", {}).get("stable") == "3.6.4"; assert pathlib.Path(str(source.get("path"))).name == "packages.arm64_sequoia.jws.json"' \
             "${openssl_receipt}"
           python3.11 -I -B scripts/toolchains/verify_openssl3_ci_runtime.py
-          printf '%s\n' "/opt/homebrew/Cellar/openssl@3/3.6.3/bin" >>"${GITHUB_PATH}"
+          printf '%s\n' "/opt/homebrew/Cellar/openssl@3/3.6.4/bin" >>"${GITHUB_PATH}"
       - name: Verify bound OpenSSL runtime
         run: |
-          openssl_bin="/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl"
+          openssl_bin="/opt/homebrew/Cellar/openssl@3/3.6.4/bin/openssl"
           test "$(command -v openssl)" = "${openssl_bin}"
           python3.11 -I -B scripts/toolchains/verify_openssl3_ci_runtime.py
       - name: Replay complete Batch 32 and Batch 35 formal gates
@@ -739,6 +739,9 @@ jobs:
           python-version: "3.12"
       - name: Install locked uv tool
         run: python -m pip install --disable-pip-version-check uv==0.11.16
+      - name: Build native CDC comparator
+        working-directory: engines/sql-dialect-engine/cdc-engine-rust
+        run: cargo build --locked --release
       - name: Verify SQL Dialect Engine
         working-directory: engines/sql-dialect-engine
         run: |

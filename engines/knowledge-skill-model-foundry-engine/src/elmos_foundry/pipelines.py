@@ -97,6 +97,56 @@ def _plain_digest(value: Mapping[str, Any]) -> str:
     return canonical_digest(value).removeprefix("sha256:")
 
 
+def exact_pipeline_binding(
+    name: str,
+    source: Mapping[str, Any],
+) -> tuple[AdapterBinding, ExternalAdapterRoute]:
+    """Compile one exact pipeline binding from its verified catalog record."""
+
+    profile = PIPELINE_PROFILE_REGISTRY.get(name)
+    if profile is None or source.get("name") != name:
+        raise ValueError("pipeline identity is unknown or differs from its catalog record")
+    operation = f"foundry.pipeline.{name}.execute"
+    document = {
+        "schema_version": "elmos.foundry.pipeline-binding.v1",
+        "pipeline": name,
+        "kind": source["kind"],
+        "source_sha256": source["source_sha256"],
+        "required_inputs": list(profile.required_inputs),
+        "required_adapters": list(profile.required_adapters),
+        "external_effects": list(profile.external_effects),
+        "required_outputs": list(PIPELINE_REQUIRED_OUTPUTS),
+        "operation": operation,
+        "effect_class": EffectClass.PRIVILEGED_EXTERNAL.value,
+    }
+    binding_digest = _plain_digest(document)
+    binding = AdapterBinding(
+        adapter_id=f"pipeline.{name}",
+        version=PIPELINE_BINDING_VERSION,
+        digest=binding_digest,
+        exact_skills=(name,),
+        effect_class=EffectClass.PRIVILEGED_EXTERNAL,
+        metadata={
+            "integration_status": "HOST_BROKER_REQUIRED",
+            "source_sha256": str(source["source_sha256"]),
+        },
+    )
+    route = ExternalAdapterRoute(
+        route_id=f"pipeline-route.{name}",
+        version=PIPELINE_BINDING_VERSION,
+        digest=_plain_digest(
+            {
+                "schema_version": "elmos.foundry.pipeline-route.v1",
+                "pipeline": name,
+                "binding_digest": binding_digest,
+                "operation": operation,
+            }
+        ),
+        operation=operation,
+    )
+    return binding, route
+
+
 def build_pipeline_adapter_registry(
     skills: SkillCatalog,
     *,
@@ -109,48 +159,10 @@ def build_pipeline_adapter_registry(
         permit_verifier=permit_verifier,
         external_broker=external_broker,
     )
-    for name, profile in sorted(PIPELINE_PROFILE_REGISTRY.items()):
+    for name in sorted(PIPELINE_PROFILE_REGISTRY):
         source = skills.pipeline_records[name]
-        operation = f"foundry.pipeline.{name}.execute"
-        document = {
-            "schema_version": "elmos.foundry.pipeline-binding.v1",
-            "pipeline": name,
-            "kind": source["kind"],
-            "source_sha256": source["source_sha256"],
-            "required_inputs": list(profile.required_inputs),
-            "required_adapters": list(profile.required_adapters),
-            "external_effects": list(profile.external_effects),
-            "required_outputs": list(PIPELINE_REQUIRED_OUTPUTS),
-            "operation": operation,
-            "effect_class": EffectClass.PRIVILEGED_EXTERNAL.value,
-        }
-        binding_digest = _plain_digest(document)
-        registry.register(
-            AdapterBinding(
-                adapter_id=f"pipeline.{name}",
-                version=PIPELINE_BINDING_VERSION,
-                digest=binding_digest,
-                exact_skills=(name,),
-                effect_class=EffectClass.PRIVILEGED_EXTERNAL,
-                metadata={
-                    "integration_status": "HOST_BROKER_REQUIRED",
-                    "source_sha256": str(source["source_sha256"]),
-                },
-            ),
-            ExternalAdapterRoute(
-                route_id=f"pipeline-route.{name}",
-                version=PIPELINE_BINDING_VERSION,
-                digest=_plain_digest(
-                    {
-                        "schema_version": "elmos.foundry.pipeline-route.v1",
-                        "pipeline": name,
-                        "binding_digest": binding_digest,
-                        "operation": operation,
-                    }
-                ),
-                operation=operation,
-            ),
-        )
+        binding, route = exact_pipeline_binding(name, source)
+        registry.register(binding, route)
     if len(registry.describe()) != len(EXPECTED_PIPELINES):
         raise RuntimeError("pipeline adapter registry coverage is incomplete")
     return registry
@@ -443,6 +455,7 @@ class PipelineOrchestrator:
 __all__ = [
     "PIPELINE_BINDING_VERSION",
     "PIPELINE_PROFILE_REGISTRY",
+    "exact_pipeline_binding",
     "PIPELINE_REQUIRED_OUTPUTS",
     "PipelineOrchestrator",
     "PipelineProfile",

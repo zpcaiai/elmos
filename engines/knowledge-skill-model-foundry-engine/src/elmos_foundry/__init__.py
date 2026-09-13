@@ -78,7 +78,13 @@ from .native_semantics import (
     load_native_programs,
 )
 from .pipelines import PipelineOrchestrator
+from .permit_authority import SignedPermitTrustPolicy, build_signed_permit_verifier
 from .policies import PolicyEngine
+from .provider_runtime import (
+    ProviderRuntimeManifest,
+    ProviderRuntimeManifestError,
+    load_provider_runtime_manifest,
+)
 from .semantic_program_runner import SemanticProgramRunner, StageResult
 from .service import FoundryService
 from .serving import ModelServingGateway
@@ -143,6 +149,8 @@ __all__ = [
     "OutboxReceiptVerifier",
     "PipelineOrchestrator",
     "PolicyEngine",
+    "ProviderRuntimeManifest",
+    "ProviderRuntimeManifestError",
     "ProviderCommandRoute",
     "ProviderEvidenceRequest",
     "RightsClass",
@@ -153,11 +161,14 @@ __all__ = [
     "SkillContract",
     "SignatureVerifier",
     "SignatureBackend",
+    "SignedPermitTrustPolicy",
     "StageResult",
     "TenantScope",
     "build_subprocess_broker",
+    "build_signed_permit_verifier",
     "evaluate_certification",
     "load_native_programs",
+    "load_provider_runtime_manifest",
     "verify_external_run_receipt",
     "verify_external_qualification_chain",
     "verify_independent_acceptance",
