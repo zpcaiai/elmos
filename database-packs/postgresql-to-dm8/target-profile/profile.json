@@ -7,6 +7,7 @@
   "versions": [
     "8.1.3.140"
   ],
+  "patch_version": "8.1.3.140",
   "edition": "enterprise",
   "dialect": "dm8-oracle-compatible",
   "driver_versions": [
@@ -21,7 +22,9 @@
       "dmserver --version",
       "disql SELECT id_code FROM v$instance"
     ],
-    "image_digests": []
+    "image_digests": [],
+    "image_digest_status": "NOT_PROVISIONED",
+    "required_architecture": "operator-selected-exact-linux-architecture"
   },
   "health_check": {
     "query": "SELECT 1"
@@ -37,6 +40,17 @@
   "providers": {
     "compatibility_mode": "oracle-compatible-explicit",
     "adapter_id": "chinadb.dm8.target-adapter.v1",
-    "licensed_disposable_sandbox": "NOT_PROVISIONED"
+    "deployment_topology": "single-instance-non-mpp",
+    "sql_mode": "oracle-compatible-explicit",
+    "licensed_disposable_sandbox": "NOT_PROVISIONED",
+    "license_ref": null,
+    "license_digest": null,
+    "license_verification": "NOT_RUN",
+    "rls": {
+      "mode": "DBMS_RLS_ENABLE_RLS_1_NON_MPP",
+      "enable_rls": 1,
+      "initialization": "SP_INIT_RLS_SYS(1)",
+      "mpp_supported": false
+    }
   }
 }

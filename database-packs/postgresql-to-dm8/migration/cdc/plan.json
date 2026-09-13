@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0",
+  "status": "NOT_RUN",
+  "deliverySemantics": "AT_LEAST_ONCE_WITH_IDEMPOTENT_EFFECTS",
+  "sourcePosition": "postgresql-lsn",
+  "checkpointDurability": "FSYNC_AND_ATOMIC_REPLACE_OR_EXTERNAL_DURABLE_STORE",
+  "targetTransactionLedger": {
+    "table": "elmos_cdc_event_ledger",
+    "atomicWithTargetMutation": true,
+    "purpose": "close-target-commit-before-external-checkpoint-crash-window"
+  },
+  "requiredChecks": ["insertPropagation", "updatePropagation", "deletePropagation", "duplicateSuppression", "outOfOrderHandling", "restartResume"],
+  "acceptance": {
+    "missingEventCount": 0,
+    "duplicateEffectCount": 0,
+    "checkpointRegressionCount": 0,
+    "lagWithinDeclaredSlo": true
+  }
+}

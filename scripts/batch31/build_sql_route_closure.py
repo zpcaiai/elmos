@@ -220,7 +220,7 @@ def build(reachability_path: Path, backlog_path: Path) -> dict[str, Any]:
                 "phase": "DEDICATED_RUNNER_75MS",
                 "state": "NOT_RUN_ENVIRONMENT_INVALID",
                 "targetIds": ["dm8"],
-                "completionRule": "signed protocol 1.2.0 performance summary passes 75 ms p95",
+                "completionRule": "signed protocol 1.3.0 DM8 Phase-1 summaries and 75 ms p95 pass",
             },
             {
                 "order": 4,

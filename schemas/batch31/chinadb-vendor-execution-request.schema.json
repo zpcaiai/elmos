@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "protocolVersion", "kind", "idempotencyKey", "scope", "scopeDigest", "targetId", "adapterId", "qualificationInputDigest", "exactTuple", "exactTupleDigest", "disposableEnvironment", "environmentDigest", "vendorTools", "vendorToolDigests", "allowedOperations", "inputArtifactDigests", "authorizationEnvelope", "authorizationEnvelopeDigest", "performanceContract", "safety", "externalExecution", "certification", "requestDigest"],
+  "required": ["schemaVersion", "protocolVersion", "kind", "idempotencyKey", "scope", "scopeDigest", "targetId", "adapterId", "qualificationInputDigest", "exactTuple", "exactTupleDigest", "disposableEnvironment", "environmentDigest", "vendorTools", "vendorToolDigests", "allowedOperations", "inputArtifactDigests", "authorizationEnvelope", "authorizationEnvelopeDigest", "phase1ExecutionContract", "performanceContract", "safety", "externalExecution", "certification", "requestDigest"],
   "properties": {
     "schemaVersion": {"const": "1.0"},
-    "protocolVersion": {"const": "1.2.0"},
+    "protocolVersion": {"const": "1.3.0"},
     "kind": {"const": "CHINADB_VENDOR_EXECUTION_REQUEST"},
     "idempotencyKey": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
     "scope": {"type": "object"},
@@ -48,6 +48,23 @@
     },
     "authorizationEnvelope": {"type": "object"},
     "authorizationEnvelopeDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "phase1ExecutionContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route", "databaseSurfaces", "cdcChecks", "failureScenarios", "reconciliationGranularity", "moneyComparison", "p0DifferenceCount", "targetWindowWriteLossCount", "performance", "certificationAuthority"],
+      "properties": {
+        "route": {"type": "object"},
+        "databaseSurfaces": {"type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true},
+        "cdcChecks": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true},
+        "failureScenarios": {"type": "array", "minItems": 8, "maxItems": 8, "uniqueItems": true},
+        "reconciliationGranularity": {"const": "TABLE_PRIMARY_KEY_ROW_FIELD"},
+        "moneyComparison": {"const": "EXACT_PRECISION_AND_SCALE"},
+        "p0DifferenceCount": {"const": 0},
+        "targetWindowWriteLossCount": {"const": 0},
+        "performance": {"type": "object"},
+        "certificationAuthority": {"const": "BATCH31_GATE_ONLY"}
+      }
+    },
     "performanceContract": {
       "type": "object",
       "additionalProperties": false,

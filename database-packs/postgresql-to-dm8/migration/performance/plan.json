@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "1.0",
+  "status": "NOT_RUN_ENVIRONMENT_INVALID",
+  "runner": {"class": "DEDICATED", "exclusive": true, "attestationRequired": true, "attestationDigest": null, "monotonicHighResolutionClock": true, "maximumNormalizedOneMinuteLoad": 1.0},
+  "sampling": {"warmupCountPerQuery": 5, "sampleCountPerQueryPerEngine": 40, "maximumAttempts": 2, "rawSamplesRequired": true, "queryPlanRequired": true},
+  "thresholds": {"sourceP95MillisecondsMaximum": 75.0, "targetP95MillisecondsMaximum": 75.0},
+  "engines": ["postgresql-17.5-community", "dm8-8.1.3.140-enterprise"]
+}

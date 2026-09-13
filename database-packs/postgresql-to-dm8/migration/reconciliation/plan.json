@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "1.0",
+  "status": "NOT_RUN",
+  "granularity": ["table", "primaryKey", "row", "field"],
+  "tables": [{"name": "orders", "primaryKey": ["id"], "moneyFields": {"amount": {"precision": 19, "scale": 4}}}, {"name": "order_audit", "primaryKey": ["audit_id"], "moneyFields": {"old_amount": {"precision": 19, "scale": 4}, "new_amount": {"precision": 19, "scale": 4}}}],
+  "normalization": {"money": "NONE_EXACT_DECIMAL_VALUE_AND_SCALE", "timestamps": "UTC_INSTANT_PLUS_DECLARED_PRECISION", "strings": "NO_COLLATION_OR_WHITESPACE_COERCION"},
+  "acceptance": {"tableDifferenceCount": 0, "missingPrimaryKeyCount": 0, "duplicatePrimaryKeyCount": 0, "rowDifferenceCount": 0, "fieldMismatchCount": 0, "moneyPrecisionExact": true, "moneyScaleExact": true, "p0DifferenceCount": 0}
+}

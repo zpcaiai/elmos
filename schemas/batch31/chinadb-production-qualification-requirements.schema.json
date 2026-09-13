@@ -17,7 +17,7 @@
   ],
   "properties": {
     "schemaVersion": { "const": "1.0" },
-    "protocolVersion": { "const": "1.2.0" },
+    "protocolVersion": { "const": "1.3.0" },
     "package": { "const": "chinadb-commercial-migration-skills" },
     "capabilitySnapshotDigest": { "$ref": "#/$defs/digest" },
     "targetCount": { "const": 13 },
@@ -43,6 +43,7 @@
           "requiredEvidenceChain",
           "requiredArtifactDigests",
           "requiredEvidenceDigests",
+          "phase1ExecutionContract",
           "performanceContract",
           "rolloutPrerequisiteTargetId",
           "currentState"
@@ -110,6 +111,7 @@
               "rawEvidenceDigest"
             ]
           },
+          "phase1ExecutionContract": { "$ref": "#/$defs/phase1ExecutionContract" },
           "performanceContract": {
             "type": "object",
             "additionalProperties": false,
@@ -184,6 +186,23 @@
     "requirementsDigest": { "$ref": "#/$defs/digest" }
   },
   "$defs": {
+    "phase1ExecutionContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route", "databaseSurfaces", "cdcChecks", "failureScenarios", "reconciliationGranularity", "moneyComparison", "p0DifferenceCount", "targetWindowWriteLossCount", "performance", "certificationAuthority"],
+      "properties": {
+        "route": { "type": "object" },
+        "databaseSurfaces": { "type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true },
+        "cdcChecks": { "type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true },
+        "failureScenarios": { "type": "array", "minItems": 8, "maxItems": 8, "uniqueItems": true },
+        "reconciliationGranularity": { "const": "TABLE_PRIMARY_KEY_ROW_FIELD" },
+        "moneyComparison": { "const": "EXACT_PRECISION_AND_SCALE" },
+        "p0DifferenceCount": { "const": 0 },
+        "targetWindowWriteLossCount": { "const": 0 },
+        "performance": { "type": "object" },
+        "certificationAuthority": { "const": "BATCH31_GATE_ONLY" }
+      }
+    },
     "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
   }
 }
