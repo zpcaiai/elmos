@@ -1,5 +1,5 @@
 ; ELMOS bounded-frontend-interaction-v1 per-block assumption/vacuity precheck
-; formal-input-bytes-digest: sha256:4e43fbec9b50fa94cdb3eaea24e556b7e2b074702bb82e2d53d95eafd995f9ad
+; formal-input-bytes-digest: sha256:a3ff6e792c006068b23d9eae38c16fd10ecbe7d21fc23b8bd765de121f750364
 (set-logic ALL)
 (declare-const route_path String)
 (declare-const deep_link_path String)

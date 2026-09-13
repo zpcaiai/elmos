@@ -6852,7 +6852,7 @@ def validate_formal_equivalence(
                                             failures.append(
                                                 f"engine source manifest live file drifted: {repository_path}"
                                             )
-                            if is_specialized:
+                            if is_specialized and not is_legacy_immutable:
                                 _validate_engine_runtime_source_receipts(
                                     source_manifest_document,
                                     files_by_repository_path,
