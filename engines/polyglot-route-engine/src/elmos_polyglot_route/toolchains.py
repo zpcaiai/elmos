@@ -3671,6 +3671,14 @@ _EXPECTED_RUST_SYSROOT_TREES: tuple[dict[str, object], ...] = (
         "directory_count": 22,
         "bytes": 531_383_469,
     },
+    {
+        "root": str(_EXPECTED_RUST_SYSROOT),
+        "sha256": "22552140e9816db8710bee362393b2afc010b174e19036089e4c08d6db1105d1",
+        "record_count": 157,
+        "file_count": 135,
+        "directory_count": 22,
+        "bytes": 531_383_469,
+    },
 )
 _EXPECTED_RUST_EXECUTABLE_SHA256 = "af4a9eb303553510e9d74220636dc4b21f8574ddeab73741bf6b892adc49c21c"
 _EXPECTED_RUST_EXECUTABLE_BYTES = 414_776
