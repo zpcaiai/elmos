@@ -3,8 +3,10 @@
 This directory binds the production Java Control Plane to the exact Google
 Cloud project `nexus` (`gen-lang-client-0684615336`) in `asia-east1`. The
 deployment remains digest-pinned and sends database values only to Google
-Secret Manager over stdin. It never writes a credential into a command,
-receipt, Git file, image label, or Cloud Run environment variable.
+Secret Manager over stdin. It resolves and re-reads the exact numeric Secret
+Manager version before binding that immutable version to Cloud Run; `latest`
+is never used in the deployed revision. It never writes a credential into a
+command, receipt, Git file, image label, or Cloud Run environment variable.
 
 The Vercel setting is a server-only HTTPS origin:
 

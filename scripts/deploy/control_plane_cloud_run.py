@@ -18,7 +18,7 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -40,6 +40,7 @@ ALLOWED_VERCEL_KEYS = {
     "PGUSER",
     "PGPASSWORD",
 }
+VERCEL_REDACTED_VALUES = {"[SENSITIVE]", "[ENCRYPTED]", "[REDACTED]"}
 
 
 class DeploymentError(RuntimeError):
@@ -86,6 +87,9 @@ def parse_environment_file(path: Path) -> dict[str, str]:
     missing = sorted(key for key in ALLOWED_VERCEL_KEYS if not values.get(key))
     if missing:
         raise DeploymentError("missing required Vercel keys: " + ", ".join(missing))
+    redacted = sorted(key for key in ALLOWED_VERCEL_KEYS if values[key] in VERCEL_REDACTED_VALUES)
+    if redacted:
+        raise DeploymentError("redacted Vercel values are unusable: " + ", ".join(redacted))
     return {key: values[key] for key in ALLOWED_VERCEL_KEYS}
 
 
@@ -332,7 +336,27 @@ def ensure_gcloud_identity(gcloud: Gcloud, profile: DeploymentProfile) -> None:
     gcloud.run("config", "set", "project", profile.project_id, capture=True)
 
 
-def ensure_secret(gcloud: Gcloud, profile: DeploymentProfile, name: str, value: bytes) -> None:
+def enabled_secret_version(gcloud: Gcloud, profile: DeploymentProfile, name: str) -> str | None:
+    result = gcloud.run(
+        "secrets", "versions", "list", name,
+        "--project", profile.project_id,
+        "--filter=state:ENABLED",
+        "--sort-by=~createTime",
+        "--limit=1",
+        "--format=value(name)",
+        capture=True,
+        check=False,
+    )
+    if result.returncode != 0 or not result.stdout.strip():
+        return None
+    raw = result.stdout.decode().strip()
+    match = re.fullmatch(r"(?:projects/[^/]+/secrets/[^/]+/versions/)?([1-9][0-9]*)", raw)
+    if not match:
+        raise DeploymentError("Secret Manager returned an invalid immutable version")
+    return match.group(1)
+
+
+def ensure_secret(gcloud: Gcloud, profile: DeploymentProfile, name: str, value: bytes) -> str:
     exists = gcloud.run(
         "secrets", "describe", name, "--project", profile.project_id,
         capture=True, check=False,
@@ -342,8 +366,9 @@ def ensure_secret(gcloud: Gcloud, profile: DeploymentProfile, name: str, value: 
             "secrets", "create", name, "--project", profile.project_id,
             "--replication-policy=automatic",
         )
+    version = enabled_secret_version(gcloud, profile, name)
     current = gcloud.run(
-        "secrets", "versions", "access", "latest", "--secret", name,
+        "secrets", "versions", "access", version or "latest", "--secret", name,
         "--project", profile.project_id, capture=True, check=False,
     )
     if current.returncode != 0 or not hmac.compare_digest(current.stdout, value):
@@ -351,6 +376,15 @@ def ensure_secret(gcloud: Gcloud, profile: DeploymentProfile, name: str, value: 
             "secrets", "versions", "add", name, "--project", profile.project_id,
             "--data-file=-", input_bytes=value,
         )
+        version = enabled_secret_version(gcloud, profile, name)
+    if version is None:
+        raise DeploymentError("Secret Manager did not return an immutable version")
+    observed = gcloud.run(
+        "secrets", "versions", "access", version, "--secret", name,
+        "--project", profile.project_id, capture=True,
+    )
+    if not hmac.compare_digest(observed.stdout, value):
+        raise DeploymentError("Secret Manager immutable version verification failed")
     gcloud.run(
         "secrets", "add-iam-policy-binding", name,
         "--project", profile.project_id,
@@ -358,6 +392,18 @@ def ensure_secret(gcloud: Gcloud, profile: DeploymentProfile, name: str, value: 
         "--role=roles/secretmanager.secretAccessor",
         "--condition=None",
         capture=True,
+    )
+    return version
+
+
+def secret_mount_argument(profile: DeploymentProfile, secret_versions: Mapping[str, str]) -> str:
+    if set(secret_versions) != set(profile.secrets.values()):
+        raise DeploymentError("Secret Manager version set does not match the deployment profile")
+    if any(re.fullmatch(r"[1-9][0-9]*", version) is None for version in secret_versions.values()):
+        raise DeploymentError("Cloud Run Secret bindings require immutable numeric versions")
+    return ",".join(
+        f"{variable}={secret}:{secret_versions[secret]}"
+        for variable, secret in sorted(profile.secrets.items())
     )
 
 
@@ -411,8 +457,10 @@ def deploy(profile: DeploymentProfile, env_file: Path, gcloud_dir: Path | None, 
             "--project", profile.project_id,
             "--display-name=ELMOS Control Plane runtime",
         )
-    for name, value in secrets.items():
-        ensure_secret(gcloud, profile, name, value)
+    secret_versions = {
+        name: ensure_secret(gcloud, profile, name, value)
+        for name, value in secrets.items()
+    }
     tag = f"{profile.image_base}:{revision}"
     existing_image = gcloud.run(
         "artifacts", "docker", "images", "describe", tag,
@@ -452,9 +500,7 @@ def deploy(profile: DeploymentProfile, env_file: Path, gcloud_dir: Path | None, 
         **identity,
     }
     env_argument = ",".join(f"{key}={value}" for key, value in sorted(env_values.items()))
-    secret_argument = ",".join(
-        f"{variable}={secret}:latest" for variable, secret in sorted(profile.secrets.items())
-    )
+    secret_argument = secret_mount_argument(profile, secret_versions)
     labels = profile.raw.get("labels")
     if not isinstance(labels, dict) or not labels:
         raise DeploymentError("labels must be a non-empty object")
@@ -497,6 +543,10 @@ def deploy(profile: DeploymentProfile, env_file: Path, gcloud_dir: Path | None, 
         "service_url": service_url,
         "image_digest": digest,
         "revision": revision,
+        "secret_versions": {
+            variable: secret_versions[secret]
+            for variable, secret in sorted(profile.secrets.items())
+        },
         "profile_sha256": hashlib.sha256(json.dumps(profile.raw, sort_keys=True).encode()).hexdigest(),
     }
 
