@@ -67,6 +67,7 @@ from typing import Any
 REWRITE_PLUGIN = "6.44.0"
 GRADLE_REWRITE_PLUGIN = "7.37.0"
 REWRITE_SPRING = "6.35.0"
+ELMOS_RECIPE_COORDINATE = "io.elmos:elmos-java-recipes:0.1.0-SNAPSHOT"
 TARGET_BOOT = "3.5.3"
 TARGET_JAVA = "21"
 REQUIRED_MAVEN = "Apache Maven 3.9.11"
@@ -356,6 +357,47 @@ class SecurityConfiguration {
 }
 """
 
+_SECURITY_BOOT2 = """package io.elmos.reference;
+
+import static org.springframework.security.config.Customizer.withDefaults;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+class SecurityConfiguration {
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeRequests(authorize -> authorize
+            .antMatchers("/actuator/health").permitAll()
+            .antMatchers("/error").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/orders/**").authenticated()
+            .antMatchers(HttpMethod.POST, "/api/orders").authenticated()
+            .antMatchers("/api/persisted-orders/**").authenticated()
+            .anyRequest().denyAll()
+        ).csrf(csrf -> csrf.ignoringAntMatchers("/api/orders", "/api/persisted-orders/**"))
+            .httpBasic(withDefaults());
+        return http.build();
+    }
+
+    @Bean
+    UserDetailsService userDetailsService() {
+        return new InMemoryUserDetailsManager(
+            User.withUsername("operator")
+                .password("{noop}operator-password")
+                .roles("OPERATOR")
+                .build()
+        );
+    }
+}
+"""
+
 _PERSISTENCE_ENTITY = """package io.elmos.reference;
 
 import jakarta.persistence.Entity;
@@ -383,6 +425,10 @@ class PersistedOrder {
 }
 """
 
+_PERSISTENCE_ENTITY_JAVAX = _PERSISTENCE_ENTITY.replace(
+    "import jakarta.persistence.", "import javax.persistence."
+)
+
 _PERSISTENCE_REPOSITORY = """package io.elmos.reference;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -404,7 +450,7 @@ class OrderTransactionService {
     }
 
     @Transactional
-    void createThenRollback() {
+    public void createThenRollback() {
         repository.save(new PersistedOrder("rollback-customer", "PENDING"));
         throw new IllegalStateException("expected transaction rollback");
     }
@@ -644,9 +690,12 @@ ROUTES: dict[str, Route] = {
         source_boot="2.7.18",
         source_java="17",
         controller=_CONTROLLER_JAVA11,
-        test=_TEST_JUNIT5,
-        properties=_PROPERTIES_BOOT2_PLUS,
+        test=_TEST_SECURITY_PERSISTENCE_JUNIT5,
+        properties=_PROPERTIES_PERSISTENCE,
         health_path="/actuator/health",
+        extra_starters=("validation", "security", "data-jpa"),
+        security=_SECURITY_BOOT2,
+        persistence=_PERSISTENCE_ENTITY_JAVAX,
     ),
     "boot-3.5-maven-to-boot-4.1.0-java-21": Route(
         route_id="boot-3.5-maven-to-boot-4.1.0-java-21",
@@ -935,7 +984,7 @@ def materialize(project: Path, route: Route) -> None:
     if route.security:
         (source / "SecurityConfiguration.java").write_text(route.security, encoding="utf-8")
     if route.persistence:
-        (source / "PersistedOrder.java").write_text(_PERSISTENCE_ENTITY, encoding="utf-8")
+        (source / "PersistedOrder.java").write_text(route.persistence, encoding="utf-8")
         (source / "PersistedOrderRepository.java").write_text(_PERSISTENCE_REPOSITORY, encoding="utf-8")
         (source / "OrderTransactionService.java").write_text(_PERSISTENCE_SERVICE, encoding="utf-8")
         (source / "PersistenceController.java").write_text(_PERSISTENCE_CONTROLLER, encoding="utf-8")
@@ -1129,6 +1178,13 @@ allprojects {
 """
 
 
+def rewrite_recipe_artifact_coordinates(recipe: Path) -> str:
+    coordinates = f"org.openrewrite.recipe:rewrite-spring:{REWRITE_SPRING}"
+    if "io.elmos.recipes." in recipe.read_text(encoding="utf-8"):
+        coordinates += f",{ELMOS_RECIPE_COORDINATE}"
+    return coordinates
+
+
 def transform(source: Path, target: Path, recipe: Path, route: Route, driver: str,
               home: Path) -> subprocess.CompletedProcess[str]:
     if target.exists():
@@ -1167,12 +1223,13 @@ def transform(source: Path, target: Path, recipe: Path, route: Route, driver: st
         ):
             raise RunFailure("OPENREWRITE_TARGET_JAVA_BINDING_FAILED")
         return result
+    recipe_coordinates = rewrite_recipe_artifact_coordinates(recipe)
     result = run(
         [driver, "-B", "--no-transfer-progress",
          f"org.openrewrite.maven:rewrite-maven-plugin:{REWRITE_PLUGIN}:run",
          "-Drewrite.configLocation=.elmos/openrewrite.yml",
          f"-Drewrite.activeRecipes={route.recipe_id}",
-         f"-Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-spring:{REWRITE_SPRING}"],
+         f"-Drewrite.recipeArtifactCoordinates={recipe_coordinates}"],
         cwd=target, home=home, timeout=3_600,
     )
     if "Recipe validation error" in result.stdout + result.stderr:
@@ -1185,12 +1242,48 @@ def transform(source: Path, target: Path, recipe: Path, route: Route, driver: st
     return result
 
 
+def install_elmos_recipe_artifact(
+    repo: Path, maven: str, home: Path
+) -> tuple[subprocess.CompletedProcess[str], str]:
+    """Build and install the repository-owned recipes used by composite YAML.
+
+    The Java Worker resolves this exact coordinate from its isolated Maven
+    repository.  The standalone evidence harness must prepare the same input;
+    otherwise Maven reports recipe validation errors for every composite that
+    names ``io.elmos.recipes.*`` while still being able to discover the
+    upstream ``rewrite-spring`` recipes.
+    """
+    result = run(
+        [
+            maven,
+            "-B",
+            "--no-transfer-progress",
+            "-pl",
+            "recipes/elmos-java-recipes",
+            "-am",
+            "-DskipTests",
+            "install",
+        ],
+        cwd=repo,
+        home=home,
+        timeout=3_600,
+    )
+    artifact = (
+        repo
+        / "recipes/elmos-java-recipes/target/elmos-java-recipes-0.1.0-SNAPSHOT.jar"
+    )
+    if not artifact.is_file():
+        raise RunFailure(f"ELMOS_RECIPE_ARTIFACT_MISSING:{artifact}")
+    return result, hashlib.sha256(artifact.read_bytes()).hexdigest()
+
+
 def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
     recipe = (repo / "apps/java-engine-worker/src/main/resources/rewrite"
               / route.recipe_file)
     if not recipe.is_file():
         raise RunFailure(f"RECIPE_MISSING:{recipe}")
 
+    recipe_artifact_digest: str | None = None
     if route.build_tool == "gradle":
         driver = os.environ.get("ELMOS_GRADLE_EXECUTABLE") or shutil.which("gradle")
         if driver is None or not Path(driver).is_file():
@@ -1256,6 +1349,11 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
         driver_version = version_line
         build_argv = [driver, "-B", "--no-transfer-progress", "verify"]
         driver_key = "maven"
+
+        if "io.elmos.recipes." in recipe.read_text(encoding="utf-8"):
+            _, recipe_artifact_digest = install_elmos_recipe_artifact(
+                repo, driver, target_home
+            )
 
     source = workspace / "source"
     target = workspace / "migrated"
@@ -1331,6 +1429,14 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
                 GRADLE_REWRITE_PLUGIN if route.build_tool == "gradle" else REWRITE_PLUGIN
             ),
             "rewrite_spring": REWRITE_SPRING,
+            "elmos_recipe_artifact": (
+                {
+                    "coordinate": ELMOS_RECIPE_COORDINATE,
+                    "sha256": recipe_artifact_digest,
+                }
+                if recipe_artifact_digest is not None
+                else "NOT_REQUIRED"
+            ),
             "output_tail": transformation.stdout[-2_000:],
             driver_key: driver_version,
         },
@@ -1520,6 +1626,65 @@ def record_failure_attempt(
     return attempt_destination
 
 
+def run_selected_route(
+    *, repo: Path, route: Route, workspace: Path, pack_dir_arg: str | None
+) -> int:
+    """Execute one selected route in an already-scoped workspace."""
+    workspace.mkdir(parents=True, exist_ok=True)
+
+    destination = repo / "evidence/spring-routes" / f"{route.route_id}.json"
+    try:
+        evidence = execute(repo, route, workspace)
+    except RunFailure as failure:
+        print(f"FAIL: {route.route_id}\n{failure}", file=sys.stderr)
+        try:
+            attempt_destination = record_failure_attempt(
+                repo, route, destination, failure
+            )
+        except OSError as audit_failure:
+            print(
+                "ATTEMPT_AUDIT_WRITE_FAILED: "
+                f"{type(audit_failure).__name__}: {audit_failure}",
+                file=sys.stderr,
+            )
+        else:
+            print(
+                f"non-certifying attempt recorded at {attempt_destination}",
+                file=sys.stderr,
+            )
+        if destination.exists():
+            print(f"canonical evidence preserved at {destination}", file=sys.stderr)
+        return 1
+
+    write_json_atomic(destination, evidence)
+    if pack_dir_arg:
+        pack_dir = Path(pack_dir_arg).resolve()
+        pack_key_path = pack_dir / "pack.json"
+        if not pack_key_path.is_file():
+            print(f"PACK_MANIFEST_MISSING:{pack_key_path}", file=sys.stderr)
+            return 1
+        pack_key = json.loads(pack_key_path.read_text(encoding="utf-8")).get("pack_key")
+        if not isinstance(pack_key, str) or not pack_key:
+            print(f"PACK_KEY_MISSING:{pack_key_path}", file=sys.stderr)
+            return 1
+        pack_evidence = pack_dir / "certification/local-reference-evidence.json"
+        write_json_atomic(pack_evidence, pack_local_reference_evidence(evidence, pack_key))
+        print(f"pack local evidence: {pack_evidence}")
+
+    print(f"PASS: {route.route_id}")
+    print(f"evidence: {destination}")
+    print()
+    print("This run does not promote the route by itself. To record it, edit")
+    print("apps/java-engine-worker/src/main/java/io/elmos/worker/SpringRouteCatalog.java")
+    print(f"for route {route.route_id} and set:")
+    print(f"    EvidenceStatus.PASSED_LOCAL, \"{route.source_boot}\", \"{route.source_java}\"")
+    print()
+    print("Note: this harness records evidence but never promotes a route. The")
+    print("catalog stores local execution evidence separately from independent")
+    print("verification and external certification.")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--route", help="route id from SpringRouteCatalog")
@@ -1545,53 +1710,20 @@ def main() -> int:
 
     repo = Path(args.repo_root).resolve()
     route = ROUTES[args.route]
-    workspace = Path(args.workspace).resolve() if args.workspace else (
-        repo / "build/spring-route-reference" / route.route_id)
-    workspace.mkdir(parents=True, exist_ok=True)
-
-    destination = repo / "evidence/spring-routes" / f"{route.route_id}.json"
-    try:
-        evidence = execute(repo, route, workspace)
-    except RunFailure as failure:
-        attempt_destination = record_failure_attempt(
-            repo, route, destination, failure
+    if args.workspace:
+        return run_selected_route(
+            repo=repo,
+            route=route,
+            workspace=Path(args.workspace).resolve(),
+            pack_dir_arg=args.pack_dir,
         )
-        print(f"FAIL: {route.route_id}\n{failure}", file=sys.stderr)
-        print(
-            f"non-certifying attempt recorded at {attempt_destination}",
-            file=sys.stderr,
+    with tempfile.TemporaryDirectory(prefix="elmos-spring-ref.") as temporary:
+        return run_selected_route(
+            repo=repo,
+            route=route,
+            workspace=Path(temporary),
+            pack_dir_arg=args.pack_dir,
         )
-        if destination.exists():
-            print(f"canonical evidence preserved at {destination}", file=sys.stderr)
-        return 1
-
-    write_json_atomic(destination, evidence)
-    if args.pack_dir:
-        pack_dir = Path(args.pack_dir).resolve()
-        pack_key_path = pack_dir / "pack.json"
-        if not pack_key_path.is_file():
-            print(f"PACK_MANIFEST_MISSING:{pack_key_path}", file=sys.stderr)
-            return 1
-        pack_key = json.loads(pack_key_path.read_text(encoding="utf-8")).get("pack_key")
-        if not isinstance(pack_key, str) or not pack_key:
-            print(f"PACK_KEY_MISSING:{pack_key_path}", file=sys.stderr)
-            return 1
-        pack_evidence = pack_dir / "certification/local-reference-evidence.json"
-        write_json_atomic(pack_evidence, pack_local_reference_evidence(evidence, pack_key))
-        print(f"pack local evidence: {pack_evidence}")
-
-    print(f"PASS: {route.route_id}")
-    print(f"evidence: {destination}")
-    print()
-    print("This run does not promote the route by itself. To record it, edit")
-    print("apps/java-engine-worker/src/main/java/io/elmos/worker/SpringRouteCatalog.java")
-    print(f"for route {route.route_id} and set:")
-    print(f"    EvidenceStatus.PASSED_LOCAL, \"{route.source_boot}\", \"{route.source_java}\"")
-    print()
-    print("Note: this harness records evidence but never promotes a route. The")
-    print("catalog stores local execution evidence separately from independent")
-    print("verification and external certification.")
-    return 0
 
 
 if __name__ == "__main__":

@@ -136,6 +136,26 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         )
         self.assertEqual(list(attempt.parent.glob("*.tmp")), [])
 
+    def test_failed_attempt_preserves_primary_error_when_audit_write_fails(self) -> None:
+        with (
+            mock.patch.object(
+                REFERENCE,
+                "execute",
+                side_effect=REFERENCE.RunFailure("PRIMARY_ROUTE_FAILURE"),
+            ),
+            mock.patch.object(
+                REFERENCE,
+                "record_failure_attempt",
+                side_effect=OSError(28, "No space left on device"),
+            ),
+        ):
+            result, _, stderr = self.run_main()
+
+        self.assertEqual(result, 1)
+        self.assertIn("PRIMARY_ROUTE_FAILURE", stderr)
+        self.assertIn("ATTEMPT_AUDIT_WRITE_FAILED", stderr)
+        self.assertNotIn("Traceback", stderr)
+
     def test_success_atomically_replaces_the_canonical_record(self) -> None:
         success = {
             "schema_version": 1,
@@ -167,6 +187,45 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         self.assertFalse(
             REFERENCE.failure_attempt_destination(self.repo, self.route).exists()
         )
+
+    def test_default_workspace_is_external_temporary_and_cleaned(self) -> None:
+        success = {
+            "schema_version": 1,
+            "route_id": ROUTE_ID,
+            "execution_status": "PASSED_LOCAL",
+            "behavioral_parity": True,
+            "external_evidence_status": "NOT_RUN",
+            "certification_status": "NOT_CERTIFIED",
+        }
+        observed: list[Path] = []
+
+        def execute(repo: Path, route: REFERENCE.Route, workspace: Path) -> dict:
+            observed.append(workspace)
+            self.assertEqual(repo, self.repo.resolve())
+            self.assertEqual(route, self.route)
+            self.assertTrue(workspace.is_dir())
+            with self.assertRaises(ValueError):
+                workspace.relative_to(repo)
+            return success
+
+        argv = [
+            str(SCRIPT),
+            "--route",
+            ROUTE_ID,
+            "--repo-root",
+            str(self.repo),
+        ]
+        with (
+            mock.patch.object(sys, "argv", argv),
+            mock.patch.object(REFERENCE, "execute", side_effect=execute),
+            contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stderr(io.StringIO()),
+        ):
+            result = REFERENCE.main()
+
+        self.assertEqual(result, 0)
+        self.assertEqual(len(observed), 1)
+        self.assertFalse(observed[0].exists())
 
     def test_boot_3_5_local_records_are_exact(self) -> None:
         expected = {
@@ -301,6 +360,51 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         # The harness drives the same init-script mechanism the Java Worker
         # ships, so the recipe must pin the boot plugin for Gradle builds.
         self.assertIn("org.openrewrite.gradle.plugins.ChangePluginVersion", text)
+
+    def test_priority_route_exercises_security_jpa_and_transaction_rollback(self) -> None:
+        route = REFERENCE.ROUTES[ROUTE_ID]
+        self.assertIn("security", route.extra_starters)
+        self.assertIn("data-jpa", route.extra_starters)
+        self.assertIn("antMatchers", route.security)
+        self.assertIn("javax.persistence.Entity", route.persistence)
+        self.assertIn("rollsBackTransactionalWrites", route.test)
+        self.assertIn("public void createThenRollback", REFERENCE._PERSISTENCE_SERVICE)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary) / "source"
+            REFERENCE.materialize(project, route)
+            entity = (project / "src/main/java/io/elmos/reference/PersistedOrder.java")
+            security = (
+                project / "src/main/java/io/elmos/reference/SecurityConfiguration.java"
+            )
+            self.assertIn("javax.persistence.Entity", entity.read_text(encoding="utf-8"))
+            self.assertIn("antMatchers", security.read_text(encoding="utf-8"))
+            pom = (project / "pom.xml").read_text(encoding="utf-8")
+            self.assertIn("spring-boot-starter-security", pom)
+            self.assertIn("spring-boot-starter-data-jpa", pom)
+            self.assertIn("com.h2database", pom)
+
+    def test_composite_recipe_loads_repository_owned_recipe_artifact(self) -> None:
+        boot_3_recipe = (
+            ROOT
+            / "apps/java-engine-worker/src/main/resources/rewrite"
+            / REFERENCE.ROUTES[ROUTE_ID].recipe_file
+        )
+        boot_4_recipe = (
+            ROOT
+            / "apps/java-engine-worker/src/main/resources/rewrite"
+            / REFERENCE.ROUTES[
+                "boot-3.5-maven-to-boot-4.1.0-java-21"
+            ].recipe_file
+        )
+        self.assertNotIn(
+            REFERENCE.ELMOS_RECIPE_COORDINATE,
+            REFERENCE.rewrite_recipe_artifact_coordinates(boot_3_recipe),
+        )
+        self.assertIn(
+            REFERENCE.ELMOS_RECIPE_COORDINATE,
+            REFERENCE.rewrite_recipe_artifact_coordinates(boot_4_recipe),
+        )
 
     def test_built_boot_jar_rejects_missing_and_plain_jars(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
