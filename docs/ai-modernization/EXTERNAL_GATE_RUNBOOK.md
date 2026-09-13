@@ -72,9 +72,10 @@ never allowed to set those fields. Create an application-scoped API key, record
 the exact Workflow identity and deployed Dify version, and keep policy,
 authorization, approval, and certification decisions in ELMOS.
 
-The adapter reads `/v1/info`, calls `/v1/workflows/run` in blocking mode with a
-unique idempotency key, accepts only `data.status=succeeded`, and stores only
-digests and provider run identifiers in its receipt. Dify currently does not
+The adapter reads `/v1/info`, calls the exact published
+`/v1/workflows/{workflow_id}/run` endpoint in blocking mode with a unique
+idempotency key, accepts only `data.status=succeeded`, and stores only digests
+and provider run identifiers in its receipt. Dify currently does not
 expose a server-version assertion through that application endpoint, so the
 version is configuration-bound and remains explicitly unverified by this
 probe; bind it to the deployment artifact receipt during external verification.

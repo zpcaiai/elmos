@@ -225,7 +225,7 @@ class DifyAndTelemetryTests(unittest.TestCase):
             {"question": "where is the queue?"}, actor_id="alice", idempotency_key="req-1"
         )
         path, request = client.request
-        self.assertEqual(path, "/v1/workflows/run")
+        self.assertEqual(path, "/v1/workflows/workflow-123/run")
         self.assertEqual(request["headers"]["Idempotency-Key"], "req-1")
         self.assertEqual(request["json"]["inputs"]["_elmos_tenant_id"], "tenant-a")
         self.assertFalse(receipt["policy_authority"])
@@ -256,6 +256,17 @@ class DifyAndTelemetryTests(unittest.TestCase):
             },
         )
         self.assertEqual(from_environment.workflow_id, "workflow-123")
+
+        with self.assertRaisesRegex(ContractError, "URL-safe path segment"):
+            DifySettings(
+                "https://dify.example",
+                "secret-api-key",
+                "../another-workflow",
+                "1.10.1",
+                "tenant-a",
+                "project-a",
+                "rag-experiment",
+            )
 
     def test_otel_records_safe_attributes_and_rejects_content(self) -> None:
         from opentelemetry.sdk.trace import TracerProvider
