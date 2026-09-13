@@ -86,6 +86,33 @@ def review_store(tmp_path: Path):
         store.close()
 
 
+def test_parser_source_capability_uses_atomic_publication_timestamp(
+    tmp_path: Path,
+) -> None:
+    store = IntakeStore(tmp_path / "parser-source-time.sqlite3")
+    context = TenantContext("tenant-a", "project-a", "reviewer-a")
+    publication_time = "2026-09-13T01:02:03+00:00"
+    try:
+        store.bootstrap_project(context)
+        with store.transaction() as connection:
+            capability_id = store._human_review_parser_producer_capability(
+                connection,
+                context,
+                created_at=publication_time,
+            )
+        row = store._connection.execute(
+            """SELECT created_at,expires_at
+                 FROM human_review_source_producer_capabilities
+                WHERE capability_id=?""",
+            (capability_id,),
+        ).fetchone()
+        assert row is not None
+        assert row["created_at"] == publication_time
+        assert row["expires_at"] == "2026-10-13T01:02:03+00:00"
+    finally:
+        store.close()
+
+
 def _runtime_context(
     context: TenantContext,
     *,

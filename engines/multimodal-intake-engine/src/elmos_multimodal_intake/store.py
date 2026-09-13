@@ -8371,9 +8371,24 @@ class IntakeStore:
         self,
         connection: sqlite3.Connection,
         context: TenantContext,
+        *,
+        created_at: str,
     ) -> str:
-        now_dt = datetime.now(UTC).replace(microsecond=0)
-        now = now_dt.isoformat()
+        try:
+            now_dt = datetime.fromisoformat(created_at)
+        except (TypeError, ValueError) as error:
+            raise IntegrityError("HUMAN_REVIEW_PARSER_SOURCE_INVALID") from error
+        if (
+            now_dt.tzinfo is None
+            or now_dt.utcoffset() is None
+            or now_dt.isoformat() != created_at
+        ):
+            raise IntegrityError("HUMAN_REVIEW_PARSER_SOURCE_INVALID")
+        # The capability and snapshots form one atomic publication. Bind their
+        # timestamps to the same transaction instant: sampling the wall clock
+        # again here can cross a second boundary under load and make a freshly
+        # committed snapshot appear to predate its own producer capability.
+        now = created_at
         source_kinds = list(self._HUMAN_REVIEW_PARSER_SOURCE_KINDS)
         source_kinds_json, source_kinds_digest = self._human_review_source_content(
             source_kinds,
@@ -8464,7 +8479,11 @@ class IntakeStore:
         )
         if not candidates:
             return
-        capability_id = self._human_review_parser_producer_capability(connection, context)
+        capability_id = self._human_review_parser_producer_capability(
+            connection,
+            context,
+            created_at=created_at,
+        )
         producer_context = TenantContext(
             context.tenant_id,
             context.project_id,
