@@ -1,22 +1,22 @@
 {
   "current": {
-    "admittedCandidateUnits": 1365,
-    "blockedRouteCells": 365,
+    "admittedCandidateUnits": 1387,
+    "blockedRouteCells": 367,
     "certification": "NOT_CERTIFIED",
-    "commonFourTargetEmittableUnits": 1189,
-    "commonFourTargetImplementationRate": 0.8711,
-    "commonFourTargetOpenUnits": 176,
-    "dispositionAccountedUnits": 1865,
+    "commonFourTargetEmittableUnits": 1210,
+    "commonFourTargetImplementationRate": 0.8724,
+    "commonFourTargetOpenUnits": 177,
+    "dispositionAccountedUnits": 1904,
     "dispositionCoverage": 1.0,
-    "emittableRouteCells": 5095,
+    "emittableRouteCells": 5181,
     "externalExecution": "NOT_RUN",
-    "frozenSourceUnits": 1865,
+    "frozenSourceUnits": 1904,
     "independentVerification": "NOT_RUN",
-    "manualMigrationItems": 435,
-    "manualMigrationOpen": 0,
+    "manualMigrationItems": 515,
+    "manualMigrationOpen": 80,
     "runtimeVerifiedRouteCells": 0,
-    "sourceFormatReviewItems": 65,
-    "targetRouteCells": 5460
+    "sourceFormatReviewItems": 2,
+    "targetRouteCells": 5548
   },
   "definitionOf100Percent": {
     "retryPolicy": "at most two bounded measurement attempts; no infinite retry",
@@ -77,31 +77,34 @@
     }
   ],
   "inputs": {
-    "manualBacklogDigest": "sha256:93fca5c8d94c4202474abd2872fe3ed224b08f3bbe6f67186db5432432d1e6c4",
+    "manualBacklogDigest": "sha256:8c968641b894b8597503961e20cf89dfa31695a115ff7081af1c112363b9fea6",
     "manualBacklogEvidence": "docs/batch31/evidence/sql-manual-review-backlog.json",
-    "reachabilityDigest": "sha256:d72670f661e7018ccb19cbec79b581b2a399b6fcb8ceb23dfea0c4e4387900d0",
+    "reachabilityDigest": "sha256:50ef076d0cc8dbe133c62ba1c78ab044ab501e89be11f5e7964e201f0f9e19fa",
     "reachabilityEvidence": "docs/batch31/evidence/sql-target-reachability.json"
   },
   "kind": "elmos.batch31.sql-route-closure-plan",
   "manualBacklogByReason": {
     "CERTIFIED_DDL_NAMESPACE_MAPPING_REQUIRED": 181,
-    "CERTIFIED_DDL_UNBOUNDED_DECIMAL": 17,
-    "CERTIFIED_DDL_UNSUPPORTED_CHECK": 1,
-    "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE": 1,
-    "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 36,
-    "CERTIFIED_DDL_UNSUPPORTED_TYPE": 8,
-    "CERTIFIED_DML_UNSUPPORTED_EXPRESSION": 2,
+    "CERTIFIED_DDL_UNBOUNDED_DECIMAL": 21,
+    "CERTIFIED_DDL_UNSUPPORTED_CHECK": 7,
+    "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE": 3,
+    "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 65,
+    "CERTIFIED_DDL_UNSUPPORTED_TYPE": 11,
+    "CERTIFIED_DML_UNSUPPORTED_EXPRESSION": 6,
+    "CERTIFIED_DROP_UNSUPPORTED_STATEMENT": 1,
     "CERTIFIED_INSERT_UNSUPPORTED_MODIFIER": 3,
+    "CERTIFIED_INSERT_UNSUPPORTED_SOURCE": 1,
     "CERTIFIED_ROUTINE_NAMESPACE_MAPPING_REQUIRED": 25,
-    "CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET": 2,
-    "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED": 22,
-    "CERTIFIED_ROUTINE_UNSUPPORTED_BODY": 62,
+    "CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET": 3,
+    "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED": 25,
+    "CERTIFIED_ROUTINE_UNSUPPORTED_BODY": 77,
     "CERTIFIED_ROUTINE_UNSUPPORTED_LANGUAGE": 2,
-    "CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW": 73
+    "CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW": 81,
+    "CERTIFIED_UPDATE_SOURCE_KEY_NOT_UNIQUE": 3
   },
   "perTarget": {
     "mysql": {
-      "blocked": 127,
+      "blocked": 128,
       "blockers": {
         "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED": 1,
         "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED": 1,
@@ -109,35 +112,35 @@
         "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED": 8,
         "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 15,
         "CERTIFIED_DDL_INDEX_EXPRESSION_UNSUPPORTED_BY_TARGET": 12,
-        "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET": 70,
+        "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET": 71,
         "CERTIFIED_DDL_MYSQL_TEXT_DEFAULT_UNSUPPORTED": 1,
         "CERTIFIED_DDL_MYSQL_TEXT_KEY_REQUIRES_PREFIX": 7,
         "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET": 2,
         "CERTIFIED_DDL_TARGET_RESERVED_IDENTIFIER": 1,
         "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": 3
       },
-      "emittable": 1238,
+      "emittable": 1259,
       "runtimeVerified": 0
     },
     "oracle": {
-      "blocked": 165,
+      "blocked": 166,
       "blockers": {
         "CERTIFIED_COMMENT_TARGET_UNSUPPORTED": 28,
         "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED": 7,
         "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 15,
         "CERTIFIED_DDL_INDEX_EXPRESSION_UNSUPPORTED_BY_TARGET": 12,
-        "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET": 70,
+        "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET": 71,
         "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET": 2,
         "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": 3,
         "CERTIFIED_SCHEMA_UNSUPPORTED_TARGET": 28
       },
-      "emittable": 1200,
+      "emittable": 1221,
       "runtimeVerified": 0
     },
     "postgres": {
       "blocked": 0,
       "blockers": {},
-      "emittable": 1365,
+      "emittable": 1387,
       "runtimeVerified": 0
     },
     "tsql": {
@@ -149,7 +152,7 @@
         "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET": 2,
         "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": 3
       },
-      "emittable": 1292,
+      "emittable": 1314,
       "runtimeVerified": 0
     }
   },
@@ -164,7 +167,7 @@
         "real disposable target execution",
         "digest-bound revalidation evidence"
       ],
-      "routeCellCount": 70,
+      "routeCellCount": 71,
       "status": "OPEN",
       "target": "mysql",
       "workstreamId": "route-mysql-certified-ddl-index-predicate-unsupported-by-target"
@@ -178,7 +181,7 @@
         "real disposable target execution",
         "digest-bound revalidation evidence"
       ],
-      "routeCellCount": 70,
+      "routeCellCount": 71,
       "status": "OPEN",
       "target": "oracle",
       "workstreamId": "route-oracle-certified-ddl-index-predicate-unsupported-by-target"

@@ -80,6 +80,12 @@ class ToolkitTests(unittest.TestCase):
             + closure["current"]["sourceFormatReviewItems"],
         )
 
+    def test_sql_line_evidence_is_current_and_fail_closed(self):
+        subprocess.run(
+            [sys.executable, str(SCRIPTS / "validate_sql_line_evidence.py")],
+            check=True,
+        )
+
     def test_scaffold_and_validate(self):
         with tempfile.TemporaryDirectory() as td:
             repo = Path(td)

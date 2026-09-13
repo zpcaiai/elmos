@@ -1,27 +1,27 @@
 {
   "kind": "elmos.sql-dialect.target-reachability",
-  "discovered_units": 1865,
-  "admitted_source_side": 1365,
-  "source_candidate_rate": 0.7319,
-  "disposition_units": 1865,
-  "disposition_covered": 1865,
+  "discovered_units": 1904,
+  "admitted_source_side": 1387,
+  "source_candidate_rate": 0.7285,
+  "disposition_units": 1904,
+  "disposition_covered": 1904,
   "disposition_unknown": 0,
   "disposition_coverage": 1.0,
-  "translatable_to_all_four": 1189,
-  "all_four_ratio_of_admitted": 0.8711,
+  "translatable_to_all_four": 1210,
+  "all_four_ratio_of_admitted": 0.8724,
   "reachable_per_target": {
-    "postgres": 1365,
-    "mysql": 1238,
-    "oracle": 1200,
-    "tsql": 1292
+    "postgres": 1387,
+    "mysql": 1259,
+    "oracle": 1221,
+    "tsql": 1314
   },
   "target_route_rate": {
     "postgres": 1.0,
-    "mysql": 0.907,
-    "oracle": 0.8791,
-    "tsql": 0.9465
+    "mysql": 0.9077,
+    "oracle": 0.8803,
+    "tsql": 0.9474
   },
-  "all_target_intersection_rate": 0.8711,
+  "all_target_intersection_rate": 0.8724,
   "routeStrategy": {
     "mode": "target-specific-portfolio",
     "targetPriority": [
@@ -37,7 +37,7 @@
   "refusals_per_target": {
     "postgres": {},
     "mysql": {
-      "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET": 70,
+      "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET": 71,
       "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 15,
       "CERTIFIED_DDL_INDEX_EXPRESSION_UNSUPPORTED_BY_TARGET": 12,
       "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED": 8,
@@ -51,7 +51,7 @@
       "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED": 1
     },
     "oracle": {
-      "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET": 70,
+      "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET": 71,
       "CERTIFIED_SCHEMA_UNSUPPORTED_TARGET": 28,
       "CERTIFIED_COMMENT_TARGET_UNSUPPORTED": 28,
       "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 15,
@@ -69,7 +69,7 @@
     }
   },
   "lost_by_first_refusal": {
-    "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET": 70,
+    "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET": 71,
     "CERTIFIED_SCHEMA_UNSUPPORTED_TARGET": 28,
     "CERTIFIED_COMMENT_TARGET_UNSUPPORTED": 27,
     "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 15,
@@ -91,6 +91,29 @@
     },
     "digest": "21cb5cbb1f12ee8de95711b911b5fc60f452e897b23b16764ba63bcbd1651daa"
   },
+  "translationPolicy": {
+    "typeMigration": {
+      "jsonBinary": "json",
+      "array": "fail-closed",
+      "unboundedDecimal": "fail-closed",
+      "unboundedVarchar": "postgres-only",
+      "unsignedBigint": "ask"
+    },
+    "allowTriggerShim": true,
+    "allowAlterColumn": false,
+    "allowIndexShim": false,
+    "allowIfNotExistsShim": false,
+    "allowSchemaShim": false,
+    "allowRlsShim": true,
+    "allowPrivilegeShim": true,
+    "allowCommentShim": false,
+    "allowIndexExpressionShim": false,
+    "allowRoutineShim": false,
+    "allowMysqlTextPrefix": false,
+    "allowCheckShim": false,
+    "allowMysqlTextDefault": false,
+    "allowReservedWordShim": false
+  },
   "capabilityMatrix": [
     {
       "feature": "namespace_explicit_mapping",
@@ -98,7 +121,9 @@
         "postgres",
         "mysql",
         "oracle",
-        "tsql"
+        "tsql",
+        "dm8",
+        "opengauss"
       ],
       "blocked_targets": [],
       "rule": "schema identity must come from an explicit digest-bound namespace profile"
@@ -109,7 +134,9 @@
         "postgres",
         "mysql",
         "oracle",
-        "tsql"
+        "tsql",
+        "dm8",
+        "opengauss"
       ],
       "blocked_targets": [],
       "rule": "preserve source quote intent and use the target quote character"
@@ -260,7 +287,7 @@
   "externalExecution": "NOT_RUN",
   "independentVerification": "NOT_RUN",
   "certification": "NOT_CERTIFIED",
-  "sourceCatalogEvidenceUnits": 837,
+  "sourceCatalogEvidenceUnits": 848,
   "routeUnits": [
     {
       "unitId": "persistence:V1__batch_one_baseline.sql#1:7a41b115fb61",
@@ -38475,6 +38502,622 @@
         "oracle": {
           "state": "BLOCKED",
           "refusalCode": "CERTIFIED_COMMENT_TARGET_UNSUPPORTED"
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#1:1fd87c429a06",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 1,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:1fd87c429a060c9ce08b2b36e194291780230dfe7a695d309d1213b961602a40",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#3:8a6db6e1ffe8",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 3,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:8a6db6e1ffe88e3e15db50d0a52b0aeeedb4c2b1c8f68cb9c3356a42a0b8f419",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#4:825cdb3f3a3c",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 4,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:825cdb3f3a3ce0f9e8418e78a2a5e956759a5f911c867ffb3f674fb6a276a05b",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#6:14605d03e8a3",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 6,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:14605d03e8a3271615fbc77121fbc0bc49579a8d85fcc1446de4808f41966d89",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#7:1ff12b93e0c5",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 7,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:1ff12b93e0c576ed846c7d98d5cdb105d169f8a2563d497a840e34f80db7cc29",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#9:85f5c60b086a",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 9,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:85f5c60b086a2cda4a7ea198d710874eea49a003d4289a277d982bc23947b993",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#10:4fefe0dcf911",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 10,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:4fefe0dcf91191b798a95b7dac5c96ed83529ae384397b8840f32075410825eb",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#11:ea0c6ed5f1b0",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 11,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:ea0c6ed5f1b0d2f549e3f4db4c59a7e9386b028b6f06928270d8f0d19a71ef32",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#12:4c93934f5b4c",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 12,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:4c93934f5b4c0c5f61a4edfb5c2a26e270d71501b27ddd0973a0a33379a1f082",
+      "allFourReachable": false,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "BLOCKED",
+          "refusalCode": "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET"
+        },
+        "oracle": {
+          "state": "BLOCKED",
+          "refusalCode": "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET"
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#14:af3cefbd919c",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 14,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:af3cefbd919cb8e90a5cb1370dfb272c96d327db466e4f34540fb7c93c6805f6",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#15:5daa49970d79",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 15,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:5daa49970d7987ae691d6820884bbb1409e8cda8215034022b08290d3e96c466",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#16:7bdee7ae750b",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 16,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:7bdee7ae750b919bb45ed8752367d228f33a6344ce5c0b2a3d328764e7638395",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#17:f7c382a18336",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 17,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:f7c382a183362e3c88ddf1bce9667ee52d1f5c7cc52bf18673a0cf3c5c736344",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#19:576b30206047",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 19,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:576b302060470fc3eb2e2f052f5705c20cc84745914471fc7437a2a8cefef79f",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#24:ee61276ca033",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 24,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:ee61276ca0338c6dd1bdd667d8fb2b8e759ae900552b9ad302077918558dbdf3",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#32:05328589c5a1",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 32,
+      "sourceDialect": "postgres",
+      "statementKind": "Revoke",
+      "statementDigest": "sha256:05328589c5a11dd02983a9e29e63be377167d45d1d9f4400c70d75d7a324e9eb",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#33:4f0ca89f6a25",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 33,
+      "sourceDialect": "postgres",
+      "statementKind": "Revoke",
+      "statementDigest": "sha256:4f0ca89f6a258f68c09c65bea5e25d98b942384ff7bc56d72d712db55f196336",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#34:14fb673d4501",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 34,
+      "sourceDialect": "postgres",
+      "statementKind": "Revoke",
+      "statementDigest": "sha256:14fb673d450158086b18dfdcc56284490008461078cc2b40ffefadf5b77b2022",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#35:0152553b540b",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 35,
+      "sourceDialect": "postgres",
+      "statementKind": "Revoke",
+      "statementDigest": "sha256:0152553b540bd6f0c66056f851cec4d92d00ffa9a1f3607dc4a21310f18e5609",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#36:7f4d3cb4305c",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 36,
+      "sourceDialect": "postgres",
+      "statementKind": "Grant",
+      "statementDigest": "sha256:7f4d3cb4305cbef695ac035bc145abb26cc4de5c01a90cf3c25387d75c10b7c6",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#37:7b660279a1a2",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 37,
+      "sourceDialect": "postgres",
+      "statementKind": "Grant",
+      "statementDigest": "sha256:7b660279a1a27dd28041a8512ba671eb95a4664d7d1a096efea30e606517c51e",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#38:e515bf1f617b",
+      "corpus": "persistence",
+      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 38,
+      "sourceDialect": "postgres",
+      "statementKind": "Grant",
+      "statementDigest": "sha256:e515bf1f617b8e50024861e529439f6660cc82bfdd0ca3f12a13d368de797041",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
         },
         "tsql": {
           "state": "REACHABLE",

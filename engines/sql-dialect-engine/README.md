@@ -35,14 +35,14 @@ other engines (see `engines/polyglot-route-engine`, `CanonicalDatabaseIr`'s
 
 So this engine draws a hard line instead: the scanner gives every discovered
 SQL unit an explicit disposition. The current measured result is
-**1739/1739 = 100.0% disposition coverage**: each unit is either an automatic
+**1904/1904 = 100.0% disposition coverage**: each unit is either an automatic
 translation candidate, a manual migration requirement, source-format review,
 or an engine defect. This is the 100% completeness measure; it does not
 relabel manual work as translated.
 
 The separate automatic-translation measure remains an upper bound. With the
 digest-bound profile `persistence-public-to-dbo` (`{"": "dbo", "public":
-"dbo"}`), the current 81-file migration corpus measures **1302/1739 = 74.9%**
+"dbo"}`), the current 87-file migration corpus measures **1387/1904 = 72.8%**
 source-side candidates. This includes typed namespace profiles, quoted and
 reserved identifiers, views, callable, constraint and PostgreSQL role comments, table
 privileges, bounded procedures, typed `RETURNS TABLE`, narrow static PL/pgSQL
@@ -62,7 +62,7 @@ guessing. External execution, independent verification, and certification
 remain separate evidence gates.
 
 For the domestic target ledger, the current scan expands every discovered
-source unit against all 13 ChinaDB targets: **22607/22607 = 100.0% route
+source unit against all 13 ChinaDB targets: **24752/24752 = 100.0% route
 disposition coverage**. An admitted source unit receives
 `TARGET_ADAPTER_REVIEW_REQUIRED`; an already blocked source unit retains its
 manual or source-format disposition. This is complete, auditable route
@@ -72,10 +72,12 @@ remain `0`, external execution remains `NOT_RUN`, and certification remains
 
 The source-side number is not the same as target reachability. Replaying every
 admitted candidate through all four target emitters with that explicit profile
-gives **363/1302 = 27.9%** strict four-target intersection. The optimal strategy
+gives **1210/1387 = 87.2%** policy-enabled four-target emission intersection
+under the explicit P0 policy recorded in the reachability artifact. This is
+not a runtime-equivalence claim. The optimal strategy
 under the fail-closed constraints is a target-specific route portfolio, not a
-forced common denominator: PostgreSQL is source-native at **1302**, followed by
-SQL Server at **525**, Oracle at **435**, and MySQL at **411**. Routine privileges
+forced common denominator: PostgreSQL is source-native at **1387**, followed by
+SQL Server at **1314**, MySQL at **1259**, and Oracle at **1221**. Routine privileges
 and MySQL function comments are widened only when a typed source catalog proves
 one exact routine overload, including a proven zero-argument signature; opaque
 PL/pgSQL declarations contribute identity-only evidence and remain blocked for
@@ -386,30 +388,37 @@ hiding exactly what this engine cannot do.
 
 ### What it says about real code
 
-Run against the current checkout's 76 migration files with the digest-bound
-namespace profile, the scan reports **1274 of 1485 statements as automatic
-translation candidates (85.8% upper bound)**. It also reports **1485 of 1485
-(100.0%) with an explicit disposition**: 1274 automatic candidates, 202
-manual migrations, and 9 source-format reviews.
+Run against the current checkout's 87 migration files with the digest-bound
+namespace profile, the scan reports **1387 of 1904 statements as automatic
+translation candidates (72.8% upper bound)**. It also reports **1904 of 1904
+(100.0%) with an explicit disposition**: 1387 automatic candidates, 515
+manual migrations, and 2 source-format reviews. Of the 515 manual items, 362
+retain passed resolutions, 73 retain time-bounded waivers, and 80 newly
+discovered items remain open; release therefore remains blocked.
 
 The automatic candidate number is intentionally conservative. The blocker
 ranking says why, while the disposition ledger ensures no unit disappears:
 
 | Blocker | Occurrences | Distinct | What it really is |
 |---|---|---|---|
-| `CERTIFIED_ROUTINE_UNSUPPORTED_BODY` | 54 | 1 | arbitrary procedural bodies without a bounded typed route remain blocked |
-| `CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED` | 22 | 2 | SECURITY DEFINER/search_path changes execution identity or name resolution |
-| `CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW` | 70 | 1 | dynamic SQL and procedural control flow cannot be statically expanded |
-| `CERTIFIED_DDL_UNSUPPORTED_STATEMENT` | 29 | 1 | routine/query statements without a bounded typed route remain blocked |
-| `CERTIFIED_DDL_UNBOUNDED_DECIMAL` | 12 | 1 | arbitrary-precision DECIMAL/NUMBER has no fixed cross-dialect equivalent |
-| `CERTIFIED_DDL_PARSE_FAILED` | 9 | 9 | source-format/parser review remains required |
-| `CERTIFIED_DDL_UNSUPPORTED_TYPE` | 5 | 1 | residual vendor-specific/return types remain outside the certified set |
+| `CERTIFIED_DDL_NAMESPACE_MAPPING_REQUIRED` | 181 | 40 | the source namespace needs an explicit reviewed target mapping |
+| `CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW` | 81 | 1 | dynamic SQL and procedural control flow cannot be statically expanded |
+| `CERTIFIED_ROUTINE_UNSUPPORTED_BODY` | 77 | 3 | arbitrary procedural bodies without a bounded typed route remain blocked |
+| `CERTIFIED_DDL_UNSUPPORTED_STATEMENT` | 65 | 1 | routine/query statements without a bounded typed route remain blocked |
+| `CERTIFIED_ROUTINE_NAMESPACE_MAPPING_REQUIRED` | 25 | 5 | qualified routines need an explicit target namespace mapping |
+| `CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED` | 25 | 6 | table-returning routines need a static typed row and matching read-only SELECT |
+| `CERTIFIED_DDL_UNBOUNDED_DECIMAL` | 21 | 1 | arbitrary-precision DECIMAL/NUMBER has no fixed cross-dialect equivalent |
+| `CERTIFIED_DDL_UNSUPPORTED_TYPE` | 11 | 1 | residual vendor-specific/return types remain outside the certified set |
+| `CERTIFIED_DDL_UNSUPPORTED_CHECK` | 7 | 2 | residual CHECK expression semantics are not in the typed predicate profile |
+| `CERTIFIED_DML_UNSUPPORTED_EXPRESSION` | 6 | 3 | volatile or digest expressions remain outside the typed DML profile |
+| `CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE` | 3 | 3 | computed identifiers outside the typed profile remain blocked |
+| `CERTIFIED_DDL_PARSE_FAILED` | 2 | 2 | source-format/parser review remains required |
 | `CERTIFIED_INSERT_UNSUPPORTED_MODIFIER` | 3 | 1 | conflict/upsert semantics need a target-specific route |
-| `CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET` | 2 | 2 | STABLE volatility has no exact common target declaration |
-| `CERTIFIED_DDL_UNSUPPORTED_CHECK` | 1 | 1 | residual CHECK expression semantics are not in the typed predicate profile |
-| `CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE` | 1 | 1 | computed CHECK operands outside the typed JSONB/array profile remain blocked |
-| `CERTIFIED_DML_UNSUPPORTED_EXPRESSION` | 1 | 1 | volatile `clock_timestamp()` and other expressions remain outside the typed DML profile |
+| `CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET` | 3 | 1 | STABLE volatility has no exact common target declaration |
+| `CERTIFIED_UPDATE_SOURCE_KEY_NOT_UNIQUE` | 3 | 2 | source rows lack a proven unique join key |
 | `CERTIFIED_ROUTINE_UNSUPPORTED_LANGUAGE` | 2 | 1 | routine language has no bounded certified route |
+| `CERTIFIED_DROP_UNSUPPORTED_STATEMENT` | 1 | 1 | the statement is not a single bounded DROP TABLE |
+| `CERTIFIED_INSERT_UNSUPPORTED_SOURCE` | 1 | 1 | the source is outside fixed VALUES or a bounded SELECT |
 
 The first run of this scan reported **8.0%**, and reading it found a real
 defect rather than a subset limit: inline `b_id INTEGER REFERENCES b(id)`
@@ -422,7 +431,6 @@ tests asserting the two spellings produce an identical model.
 
 The historical 64-file snapshot was 174/1015 = 17.1%. Subsequent typed
 expansions now cover schema-qualified objects with digest-bound explicit
-mapping, quote-preserving identifiers, safe OR REPLACE cases, view/query
 metadata, callable and constraint comments, table privileges, bounded
 procedures, typed table-returning functions, narrow PL/pgSQL blocks, static
 single-DDL `DO`, trigger OLD/NEW metadata, JSON/plain binary routes, unbounded
@@ -435,10 +443,10 @@ text-path expression indexes plus `JSONB_TYPEOF`/top-level-key object checks,
 typed `ARRAY_LENGTH`/`CARDINALITY`/`ARRAY_POSITION`/containment/default routes,
 and PostgreSQL-only table-level RLS state controls plus typed tenant-setting
 policies on the source side; their non-PostgreSQL target routes remain
-explicitly blocked. The current checkout therefore measures **1302/1739 =
-74.9%** automatic candidates with the
+explicitly blocked. The current checkout therefore measures **1387/1904 =
+72.8%** automatic candidates with the
 explicit namespace profile.
-The repository-level headline remains **1739/1739 = 100.0% disposition
+The repository-level headline remains **1904/1904 = 100.0% disposition
 coverage**: every blocker is explicit manual or source-review work, and none
 is silently converted.
 

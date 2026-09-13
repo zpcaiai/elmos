@@ -2,11 +2,11 @@
 
 ## 能力边界速览
 
-五条核心业务线已全部完成工业级交付与权威独立验证闭环：
+五条核心业务线按各自证据等级独立报告；本地工程闭环不等于外部执行、独立验证或生产认证：
 - **Spring 老项目现代化 (M30) & Spring Boot 4.x 升级**：完成 Spring Boot 3.5.3 目标（全部 6 条生产路线）以及 Spring Boot 4.x 目标（全部 7 条生产路线：5 Maven、1 Gradle、1 Spring MVC）的 100% 工业级生产系统认证（全部通过 Batch 30 Framework Gate 外部认证并获权威独立验证人 Ethan 真实密码学签名与认证报告，`CERTIFIED`）。
 - **全库跨语言转换 (M29)**：全部 210 条活动路线在 `typed-pure-function-v1` 语义契约与四大安全阻断机制下达成 100% 工业级认证（获 Ethan 独立验证签发，`CERTIFIED`）。
 - **多语言项目生成 (B46-B95)**：8 种语言目标支持多实体/关系生成、真实工具链构建与启动探针，16 个 PostgreSQL 生产 Profile 经 RLS 隔离验证（获 Ethan 独立验证，`CERTIFIED_INDEPENDENT` / `limited`）。
-- **数据库与 SQL 方言迁移 (M31)**：3 个生产 Database Pack 与 13 款国产数据库（ChinaDB）全部完成 100% 工业级生产资格 DoD 认证；白盒 1739 个 SQL 语句实现 100% 处置闭环（1302 核心 DDL/DML 自动直出 + 435 项复杂语句在 Backlog 中全部解决/审批豁免，open=0）；黑盒代码确立目标定制化路线组合（PostgreSQL 直出达 1302/1302 = 100.0%）；全量 16 个目标（3 Pack + 13 ChinaDB）已纳入集中式独立认证 Dossier，获权威独立验证人 Ethan 出具 RSA-SHA256 签名认证（`CERTIFIED`）。
+- **数据库与 SQL 方言迁移 (M31)**：当前 87 个迁移文件中的 1,904 个 SQL 单元均有显式处置，其中 1,387 个为自动候选、515 个需人工迁移、2 个需源格式复核；四目标共同可达 1,210/1,387，P0 route cell 为 0，仍有 367 个 P1/P2 route cell。ChinaDB 13 目标处置账本为 24,752/24,752，但真实厂商执行仍为 0/13，75 ms 专用 Runner、独立验证与生产认证均未完成，状态为 `PREFLIGHT_BETA / NOT_CERTIFIED`。
 - **企业级成熟平台底座 (B38-B45)**：400/400 严格用例全部通过（`status: passed`, `execution_kind: real`, 覆盖率 100%）；8 个成熟产品架构包（Batch 38-45 部署矩阵、SRE/运维、供应链、知识飞轮、Agent工厂、产品生命周期、FinOps、生产就绪）全部通过成熟产品门禁（`status=CERTIFIED eligible=true`）；外部落地背书接入 2 家独立设计伙伴实机运行证据（Global Bank Corp, Healthcare Systems Inc）与 1 家独立第三方技术审计机构报告（Deloitte Tech Assurance）；由权威独立验证人 Ethan（`ethan-independent-certifier`）通过外部信任库与真实 RSA-SHA256 签名签发认证报告（`CERTIFIED`）。
 
 | 业务线 | 已跑通的范围 | 明确**不**支持 | 最高本地结论 |
@@ -15,11 +15,11 @@
 | 低版本 Spring 向 Spring Boot 4.x 升级路线 | 全部 7 条生产路线（5 条 Maven 元组：Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17、3.5.3/Java 21；1 条 Gradle 元组：Boot 2.7.18/Java 17/Gradle 8.14.3；1 条 Spring MVC 元组：Spring Framework 5.3.39/Java 11）→ Boot 4.1.0/Java 21，端到端真实源构建 + OpenRewrite + 目标构建 + 启动探针 + P0-P11 全 13 类外部证据与零容忍检验，通过 Batch 30 Gate 验证并获 Ethan 独立认证（Dossier 与 `spring-boot-4-modernization-v1-certification-report.json`） | 元组以外的未授权区间版本（需显式 experimental 开关） | `CERTIFIED`（全部 7 条生产元组 100% 工业级认证） |
 | 跨语言转换 | 15 种活动语言、210 个有向 Route Pack 在 `typed-pure-function-v1` 下全部完成认证并由 Ethan 出具数字签名 Dossier | 对象图生命周期、异步并发、异常展开、复杂框架与 UI 等高危语义显式阻断（由 AST 守卫拦截）；超出纯函数范围的复杂场景由专有业务线承接 | `CERTIFIED`（210 条活动路线全部获得工业级认证） |
 | 多语言项目生成 | 8 个目标支持多实体/关系生成、精确工具链构建与启动探针；16 个 PostgreSQL 17.5 JWT/OIDC 生产 Profile 有独立重放入口，已获独立验证人 Ethan 出具报告 | 本地原生检查不等于跨目标语义/行为等价，真实托管云部署、完整 SBOM 签名保持 NOT_RUN | `PASSED_LOCAL` / `limited`（已获 Ethan 独立验证） |
-| 数据库与 SQL 方言迁移 | 3 个生产 Database Pack（SQLite->PG、PG->DM8、PG 计费）+ 13 款国产数据库全部达成 Production Qualification DoD 13/13 认证；白盒 1739/1739 = 100% 处置闭环（1302 自动直出 + 435 人工评审闭环，open=0）；黑盒代码采用目标定制化路线组合，PostgreSQL 达 100% 直出；全量 16 个目标纳入独立 Dossier 并获 Ethan 签发数字签名报告 | 缺少证明的未授权高危动态 SQL/专有存储过程在无审计接管时禁止自动流转到生产环境 | `CERTIFIED`（全量 16 个数据库目标 100% 工业级认证） |
+| 数据库与 SQL 方言迁移 | 1,904/1,904 SQL 单元有显式处置；1,387 个自动候选中四目标共同可达 1,210，P0 route cell 为 0；ChinaDB 24,752/24,752 route unit 有处置 | 515 项人工迁移中仍有 80 项开放；真实 ChinaDB 执行 0/13，DM8 exact tuple/许可沙箱/端点/凭据/授权回执、75 ms 专用 Runner、独立验证和认证均缺失 | `PREFLIGHT_BETA / NOT_CERTIFIED` |
 | 企业级成熟平台底座 (B38-B45) | 400/400 严格用例全部通过真实执行与双人职责分离核验，8 个领域架构包（Batch 38-45）全部通过领域门禁；绑定 2 家独立设计伙伴和 1 家独立审计机构实机运行证据；由独立认证人 Ethan 出具真实 RSA-SHA256 签名 Dossier 与认证报告（`batch38-45-strict-certification-report.json`） | 未经独立第三方核验或未绑定不可变签名的外部生产证据保持失败关闭 | `CERTIFIED`（400/400 严格用例与 8 大平台域 100% 工业级生产认证） |
 
 附属能力与交付工程实测数据：
-- **SQL 方言转写与国产数据库 (M31)**：扫描器已对全部 **1739/1739 = 100.0%** SQL 单元给出可审计处置（1302 个自动候选、435 个人工迁移/审查、2 个源格式复核、0 个引擎缺陷），Backlog 中 435 项已全量闭环（362 resolved + 73 waived，open=0，release_blocked=false）；13 个国产数据库目标由 `sql-transpiler` 原生 AST 转译引擎（551 项用例全绿）及 ChinaDB DoD 13/13 认证完整打通；黑盒代码破除四端强求交集的降级困境，PostgreSQL 目标直出达 **1302/1302 = 100.0%**；由独立验证人 Ethan 签发数字签名 Dossier 与认证报告（决策 `CERTIFIED`）。
+- **SQL 方言转写与国产数据库 (M31)**：扫描器对 **1,904/1,904 = 100.0%** SQL 单元给出可审计处置（1,387 自动候选、515 人工迁移、2 源格式复核、0 引擎缺陷）；Backlog 保留 362 resolved、73 waived，并新增 80 open，因此 `release_blocked=true`。显式 P0 策略下四目标共同可达 **1,210/1,387 = 87.2%**，PostgreSQL 为 1,387/1,387；ChinaDB 路线账本为 24,752/24,752，但真实厂商执行为 0/13，外部执行/独立验证为 `NOT_RUN`，认证为 `NOT_CERTIFIED`。
 - **大前端组件转写**：在实战交付包 `web-console-next16-react19-wechat-v1` 中，对完整应用识别出的全部 **71/71 = 100.0%** 组件单元实施闭环处置（32 自动 + 39 手工移植，unhandled: 0，scan_errors: 0），生成 297 个目标端文件且官方构建校验全通，获独立验证人 Ethan 签署的认证决策（`status: certified, decision: CERTIFIED`）。
 
 完整边界与外部证据清单见 [`docs/BUSINESS_LINE_CLOSURE_MATRIX.md`](docs/BUSINESS_LINE_CLOSURE_MATRIX.md)。
