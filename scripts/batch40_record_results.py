@@ -306,8 +306,18 @@ if repository_controls is not None:
 (P / 'claims.json').write_text(json.dumps(claims, indent=2, ensure_ascii=False) + '\n')
 
 metrics = json.loads((P / 'metrics.json').read_text())
+metrics['owner'] = 'elmos-platform-maintainers'
 metrics['status'] = 'PARTIAL'
 for entry in metrics['metrics']:
+    # A refresh must never inherit an earlier certification assertion. Start
+    # every metric at the conservative, unmeasured boundary and promote only
+    # the repository-owned values computed from the exact reports above.
+    entry.update({
+        'measured': False,
+        'value': None,
+        'evidenceRefs': [],
+        'note': 'not measured',
+    })
     if entry['name'] == 'sbomCoverage':
         entry.update({"measured": True, "value": inv['metrics']['sbomCoverage'],
                       "evidenceRefs": ["b40-dependency-inventory"],
@@ -346,8 +356,17 @@ for entry in metrics['metrics']:
 (P / 'metrics.json').write_text(json.dumps(metrics, indent=2, ensure_ascii=False) + '\n')
 
 flags = json.loads((P / 'zero-tolerance.json').read_text())
+flags['owner'] = 'elmos-platform-maintainers'
 flags['status'] = 'PARTIAL'
 for entry in flags['flags']:
+    # Zero-tolerance values are evidence claims, not sticky configuration.
+    # Clear every old observation before binding the locally evaluated subset.
+    entry.update({
+        'evaluated': False,
+        'observed': None,
+        'evidenceRefs': [],
+        'note': 'not evaluated',
+    })
     if entry['name'] == 'secretLeaks':
         entry.update({"evaluated": True, "observed": actionable,
                       "evidenceRefs": ["b40-secret-scan"],
@@ -498,9 +517,15 @@ pack['status'] = 'experimental'
 if not arguments.skip_context_refresh:
     pack['artifactDigest'] = sha256_file(artifact_path)
     pack['environmentDigest'] = sha256_file(environment_path)
-pack['evidenceRefs'] = sorted(set(pack.get('evidenceRefs', [])) | {
+# Rebuild this list from present bounded evidence.  Unioning with an older
+# certified pack leaves dangling external-verification IDs after the evidence
+# is revoked and makes a conservative refresh look certified by association.
+pack['evidenceRefs'] = sorted({
     'b40-dependency-inventory', 'b40-secret-scan',
     *(['b40-dependabot-alerts'] if dependabot is not None else []),
+    *(['b40-dependabot-open-alerts'] if (P / 'evidence/execution/b40-dependabot-open-alerts.json').is_file() else []),
+    *(['b40-dependabot-vex'] if (P / 'evidence/execution/b40-dependabot-vex.json').is_file() else []),
+    *(['b40-dependabot-vex-provenance'] if (P / 'evidence/provenance/b40-dependabot-vex-provenance.json').is_file() else []),
     *(['b40-local-assurance'] if assurance is not None else []),
     *(['b40-repository-controls'] if repository_controls is not None else []),
 })
@@ -719,7 +744,12 @@ if assurance is not None or repository_controls is not None:
             json.dumps(threat_model, indent=2, ensure_ascii=False) + '\n'
         )
 if dependabot is not None:
-    if repository_controls is not None:
+    governed_vex_registry = P / 'evidence/execution/b40-dependabot-vex.json'
+    if repository_controls is not None and not governed_vex_registry.is_file():
+        # The generic repository-control projection is only a fallback.  When
+        # the digest-bound Dependabot governance registry exists, its active
+        # NOT_AFFECTED decisions and GitHub dispositions are authoritative and
+        # must not be overwritten by the broad all-alert status projection.
         vex_record = json.loads((P / 'vex-record.json').read_text())
         vex_record.update({
             'status': 'draft',

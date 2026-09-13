@@ -2,7 +2,7 @@
   "packKey": "elmos-platform-supply-chain",
   "batch": 40,
   "status": "OPEN",
-  "owner": "Aria Thorne, Chief Security & Compliance Officer",
+  "owner": "elmos-platform-maintainers",
   "risks": [
     {
       "id": "RISK-B40-SIGN-001",
@@ -20,7 +20,7 @@
       "id": "RISK-B40-SLA-001",
       "severity": "high",
       "status": "OPEN",
-      "statement": "Historical Dependabot remediation SLA compliance is 0.9027: 18 of 185 fixed alerts breached the declared response limit. The observed history is immutable."
+      "statement": "Historical Dependabot remediation SLA compliance is 0.8916: 27 of 249 fixed alerts breached the declared response limit. The observed history is immutable."
     },
     {
       "id": "RISK-B40-INDEPENDENT-001",

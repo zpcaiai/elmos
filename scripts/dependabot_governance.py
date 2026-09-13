@@ -254,6 +254,108 @@ def migrate_registry(registry: Mapping[str, Any]) -> dict[str, Any]:
     return migrated
 
 
+def refresh_registry(
+    repo: str,
+    registry: Mapping[str, Any] | None,
+    open_alerts: Sequence[Mapping[str, Any]],
+    all_alerts: Sequence[Mapping[str, Any]],
+    *,
+    now: datetime | None = None,
+    repo_root: Path | None = None,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Merge newly open alerts into an existing VEX registry.
+
+    Legacy 2.0 registries may have been bound to a mixed snapshot containing
+    runtime alerts that were later fixed.  Those source keys cannot be
+    reconstructed from the exception list alone.  A refresh therefore
+    revalidates every retained exception against the live all-state GitHub
+    inventory and the current manifest bytes, then binds a new 2.1 snapshot to
+    the retained exceptions plus the exact current open-alert set.  Git
+    preserves the superseded source digest. The refreshed file keeps every
+    unresolved decision and retires only alerts that GitHub now reports fixed
+    or auto-dismissed; it never turns those transitions into a fix claim.
+    """
+    current = now or datetime.now(timezone.utc)
+    root = (repo_root or Path.cwd()).resolve()
+    by_number = {int(alert["number"]): dict(alert) for alert in all_alerts}
+    if len(by_number) != len(all_alerts):
+        raise ValueError("GitHub Dependabot inventory contains duplicate alert numbers")
+
+    retained: list[dict[str, Any]] = []
+    retained_numbers: set[int] = set()
+    if registry is not None:
+        if registry.get("schema_version") not in {LEGACY_SCHEMA_VERSION, SCHEMA_VERSION}:
+            raise ValueError("Dependabot registry schema version is unsupported")
+        if registry.get("repository") != repo:
+            raise ValueError("Dependabot registry repository scope changed")
+        raw_exceptions = registry.get("exceptions")
+        if not isinstance(raw_exceptions, list) or not all(
+            isinstance(item, Mapping) for item in raw_exceptions
+        ):
+            raise TypeError("Dependabot exceptions must be a list")
+        if registry.get("fixed_claims") != [] or registry.get("certification") != "NOT_CERTIFIED":
+            raise ValueError("Dependabot registry cannot certify or claim fixes")
+        for raw_exception in raw_exceptions:
+            exception = dict(raw_exception)
+            number = int(exception.get("alert_number", -1))
+            if number <= 0 or number in retained_numbers or number not in by_number:
+                raise ValueError("Dependabot retained exception alert identity is invalid")
+            # A dependency update may later close an alert that was previously
+            # governed as residual risk.  The active registry must then stop
+            # presenting it as an exception; its historical decision remains
+            # available in Git and it is never converted into a tool-authored
+            # fixed claim.
+            state = by_number[number].get("state")
+            if state in {"fixed", "auto_dismissed"}:
+                continue
+            if state not in {"open", "dismissed"}:
+                raise ValueError("Dependabot retained exception state is unsupported")
+            retained_numbers.add(number)
+            retained.append(exception)
+
+    new_open = [
+        alert for alert in open_alerts if int(alert["number"]) not in retained_numbers
+    ]
+    additions = build_registry(repo, new_open, now=current, repo_root=root)["exceptions"]
+    exception_numbers = retained_numbers | {
+        int(exception["alert_number"]) for exception in additions
+    }
+    uncovered = sorted(
+        int(alert["number"])
+        for alert in open_alerts
+        if int(alert["number"]) not in exception_numbers
+    )
+    if uncovered:
+        raise ValueError(
+            "Dependabot open alerts are not eligible for residual-risk dismissal: "
+            + ", ".join(str(number) for number in uncovered)
+        )
+
+    governed_numbers = sorted(exception_numbers)
+    governed_alerts = [by_number[number] for number in governed_numbers]
+    source_alerts = [alert_key(alert) for alert in governed_alerts]
+    refreshed = {
+        "schema_version": SCHEMA_VERSION,
+        "repository": repo,
+        "generated_at": current.isoformat().replace("+00:00", "Z"),
+        "source_alert_snapshot_digest": alert_key_snapshot_digest(source_alerts),
+        "source_alerts": source_alerts,
+        "exceptions": sorted(
+            [*retained, *additions], key=lambda item: int(item["alert_number"])
+        ),
+        "fixed_claims": [],
+        "certification": "NOT_CERTIFIED",
+    }
+    validate_registry(
+        refreshed,
+        governed_alerts,
+        now=current,
+        repo_root=root,
+        source_alert_keys=source_alerts,
+    )
+    return refreshed, governed_alerts
+
+
 def validate_registry(
     registry: Mapping[str, Any],
     alerts: Sequence[Mapping[str, Any]],
@@ -647,27 +749,42 @@ def main() -> int:
     snapshot_path = Path(args.snapshot)
     registry_path = Path(args.registry)
     source_alert_keys: list[dict[str, Any]] | None = None
-    if not args.refresh and registry_path.exists():
+    raw_registry = (
+        json.loads(registry_path.read_bytes()) if registry_path.exists() else None
+    )
+    if registry_path.exists() and not isinstance(raw_registry, Mapping):
+        raise TypeError("Dependabot registry must be a JSON object")
+    if (
+        not args.refresh
+        and isinstance(raw_registry, Mapping)
+        and raw_registry.get("schema_version") == LEGACY_SCHEMA_VERSION
+    ):
         if not snapshot_path.is_file():
-            raise ValueError("Dependabot source alert snapshot is unavailable")
+            raise ValueError("Dependabot legacy source alert snapshot is unavailable")
         stored_snapshot = json.loads(snapshot_path.read_bytes())
         if not isinstance(stored_snapshot, list) or not all(
             isinstance(item, Mapping) for item in stored_snapshot
         ):
-            raise ValueError("Dependabot source alert snapshot is invalid")
+            raise ValueError("Dependabot legacy source alert snapshot is invalid")
         source_alert_keys = [dict(item) for item in stored_snapshot]
     open_alerts = fetch_open_alerts(args.repo)
     if args.refresh:
-        alerts = open_alerts
-        registry = build_registry(args.repo, alerts, repo_root=args.repo_root)
-        validate_registry(registry, alerts, repo_root=args.repo_root)
+        all_alerts = fetch_all_alerts(args.repo)
+        registry, alerts = refresh_registry(
+            args.repo,
+            raw_registry if isinstance(raw_registry, Mapping) else None,
+            open_alerts,
+            all_alerts,
+            repo_root=args.repo_root,
+        )
+        source_alert_keys = [dict(item) for item in registry["source_alerts"]]
         registry_path.parent.mkdir(parents=True, exist_ok=True)
         registry_path.write_text(
             json.dumps(registry, indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
     elif registry_path.exists():
-        registry = migrate_registry(json.loads(registry_path.read_bytes()))
+        registry = migrate_registry(raw_registry)
         if not source_alert_keys and registry["source_alerts"]:
             source_alert_keys = [dict(item) for item in registry["source_alerts"]]
         registered_numbers = {
@@ -777,8 +894,17 @@ def main() -> int:
             + "\n",
             encoding="utf-8",
         )
+    final_open_alerts = fetch_open_alerts(args.repo) if args.apply else open_alerts
+    still_open = sorted(int(alert["number"]) for alert in final_open_alerts)
+    if args.apply and still_open:
+        raise RuntimeError(
+            "Dependabot alerts remain open after reconciliation: "
+            + ", ".join(str(number) for number in still_open)
+        )
     snapshot_path.parent.mkdir(parents=True, exist_ok=True)
-    snapshot_path.write_bytes(canonical([alert_key(alert) for alert in open_alerts]))
+    snapshot_path.write_bytes(
+        canonical([alert_key(alert) for alert in final_open_alerts])
+    )
     return 0
 
 

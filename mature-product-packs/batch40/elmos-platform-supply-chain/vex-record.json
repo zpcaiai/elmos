@@ -3,7 +3,7 @@
   "id": "elmos-platform-supply-chain-vex-record",
   "batch": 40,
   "version": "0.2.0",
-  "owner": "Aria Thorne, Chief Security & Compliance Officer",
+  "owner": "elmos-security-owner",
   "status": "review",
   "evidenceRefs": [
     "b40-dependabot-vex"
@@ -300,186 +300,6 @@
           "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue3/project/package.json",
           "sha256": "sha256:64b96463b6ace4722536ce10a98ac46fea90a359383068aca1b7083fa8e2cc10",
           "bytes": 533
-        }
-      },
-      "controls": [
-        "immutable-byte-digest-and-source-corpus-retained",
-        "no-runtime-install-or-production-deployment",
-        "revalidate-on-every-release-and-before-expiry"
-      ],
-      "expiresAt": "2026-12-07T23:06:54Z"
-    },
-    {
-      "id": "dependabot-405-ghsa-p293-qw3h-jr36",
-      "vulnerabilityId": "GHSA-p293-qw3h-jr36",
-      "alertNumber": 405,
-      "component": {
-        "ecosystem": "npm",
-        "name": "next",
-        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
-        "dependencyScope": "runtime",
-        "relationship": "direct"
-      },
-      "analysis": {
-        "state": "NOT_AFFECTED",
-        "justification": "component_not_present_in_runtime",
-        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
-      },
-      "evidence": {
-        "manifest": {
-          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
-          "sha256": "sha256:8789236a161bfe6b5c1017507ff1b8a8115a0ddfc3ee7cc77a27b4333dbd38d7",
-          "bytes": 4988
-        }
-      },
-      "controls": [
-        "immutable-byte-digest-and-source-corpus-retained",
-        "no-runtime-install-or-production-deployment",
-        "revalidate-on-every-release-and-before-expiry"
-      ],
-      "expiresAt": "2026-12-07T23:06:54Z"
-    },
-    {
-      "id": "dependabot-406-ghsa-2xp9-vwfh-vxw4",
-      "vulnerabilityId": "GHSA-2xp9-vwfh-vxw4",
-      "alertNumber": 406,
-      "component": {
-        "ecosystem": "npm",
-        "name": "next",
-        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
-        "dependencyScope": "runtime",
-        "relationship": "direct"
-      },
-      "analysis": {
-        "state": "NOT_AFFECTED",
-        "justification": "component_not_present_in_runtime",
-        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
-      },
-      "evidence": {
-        "manifest": {
-          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
-          "sha256": "sha256:8789236a161bfe6b5c1017507ff1b8a8115a0ddfc3ee7cc77a27b4333dbd38d7",
-          "bytes": 4988
-        }
-      },
-      "controls": [
-        "immutable-byte-digest-and-source-corpus-retained",
-        "no-runtime-install-or-production-deployment",
-        "revalidate-on-every-release-and-before-expiry"
-      ],
-      "expiresAt": "2026-12-07T23:06:54Z"
-    },
-    {
-      "id": "dependabot-407-ghsa-w5vr-8v7q-w6rv",
-      "vulnerabilityId": "GHSA-w5vr-8v7q-w6rv",
-      "alertNumber": 407,
-      "component": {
-        "ecosystem": "npm",
-        "name": "baseline-browser-mapping",
-        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-        "dependencyScope": "runtime",
-        "relationship": "transitive"
-      },
-      "analysis": {
-        "state": "NOT_AFFECTED",
-        "justification": "component_not_present_in_runtime",
-        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
-      },
-      "evidence": {
-        "manifest": {
-          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
-          "bytes": 35334
-        }
-      },
-      "controls": [
-        "immutable-byte-digest-and-source-corpus-retained",
-        "no-runtime-install-or-production-deployment",
-        "revalidate-on-every-release-and-before-expiry"
-      ],
-      "expiresAt": "2026-12-07T23:06:54Z"
-    },
-    {
-      "id": "dependabot-408-ghsa-p293-qw3h-jr36",
-      "vulnerabilityId": "GHSA-p293-qw3h-jr36",
-      "alertNumber": 408,
-      "component": {
-        "ecosystem": "npm",
-        "name": "next",
-        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-        "dependencyScope": "runtime",
-        "relationship": "direct"
-      },
-      "analysis": {
-        "state": "NOT_AFFECTED",
-        "justification": "component_not_present_in_runtime",
-        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
-      },
-      "evidence": {
-        "manifest": {
-          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
-          "bytes": 35334
-        }
-      },
-      "controls": [
-        "immutable-byte-digest-and-source-corpus-retained",
-        "no-runtime-install-or-production-deployment",
-        "revalidate-on-every-release-and-before-expiry"
-      ],
-      "expiresAt": "2026-12-07T23:06:54Z"
-    },
-    {
-      "id": "dependabot-409-ghsa-2xp9-vwfh-vxw4",
-      "vulnerabilityId": "GHSA-2xp9-vwfh-vxw4",
-      "alertNumber": 409,
-      "component": {
-        "ecosystem": "npm",
-        "name": "next",
-        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-        "dependencyScope": "runtime",
-        "relationship": "direct"
-      },
-      "analysis": {
-        "state": "NOT_AFFECTED",
-        "justification": "component_not_present_in_runtime",
-        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
-      },
-      "evidence": {
-        "manifest": {
-          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
-          "bytes": 35334
-        }
-      },
-      "controls": [
-        "immutable-byte-digest-and-source-corpus-retained",
-        "no-runtime-install-or-production-deployment",
-        "revalidate-on-every-release-and-before-expiry"
-      ],
-      "expiresAt": "2026-12-07T23:06:54Z"
-    },
-    {
-      "id": "dependabot-410-ghsa-rgj7-g3m4-5g8c",
-      "vulnerabilityId": "GHSA-rgj7-g3m4-5g8c",
-      "alertNumber": 410,
-      "component": {
-        "ecosystem": "npm",
-        "name": "sharp",
-        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-        "dependencyScope": "runtime",
-        "relationship": "transitive"
-      },
-      "analysis": {
-        "state": "NOT_AFFECTED",
-        "justification": "component_not_present_in_runtime",
-        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
-      },
-      "evidence": {
-        "manifest": {
-          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
-          "bytes": 35334
         }
       },
       "controls": [
@@ -1300,13 +1120,13 @@
       "expiresAt": "2026-12-07T23:06:54Z"
     },
     {
-      "id": "dependabot-440-ghsa-p293-qw3h-jr36",
-      "vulnerabilityId": "GHSA-p293-qw3h-jr36",
-      "alertNumber": 440,
+      "id": "dependabot-494-ghsa-hh8m-fm6v-7cvg",
+      "vulnerabilityId": "GHSA-hh8m-fm6v-7cvg",
+      "alertNumber": 494,
       "component": {
         "ecosystem": "npm",
-        "name": "next",
-        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
+        "name": "@angular/core",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json",
         "dependencyScope": "runtime",
         "relationship": "direct"
       },
@@ -1317,9 +1137,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
-          "sha256": "sha256:8789236a161bfe6b5c1017507ff1b8a8115a0ddfc3ee7cc77a27b4333dbd38d7",
-          "bytes": 4988
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json",
+          "sha256": "sha256:73da1a858ece1560f0f9469e9d2a179056d313ebf8fc16ab4f92821d1283ed57",
+          "bytes": 711
         }
       },
       "controls": [
@@ -1327,16 +1147,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T23:06:54Z"
+      "expiresAt": "2026-12-12T20:58:38Z"
     },
     {
-      "id": "dependabot-441-ghsa-2xp9-vwfh-vxw4",
-      "vulnerabilityId": "GHSA-2xp9-vwfh-vxw4",
-      "alertNumber": 441,
+      "id": "dependabot-495-ghsa-hh8m-fm6v-7cvg",
+      "vulnerabilityId": "GHSA-hh8m-fm6v-7cvg",
+      "alertNumber": 495,
       "component": {
         "ecosystem": "npm",
-        "name": "next",
-        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
+        "name": "@angular/compiler",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json",
         "dependencyScope": "runtime",
         "relationship": "direct"
       },
@@ -1347,9 +1167,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
-          "sha256": "sha256:8789236a161bfe6b5c1017507ff1b8a8115a0ddfc3ee7cc77a27b4333dbd38d7",
-          "bytes": 4988
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json",
+          "sha256": "sha256:73da1a858ece1560f0f9469e9d2a179056d313ebf8fc16ab4f92821d1283ed57",
+          "bytes": 711
         }
       },
       "controls": [
@@ -1357,46 +1177,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T23:06:54Z"
+      "expiresAt": "2026-12-12T20:58:38Z"
     },
     {
-      "id": "dependabot-442-ghsa-w5vr-8v7q-w6rv",
-      "vulnerabilityId": "GHSA-w5vr-8v7q-w6rv",
-      "alertNumber": 442,
+      "id": "dependabot-496-ghsa-p297-fm68-3q8c",
+      "vulnerabilityId": "GHSA-p297-fm68-3q8c",
+      "alertNumber": 496,
       "component": {
         "ecosystem": "npm",
-        "name": "baseline-browser-mapping",
-        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-        "dependencyScope": "runtime",
-        "relationship": "transitive"
-      },
-      "analysis": {
-        "state": "NOT_AFFECTED",
-        "justification": "component_not_present_in_runtime",
-        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
-      },
-      "evidence": {
-        "manifest": {
-          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
-          "bytes": 35334
-        }
-      },
-      "controls": [
-        "immutable-byte-digest-and-source-corpus-retained",
-        "no-runtime-install-or-production-deployment",
-        "revalidate-on-every-release-and-before-expiry"
-      ],
-      "expiresAt": "2026-12-07T23:06:54Z"
-    },
-    {
-      "id": "dependabot-443-ghsa-p293-qw3h-jr36",
-      "vulnerabilityId": "GHSA-p293-qw3h-jr36",
-      "alertNumber": 443,
-      "component": {
-        "ecosystem": "npm",
-        "name": "next",
-        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+        "name": "@angular/common",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json",
         "dependencyScope": "runtime",
         "relationship": "direct"
       },
@@ -1407,9 +1197,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
-          "bytes": 35334
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json",
+          "sha256": "sha256:73da1a858ece1560f0f9469e9d2a179056d313ebf8fc16ab4f92821d1283ed57",
+          "bytes": 711
         }
       },
       "controls": [
@@ -1417,78 +1207,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T23:06:54Z"
-    },
-    {
-      "id": "dependabot-444-ghsa-2xp9-vwfh-vxw4",
-      "vulnerabilityId": "GHSA-2xp9-vwfh-vxw4",
-      "alertNumber": 444,
-      "component": {
-        "ecosystem": "npm",
-        "name": "next",
-        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-        "dependencyScope": "runtime",
-        "relationship": "direct"
-      },
-      "analysis": {
-        "state": "NOT_AFFECTED",
-        "justification": "component_not_present_in_runtime",
-        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
-      },
-      "evidence": {
-        "manifest": {
-          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
-          "bytes": 35334
-        }
-      },
-      "controls": [
-        "immutable-byte-digest-and-source-corpus-retained",
-        "no-runtime-install-or-production-deployment",
-        "revalidate-on-every-release-and-before-expiry"
-      ],
-      "expiresAt": "2026-12-07T23:06:54Z"
-    },
-    {
-      "id": "dependabot-445-ghsa-rgj7-g3m4-5g8c",
-      "vulnerabilityId": "GHSA-rgj7-g3m4-5g8c",
-      "alertNumber": 445,
-      "component": {
-        "ecosystem": "npm",
-        "name": "sharp",
-        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-        "dependencyScope": "runtime",
-        "relationship": "transitive"
-      },
-      "analysis": {
-        "state": "NOT_AFFECTED",
-        "justification": "component_not_present_in_runtime",
-        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
-      },
-      "evidence": {
-        "manifest": {
-          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
-          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
-          "bytes": 35334
-        }
-      },
-      "controls": [
-        "immutable-byte-digest-and-source-corpus-retained",
-        "no-runtime-install-or-production-deployment",
-        "revalidate-on-every-release-and-before-expiry"
-      ],
-      "expiresAt": "2026-12-07T23:06:54Z"
+      "expiresAt": "2026-12-12T20:58:38Z"
     }
   ],
   "metadata": {
     "repository": "zpcaiai/elmos",
-    "generatedAt": "2026-09-08T23:01:32.760768Z",
-    "sourceAlertSnapshotDigest": "sha256:f3033fd9176e3165d0e4c2ed885b4d79816a381c83b7c4334afa14fcecddb43a",
-    "exceptionCount": 49,
+    "generatedAt": "2026-09-13T21:08:14.235233Z",
+    "sourceAlertSnapshotDigest": "sha256:81a4b1ef187ef7bb39679ba67ed1aaa0cf0272a2367ded9a8a52e8400280dfdd",
+    "exceptionCount": 40,
     "fixedClaims": [],
     "evidenceStatus": "LOCAL_EXECUTED_SELF_ATTESTED",
     "githubDisposition": "DISMISSED",
-    "dismissedCount": 49,
+    "dismissedCount": 40,
     "independentVerification": "NOT_RUN",
     "certification": "NOT_CERTIFIED"
   },

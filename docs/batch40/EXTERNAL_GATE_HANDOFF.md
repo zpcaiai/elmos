@@ -15,10 +15,12 @@ not a certification request, approval, signature, or evidence manifest.
   authorization, independent-identity separation, and trusted-builder policy.
   Provider scanners, active tests, signing, and isolated builders remain
   `NOT_RUN`.
-- GitHub Dependabot snapshot: 290 historical alerts, 0 open. Of 185 fixed
-  alerts with complete timestamps, 167 met the declared severity SLA and 18
-  breached it (`0.9027`). The 105 dismissed alerts are excluded from SLA success
-  and still require an explicit risk-acceptance/VEX review.
+- GitHub Dependabot snapshot: 499 historical alerts, 0 open. Of 249 fixed
+  alerts with complete timestamps, 222 met the declared severity SLA and 27
+  breached it (`0.8916`). The 202 dismissed and 48 auto-dismissed alerts are
+  excluded from SLA success. The active digest-bound VEX registry contains 40
+  `NOT_AFFECTED` residual-risk decisions; it declares no fixes, independent
+  verification, or certification.
 - Direct dependency inventory: 427 external components have versions, but none
   has a repository-approved license decision. They remain 427 unresolved
   license blocks rather than being silently treated as acceptable. Every
@@ -36,11 +38,10 @@ The authoritative, refreshable list is
    427 queued external direct components. Unknown, conflicting, prohibited, or
    context-dependent licenses remain blocking; the repository cannot self-approve
    them.
-2. Review the 18 recorded patch-SLA breaches and all 105 dismissed Dependabot
-   alerts. Bind every accepted exception to an owner, reason, expiry, and VEX or
-   risk-decision record; do not rewrite the observed historical result. The 105
-   dismissed alerts are already represented as `UNDER_INVESTIGATION`, never
-   inferred as `NOT_AFFECTED`.
+2. Review the 27 recorded patch-SLA breaches and the full dismissed/auto-dismissed
+   history. Renew every active accepted exception before its expiry and preserve
+   its owner, reason, manifest digest, and VEX decision; do not rewrite the
+   observed historical result or treat a dismissal as a fix.
 
 ## Inputs that must come from accountable external actors
 

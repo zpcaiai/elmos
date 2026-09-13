@@ -5,243 +5,243 @@
   "capabilities": [
     {
       "capabilityId": "b40-ai-model-supply-chain",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-repository-controls"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-artifact-container-signing",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-repository-controls"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-compliance-control-crosswalk",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-container-kubernetes-iac-scanning",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-repository-controls"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-customer-audit-evidence",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-dast-iast-integration",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-repository-controls"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-dependency-sca-governance",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-dependabot-alerts"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-independent-security-assessment",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-repository-controls"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-isolated-trusted-builder",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-repository-controls"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-license-ip-provenance",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-dependency-inventory"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-psirt-security-incident",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-repository-controls"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-runner-update-supply-chain",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-sast-integration",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-repository-controls"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-sbom-component-identity",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-dependency-inventory"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-secret-credential-scanning",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-secret-scan"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-secure-code-review-approval",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-repository-controls"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-secure-sdlc-ssdf",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-security-architecture-review",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-security-supply-chain-gate",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-slsa-provenance",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-repository-controls"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-supply-chain-compliance-factory",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-threat-modeling",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-vex-applicability",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-repository-controls"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-vulnerability-patch-sla",
-      "status": "certified",
-      "owner": "REPLACE_ME",
+      "status": "limited",
+      "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-dependabot-alerts"
       ],
-      "reason": "Fully verified and certified in industrial-grade reference environment."
+      "reason": "Fully verified and certified in industrial-grade reference environment.",
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     }
   ],
   "packKey": "elmos-platform-supply-chain"

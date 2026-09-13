@@ -3,89 +3,80 @@
   "id": "elmos-platform-supply-chain-zero-tolerance",
   "batch": 40,
   "version": "0.1.0",
-  "owner": "Aria Thorne, Chief Security & Compliance Officer",
-  "status": "PASSED",
+  "owner": "elmos-platform-maintainers",
+  "status": "PARTIAL",
   "flags": [
     {
       "name": "builderAttestationFailures",
-      "evaluated": true,
-      "observed": 0,
-      "evidenceRefs": [
-        "batch40-verification"
-      ],
-      "note": "evaluated to 0 occurrences in independent test suite"
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
     },
     {
       "name": "criticalOpenVulnerabilities",
       "evaluated": true,
       "observed": 0,
       "evidenceRefs": [
-        "batch40-verification"
+        "b40-dependabot-alerts"
       ],
-      "note": "evaluated to 0 occurrences in independent test suite"
+      "note": "exact GitHub Dependabot snapshot; independent verification and non-GitHub advisory coverage remain outstanding"
     },
     {
       "name": "crossTenantEvidenceLeaks",
-      "evaluated": true,
-      "observed": 0,
-      "evidenceRefs": [
-        "batch40-verification"
-      ],
-      "note": "evaluated to 0 occurrences in independent test suite"
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
     },
     {
       "name": "runnerDowngradeAcceptances",
-      "evaluated": true,
-      "observed": 0,
-      "evidenceRefs": [
-        "batch40-verification"
-      ],
-      "note": "evaluated to 0 occurrences in independent test suite"
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
     },
     {
       "name": "secretLeaks",
       "evaluated": true,
       "observed": 0,
       "evidenceRefs": [
-        "batch40-verification"
+        "b40-secret-scan"
       ],
-      "note": "evaluated to 0 occurrences in independent test suite"
+      "note": "0 actionable findings await triage across 32 scanned roots; working tree only, git history not examined"
     },
     {
       "name": "tamperedArtifactsAccepted",
-      "evaluated": true,
-      "observed": 0,
-      "evidenceRefs": [
-        "batch40-verification"
-      ],
-      "note": "evaluated to 0 occurrences in independent test suite"
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
     },
     {
       "name": "testIntegrityViolations",
       "evaluated": true,
       "observed": 0,
       "evidenceRefs": [
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "note": "evaluated to 0 occurrences in independent test suite"
+      "note": "bounded to continue-on-error enforcement in the exact CI workflow; independent corpus and signed evidence integrity remain NOT_RUN"
     },
     {
       "name": "unresolvedLicenseBlocks",
       "evaluated": true,
-      "observed": 0,
+      "observed": 427,
       "evidenceRefs": [
-        "batch40-verification"
+        "b40-dependency-inventory",
+        "b40-repository-controls"
       ],
-      "note": "evaluated to 0 occurrences in independent test suite"
+      "note": "427 external direct components have no approved license decision; 26 also lack observed license metadata. Metadata never implies legal approval, and unknown decision state fails closed"
     },
     {
       "name": "unsignedProductionArtifacts",
-      "evaluated": true,
-      "observed": 0,
-      "evidenceRefs": [
-        "batch40-verification"
-      ],
-      "note": "evaluated to 0 occurrences in independent test suite"
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
     }
   ],
   "packKey": "elmos-platform-supply-chain"

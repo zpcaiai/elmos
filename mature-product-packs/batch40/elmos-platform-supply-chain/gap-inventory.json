@@ -22,25 +22,109 @@
     "zero-tolerance"
   ],
   "skillCount": 24,
-  "blockingCount": 0,
+  "blockingCount": 14,
   "openCount": 2,
-  "repositoryBlockingCount": 0,
-  "repositoryOpenCount": 2,
-  "externalGateBlockingCount": 0,
-  "externalGateOpenCount": 0,
+  "repositoryBlockingCount": 1,
+  "repositoryOpenCount": 1,
+  "externalGateBlockingCount": 13,
+  "externalGateOpenCount": 1,
   "certifiable": false,
   "gaps": [
     {
-      "category": "claim-scope",
-      "severity": "open",
-      "responsibility": "repository",
-      "detail": "claims.json describes b40-local-assurance-controls, which evidence.json does not declare"
+      "category": "evidence",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "evidence-manifest.json has not been produced"
     },
     {
-      "category": "claim-scope",
+      "category": "evidence",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "certification-request.json has not been produced"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "certification-request.sig has not been produced"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "independentAssessmentClosureRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "signatureVerificationRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
       "severity": "open",
       "responsibility": "repository",
-      "detail": "claims.json describes b40-repository-control-contracts, which evidence.json does not declare"
+      "detail": "vulnerabilitySlaCompliance is 0.8916, below the required 1.0"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "unsignedProductionArtifacts has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "tamperedArtifactsAccepted has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "responsibility": "repository",
+      "detail": "unresolvedLicenseBlocks observed 427, must be zero"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "builderAttestationFailures has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "runnerDowngradeAcceptances has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "crossTenantEvidenceLeaks has not been evaluated"
+    },
+    {
+      "category": "corpus",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "holdout corpus is empty"
+    },
+    {
+      "category": "corpus",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "representative corpus is empty"
+    },
+    {
+      "category": "approval",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "no accountable approver is recorded on the certification"
+    },
+    {
+      "category": "status",
+      "severity": "open",
+      "responsibility": "external-gate",
+      "detail": "certification status is NOT_RUN"
     }
   ]
 }
