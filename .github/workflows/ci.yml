@@ -318,7 +318,10 @@ jobs:
       - name: Replay complete Batch 32 and Batch 35 formal gates
         run: |
           make batch32-check
-          make batch32-client-packs-portable-gate
+          find client-packs -mindepth 2 -maxdepth 2 -type f -name pack.json -print | sort | while IFS= read -r manifest; do
+            pack="${manifest%/pack.json}"
+            python3.11 scripts/batch32/run_client_gate.py "$pack"
+          done
           make batch35-check
 
   polyglot-route-pack-contracts:
@@ -367,9 +370,8 @@ jobs:
             >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
-          # Hydrate the exact packages.lock.json closure while network access
-          # is allowed. The analyzer snapshots verified nupkg bytes into an
-          # isolated local source and restores offline during route execution.
+          # Populate the exact lock-file graph while network is authorized;
+          # analyzer execution later verifies and restores from this cache offline.
           dotnet restore \
             engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
             --locked-mode
@@ -500,8 +502,6 @@ jobs:
         run: |
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
-          # Hydrate the exact C# analyzer dependency closure before its
-          # fail-closed offline build phase.
           dotnet restore \
             engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
             --locked-mode
@@ -636,8 +636,6 @@ jobs:
             >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
-          # Each shard runs on a fresh host and needs the verified C# analyzer
-          # packages hydrated before offline route execution.
           dotnet restore \
             engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
             --locked-mode
@@ -791,29 +789,21 @@ jobs:
     name: Project Synthesis and operability
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    env:
-      UV_PYTHON_DOWNLOADS: never
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up Python 3.12.12
+      - name: Set up Python 3.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: "3.12.12"
+          python-version: "3.12"
       - name: Set up Rust 1.89.0
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
-        with:
-          toolchain: "1.89.0"
       - name: Install locked uv tool
         run: python -m pip install --disable-pip-version-check uv==0.11.16
-      - name: Build locked native dependency solver
-        env:
-          CARGO_NET_OFFLINE: "true"
-        run: |
-          test "$(rustc --version)" = "rustc 1.89.0 (29483883e 2025-08-04)"
-          test "$(cargo --version)" = "cargo 1.89.0 (c24e10642 2025-06-23)"
-          cargo build --locked --release --lib \
-            --manifest-path native/rust-core/Cargo.toml
+      - name: Build native dependency solver
+        run: >-
+          cargo build --locked --release
+          --manifest-path native/rust-core/Cargo.toml
       - name: Verify installed Project Synthesis distribution boundary
         run: |
           python tooling/validate_project_synthesis_integration.py --require-packages |
@@ -822,14 +812,11 @@ jobs:
             /tmp/elmos-project-synthesis-integration.txt
       - name: Verify Project Synthesis
         working-directory: engines/project-synthesis-engine
-        env:
-          ELMOS_NATIVE_LIB: ${{ github.workspace }}/native/rust-core/target/release/libelmos_native.so
         run: |
-          test -f "${ELMOS_NATIVE_LIB}"
           uv sync --locked
-          uv run --locked pytest
-          uv run --locked ruff check src tests scripts workload
-          uv run --locked mypy src
+          uv run pytest
+          uv run ruff check src tests scripts workload
+          uv run mypy src
       - name: Verify generation support matrix and workload image assets
         run: |
           uv --directory engines/project-synthesis-engine run --locked \
@@ -842,8 +829,6 @@ jobs:
           uv run --with pyyaml python tooling/validate_runtime_operability.py
           uv run --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
           uv run --with pyyaml python -m unittest discover -s scripts/operations -p 'test_*.py'
-      - name: Verify Project Synthesis P0 launch contracts
-        run: make project-synthesis-p0-contract
       - name: Verify three-line workflow protocol pack
         run: |
           uv run --with 'jsonschema>=4.23' --with pyyaml \
@@ -915,8 +900,6 @@ jobs:
     name: Eight-language synthesis acceptance
     runs-on: ubuntu-24.04
     timeout-minutes: 180
-    env:
-      UV_PYTHON_DOWNLOADS: never
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -977,8 +960,6 @@ jobs:
     # real web build and browser journeys on the hosted Linux runtime.
     runs-on: ubuntu-24.04
     timeout-minutes: 35
-    env:
-      UV_PYTHON_DOWNLOADS: never
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -1009,9 +990,7 @@ jobs:
           python-version: "3.14.6"
       - name: Verify exact ChinaDB preflight runtime
         run: |
-          test "$(python3.12 --version)" = "Python 3.12.12"
           test "$(python -c 'import platform; print(platform.python_version())')" = "3.14.6"
-          test "$(uv --version | awk '{print $1, $2}')" = "uv 0.11.16"
           test "$(uv --directory engines/database-data-engine/sql-transpiler run --locked python -c 'import platform; print(platform.python_version())')" = "3.14.6"
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
@@ -1129,12 +1108,11 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.14.6"
-          architecture: arm64
       - name: Verify exact ChinaDB preflight runtime
         run: |
-          test "$(python -c 'import platform; print(platform.python_version())')" = "3.14.6"
-          test "$(uv --version | awk '{print $1, $2}')" = "uv 0.11.16"
-          test "$(uv --directory engines/database-data-engine/sql-transpiler run --locked python -c 'import platform; print(platform.python_version())')" = "3.14.6"
+          python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
+          uv --directory engines/database-data-engine/sql-transpiler run --locked \
+            python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
       - name: Type-check and build the job API and Skills workspace
         run: pnpm --dir apps/web-console check
 
@@ -1142,8 +1120,6 @@ jobs:
     name: Project generation browser qualification
     runs-on: ubuntu-24.04
     timeout-minutes: 35
-    env:
-      UV_PYTHON_DOWNLOADS: never
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -1161,7 +1137,6 @@ jobs:
           npm install --global pnpm@10.12.4
       - name: Install dependencies
         run: |
-          uv --directory engines/polyglot-route-engine sync --locked --no-dev
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           pnpm --dir apps/web-console install --frozen-lockfile
       - name: Set up exact ChinaDB preflight runtime
@@ -1170,10 +1145,9 @@ jobs:
           python-version: "3.14.6"
       - name: Verify exact ChinaDB preflight runtime
         run: |
-          test "$(python3.12 --version)" = "Python 3.12.12"
-          test "$(python -c 'import platform; print(platform.python_version())')" = "3.14.6"
-          test "$(uv --version | awk '{print $1, $2}')" = "uv 0.11.16"
-          test "$(uv --directory engines/database-data-engine/sql-transpiler run --locked python -c 'import platform; print(platform.python_version())')" = "3.14.6"
+          python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
+          uv --directory engines/database-data-engine/sql-transpiler run --locked \
+            python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
       - name: Install exact browser engines

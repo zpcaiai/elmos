@@ -96,6 +96,23 @@ class CoreCiRuntimeContractTests(unittest.TestCase):
         self.assertIn("869f0cf437260856fe4ffa52c90f42e5e625afec80f109986c9888fee7eabf55", script)
         self.assertIn('POSTGRESQL_17_BIN=%s\\n', script)
 
+    def test_frontend_job_gates_only_declared_client_pack_manifests(self) -> None:
+        job = _job(
+            self.workflow,
+            "frontend-client-engine",
+            "polyglot-route-pack-contracts",
+        )
+        replay = job.split(
+            "- name: Replay complete Batch 32 and Batch 35 formal gates", 1
+        )[1]
+
+        self.assertIn(
+            "find client-packs -mindepth 2 -maxdepth 2 -type f -name pack.json -print",
+            replay,
+        )
+        self.assertIn('pack="${manifest%/pack.json}"', replay)
+        self.assertNotIn("-maxdepth 1 -type d", replay)
+
     def test_web_console_binds_chinadb_runtime_after_python_312_consumers(self) -> None:
         job = _job(self.workflow, "web-console", "precision-migration-b01-44")
         polyglot_sync = job.index("uv --directory engines/polyglot-route-engine sync --locked --no-dev")
