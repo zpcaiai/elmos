@@ -147,3 +147,12 @@ def test_secret_promotion_appends_version_only_when_value_changes() -> None:
     MODULE.ensure_secret(gcloud, profile(), "elmos-control-plane-database-user", b"new-value")
     assert sum(call[:3] == ("secrets", "versions", "add") for call in gcloud.calls) == 1
     assert gcloud.current == b"new-value"
+
+
+def test_deployment_pins_service_and_revision_scaling_limits() -> None:
+    assert MODULE.cloud_run_scaling_arguments(profile().container) == (
+        "--min=0",
+        "--max=4",
+        "--min-instances=0",
+        "--max-instances=4",
+    )

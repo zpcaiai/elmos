@@ -95,6 +95,16 @@ def require_string(value: Any, field: str) -> str:
     return value.strip()
 
 
+def cloud_run_scaling_arguments(container: Mapping[str, Any]) -> tuple[str, ...]:
+    """Bind the repository scaling contract to both Cloud Run scopes."""
+    return (
+        f"--min={container['min_instances']}",
+        f"--max={container['max_instances']}",
+        f"--min-instances={container['min_instances']}",
+        f"--max-instances={container['max_instances']}",
+    )
+
+
 def validate_https_origin(value: str, field: str) -> str:
     parsed = urllib.parse.urlsplit(value)
     if (
@@ -469,8 +479,11 @@ def deploy(profile: DeploymentProfile, env_file: Path, gcloud_dir: Path | None, 
         f"--port={profile.container['port']}",
         f"--cpu={profile.container['cpu']}",
         f"--memory={profile.container['memory']}",
-        f"--min={profile.container['min_instances']}",
-        f"--max={profile.container['max_instances']}",
+        # Pin both Cloud Run scaling scopes. --min/--max are mutable
+        # service-level limits, while --min-instances/--max-instances are
+        # revision-level limits. Leaving the latter implicit permits the
+        # provider default to drift from the repository contract.
+        *cloud_run_scaling_arguments(profile.container),
         f"--concurrency={profile.container['concurrency']}",
         f"--timeout={profile.container['timeout_seconds']}",
         f"--execution-environment={profile.container['execution_environment']}",
