@@ -513,53 +513,6 @@ def write_interface(
         fail(f"cannot generate agents/openai.yaml: {record['name']}")
 
 
-def promoted_skill_text(alias: str, text: str) -> str:
-    """Apply the repository-owned bounded-local promotion deterministically."""
-    parts = text.split("---", 2)
-    if len(parts) < 3:
-        fail(f"generated Skill has invalid frontmatter: {alias}")
-    frontmatter_text = parts[1]
-    promotion = (
-        f'name: {alias}\n'
-        'implementation_state: "VERIFIED"\n'
-        'external_evidence_status: "LOCAL_EXECUTED"\n'
-        'production_certification: "NOT_CERTIFIED"'
-    )
-    frontmatter_text = re.sub(
-        rf"^name:\s*{re.escape(alias)}.*$",
-        promotion,
-        frontmatter_text,
-        count=1,
-        flags=re.MULTILINE,
-    )
-    return f"---{frontmatter_text}---{parts[2]}"
-
-
-def compiled_skill_contract(record: dict[str, Any]) -> dict[str, Any]:
-    binding = record["binding"]
-    return {
-        "schema_version": "elmos.precision-migration.compiled-skill-contract.v1",
-        "package_id": "elmos.precision-migration.b01-44",
-        "package_version": "1.0.0",
-        "installed_alias": record["name"],
-        "namespace": NAMESPACE,
-        "repository_owned_wrapper": True,
-        "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
-        "installed_dependencies": binding["repository_surfaces"],
-        "declared_external_effects": [],
-        "runtime_binding": {
-            "binding_state": "VERIFIED",
-            "handler_id": binding["handler_id"],
-            "handler_entrypoint": binding["handler_entrypoint"],
-            "supported_modes": binding["supported_modes"],
-            "timeout_seconds": binding["timeout_seconds"],
-            "local_handler_status": "PASSED",
-            "external_evidence_status": "LOCAL_EXECUTED",
-            "certification_status": "NOT_CERTIFIED",
-        },
-    }
-
-
 def render_web_catalog(manifest: dict[str, Any]) -> str:
     payload = {
         "namespace": NAMESPACE,
@@ -627,16 +580,12 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
     for record in records:
         destination = generated_root / str(record["name"])
         destination.mkdir()
-        skill_text = promoted_skill_text(
-            str(record["name"]), normalized_skill(record, records)
+        skill_content = promoted_skill_content(
+            normalized_skill(record, records).encode("utf-8"),
+            str(record["name"]),
         )
-        (destination / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        (destination / "SKILL.md").write_bytes(skill_content)
         write_interface(destination, record, write_openai_yaml)
-        (destination / "compiled-contract.json").write_text(
-            json.dumps(compiled_skill_contract(record), ensure_ascii=False, indent=2)
-            + "\n",
-            encoding="utf-8",
-        )
         installed = dict(record)
         installed["source_sha256"] = sha256(
             (SOURCE / str(record["source_path"])).read_bytes()
@@ -747,7 +696,6 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
         json.dumps(executable_contracts, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-
     paths = {str(record["name"]): generated_root / str(record["name"]) for record in records}
     paths["__manifest__"] = manifest_path
     paths["__web__"] = web_path
@@ -756,18 +704,16 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
     return manifest, paths
 
 
-def directories_equal(
-    left: Path, right: Path, *, ignored: frozenset[str] = frozenset()
-) -> bool:
+def directories_equal(left: Path, right: Path) -> bool:
     left_files = {
         path.relative_to(left).as_posix(): path.read_bytes()
         for path in left.rglob("*")
-        if path.is_file() and path.relative_to(left).as_posix() not in ignored
+        if path.is_file()
     }
     right_files = {
         path.relative_to(right).as_posix(): path.read_bytes()
         for path in right.rglob("*")
-        if path.is_file() and path.relative_to(right).as_posix() not in ignored
+        if path.is_file()
     }
     right_files.pop("compiled-contract.json", None)
     left_files.pop("compiled-contract.json", None)
@@ -779,32 +725,46 @@ def directories_equal(
     return left_files == right_files
 
 
-PROMOTION_METADATA = (
+LEGACY_PROMOTION_METADATA = (
     'implementation_state: "VERIFIED"\n'
     'external_evidence_status: "LOCAL_EXECUTED"\n'
     'production_certification: "NOT_CERTIFIED"\n'
+)
+PROMOTION_METADATA = (
+    "metadata:\n"
+    '  implementation_state: "VERIFIED"\n'
+    '  external_evidence_status: "LOCAL_EXECUTED"\n'
+    '  production_certification: "NOT_CERTIFIED"\n'
 )
 
 
 def normalize_promotion_metadata(content: bytes) -> bytes:
     """Remove only the exact repository-owned promotion overlay."""
-    marker = PROMOTION_METADATA.encode("utf-8")
-    if marker not in content:
+    markers = tuple(
+        value.encode("utf-8")
+        for value in (PROMOTION_METADATA, LEGACY_PROMOTION_METADATA)
+    )
+    present = [marker for marker in markers if marker in content]
+    if len(present) != 1 or content.count(present[0]) != 1:
         return content
-    if content.count(marker) != 1:
-        return content
-    return content.replace(marker, b"", 1)
+    return content.replace(present[0], b"", 1)
 
 
 def promoted_skill_content(content: bytes, name: str) -> bytes:
     marker = f"name: {name}\n".encode("utf-8")
     if content.count(marker) != 1:
         fail(f"cannot apply exact promotion metadata: {name}")
-    if PROMOTION_METADATA.encode("utf-8") in content:
+    canonical = PROMOTION_METADATA.encode("utf-8")
+    legacy = LEGACY_PROMOTION_METADATA.encode("utf-8")
+    if content.count(canonical) == 1 and legacy not in content:
         return content
+    if content.count(legacy) == 1 and canonical not in content:
+        return content.replace(legacy, canonical, 1)
+    if canonical in content or legacy in content or b"\nmetadata:\n" in content:
+        fail(f"ambiguous promotion metadata: {name}")
     return content.replace(
         marker,
-        marker + PROMOTION_METADATA.encode("utf-8"),
+        marker + canonical,
         1,
     )
 
@@ -937,7 +897,8 @@ def install(manifest: dict[str, Any], expected: dict[str, Path]) -> None:
         if workspace.exists():
             shutil.rmtree(workspace)
         shutil.copytree(expected[name], workspace)
-        (workspace / "compiled-contract.json").unlink()
+        skill_path = workspace / "SKILL.md"
+        skill_path.write_bytes(promoted_skill_content(skill_path.read_bytes(), name))
     workspace_name = str(manifest["workspace_entrypoint"])
     DOC_ROOT.mkdir(parents=True, exist_ok=True)
     shutil.copy2(expected["__manifest__"], INSTALL_MANIFEST)

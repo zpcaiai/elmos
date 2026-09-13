@@ -234,6 +234,18 @@ class FrontendFormalCampaignTests(unittest.TestCase):
         )
 
     def test_v1_toolchain_identity_uses_current_exact_runner_payload(self) -> None:
+        expected_solver_digests = frozenset(
+            {
+                "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+                "sha256:edae32f9e37ea4b5bb35310d72f0e352d0dc07626cac4e9e30bc1ea9a5bc8efb",
+            }
+        )
+        self.assertEqual(
+            expected_solver_digests, generator.LOCKED_Z3_BINARY_SHA256S
+        )
+        self.assertEqual(
+            expected_solver_digests, validator.LOCKED_Z3_BINARY_SHA256S
+        )
         _, campaign = self.campaign(self.client_base)
         declaration = campaign["toolchain_evidence"]
         reference = self.artifact(campaign, declaration["artifact_id"])

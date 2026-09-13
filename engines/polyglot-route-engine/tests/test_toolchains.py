@@ -24,7 +24,7 @@ def test_apple_host_profiles_select_only_exact_complete_tuples() -> None:
         build_version="25G83",
         xcode="Xcode 26.6\nBuild version 17F113",
     )
-    refreshed = toolchains._select_apple_route_host_profile(
+    latest = toolchains._select_apple_route_host_profile(
         image_version="20260907.0351.1",
         product_version="26.6.2",
         build_version="25G83",
@@ -33,9 +33,9 @@ def test_apple_host_profiles_select_only_exact_complete_tuples() -> None:
 
     assert legacy.profile_id == "github-macos26-20260728.0273.1"
     assert current.profile_id == "github-macos26-20260831.0337.3"
-    assert refreshed.profile_id == "github-macos26-20260907.0351.1"
+    assert latest.profile_id == "github-macos26-20260907.0351.1"
     assert legacy.swiftc_sha256 == current.swiftc_sha256
-    assert refreshed.swiftc_sha256 == current.swiftc_sha256
+    assert latest.swiftc_sha256 == current.swiftc_sha256
     assert legacy.apple_git_sha256 == current.apple_git_sha256
     assert legacy.sandbox_exec_sha256 != current.sandbox_exec_sha256
 
@@ -85,9 +85,13 @@ def test_legacy_apple_profile_replaces_one_complete_closure(
     legacy = toolchains._APPLE_ROUTE_LEGACY_PROFILE
     monkeypatch.setattr(native, "_apple_native_profile", lambda: legacy)
 
-    components = {str(spec[0]): (str(spec[4]), int(spec[5])) for spec in native._profiled_swift_build_component_specs()}
+    components = {
+        str(spec[0]): (str(spec[4]), int(spec[5]))
+        for spec in native._profiled_swift_build_component_specs()
+    }
     trees = {
-        str(spec[0]): (str(spec[3]), int(spec[4]), int(spec[5])) for spec in native._profiled_swift_build_tree_specs()
+        str(spec[0]): (str(spec[3]), int(spec[4]), int(spec[5]))
+        for spec in native._profiled_swift_build_tree_specs()
     }
 
     assert components["swift-dispatcher"] == (
@@ -116,7 +120,10 @@ def test_output_prefers_successful_stdout_over_diagnostic_stderr(
         ),
     )
 
-    assert toolchains._output(["/usr/bin/env"], include_stderr=False) == "Xcode 26.6\nBuild version 17F113"
+    assert (
+        toolchains._output(["/usr/bin/env"], include_stderr=False)
+        == "Xcode 26.6\nBuild version 17F113"
+    )
 
 
 def test_output_keeps_successful_stderr_only_version_surfaces(
@@ -249,7 +256,8 @@ def test_repeated_go_probes_leave_no_toolchain_environment_roots(
     assert toolchains._output([str(toolchains._EXPECTED_GO_EXECUTABLE), "env", "GOTELEMETRY"]) == "off"
     for _ in range(3):
         assert (
-            toolchains._output([str(toolchains._EXPECTED_GO_EXECUTABLE), "version"]) == toolchains._EXPECTED_GO_VERSION
+            toolchains._output([str(toolchains._EXPECTED_GO_EXECUTABLE), "version"])
+            == toolchains._EXPECTED_GO_VERSION
         )
 
     deadline = time.monotonic() + 1.0
