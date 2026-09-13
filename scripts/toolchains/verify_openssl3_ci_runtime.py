@@ -42,7 +42,7 @@ OPT_LINK_TARGET: Final = "../Cellar/openssl@3/3.6.4"
 
 UNSEALED_DIRECTORY_PROFILES: Final = {
     Path("/opt"): {"mode": "0755", "uid": 0, "gid": 0},
-    # github-actions macos-15 image 20260829.0321.1 exposes the Homebrew
+    # github-actions macos-15 image 20260907.0337.1 exposes the Homebrew
     # prefix itself as runner-owned but already non-group-writable.  Keep this
     # exact pre-seal identity separate from the root-owned post-seal profile.
     Path("/opt/homebrew"): {"mode": "0755", "uid": 501, "gid": 80},
@@ -145,9 +145,9 @@ SIGNATURE_PROFILES: Final = {
         "Format=Mach-O thin (arm64)",
         "CodeDirectory v=20400 size=37924 flags=0x2(adhoc) hashes=1180+2 location=embedded",
         "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
-        "CMSDigest=a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
-        "CDHash=a8f03e63667ae72e9928cafa28a677fe8cafd9c0",
+        "CandidateCDHashFull sha256=62a898da6d899ade18542bdba30ed3eb44a351472a792e531d9b9b7b2becc51e",
+        "CMSDigest=62a898da6d899ade18542bdba30ed3eb44a351472a792e531d9b9b7b2becc51e",
+        "CDHash=62a898da6d899ade18542bdba30ed3eb44a35147",
         "Signature=adhoc",
         "TeamIdentifier=not set",
         "Sealed Resources=none",

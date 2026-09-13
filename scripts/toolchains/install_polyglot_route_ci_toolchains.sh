@@ -166,8 +166,7 @@ PY
     ;;
   frontend-formal)
     if [[ "${ImageOS:-}" != "macos15" \
-      || ( "${ImageVersion:-}" != "20260829.0321.1" \
-        && "${ImageVersion:-}" != "20260907.0337.1" ) \
+      || "${ImageVersion:-}" != "20260907.0337.1" \
       || "$(sw_vers -productVersion)" != 15.* ]]; then
       printf 'The frontend formal Node closure requires an exact allowlisted GitHub macos15 image.\n' >&2
       exit 2

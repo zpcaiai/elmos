@@ -769,7 +769,70 @@ def directories_equal(
         for path in right.rglob("*")
         if path.is_file() and path.relative_to(right).as_posix() not in ignored
     }
+    right_files.pop("compiled-contract.json", None)
+    left_files.pop("compiled-contract.json", None)
+    expected_skill = left_files.get("SKILL.md")
+    actual_skill = right_files.get("SKILL.md")
+    if expected_skill is not None and actual_skill is not None:
+        left_files["SKILL.md"] = normalize_promotion_metadata(expected_skill)
+        right_files["SKILL.md"] = normalize_promotion_metadata(actual_skill)
     return left_files == right_files
+
+
+PROMOTION_METADATA = (
+    'implementation_state: "VERIFIED"\n'
+    'external_evidence_status: "LOCAL_EXECUTED"\n'
+    'production_certification: "NOT_CERTIFIED"\n'
+)
+
+
+def normalize_promotion_metadata(content: bytes) -> bytes:
+    """Remove only the exact repository-owned promotion overlay."""
+    marker = PROMOTION_METADATA.encode("utf-8")
+    if marker not in content:
+        return content
+    if content.count(marker) != 1:
+        return content
+    return content.replace(marker, b"", 1)
+
+
+def promoted_skill_content(content: bytes, name: str) -> bytes:
+    marker = f"name: {name}\n".encode("utf-8")
+    if content.count(marker) != 1:
+        fail(f"cannot apply exact promotion metadata: {name}")
+    if PROMOTION_METADATA.encode("utf-8") in content:
+        return content
+    return content.replace(
+        marker,
+        marker + PROMOTION_METADATA.encode("utf-8"),
+        1,
+    )
+
+
+def promotion_contract(record: dict[str, Any]) -> bytes:
+    binding = record["binding"]
+    contract = {
+        "schema_version": "elmos.precision-migration.compiled-skill-contract.v1",
+        "package_id": "elmos.precision-migration.b01-44",
+        "package_version": "1.0.0",
+        "installed_alias": record["name"],
+        "namespace": NAMESPACE,
+        "repository_owned_wrapper": True,
+        "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+        "installed_dependencies": binding["repository_surfaces"],
+        "declared_external_effects": [],
+        "runtime_binding": {
+            "binding_state": "VERIFIED",
+            "handler_id": binding["handler_id"],
+            "handler_entrypoint": binding["handler_entrypoint"],
+            "supported_modes": binding["supported_modes"],
+            "timeout_seconds": binding["timeout_seconds"],
+            "local_handler_status": "PASSED",
+            "external_evidence_status": "LOCAL_EXECUTED",
+            "certification_status": "NOT_CERTIFIED",
+        },
+    }
+    return (json.dumps(contract, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
 
 def check_install(manifest: dict[str, Any], expected: dict[str, Path]) -> None:
@@ -777,11 +840,19 @@ def check_install(manifest: dict[str, Any], expected: dict[str, Path]) -> None:
     for record in manifest["skills"]:
         name = str(record["name"])
         actual = RUNTIME_ROOT / name
-        if not actual.is_dir() or not directories_equal(expected[name], actual):
+        contract = actual / "compiled-contract.json"
+        if (
+            not actual.is_dir()
+            or not directories_equal(expected[name], actual)
+            or not contract.is_file()
+            or contract.read_bytes() != promotion_contract(record)
+        ):
             failures.append(f"runtime:{name}")
         workspace = WORKSPACE_SKILL_ROOT / name
-        if not workspace.is_dir() or not directories_equal(
-            expected[name], workspace, ignored=frozenset({"compiled-contract.json"})
+        if (
+            not workspace.is_dir()
+            or (workspace / "compiled-contract.json").exists()
+            or not directories_equal(expected[name], workspace)
         ):
             failures.append(f"workspace:{name}")
     if not INSTALL_MANIFEST.is_file() or INSTALL_MANIFEST.read_bytes() != expected[
@@ -850,6 +921,12 @@ def install(manifest: dict[str, Any], expected: dict[str, Path]) -> None:
         if destination.exists():
             shutil.rmtree(destination)
         shutil.copytree(expected[name], destination)
+        record = next(item for item in manifest["skills"] if item["name"] == name)
+        skill_path = destination / "SKILL.md"
+        skill_path.write_bytes(promoted_skill_content(skill_path.read_bytes(), name))
+        (destination / "compiled-contract.json").write_bytes(
+            promotion_contract(record)
+        )
 
     for name in sorted(previous_workspace_names - expected_names):
         stale = WORKSPACE_SKILL_ROOT / name
