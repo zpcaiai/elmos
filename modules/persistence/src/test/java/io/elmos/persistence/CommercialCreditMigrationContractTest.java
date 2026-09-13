@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CommercialCreditMigrationContractTest {
     private static final Path MIGRATION = Path.of(
             "src/main/resources/db/migration/V83__commercial_credit_and_one_time_orders.sql");
-    private static final Path ELMPAY_MIGRATION = Path.of(
-            "src/main/resources/db/migration/V84__elmpay_order_digest_lookup.sql");
+    private static final Path PAYMENT_LIFECYCLE_MIGRATION = Path.of(
+            "src/main/resources/db/migration/V85__payment_provider_binding_and_credit_expiry.sql");
     private static final Path CATALOG_MIGRATION = Path.of(
             "src/main/resources/db/migration/V86__self_service_catalog_2026_09_08.sql");
     private static final Path RUNTIME_ROLE_CONFIGURATION = Path.of(
@@ -106,12 +106,11 @@ class CommercialCreditMigrationContractTest {
         assertFalse(script.contains("GRANT DELETE ON TABLE commercial_credit_ledger_entries"));
     }
 
-    @Test void elmpayDigestTriggersUsePinnedCoreHashFunctions() throws Exception {
-        String sql = Files.readString(ELMPAY_MIGRATION);
-        assertTrue(sql.contains("pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to("));
+    @Test void elmpayDigestTriggersUseSchemaQualifiedHashFunctions() throws Exception {
+        String sql = Files.readString(PAYMENT_LIFECYCLE_MIGRATION);
+        assertTrue(sql.contains("pg_catalog.encode(public.digest(pg_catalog.convert_to("));
         assertFalse(sql.contains("public.encode("));
-        assertFalse(sql.contains("public.digest("));
-        assertFalse(sql.contains("digest("));
+        assertFalse(sql.contains("encode(digest("));
     }
 
     @Test void databaseCatalogAndSubscriptionFunctionsUseTheCurrentAppendOnlyVersion() throws Exception {

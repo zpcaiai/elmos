@@ -10,14 +10,14 @@ ALTER TABLE commercial_order_directory
     ADD COLUMN business_order_sha256 char(64);
 
 UPDATE payment_order_directory
-   SET business_order_sha256 = pg_catalog.encode(pg_catalog.sha256(
-       pg_catalog.convert_to(checkout_session_id, 'UTF8')), 'hex');
+   SET business_order_sha256 = encode(digest(
+       convert_to(checkout_session_id, 'UTF8'), 'sha256'), 'hex');
 UPDATE wallet_topup_order_directory
-   SET business_order_sha256 = pg_catalog.encode(pg_catalog.sha256(
-       pg_catalog.convert_to(out_trade_no, 'UTF8')), 'hex');
+   SET business_order_sha256 = encode(digest(
+       convert_to(out_trade_no, 'UTF8'), 'sha256'), 'hex');
 UPDATE commercial_order_directory
-   SET business_order_sha256 = pg_catalog.encode(pg_catalog.sha256(
-       pg_catalog.convert_to(out_trade_no, 'UTF8')), 'hex');
+   SET business_order_sha256 = encode(digest(
+       convert_to(out_trade_no, 'UTF8'), 'sha256'), 'hex');
 
 ALTER TABLE payment_order_directory
     ALTER COLUMN business_order_sha256 SET NOT NULL,
@@ -51,8 +51,8 @@ BEGIN
         amount_minor, status)
     VALUES (
         NEW.checkout_session_id,
-        pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to(
-            NEW.checkout_session_id, 'UTF8')), 'hex'),
+        public.encode(public.digest(pg_catalog.convert_to(
+            NEW.checkout_session_id, 'UTF8'), 'sha256'), 'hex'),
         NEW.organization_id, NEW.plan_id, NEW.amount_minor, NEW.status)
     ON CONFLICT (checkout_session_id) DO UPDATE
         SET status = EXCLUDED.status,
@@ -73,8 +73,8 @@ BEGIN
         amount_minor, status)
     VALUES (
         NEW.out_trade_no,
-        pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to(
-            NEW.out_trade_no, 'UTF8')), 'hex'),
+        public.encode(public.digest(pg_catalog.convert_to(
+            NEW.out_trade_no, 'UTF8'), 'sha256'), 'hex'),
         NEW.topup_order_id, NEW.organization_id, NEW.amount_minor, NEW.status)
     ON CONFLICT (out_trade_no) DO UPDATE
         SET status = EXCLUDED.status,
@@ -95,8 +95,8 @@ BEGIN
         amount_minor, status)
     VALUES (
         NEW.out_trade_no,
-        pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to(
-            NEW.out_trade_no, 'UTF8')), 'hex'),
+        public.encode(public.digest(pg_catalog.convert_to(
+            NEW.out_trade_no, 'UTF8'), 'sha256'), 'hex'),
         NEW.order_id, NEW.organization_id, NEW.order_type, NEW.amount_minor, NEW.status)
     ON CONFLICT (out_trade_no) DO UPDATE
        SET status = EXCLUDED.status, updated_at = pg_catalog.now();

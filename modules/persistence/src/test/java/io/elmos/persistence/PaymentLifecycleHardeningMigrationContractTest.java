@@ -12,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PaymentLifecycleHardeningMigrationContractTest {
     private static final Path MIGRATION = Path.of(
             "src/main/resources/db/migration/V85__payment_provider_binding_and_credit_expiry.sql");
+    private static final Path FORWARD_REPAIR = Path.of(
+            "src/main/resources/db/migration/V88__payment_lifecycle_immutable_forward_repair.sql");
     private static final Path RUNTIME_ROLE_CONFIG = Path.of(
             "..", "..", "scripts", "commercial", "configure_billing_runtime_role.sh");
     private static final Path CATALOG_MIGRATION = Path.of(
@@ -19,7 +21,7 @@ class PaymentLifecycleHardeningMigrationContractTest {
 
     @Test
     void callbackDirectoriesBindTheImmutableProviderAndUseTheRealEncodeSchema() throws Exception {
-        String sql = Files.readString(MIGRATION);
+        String sql = migrationSql();
 
         for (String directory : new String[]{
                 "payment_order_directory", "wallet_topup_order_directory",
@@ -44,7 +46,7 @@ class PaymentLifecycleHardeningMigrationContractTest {
 
     @Test
     void providerUnknownWalletStateFitsBothSourceAndDirectoryAndKeepsItsTrigger() throws Exception {
-        String sql = Files.readString(MIGRATION);
+        String sql = migrationSql();
 
         assertTrue(sql.contains("ALTER COLUMN status TYPE varchar(24)"));
         assertTrue(sql.contains("DROP TRIGGER wallet_topup_orders_directory_sync"));
@@ -59,7 +61,7 @@ class PaymentLifecycleHardeningMigrationContractTest {
 
     @Test
     void onlyPrepareUnknownCommercialOrdersCanRecoverAutomatically() throws Exception {
-        String sql = Files.readString(MIGRATION);
+        String sql = migrationSql();
 
         assertTrue(sql.contains("v_order.failure_code IS DISTINCT FROM "
                 + "'CHECKOUT_PREPARE_OUTCOME_UNKNOWN'"));
@@ -70,7 +72,7 @@ class PaymentLifecycleHardeningMigrationContractTest {
 
     @Test
     void expiredCreditReservationsAreReclaimedWithoutMintingExpiredCredit() throws Exception {
-        String sql = Files.readString(MIGRATION);
+        String sql = migrationSql();
 
         assertTrue(sql.contains("elmos_commercial_expire_generation_reservations"));
         assertTrue(sql.contains("FOR UPDATE SKIP LOCKED"));
@@ -132,5 +134,9 @@ class PaymentLifecycleHardeningMigrationContractTest {
                 "new trial and paid activations must not bind the superseded catalog");
         assertTrue(sql.contains("REVOKE ALL ON FUNCTION elmos_grant_trial"));
         assertTrue(sql.contains("GRANT EXECUTE ON FUNCTION elmos_grant_trial"));
+    }
+
+    private static String migrationSql() throws Exception {
+        return Files.readString(MIGRATION) + "\n" + Files.readString(FORWARD_REPAIR);
     }
 }
