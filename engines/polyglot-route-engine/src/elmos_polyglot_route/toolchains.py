@@ -540,6 +540,7 @@ _HOMEBREW_ROUTE_LATEST_HOSTED_PROFILE = replace(
     php_tree_bytes=129_938_026,
     php_tree_record_count=644,
     php_tree_file_count=533,
+    php_tree_directory_count=109,
 )
 _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
     _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
@@ -549,6 +550,9 @@ _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
     build_version="25F84",
     php_tree_sha256="60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
     php_tree_bytes=129_937_220,
+    php_tree_record_count=643,
+    php_tree_file_count=532,
+    php_tree_directory_count=109,
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LOCAL_PROFILE,
