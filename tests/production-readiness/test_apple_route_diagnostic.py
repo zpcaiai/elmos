@@ -609,6 +609,7 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
             "26.5.2",
             "25F84",
             "20260831.0337.3",
+            "20260907.0351.1",
             "26.6.2",
             "25G83",
             "Xcode 26.6",

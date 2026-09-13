@@ -163,9 +163,10 @@ PY
     ;;
   frontend-formal)
     if [[ "${ImageOS:-}" != "macos15" \
-      || "${ImageVersion:-}" != "20260829.0321.1" \
+      || ( "${ImageVersion:-}" != "20260829.0321.1" \
+        && "${ImageVersion:-}" != "20260907.0337.1" ) \
       || "$(sw_vers -productVersion)" != 15.* ]]; then
-      printf 'The frontend formal Node closure requires GitHub macos15 image 20260829.0321.1.\n' >&2
+      printf 'The frontend formal Node closure requires an exact allowlisted GitHub macos15 image.\n' >&2
       exit 2
     fi
     ;;
@@ -817,7 +818,8 @@ if [[ "${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python" ]]; then
   # by file digests, version output, bundle signature, team, and CDHash.
   case "${TEMURIN_HOST_BINDING}" in
     "20260728.0273.1:26.5.2:25F84:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"|\
-    "20260831.0337.3:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home") ;;
+    "20260831.0337.3:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home"|\
+    "20260907.0351.1:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home") ;;
     *)
       printf 'setup-java Temurin home is not bound to the exact hosted image: %s\n' \
         "${TEMURIN_HOST_BINDING}" >&2
