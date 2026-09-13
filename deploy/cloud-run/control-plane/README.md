@@ -7,6 +7,9 @@ Secret Manager over stdin. It resolves and re-reads the exact numeric Secret
 Manager version before binding that immutable version to Cloud Run; `latest`
 is never used in the deployed revision. It never writes a credential into a
 command, receipt, Git file, image label, or Cloud Run environment variable.
+The image build context is materialized from the exact committed Maven reactor;
+large route, Skill, evidence-pack, cache, and other non-reactor trees are not
+sent to the Docker engine.
 
 The Vercel setting is a server-only HTTPS origin:
 

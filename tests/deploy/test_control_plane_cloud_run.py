@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -176,3 +177,18 @@ def test_cloud_run_secret_bindings_are_immutable_numeric_versions() -> None:
     assert "ELMOS_DATABASE_URL=elmos-control-plane-database-url:7" in argument
     with pytest.raises(MODULE.DeploymentError, match="immutable numeric versions"):
         MODULE.secret_mount_argument(value, {**versions, value.secrets["ELMOS_DATABASE_URL"]: "latest"})
+
+
+def test_exact_maven_build_context_excludes_non_reactor_payloads() -> None:
+    revision = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=ROOT, check=True, capture_output=True, text=True
+    ).stdout.strip()
+    modules = MODULE.reactor_module_paths(revision)
+    assert "apps/control-plane" in modules
+    assert all(path.split("/", 1)[0] in {"apps", "contracts", "engines", "modules", "recipes"} for path in modules)
+    with MODULE.exact_maven_build_context(revision) as context:
+        assert (context / "pom.xml").is_file()
+        assert (context / "apps/control-plane/Dockerfile").is_file()
+        assert not (context / "routes").exists()
+        assert not (context / "skills").exists()
+        assert not (context / "client-packs").exists()

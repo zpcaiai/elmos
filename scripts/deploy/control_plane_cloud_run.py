@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import hmac
 import json
@@ -12,13 +13,15 @@ import re
 import shlex
 import subprocess
 import sys
+import tarfile
 import tempfile
 import urllib.error
 import urllib.parse
 import urllib.request
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Mapping, Sequence
+from pathlib import Path, PurePosixPath
+from typing import Any, Iterator, Mapping, Sequence
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -423,6 +426,61 @@ def docker_login(gcloud: Gcloud, profile: DeploymentProfile, docker_config: Path
     )
 
 
+def reactor_module_paths(revision: str) -> tuple[str, ...]:
+    completed = subprocess.run(
+        ["git", "show", f"{revision}:pom.xml"],
+        cwd=REPOSITORY_ROOT,
+        check=True,
+        stdout=subprocess.PIPE,
+    )
+    try:
+        root = ET.fromstring(completed.stdout)
+    except ET.ParseError as exc:
+        raise DeploymentError("root Maven reactor POM is invalid") from exc
+    namespace = root.tag.removesuffix("project")
+    values = tuple(
+        (item.text or "").strip()
+        for item in root.findall(f"{namespace}modules/{namespace}module")
+    )
+    if not values or "apps/control-plane" not in values:
+        raise DeploymentError("root Maven reactor does not contain the Control Plane")
+    for value in values:
+        path = PurePosixPath(value)
+        if (
+            not value
+            or path.is_absolute()
+            or any(part in {"", ".", ".."} for part in path.parts)
+            or path.parts[0] not in {"apps", "contracts", "engines", "modules", "recipes"}
+        ):
+            raise DeploymentError("root Maven reactor contains an unsafe module path")
+    return values
+
+
+@contextlib.contextmanager
+def exact_maven_build_context(revision: str) -> Iterator[Path]:
+    modules = reactor_module_paths(revision)
+    with tempfile.TemporaryDirectory(prefix="elmos-control-plane-context-") as temporary_raw:
+        temporary = Path(temporary_raw)
+        context = temporary / "context"
+        archive = temporary / "source.tar"
+        context.mkdir(mode=0o700)
+        subprocess.run(
+            [
+                "git", "archive", "--format=tar", f"--output={archive}",
+                revision, "--", "pom.xml", *modules,
+            ],
+            cwd=REPOSITORY_ROOT,
+            check=True,
+        )
+        with tarfile.open(archive, mode="r:") as handle:
+            handle.extractall(context, filter="data")
+        archive.unlink()
+        dockerfile = context / "apps/control-plane/Dockerfile"
+        if not dockerfile.is_file():
+            raise DeploymentError("exact Maven build context is missing the Control Plane Dockerfile")
+        yield context
+
+
 def deploy(profile: DeploymentProfile, env_file: Path, gcloud_dir: Path | None, expected: str | None) -> dict[str, Any]:
     revision = exact_revision(expected)
     environment = parse_environment_file(env_file)
@@ -472,14 +530,15 @@ def deploy(profile: DeploymentProfile, env_file: Path, gcloud_dir: Path | None, 
         with tempfile.TemporaryDirectory(prefix="elmos-docker-auth-") as docker_config_raw:
             docker_config = Path(docker_config_raw)
             docker_login(gcloud, profile, docker_config)
-            subprocess.run(
-                [
-                    "docker", "build", "--platform=linux/amd64",
-                    "--file", str(REPOSITORY_ROOT / profile.container["dockerfile"]),
-                    "--tag", tag, str(REPOSITORY_ROOT),
-                ],
-                check=True,
-            )
+            with exact_maven_build_context(revision) as build_context:
+                subprocess.run(
+                    [
+                        "docker", "build", "--platform=linux/amd64",
+                        "--file", str(build_context / profile.container["dockerfile"]),
+                        "--tag", tag, str(build_context),
+                    ],
+                    check=True,
+                )
             subprocess.run(
                 ["docker", "push", tag],
                 env={**os.environ, "DOCKER_CONFIG": str(docker_config)},
