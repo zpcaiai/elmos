@@ -11,8 +11,8 @@
     "target_profile": "vue2",
     "target_framework_version": "2.7.16"
   },
-  "source_project_digest": "sha256:927aa72f948d73cfdcb9bf5182308003c3d28e65b25448140e627f33c4114a57",
-  "target_project_digest": "sha256:2c038dd212afa81ce44fa44293ac5fa43179d46f94c9ec547a112f2b78c39458",
+  "source_project_digest": "sha256:95de96c2dc8edff3d9d9e1d6cb4956db7fe6615508fa49b16776d604c9759223",
+  "target_project_digest": "sha256:7f29612e94587f65bdf1f951fdbda4fe99b6f473f932940c9a9c63e791fed412",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",

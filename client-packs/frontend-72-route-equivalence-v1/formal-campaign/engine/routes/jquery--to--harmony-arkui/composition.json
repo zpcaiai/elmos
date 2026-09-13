@@ -3,12 +3,12 @@
   "route_id": "jquery--to--harmony-arkui",
   "source_lifting": {
     "profile_id": "jquery",
-    "project_digest": "sha256:a5432c7df1ffa8f7d1ede783c8848215ad5d423c7dae8f5a824d0bd19a274709",
+    "project_digest": "sha256:a8d47f3b6bac54041e4972605cd7ce226cd8b2a9220670f8a39386baae723071",
     "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
   },
   "target_lowering_relift": {
     "profile_id": "harmony-arkui",
-    "project_digest": "sha256:632643db8f438a23ca1eab0cbec700d75af4c42470046366be6bfd5fd52feb69",
+    "project_digest": "sha256:c50745cef818dbd48a14ef3bb925b4031c91d153640e0a1cf49723684e0828fe",
     "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
   },
   "canonical_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",

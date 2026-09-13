@@ -1,11 +1,11 @@
 {
   "schemaVersion": "2.0",
-  "projectId": "d987df49475baaef0abc853b",
+  "projectId": "bcfbe3c26794debda767d276",
   "direction": {
     "routeId": "angular--to--svelte",
     "source": "angular",
     "target": "svelte",
-    "sourceProfileVersion": "22.0.8",
+    "sourceProfileVersion": "22.1.4",
     "targetProfileVersion": "5.56.8",
     "supportState": "PROJECT_GENERATION_READY",
     "semanticConversionEvidence": "NOT_RUN",
@@ -44,7 +44,7 @@
     ]
   },
   "digestScope": "all generated files except elmos.ui-migration.json",
-  "contentDigest": "sha256:f44eebb500c1dd15c505c6406c7d4c9b86679ac8bbead5411de3de5dd54a1b8a",
+  "contentDigest": "sha256:2254c3b1d90afc1945699703bcec6f226e60d7c0ad6d73f0d3bbc0aa850ffb52",
   "ownership": {
     "generated": [
       ".editorconfig",

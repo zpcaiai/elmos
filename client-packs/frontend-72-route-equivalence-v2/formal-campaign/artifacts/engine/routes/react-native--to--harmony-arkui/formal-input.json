@@ -11,8 +11,8 @@
     "target_profile": "harmony-arkui",
     "target_framework_version": "6.0.0(20)"
   },
-  "source_project_digest": "sha256:927aa72f948d73cfdcb9bf5182308003c3d28e65b25448140e627f33c4114a57",
-  "target_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
+  "source_project_digest": "sha256:95de96c2dc8edff3d9d9e1d6cb4956db7fe6615508fa49b16776d604c9759223",
+  "target_project_digest": "sha256:00f2f6981e2cd5f90598cc561f237c3dd9fcca048092073e6667bf3c52452b83",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",

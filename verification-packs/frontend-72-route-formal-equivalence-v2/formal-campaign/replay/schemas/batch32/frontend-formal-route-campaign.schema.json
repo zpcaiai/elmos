@@ -421,12 +421,12 @@
     "exactProfile": {
       "oneOf": [
         { "const": {
-          "id": "angular", "label": "Angular", "framework_version": "22.0.8",
+          "id": "angular", "label": "Angular", "framework_version": "22.1.4",
           "profile_version": "1.0.0", "status": "ACTIVE", "platforms": ["WEB"],
           "language": "TypeScript", "language_version": "6.0.3", "runtime": "Node.js",
           "runtime_version": "26.0.0", "node_version": "26.0.0", "build_tool": "Angular CLI",
-          "build_tool_version": "22.0.8", "package_manager": "npm", "package_manager_version": "11.12.1",
-          "router": "Angular Router 22.0.8", "state": "Angular signals", "rendering": "CSR",
+          "build_tool_version": "22.1.4", "package_manager": "npm", "package_manager_version": "11.12.1",
+          "router": "Angular Router 22.1.4", "state": "Angular signals", "rendering": "CSR",
           "test_tool": "Angular build and browser E2E profile", "runner_profile": "MODERN_WEB",
           "required_project_files": ["package.json", "angular.json", "src/main.ts", "src/app/app.component.ts"]
         } },

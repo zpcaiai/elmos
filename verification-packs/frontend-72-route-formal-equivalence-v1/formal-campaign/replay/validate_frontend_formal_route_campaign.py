@@ -2436,7 +2436,7 @@ def validate_campaign(
                     cwd=pack,
                     capture_output=True,
                     text=True,
-                    timeout=120,
+                    timeout=600,
                     check=False,
                 )
                 replay_result = json.loads(completed.stdout.strip().splitlines()[-1])

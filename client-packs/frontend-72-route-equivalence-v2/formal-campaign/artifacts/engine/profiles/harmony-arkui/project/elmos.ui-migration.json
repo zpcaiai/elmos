@@ -1,11 +1,11 @@
 {
   "schemaVersion": "2.0",
-  "projectId": "f1789a531da15a1399c4bcba",
+  "projectId": "e5a13f570c89715d6df097f6",
   "direction": {
     "routeId": "angular--to--harmony-arkui",
     "source": "angular",
     "target": "harmony-arkui",
-    "sourceProfileVersion": "22.0.8",
+    "sourceProfileVersion": "22.1.4",
     "targetProfileVersion": "6.0.0(20)",
     "supportState": "ADAPTER_REQUIRED",
     "semanticConversionEvidence": "NOT_RUN",
@@ -44,7 +44,7 @@
     ]
   },
   "digestScope": "all generated files except elmos.ui-migration.json",
-  "contentDigest": "sha256:8512d5966bcb9a399f4d66a5647fc2c1cffd63c9c87d139316bb1801f6feec62",
+  "contentDigest": "sha256:ae8bd66b453bc93a1861002c37d6d88439beaeb6ee90e91c349cebd30527d1f3",
   "ownership": {
     "generated": [
       ".editorconfig",

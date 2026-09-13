@@ -7,11 +7,11 @@
   "maintenance_owner": "frontend-client-platform-team",
   "scope": {
     "migration_route": "all-directed-pairs-nine-exact-frontend-profiles",
-    "source_artifact_digest": "sha256:cfb2d33bb2752d4423a9dc7a2bcf635406b610b05b84401df11f7b55d691cb23",
-    "target_artifact_digest": "sha256:cfb2d33bb2752d4423a9dc7a2bcf635406b610b05b84401df11f7b55d691cb23",
+    "source_artifact_digest": "sha256:31c713c996ae69d94f08f8f4f9a0d0118a2c6b25c95df6d3baad42e461239adb",
+    "target_artifact_digest": "sha256:31c713c996ae69d94f08f8f4f9a0d0118a2c6b25c95df6d3baad42e461239adb",
     "workload_key": "bounded-navigation-v1",
     "risk_tier": "P0",
-    "environment_digest": "sha256:2caaec9146f759f74b3151feee7e356a1098f2b5882c34241799b5a2a5413d4d"
+    "environment_digest": "sha256:d875582bbad32cc2020aed53b1270301a868ac089cb88100e6be8ee0d5775286"
   },
   "contracts": {
     "validation_profile": "validation-profile.json",
@@ -32,11 +32,11 @@
     "advanced-verification"
   ],
   "frontend_formal_route_campaign": "formal-campaign/frontend-formal-route-campaign.json",
-  "frontend_formal_campaign_digest": "sha256:30b38feab81da81199959385a46e49270b7e8947dfd040b4211d3dd1149b5149",
-  "frontend_formal_scope_digest": "sha256:cfb2d33bb2752d4423a9dc7a2bcf635406b610b05b84401df11f7b55d691cb23",
+  "frontend_formal_campaign_digest": "sha256:4ad776d18419bd5446270d95f663335f738744fd92717a5d2c8f34d6681e7aa3",
+  "frontend_formal_scope_digest": "sha256:31c713c996ae69d94f08f8f4f9a0d0118a2c6b25c95df6d3baad42e461239adb",
   "frontend_formal_peer": {
     "pack_key": "frontend-72-route-equivalence-v1",
-    "campaign_sha256": "sha256:30b38feab81da81199959385a46e49270b7e8947dfd040b4211d3dd1149b5149",
-    "scope_digest": "sha256:cfb2d33bb2752d4423a9dc7a2bcf635406b610b05b84401df11f7b55d691cb23"
+    "campaign_sha256": "sha256:4ad776d18419bd5446270d95f663335f738744fd92717a5d2c8f34d6681e7aa3",
+    "scope_digest": "sha256:31c713c996ae69d94f08f8f4f9a0d0118a2c6b25c95df6d3baad42e461239adb"
   }
 }

@@ -2,7 +2,7 @@
   "routeId": "angular--to--jquery",
   "source": "angular",
   "target": "jquery",
-  "sourceProfileVersion": "22.0.8",
+  "sourceProfileVersion": "22.1.4",
   "targetProfileVersion": "4.0.0",
   "supportState": "LEGACY_TARGET_CONDITIONAL",
   "semanticConversionEvidence": "NOT_RUN",
