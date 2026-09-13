@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scaffold and certify all 7 Spring modernization framework packs to Spring Boot 4.1.0:
+"""Scaffold all 7 Spring modernization framework packs to Spring Boot 4.1.0:
 - spring-boot-1-5-to-4-1-0 (1.5.22.RELEASE / Java 8 / Maven 3.9.11)
 - spring-boot-2-0-2-6-to-4-1-0 (2.3.12.RELEASE / Java 11 / Maven 3.9.11)
 - spring-boot-2-7-18-to-4-1-0 (2.7.18 / Java 17 / Maven 3.9.11)
@@ -8,8 +8,9 @@
 - spring-boot-2-x-gradle-to-4-1-0 (2.7.18 / Java 17 / Gradle 8.14.3)
 - spring-framework-5-3-mvc-to-boot-4-1-0 (Spring MVC 5.3.39 / Java 11 / Maven 3.9.11)
 
-Generates exact contracts, corpora, policies, Ed25519 keys, authentic signatures,
-executes the P0-P11 campaign, and promotes each pack to certified status under Batch 30 gates.
+Generates exact local contracts, corpora, policies, and a P0-P11 campaign plan.
+The resulting packs remain ``experimental`` with external execution ``NOT_RUN``
+until externally supplied evidence is reverified and promoted by the Batch 30 gate.
 """
 
 from __future__ import annotations
@@ -32,7 +33,6 @@ from scripts.batch30.certification_campaign import (
     _version_tuple_from_exact_binding,
     support_matrix_subject_digest,
 )
-from scripts.batch30.execute_spring_certification_campaign import execute_campaign
 from scripts.precision_migration.trust import canonical_digest
 
 
@@ -146,7 +146,7 @@ PACK_SPECS = [
 ]
 
 
-def scaffold_and_certify_pack(spec: dict[str, Any]) -> None:
+def scaffold_pack(spec: dict[str, Any]) -> None:
     pack_key = spec["pack_key"]
     pack_dir = ROOT / "framework-packs" / pack_key
     print(f"\n=======================================================")
@@ -882,38 +882,29 @@ def scaffold_and_certify_pack(spec: dict[str, Any]) -> None:
         raise RuntimeError(f"validate_framework_pack failed: {res.stderr}\n{res.stdout}")
     print(res.stdout.strip())
 
-    # 15. Execute P0-P11 campaign and promote to certified
-    print("Executing P0-P11 Certification Campaign (authorized by Ethan, Ed25519 signatures)...")
-    camp_result = execute_campaign(
-        pack_dir=pack_dir,
-        client_name="Ethan-Enterprise-Holdings",
-        actor_id="actor-ethan",
-        apply=True,
-    )
-    print(f"Pack {pack_key} successfully certified! Decision: {camp_result.get('decision')}")
-
-    # 16. Run final framework gate check
-    print("Running final Batch 30 Framework Gate...")
+    # 15. Prove the scaffold is valid without manufacturing external evidence.
+    print("Running Batch 30 Framework Gate in pre-certification mode...")
     gate_script = ROOT / "scripts" / "batch30" / "run_framework_gate.py"
     gate_res = subprocess.run([
         sys.executable,
         str(gate_script),
         str(pack_dir),
         "--campaign", str(pack_dir / "certification" / "p0-p11-campaign.json"),
-        "--external-intake", str(pack_dir / "certification" / "campaign-runs" / "actor-ethan-certified" / "external-certification-intake.json"),
-        "--trust-store", str(pack_dir / "certification" / "campaign-runs" / "actor-ethan-certified" / "trust" / "trust-store.json"),
-        "--evidence-root", str(pack_dir),
-        "--evidence-root", str(pack_dir / "certification" / "campaign-runs" / "actor-ethan-certified" / "evidence"),
     ], capture_output=True, text=True)
     print(gate_res.stdout.strip())
     if gate_res.returncode != 0:
         raise RuntimeError(f"Gate check failed for {pack_key}:\n{gate_res.stderr}\n{gate_res.stdout}")
+    if "status=experimental decision=NOT_CERTIFIED" not in gate_res.stdout:
+        raise RuntimeError(
+            f"Pre-certification gate returned an unexpected decision for {pack_key}:\n"
+            f"{gate_res.stderr}\n{gate_res.stdout}"
+        )
 
 
 def main() -> int:
     for spec in PACK_SPECS:
-        scaffold_and_certify_pack(spec)
-    print("\nALL 7 SPRING BOOT 4.1.0 FRAMEWORK PACKS SUCCESSFULLY SCAFFOLDED AND CERTIFIED!")
+        scaffold_pack(spec)
+    print("\nALL 7 SPRING BOOT 4.1.0 FRAMEWORK PACKS SCAFFOLDED; EXTERNAL CERTIFICATION NOT RUN.")
     return 0
 
 

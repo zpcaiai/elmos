@@ -88,6 +88,13 @@ store, and external evidence root to `scripts/batch30/run_framework_gate.py`.
 Until that succeeds, the current live decision is `NOT_CERTIFIED` even though a
 historical checked-in promotion record exists.
 
+Repository-side pack scaffolders now stop at the pre-certification boundary.
+They emit `experimental` packs with external execution `NOT_RUN`, require the
+framework gate to return `decision=NOT_CERTIFIED`, and no longer import the
+legacy campaign executor, generate role keys, synthesize external evidence, or
+promote packs. External promotion remains available only through the explicit
+intake/trust/evidence inputs shown below.
+
 ## Reproduction commands
 
 ```bash
