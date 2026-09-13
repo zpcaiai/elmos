@@ -1,5 +1,9 @@
 ---
 name: pm-b34-proof-regression-ci
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "在 IR、规则、生成器和依赖变化时持续重跑证明回归. Precision Migration B34 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

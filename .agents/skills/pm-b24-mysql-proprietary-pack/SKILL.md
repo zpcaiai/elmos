@@ -1,5 +1,9 @@
 ---
 name: pm-b24-mysql-proprietary-pack
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "识别 MySQL 方言、InnoDB、SQL Mode、字符集、复制和平台专有对象并制定迁移策略. Precision Migration B24 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

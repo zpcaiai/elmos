@@ -17,6 +17,7 @@ import io
 import json
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 from collections import Counter, defaultdict
@@ -78,6 +79,35 @@ def fail(message: str) -> None:
 
 def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def tracked_repository_surfaces() -> frozenset[str]:
+    """Return tracked files and their parents, including sparse-checkout paths."""
+    completed = subprocess.run(
+        ["git", "ls-files", "-z"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    )
+    surfaces: set[str] = set()
+    for raw_path in completed.stdout.split(b"\0"):
+        if not raw_path:
+            continue
+        path = Path(raw_path.decode("utf-8"))
+        surfaces.add(path.as_posix())
+        surfaces.update(
+            parent.as_posix()
+            for parent in path.parents
+            if parent != Path(".")
+        )
+    return frozenset(surfaces)
+
+
+TRACKED_REPOSITORY_SURFACES = tracked_repository_surfaces()
+
+
+def repository_surface_exists(relative_path: str) -> bool:
+    return (ROOT / relative_path).exists() or relative_path in TRACKED_REPOSITORY_SURFACES
 
 
 def tree_digest(root: Path) -> str:
@@ -193,7 +223,7 @@ def binding_for_record(batch: int | None, source_name: str, kind: str) -> dict[s
         adapter = "enterprise-private-commercialization"
         surfaces = ["apps/control-plane", "apps/commercial-api"]
     route_key = source_name.removesuffix("-direction-pack")
-    route_path = ROOT / "routes" / route_key / "route.json"
+    route_relative_path = f"routes/{route_key}/route.json"
     runtime_skill = runtime_name(source_name, batch, kind)
     if kind in {"global-orchestrator", "batch-orchestrator"}:
         handler_id = f"orchestrator-dag-v2:{source_name}"
@@ -213,11 +243,11 @@ def binding_for_record(batch: int | None, source_name: str, kind: str) -> dict[s
         handler_entrypoint = "scripts.precision_migration.adapters:execute_repository_assessment"
         supported_modes = ["assess"]
         surfaces = [*surfaces, "scripts/precision_migration/adapters.py"]
-    elif batch == 16 and route_path.is_file():
+    elif batch == 16 and repository_surface_exists(route_relative_path):
         handler_id = f"batch29-route-executor-v1:{route_key}"
         handler_entrypoint = "scripts.precision_migration.adapters:execute_batch29_route"
         supported_modes = ["transform", "validate", "certify"]
-        surfaces = [*surfaces, f"routes/{route_key}/route.json"]
+        surfaces = [*surfaces, route_relative_path]
     elif batch == 41:
         b41_functions = {
             "evidence-manifest": "execute_evidence_manifest",
@@ -271,7 +301,7 @@ def binding_for_record(batch: int | None, source_name: str, kind: str) -> dict[s
             "scripts/precision_migration/generated_handlers.py",
             "docs/precision-migration-b01-44/handler-implementations.json",
         ]
-    missing = [path for path in surfaces if not (ROOT / path).exists()]
+    missing = [path for path in surfaces if not repository_surface_exists(path)]
     declared = not missing
     return {
         "adapter": adapter,
@@ -591,7 +621,9 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
             f"agent-skills/runtime/{record['name']}/SKILL.md"
         )
         installed["installed_sha256"] = sha256(
-            (destination / "SKILL.md").read_bytes()
+            promoted_skill_content(
+                (destination / "SKILL.md").read_bytes(), str(record["name"])
+            )
         )
         installed["workspace_path"] = f".agents/skills/{record['name']}/SKILL.md"
         installed["workspace_sha256"] = installed["installed_sha256"]
@@ -723,9 +755,10 @@ def directories_equal(left: Path, right: Path) -> bool:
 
 
 PROMOTION_METADATA = (
-    'implementation_state: "VERIFIED"\n'
-    'external_evidence_status: "LOCAL_EXECUTED"\n'
-    'production_certification: "NOT_CERTIFIED"\n'
+    "metadata:\n"
+    '  implementation_state: "VERIFIED"\n'
+    '  external_evidence_status: "LOCAL_EXECUTED"\n'
+    '  production_certification: "NOT_CERTIFIED"\n'
 )
 
 

@@ -1,5 +1,9 @@
 ---
 name: pm-b41-module-equivalence-certificate
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "记录关键模块源目标类型、结果、状态、Effect 和观察等价证据. Precision Migration B41 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

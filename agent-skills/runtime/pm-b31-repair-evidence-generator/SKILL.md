@@ -1,5 +1,9 @@
 ---
 name: pm-b31-repair-evidence-generator
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "记录差异、根因、补丁、验证、残余风险和最终状态证据. Precision Migration B31 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

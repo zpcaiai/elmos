@@ -1,5 +1,9 @@
 ---
 name: pm-b21-procedure-differential-test-generator
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "从签名、分支、数据约束和源行为生成双库差分测试. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

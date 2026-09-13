@@ -1,5 +1,9 @@
 ---
 name: pm-b11-scanning-recipe-engine
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "先扫描全仓库收集状态，再执行跨文件和跨模块变换. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

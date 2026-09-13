@@ -131,6 +131,7 @@ class PrecisionMigrationExternalTest(unittest.TestCase):
         self.assertEqual(557, len(self.profiles.by_skill))
         self.assertEqual(557, len({item["profile_digest"] for item in self.profiles.by_skill.values()}))
         self.assertTrue(all(len(item["required_stages"]) == 4 for item in self.profiles.by_skill.values()))
+        self.assertFalse(any(item["batch"] == 16 for item in self.profiles.by_skill.values()))
         self.assertFalse(any(item["handler_id"].startswith("batch29-route-executor-v1:") for item in self.profiles.by_skill.values()))
 
     def test_checked_in_external_state_is_honestly_not_run(self) -> None:

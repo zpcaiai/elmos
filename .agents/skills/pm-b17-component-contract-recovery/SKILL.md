@@ -1,5 +1,9 @@
 ---
 name: pm-b17-component-contract-recovery
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "恢复 Props、Events、Slots/Children、公开方法、Context 和组件边界契约. Precision Migration B17 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

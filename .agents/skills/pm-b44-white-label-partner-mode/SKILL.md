@@ -1,5 +1,9 @@
 ---
 name: pm-b44-white-label-partner-mode
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "为集成商和厂商提供品牌、租户、报告、规则和交付流程定制. Precision Migration B44 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

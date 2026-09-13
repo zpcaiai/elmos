@@ -1,5 +1,9 @@
 ---
 name: pm-b39-observability-generator
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "生成日志、指标、Trace、健康检查、告警和业务 SLI. Precision Migration B39 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

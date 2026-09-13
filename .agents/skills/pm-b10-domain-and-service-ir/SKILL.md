@@ -1,5 +1,9 @@
 ---
 name: pm-b10-domain-and-service-ir
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "表达领域规则、应用服务、领域服务、工作流、不变量和用例边界. Precision Migration B10 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

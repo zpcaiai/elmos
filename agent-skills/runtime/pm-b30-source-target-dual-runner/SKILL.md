@@ -1,5 +1,9 @@
 ---
 name: pm-b30-source-target-dual-runner
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "编排源目标构建、启动、健康检查、隔离、执行和结果收集. Precision Migration B30 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

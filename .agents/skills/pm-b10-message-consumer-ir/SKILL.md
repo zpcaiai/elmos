@@ -1,5 +1,9 @@
 ---
 name: pm-b10-message-consumer-ir
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "表达消费者、订阅、批量、顺序、重试、幂等、ACK 和死信行为. Precision Migration B10 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

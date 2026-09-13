@@ -1,5 +1,9 @@
 ---
 name: pm-b15-generic-type-lowering
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "处理泛型擦除、实例化、约束、协变、Trait bound 和运行时类型. Precision Migration B15 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

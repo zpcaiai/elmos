@@ -1,5 +1,9 @@
 ---
 name: pm-b21-scheduled-event-converter
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "转换数据库 Job、Event、Scheduler 到目标调度器或外部工作流. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

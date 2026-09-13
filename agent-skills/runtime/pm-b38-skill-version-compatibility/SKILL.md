@@ -1,5 +1,9 @@
 ---
 name: pm-b38-skill-version-compatibility
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "检查 Skill 升级、降级、数据迁移、依赖和生成代码兼容性. Precision Migration B38 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

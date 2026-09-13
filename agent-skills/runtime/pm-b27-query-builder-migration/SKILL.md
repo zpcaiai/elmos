@@ -1,5 +1,9 @@
 ---
 name: pm-b27-query-builder-migration
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "迁移 Query Builder、Criteria、DSL、表达式树和方言扩展. Precision Migration B27 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

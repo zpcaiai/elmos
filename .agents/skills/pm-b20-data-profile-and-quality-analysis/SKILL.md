@@ -1,5 +1,9 @@
 ---
 name: pm-b20-data-profile-and-quality-analysis
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "分析 NULL、空字符串、越界、重复、孤儿、编码、时区和数据倾斜. Precision Migration B20 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

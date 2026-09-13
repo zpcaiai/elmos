@@ -1,5 +1,9 @@
 ---
 name: pm-b29-graphql-test-generator
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "从 GraphQL Schema、Resolver、Directive 和错误契约生成测试. Precision Migration B29 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

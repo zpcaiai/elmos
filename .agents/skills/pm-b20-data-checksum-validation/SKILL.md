@@ -1,5 +1,9 @@
 ---
 name: pm-b20-data-checksum-validation
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "执行表级、分区级、列级和业务聚合校验. Precision Migration B20 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

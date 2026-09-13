@@ -1,5 +1,9 @@
 ---
 name: pm-b23-sqlserver-clr-stored-procedure
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "迁移 SQL CLR、程序集、权限集和外部代码依赖. Precision Migration B23 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

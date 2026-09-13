@@ -84,7 +84,7 @@
     "scope": "DISPOSABLE_TEST_TRUST_AND_LOCAL_LEDGER",
     "state": "PASS",
     "test_count": 15,
-    "test_module_digest": "sha256:59057fb8799a53830ab43247c6ffd9a7c896cf27f00db5afbae345228d271f94"
+    "test_module_digest": "sha256:eb8516bd78e380f6616c7fa251a3070e4e69ce0c01d2a2ed9c9c3097edc6e5bf"
   },
   "result_count": 2785,
   "results": [

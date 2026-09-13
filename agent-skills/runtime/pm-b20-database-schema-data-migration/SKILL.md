@@ -1,5 +1,9 @@
 ---
 name: pm-b20-database-schema-data-migration
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "完成 Schema、数据类型、对象、全量、增量、校验、切换和回滚的基础迁移闭环. Precision Migration B20 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

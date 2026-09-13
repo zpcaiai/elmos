@@ -1,5 +1,9 @@
 ---
 name: pm-b11-transformation-skill-compiler
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "把 Transformation Skill 编译为规则、查询、生成器、验证器和证据要求. Precision Migration B11 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

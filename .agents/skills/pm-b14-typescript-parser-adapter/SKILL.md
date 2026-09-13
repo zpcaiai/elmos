@@ -1,5 +1,9 @@
 ---
 name: pm-b14-typescript-parser-adapter
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "使用 TypeScript/Node.js 原生或高保真解析前端构建语法树，并保留源码位置、注释和语法特征. Precision Migration B14 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

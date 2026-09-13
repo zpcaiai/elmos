@@ -1,5 +1,9 @@
 ---
 name: pm-b15-collection-pipeline-lowering
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "在 Stream、LINQ、Iterator、Loop、Generator 和 Array pipeline 之间保持顺序与惰性. Precision Migration B15 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

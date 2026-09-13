@@ -1,5 +1,9 @@
 ---
 name: pm-b09-message-effect-model
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "表达 Topic、Key、顺序、投递、重试、ACK、DLQ 和逻辑 Exactly-once Effect. Precision Migration B09 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

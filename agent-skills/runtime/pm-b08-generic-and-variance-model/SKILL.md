@@ -1,5 +1,9 @@
 ---
 name: pm-b08-generic-and-variance-model
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "建模泛型约束、擦除、实例化、协变、逆变和高阶类型差异. Precision Migration B08 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

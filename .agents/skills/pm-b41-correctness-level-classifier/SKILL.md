@@ -1,5 +1,9 @@
 ---
 name: pm-b41-correctness-level-classifier
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "将结果分类为语法、构建、类型、局部语义、组合行为、系统性质和生产证据等级. Precision Migration B41 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 

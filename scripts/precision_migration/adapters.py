@@ -81,6 +81,31 @@ class AdapterError(ValueError):
     pass
 
 
+def _tracked_repository_surfaces() -> frozenset[str]:
+    """Return Git-tracked files and parents so sparse checkouts validate exactly."""
+    try:
+        completed = subprocess.run(
+            ["git", "ls-files", "-z"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return frozenset()
+    surfaces: set[str] = set()
+    for raw_path in completed.stdout.split(b"\0"):
+        if not raw_path:
+            continue
+        path = Path(raw_path.decode("utf-8"))
+        surfaces.add(path.as_posix())
+        surfaces.update(
+            parent.as_posix()
+            for parent in path.parents
+            if parent != Path(".")
+        )
+    return frozenset(surfaces)
+
+
 def validate_request_contract(request: Any) -> dict[str, Any]:
     """Validate the fail-closed request envelope without third-party runtime dependencies."""
     if not isinstance(request, dict):
@@ -190,6 +215,7 @@ class AdapterRegistry:
 
     def validate_handlers(self) -> list[str]:
         errors: list[str] = []
+        tracked_surfaces = _tracked_repository_surfaces()
         for entry in self.by_skill.values():
             dotted = entry.get("handler_entrypoint")
             if not isinstance(dotted, str) or ":" not in dotted:
@@ -203,7 +229,11 @@ class AdapterRegistry:
                 continue
             if not callable(function):
                 errors.append(f"{entry['skill']}: handler is not callable")
-            missing = [surface for surface in entry.get("repository_surfaces", []) if not (ROOT / surface).exists()]
+            missing = [
+                surface
+                for surface in entry.get("repository_surfaces", [])
+                if not (ROOT / surface).exists() and surface not in tracked_surfaces
+            ]
             if missing != entry.get("missing_surfaces", []):
                 errors.append(f"{entry['skill']}: repository surface status drifted")
             if entry.get("binding_state") == "DECLARED" and not entry.get("supported_modes"):

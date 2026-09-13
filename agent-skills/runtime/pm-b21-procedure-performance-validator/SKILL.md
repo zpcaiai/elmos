@@ -1,5 +1,9 @@
 ---
 name: pm-b21-procedure-performance-validator
+metadata:
+  implementation_state: "VERIFIED"
+  external_evidence_status: "LOCAL_EXECUTED"
+  production_certification: "NOT_CERTIFIED"
 description: "比较执行计划、IO、CPU、临时空间、锁、吞吐和延迟. Precision Migration B21 contract; use for this exact assessment, transformation, validation, repair, evidence, or cutover scope."
 ---
 
