@@ -2,11 +2,13 @@
 
 Observed on 2026-09-14 against repository revision
 `c132ddb597b93b0e7f88a57b2632f1dee690c743` plus the task-scoped Java Worker
-and legacy-web changes in the working tree.
+and legacy-web changes in the working tree. The final regression was repeated
+after cleanly applying the task commit to `origin/main` revision
+`e0350fb0c9d651b8d870bfbf8ed229745cfced7e`.
 
 ## Closed repository implementation gaps
 
-- The Java Worker regression suite passes 303/303. The former missing
+- The Java Worker regression suite passes 304/304. The former missing
   `spring-cloud-gateway-server` fixture dependency is present in the current
   baseline and the two Zuul-to-Gateway corpus cases pass.
 - A fail-closed enterprise integration pass now covers the deterministic JAX-WS
@@ -72,8 +74,8 @@ identity, role separation, or observed runtime evidence. The existing
 `actor-ethan-certified` intake was supplied to the formal framework gate with
 all three CLI inputs. Live re-verification failed because its evidence URIs are
 inside the framework pack while the current gate requires an evidence root
-physically disjoint from the pack. The working trust store also marks the old
-keys revoked. Therefore the checked-in historical `CERTIFIED` receipt is not a
+physically disjoint from the pack. Therefore the checked-in historical
+`CERTIFIED` receipt is not a
 successful live re-verification result.
 
 To close this gap legitimately, an authorized external executor must place the
